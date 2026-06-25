@@ -58,3 +58,19 @@ cp .env.example .env       # fill in the Azure key
 - Box: Aliyun A10 (ecs.gn7i), Ubuntu 26.04, driver 595.71.05, Docker + NVIDIA toolkit
 - Sim: `nvcr.io/nvidia/isaac-sim:6.0.1` (namespace `isaacsim.*`)
 - VLM: Azure OpenAI (no native video on Azure → frame sampling)
+
+## RL evaluation (Isaac Lab)
+
+For tasks needing a learned controller (e.g. "create a walkable robot"), the
+evaluator trains an RL policy instead of holding a static pose:
+
+- `strategy_selector.py` — LLM decides static_stability / scripted_motion / **rl_training** from the task + URDF (counts actuated DOF, flags structural feasibility).
+- `isaaclab/install_isaaclab.sh` — install Isaac Lab into the isaac-sim container (committed as image `isaac-lab:6.0.1`).
+- `isaaclab/convert_urdf_to_usd.sh` — URDF → USD (Isaac Lab spawns from USD).
+- `isaaclab/train_locomotion.sh` — train a shipped velocity task (e.g. `Isaac-Velocity-Flat-Cassie-v0`) on the GPU, headless.
+- `isaaclab/play_policy.sh` — render a trained checkpoint to MP4 for VLM judging.
+- `analyze.py` — opus-4.8 judges the rendered behavior: locomotion progress vs structural failure.
+
+Proven: Cassie trains on a single A10 (~0.73 s/iter; ~12–18 min for a walking
+policy); opus-4.8 correctly reads early behavior as "progressing, structurally
+sound" vs collapse.
