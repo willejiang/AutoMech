@@ -1,0 +1,83 @@
+{
+  "design_id": "quarter_car_v1",
+  "user_prompt": "Design a quarter-car suspension that absorbs a 10cm curb bump without bottoming out",
+  "units": "mm",
+  "up_axis": "Z",
+  "source": {
+    "type": "scad",
+    "file": "quarter_car.scad"
+  },
+  "parts": [
+    {
+      "name": "chassis",
+      "render_module": "chassis",
+      "role": "sprung_mass",
+      "material": "aluminum",
+      "density_kg_m3": 2700,
+      "fixed_base": false
+    },
+    {
+      "name": "upright",
+      "render_module": "upright",
+      "role": "unsprung_mass",
+      "material": "steel",
+      "density_kg_m3": 7850
+    },
+    {
+      "name": "wheel",
+      "render_module": "wheel",
+      "role": "wheel",
+      "material": "rubber",
+      "density_kg_m3": 1100,
+      "contact": {
+        "static_friction": 0.9,
+        "dynamic_friction": 0.8,
+        "restitution": 0.1
+      }
+    }
+  ],
+  "joints": [
+    {
+      "name": "suspension",
+      "type": "prismatic",
+      "parent": "chassis",
+      "child": "upright",
+      "axis": [0, 0, 1],
+      "lower_m": -0.08,
+      "upper_m": 0.08,
+      "stiffness": 35000,
+      "damping": 1500
+    },
+    {
+      "name": "hub",
+      "type": "revolute",
+      "parent": "upright",
+      "child": "wheel",
+      "axis": [0, 1, 0],
+      "lower_deg": -360,
+      "upper_deg": 360,
+      "stiffness": 0,
+      "damping": 5
+    }
+  ],
+  "scenario": {
+    "type": "curb_bump",
+    "ground_friction": 0.9,
+    "obstacle": {
+      "shape": "box",
+      "height_m": 0.10,
+      "width_m": 0.30,
+      "distance_m": 1.5
+    },
+    "initial_velocity_mps": [2.0, 0, 0],
+    "sim_duration_s": 4.0,
+    "sim_dt": 0.00833,
+    "gravity_mps2": -9.81
+  },
+  "pass_criteria": {
+    "max_suspension_travel_m": 0.075,
+    "no_chassis_ground_contact": true,
+    "max_chassis_roll_deg": 15,
+    "settle_within_s": 3.0
+  }
+}
