@@ -266,11 +266,27 @@ python3 loop.py --urdf .../robot.urdf --asset-root ... \
 **(c) The full automation loop** (maker → evaluator), from the client:
 ```bash
 cd orchestrator
-cp .env.example .env                         # VLM key (reuses evaluator's AZURE_* names)
+cp .env.example .env                         # then fill in the VLM endpoint + key
 python automech_loop.py --task "quarter-car suspension that clears a 10cm curb" \
-   --dry-run --max-iters 3                    # --dry-run stubs Isaac when the box is offline
+   --dry-run --max-iters 3
 ```
 Drop `--dry-run` once the GPU box is up.
+
+> ⚠️ **`--dry-run` is NOT zero-setup.** It stubs **only** the Isaac Sim step (so you
+> don't need the GPU box / Docker). The stages *before* it still run for real and
+> have hard prerequisites:
+> - **`orchestrator/.env` with a working VLM endpoint + key** — cadam generation, the
+>   visual gate, and the URDF author all make live LLM/VLM calls. Without it the very
+>   first step fails with `KeyError: 'AZURE_OPENAI_ENDPOINT'`.
+> - **The native OpenSCAD CLI on PATH** (`OPENSCAD_BIN` or `openscad`) — the render
+>   stage compiles the `.scad` to STL + the 6 views; with no OpenSCAD it can't produce
+>   views and the gate fails closed.
+>
+> So `--dry-run` exercises *generate → render → visual gate → author → (stubbed) sim →
+> feedback* — everything except the GPU physics. To check pieces in isolation without
+> the full loop, the **"Test individual stages"** section of
+> [`orchestrator/README.md`](orchestrator/README.md) runs render / gate / generation
+> on their own; a built-in fully-offline mock of the whole loop is not yet wired.
 
 > **Two container gotchas** (both already handled in the scripts): the isaac-sim
 > image's default entrypoint launches the WebRTC streamer and **swallows your
