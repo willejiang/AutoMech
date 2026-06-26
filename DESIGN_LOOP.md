@@ -292,4 +292,30 @@ flowchart LR
   `max_completion_tokens` (not `max_tokens`) and rejects custom `temperature`.
 - **Deliverable:** recorded experiment MP4s for the demo (the
   before/after loop videos in `physcad_videos/`).
-```
+
+---
+
+## 7. Implementation: the `orchestrator/` wiring
+
+§1–§2 describe the architecture; [`orchestrator/`](orchestrator/) is the running
+glue that ties the **cadam worker** (`worker/`) to the **Isaac Sim evaluator**
+(`evaluator/`) into one automated loop.
+
+| File | Stage it owns |
+|------|---------------|
+| [`orchestrator/automech_loop.py`](orchestrator/automech_loop.py) | The outer loop (entry point). |
+| [`orchestrator/cadam_bridge.py`](orchestrator/cadam_bridge.py) | Worker → `.scad`, via cadam's own `PARAMETRIC_AGENT_PROMPT` (direct LLM; the `.scad` artifact is the seam, since cadam's server is Supabase-bound). |
+| [`orchestrator/render_views.py`](orchestrator/render_views.py) | `.scad` → STL + 6 orthographic PNGs + part-module names (native OpenSCAD CLI, as `worker/benchmarks/render.sh` does). |
+| [`orchestrator/visual_gate.py`](orchestrator/visual_gate.py) | The inner gate — ports cadam's `evaluateModel.ts` 6-view judge. |
+| [`orchestrator/urdf_author.py`](orchestrator/urdf_author.py) | VLM authors `manifest.json` (= authoring the URDF; the evaluator's `run_eval.py` turns manifest → URDF). |
+| [`orchestrator/evaluator_bridge.py`](orchestrator/evaluator_bridge.py) | Shells `evaluator/evaluate.sh`; **stubs the verdict under `--dry-run`** while the Aliyun box is offline. |
+
+**Feedback cadences (as §2 specifies):** a compile error or visual-gate rejection
+short-circuits **back to cadam before any sim runs** (fast); an evaluator
+`fix_hint` comes back only after a full Isaac pass (slow).
+
+> **Offline now:** the Aliyun A10 is down, so the Isaac step can't run for real.
+> `python orchestrator/automech_loop.py --task "..." --dry-run` exercises the
+> entire chain (generate → render → gate → author → *stubbed* evaluate → feedback)
+> without a GPU. Drop `--dry-run` once the box is back — it's the only stage the
+> offline box blocks.
