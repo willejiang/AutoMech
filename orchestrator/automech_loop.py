@@ -27,9 +27,18 @@ exercise the whole wiring without a GPU.
 """
 import argparse
 import json
+import os
 import sys
 import time
 from pathlib import Path
+
+# auto-load orchestrator/.env so no exports are needed each run
+_env = Path(__file__).resolve().parent / ".env"
+if _env.exists():
+    for line in _env.read_text().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            k, v = line.split("=", 1); os.environ.setdefault(k, v.strip())
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import cadam_bridge
@@ -46,7 +55,7 @@ def _slug(task):
     return s[:40] or "design"
 
 
-def run(task, max_iters=3, dry_run=False, run_id=None):
+def run(task, max_iters=3, dry_run=False, run_id=None, scad_override=None):
     run_id = run_id or f"{_slug(task)}-{int(time.time())}"
     wd = RUNS / run_id
     wd.mkdir(parents=True, exist_ok=True)
@@ -57,15 +66,20 @@ def run(task, max_iters=3, dry_run=False, run_id=None):
 
     feedback = None       # carries either fast (gate/compile) or slow (sim) feedback
     history = []
+    last_result = {"passed": False, "summary": "did not reach evaluation", "failures": []}
 
     for it in range(max_iters):
         print(f"\n===== ITERATION {it} =====", flush=True)
         idir = wd / f"iter_{it}"
         idir.mkdir(parents=True, exist_ok=True)
 
-        # 1) MAKER: cadam generates .scad (revision if we have feedback)
-        print("[loop] cadam generating .scad ...", flush=True)
-        scad = cadam_bridge.generate(task, feedback)
+        # 1) MAKER: cadam generates .scad (or use a provided one on iter 0)
+        if it == 0 and scad_override:
+            scad = Path(scad_override).read_text(encoding="utf-8")
+            print("[loop] using provided .scad (frontend bridge)", flush=True)
+        else:
+            print("[loop] cadam generating .scad ...", flush=True)
+            scad = cadam_bridge.generate(task, feedback)
         scad_path = idir / "model.scad"
         scad_path.write_text(scad, encoding="utf-8")
 
@@ -107,6 +121,7 @@ def run(task, max_iters=3, dry_run=False, run_id=None):
 
         # 5) EVALUATOR: design dir -> Isaac Sim -> VLM verdict (or stub)
         result = evaluator_bridge.evaluate(idir, dry_run=dry_run)
+        last_result = result
         passed = bool(result.get("passed"))
         print(f"[loop] evaluator: passed={passed}"
               f"{' (stub)' if result.get('stubbed') else ''} :: "
@@ -129,7 +144,8 @@ def run(task, max_iters=3, dry_run=False, run_id=None):
             print(f"\n[loop] reached max iters ({max_iters}) without PASS.", flush=True)
 
     (wd / "history.json").write_text(json.dumps(history, indent=2))
-    print(f"\n[loop] done. history: {json.dumps(history)}")
+    (wd / "result.json").write_text(json.dumps(last_result, indent=2))
+    print(f"\n[loop] done. result.json -> {wd / 'result.json'}")
     print(f"[loop] artifacts under {wd}")
     return history
 
@@ -141,8 +157,9 @@ def main():
     ap.add_argument("--dry-run", action="store_true",
                     help="stub the Isaac Sim step (box offline / no GPU)")
     ap.add_argument("--run-id", default=None)
+    ap.add_argument("--scad", default=None, help="use this .scad on iter 0 (frontend bridge)")
     a = ap.parse_args()
-    run(a.task, a.max_iters, a.dry_run, a.run_id)
+    run(a.task, a.max_iters, a.dry_run, a.run_id, a.scad)
 
 
 if __name__ == "__main__":

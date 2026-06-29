@@ -1,0 +1,19 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  Minimal steady incompressible RAS control for an external aero solve (simpleFoam).
+  Theoretical template — fill snappyHexMesh + body.stl at runtime.
+\*---------------------------------------------------------------------------*/
+FoamFile { version 2.0; format ascii; class dictionary; object controlDict; }
+application     simpleFoam;
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         500;
+deltaT          1;
+writeControl    timeStep;
+writeInterval   100;
+purgeWrite      0;
+writeFormat     ascii;
+runTimeModifiable true;
+functions {
+    forces { type forces; libs ("libforces.so"); patches (body); rho rhoInf; rhoInf 1.225; CofR (0 0 0); }
+}

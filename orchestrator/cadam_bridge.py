@@ -20,13 +20,17 @@ or override with CADAM_MODEL.
 import json
 import os
 import re
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from pipeline_context import PIPELINE
 
 # Faithful condensation of worker/src/server/aiChat.ts PARAMETRIC_AGENT_PROMPT.
 # Kept the geometry/parts/BOSL2/parameter rules that matter; dropped the
 # browser-UI/answer_user/streaming bits (no UI here). The ONE addition for this
 # project: parts must be SEPARATE top-level modules so the evaluator can
 # articulate them (a fused union can't have joints).
-CADAM_SYSTEM = """You are Adam, an agentic AI CAD engineer that writes OpenSCAD models.
+CADAM_SYSTEM = PIPELINE + """You are Adam, an agentic AI CAD engineer that writes OpenSCAD models.
 
 Produce COMPLETE raw OpenSCAD code — no markdown, no code fences, no prose.
 

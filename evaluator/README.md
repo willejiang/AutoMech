@@ -54,6 +54,22 @@ cp .env.example .env       # fill in the Azure key
 | `analyze.py` | host venv | sample frames → Azure VLM → structured pass/fail |
 | `evaluate.sh` | host | orchestrates both halves |
 
+## Simulator backends (the evaluator picks)
+
+`strategy_selector.py` also chooses the **sim backend** by the task's physics, so you
+don't need a GPU for everything and CFD is possible:
+
+| backend | when | needs | status |
+|---------|------|-------|--------|
+| `pybullet` | rigid dynamics, contact, locomotion — default | CPU only, `pip install -r requirements.txt` | real |
+| `isaac_sim` | RL at scale / photoreal frames | GPU box + `isaac-lab:6.0.1` | real |
+| `openfoam` | fluid / aero / drag / lift / flow | OpenFOAM (Docker) | wired, stubs if absent |
+
+`loop.py` dispatches via `run_backend()`; force one with `--backend pybullet|isaac_sim|openfoam`,
+or `--backend auto` lets the selector decide. All three write the same `sim_result.json`,
+so `analyze.py` is unchanged. VLM model = `~/.physcad_vlm.json` (worker's choice) →
+`AZURE_VLM_DEPLOYMENT` → default, so the evaluator uses the SAME model the worker picked.
+
 ## Stack
 - Box: Aliyun A10 (ecs.gn7i), Ubuntu 26.04, driver 595.71.05, Docker + NVIDIA toolkit
 - Sim: `nvcr.io/nvidia/isaac-sim:6.0.1` (namespace `isaacsim.*`)

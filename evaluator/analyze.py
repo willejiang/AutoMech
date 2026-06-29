@@ -19,6 +19,8 @@ import json
 import os
 import sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from pipeline_context import PIPELINE
 
 
 def parse_args():
@@ -55,11 +57,16 @@ def b64_image(path):
     return base64.b64encode(Path(path).read_bytes()).decode()
 
 
-SYSTEM = """You are a mechanical-engineering simulation judge. You are given keyframes
+SYSTEM = PIPELINE + """You are a mechanical-engineering simulation judge. You are given keyframes
 from a physics simulation of a CAD design under a specific task, plus measured metrics.
 Decide if the design PASSES the user's task. Be strict and concrete: name the physical
 failure mode (bottoming out, rollover, parts detaching, insufficient travel, instability)
-and which frames show it. Respond ONLY with the JSON schema requested."""
+and which frames show it. ALSO read the base/body POSITION metrics: forward
+displacement (base_dx) near zero means it did NOT walk even if upright; base_dz
+dropping and staying low means it fell or sank; min_base_z near the floor means it
+collapsed onto its body. A robot that spawns and immediately falls (no forward
+travel, height collapses) is a FAIL even if frames look busy. Respond ONLY with the
+JSON schema requested."""
 
 
 def build_messages(manifest, metrics, frames):

@@ -10,10 +10,13 @@ a scripted motion, or a LEARNED controller (RL training).
 Runs against the configured VLM gateway (AZURE_VLM_DEPLOYMENT). Outputs a structured
 decision the orchestrator acts on.
 """
-import json, os
+import json, os, sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from sim_backends import model_id
+from pipeline_context import PIPELINE
 
-SYSTEM = """You are the planning stage of a robotics design evaluator. Given a TASK and a
+SYSTEM = PIPELINE + """You are the planning stage of a robotics design evaluator. Given a TASK and a
 robot's URDF structure (joints, links, actuated DOF), you decide the best way to
 TEST whether the robot can accomplish the task in simulation.
 
@@ -21,7 +24,7 @@ Choose ONE evaluation strategy:
 
 - "static_stability": the task is about holding a configuration / not falling
   (e.g. "stand upright", "is this pose stable"). Spawn the robot in a pose and
-  check it holds. No motion, no learning.
+  check it holds. No motion, no learning. 
 
 - "scripted_motion": the task is a short, prescribable maneuver achievable by a
   fixed timed joint trajectory (e.g. "squat and stand", "lift a leg"). No
@@ -40,7 +43,22 @@ pose or a short open-loop motion?
 
 Also assess feasibility from the URDF: how many ACTUATED (non-fixed) joints does
 the robot have? A robot with zero actuated joints CANNOT be controlled at all —
-flag this as a structural blocker regardless of task.
+flag this as a structural blocker. If the TASK needs motion but the robot has no
+joints, set action="return_to_worker" with a worker_message saying exactly what to
+add (e.g. "task wants walking but URDF has 0 joints — add leg joints").
+
+Define a TEST SET: list the distinct things to verify for the task, not just one.
+A walkable quadruped: stand (hold pose), walk (forward locomotion), get_up (rise
+after a fall). A bridge: load-bearing, deflection. Each test = {name, goal,
+strategy}. The designer builds + runs each; the judge scores all.
+
+Also pick the SIMULATOR BACKEND best suited to the task's physics:
+- "pybullet": rigid-body dynamics, contact, locomotion/manipulation — runs on CPU
+  with no server/GPU. Default for most robotics tasks and when no GPU is available.
+- "isaac_sim": GPU-accelerated rigid/robotics with photoreal frames — pick when the
+  task needs RL at scale or high-fidelity rendering AND a GPU box is available.
+- "openfoam": fluid / aerodynamics / CFD — anything about airflow, drag, lift,
+  flow, pressure, cooling, hydro. Rigid sims cannot do this; choose openfoam.
 
 Output ONLY the JSON schema."""
 
@@ -55,13 +73,29 @@ SCHEMA = {
             "properties": {
                 "strategy": {"type": "string",
                              "enum": ["static_stability", "scripted_motion", "rl_training"]},
+                "sim_backend": {"type": "string",
+                                "enum": ["isaac_sim", "pybullet", "openfoam"]},
+                "backend_reason": {"type": "string"},
                 "reasoning": {"type": "string"},
                 "actuated_dof_count": {"type": "integer"},
                 "structurally_feasible": {"type": "boolean"},
                 "structural_concern": {"type": "string"},
+                "action": {"type": "string", "enum": ["proceed", "return_to_worker"]},
+                "worker_message": {"type": "string"},
+                "tests": {
+                    "type": "array",
+                    "items": {
+                        "type": "object", "additionalProperties": False,
+                        "properties": {
+                            "name": {"type": "string"},
+                            "goal": {"type": "string"},
+                            "strategy": {"type": "string",
+                                "enum": ["static_stability", "scripted_motion", "rl_training"]}},
+                        "required": ["name", "goal", "strategy"]}},
             },
-            "required": ["strategy", "reasoning", "actuated_dof_count",
-                         "structurally_feasible", "structural_concern"],
+            "required": ["strategy", "sim_backend", "backend_reason", "reasoning",
+                         "actuated_dof_count", "structurally_feasible", "structural_concern",
+                         "action", "worker_message", "tests"],
         },
     },
 }
@@ -77,7 +111,7 @@ def decide(task, robot_info):
            f"LINKS ({len(robot_info.get('links',[]))}): {robot_info.get('links',[])}\n\n"
            f"Decide how to evaluate this task on this robot.")
     r = c.chat.completions.create(
-        model=os.environ.get("AZURE_VLM_DEPLOYMENT", "anthropic/claude-opus-4.8"),
+        model=model_id(),
         messages=[{"role": "system", "content": SYSTEM},
                   {"role": "user", "content": msg}],
         response_format=SCHEMA, max_completion_tokens=1200)

@@ -20,6 +20,7 @@ import { Route as ConfirmEmailRouteImport } from './routes/confirm-email'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
 import { Route as ApiTitleGeneratorRouteImport } from './routes/api/title-generator'
+import { Route as ApiRunPhysicsTestRouteImport } from './routes/api/run-physics-test'
 import { Route as ApiPromptGeneratorRouteImport } from './routes/api/prompt-generator'
 import { Route as ApiParametricChatRouteImport } from './routes/api/parametric-chat'
 import { Route as ApiMeshRouteImport } from './routes/api/mesh'
@@ -92,6 +93,11 @@ const LayoutIndexRoute = LayoutIndexRouteImport.update({
 const ApiTitleGeneratorRoute = ApiTitleGeneratorRouteImport.update({
   id: '/api/title-generator',
   path: '/api/title-generator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRunPhysicsTestRoute = ApiRunPhysicsTestRouteImport.update({
+  id: '/api/run-physics-test',
+  path: '/api/run-physics-test',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPromptGeneratorRoute = ApiPromptGeneratorRouteImport.update({
@@ -211,6 +217,7 @@ export interface FileRoutesByFullPath {
   '/api/mesh': typeof ApiMeshRoute
   '/api/parametric-chat': typeof ApiParametricChatRoute
   '/api/prompt-generator': typeof ApiPromptGeneratorRoute
+  '/api/run-physics-test': typeof ApiRunPhysicsTestRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
   '/history': typeof LayoutAuthHistoryRoute
   '/settings': typeof LayoutAuthSettingsRoute
@@ -241,6 +248,7 @@ export interface FileRoutesByTo {
   '/api/mesh': typeof ApiMeshRoute
   '/api/parametric-chat': typeof ApiParametricChatRoute
   '/api/prompt-generator': typeof ApiPromptGeneratorRoute
+  '/api/run-physics-test': typeof ApiRunPhysicsTestRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
   '/history': typeof LayoutAuthHistoryRoute
   '/settings': typeof LayoutAuthSettingsRoute
@@ -273,6 +281,7 @@ export interface FileRoutesById {
   '/api/mesh': typeof ApiMeshRoute
   '/api/parametric-chat': typeof ApiParametricChatRoute
   '/api/prompt-generator': typeof ApiPromptGeneratorRoute
+  '/api/run-physics-test': typeof ApiRunPhysicsTestRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
   '/_layout/': typeof LayoutIndexRoute
   '/_layout/_auth/history': typeof LayoutAuthHistoryRoute
@@ -306,6 +315,7 @@ export interface FileRouteTypes {
     | '/api/mesh'
     | '/api/parametric-chat'
     | '/api/prompt-generator'
+    | '/api/run-physics-test'
     | '/api/title-generator'
     | '/history'
     | '/settings'
@@ -336,6 +346,7 @@ export interface FileRouteTypes {
     | '/api/mesh'
     | '/api/parametric-chat'
     | '/api/prompt-generator'
+    | '/api/run-physics-test'
     | '/api/title-generator'
     | '/history'
     | '/settings'
@@ -367,6 +378,7 @@ export interface FileRouteTypes {
     | '/api/mesh'
     | '/api/parametric-chat'
     | '/api/prompt-generator'
+    | '/api/run-physics-test'
     | '/api/title-generator'
     | '/_layout/'
     | '/_layout/_auth/history'
@@ -398,6 +410,7 @@ export interface RootRouteChildren {
   ApiMeshRoute: typeof ApiMeshRoute
   ApiParametricChatRoute: typeof ApiParametricChatRoute
   ApiPromptGeneratorRoute: typeof ApiPromptGeneratorRoute
+  ApiRunPhysicsTestRoute: typeof ApiRunPhysicsTestRoute
   ApiTitleGeneratorRoute: typeof ApiTitleGeneratorRoute
   ApiJacksonPollockSplatRoute: typeof ApiJacksonPollockSplatRoute
 }
@@ -479,6 +492,13 @@ declare module '@tanstack/react-router' {
       path: '/api/title-generator'
       fullPath: '/api/title-generator'
       preLoaderRoute: typeof ApiTitleGeneratorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/run-physics-test': {
+      id: '/api/run-physics-test'
+      path: '/api/run-physics-test'
+      fullPath: '/api/run-physics-test'
+      preLoaderRoute: typeof ApiRunPhysicsTestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/prompt-generator': {
@@ -673,6 +693,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiMeshRoute: ApiMeshRoute,
   ApiParametricChatRoute: ApiParametricChatRoute,
   ApiPromptGeneratorRoute: ApiPromptGeneratorRoute,
+  ApiRunPhysicsTestRoute: ApiRunPhysicsTestRoute,
   ApiTitleGeneratorRoute: ApiTitleGeneratorRoute,
   ApiJacksonPollockSplatRoute: ApiJacksonPollockSplatRoute,
 }

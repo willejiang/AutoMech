@@ -17,8 +17,51 @@ import argparse, json, os, re, subprocess, sys
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
+# auto-load evaluator/.env so a normal user just needs the proxy running
+_env = Path(__file__).resolve().parent / ".env"
+if _env.exists():
+    for line in _env.read_text().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            k, v = line.split("=", 1); os.environ.setdefault(k, v)
+
 import scenario_designer
 import analyze
+import strategy_selector
+from sim_backends import select_backend
+
+
+def run_pybullet(urdf, spec_path, task, out_dir):
+    """Local CPU run — no docker, no GPU, no sudo."""
+    here = Path(__file__).resolve().parent
+    Path(out_dir).mkdir(parents=True, exist_ok=True)
+    r = subprocess.run([sys.executable, str(here / "run_scenario_pybullet.py"),
+                        "--urdf", str(urdf), "--spec", str(spec_path),
+                        "--out", str(out_dir), "--task", task],
+                       capture_output=True, text=True)
+    print((r.stdout + r.stderr)[-600:], flush=True)
+    return Path(out_dir) / "sim_result.json"
+
+
+def run_openfoam(stl, spec_path, task, out_dir):
+    """CFD run — uses simpleFoam if present, else writes a stub (box offline)."""
+    here = Path(__file__).resolve().parent
+    Path(out_dir).mkdir(parents=True, exist_ok=True)
+    r = subprocess.run([sys.executable, str(here / "run_scenario_openfoam.py"),
+                        "--stl", str(stl), "--spec", str(spec_path),
+                        "--out", str(out_dir), "--task", task],
+                       capture_output=True, text=True)
+    print((r.stdout + r.stderr)[-600:], flush=True)
+    return Path(out_dir) / "sim_result.json"
+
+
+def run_backend(backend, urdf, asset_root, spec_path, task, out_dir):
+    """Dispatch to the simulator the evaluator chose."""
+    if backend == "pybullet":
+        return run_pybullet(urdf, spec_path, task, out_dir)
+    if backend == "openfoam":
+        return run_openfoam(urdf, spec_path, task, out_dir)
+    return run_in_container(urdf, asset_root, spec_path, task, out_dir)
 
 
 def robot_info_from_urdf(urdf_path, name="robot"):
@@ -71,63 +114,66 @@ def feedback_text(sim_result, vlm_result):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--urdf", required=True)
-    ap.add_argument("--asset-root", required=True)
+    ap.add_argument("--asset-root", default="", help="only needed for isaac_sim backend")
     ap.add_argument("--task", required=True)
     ap.add_argument("--workdir", required=True)
     ap.add_argument("--max-iters", type=int, default=4)
     ap.add_argument("--robot-name", default="robot")
+    ap.add_argument("--backend", default="pybullet",
+                    help="pybullet|isaac_sim|openfoam|auto (auto = strategy_selector picks)")
     a = ap.parse_args()
 
     wd = Path(a.workdir); wd.mkdir(parents=True, exist_ok=True)
     robot = robot_info_from_urdf(a.urdf, a.robot_name)
     print(f"[loop] robot: {len(robot['joints'])} joints, {len(robot['links'])} links")
 
-    spec = scenario_designer.design(a.task, robot)
-    history = []
-    for it in range(a.max_iters):
-        print(f"\n===== ITERATION {it} =====", flush=True)
-        print(f"[loop] spec reasoning: {spec.get('reasoning','')[:240]}", flush=True)
-        spec_path = wd / f"spec_{it}.json"; spec_path.write_text(json.dumps(spec, indent=2))
-        out_dir = wd / f"iter_{it}"
+    if a.backend == "auto":
+        decision = strategy_selector.decide(a.task, robot)
+        backend = select_backend(decision)
+        print(f"[loop] backend={backend} :: {decision.get('backend_reason','')[:120]}")
+    else:
+        backend, decision = a.backend, {}
 
-        sim_result_path = run_in_container(a.urdf, a.asset_root, spec_path, a.task, out_dir)
+    # early return to worker: jointless/unfixable structure
+    if decision.get("action") == "return_to_worker" or decision.get("structurally_feasible") is False:
+        msg = decision.get("worker_message") or decision.get("structural_concern") or "design cannot be evaluated"
+        result = {"passed": False, "returned_to_worker": True, "summary": msg, "failures": []}
+        out0 = wd / "iter_0"; out0.mkdir(parents=True, exist_ok=True)
+        (out0 / "result.json").write_text(json.dumps(result, indent=2))
+        print(f"[loop] RETURN TO WORKER: {msg}"); return [result]
+
+    tests = decision.get("tests") or [{"name": "task", "goal": a.task, "strategy": decision.get("strategy", "static_stability")}]
+    print(f"[loop] test set: {[t['name'] for t in tests]}")
+    failures, history = [], []
+    for ti, test in enumerate(tests):
+        print(f"\n===== TEST {ti}: {test['name']} — {test['goal']} =====", flush=True)
+        spec = scenario_designer.design(a.task, robot, test)
+        spec_path = wd / f"spec_{test['name']}.json"; spec_path.write_text(json.dumps(spec, indent=2))
+        out_dir = wd / f"test_{test['name']}"
+        sim_result_path = run_backend(backend, a.urdf, a.asset_root, spec_path, a.task, out_dir)
         if not sim_result_path.exists():
-            print("[loop] sim produced no result; stopping.", flush=True); break
-        sim_result = json.loads(sim_result_path.read_text())
-        m = sim_result["metrics"]
-        print(f"[loop] sim verdict={m['verdict']} survived={m.get('survive_s')}s frames={sim_result.get('n_frames')}", flush=True)
-
-        # VLM critique (only if frames exist)
+            failures.append({"failure_mode": test["name"], "explanation": "sim produced no result", "fix_hint": ""}); continue
+        sim_result = json.loads(sim_result_path.read_text()); m = sim_result["metrics"]
         vlm = None
         if sim_result.get("n_frames", 0) > 0:
-            vlm_out = out_dir / "vlm.json"
-            try:
-                frames = analyze.sample_frames(sim_result["frames_dir"], 12)
-                if frames:
-                    verdict = analyze.call_vlm(analyze.build_messages(
-                        {"user_prompt": a.task, "pass_criteria": spec.get("pass_criteria", {})},
-                        m, frames))
-                    vlm = verdict
-                    vlm_out.write_text(json.dumps(verdict, indent=2))
-                    print(f"[loop] VLM passed={verdict['passed']} :: {verdict['summary'][:200]}", flush=True)
-            except Exception as e:
-                print(f"[loop] VLM step error: {e!r}", flush=True)
-
+            frames = analyze.sample_frames(sim_result["frames_dir"], 12)
+            if frames:
+                vlm = analyze.call_vlm(analyze.build_messages(
+                    {"user_prompt": f"{a.task} :: {test['goal']}", "pass_criteria": spec.get("pass_criteria", {})}, m, frames))
         passed = m["verdict"] == "PASS" and (vlm is None or vlm.get("passed", True))
-        history.append({"iter": it, "sim_verdict": m["verdict"],
-                        "vlm_passed": (vlm or {}).get("passed"),
-                        "survive_s": m.get("survive_s")})
-        if passed:
-            print(f"\n[loop] *** SUCCESS at iteration {it} ***", flush=True); break
-        if it == a.max_iters - 1:
-            print(f"\n[loop] reached max iters ({a.max_iters}) without pass.", flush=True); break
+        history.append({"test": test["name"], "passed": passed, "verdict": m["verdict"]})
+        if not passed:
+            for f in (vlm or {}).get("failures", []) or [{"failure_mode": test["name"], "explanation": m["verdict"], "fix_hint": ""}]:
+                failures.append({**f, "test": test["name"]})
+        print(f"[loop] {test['name']}: passed={passed}", flush=True)
 
-        fb = feedback_text(sim_result, vlm)
-        print(f"[loop] feeding back:\n{fb}", flush=True)
-        spec = scenario_designer.revise(a.task, robot, spec, fb)
-
+    result = {"passed": not failures, "returned_to_worker": False,
+              "summary": "all tests passed" if not failures else f"{len(failures)} failure(s) across {len(tests)} tests",
+              "failures": failures}
+    (wd / "result.json").write_text(json.dumps(result, indent=2))
     (wd / "history.json").write_text(json.dumps(history, indent=2))
-    print(f"\n[loop] done. history: {json.dumps(history)}", flush=True)
+    print(f"\n[loop] done. {result['summary']}", flush=True)
+    return [result]
 
 
 if __name__ == "__main__":

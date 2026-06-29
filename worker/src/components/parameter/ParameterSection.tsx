@@ -41,6 +41,7 @@ import {
 import type { DxfExporter } from '@/utils/downloadUtils';
 import { generateSixViewPngs } from '@/utils/meshUtils';
 import { useToast } from '@/hooks/use-toast';
+import { apiJson } from '@/services/api';
 
 interface ParameterSectionProps {
   parameters: Parameter[];
@@ -68,6 +69,24 @@ export function ParameterSection({
   const { toast } = useToast();
   const [selectedFormat, setSelectedFormat] = useState<DownloadFormat>('stl');
   const [isExporting, setIsExporting] = useState(false);
+  const [physRunning, setPhysRunning] = useState(false);
+  const [physVerdict, setPhysVerdict] = useState<{ passed: boolean; summary: string; failures?: { failure_mode?: string; explanation?: string }[] } | null>(null);
+
+  const handlePhysicsTest = async () => {
+    if (!code) return;
+    setPhysRunning(true); setPhysVerdict(null);
+    try {
+      const v = await apiJson('run-physics-test', {
+        method: 'POST',
+        body: JSON.stringify({ scad: code, task: 'evaluate this design in physics' }),
+      });
+      setPhysVerdict(v as { passed: boolean; summary: string });
+    } catch (e) {
+      toast({ title: 'Physics test failed', description: String(e), variant: 'destructive' });
+    } finally {
+      setPhysRunning(false);
+    }
+  };
 
   // Split params into the main list (non-color, shown by default) and a
   // collapsible Colors group below it. Keeps the dimensions the user
@@ -273,6 +292,23 @@ export function ParameterSection({
                 )}
                 {isEvaluating ? 'Evaluating…' : 'Evaluate & Download'}
               </Button>
+            )}
+            <Button
+              variant="outline"
+              onClick={handlePhysicsTest}
+              disabled={!code || physRunning}
+              className="w-full justify-center gap-2 border-adam-neutral-700 bg-adam-neutral-900/40 text-adam-text-primary hover:bg-adam-neutral-800"
+            >
+              {physRunning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+              {physRunning ? 'Testing in PyBullet…' : 'Run physics test'}
+            </Button>
+            {physVerdict && (
+              <div className={`rounded-md border p-3 text-xs ${physVerdict.passed ? 'border-green-700 bg-green-900/20' : 'border-red-700 bg-red-900/20'} text-adam-text-primary`}>
+                <div className="font-semibold">{physVerdict.passed ? 'PASS' : 'FAIL'}: {physVerdict.summary}</div>
+                {physVerdict.failures?.map((f, i) => (
+                  <div key={i} className="mt-1 text-adam-neutral-300">• {f.failure_mode}: {f.explanation}</div>
+                ))}
+              </div>
             )}
             {mainParameters.length > 0 && (
               <Collapsible

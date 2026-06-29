@@ -13,11 +13,14 @@ Runs on the HOST (uses the Azure key from .env). Two entry points:
   design(task, robot_info)                    -> first spec
   revise(task, robot_info, prev_spec, feedback)-> improved spec
 """
-import json, os
+import json, os, sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from pipeline_context import PIPELINE
+from sim_backends import model_id
 
 
-SYSTEM = """You are a robotics simulation SCENARIO DESIGNER. Given a natural-language
+SYSTEM = PIPELINE + """You are a robotics simulation SCENARIO DESIGNER. Given a natural-language
 task and a robot's actual joint and link names (from its URDF), you output a
 STRUCTURED SCENARIO SPEC (JSON) that sets up a physics test of whether the robot
 can accomplish the task in a simulator.
@@ -59,6 +62,13 @@ You will sometimes be given FEEDBACK from a prior simulation attempt (what the
 camera saw + measured metrics). Use it to diagnose the physical failure and
 REVISE the spec — change orientation, height, pose, friction, or control to fix
 the specific failure observed. Explain your reasoning briefly in "reasoning".
+
+POLICY MATCH (RL tasks): existing trained policies assume a standard morphology —
+quadruped (Cassie/ANYmal/dog12: 4 legs, hips+knees) or biped. If the robot needs a
+learned gait but its structure matches NO known policy template, that is a
+worker-level problem: the structure should be redesigned to match a policy-ready
+morphology, OR kept as-is and trained from scratch (slow). Note this in reasoning so
+the loop can ask the user redesign-vs-keep.
 
 Output ONLY the JSON spec matching the provided schema."""
 
@@ -121,7 +131,7 @@ def _client():
 def _call(messages):
     c = _client()
     r = c.chat.completions.create(
-        model=os.environ.get("AZURE_VLM_DEPLOYMENT", "gpt-5.4"),
+        model=model_id(),
         messages=messages, response_format=SPEC_SCHEMA,
         max_completion_tokens=2000)
     return json.loads(r.choices[0].message.content)
@@ -133,11 +143,12 @@ def _robot_block(robot_info):
             f"LINK NAMES ({len(robot_info.get('links',[]))}): {robot_info.get('links',[])}\n")
 
 
-def design(task, robot_info):
+def design(task, robot_info, test=None):
+    sub = f"\n\nTHIS TEST: {test.get('name')} — {test.get('goal')}" if test else ""
     msgs = [{"role": "system", "content": SYSTEM},
             {"role": "user", "content":
-                f"TASK: {task}\n\n{_robot_block(robot_info)}\n"
-                f"Design the scenario spec to test this task. Use ONLY the real joint/link "
+                f"TASK: {task}{sub}\n\n{_robot_block(robot_info)}\n"
+                f"Design the scenario spec to test this. Use ONLY the real joint/link "
                 f"names above."}]
     return _call(msgs)
 

@@ -19,9 +19,12 @@ Env: AZURE_OPENAI_ENDPOINT + AZURE_OPENAI_API_KEY + AZURE_VLM_DEPLOYMENT.
 import base64
 import json
 import os
+import sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from pipeline_context import PIPELINE
 
-AUTHOR_SYSTEM = """You are a robotics assembly engineer. You are given a natural-language task, the OpenSCAD source of a CAD model, the list of its top-level module names (each is an independently renderable PART), and orthographic renders.
+AUTHOR_SYSTEM = PIPELINE + """You are a robotics assembly engineer. You are given a natural-language task, the OpenSCAD source of a CAD model, the list of its top-level module names (each is an independently renderable PART), and orthographic renders.
 
 Author a MANIFEST describing how to turn this geometry into an ARTICULATED physics model for an Isaac Sim evaluator. Reason from rigid-body mechanics:
 

@@ -14,12 +14,15 @@ Env: AZURE_OPENAI_ENDPOINT + AZURE_OPENAI_API_KEY + AZURE_VLM_DEPLOYMENT.
 import base64
 import json
 import os
+import sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from pipeline_context import PIPELINE
 
 # Lifted from worker/src/server/evaluateModel.ts EVAL_SYSTEM_PROMPT (the prose-
 # review instructions), minus the streaming VERDICT_MARKER mechanics — the schema
 # below replaces that.
-GATE_SYSTEM = """You are a strict 3D CAD model reviewer. The user gives you their original modeling request plus orthographic renders of the generated model from different viewpoints (ISO, FRONT, BACK, LEFT, RIGHT, TOP). The views are not reliably labeled — infer each view's orientation yourself.
+GATE_SYSTEM = PIPELINE + """You are a strict 3D CAD model reviewer. The user gives you their original modeling request plus orthographic renders of the generated model from different viewpoints (ISO, FRONT, BACK, LEFT, RIGHT, TOP). The views are not reliably labeled — infer each view's orientation yourself.
 
 Analyze step by step whether the generated model reasonably satisfies the request: are the main features present, are the shape and proportions correct, is anything missing / intersecting / floating / non-printable / over-simplified, does it match the description overall. This is a GEOMETRY sanity + prompt-match check ONLY — you are NOT judging physics or function, just whether the shape looks like a correct, complete model of what was asked.
 
