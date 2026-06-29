@@ -1,0 +1,173 @@
+"""Manager agent prompt: decompose a product prompt into a KinematicModel."""
+
+from __future__ import annotations
+
+from .schema import SCHEMA_TEXT, FEWSHOT_PRODUCT, FEWSHOT_JSON
+
+
+MANAGER_SYSTEM = f"""\
+You are the MANAGER of an automated CAD pipeline. You turn a one-line product
+description into a complete mechanical decomposition: every part the product is
+made of, and how the parts connect.
+
+Your decomposition is a CONTRACT. Downstream, one CAD worker builds each link in
+isolation (it sees only that link's description and origin_note, never the other
+parts), and a URDF assembler positions the parts using only your joints. So you
+alone own all geometry relationships and the spatial layout.
+
+Decompose thoroughly but sensibly: split the product into the distinct rigid
+parts a person would recognize, give each a clear build brief, choose a sensible
+local origin for each, and connect them with joints whose origins make the parts
+mate correctly. Prefer fixed joints unless the product clearly articulates
+(hinges, sliders, wheels, pan/tilt), in which case use revolute/prismatic/
+continuous with sane limits.
+
+HIGHLIGHT: 
+1. We are using you to create the CAD that will be used in physics simulation and
+    ACTUAL PRODUCTION, so you really have to care about The SMMALLEST PIECE, like EACH GEAR, DRIVE SHAFT, HINGE, ETC..
+    BUT IF THE TASK IS TO GENERATE A ROBOT, FIRST THING FIRST, MAKE SURE YOUR URDF STRUCTURE CAN BE EASILY CONFIGURED IN ISSAC SIM 
+2. In physics simulation, we will turn your urdf to USD file in Issac Sim, and I want you to
+    make sure that the joint for the mmoveable part like between GEARS are movable
+3. Always remember materials
+4. IF EVALUATOR RETURNS FALSE WITH FEEDBACK, FORGET ALL THE HIGHLIGHT OR AVOID, STRICTLY FOLLOW EVALUATOR
+
+Optional: 
+assign the identical work type to the same agent like creating the four wheels are for the same agent
+
+AVOID:
+2. Cute Structure
+
+{SCHEMA_TEXT}
+
+Output ONLY the JSON object. No commentary, no markdown fences."""
+
+# MANAGER_SYSTEM = f"""\
+# You are the MANAGER of an automated CAD pipeline. You turn a one-line product
+# description into a complete mechanical decomposition: every part the product is
+# made of, and how the parts connect.
+
+# Your decomposition is a CONTRACT. Downstream, one CAD worker builds each link in
+# isolation (it sees only that link's description and origin_note, never the other
+# parts), and a URDF assembler positions the parts using only your joints. So you
+# alone own all geometry relationships and the spatial layout.
+
+# Decompose thoroughly but sensibly: split the product into the distinct rigid
+# parts a person would recognize, give each a clear build brief, choose a sensible
+# local origin for each, and connect them with joints whose origins make the parts
+# mate correctly. Prefer fixed joints unless the product clearly articulates
+# (hinges, sliders, wheels, pan/tilt), in which case use revolute/prismatic/
+# continuous with sane limits.
+
+# HIGHLIGHT: 
+# 1. We are using you to create the CAD that will be used in physics simulation and
+#     ACTUAL PRODUCTION
+# 2. In physics simulation, we will turn your urdf to USD file in Issac Sim, and I want you to
+#     make sure that the joint for the mmoveable part like between GEARS are movable
+# 3. Always remember materials
+# 4. IF EVALUATOR RETURNS FALSE WITH FEEDBACK, FORGET ALL THE HIGHLIGHT OR AVOID, STRICTLY FOLLOW EVALUATOR
+
+# Optional: 
+# assign the identical work type to the same agent like creating the four wheels are for the same agent
+
+# AVOID:
+# 2. Cute Structure
+
+# {SCHEMA_TEXT}
+
+# Output ONLY the JSON object. No commentary, no markdown fences."""
+
+
+def build_manager_user(product_prompt: str, has_image: bool = False) -> str:
+    """The manager's user message: the product + a worked example.
+
+    When ``has_image`` is set, an image is attached to this message by the caller
+    (Conversation.add_user_message(images=...)); the wording then makes the IMAGE
+    the authoritative source and treats the text as a hint.
+    """
+    if has_image:
+        task = (
+            "NOW DO THIS ONE\n"
+            "The product is shown in the ATTACHED IMAGE. Decompose the product you\n"
+            "SEE in the image. Use this text only as a hint about what it is:\n"
+            f'"{product_prompt}". Reproduce the parts, proportions, and\n'
+            "articulation visible in the image."
+        )
+    else:
+        task = f'NOW DO THIS ONE\nProduct: "{product_prompt}"'
+    return f"""\
+Decompose this product into a kinematic model following the schema and the
+units/origin contract exactly.
+
+EXAMPLE
+Product: "{FEWSHOT_PRODUCT}"
+Output:
+{FEWSHOT_JSON}
+
+{task}
+Output:"""
+
+
+def build_manager_repair(error: str) -> str:
+    """Feedback message appended after a parse/validation failure."""
+    return f"""\
+Your previous response could not be used:
+
+{error}
+
+Return a corrected JSON object that fixes this. Output ONLY the JSON object, no
+prose, no markdown fences."""
+
+
+def build_manager_coarser(error: str) -> str:
+    """Feedback message appended after the response overran the output cap.
+
+    The full-detail decomposition was too large to fit in one response, so this
+    OVERRIDES the fine-grained HIGHLIGHT guidance for the retry: ask for a
+    smaller tree of major parts that will fit under the cap.
+    """
+    return f"""\
+Your previous response was TOO LONG and was cut off before it finished, so none
+of it could be used:
+
+{error}
+
+There is a hard limit on how much you can output in one response. You MUST make
+this decomposition SMALLER so it fits. For THIS response only, override the
+"smallest piece / each gear" guidance and decompose COARSELY:
+
+- Emit AT MOST 40 links total.
+- Do NOT break parts down to individual gears, fasteners, or tiny internals.
+  Represent each sub-mechanism as ONE link (e.g. a single "landing_gear" link,
+  not separate struts + axles + wheels + bolts; a single "engine" link, not its
+  internal parts).
+- Keep every description and origin_note to ONE short sentence.
+- Still cover all the MAJOR structural and moving parts, and keep the model a
+  single connected tree.
+
+Output ONLY the JSON object, no prose, no markdown fences."""
+
+
+def build_manager_evaluator_feedback(feedback: str) -> str:
+    """Follow-up message delivering the evaluator's FALSE verdict to the manager.
+
+    Used on loop iterations after the first: the evaluator reviewed the rendered
+    CAD against the user's request, judged it NOT good enough, and returned
+    concrete suggestions. The MANAGER_SYSTEM prompt already says to obey the
+    evaluator over every other guideline, so this just hands over the verdict and
+    asks for a fresh full decomposition that addresses it.
+    """
+    return f"""\
+An EVALUATOR reviewed the CAD built from your previous decomposition (rendered
+from six viewpoints) against the user's request and judged that it DID NOT PASS.
+
+The evaluator's required changes:
+
+{feedback}
+
+Regenerate the COMPLETE kinematic model for the SAME product, strictly applying
+every change above. This OVERRIDES any conflicting earlier guidance. Keep the
+same schema, units, and origin contract, and keep the model a single connected
+tree (one root, every other link the child of exactly one joint).
+
+Output ONLY the JSON object, no prose, no markdown fences."""
+

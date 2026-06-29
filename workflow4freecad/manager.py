@@ -1,0 +1,379 @@
+"""Manager agent: one product prompt -> a validated KinematicModel.
+
+The manager is the only component that owns geometry RELATIONSHIPS. It asks the
+LLM for a plain-JSON decomposition (links + joints), parses it into the dataclass
+contract, then runs a pure-Python validation pass that the LLM cannot be trusted
+to satisfy on its own: URDF-safe unique names, a single connected tree (one root,
+no cycles, no orphans), valid joint types, and sane limits for articulated joints.
+
+Validation MUTATES the model into a normalized, URDF-safe form (slugified/deduped
+names propagated into joint endpoints; root_link inferred; mesh_filename assigned)
+and raises ManagerError listing every problem at once. On failure the error text
+is fed back to the LLM as a repair request, bounded by Settings.manager_retries.
+
+We use plain JSON rather than native tool-calling because the local gateway's
+tool support is unverified; a single JSON object is trivial to validate + repair.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+
+from .imageutil import ImageLoadError, load_image_block
+from .jsonutil import extract_json_object
+from .llm.client import LLMError, LLMTruncationError
+from .llm.conversation import Conversation
+from .model import JointSpec, KinematicModel, LinkSpec
+from .prompts.manager_prompt import (MANAGER_SYSTEM, build_manager_coarser,
+                                     build_manager_evaluator_feedback,
+                                     build_manager_repair, build_manager_user)
+
+
+_VALID_JOINT_TYPES = {"fixed", "revolute", "prismatic", "continuous"}
+_NEEDS_LIMITS = {"revolute", "prismatic"}
+_NEEDS_AXIS = {"revolute", "prismatic", "continuous"}
+_URDF_SAFE = re.compile(r"^[a-z][a-z0-9_]*$")
+
+
+class ManagerError(RuntimeError):
+    """The manager could not produce a valid model (parse or validation)."""
+
+
+# --------------------------------------------------------------------------- #
+# Dataclass parsing
+# --------------------------------------------------------------------------- #
+
+def _as_tuple3(value, default: tuple) -> tuple:
+    if value is None:
+        return default
+    if not isinstance(value, (list, tuple)) or len(value) != 3:
+        raise ValueError(f"expected a 3-number list, got {value!r}")
+    return tuple(float(x) for x in value)
+
+
+def _opt_float(value):
+    return None if value is None else float(value)
+
+
+def _link_from_dict(d: dict, idx: int) -> LinkSpec:
+    if not isinstance(d, dict):
+        raise ValueError(f"links[{idx}] is not an object")
+    name = d.get("name")
+    if not isinstance(name, str) or not name.strip():
+        raise ValueError(f"links[{idx}] is missing a non-empty 'name'")
+    desc = d.get("description") or ""
+    size = d.get("size_mm") or {}
+    if not isinstance(size, dict):
+        raise ValueError(f"links[{idx}] '{name}': size_mm must be an object")
+    return LinkSpec(
+        name=name.strip(),
+        description=str(desc),
+        shape_hint=str(d.get("shape_hint") or ""),
+        size_mm={str(k): v for k, v in size.items()},
+        origin_note=str(d.get("origin_note") or ""),
+    )
+
+
+def _joint_from_dict(d: dict, idx: int) -> JointSpec:
+    if not isinstance(d, dict):
+        raise ValueError(f"joints[{idx}] is not an object")
+    name = d.get("name")
+    if not isinstance(name, str) or not name.strip():
+        raise ValueError(f"joints[{idx}] is missing a non-empty 'name'")
+    jtype = d.get("type")
+    if not isinstance(jtype, str) or not jtype.strip():
+        raise ValueError(f"joints[{idx}] '{name}' is missing 'type'")
+    parent = d.get("parent")
+    child = d.get("child")
+    if not isinstance(parent, str) or not parent.strip():
+        raise ValueError(f"joints[{idx}] '{name}' is missing 'parent'")
+    if not isinstance(child, str) or not child.strip():
+        raise ValueError(f"joints[{idx}] '{name}' is missing 'child'")
+    return JointSpec(
+        name=name.strip(),
+        type=jtype.strip().lower(),
+        parent=parent.strip(),
+        child=child.strip(),
+        xyz_m=_as_tuple3(d.get("xyz_m"), (0.0, 0.0, 0.0)),
+        rpy_rad=_as_tuple3(d.get("rpy_rad"), (0.0, 0.0, 0.0)),
+        axis=_as_tuple3(d.get("axis"), (0.0, 0.0, 1.0)),
+        lower=_opt_float(d.get("lower")),
+        upper=_opt_float(d.get("upper")),
+        effort=float(d.get("effort", 10.0)),
+        velocity=float(d.get("velocity", 1.0)),
+    )
+
+
+def parse_model(text: str) -> KinematicModel:
+    """Parse an LLM response into a (not-yet-validated) KinematicModel."""
+    obj = json.loads(extract_json_object(text))
+    if not isinstance(obj, dict):
+        raise ValueError("top-level JSON value is not an object")
+    links = obj.get("links")
+    joints = obj.get("joints")
+    if not isinstance(links, list) or not links:
+        raise ValueError("'links' must be a non-empty array")
+    if not isinstance(joints, list):
+        raise ValueError("'joints' must be an array")
+    return KinematicModel(
+        name=str(obj.get("name") or "product"),
+        root_link=str(obj.get("root_link") or ""),
+        links=[_link_from_dict(d, i) for i, d in enumerate(links)],
+        joints=[_joint_from_dict(d, i) for i, d in enumerate(joints)],
+    )
+
+
+# --------------------------------------------------------------------------- #
+# Normalization + tree validation
+# --------------------------------------------------------------------------- #
+
+def _slugify(name: str, fallback: str) -> str:
+    s = re.sub(r"[^a-z0-9_]+", "_", str(name).strip().lower())
+    s = re.sub(r"_+", "_", s).strip("_")
+    if not _URDF_SAFE.match(s):
+        s = re.sub(r"_+", "_", f"{fallback}_{s}").strip("_")
+    return s if _URDF_SAFE.match(s) else fallback
+
+
+def _dedupe(slug: str, used: set) -> str:
+    if slug not in used:
+        return slug
+    i = 2
+    while f"{slug}_{i}" in used:
+        i += 1
+    return f"{slug}_{i}"
+
+
+def _validate_model(model: KinematicModel) -> None:
+    """Normalize names + verify a single connected tree. Raises on problems.
+
+    Mutates ``model`` in place: link names are slugified/deduped and the new
+    names are propagated into joint parent/child; joint names are slugified/
+    deduped; on success ``root_link`` is set and each link's ``mesh_filename``
+    is assigned. All detected problems are collected and raised together so the
+    repair prompt can fix everything in one round-trip.
+    """
+    problems: list[str] = []
+
+    # 1. Normalize link names, building old -> new remap.
+    link_remap: dict[str, str] = {}
+    used_links: set[str] = set()
+    for link in model.links:
+        slug = _dedupe(_slugify(link.name, "link"), used_links)
+        used_links.add(slug)
+        link_remap[link.name] = slug
+        link.name = slug
+    valid_links = set(used_links)
+
+    # 2. Remap joint endpoints through the same table; normalize joint names.
+    used_joints: set[str] = set()
+    for joint in model.joints:
+        slug = _dedupe(_slugify(joint.name, "joint"), used_joints)
+        used_joints.add(slug)
+        joint.name = slug
+        joint.parent = link_remap.get(joint.parent, _slugify(joint.parent, "link"))
+        joint.child = link_remap.get(joint.child, _slugify(joint.child, "link"))
+
+    # 3. Endpoints must reference real links; no self-loops.
+    for j in model.joints:
+        if j.parent not in valid_links:
+            problems.append(f"joint '{j.name}' references unknown parent '{j.parent}'")
+        if j.child not in valid_links:
+            problems.append(f"joint '{j.name}' references unknown child '{j.child}'")
+        if j.parent == j.child:
+            problems.append(f"joint '{j.name}' connects link '{j.parent}' to itself")
+
+    # 4. Joint types + articulated-joint requirements.
+    for j in model.joints:
+        if j.type not in _VALID_JOINT_TYPES:
+            problems.append(
+                f"joint '{j.name}' has invalid type '{j.type}' "
+                f"(expected one of {sorted(_VALID_JOINT_TYPES)})")
+            continue
+        if j.type in _NEEDS_AXIS and tuple(j.axis) == (0.0, 0.0, 0.0):
+            problems.append(f"joint '{j.name}' ({j.type}) needs a non-zero axis")
+        if j.type in _NEEDS_LIMITS:
+            if j.lower is None or j.upper is None:
+                problems.append(
+                    f"joint '{j.name}' ({j.type}) needs both 'lower' and 'upper'")
+            elif j.lower >= j.upper:
+                problems.append(
+                    f"joint '{j.name}' ({j.type}) needs lower < upper "
+                    f"(got {j.lower} >= {j.upper})")
+
+    # 5. Each non-root link is the child of exactly one joint.
+    child_counts: dict[str, int] = {}
+    for j in model.joints:
+        if j.child in valid_links:
+            child_counts[j.child] = child_counts.get(j.child, 0) + 1
+    for name, count in child_counts.items():
+        if count > 1:
+            problems.append(f"link '{name}' is the child of {count} joints (must be 1)")
+
+    # 6. Exactly one root (a link that is never any joint's child).
+    roots = sorted(valid_links - set(child_counts))
+    if len(roots) == 0:
+        problems.append("no root link -- every link is a child (a cycle, not a tree)")
+    elif len(roots) > 1:
+        problems.append(
+            f"multiple root links {roots} -- the model is a forest, not one tree")
+
+    # 7. DFS from the single root: catch orphans + cycles.
+    if len(roots) == 1:
+        adjacency: dict[str, list[str]] = {}
+        for j in model.joints:
+            adjacency.setdefault(j.parent, []).append(j.child)
+        visited: set[str] = set()
+        stack = [roots[0]]
+        while stack:
+            node = stack.pop()
+            if node in visited:
+                problems.append(f"cycle detected at link '{node}'")
+                continue
+            visited.add(node)
+            stack.extend(adjacency.get(node, []))
+        orphans = sorted(valid_links - visited)
+        if orphans:
+            problems.append(f"links not connected to the root: {orphans}")
+
+    if problems:
+        raise ManagerError("Model validation failed:\n- " + "\n- ".join(problems))
+
+    # Success: finalize the normalized model.
+    model.root_link = roots[0]
+    for link in model.links:
+        link.mesh_filename = f"meshes/{link.name}.stl"
+
+
+# --------------------------------------------------------------------------- #
+# Persistence
+# --------------------------------------------------------------------------- #
+
+def model_to_dict(model: KinematicModel) -> dict:
+    """Serialize a KinematicModel to the same JSON shape the manager emits."""
+    return {
+        "name": model.name,
+        "root_link": model.root_link,
+        "links": [
+            {
+                "name": l.name,
+                "description": l.description,
+                "shape_hint": l.shape_hint,
+                "size_mm": l.size_mm,
+                "origin_note": l.origin_note,
+                "mesh_filename": l.mesh_filename,
+            }
+            for l in model.links
+        ],
+        "joints": [
+            {
+                "name": j.name,
+                "type": j.type,
+                "parent": j.parent,
+                "child": j.child,
+                "xyz_m": list(j.xyz_m),
+                "rpy_rad": list(j.rpy_rad),
+                "axis": list(j.axis),
+                "lower": j.lower,
+                "upper": j.upper,
+                "effort": j.effort,
+                "velocity": j.velocity,
+            }
+            for j in model.joints
+        ],
+    }
+
+
+def save_model(model: KinematicModel, path: str) -> None:
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(model_to_dict(model), f, indent=2)
+
+
+def load_model(path: str) -> KinematicModel:
+    with open(path, "r", encoding="utf-8") as f:
+        return parse_model(f.read())
+
+
+# --------------------------------------------------------------------------- #
+# Top-level decomposition (LLM + repair loop)
+# --------------------------------------------------------------------------- #
+
+def decompose(product_prompt: str, settings, *, image_path: str | None = None,
+              model_json_path: str | None = None,
+              evaluator_feedback: str | None = None,
+              log_fn=None) -> KinematicModel:
+    """Decompose a product prompt into a validated, persisted KinematicModel.
+
+    If ``image_path`` is given, the image is attached to the manager's first user
+    message and becomes the authoritative source (the text prompt is a hint).
+
+    If ``evaluator_feedback`` is given (a later loop iteration), it is appended as
+    a follow-up user message instructing the manager to regenerate strictly
+    following that feedback. The MANAGER_SYSTEM prompt already tells the manager
+    to obey the evaluator, so this just delivers the verdict.
+
+    Sends the manager prompt, parses + validates, and on any parse/validation
+    failure feeds the error back as a repair request — bounded by
+    ``settings.manager_retries`` (so initial + retries attempts total). Raises
+    ManagerError if no attempt yields a valid model.
+    """
+    client = settings.manager_client()
+    conv = Conversation()
+    try:
+        images = [load_image_block(image_path)] if image_path else None
+    except ImageLoadError as e:
+        raise ManagerError(str(e)) from e
+    conv.add_user_message(
+        build_manager_user(product_prompt, has_image=bool(image_path)),
+        images=images)
+    if image_path and log_fn:
+        log_fn(f"[manager] using input image: {image_path}")
+    if evaluator_feedback:
+        conv.add_user_message(build_manager_evaluator_feedback(evaluator_feedback))
+        if log_fn:
+            log_fn("[manager] applying evaluator feedback from the previous "
+                   "iteration")
+
+    last_err = ""
+    attempts = settings.manager_retries + 1
+    for attempt in range(1, attempts + 1):
+        messages = conv.get_messages_for_api(api_style=client.api_style)
+        try:
+            text = client.send(messages, system=MANAGER_SYSTEM)
+        except LLMTruncationError as e:
+            # The decomposition was too large to fit in one response and the
+            # gateway returned nothing usable. Re-sending the identical prompt
+            # would just truncate again, so ask for a COARSER decomposition
+            # (fewer, larger parts) and retry within the budget.
+            last_err = str(e)
+            if log_fn:
+                log_fn(f"[manager] attempt {attempt}/{attempts} truncated: {last_err}")
+            conv.add_user_message(build_manager_coarser(last_err))
+            continue
+        except LLMError as e:
+            # Other send() failures (truncation aside: connection, HTTP, empty
+            # with no output) are not fixed by re-sending the identical prompt,
+            # so fail fast with a clear message rather than letting a raw
+            # LLMError abort the whole run.
+            raise ManagerError(f"Manager LLM request failed: {e}") from e
+        conv.add_assistant_message(text)
+        try:
+            model = parse_model(text)
+            _validate_model(model)
+        except (ValueError, ManagerError, json.JSONDecodeError) as e:
+            last_err = str(e)
+            if log_fn:
+                log_fn(f"[manager] attempt {attempt}/{attempts} rejected: {last_err}")
+            conv.add_user_message(build_manager_repair(last_err))
+            continue
+        if model_json_path:
+            save_model(model, model_json_path)
+        if log_fn:
+            log_fn(f"[manager] OK on attempt {attempt}: "
+                   f"{len(model.links)} links, {len(model.joints)} joints, "
+                   f"root='{model.root_link}'")
+        return model
+
+    raise ManagerError(
+        f"Manager failed after {attempts} attempts. Last error:\n{last_err}")
