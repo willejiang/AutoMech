@@ -96,9 +96,10 @@ def render(scad_path, out_dir):
         }
 
     # 1) STL (full render). First failure here == bad geometry -> feed back.
+    # explicit --export-format: 2026 OpenSCAD rejects bare `-o x.stl --render`.
     stl_path = out_dir / "model.stl"
     r = subprocess.run(
-        [oscad, "-o", str(stl_path), "--render", str(scad_path)],
+        [oscad, "-o", str(stl_path), "--export-format", "binstl", str(scad_path)],
         capture_output=True, text=True,
     )
     if r.returncode != 0 or not stl_path.exists():
