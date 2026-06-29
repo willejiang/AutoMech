@@ -4,7 +4,7 @@
 A connected-component split is useless here: the dog is one welded mesh. So we
 segment it by GEOMETRY into a torso + 4 legs, each leg cut into thigh + shank,
 giving a hip and a knee revolute joint per leg (8 movable joints total). Claude
-(claude-opus-4.8, via the local gateway) confirms the per-segment material.
+(claude-opus-4.8, via the configured LLM gateway) confirms the per-segment material.
 
 Kinematics (quadruped, legs swing in the sagittal X-Z plane):
   base_link (torso)
@@ -48,7 +48,7 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection  # noqa: E402
 import os
 
 GATEWAY_DEFAULT = os.environ.get("LLM_GATEWAY_URL", "http://localhost:8313").rstrip("/")
-MODEL_ID = "claude-opus-4.8"
+MODEL_ID = os.environ.get("LLM_MODEL", "anthropic/claude-opus-4.8")
 
 LEG_KEYS = [
     ("front", "left"),

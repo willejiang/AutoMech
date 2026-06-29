@@ -17,7 +17,7 @@ mesh), so the knee cut is taken at each leg's own knee height. Each child
 mesh is translated so its joint origin sits at the child-frame origin, which
 the reassembly check in validate confirms is correct.
 
-Materials are inferred by Claude (claude-opus-4.8 via the local gateway).
+Materials are inferred by Claude (claude-opus-4.8 via the configured LLM gateway).
 
 Usage:
   python scripts/dog12_to_urdf.py [path/to/dog.stl] [--no-llm]
@@ -48,7 +48,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection  # noqa: E402
 
 GATEWAY_DEFAULT = os.environ.get("LLM_GATEWAY_URL", "http://localhost:8313").rstrip("/")
-MODEL_ID = "claude-opus-4.8"
+MODEL_ID = os.environ.get("LLM_MODEL", "anthropic/claude-opus-4.8")
 
 LEG_KEYS = [("front", "left"), ("front", "right"), ("back", "left"), ("back", "right")]
 SEGMENTS = ("hip", "thigh", "shank")

@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """Before/after RL judge — compares untrained (model_0) vs trained (model_500)
-keyframes of the maker-generated dog and asks the local opus-4.8 proxy whether
-RL produced a real behavioral improvement. Runs on the laptop (proxy is local)."""
+keyframes of the maker-generated dog and asks the configured VLM whether
+RL produced a real behavioral improvement. Reads endpoint/model from env."""
 import base64, json, os, sys
 from pathlib import Path
 from openai import OpenAI
 
 BASE = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parents[1] / "physcad_videos" / "cmp_frames"
-ENDPOINT = os.environ.get("AZURE_OPENAI_ENDPOINT", "http://localhost:8313/v1").rstrip("/")
-MODEL = os.environ.get("AZURE_VLM_DEPLOYMENT", "claude-opus-4.8")
-KEY = os.environ.get("AZURE_OPENAI_API_KEY", "not-needed-for-local-proxy")
+ENDPOINT = os.environ["AZURE_OPENAI_ENDPOINT"].rstrip("/")
+MODEL = os.environ.get("AZURE_VLM_DEPLOYMENT", "anthropic/claude-opus-4.8")
+KEY = os.environ.get("AZURE_OPENAI_API_KEY", "")
 
 def imgs(d):
     fs = sorted(Path(d).glob("*.png"))
@@ -41,7 +41,7 @@ def parse(text):
     return json.loads(s)
 
 client = OpenAI(base_url=ENDPOINT, api_key=KEY)
-# the local Copilot proxy ignores response_format json_schema and fences the JSON,
+# some gateways ignore response_format json_schema and fence the JSON,
 # so we ask for JSON in-prompt and strip the fence instead. Keep the JSON instruction
 # in the SAME user turn as the images — a trailing text-only turn makes the model
 # lose the image context and claim no frames were sent.

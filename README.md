@@ -166,7 +166,7 @@ npm run dev
 | `VITE_SUPABASE_URL` | Supabase project URL | ✅ |
 | `VITE_SUPABASE_ANON_KEY` | Supabase anon key (client auth) | ✅ |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role (server) | ✅ |
-| `LLM_GATEWAY_URL` | LLM proxy (default `http://localhost:8313`) | ✅ |
+| `LLM_GATEWAY_URL` | OpenAI-compatible LLM gateway (multi-provider, picks VLM by id) | ✅ |
 | `ANTHROPIC_API_KEY` | Claude models (via gateway) | ✅ |
 | `OPENROUTER_API_KEY` | GPT/Gemini routing (via gateway) | ✅ |
 | `BILLING_SERVICE_URL` / `BILLING_SERVICE_KEY` | token-usage tracking | ✅ |
@@ -209,16 +209,19 @@ Isaac Lab is **cloned, not vendored**. Put it in the host dir that mounts to
 cd /data/physcad
 git clone https://github.com/isaac-sim/IsaacLab.git
 
-# start the container with the GPU + mounts, OVERRIDING the entrypoint
-# (the default entrypoint launches the WebRTC streamer and swallows your command)
-docker run -it --gpus all --runtime=nvidia \
-  --entrypoint /bin/bash \
+# start the container with the GPU + mounts, OVERRIDING the entrypoint, as ROOT
+# (base image runs as uid 1234; root is needed for pip installs + writable mounts).
+# Disable OmniHub — it deadlocks in a reconnect loop and freezes training.
+docker run -it --gpus all --runtime=nvidia --user root \
+  --entrypoint /bin/bash -e OMNI_HUB_DISABLE=1 \
   -v /data/physcad:/work \
   nvcr.io/nvidia/isaac-sim:6.0.1
 
 # inside the container: run the project's installer (does ./isaaclab.sh --install rl,
-# Tsinghua pip mirror, sanity-imports isaaclab + rsl_rl)
+# Tsinghua pip mirror, sanity-imports isaaclab + rsl_rl). The restructured source
+# also needs the isaaclab_physx + isaaclab_contrib extensions installed:
 bash /work/<repo>/evaluator/isaaclab/install_isaaclab.sh
+/isaac-sim/python.sh -m pip install -e source/isaaclab_physx -e source/isaaclab_contrib
 
 # from ANOTHER host shell, snapshot the container as a reusable image:
 docker commit <container_id> isaac-lab:6.0.1
@@ -228,10 +231,11 @@ docker commit <container_id> isaac-lab:6.0.1
 [Isaac Lab docs](https://isaac-sim.github.io/IsaacLab/).
 
 > **Version pairing caveat:** Isaac Sim and Isaac Lab versions are tightly coupled.
-> This repo targets **Isaac Sim 6.0.1** (what ran on ANYmal/Cassie). The official
-> Isaac Lab docs currently recommend Isaac Sim 5.1.0 for the main line and list a
-> `3.0.0-beta2` release; if you pick a different Isaac Lab version, confirm its
-> Isaac Sim pairing in the
+> This repo targets **Isaac Sim 6.0.1** paired with **Isaac Lab 3.0.0-beta2** (what ran on
+> ANYmal/Cassie + the dog). A fresh `pip install -e` may pull a newer Isaac Lab whose
+> API moved (`RigidBodyMaterialCfg` → `isaaclab_physx`), so pin the 3.0.x source and
+> install `isaaclab_physx` + `isaaclab_contrib` as above. If you pick a different
+> version, confirm its Isaac Sim pairing in the
 > [installation guide](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html)
 > first, and update the image tag in `evaluator/evaluate.sh` + `evaluator/loop.py`
 > to match.
@@ -242,9 +246,11 @@ docker commit <container_id> isaac-lab:6.0.1
 mkdir -p /data/physcad /data/isaac-cache
 cp evaluator/.env.example evaluator/.env   # then fill in the VLM endpoint + key
 ```
-`evaluator/.env` drives `analyze.py` / `scenario_designer.py`. It supports either a
-local Copilot proxy (`http://localhost:8313/v1`, `claude-opus-4.8`) or Azure OpenAI
-— see the comments in [`evaluator/.env.example`](evaluator/.env.example).
+`evaluator/.env` drives `analyze.py` / `scenario_designer.py`. It points at any
+OpenAI-compatible LLM gateway; pick the VLM via `AZURE_VLM_DEPLOYMENT` using cadam's
+`provider/model` ids (`anthropic/claude-opus-4.8`, `openai/gpt-5.4`,
+`google/gemini-3.1-pro-preview`), or use Azure OpenAI directly — see the comments in
+[`evaluator/.env.example`](evaluator/.env.example).
 
 ---
 
@@ -288,11 +294,13 @@ Drop `--dry-run` once the GPU box is up.
 > [`orchestrator/README.md`](orchestrator/README.md) runs render / gate / generation
 > on their own; a built-in fully-offline mock of the whole loop is not yet wired.
 
-> **Two container gotchas** (both already handled in the scripts): the isaac-sim
-> image's default entrypoint launches the WebRTC streamer and **swallows your
-> script** — you must override it (`--entrypoint /isaac-sim/python.sh`). And run the
-> sim container **detached** (`-d`); an SSH "Connection reset" kills an attached
-> container mid-run.
+> **Three container gotchas** (handled in the scripts): the isaac-sim image's
+> default entrypoint launches the WebRTC streamer and **swallows your script** —
+> override it (`--entrypoint /isaac-sim/python.sh`). Run the sim container
+> **detached** (`-d`); an SSH "Connection reset" kills an attached container
+> mid-run. And **disable OmniHub** (`-e OMNI_HUB_DISABLE=1`) — if its cache service
+> fails to launch it spins in a reconnect loop and **freezes training before the
+> GPU engages** (no checkpoints, GPU stuck idle).
 
 ---
 

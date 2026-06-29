@@ -7,7 +7,7 @@ This is the "does the evaluator know to use RL" test. The LLM picks among
 evaluation strategies based on whether the task needs a static-stability check,
 a scripted motion, or a LEARNED controller (RL training).
 
-Runs locally against the Copilot proxy (claude-opus-4.8). Outputs a structured
+Runs against the configured VLM gateway (AZURE_VLM_DEPLOYMENT). Outputs a structured
 decision the orchestrator acts on.
 """
 import json, os
@@ -77,7 +77,7 @@ def decide(task, robot_info):
            f"LINKS ({len(robot_info.get('links',[]))}): {robot_info.get('links',[])}\n\n"
            f"Decide how to evaluate this task on this robot.")
     r = c.chat.completions.create(
-        model=os.environ.get("AZURE_VLM_DEPLOYMENT", "claude-opus-4.8"),
+        model=os.environ.get("AZURE_VLM_DEPLOYMENT", "anthropic/claude-opus-4.8"),
         messages=[{"role": "system", "content": SYSTEM},
                   {"role": "user", "content": msg}],
         response_format=SCHEMA, max_completion_tokens=1200)

@@ -13,7 +13,7 @@ off to the +X side — is the rotor. The rotor mesh is translated so the spin
 axis passes through the child-frame origin, so driving the joint spins the
 blades about the correct centre instead of flinging them off.
 
-Material is inferred by Claude (claude-opus-4.8 via the local gateway).
+Material is inferred by Claude (claude-opus-4.8 via the configured LLM gateway).
 
 Usage:
   python scripts/turbine_to_urdf.py [path/to/turbine.stl] [--no-llm]
@@ -46,7 +46,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection  # noqa: E402
 
 GATEWAY_DEFAULT = os.environ.get("LLM_GATEWAY_URL", "http://localhost:8313").rstrip("/")
-MODEL_ID = "claude-opus-4.8"
+MODEL_ID = os.environ.get("LLM_MODEL", "anthropic/claude-opus-4.8")
 SCRIPT_DIR = Path(__file__).resolve().parent
 OUTPUT_ROOT = SCRIPT_DIR.parent / "output"
 

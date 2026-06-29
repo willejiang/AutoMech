@@ -5,7 +5,7 @@ Pipeline:
   1. Pick the newest *.stl in ~/Downloads (or a path given on the CLI).
   2. Split it into geometrically connected components via trimesh — each
      physically separate mesh becomes one URDF link.
-  3. Render each part to a PNG and ask Claude (claude-opus-4.8, via the local
+  3. Render each part to a PNG and ask Claude (claude-opus-4.8, via the configured
      LLM gateway at localhost:8313) to name it and pick a material (color +
      physical properties). One batched call for all parts.
   4. Export each part as its own mesh and write a URDF where every link is
@@ -45,7 +45,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection  # noqa: E402
 
 GATEWAY_DEFAULT = os.environ.get("LLM_GATEWAY_URL", "http://localhost:8313").rstrip("/")
-MODEL_ID = "claude-opus-4.8"
+MODEL_ID = os.environ.get("LLM_MODEL", "anthropic/claude-opus-4.8")
 
 # Parts smaller than this fraction of the largest component's volume are
 # treated as noise/shards and merged away rather than becoming their own link.
