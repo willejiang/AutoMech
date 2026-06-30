@@ -56,6 +56,25 @@ def _opt_float(value):
     return None if value is None else float(value)
 
 
+def _parse_color(value) -> tuple:
+    """Coerce a manager-supplied color to an RGBA tuple in 0..1, else ().
+
+    Accepts [r,g,b] or [r,g,b,a]; values >1 are treated as 0..255 and scaled.
+    A bad/missing value yields () so the URDF builder falls back to its palette.
+    """
+    if not isinstance(value, (list, tuple)) or len(value) < 3:
+        return ()
+    try:
+        nums = [float(x) for x in value[:4]]
+    except (TypeError, ValueError):
+        return ()
+    if any(n > 1.0 for n in nums):
+        nums = [n / 255.0 for n in nums]
+    if len(nums) == 3:
+        nums.append(1.0)
+    return tuple(min(1.0, max(0.0, n)) for n in nums)
+
+
 def _link_from_dict(d: dict, idx: int) -> LinkSpec:
     if not isinstance(d, dict):
         raise ValueError(f"links[{idx}] is not an object")
@@ -72,6 +91,7 @@ def _link_from_dict(d: dict, idx: int) -> LinkSpec:
         shape_hint=str(d.get("shape_hint") or ""),
         size_mm={str(k): v for k, v in size.items()},
         origin_note=str(d.get("origin_note") or ""),
+        color=_parse_color(d.get("color")),
     )
 
 
@@ -262,6 +282,7 @@ def model_to_dict(model: KinematicModel) -> dict:
                 "shape_hint": l.shape_hint,
                 "size_mm": l.size_mm,
                 "origin_note": l.origin_note,
+                "color": list(l.color),
                 "mesh_filename": l.mesh_filename,
             }
             for l in model.links

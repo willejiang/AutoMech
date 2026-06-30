@@ -20,7 +20,8 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
       "description": "<what this part is; enough for a CAD worker to build it>",
       "shape_hint": "<box | cylinder | sphere | free text>",
       "size_mm": { "<dim>": <number>, ... },   // approx bounding size in MM
-      "origin_note": "<where this part's LOCAL origin sits and which way it points>"
+      "origin_note": "<where this part's LOCAL origin sits and which way it points>",
+      "color": [<r>, <g>, <b>]                  // 0..1 RGB; the part's real-world color
     }
   ],
   "joints": [
@@ -59,7 +60,12 @@ UNITS / ORIGIN CONTRACT (critical — this is how blindly-built parts line up)
   TO the point where the child link's origin attaches. Workers never position
   parts relative to each other — all spatial relationships live in your joints.
 - Pick origins and joint offsets so the assembled parts touch/mate without
-  floating gaps or overlaps."""
+  floating gaps or overlaps.
+
+COLOR
+- Give every link a `color` as [r, g, b] in 0..1 matching the part's real-world
+  material (e.g. brushed metal ~[0.75,0.76,0.78], brass ~[0.80,0.62,0.20], black
+  plastic ~[0.12,0.12,0.13]). Adjacent parts should differ enough to read apart."""
 
 
 # A complete, valid worked example (a table) used as a one-shot in the prompt.
@@ -78,14 +84,16 @@ FEWSHOT_JSON = """\
       "description": "A flat square table top, 400 x 400 mm, 20 mm thick.",
       "shape_hint": "box",
       "size_mm": {"x": 400, "y": 400, "z": 20},
-      "origin_note": "underside-center at local origin; slab extends +Z (0..20mm) and is centered in X and Y (-200..200mm)"
+      "origin_note": "underside-center at local origin; slab extends +Z (0..20mm) and is centered in X and Y (-200..200mm)",
+      "color": [0.55, 0.35, 0.20]
     },
     {
       "name": "leg",
       "description": "A central cylindrical leg, 40 mm diameter, 500 mm long.",
       "shape_hint": "cylinder",
       "size_mm": {"radius": 20, "height": 500},
-      "origin_note": "top face center at local origin; cylinder extends -Z downward (0..-500mm)"
+      "origin_note": "top face center at local origin; cylinder extends -Z downward (0..-500mm)",
+      "color": [0.30, 0.30, 0.32]
     }
   ],
   "joints": [

@@ -30,6 +30,47 @@ def load_robot(urdf_path: str) -> "yourdfpy.URDF":
                               build_scene_graph=True, force_mesh=True)
 
 
+# Fallback palette (RGB 0..255) used ONLY for a mesh that somehow loaded with no
+# per-face color. Normally the URDF carries a <material> per link (authored by the
+# manager, or a builder palette fallback), and yourdfpy applies it on load — so
+# this is just a last resort to avoid a stray gray part.
+_PALETTE = [
+    (210, 70, 60), (70, 130, 200), (90, 180, 90), (230, 170, 50),
+    (150, 100, 200), (60, 190, 190), (220, 120, 170), (160, 160, 80),
+    (120, 110, 100), (200, 200, 210), (180, 90, 60), (80, 150, 120),
+]
+
+# A near-gray default trimesh assigns when a mesh has no material; if every face
+# matches it, the link rendered colorless and we substitute a palette color.
+_DEFAULT_GRAY = (102, 102, 102)
+
+
+def _has_real_color(geom) -> bool:
+    fc = getattr(getattr(geom, "visual", None), "face_colors", None)
+    if fc is None or len(fc) == 0:
+        return False
+    r, g, b = (int(x) for x in fc[0][:3])
+    return (r, g, b) != _DEFAULT_GRAY
+
+
+def _colorize_fallback(robot) -> None:
+    """Tint only meshes that loaded WITHOUT a real material color.
+
+    The URDF normally supplies a per-link <material>, so most parts already have
+    their color by the time this runs. This just rescues any part that came in as
+    the default gray, so the judge never sees an ambiguous colorless link."""
+    import numpy as _np
+    for i, (name, geom) in enumerate(sorted(robot.scene.geometry.items())):
+        if _has_real_color(geom):
+            continue
+        try:
+            c = _PALETTE[i % len(_PALETTE)]
+            rgba = _np.array([c[0], c[1], c[2], 255], dtype=_np.uint8)
+            geom.visual.face_colors = _np.tile(rgba, (len(geom.faces), 1))
+        except Exception:
+            pass
+
+
 def _frame_isometric(scene) -> None:
     """Aim the scene camera at the geometry from an isometric angle, fit to bounds."""
     scene.set_camera(angles=_ISO_ANGLES)
@@ -46,6 +87,7 @@ def render_png(urdf_path: str, out_path: str,
                resolution: tuple[int, int] = (1280, 960)) -> str:
     """Render the assembled product to a PNG (needs an OpenGL context)."""
     robot = load_robot(urdf_path)
+    _colorize_fallback(robot)
     _frame_isometric(robot.scene)
     png = robot.scene.save_image(resolution=resolution, visible=True)
     with open(out_path, "wb") as f:
@@ -79,6 +121,7 @@ def render_six_views(urdf_path: str, out_dir: str,
     failure as "no images" and degrades to a text-only judge.
     """
     robot = load_robot(urdf_path)
+    _colorize_fallback(robot)
     os.makedirs(out_dir, exist_ok=True)
     paths: dict[str, str] = {}
     for name, angles in _SIX_VIEWS.items():

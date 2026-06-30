@@ -17,7 +17,7 @@ import os
 import numpy as np
 import trimesh.transformations as tf
 from yourdfpy import (URDF, Robot, Link, Joint, Visual, Collision, Geometry,
-                      Mesh, Limit)
+                      Mesh, Limit, Material, Color)
 
 from .model import KinematicModel, JointSpec, LinkSpec, RunContext
 
@@ -25,6 +25,14 @@ from .model import KinematicModel, JointSpec, LinkSpec, RunContext
 # mm geometry -> meter URDF
 _MM_TO_M_SCALE = (0.001, 0.001, 0.001)
 _NONFIXED = {"revolute", "prismatic", "continuous"}
+
+# Fallback palette (RGB 0..1) so a link the manager left uncolored still renders
+# as a distinct solid instead of the default gray. Indexed by link order.
+_FALLBACK_PALETTE = [
+    (0.82, 0.27, 0.24), (0.27, 0.51, 0.78), (0.35, 0.71, 0.35), (0.90, 0.67, 0.20),
+    (0.59, 0.39, 0.78), (0.24, 0.75, 0.75), (0.86, 0.47, 0.67), (0.63, 0.63, 0.31),
+    (0.47, 0.43, 0.39), (0.78, 0.78, 0.82), (0.71, 0.35, 0.24), (0.31, 0.59, 0.47),
+]
 
 
 def _rel_mesh(link: LinkSpec) -> str:
@@ -45,11 +53,23 @@ def _mesh_geometry(rel_filename: str) -> Geometry:
                               scale=np.array(_MM_TO_M_SCALE, dtype=float)))
 
 
-def _build_link(link: LinkSpec) -> Link:
+def _link_material(link: LinkSpec, idx: int) -> Material:
+    """A URDF <material> for the link: its manager color, else a palette color.
+
+    yourdfpy applies this rgba to the loaded mesh, so the judge's render shows
+    each part in its own solid color instead of a uniform gray."""
+    rgba = link.color if len(link.color) == 4 else (
+        *_FALLBACK_PALETTE[idx % len(_FALLBACK_PALETTE)], 1.0)
+    return Material(name=f"{link.name}_mat",
+                    color=Color(rgba=np.array(rgba, dtype=float)))
+
+
+def _build_link(link: LinkSpec, idx: int) -> Link:
     rel = _rel_mesh(link)
     return Link(
         name=link.name,
-        visuals=[Visual(name=f"{link.name}_visual", geometry=_mesh_geometry(rel))],
+        visuals=[Visual(name=f"{link.name}_visual", geometry=_mesh_geometry(rel),
+                        material=_link_material(link, idx))],
         collisions=[Collision(name=f"{link.name}_collision",
                               geometry=_mesh_geometry(rel))],
     )
@@ -70,7 +90,7 @@ def build_urdf(model: KinematicModel, ctx: RunContext) -> str:
     """Build the URDF from the model and write it to ``ctx.urdf_path``."""
     robot = Robot(
         name=model.name,
-        links=[_build_link(l) for l in model.links],
+        links=[_build_link(l, i) for i, l in enumerate(model.links)],
         joints=[_build_joint(j) for j in model.joints],
     )
     urdf = URDF(robot=robot, build_scene_graph=False, load_meshes=False)

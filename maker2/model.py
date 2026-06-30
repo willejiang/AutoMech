@@ -47,6 +47,7 @@ class LinkSpec:
     shape_hint: str = ""                            # "cylinder" | "box" | free text
     size_mm: dict = field(default_factory=dict)     # approx bbox, {"radius":20,"height":60}
     origin_note: str = ""                           # e.g. "attach point at origin, +Z up"
+    color: tuple = ()                               # display RGBA 0..1, () -> palette fallback
     mesh_filename: str = ""                         # RELATIVE "meshes/<name>.stl"
 
 
