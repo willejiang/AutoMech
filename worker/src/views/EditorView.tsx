@@ -1049,6 +1049,7 @@ function ConversationEditor() {
                 ? activePreview.artifact.code
                 : undefined
             }
+            model={model}
           />
         </div>
       }

@@ -52,6 +52,7 @@ interface ParameterSectionProps {
   isEvaluating?: boolean;
   dxfExporter?: DxfExporter | null;
   code?: string;
+  model?: string;
 }
 
 type DownloadFormat = 'stl' | 'scad' | 'dxf' | 'views';
@@ -65,12 +66,39 @@ export function ParameterSection({
   isEvaluating,
   dxfExporter,
   code,
+  model,
 }: ParameterSectionProps) {
   const { toast } = useToast();
   const [selectedFormat, setSelectedFormat] = useState<DownloadFormat>('stl');
   const [isExporting, setIsExporting] = useState(false);
   const [physRunning, setPhysRunning] = useState(false);
   const [physVerdict, setPhysVerdict] = useState<{ passed: boolean; summary: string; failures?: { failure_mode?: string; explanation?: string }[] } | null>(null);
+
+  // maker2: prompt -> articulated URDF -> appearance judge -> physics.
+  const [m2Prompt, setM2Prompt] = useState('');
+  const [m2Running, setM2Running] = useState(false);
+  const [m2Result, setM2Result] = useState<{
+    ok: boolean; links?: number; joints?: number; movable_joints?: number;
+    built?: number; error?: string;
+    judge?: { passed: boolean | null; reasons: string; suggestions: string } | null;
+    physics?: { passed: boolean | null; summary: string } | null;
+  } | null>(null);
+
+  const handleMaker2 = async () => {
+    if (!m2Prompt.trim()) return;
+    setM2Running(true); setM2Result(null);
+    try {
+      const v = await apiJson('run-maker2', {
+        method: 'POST',
+        body: JSON.stringify({ prompt: m2Prompt, model, physics: true }),
+      });
+      setM2Result(v as typeof m2Result);
+    } catch (e) {
+      toast({ title: 'maker2 build failed', description: String(e), variant: 'destructive' });
+    } finally {
+      setM2Running(false);
+    }
+  };
 
   const handlePhysicsTest = async () => {
     if (!code) return;
@@ -310,6 +338,55 @@ export function ParameterSection({
                 ))}
               </div>
             )}
+            {/* maker2: build an ARTICULATED URDF from a prompt (manager -> SCAD
+                worker -> URDF -> appearance judge -> physics). Uses the selected
+                model. No urdf_author — maker2 produces the URDF directly. */}
+            <div className="space-y-2 rounded-md border border-adam-neutral-800 p-2">
+              <div className="text-xs font-semibold text-adam-text-primary">
+                Articulated maker (maker2){model ? ` · ${model}` : ''}
+              </div>
+              <textarea
+                value={m2Prompt}
+                onChange={(e) => setM2Prompt(e.target.value)}
+                placeholder="Describe the articulated product, e.g. a 2-DOF pan-tilt camera mount"
+                rows={2}
+                className="w-full resize-none rounded border border-adam-neutral-700 bg-adam-neutral-900/40 p-2 text-xs text-adam-text-primary placeholder:text-adam-neutral-500"
+              />
+              <Button
+                variant="outline"
+                onClick={handleMaker2}
+                disabled={!m2Prompt.trim() || m2Running}
+                className="w-full justify-center gap-2 border-adam-neutral-700 bg-adam-neutral-900/40 text-adam-text-primary hover:bg-adam-neutral-800"
+              >
+                {m2Running ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                {m2Running ? 'Building (several min)…' : 'Build articulated + test'}
+              </Button>
+              {m2Result && (
+                <div className={`rounded-md border p-3 text-xs ${m2Result.ok ? 'border-green-700 bg-green-900/20' : 'border-red-700 bg-red-900/20'} text-adam-text-primary`}>
+                  {m2Result.ok ? (
+                    <>
+                      <div className="font-semibold">
+                        Built {m2Result.built}/{m2Result.links} links · {m2Result.movable_joints} movable joints
+                      </div>
+                      {m2Result.judge && (
+                        <div className="mt-1">
+                          <span className="font-semibold">{m2Result.judge.passed === false ? 'Judge: FAIL' : 'Judge: PASS'}</span>
+                          <span className="text-adam-neutral-300"> — {m2Result.judge.reasons}</span>
+                        </div>
+                      )}
+                      {m2Result.physics && (
+                        <div className="mt-1">
+                          <span className="font-semibold">{m2Result.physics.passed ? 'Physics: PASS' : 'Physics: FAIL'}</span>
+                          <span className="text-adam-neutral-300"> — {m2Result.physics.summary}</span>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="font-semibold">maker2 failed: {m2Result.error}</div>
+                  )}
+                </div>
+              )}
+            </div>
             {mainParameters.length > 0 && (
               <Collapsible
                 open={dimensionsOpen}
