@@ -150,6 +150,13 @@ def run(prompt: str, out_dir: str = "output", manager_only: bool = False,
 
 
 def main() -> int:
+    # Windows consoles default to cp1252 and crash on non-Latin-1 output (the
+    # manager's part names, ·/→ glyphs in logs). Force UTF-8 like stl_to_urdf.py.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
     _load_dotenv()
     ap = argparse.ArgumentParser(description="maker2: manager + cadam SCAD worker -> URDF")
     ap.add_argument("prompt", help="natural-language product description")

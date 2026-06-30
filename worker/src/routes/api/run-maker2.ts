@@ -26,7 +26,10 @@ export const Route = createFileRoute('/api/run-maker2')({
         if (body.physics) args.push('--physics');
 
         const result = await new Promise((res) => {
-          const p = spawn('python3', args, { cwd: REPO_ROOT });
+          const p = spawn('python3', args, {
+            cwd: REPO_ROOT,
+            env: { ...process.env, PYTHONIOENCODING: 'utf-8', PYTHONUTF8: '1' },
+          });
           let out = '';
           p.stdout.on('data', (d) => (out += d));
           p.stderr.on('data', (d) => (out += d));
