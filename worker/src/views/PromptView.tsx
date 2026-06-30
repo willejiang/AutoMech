@@ -338,7 +338,13 @@ export function PromptView() {
                   setArticulated={setArticulated}
                   maxIters={maxIters}
                   setMaxIters={setMaxIters}
-                  onArticulated={(prompt, iters) => void runMaker2(prompt, iters)}
+                  onArticulated={(p, iters) =>
+                    navigate({
+                      to: '/maker2/$runId',
+                      params: { runId: crypto.randomUUID() },
+                      search: { prompt: p, model, iters: iters ?? 2 },
+                    })
+                  }
                 />
               </SelectedItemsContext.Provider>
               {/* maker2: build an ARTICULATED URDF from a prompt, right on the

@@ -19,8 +19,11 @@ import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as ConfirmEmailRouteImport } from './routes/confirm-email'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
+import { Route as Maker2RunIdRouteImport } from './routes/maker2.$runId'
 import { Route as ApiTitleGeneratorRouteImport } from './routes/api/title-generator'
 import { Route as ApiRunPhysicsTestRouteImport } from './routes/api/run-physics-test'
+import { Route as ApiRunMaker2StreamRouteImport } from './routes/api/run-maker2-stream'
+import { Route as ApiRunMaker2GlbRouteImport } from './routes/api/run-maker2-glb'
 import { Route as ApiRunMaker2RouteImport } from './routes/api/run-maker2'
 import { Route as ApiPromptGeneratorRouteImport } from './routes/api/prompt-generator'
 import { Route as ApiParametricChatRouteImport } from './routes/api/parametric-chat'
@@ -91,6 +94,11 @@ const LayoutIndexRoute = LayoutIndexRouteImport.update({
   path: '/',
   getParentRoute: () => LayoutRoute,
 } as any)
+const Maker2RunIdRoute = Maker2RunIdRouteImport.update({
+  id: '/maker2/$runId',
+  path: '/maker2/$runId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiTitleGeneratorRoute = ApiTitleGeneratorRouteImport.update({
   id: '/api/title-generator',
   path: '/api/title-generator',
@@ -99,6 +107,16 @@ const ApiTitleGeneratorRoute = ApiTitleGeneratorRouteImport.update({
 const ApiRunPhysicsTestRoute = ApiRunPhysicsTestRouteImport.update({
   id: '/api/run-physics-test',
   path: '/api/run-physics-test',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRunMaker2StreamRoute = ApiRunMaker2StreamRouteImport.update({
+  id: '/api/run-maker2-stream',
+  path: '/api/run-maker2-stream',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRunMaker2GlbRoute = ApiRunMaker2GlbRouteImport.update({
+  id: '/api/run-maker2-glb',
+  path: '/api/run-maker2-glb',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiRunMaker2Route = ApiRunMaker2RouteImport.update({
@@ -224,8 +242,11 @@ export interface FileRoutesByFullPath {
   '/api/parametric-chat': typeof ApiParametricChatRoute
   '/api/prompt-generator': typeof ApiPromptGeneratorRoute
   '/api/run-maker2': typeof ApiRunMaker2Route
+  '/api/run-maker2-glb': typeof ApiRunMaker2GlbRoute
+  '/api/run-maker2-stream': typeof ApiRunMaker2StreamRoute
   '/api/run-physics-test': typeof ApiRunPhysicsTestRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
+  '/maker2/$runId': typeof Maker2RunIdRoute
   '/history': typeof LayoutAuthHistoryRoute
   '/settings': typeof LayoutAuthSettingsRoute
   '/subscription': typeof LayoutAuthSubscriptionRoute
@@ -256,8 +277,11 @@ export interface FileRoutesByTo {
   '/api/parametric-chat': typeof ApiParametricChatRoute
   '/api/prompt-generator': typeof ApiPromptGeneratorRoute
   '/api/run-maker2': typeof ApiRunMaker2Route
+  '/api/run-maker2-glb': typeof ApiRunMaker2GlbRoute
+  '/api/run-maker2-stream': typeof ApiRunMaker2StreamRoute
   '/api/run-physics-test': typeof ApiRunPhysicsTestRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
+  '/maker2/$runId': typeof Maker2RunIdRoute
   '/history': typeof LayoutAuthHistoryRoute
   '/settings': typeof LayoutAuthSettingsRoute
   '/subscription': typeof LayoutAuthSubscriptionRoute
@@ -290,8 +314,11 @@ export interface FileRoutesById {
   '/api/parametric-chat': typeof ApiParametricChatRoute
   '/api/prompt-generator': typeof ApiPromptGeneratorRoute
   '/api/run-maker2': typeof ApiRunMaker2Route
+  '/api/run-maker2-glb': typeof ApiRunMaker2GlbRoute
+  '/api/run-maker2-stream': typeof ApiRunMaker2StreamRoute
   '/api/run-physics-test': typeof ApiRunPhysicsTestRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
+  '/maker2/$runId': typeof Maker2RunIdRoute
   '/_layout/': typeof LayoutIndexRoute
   '/_layout/_auth/history': typeof LayoutAuthHistoryRoute
   '/_layout/_auth/settings': typeof LayoutAuthSettingsRoute
@@ -325,8 +352,11 @@ export interface FileRouteTypes {
     | '/api/parametric-chat'
     | '/api/prompt-generator'
     | '/api/run-maker2'
+    | '/api/run-maker2-glb'
+    | '/api/run-maker2-stream'
     | '/api/run-physics-test'
     | '/api/title-generator'
+    | '/maker2/$runId'
     | '/history'
     | '/settings'
     | '/subscription'
@@ -357,8 +387,11 @@ export interface FileRouteTypes {
     | '/api/parametric-chat'
     | '/api/prompt-generator'
     | '/api/run-maker2'
+    | '/api/run-maker2-glb'
+    | '/api/run-maker2-stream'
     | '/api/run-physics-test'
     | '/api/title-generator'
+    | '/maker2/$runId'
     | '/history'
     | '/settings'
     | '/subscription'
@@ -390,8 +423,11 @@ export interface FileRouteTypes {
     | '/api/parametric-chat'
     | '/api/prompt-generator'
     | '/api/run-maker2'
+    | '/api/run-maker2-glb'
+    | '/api/run-maker2-stream'
     | '/api/run-physics-test'
     | '/api/title-generator'
+    | '/maker2/$runId'
     | '/_layout/'
     | '/_layout/_auth/history'
     | '/_layout/_auth/settings'
@@ -423,8 +459,11 @@ export interface RootRouteChildren {
   ApiParametricChatRoute: typeof ApiParametricChatRoute
   ApiPromptGeneratorRoute: typeof ApiPromptGeneratorRoute
   ApiRunMaker2Route: typeof ApiRunMaker2Route
+  ApiRunMaker2GlbRoute: typeof ApiRunMaker2GlbRoute
+  ApiRunMaker2StreamRoute: typeof ApiRunMaker2StreamRoute
   ApiRunPhysicsTestRoute: typeof ApiRunPhysicsTestRoute
   ApiTitleGeneratorRoute: typeof ApiTitleGeneratorRoute
+  Maker2RunIdRoute: typeof Maker2RunIdRoute
   ApiJacksonPollockSplatRoute: typeof ApiJacksonPollockSplatRoute
 }
 
@@ -500,6 +539,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutIndexRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/maker2/$runId': {
+      id: '/maker2/$runId'
+      path: '/maker2/$runId'
+      fullPath: '/maker2/$runId'
+      preLoaderRoute: typeof Maker2RunIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/title-generator': {
       id: '/api/title-generator'
       path: '/api/title-generator'
@@ -512,6 +558,20 @@ declare module '@tanstack/react-router' {
       path: '/api/run-physics-test'
       fullPath: '/api/run-physics-test'
       preLoaderRoute: typeof ApiRunPhysicsTestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/run-maker2-stream': {
+      id: '/api/run-maker2-stream'
+      path: '/api/run-maker2-stream'
+      fullPath: '/api/run-maker2-stream'
+      preLoaderRoute: typeof ApiRunMaker2StreamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/run-maker2-glb': {
+      id: '/api/run-maker2-glb'
+      path: '/api/run-maker2-glb'
+      fullPath: '/api/run-maker2-glb'
+      preLoaderRoute: typeof ApiRunMaker2GlbRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/run-maker2': {
@@ -714,8 +774,11 @@ const rootRouteChildren: RootRouteChildren = {
   ApiParametricChatRoute: ApiParametricChatRoute,
   ApiPromptGeneratorRoute: ApiPromptGeneratorRoute,
   ApiRunMaker2Route: ApiRunMaker2Route,
+  ApiRunMaker2GlbRoute: ApiRunMaker2GlbRoute,
+  ApiRunMaker2StreamRoute: ApiRunMaker2StreamRoute,
   ApiRunPhysicsTestRoute: ApiRunPhysicsTestRoute,
   ApiTitleGeneratorRoute: ApiTitleGeneratorRoute,
+  Maker2RunIdRoute: Maker2RunIdRoute,
   ApiJacksonPollockSplatRoute: ApiJacksonPollockSplatRoute,
 }
 export const routeTree = rootRouteImport
