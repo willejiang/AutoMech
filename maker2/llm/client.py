@@ -271,8 +271,10 @@ class LLMClient:
         belong in providers.py ``default_params`` and are user-editable
         via the Model Parameters table in Settings.
         """
-        if self.provider_name == "openai" and (self.model or "").lower().startswith("gpt-5"):
-            # Official OpenAI Chat Completions: gpt-5.x rejects max_tokens and non-default temperature.
+        # gpt-5.x rejects max_tokens + non-default temperature (Official OpenAI
+        # Chat Completions). Trigger on the MODEL, not just provider_name="openai"
+        # — the local_gateway forwards gpt-5.x to OpenAI and enforces the same.
+        if (self.model or "").lower().startswith("gpt-5"):
             body.pop("temperature", None)
             if "max_tokens" in body:
                 body["max_completion_tokens"] = body.pop("max_tokens")

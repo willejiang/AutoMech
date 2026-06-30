@@ -70,13 +70,12 @@ def build_all(model: KinematicModel, ctx: RunContext, settings,
                 for l in model.links]
 
     scad_path = Path(ctx.run_dir) / "model.scad"
-    # The worker generates a whole multi-module .scad in one shot — opus-4.8 via
-    # the local proxy hangs/empties on that heavy a request, so default the worker
-    # to a faster model (gpt-5.4 did equivalent generation in ~17s). Override with
-    # MAKER2_WORKER_MODEL; the manager keeps its own (focused) model.
+    # Worker model: defaults to the manager's model (claude-opus-4.8). Override
+    # with MAKER2_WORKER_MODEL if a faster model is wanted for the heavy
+    # whole-model generation.
     import copy
     wsettings = copy.copy(settings)
-    wsettings.model = os.environ.get("MAKER2_WORKER_MODEL", "gpt-5.4")
+    wsettings.model = os.environ.get("MAKER2_WORKER_MODEL", settings.model)
     client = wsettings.worker_client()
     log_fn(f"[worker] model = {wsettings.model}")
     conv = Conversation()
