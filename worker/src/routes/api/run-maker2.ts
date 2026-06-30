@@ -10,7 +10,7 @@ import { resolve } from 'node:path';
 // the worker dev server runs from worker/, so cwd is one level up.
 const REPO_ROOT = resolve(process.cwd(), '..');
 
-type Body = { prompt?: string; model?: string; physics?: boolean };
+type Body = { prompt?: string; model?: string; physics?: boolean; maxIters?: number };
 
 export const Route = createFileRoute('/api/run-maker2')({
   server: {
@@ -24,6 +24,8 @@ export const Route = createFileRoute('/api/run-maker2')({
         const args = ['-m', 'maker2.run', body.prompt, '--json', '--allow-partial'];
         if (body.model) args.push('--model', body.model);
         if (body.physics) args.push('--physics');
+        if (body.maxIters && body.maxIters > 0)
+          args.push('--max-iters', String(body.maxIters));
 
         const result = await new Promise((res) => {
           const p = spawn('python3', args, {

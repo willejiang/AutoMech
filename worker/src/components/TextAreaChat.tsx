@@ -15,6 +15,7 @@ import {
   CircleX,
   Wand2,
   Box,
+  Cog,
   X,
 } from 'lucide-react';
 import {
@@ -80,6 +81,13 @@ interface TextAreaChatProps {
   showPromptGenerator?: boolean;
   showFullLabels?: boolean; // Controls whether to show full text labels on buttons
   onTypeChange?: (type: 'parametric' | 'creative') => void;
+  // Articulated (maker2) mode: a toggle next to the model picker. When on,
+  // submit runs maker2 via onArticulated instead of the normal cadam chat.
+  articulated?: boolean;
+  setArticulated?: (v: boolean) => void;
+  maxIters?: number | null;
+  setMaxIters?: (v: number | null) => void;
+  onArticulated?: (prompt: string, maxIters: number | null) => void;
   conversation: {
     id: string;
     user_id: string;
@@ -472,6 +480,11 @@ function TextAreaChat({
   showPromptGenerator = false,
   showFullLabels = false,
   onTypeChange,
+  articulated = false,
+  setArticulated,
+  maxIters = null,
+  setMaxIters,
+  onArticulated,
   conversation,
 }: TextAreaChatProps) {
   const [isFocused, setIsFocused] = useState(false);
@@ -736,6 +749,17 @@ function TextAreaChat({
     if (hasNoInput || isLoading || hasUploadingImages) {
       return;
     }
+
+    // Articulated (maker2) mode: bypass the cadam chat flow entirely. Run maker2
+    // on the plain prompt text; the parent (PromptView) shows the verdict.
+    if (articulated && onArticulated) {
+      const prompt = input.trim();
+      if (!prompt) return;
+      onArticulated(prompt, maxIters);
+      setInput('');
+      return;
+    }
+
     const text = input.trim();
     const parts: AppUIMessage['parts'] = [];
 
@@ -1545,7 +1569,17 @@ function TextAreaChat({
               onBlur={() => setIsFocused(false)}
               onFocus={() => setIsFocused(true)}
               onChange={(e) => {
-                setInput(e.target.value);
+                let v = e.target.value;
+                // Client-side slash: `/iters N` sets the maker2 refine cap and
+                // is stripped from the prompt text (live, as you type).
+                if (setMaxIters) {
+                  const m = v.match(/(?:^|\s)\/iters\s+(\d+)/i);
+                  if (m) {
+                    setMaxIters(parseInt(m[1], 10));
+                    v = v.replace(/(?:^|\s)\/iters\s+\d+/i, '').replace(/^\s+/, '');
+                  }
+                }
+                setInput(v);
               }}
               placeholder={placeholderAnim}
               className="hide-scrollbar z-40 block h-auto min-h-10 w-full resize-none overflow-hidden whitespace-pre-line break-words border-none bg-adam-neutral-800 bg-transparent px-3 py-2 text-base leading-6 text-adam-text-primary outline-none transition-all duration-500 placeholder:text-adam-text-secondary placeholder:opacity-[var(--placeholder-opacity)] placeholder:transition-all placeholder:duration-300 placeholder:ease-in-out hover:placeholder:blur-[0.2px] focus:border-0 focus:shadow-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 dark:text-gray-200 sm:px-4 sm:text-sm"
@@ -1652,6 +1686,55 @@ function TextAreaChat({
                     : 'Switch to Parametric mode'}
                 </TooltipContent>
               </Tooltip>
+            )}
+
+            {/* Articulated (maker2) mode toggle — sits next to the type toggle.
+                When on, submit runs maker2 (manager -> URDF -> worker -> judge
+                -> physics) instead of a cadam chat. */}
+            {setArticulated && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      'flex h-8 items-center gap-1.5 rounded-lg border border-[#2a2a2a] bg-adam-background-2 px-2 text-sm transition-colors',
+                      articulated
+                        ? 'border-adam-blue/50 bg-adam-blue/10 text-adam-blue'
+                        : 'text-adam-text-secondary hover:bg-adam-bg-secondary-dark',
+                    )}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setArticulated(!articulated);
+                    }}
+                  >
+                    <Cog className="h-4 w-4" />
+                    <span className="hidden text-xs lg:inline">Articulated</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {articulated
+                    ? 'Articulated mode ON — send builds a URDF via maker2'
+                    : 'Switch to Articulated (maker2) mode'}
+                </TooltipContent>
+              </Tooltip>
+            )}
+
+            {/* maker2 refine-cap chip, set live via the `/iters N` slash. */}
+            {articulated && maxIters !== null && (
+              <div className="flex h-8 items-center gap-1 rounded-lg border border-adam-blue/50 bg-adam-blue/10 px-2 text-xs text-adam-blue">
+                <span>max iters: {maxIters}</span>
+                {setMaxIters && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setMaxIters(null);
+                    }}
+                    className="hover:text-adam-text-primary"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                )}
+              </div>
             )}
 
             {/* Quads vs Polys toggle button - show for standard and ultra models */}

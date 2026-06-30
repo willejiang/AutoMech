@@ -67,24 +67,27 @@ export function PromptView() {
   const [mesh, setMesh] = useState<MessageItem | null>(null);
 
   // maker2: build an ARTICULATED URDF from a prompt (manager -> SCAD worker ->
-  // URDF -> appearance judge -> physics). Available on the fresh page; reads the
-  // selected `model`. Has its own prompt field since the chat textarea's text
-  // isn't lifted to this view.
+  // URDF -> appearance judge -> physics). Reachable two ways: the dedicated
+  // block below, and the "Articulated" toggle in the prompt bar (which calls
+  // runMaker2 via onArticulated). Reads the selected `model`.
   const [m2Prompt, setM2Prompt] = useState('');
   const [m2Running, setM2Running] = useState(false);
+  const [articulated, setArticulated] = useState(false);
+  const [maxIters, setMaxIters] = useState<number | null>(null);
   const [m2Result, setM2Result] = useState<{
-    ok: boolean; links?: number; movable_joints?: number; built?: number; error?: string;
+    ok: boolean; links?: number; movable_joints?: number; built?: number;
+    iterations?: number; error?: string;
     judge?: { passed: boolean | null; reasons: string } | null;
     physics?: { passed: boolean | null; summary: string } | null;
   } | null>(null);
 
-  const handleMaker2 = async () => {
-    if (!m2Prompt.trim()) return;
+  const runMaker2 = async (prompt: string, iters: number | null) => {
+    if (!prompt.trim()) return;
     setM2Running(true); setM2Result(null);
     try {
       const v = await apiJson('run-maker2', {
         method: 'POST',
-        body: JSON.stringify({ prompt: m2Prompt, model, physics: true }),
+        body: JSON.stringify({ prompt, model, physics: true, maxIters: iters ?? 2 }),
       });
       setM2Result(v as typeof m2Result);
     } catch (e) {
@@ -93,6 +96,8 @@ export function PromptView() {
       setM2Running(false);
     }
   };
+
+  const handleMaker2 = () => runMaker2(m2Prompt, maxIters);
 
   const [draftConversationId, setDraftConversationId] = useState(() =>
     crypto.randomUUID(),
@@ -329,6 +334,11 @@ export function PromptView() {
                   showPromptGenerator={true}
                   showFullLabels={true}
                   onTypeChange={handleTypeChange}
+                  articulated={articulated}
+                  setArticulated={setArticulated}
+                  maxIters={maxIters}
+                  setMaxIters={setMaxIters}
+                  onArticulated={(prompt, iters) => void runMaker2(prompt, iters)}
                 />
               </SelectedItemsContext.Provider>
               {/* maker2: build an ARTICULATED URDF from a prompt, right on the
@@ -357,7 +367,7 @@ export function PromptView() {
                     {m2Result.ok ? (
                       <>
                         <div className="font-semibold">
-                          Built {m2Result.built}/{m2Result.links} links · {m2Result.movable_joints} movable joints
+                          Built {m2Result.built}/{m2Result.links} links · {m2Result.movable_joints} movable joints{m2Result.iterations ? ` · ${m2Result.iterations} iteration${m2Result.iterations > 1 ? 's' : ''}` : ''}
                         </div>
                         {m2Result.judge && (
                           <div className="mt-1">
