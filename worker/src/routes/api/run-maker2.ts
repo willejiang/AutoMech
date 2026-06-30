@@ -26,7 +26,7 @@ export const Route = createFileRoute('/api/run-maker2')({
         if (body.physics) args.push('--physics');
 
         const result = await new Promise((res) => {
-          const p = spawn('python', args, { cwd: REPO_ROOT });
+          const p = spawn('python3', args, { cwd: REPO_ROOT });
           let out = '';
           p.stdout.on('data', (d) => (out += d));
           p.stderr.on('data', (d) => (out += d));
@@ -41,7 +41,9 @@ export const Route = createFileRoute('/api/run-maker2')({
                 /* fall through to error */
               }
             }
-            res({ ok: false, error: 'maker2 produced no parseable result',
+            res({ ok: false,
+                  error: 'maker2 produced no parseable result: '
+                    + (out.trim().slice(-400) || '(no output — python3 not found?)'),
                   log: out.slice(-2000) });
           });
           p.on('error', (e) =>
