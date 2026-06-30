@@ -19,7 +19,7 @@ import posthog from 'posthog-js';
 import * as Sentry from '@sentry/react';
 import { useProfile } from '@/services/profileService';
 import { useLayoutContext } from '@/contexts/LayoutContext';
-import { apiUrl } from '@/services/api';
+import { apiUrl, apiJson } from '@/services/api';
 import {
   DefaultChatTransport,
   lastAssistantMessageIsCompleteWithToolCalls,
@@ -65,6 +65,34 @@ export function PromptView() {
   const isMobile = useIsMobile();
   const [images, setImages] = useState<MessageItem[]>([]);
   const [mesh, setMesh] = useState<MessageItem | null>(null);
+
+  // maker2: build an ARTICULATED URDF from a prompt (manager -> SCAD worker ->
+  // URDF -> appearance judge -> physics). Available on the fresh page; reads the
+  // selected `model`. Has its own prompt field since the chat textarea's text
+  // isn't lifted to this view.
+  const [m2Prompt, setM2Prompt] = useState('');
+  const [m2Running, setM2Running] = useState(false);
+  const [m2Result, setM2Result] = useState<{
+    ok: boolean; links?: number; movable_joints?: number; built?: number; error?: string;
+    judge?: { passed: boolean | null; reasons: string } | null;
+    physics?: { passed: boolean | null; summary: string } | null;
+  } | null>(null);
+
+  const handleMaker2 = async () => {
+    if (!m2Prompt.trim()) return;
+    setM2Running(true); setM2Result(null);
+    try {
+      const v = await apiJson('run-maker2', {
+        method: 'POST',
+        body: JSON.stringify({ prompt: m2Prompt, model, physics: true }),
+      });
+      setM2Result(v as typeof m2Result);
+    } catch (e) {
+      toast({ title: 'maker2 build failed', description: String(e), variant: 'destructive' });
+    } finally {
+      setM2Running(false);
+    }
+  };
 
   const [draftConversationId, setDraftConversationId] = useState(() =>
     crypto.randomUUID(),
@@ -303,6 +331,53 @@ export function PromptView() {
                   onTypeChange={handleTypeChange}
                 />
               </SelectedItemsContext.Provider>
+              {/* maker2: build an ARTICULATED URDF from a prompt, right on the
+                  fresh page. Uses the selected model. No urdf_author. */}
+              <div className="mt-3 space-y-2 rounded-md border border-adam-neutral-800 p-3 text-left">
+                <div className="text-sm font-semibold text-adam-text-primary">
+                  Build articulated (maker2){model ? ` · ${model}` : ''}
+                </div>
+                <textarea
+                  value={m2Prompt}
+                  onChange={(e) => setM2Prompt(e.target.value)}
+                  placeholder="Describe an articulated product, e.g. a 2-DOF pan-tilt camera mount"
+                  rows={2}
+                  className="w-full resize-none rounded border border-adam-neutral-700 bg-adam-neutral-900/40 p-2 text-sm text-adam-text-primary placeholder:text-adam-neutral-500"
+                />
+                <Button
+                  variant="outline"
+                  onClick={handleMaker2}
+                  disabled={!m2Prompt.trim() || m2Running}
+                  className="w-full justify-center border-adam-neutral-700 bg-adam-neutral-900/40 text-adam-text-primary hover:bg-adam-neutral-800"
+                >
+                  {m2Running ? 'Building articulated URDF (several min)…' : 'Build articulated + test'}
+                </Button>
+                {m2Result && (
+                  <div className={`rounded-md border p-3 text-xs ${m2Result.ok ? 'border-green-700 bg-green-900/20' : 'border-red-700 bg-red-900/20'} text-adam-text-primary`}>
+                    {m2Result.ok ? (
+                      <>
+                        <div className="font-semibold">
+                          Built {m2Result.built}/{m2Result.links} links · {m2Result.movable_joints} movable joints
+                        </div>
+                        {m2Result.judge && (
+                          <div className="mt-1">
+                            <span className="font-semibold">{m2Result.judge.passed === false ? 'Judge: FAIL' : 'Judge: PASS'}</span>
+                            <span className="text-adam-neutral-300"> — {m2Result.judge.reasons}</span>
+                          </div>
+                        )}
+                        {m2Result.physics && (
+                          <div className="mt-1">
+                            <span className="font-semibold">{m2Result.physics.passed ? 'Physics: PASS' : 'Physics: FAIL'}</span>
+                            <span className="text-adam-neutral-300"> — {m2Result.physics.summary}</span>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="font-semibold">maker2 failed: {m2Result.error}</div>
+                    )}
+                  </div>
+                )}
+              </div>
               <div className="relative">
                 {isLoading && (
                   <div className="absolute left-0 right-0 top-0">
