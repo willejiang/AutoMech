@@ -34,6 +34,50 @@ _MOVABLE = {"revolute", "prismatic", "continuous"}
 _DRIVER_HINT = re.compile(r"crank|handle|input|winder|drive|knob", re.I)
 
 
+def _encode_mp4(frames_dir: str, out_path: str, fps: int = 12) -> str | None:
+    """Stitch a test's rgb_*.png frames into an MP4 via imageio-ffmpeg's bundled
+    ffmpeg (no system ffmpeg needed). Returns out_path on success, else None — a
+    missing binary or zero frames just means "no video" (the breakdown still shows).
+    Mirrors evaluator/make_mp4.sh's args."""
+    import glob
+    import subprocess
+    frames = sorted(glob.glob(os.path.join(frames_dir, "rgb_*.png")))
+    if not frames:
+        return None
+    try:
+        import imageio_ffmpeg
+        ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception as e:
+        print(f"[physics] no ffmpeg ({e}); skipping video")
+        return None
+    pattern = os.path.join(frames_dir, "rgb_*.png").replace("\\", "/")
+    # +faststart moves the moov atom to the FRONT so browsers can start playback
+    # without downloading the whole file (default libx264 puts moov at the end,
+    # which makes an HTML5 <video> refuse to play).
+    cmd = [ffmpeg, "-y", "-framerate", str(fps), "-pattern_type", "glob",
+           "-i", pattern, "-c:v", "libx264", "-pix_fmt", "yuv420p",
+           "-movflags", "+faststart",
+           "-vf", "pad=ceil(iw/2)*2:ceil(ih/2)*2", out_path]
+    try:
+        subprocess.run(cmd, check=True, capture_output=True, timeout=120)
+    except Exception as e:
+        # Windows ffmpeg glob support varies; fall back to a frame-list concat.
+        try:
+            lst = os.path.join(frames_dir, "_frames.txt")
+            with open(lst, "w") as f:
+                for fr in frames:
+                    f.write(f"file '{os.path.abspath(fr)}'\n")
+            cmd2 = [ffmpeg, "-y", "-r", str(fps), "-f", "concat", "-safe", "0",
+                    "-i", lst, "-c:v", "libx264", "-pix_fmt", "yuv420p",
+                    "-movflags", "+faststart",
+                    "-vf", "pad=ceil(iw/2)*2:ceil(ih/2)*2", out_path]
+            subprocess.run(cmd2, check=True, capture_output=True, timeout=120)
+        except Exception as e2:
+            print(f"[physics] mp4 encode failed ({e2}); skipping video")
+            return None
+    return out_path if os.path.exists(out_path) and os.path.getsize(out_path) > 0 else None
+
+
 def _static_spec() -> dict:
     """The legacy stability spec: hold, settle, check it doesn't sink/topple/drift."""
     return {
@@ -171,12 +215,22 @@ def run_physics(urdf_path: str, task: str, run_dir: str) -> dict:
 
     # No model or no plan -> the legacy single static stability test.
     if not tests:
-        out = str(Path(run_dir) / "physics")
+        out = str(Path(run_dir) / "physics" / "test_0")
         res = pyb.run(urdf_path, _static_spec(), out, task or "settle stably")
         m = res.get("metrics", {})
+        video = None
+        if res.get("frames_dir"):
+            mp4 = _encode_mp4(res["frames_dir"], os.path.join(out, "model.mp4"))
+            if mp4:
+                video = "physics/test_0/model.mp4"
+        entry = {"name": "stability", "strategy": "static_stability",
+                 "verdict": m.get("verdict"), "metrics": m,
+                 "summary": _summarize({"name": "stability"}, m),
+                 "frames_dir": res.get("frames_dir"), "video": video}
         return {"passed": m.get("verdict") == "PASS", "verdict": m.get("verdict", "FAIL"),
-                "summary": _summarize({"name": "stability"}, m),
-                "metrics": m, "frames_dir": res.get("frames_dir")}
+                "summary": entry["summary"], "metrics": m,
+                "frames_dir": res.get("frames_dir"), "video": video,
+                "tests": [entry]}
 
     per_test = []
     primary = None                     # the machinery test if any, else the last
@@ -199,9 +253,16 @@ def run_physics(urdf_path: str, task: str, run_dir: str) -> dict:
         out = str(Path(run_dir) / "physics" / f"test_{i}")
         res = pyb.run(urdf_path, spec, out, f"{task} :: {test.get('name','')}")
         m = res.get("metrics", {})
+        video = None
+        if res.get("frames_dir"):
+            mp4 = _encode_mp4(res["frames_dir"], os.path.join(out, "model.mp4"))
+            if mp4:
+                video = f"physics/test_{i}/model.mp4"
+                print(f"[physics] test {i} video -> {video}")
         entry = {"name": test.get("name"), "strategy": test.get("strategy"),
                  "verdict": m.get("verdict"), "metrics": m,
-                 "frames_dir": res.get("frames_dir"), "summary": _summarize(test, m)}
+                 "frames_dir": res.get("frames_dir"), "summary": _summarize(test, m),
+                 "video": video}
         per_test.append(entry)
         if m.get("test_kind") == "driven_mechanism":
             primary = entry
@@ -214,6 +275,7 @@ def run_physics(urdf_path: str, task: str, run_dir: str) -> dict:
     return {"passed": passed, "verdict": verdict, "summary": summary,
             "metrics": primary.get("metrics", {}),
             "frames_dir": primary.get("frames_dir"),
+            "video": primary.get("video"),
             "tests": per_test}
 
 

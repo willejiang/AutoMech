@@ -23,6 +23,27 @@ def _joint_angle(rid, idx):
     return p.getJointState(rid, idx)[0]
 
 
+def _frame_camera(rid):
+    """Auto-frame the whole model: target its AABB center, back off proportional to
+    its size so a tiny mechanism (a 40 mm watch) fills the frame instead of being a
+    speck at a fixed 1.2 m. Returns (target[3], distance)."""
+    lo = np.array([1e9, 1e9, 1e9]); hi = -lo
+    n = p.getNumJoints(rid)
+    for link in range(-1, n):
+        try:
+            amin, amax = p.getAABB(rid, link)
+            lo = np.minimum(lo, amin); hi = np.maximum(hi, amax)
+        except Exception:
+            pass
+    if not np.all(np.isfinite(lo)):
+        return [0, 0, 0.1], 1.2
+    center = ((lo + hi) / 2.0).tolist()
+    extent = float(np.linalg.norm(hi - lo))
+    # ~0.9x the diagonal fills a 60deg FOV without much dead space; clamp to sane.
+    dist = max(0.08, min(4.0, extent * 0.9))
+    return center, dist
+
+
 def _run_driven(rid, name_to_idx, spec, drive, frames, dur):
     """Actuate an INPUT joint and watch whether downstream joints move — the real
     "does the mechanism transmit" test. Returns (metrics_patch, n_frames)."""
@@ -49,6 +70,7 @@ def _run_driven(rid, name_to_idx, spec, drive, frames, dur):
     cap_every = max(1, steps // 60)
     nf = 0
     base0 = np.array(p.getBasePositionAndOrientation(rid)[0])
+    cam_target, cam_dist = _frame_camera(rid)   # frame to the mechanism's size
 
     for s in range(steps):
         if in_idx is not None:
@@ -77,8 +99,8 @@ def _run_driven(rid, name_to_idx, spec, drive, frames, dur):
 
         if s % cap_every == 0:
             w, h, px, _, _ = p.getCameraImage(640, 480,
-                viewMatrix=p.computeViewMatrixFromYawPitchRoll([0, 0, 0.1], 1.2, 40, -25, 0, 2),
-                projectionMatrix=p.computeProjectionMatrixFOV(60, 1.33, 0.05, 40))
+                viewMatrix=p.computeViewMatrixFromYawPitchRoll(cam_target, cam_dist, 45, -45, 0, 2),
+                projectionMatrix=p.computeProjectionMatrixFOV(60, 1.33, 0.02, 40))
             rgb = np.reshape(np.array(px, dtype=np.uint8), (h, w, 4))[..., :3]
             Image.fromarray(rgb).save(frames / f"rgb_{nf:04d}.png")
             nf += 1

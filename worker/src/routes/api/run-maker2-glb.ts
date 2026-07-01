@@ -50,6 +50,49 @@ export const Route = createFileRoute('/api/run-maker2-glb')({
           });
         }
 
+        // VIDEO branch: a physics test's recorded MP4, with HTTP Range so the
+        // <video> element can seek/scrub. ?test=<i> picks the test (default 0).
+        // Read into a Buffer and slice (the clips are tiny, ~30KB): a Node stream
+        // cast to a web ReadableStream doesn't play reliably in the browser.
+        if (url.searchParams.get('file') === 'video') {
+          const t = Number(url.searchParams.get('test') ?? '0');
+          const idx = Number.isFinite(t) && t >= 0 ? Math.floor(t) : 0;
+          const mp4 = join(runDir, 'physics', `test_${idx}`, 'model.mp4');
+          if (!existsSync(mp4)) return json({ error: 'no recording' }, 404);
+          const buf = readFileSync(mp4);
+          const size = buf.length;
+          const range = request.headers.get('range');
+          const baseHeaders: Record<string, string> = {
+            ...corsHeaders,
+            'Content-Type': 'video/mp4',
+            'Accept-Ranges': 'bytes',
+            'Cache-Control': 'no-cache',
+          };
+          if (range) {
+            const m = /bytes=(\d*)-(\d*)/.exec(range);
+            const start = m && m[1] ? parseInt(m[1], 10) : 0;
+            const end = m && m[2] ? parseInt(m[2], 10) : size - 1;
+            if (start >= size || end >= size || start > end) {
+              return new Response(null, {
+                status: 416,
+                headers: { ...baseHeaders, 'Content-Range': `bytes */${size}` },
+              });
+            }
+            const slice = buf.subarray(start, end + 1);
+            return new Response(slice, {
+              status: 206,
+              headers: {
+                ...baseHeaders,
+                'Content-Range': `bytes ${start}-${end}/${size}`,
+                'Content-Length': String(slice.length),
+              },
+            });
+          }
+          return new Response(buf, {
+            headers: { ...baseHeaders, 'Content-Length': String(size) },
+          });
+        }
+
         // GLB branch: assemble the URDF -> binary glTF via the maker2 CLI.
         const urdfPath = join(runDir, 'model.urdf');
         if (!existsSync(urdfPath)) return json({ error: 'no model.urdf' }, 404);

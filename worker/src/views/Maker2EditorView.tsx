@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { StreamingCodeBlock } from '@/components/chat/StreamingCodeBlock';
 import { Maker2ModelCanvas } from '@/components/viewer/Maker2ModelCanvas';
+import { PhysicsPanel, type PhysicsResult } from '@/components/viewer/PhysicsPanel';
 import { apiUrl } from '@/services/api';
 import { cn } from '@/lib/utils';
 
@@ -36,7 +37,7 @@ type Maker2Result = {
   built?: number;
   iterations?: number;
   judge?: { passed: boolean | null; reasons?: string } | null;
-  physics?: { passed: boolean | null; summary?: string } | null;
+  physics?: PhysicsResult | null;
   error?: string;
 };
 
@@ -225,6 +226,11 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
     || lastTurn?.result?.error
     || (lastTurn?.result ? 'The manager or worker did not produce a model.' : undefined);
 
+  // The physics to show: the latest turn that produced a physics result.
+  const physicsTurn = [...turns].reverse().find((t) => t.result?.physics);
+  const physics = physicsTurn?.result?.physics ?? null;
+  const physicsRunDir = physicsTurn?.result?.render_dir || physicsTurn?.runDir || '';
+
   return (
     <div className="flex h-full min-h-full w-full flex-col bg-adam-bg-secondary-dark text-adam-text-primary">
       {/* Header */}
@@ -286,7 +292,7 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
           </div>
         </div>
 
-        {/* RIGHT: orbitable colored solid (latest good render) */}
+        {/* CENTER: orbitable colored solid (latest good render) */}
         <div className="min-w-0 flex-1 bg-adam-neutral-950/30">
           <Maker2ModelCanvas
             glbBlob={latestWithGlb?.glbBlob}
@@ -294,6 +300,17 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
             failedReason={canvasFailed ? canvasFailReason : undefined}
           />
         </div>
+
+        {/* RIGHT: physics evaluation (breakdown + recorded video), when present */}
+        {physics && (
+          <div className="w-[340px] shrink-0 border-l border-adam-neutral-800 bg-adam-bg-secondary-dark">
+            <PhysicsPanel
+              physics={physics}
+              runDir={physicsRunDir}
+              running={anyStreaming}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
