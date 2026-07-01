@@ -124,6 +124,7 @@ def _joint_from_dict(d: dict, idx: int) -> JointSpec:
         upper=_opt_float(d.get("upper")),
         effort=float(d.get("effort", 10.0)),
         velocity=float(d.get("velocity", 1.0)),
+        driver=bool(d.get("driver", False)),
     )
 
 
@@ -302,6 +303,7 @@ def model_to_dict(model: KinematicModel) -> dict:
                 "upper": j.upper,
                 "effort": j.effort,
                 "velocity": j.velocity,
+                "driver": j.driver,
             }
             for j in model.joints
         ],

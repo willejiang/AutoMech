@@ -70,6 +70,25 @@ worker-level problem: the structure should be redesigned to match a policy-ready
 morphology, OR kept as-is and trained from scratch (slow). Note this in reasoning so
 the loop can ask the user redesign-vs-keep.
 
+MACHINERY (gearbox / worm drive / gear train / crank-slider / clock / cryptex):
+When the object is a MECHANISM whose point is transmitting motion, do NOT test it by
+standing still — that proves nothing. Instead:
+- Set "fixed_base": true (the mechanism is bench-mounted; it must not just topple).
+- Fill the "drive" block: choose "input_joint" = the crank/input the user turns
+  (prefer a joint the model marked as the driver; else the joint on a link named
+  crank/handle/input/winder; else the movable joint nearest the root). Use
+  "mode":"velocity" with a modest "target_velocity" (~3-6 rad/s) for a rotating
+  input, or "position_sweep" over the joint's range for a lever. Set
+  "self_collision": true so gears/teeth actually contact and mesh.
+- List "watch_joints" = the DOWNSTREAM movable joints that SHOULD move if the
+  transmission works (the gears/shafts the input drives). Set "min_watched_travel"
+  to a small angle (~0.05-0.2 rad) that counts as "it moved".
+- The mechanism PASSES when driving the input makes >=1 watched joint move without
+  the assembly jamming or exploding. Leave base_height small so it sits on the
+  ground; joint_pose can be empty (the drive block controls motion).
+For a NON-machine (a bracket, a stool, a statue) leave "drive": null and use the
+static support/CoM stability reasoning above.
+
 Output ONLY the JSON spec matching the provided schema."""
 
 
@@ -106,6 +125,30 @@ SPEC_SCHEMA = {
                         "damping": {"type": "number"}},
                     "required": ["mode", "stiffness", "damping"]},
                 "duration_s": {"type": "number"},
+                "fixed_base": {"type": "boolean",
+                    "description": "bench-mount the object (true for a machine/mechanism)"},
+                "drive": {
+                    "type": ["object", "null"],
+                    "additionalProperties": False,
+                    "description": "for a MACHINE: actuate an input joint and watch "
+                                   "transmission. null for a static-stability test.",
+                    "properties": {
+                        "input_joint": {"type": "string",
+                            "description": "the joint to drive (crank/input). Real name."},
+                        "mode": {"type": "string", "enum": ["velocity", "position_sweep"]},
+                        "target_velocity": {"type": "number", "description": "rad/s for velocity mode"},
+                        "sweep": {"type": "array", "items": {"type": "number"},
+                            "description": "[lo, hi] rad for position_sweep mode"},
+                        "duration_s": {"type": "number"},
+                        "self_collision": {"type": "boolean",
+                            "description": "true so gears/teeth actually contact & mesh"},
+                        "watch_joints": {"type": "array", "items": {"type": "string"},
+                            "description": "downstream joints that should move if it transmits"},
+                        "min_watched_travel": {"type": "number",
+                            "description": "rad a watched joint must move to count as driven"}},
+                    "required": ["input_joint", "mode", "target_velocity", "sweep",
+                                 "duration_s", "self_collision", "watch_joints",
+                                 "min_watched_travel"]},
                 "pass_criteria": {
                     "type": "object", "additionalProperties": False,
                     "properties": {
@@ -116,25 +159,31 @@ SPEC_SCHEMA = {
             },
             "required": ["reasoning", "base_orientation_euler", "base_height",
                          "joint_pose", "high_friction_links", "control",
-                         "duration_s", "pass_criteria"],
+                         "duration_s", "fixed_base", "drive", "pass_criteria"],
         },
     },
 }
 
 
-def _client():
+def _client(base_url=None, api_key=None):
     from openai import OpenAI
-    return OpenAI(base_url=os.environ["AZURE_OPENAI_ENDPOINT"].rstrip("/"),
-                  api_key=os.environ["AZURE_OPENAI_API_KEY"])
+    return OpenAI(base_url=(base_url or os.environ["AZURE_OPENAI_ENDPOINT"]).rstrip("/"),
+                  api_key=api_key or os.environ["AZURE_OPENAI_API_KEY"])
 
 
-def _call(messages):
-    c = _client()
+def _call(messages, base_url=None, api_key=None, model=None):
+    c = _client(base_url, api_key)
     r = c.chat.completions.create(
-        model=model_id(),
+        model=model or model_id(),
         messages=messages, response_format=SPEC_SCHEMA,
         max_completion_tokens=2000)
-    return json.loads(r.choices[0].message.content)
+    txt = (r.choices[0].message.content or "").strip()
+    if not txt.lstrip().startswith("{"):        # gateway ignored the schema -> strip prose
+        import re
+        m = re.search(r"\{.*\}", txt, re.DOTALL)
+        if m:
+            txt = m.group(0)
+    return json.loads(txt)
 
 
 def _robot_block(robot_info):
@@ -143,24 +192,24 @@ def _robot_block(robot_info):
             f"LINK NAMES ({len(robot_info.get('links',[]))}): {robot_info.get('links',[])}\n")
 
 
-def design(task, robot_info, test=None):
+def design(task, robot_info, test=None, *, base_url=None, api_key=None, model=None):
     sub = f"\n\nTHIS TEST: {test.get('name')} — {test.get('goal')}" if test else ""
     msgs = [{"role": "system", "content": SYSTEM},
             {"role": "user", "content":
                 f"TASK: {task}{sub}\n\n{_robot_block(robot_info)}\n"
                 f"Design the scenario spec to test this. Use ONLY the real joint/link "
                 f"names above."}]
-    return _call(msgs)
+    return _call(msgs, base_url, api_key, model)
 
 
-def revise(task, robot_info, prev_spec, feedback):
+def revise(task, robot_info, prev_spec, feedback, *, base_url=None, api_key=None, model=None):
     msgs = [{"role": "system", "content": SYSTEM},
             {"role": "user", "content":
                 f"TASK: {task}\n\n{_robot_block(robot_info)}\n"
                 f"PREVIOUS SPEC:\n{json.dumps(prev_spec, indent=2)}\n\n"
                 f"SIMULATION FEEDBACK (what happened):\n{feedback}\n\n"
                 f"Diagnose the physical failure and output a REVISED spec that fixes it."}]
-    return _call(msgs)
+    return _call(msgs, base_url, api_key, model)
 
 
 if __name__ == "__main__":

@@ -36,7 +36,10 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
       "lower": <number>,            // required for revolute/prismatic (rad or m)
       "upper": <number>,            // required for revolute/prismatic
       "effort": <number>,           // optional, default 10
-      "velocity": <number>          // optional, default 1
+      "velocity": <number>,         // optional, default 1
+      "driver": <true|false>        // optional: true on the ONE input joint a user
+                                    // drives (crank/handle) — the physics test
+                                    // actuates it. Omit/false for all other joints.
     }
   ]
 }
@@ -49,6 +52,9 @@ HARD RULES
 - Link and joint names are unique and URDF-safe (^[a-z][a-z0-9_]*$).
 - "fixed" joints omit axis/lower/upper. "revolute"/"prismatic" REQUIRE a
   non-zero axis and lower < upper. "continuous" needs an axis, no limits.
+- If the product is a MACHINE the user drives (a crank, winder, hand wheel, input
+  shaft), set "driver": true on the SINGLE input joint they turn. The physics test
+  drives that joint to check the mechanism transmits motion. At most one driver.
 
 UNITS / ORIGIN CONTRACT (critical — this is how blindly-built parts line up)
 - size_mm is in MILLIMETERS. Joint xyz_m is in METERS.

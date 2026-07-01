@@ -66,6 +66,9 @@ class JointSpec:
     upper: float | None = None
     effort: float = 10.0
     velocity: float = 1.0
+    driver: bool = False                            # the INPUT joint a user drives
+                                                     # (crank/handle); tags the joint
+                                                     # the physics test actuates
 
 
 @dataclass
