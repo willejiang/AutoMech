@@ -46,6 +46,74 @@ for the full architecture with diagrams.
 
 ---
 
+## maker2 — the URDF-first articulated pipeline (runs locally, no GPU)
+
+`maker2/` is a newer, self-contained path that builds **articulated** models
+(gearboxes, cranks, tourbillons, robots) and evaluates them on the **CPU** — no
+Isaac Sim, no GPU box. It is driven from a dedicated UI in the cadam web app
+(the **Articulated** toggle in the prompt bar → `/maker2/$id`).
+
+**Pipeline** (`python -m maker2.run "<prompt>" --json --physics`):
+
+```
+manager (LLM)      decompose the prompt into a URDF CONTRACT: links + joints,
+  │                per-link color, and the input `driver` joint. One JSON object.
+  ▼
+SCAD worker (LLM)  ONE cadam SCAD call → a module per link → per-link STL.
+  │                Geometry is filled to match the manager's URDF.
+  ▼
+URDF assembled     yourdfpy builds model.urdf; materials give each part a color.
+  │
+  ▼
+judge (VLM)        renders 6 offscreen views and judges the assembled model;
+  │                FAIL → suggestions feed the manager to re-decompose (refine loop).
+  ▼
+physics (PyBullet) category-aware: strategy_selector picks static_stability vs
+                   driven_mechanism; scenario_designer writes the sim spec;
+                   run_scenario_pybullet drives the input joint and checks the
+                   downstream joints transmit motion. Records an MP4 per test.
+```
+
+**Key files:**
+
+| Path | What |
+|------|------|
+| [`maker2/run.py`](maker2/run.py) | Driver + refine loop; writes `result.json`, `run.json`, per-thread `thread.json`. |
+| [`maker2/manager.py`](maker2/manager.py) · [`maker2/prompts/`](maker2/prompts/) | Prompt → `KinematicModel` (links/joints/color/driver); multi-turn refine. |
+| [`maker2/scad_worker.py`](maker2/scad_worker.py) · [`maker2/scad_render.py`](maker2/scad_render.py) | One SCAD call → per-link STL via the native OpenSCAD CLI. |
+| [`maker2/urdf_builder.py`](maker2/urdf_builder.py) · [`maker2/viz.py`](maker2/viz.py) | Assemble the URDF (with material colors); render the judge's 6 offscreen views. |
+| [`maker2/export_glb.py`](maker2/export_glb.py) | Assemble the URDF → one colored `.glb` for the orbitable canvas. |
+| [`maker2/physics.py`](maker2/physics.py) | Orchestrates `strategy_selector`→`scenario_designer`→`run_scenario_pybullet`; encodes a per-test MP4. |
+| [`maker2/config.py`](maker2/config.py) | Gateway/model settings; `base_url` reads `FREECAD_AI_BASE_URL` (defaults to the local `:8313` proxy). |
+
+**Physics: a real machine test, not a stand-still fool test.** For a mechanism,
+`run_scenario_pybullet.py` bench-mounts the model, drives the `driver` input joint,
+and measures whether the **downstream joints move** (transmission) — a solid brick
+no longer "passes" a gearbox test. `strategy_selector.py` (env-configurable client,
+defaults to the local gateway) picks the strategy + backend; `scenario_designer.py`
+writes the `drive` block. Each test's frames are stitched into an MP4
+(`imageio-ffmpeg`, `+faststart`) shown in the editor's physics panel.
+
+**Web UI** (in `worker/`): the **Articulated** toggle streams the pipeline stages
+live (SSE from `run-maker2.run`), renders the colored model in an orbitable canvas,
+and shows a **physics panel** beside it with the driven-test breakdown + the
+recorded MP4 (per-test Prev/Next). Runs persist as disk-backed **threads** and
+reopen from the sidebar for multi-turn refinement. Relevant routes:
+[`run-maker2-stream.ts`](worker/src/routes/api/run-maker2-stream.ts) (SSE),
+[`run-maker2-glb.ts`](worker/src/routes/api/run-maker2-glb.ts) (glb/scad/result/video),
+[`list-maker2-runs.ts`](worker/src/routes/api/list-maker2-runs.ts) +
+[`maker2-thread.ts`](worker/src/routes/api/maker2-thread.ts).
+
+**Run it locally:**
+```bash
+pip install -r evaluator/requirements.txt      # pybullet, imageio-ffmpeg, ...
+# an OpenAI-compatible gateway on :8313 (or set FREECAD_AI_BASE_URL) + OpenSCAD CLI
+python -m maker2.run "a hand-cranked gear reducer" --json --physics
+# or use the UI: cd worker && npm run dev → toggle "Articulated" in the prompt bar
+```
+
+---
+
 ## The three tiers (what runs where)
 
 This is the part that trips people up: there are **three execution locations**, not
@@ -107,8 +175,9 @@ mount** (`sim_result.json`), not a network call. Note the path rewrite: the host
 
 | Path | What |
 |------|------|
-| [`worker/`](worker/) | **Maker** — cadam text→OpenSCAD web app (Node/Vite/Supabase). |
-| [`evaluator/`](evaluator/) | **Evaluator** — Isaac Sim runners + `isaaclab/` scripts + the VLM judge. |
+| [`worker/`](worker/) | **Maker** — cadam text→OpenSCAD web app (Node/Vite/Supabase). Also hosts the **maker2** articulated-CAD UI (see below). |
+| [`maker2/`](maker2/) | **maker2** — URDF-first articulated pipeline: manager decomposes a prompt into links+joints, one cadam SCAD worker fills geometry, a VLM judges the assembled model, and PyBullet drives/evaluates it. |
+| [`evaluator/`](evaluator/) | **Evaluator** — Isaac Sim runners + `isaaclab/` scripts + the VLM judge. Also the **CPU PyBullet** runner (`run_scenario_pybullet.py`) + `strategy_selector`/`scenario_designer` that maker2 drives. |
 | [`orchestrator/`](orchestrator/) | **Loop** — ties maker → evaluator into one automation loop. |
 | [`DESIGN_LOOP.md`](DESIGN_LOOP.md) | Architecture of the two nested loops (diagrams). |
 | [`evaluator/ARCHITECTURE.md`](evaluator/ARCHITECTURE.md) | Evaluator file call-graph + the two entry paths. |

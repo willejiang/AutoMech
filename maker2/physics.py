@@ -132,10 +132,12 @@ def _infer_driver(model) -> str | None:
 
 
 def _gateway():
-    """maker2's 8313 gateway creds, for the selector/designer LLM calls."""
+    """maker2's gateway creds, for the selector/designer LLM calls. Reads the same
+    env-configurable Settings the rest of maker2 uses (FREECAD_AI_BASE_URL etc.),
+    defaulting to the local 8313 proxy."""
     try:
         from maker2.config import Settings
-        s = Settings()
+        s = Settings.load()
         return {"base_url": s.base_url, "api_key": s.api_key, "model": s.model}
     except Exception:
         return {"base_url": None, "api_key": None, "model": None}
