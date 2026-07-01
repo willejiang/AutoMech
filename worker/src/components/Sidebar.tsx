@@ -32,11 +32,31 @@ import { cn } from '@/lib/utils';
 import { Conversation, ConversationSettings } from '@shared/types';
 import { UserAvatar } from '@/components/chat/UserAvatar';
 import { useProfile } from '@/services/profileService';
+import { apiJson } from '@/services/api';
 
 interface SidebarProps {
   isSidebarOpen: boolean;
   setIsSidebarOpen: (open: boolean) => void;
 }
+
+// One maker2 conversation from /api/list-maker2-runs (a thread, or a legacy run).
+type Maker2Run = {
+  threadId: string;    // '' for legacy runs that predate threads
+  run_dir: string;
+  title: string;
+  prompt: string;
+  model: string;
+  maxIters: number;
+  created_at: string;
+  ok: boolean;
+  turns: number;
+  judgePassed: boolean | null;
+};
+
+// A unified sidebar row: either a Supabase chat or a disk-backed maker2 run.
+type SidebarItem =
+  | { kind: 'chat'; id: string; title: string; when: string }
+  | { kind: 'maker2'; id: string; title: string; when: string; run: Maker2Run };
 
 type SidebarPath = '/' | '/history' | '/subscription';
 
@@ -64,6 +84,37 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
       return data;
     },
   });
+
+  // maker2 (articulated) runs live on disk, not in Supabase. Pull them and show
+  // them in the SAME list as normal conversations; clicking one reopens the saved
+  // run read-only. See /api/list-maker2-runs.
+  const { data: maker2Runs } = useQuery<Maker2Run[]>({
+    queryKey: ['maker2-runs', 'recent'],
+    initialData: [],
+    queryFn: async () => {
+      const res = (await apiJson('list-maker2-runs')) as { runs?: Maker2Run[] };
+      return res.runs ?? [];
+    },
+  });
+
+  // Merge conversations + maker2 runs into one time-sorted list of sidebar items.
+  const sidebarItems: SidebarItem[] = [
+    ...(recentConversations ?? []).map((c): SidebarItem => ({
+      kind: 'chat',
+      id: c.id,
+      title: c.title,
+      when: c.updated_at ?? c.created_at ?? '',
+    })),
+    ...(maker2Runs ?? []).map((r): SidebarItem => ({
+      kind: 'maker2',
+      id: r.run_dir,
+      title: r.title || 'Articulated run',
+      when: r.created_at,
+      run: r,
+    })),
+  ]
+    .sort((a, b) => (b.when || '').localeCompare(a.when || ''))
+    .slice(0, 12);
 
   const handleSignOut = async () => {
     try {
@@ -195,7 +246,7 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
                 label: 'Creations',
                 href: '/history' as const,
                 description: 'View past creations',
-                submenu: recentConversations,
+                submenu: sidebarItems,
               },
             ].map(({ icon: Icon, label, href, description, submenu }) => (
               <div key={label} className="space-y-1">
@@ -228,33 +279,60 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
                 </ConditionalWrapper>
                 {isSidebarOpen && submenu && (
                   <ul className="ml-7 flex list-none flex-col gap-1 border-l border-adam-neutral-500 px-2">
-                    {submenu.map(
-                      (
-                        conversation: Omit<
-                          Conversation,
-                          'message_count' | 'last_message_at'
-                        >,
-                      ) => {
+                    {submenu.map((item: SidebarItem) => {
+                      const closeOnMobile = () => {
+                        if (isMobile) setIsSidebarOpen(false);
+                      };
+                      const titleSpan = (
+                        <li>
+                          <span className="line-clamp-1 text-ellipsis text-nowrap rounded-md p-1 text-xs font-medium text-adam-neutral-400 transition-colors duration-200 ease-in-out [@media(hover:hover)]:hover:bg-adam-neutral-950 [@media(hover:hover)]:hover:text-adam-neutral-10">
+                            {item.title}
+                          </span>
+                        </li>
+                      );
+                      // maker2 run -> reopen the saved run read-only (pass its dir).
+                      if (item.kind === 'maker2') {
                         return (
                           <Link
-                            to="/editor/$id"
-                            params={{ id: conversation.id }}
-                            key={conversation.id}
-                            onClick={() => {
-                              if (isMobile) {
-                                setIsSidebarOpen(false);
-                              }
+                            key={item.id}
+                            to="/maker2/$runId"
+                            params={{
+                              runId: encodeURIComponent(
+                                item.run.threadId || item.run.run_dir,
+                              ),
                             }}
+                            search={
+                              item.run.threadId
+                                ? {
+                                    prompt: item.run.prompt,
+                                    model: item.run.model,
+                                    iters: item.run.maxIters,
+                                    thread: item.run.threadId,
+                                  }
+                                : {
+                                    prompt: item.run.prompt,
+                                    model: item.run.model,
+                                    iters: item.run.maxIters,
+                                    dir: item.run.run_dir,
+                                  }
+                            }
+                            onClick={closeOnMobile}
                           >
-                            <li key={conversation.id}>
-                              <span className="line-clamp-1 text-ellipsis text-nowrap rounded-md p-1 text-xs font-medium text-adam-neutral-400 transition-colors duration-200 ease-in-out [@media(hover:hover)]:hover:bg-adam-neutral-950 [@media(hover:hover)]:hover:text-adam-neutral-10">
-                                {conversation.title}
-                              </span>
-                            </li>
+                            {titleSpan}
                           </Link>
                         );
-                      },
-                    )}
+                      }
+                      return (
+                        <Link
+                          key={item.id}
+                          to="/editor/$id"
+                          params={{ id: item.id }}
+                          onClick={closeOnMobile}
+                        >
+                          {titleSpan}
+                        </Link>
+                      );
+                    })}
                   </ul>
                 )}
               </div>

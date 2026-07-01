@@ -83,13 +83,33 @@ def show(urdf_path: str) -> None:
     robot.scene.show()
 
 
+def _save_image_retry(scene, resolution, attempts: int = 4):
+    """Render the scene to a PNG offscreen, retrying transient GL glitches.
+
+    trimesh's offscreen path occasionally raises ZeroDivisionError (a race where
+    the hidden window reports height=0 in on_resize) or a GL error; these are
+    transient, so a few retries turn a flaky render into a reliable one and keep
+    the judge from falling back to a blind text-only verdict."""
+    last = None
+    for _ in range(attempts):
+        try:
+            png = scene.save_image(resolution=resolution, visible=False)
+            if png and len(png) > 512:
+                return png
+        except Exception as e:  # ZeroDivisionError, GL errors, window races
+            last = e
+    if last is not None:
+        raise last
+    raise RuntimeError("save_image returned empty output")
+
+
 def render_png(urdf_path: str, out_path: str,
                resolution: tuple[int, int] = (1280, 960)) -> str:
     """Render the assembled product to a PNG (needs an OpenGL context)."""
     robot = load_robot(urdf_path)
     _colorize_fallback(robot)
     _frame_isometric(robot.scene)
-    png = robot.scene.save_image(resolution=resolution, visible=True)
+    png = _save_image_retry(robot.scene, resolution)
     with open(out_path, "wb") as f:
         f.write(png)
     return out_path
@@ -126,7 +146,16 @@ def render_six_views(urdf_path: str, out_dir: str,
     paths: dict[str, str] = {}
     for name, angles in _SIX_VIEWS.items():
         robot.scene.set_camera(angles=angles)
-        png = robot.scene.save_image(resolution=resolution, visible=True)
+        try:
+            # Offscreen + retry: an on-screen window (visible=True) is racy on
+            # headless Windows and a transient ZeroDivisionError/GL glitch would
+            # otherwise drop the judge to a blind text-only verdict. Render each
+            # view robustly; if one view still fails, keep the others (the judge
+            # only needs a few good views, not all six).
+            png = _save_image_retry(robot.scene, resolution)
+        except Exception as e:
+            print(f"[viz] view '{name}' failed after retries: {e}")
+            continue
         out_path = os.path.join(out_dir, f"view_{name}.png")
         with open(out_path, "wb") as f:
             f.write(png)

@@ -27,6 +27,8 @@ from .llm.conversation import Conversation
 from .model import JointSpec, KinematicModel, LinkSpec
 from .prompts.manager_prompt import (MANAGER_SYSTEM, build_manager_coarser,
                                      build_manager_evaluator_feedback,
+                                     build_manager_prior_model,
+                                     build_manager_refine,
                                      build_manager_repair, build_manager_user)
 
 
@@ -323,6 +325,8 @@ def load_model(path: str) -> KinematicModel:
 def decompose(product_prompt: str, settings, *, image_path: str | None = None,
               model_json_path: str | None = None,
               evaluator_feedback: str | None = None,
+              refine_message: str | None = None,
+              prior_model_json: str | None = None,
               log_fn=None) -> KinematicModel:
     """Decompose a product prompt into a validated, persisted KinematicModel.
 
@@ -355,6 +359,13 @@ def decompose(product_prompt: str, settings, *, image_path: str | None = None,
         if log_fn:
             log_fn("[manager] applying evaluator feedback from the previous "
                    "iteration")
+    # Multi-turn refine: show the prior model, then the user's requested change.
+    if prior_model_json:
+        conv.add_user_message(build_manager_prior_model(prior_model_json))
+    if refine_message:
+        conv.add_user_message(build_manager_refine(refine_message))
+        if log_fn:
+            log_fn(f"[manager] applying user refine request: {refine_message[:80]}")
 
     last_err = ""
     attempts = settings.manager_retries + 1

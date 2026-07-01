@@ -67,7 +67,8 @@ def _judge(prompt, model, results, ctx, settings):
 def run(prompt: str, out_dir: str = "output", manager_only: bool = False,
         allow_partial: bool = False, model: str | None = None,
         do_judge: bool = True, do_physics: bool = False,
-        max_iters: int = 2) -> dict:
+        max_iters: int = 2, refine_message: str | None = None,
+        prior_model: str | None = None, thread: str | None = None) -> dict:
     settings = Settings()
     settings.allow_partial = allow_partial
     if model:
@@ -78,8 +79,25 @@ def run(prompt: str, out_dir: str = "output", manager_only: bool = False,
     print(f"[run] prompt: {prompt}")
     print(f"[run] max_iters: {max_iters}")
 
+    # Multi-turn refine: load the prior turn's model JSON (a file path) once so
+    # iteration 0 can start from it. A missing/unreadable file just falls back to
+    # a cold decompose (no crash).
+    prior_model_json = None
+    if prior_model:
+        try:
+            prior_model_json = Path(prior_model).read_text(encoding="utf-8")
+            print(f"[run] refine from prior model: {prior_model}")
+        except Exception as e:
+            print(f"[run] could not read prior model ({e}); cold decompose")
+    if refine_message:
+        print(f"[run] refine message: {refine_message}")
+
     # The result reflects the BEST/LAST iteration. Each iteration gets its own dir.
-    result = {"ok": False, "run_dir": "", "urdf_path": "",
+    # `render_dir` tracks the last iteration that actually BUILT a renderable model
+    # (urdf + meshes); the canvas shows THAT, so a judge-FAIL (or a later crashed
+    # iteration) still displays the last good render instead of nothing.
+    result = {"ok": False, "run_dir": "", "urdf_path": "", "render_dir": "",
+              "hard_failed": False,
               "links": 0, "joints": 0, "movable_joints": 0, "built": 0,
               "judge": None, "physics": None, "iterations": 0, "error": ""}
 
@@ -96,10 +114,16 @@ def run(prompt: str, out_dir: str = "output", manager_only: bool = False,
         print(f"\n===== ITERATION {it} (feedback: {'yes' if feedback else 'none'}) =====")
 
         # Phase 1: manager -> URDF contract. On a re-pass, judge suggestions go IN.
+        # On a multi-turn refine, iteration 0 also gets the prior model + the
+        # user's change request (later iterations refine via judge feedback).
         print("[1/3] manager: decomposing into links + joints ...")
         try:
-            model_obj = decompose(prompt, settings, model_json_path=ctx.model_json_path,
-                                  evaluator_feedback=feedback, log_fn=print)
+            model_obj = decompose(
+                prompt, settings, model_json_path=ctx.model_json_path,
+                evaluator_feedback=feedback,
+                refine_message=refine_message if it == 0 else None,
+                prior_model_json=prior_model_json if it == 0 else None,
+                log_fn=print)
         except Exception as e:
             patch["error"] = f"manager failed: {e}"
             print(f"[1/3] FAIL: {patch['error']}")
@@ -150,6 +174,10 @@ def run(prompt: str, out_dir: str = "output", manager_only: bool = False,
         result.update(patch)
         result["iterations"] = it + 1
         last_ctx = ctx
+        # Remember the last iteration that produced a renderable model, so the
+        # canvas can fall back to it if a later pass regresses or the judge fails.
+        if patch.get("ok"):
+            result["render_dir"] = ctx.run_dir
         Path(ctx.run_dir, "result.json").write_text(json.dumps(result, indent=2))
 
         judge = patch.get("judge")
@@ -166,16 +194,66 @@ def run(prompt: str, out_dir: str = "output", manager_only: bool = False,
         feedback = (judge.get("suggestions") or judge.get("reasons") or "").strip() or None
         print(f"[loop] judge FAIL -> re-decomposing with feedback for iteration {it+1}.")
 
-    # ---- physics ONCE on the final (best) URDF ----
-    if do_physics and result["ok"] and last_ctx is not None:
+    # A run is HARD-failed only if no iteration ever produced a renderable model.
+    # A judge-FAIL that still built is NOT hard-failed (we have a model to show).
+    result["hard_failed"] = not result["render_dir"]
+
+    # ---- physics ONCE on the last GOOD render (not a later crashed iteration) ----
+    if do_physics and result["render_dir"]:
+        render_urdf = os.path.join(result["render_dir"], "model.urdf")
         print("[physics] PyBullet stability test on maker2's URDF ...")
         try:
             from maker2.physics import run_physics
-            result["physics"] = run_physics(result["urdf_path"], prompt, last_ctx.run_dir)
+            result["physics"] = run_physics(render_urdf, prompt, result["render_dir"])
         except Exception as e:
             print(f"[physics] failed: {e}")
             result["physics"] = {"passed": None, "summary": f"physics error: {e}"}
-        Path(last_ctx.run_dir, "result.json").write_text(json.dumps(result, indent=2))
+        if last_ctx is not None:
+            Path(last_ctx.run_dir, "result.json").write_text(json.dumps(result, indent=2))
+
+    # ---- history sidecar: make the run self-describing for the UI sidebar ----
+    # result.json has no prompt/model, so the disk-scan lister can't title or
+    # reopen a run from it alone. Drop a tiny run.json next to it.
+    if result.get("run_dir"):
+        try:
+            from datetime import datetime, timezone
+            now_iso = datetime.now(timezone.utc).isoformat()
+            Path(result["run_dir"], "run.json").write_text(json.dumps({
+                "prompt": prompt,
+                "model": settings.model,
+                "max_iters": max_iters,
+                "refine_message": refine_message,
+                "thread": thread,
+                "created_at": now_iso,
+            }, indent=2))
+        except Exception as e:
+            print(f"[run] could not write run.json: {e}")
+
+    # ---- thread: append this run as a turn so the UI can show a conversation ----
+    if thread and result.get("run_dir"):
+        try:
+            from datetime import datetime, timezone
+            tdir = Path(out_dir, "threads", thread)
+            tdir.mkdir(parents=True, exist_ok=True)
+            tpath = tdir / "thread.json"
+            doc = json.loads(tpath.read_text()) if tpath.exists() else {
+                "id": thread, "created_at": datetime.now(timezone.utc).isoformat(),
+                "model": settings.model, "turns": [],
+            }
+            judge = result.get("judge") or {}
+            doc["turns"].append({
+                "message": refine_message or prompt,
+                "run_dir": result["run_dir"],
+                "render_dir": result.get("render_dir", ""),
+                "ok": bool(result.get("ok")),
+                "hard_failed": bool(result.get("hard_failed")),
+                "judge_passed": judge.get("passed"),
+                "ts": datetime.now(timezone.utc).isoformat(),
+            })
+            tpath.write_text(json.dumps(doc, indent=2))
+            print(f"[thread] appended turn -> {tpath}")
+        except Exception as e:
+            print(f"[thread] could not update thread.json: {e}")
 
     print("-" * 56)
     print(f"RESULT: {'PASS' if result['ok'] else 'FAIL'} — "
@@ -206,9 +284,17 @@ def main() -> int:
     ap.add_argument("--json", action="store_true", help="print result.json as the LAST line")
     ap.add_argument("--max-iters", type=int, default=2,
                     help="refine passes: judge FAIL -> re-decompose -> rebuild (default 2)")
+    ap.add_argument("--refine-message", default=None,
+                    help="multi-turn: the user's change request for the prior model")
+    ap.add_argument("--prior-model", default=None,
+                    help="multi-turn: path to the prior turn's kinematic_model.json")
+    ap.add_argument("--thread", default=None,
+                    help="thread id: append this run as a turn to output/threads/<id>/thread.json")
     a = ap.parse_args()
     res = run(a.prompt, a.out, a.manager_only, a.allow_partial, a.model,
-              do_judge=not a.no_judge, do_physics=a.physics, max_iters=a.max_iters)
+              do_judge=not a.no_judge, do_physics=a.physics, max_iters=a.max_iters,
+              refine_message=a.refine_message, prior_model=a.prior_model,
+              thread=a.thread)
     if a.json:
         print("RESULT_JSON:" + json.dumps(res))
     return 0 if res.get("ok") else 1

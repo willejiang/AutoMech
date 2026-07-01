@@ -28,6 +28,8 @@ import { Route as ApiRunMaker2RouteImport } from './routes/api/run-maker2'
 import { Route as ApiPromptGeneratorRouteImport } from './routes/api/prompt-generator'
 import { Route as ApiParametricChatRouteImport } from './routes/api/parametric-chat'
 import { Route as ApiMeshRouteImport } from './routes/api/mesh'
+import { Route as ApiMaker2ThreadRouteImport } from './routes/api/maker2-thread'
+import { Route as ApiListMaker2RunsRouteImport } from './routes/api/list-maker2-runs'
 import { Route as ApiFalWebhookRouteImport } from './routes/api/fal-webhook'
 import { Route as ApiEvaluateModelRouteImport } from './routes/api/evaluate-model'
 import { Route as ApiDeleteUserRouteImport } from './routes/api/delete-user'
@@ -139,6 +141,16 @@ const ApiMeshRoute = ApiMeshRouteImport.update({
   path: '/api/mesh',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiMaker2ThreadRoute = ApiMaker2ThreadRouteImport.update({
+  id: '/api/maker2-thread',
+  path: '/api/maker2-thread',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiListMaker2RunsRoute = ApiListMaker2RunsRouteImport.update({
+  id: '/api/list-maker2-runs',
+  path: '/api/list-maker2-runs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiFalWebhookRoute = ApiFalWebhookRouteImport.update({
   id: '/api/fal-webhook',
   path: '/api/fal-webhook',
@@ -238,6 +250,8 @@ export interface FileRoutesByFullPath {
   '/api/delete-user': typeof ApiDeleteUserRoute
   '/api/evaluate-model': typeof ApiEvaluateModelRoute
   '/api/fal-webhook': typeof ApiFalWebhookRoute
+  '/api/list-maker2-runs': typeof ApiListMaker2RunsRoute
+  '/api/maker2-thread': typeof ApiMaker2ThreadRoute
   '/api/mesh': typeof ApiMeshRoute
   '/api/parametric-chat': typeof ApiParametricChatRoute
   '/api/prompt-generator': typeof ApiPromptGeneratorRoute
@@ -273,6 +287,8 @@ export interface FileRoutesByTo {
   '/api/delete-user': typeof ApiDeleteUserRoute
   '/api/evaluate-model': typeof ApiEvaluateModelRoute
   '/api/fal-webhook': typeof ApiFalWebhookRoute
+  '/api/list-maker2-runs': typeof ApiListMaker2RunsRoute
+  '/api/maker2-thread': typeof ApiMaker2ThreadRoute
   '/api/mesh': typeof ApiMeshRoute
   '/api/parametric-chat': typeof ApiParametricChatRoute
   '/api/prompt-generator': typeof ApiPromptGeneratorRoute
@@ -310,6 +326,8 @@ export interface FileRoutesById {
   '/api/delete-user': typeof ApiDeleteUserRoute
   '/api/evaluate-model': typeof ApiEvaluateModelRoute
   '/api/fal-webhook': typeof ApiFalWebhookRoute
+  '/api/list-maker2-runs': typeof ApiListMaker2RunsRoute
+  '/api/maker2-thread': typeof ApiMaker2ThreadRoute
   '/api/mesh': typeof ApiMeshRoute
   '/api/parametric-chat': typeof ApiParametricChatRoute
   '/api/prompt-generator': typeof ApiPromptGeneratorRoute
@@ -348,6 +366,8 @@ export interface FileRouteTypes {
     | '/api/delete-user'
     | '/api/evaluate-model'
     | '/api/fal-webhook'
+    | '/api/list-maker2-runs'
+    | '/api/maker2-thread'
     | '/api/mesh'
     | '/api/parametric-chat'
     | '/api/prompt-generator'
@@ -383,6 +403,8 @@ export interface FileRouteTypes {
     | '/api/delete-user'
     | '/api/evaluate-model'
     | '/api/fal-webhook'
+    | '/api/list-maker2-runs'
+    | '/api/maker2-thread'
     | '/api/mesh'
     | '/api/parametric-chat'
     | '/api/prompt-generator'
@@ -419,6 +441,8 @@ export interface FileRouteTypes {
     | '/api/delete-user'
     | '/api/evaluate-model'
     | '/api/fal-webhook'
+    | '/api/list-maker2-runs'
+    | '/api/maker2-thread'
     | '/api/mesh'
     | '/api/parametric-chat'
     | '/api/prompt-generator'
@@ -455,6 +479,8 @@ export interface RootRouteChildren {
   ApiDeleteUserRoute: typeof ApiDeleteUserRoute
   ApiEvaluateModelRoute: typeof ApiEvaluateModelRoute
   ApiFalWebhookRoute: typeof ApiFalWebhookRoute
+  ApiListMaker2RunsRoute: typeof ApiListMaker2RunsRoute
+  ApiMaker2ThreadRoute: typeof ApiMaker2ThreadRoute
   ApiMeshRoute: typeof ApiMeshRoute
   ApiParametricChatRoute: typeof ApiParametricChatRoute
   ApiPromptGeneratorRoute: typeof ApiPromptGeneratorRoute
@@ -600,6 +626,20 @@ declare module '@tanstack/react-router' {
       path: '/api/mesh'
       fullPath: '/api/mesh'
       preLoaderRoute: typeof ApiMeshRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/maker2-thread': {
+      id: '/api/maker2-thread'
+      path: '/api/maker2-thread'
+      fullPath: '/api/maker2-thread'
+      preLoaderRoute: typeof ApiMaker2ThreadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/list-maker2-runs': {
+      id: '/api/list-maker2-runs'
+      path: '/api/list-maker2-runs'
+      fullPath: '/api/list-maker2-runs'
+      preLoaderRoute: typeof ApiListMaker2RunsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/fal-webhook': {
@@ -770,6 +810,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiDeleteUserRoute: ApiDeleteUserRoute,
   ApiEvaluateModelRoute: ApiEvaluateModelRoute,
   ApiFalWebhookRoute: ApiFalWebhookRoute,
+  ApiListMaker2RunsRoute: ApiListMaker2RunsRoute,
+  ApiMaker2ThreadRoute: ApiMaker2ThreadRoute,
   ApiMeshRoute: ApiMeshRoute,
   ApiParametricChatRoute: ApiParametricChatRoute,
   ApiPromptGeneratorRoute: ApiPromptGeneratorRoute,

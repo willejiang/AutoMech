@@ -33,6 +33,9 @@ export const Route = createFileRoute('/api/run-maker2-stream')({
         const prompt = url.searchParams.get('prompt');
         const model = url.searchParams.get('model') ?? undefined;
         const iters = url.searchParams.get('iters') ?? undefined;
+        const threadId = url.searchParams.get('thread') ?? undefined;
+        const refineMessage = url.searchParams.get('refine') ?? undefined;
+        const priorModel = url.searchParams.get('prior') ?? undefined;
         if (!prompt) {
           return new Response(sse('error', { error: 'need prompt' }), {
             headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
@@ -43,6 +46,9 @@ export const Route = createFileRoute('/api/run-maker2-stream')({
           '--physics'];
         if (model) args.push('--model', model);
         if (iters && Number(iters) > 0) args.push('--max-iters', iters);
+        if (threadId) args.push('--thread', threadId);
+        if (refineMessage) args.push('--refine-message', refineMessage);
+        if (priorModel) args.push('--prior-model', priorModel);
 
         const stream = new ReadableStream<Uint8Array>({
           start(controller) {

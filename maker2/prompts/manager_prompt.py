@@ -15,10 +15,11 @@ isolation (it sees only that link's description and origin_note, never the other
 parts), and a URDF assembler positions the parts using only your joints. So you
 alone own all geometry relationships and the spatial layout.
 
-Decompose thoroughly but sensibly: split the product into the distinct rigid
-parts a person would recognize, give each a clear build brief, choose a sensible
-local origin for each, and connect them with joints whose origins make the parts
-mate correctly. Prefer fixed joints unless the product clearly articulates
+Decompose thoroughly but sensibly: split the product into all the distinct rigid
+parts including ALL INTERNAL HARDWARE, give each a clear build brief, choose a sensible
+local origin for each, and connect them with joints to make the parts
+mate correctly, BUT DO NOT REPLACE THE ACTUAL PHYSICAL STRUCTURE LIKE SHAFT OR BEARINGS
+ WITH A VIRTUAL JOINT.  Prefer fixed joints unless the product clearly articulates
 (hinges, sliders, wheels, pan/tilt), in which case use revolute/prismatic/
 continuous with sane limits.
 
@@ -37,6 +38,11 @@ assign the identical work type to the same agent like creating the four wheels a
 AVOID:
 2. Cute Structure
 
+CASE EXAMPLE:
+    USER ASK:"I want you to build a clock"
+    GOOD URDF DESIGN: not only APPEARANCE, but also each gear, shaft, and bearing
+        are treated as a single physical part, and the joints are used to connect them in a way that they can rotate and move as they would in a real clock. The URDF should be structured in a way that allows for easy configuration in Isaac Sim, ensuring that the clock functions correctly when simulated.
+    BAD CASE: only the appearance of the clock is considered, and the internal gears, shafts, and bearings are not treated as separate physical parts. The joints may not be used correctly to connect these parts, resulting in a URDF that does not accurately represent the clock's functionality. This could lead to issues when simulating the clock in Isaac Sim, as it may not operate as expected.
 {SCHEMA_TEXT}
 
 Output ONLY the JSON object. No commentary, no markdown fences."""
@@ -170,4 +176,39 @@ same schema, units, and origin contract, and keep the model a single connected
 tree (one root, every other link the child of exactly one joint).
 
 Output ONLY the JSON object, no prose, no markdown fences."""
+
+
+def build_manager_prior_model(prior_model_json: str) -> str:
+    """Hand the manager the PREVIOUS turn's model as the starting point.
+
+    Used for multi-turn refine: the user is iterating on an existing model, so we
+    show it the exact model it produced last time and then (via
+    build_manager_refine) ask for a specific change on top of it.
+    """
+    return f"""\
+Here is the CURRENT kinematic model (the one you produced on the previous turn).
+It is the starting point for the user's next request:
+
+{prior_model_json}"""
+
+
+def build_manager_refine(refine_message: str) -> str:
+    """Follow-up delivering the USER's refinement request (not the evaluator's).
+
+    Distinct from build_manager_evaluator_feedback: this is the human asking for a
+    change to the model they already have (e.g. "make the gears bigger", "add a
+    handle"). Modify the current model to satisfy it and return the whole thing.
+    """
+    return f"""\
+The user wants this CHANGE to the current model:
+
+"{refine_message}"
+
+Apply ONLY what this asks for and keep everything else the same wherever possible
+(same parts, names, origins, and joints that the change does not touch). You may
+add, remove, resize, recolor, or re-connect parts as needed to satisfy it. Keep
+the same schema, units, and origin contract, and keep the model a single connected
+tree (one root, every other link the child of exactly one joint).
+
+Output ONLY the COMPLETE updated JSON object, no prose, no markdown fences."""
 

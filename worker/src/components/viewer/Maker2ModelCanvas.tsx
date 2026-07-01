@@ -16,6 +16,10 @@ import { GLTFLoader } from 'three-stdlib';
 interface Maker2ModelCanvasProps {
   /** The assembled GLB. While undefined, the run is still in progress. */
   glbBlob?: Blob;
+  // 'failed' -> the run produced no model at all (hard crash): show a message
+  // instead of spinning forever. Omitted/'loading' keeps the normal spinner.
+  status?: 'loading' | 'failed';
+  failedReason?: string;
 }
 
 function Model({ scene }: { scene: THREE.Object3D }) {
@@ -27,7 +31,7 @@ function Model({ scene }: { scene: THREE.Object3D }) {
   );
 }
 
-export function Maker2ModelCanvas({ glbBlob }: Maker2ModelCanvasProps) {
+export function Maker2ModelCanvas({ glbBlob, status, failedReason }: Maker2ModelCanvasProps) {
   const [scene, setScene] = useState<THREE.Object3D | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -59,6 +63,20 @@ export function Maker2ModelCanvas({ glbBlob }: Maker2ModelCanvasProps) {
     return (
       <div className="flex h-full w-full items-center justify-center p-6 text-center text-sm text-red-400">
         Failed to load model: {error}
+      </div>
+    );
+  }
+
+  // A hard-failed run has no model to ever show; don't spin forever.
+  if (!scene && status === 'failed') {
+    return (
+      <div className="flex h-full w-full flex-col items-center justify-center gap-2 p-6 text-center text-adam-neutral-400">
+        <div className="text-sm font-medium text-red-400">
+          Build failed — no model was produced
+        </div>
+        {failedReason && (
+          <div className="max-w-md text-xs text-adam-neutral-500">{failedReason}</div>
+        )}
       </div>
     );
   }

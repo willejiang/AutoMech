@@ -41,6 +41,15 @@ export const Route = createFileRoute('/api/run-maker2-glb')({
           });
         }
 
+        // JSON branch: the saved verdict, for reopening a finished run read-only.
+        if (url.searchParams.get('file') === 'result') {
+          const resultPath = join(runDir, 'result.json');
+          if (!existsSync(resultPath)) return json({ error: 'no result.json' }, 404);
+          return new Response(readFileSync(resultPath, 'utf-8'), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+
         // GLB branch: assemble the URDF -> binary glTF via the maker2 CLI.
         const urdfPath = join(runDir, 'model.urdf');
         if (!existsSync(urdfPath)) return json({ error: 'no model.urdf' }, 404);
