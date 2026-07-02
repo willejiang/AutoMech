@@ -60,6 +60,12 @@ A walkable quadruped: stand (hold pose), walk (forward locomotion), get_up (rise
 after a fall). A bridge: load-bearing, deflection. Each test = {name, goal,
 strategy}. The designer builds + runs each; the judge scores all.
 
+MULTIPLE SUBSYSTEMS: you may be given a SUBSYSTEMS list — independent functional
+units of the machine, each with its OWN power input (e.g. a car: engine, steering,
+drivetrain). When present with >1 entry, return ONE driven_mechanism test PER
+subsystem, named after that subsystem, so each independent input is exercised
+separately. A single-mechanism object (one subsystem) returns ONE test.
+
 Also pick the SIMULATOR BACKEND best suited to the task's physics:
 - "pybullet": rigid-body dynamics, contact, locomotion/manipulation — runs on CPU
   with no server/GPU. Default for most robotics tasks and when no GPU is available.
@@ -111,10 +117,11 @@ SCHEMA = {
 }
 
 
-def _coerce_decision(raw: str) -> dict:
+def _coerce_decision(raw: str, subsystems=None) -> dict:
     """Parse the model's reply into the decision shape. Some gateways (the 8313
     Copilot proxy) ignore strict response_format and return their own key names, so
-    normalize common aliases and backfill a tests list rather than hard-failing."""
+    normalize common aliases and backfill a tests list rather than hard-failing.
+    When `subsystems` (>1) is given, ensure one driven test per uncovered subsystem."""
     import re as _re
     txt = (raw or "").strip()
     if not txt:
@@ -143,6 +150,16 @@ def _coerce_decision(raw: str) -> dict:
             t.setdefault("strategy", d["strategy"])
             t.setdefault("name", t.get("strategy", "test"))
             t.setdefault("goal", "")
+    # Multi-subsystem: one driven test per subsystem the model left uncovered.
+    subs = subsystems or []
+    if len(subs) > 1:
+        named = " ".join((t.get("name") or "").lower() for t in d["tests"])
+        for s in subs:
+            sid = (s.get("id") or "").lower()
+            if sid and sid not in named:
+                d["tests"].append({"name": s.get("id"),
+                                   "goal": f"drive the {s.get('id')} subsystem",
+                                   "strategy": "driven_mechanism"})
     return d
 
 
@@ -154,17 +171,24 @@ def decide(task, robot_info, *, base_url=None, api_key=None, model=None):
     from openai import OpenAI
     c = OpenAI(base_url=(base_url or os.environ["AZURE_OPENAI_ENDPOINT"]).rstrip("/"),
                api_key=api_key or os.environ["AZURE_OPENAI_API_KEY"])
+    subs = robot_info.get("subsystems") or []
+    subs_txt = ""
+    if len(subs) > 1:
+        subs_txt = ("\nSUBSYSTEMS (independent inputs — return one driven test each):\n"
+                    + "\n".join(f"  - {s.get('id')}: input={s.get('driver')}, "
+                                f"output={s.get('output_joint')}" for s in subs) + "\n")
     msg = (f"TASK: {task}\n\n"
            f"ROBOT: {robot_info.get('name','robot')}\n"
            f"ACTUATED JOINTS ({len(robot_info.get('joints',[]))}): {robot_info.get('joints',[])}\n"
-           f"LINKS ({len(robot_info.get('links',[]))}): {robot_info.get('links',[])}\n\n"
+           f"LINKS ({len(robot_info.get('links',[]))}): {robot_info.get('links',[])}\n"
+           f"{subs_txt}\n"
            f"Decide how to evaluate this task on this robot.")
     r = c.chat.completions.create(
         model=model or model_id(),
         messages=[{"role": "system", "content": SYSTEM},
                   {"role": "user", "content": msg}],
         response_format=SCHEMA, max_completion_tokens=1200)
-    return _coerce_decision(r.choices[0].message.content)
+    return _coerce_decision(r.choices[0].message.content, subsystems=subs)
 
 
 if __name__ == "__main__":

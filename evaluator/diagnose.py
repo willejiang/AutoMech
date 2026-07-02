@@ -147,6 +147,10 @@ HARD RULES (these override your visual impression):
 3. Only choose "framing" when the input DID move a reasonable amount (INPUT_MOVED true)
    yet you still cannot see the resulting downstream motion. If the input didn't move,
    the problem is the mechanism or the test, not the camera.
+4. If the signal OUTPUT_DEAD is true, the input turned and some gears moved but motion
+   NEVER REACHED the declared output joint — the drivetrain is broken MIDWAY (a missing
+   or non-meshing gear between the moving part and the output). This is NEVER "framing";
+   return verdict=fail with cause "structure".
 
 Always fill "reason" with a concrete one-sentence explanation. Respond ONLY with the JSON
 schema."""
@@ -203,6 +207,15 @@ def _metric_signals(spec: dict, metrics: dict) -> dict:
     max_watched = max((abs(float(v)) for v in watched.values()), default=0.0)
     free_spin = bool(max_watched > 2.0 * expected and it < 0.5 * max_watched)
 
+    # Output-not-reached: the input turned and SOME transmission moved, but the
+    # declared OUTPUT joint (the far end of the train) did NOT -> the drivetrain is
+    # broken MIDWAY. This is a structure fault, never a framing one. Only meaningful
+    # when the runner reported output_reached (E-BENCH declared an output_joint).
+    moved_count = int(m.get("moved_count") or 0)
+    output_reached = m.get("output_reached")
+    output_dead = bool(input_moved and moved_count >= 1
+                       and output_reached is False)
+
     notes = []
     if input_stalled:
         notes.append(f"INPUT_STALLED: input joint '{m.get('input_joint')}' moved only "
@@ -212,24 +225,45 @@ def _metric_signals(spec: dict, metrics: dict) -> dict:
         notes.append(f"FREE_SPIN: a watched joint moved {max_watched:.1f} rad, far "
                      f"beyond the ~{expected:.2f} rad input command, while the input "
                      f"moved {it:.3f} rad -> parts flying loose / not meshed (structure).")
+    if output_dead:
+        notes.append(f"OUTPUT_NOT_REACHED: the input turned and some gears moved, but "
+                     f"the output joint '{m.get('output_joint')}' did NOT move "
+                     f"(travel {m.get('output_travel')}) -> the train is broken midway "
+                     f"(structure).")
     return {"input_moved": input_moved, "input_stalled": input_stalled,
-            "free_spin": free_spin, "expected_input_travel": round(expected, 3),
-            "notes": notes}
+            "free_spin": free_spin, "output_dead": output_dead,
+            "output_reached": bool(output_reached) if output_reached is not None else None,
+            "expected_input_travel": round(expected, 3), "notes": notes}
 
 
 def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
-                     base_url=None, api_key=None, model=None) -> dict:
+                     frames_dirs=None, base_url=None, api_key=None, model=None) -> dict:
     """VLM verdict over the sim recording. Returns {verdict, cause, reason}.
+
+    `frames_dirs` (optional) maps camera_name -> frames dir; when given, a few
+    keyframes from EACH camera are sent in ONE message (labeled per camera) so the VLM
+    judges from multiple angles. Falls back to the single `frames_dir` otherwise.
 
     Degrades safely: if there are no frames or the call fails, fall back to the raw
     metric verdict with cause based on the numbers, so the loop still progresses."""
-    frames = _sample_frames(frames_dir, 10)
+    # Build the (camera_label, frame_path) list: multi-view if frames_dirs given.
+    view_frames: list[tuple[str, str]] = []
+    if frames_dirs:
+        # Cap total images so a 3-cam run stays within a sane payload (~5 per cam).
+        per = max(3, 12 // max(1, len(frames_dirs)))
+        for cam, fd in frames_dirs.items():
+            for fp in _sample_frames(fd, per):
+                view_frames.append((cam, fp))
+    else:
+        for fp in _sample_frames(frames_dir, 10):
+            view_frames.append(("cam", fp))
+
     raw_pass = (metrics or {}).get("verdict") == "PASS"
     sig = _metric_signals(spec, metrics)
-    hard_fail = sig["input_stalled"] or sig["free_spin"]
+    hard_fail = sig["input_stalled"] or sig["free_spin"] or sig["output_dead"]
     sig_note = " ".join(sig["notes"])
 
-    if not frames:
+    if not view_frames:
         # No video to look at: trust the hard signals, else the metric verdict.
         if hard_fail:
             return {"verdict": "fail", "cause": "structure",
@@ -244,18 +278,30 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
         f"  INPUT_MOVED: {sig['input_moved']}\n"
         f"  INPUT_STALLED: {sig['input_stalled']}\n"
         f"  FREE_SPIN: {sig['free_spin']}\n"
+        f"  OUTPUT_REACHED: {sig['output_reached']}\n"
+        f"  OUTPUT_DEAD (moved but output not reached): {sig['output_dead']}\n"
         f"  expected_input_travel_rad: {sig['expected_input_travel']}\n"
         + ("  " + sig_note + "\n" if sig_note else ""))
+    ncam = len({c for c, _ in view_frames})
     content = [{"type": "text", "text": (
         f"TASK: {task}\n"
         f"DRIVEN INPUT JOINT: {drive.get('input_joint')}\n"
+        f"OUTPUT JOINT (motion must reach): {drive.get('output_joint')}\n"
         f"WATCHED JOINTS: {drive.get('watch_joints')}\n"
         f"METRICS: {json.dumps(metrics)}\n\n"
         f"{signals_txt}\n"
-        f"Judge whether driving the input made the mechanism work, and classify the "
-        f"cause if it failed. Obey the HARD RULES about the signals above.")}]
-    for i, fp in enumerate(frames, 1):
-        content.append({"type": "text", "text": f"frame {i}:"})
+        f"You are shown keyframes from {ncam} camera view(s), each labeled. Judge whether "
+        f"driving the input made the mechanism work AND motion reached the output, and "
+        f"classify the cause if it failed. Obey the HARD RULES about the signals above.")}]
+    last_cam = None
+    idx = 0
+    for cam, fp in view_frames:
+        if cam != last_cam:
+            content.append({"type": "text", "text": f"--- camera {cam} ---"})
+            last_cam = cam
+            idx = 0
+        idx += 1
+        content.append({"type": "text", "text": f"{cam} frame {idx}:"})
         content.append({"type": "image_url",
                         "image_url": {"url": f"data:image/png;base64,{_b64(fp)}"}})
 
@@ -283,8 +329,9 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
     reason = (d.get("reason") or d.get("explanation") or d.get("detail") or "")
     reason = str(reason).strip()
 
-    # Enforce the hard metric rules AFTER the model — a stalled input or a free-spinning
-    # output is a physical fact the VLM cannot override, and it is never a camera issue.
+    # Enforce the hard metric rules AFTER the model — a stalled input, a free-spinning
+    # output, or motion that never reaches the declared output joint are physical facts
+    # the VLM cannot override, and none of them is a camera issue.
     if hard_fail:
         verdict = "fail"
         if cause not in ("structure", "scenario"):

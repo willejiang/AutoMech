@@ -70,22 +70,25 @@ worker-level problem: the structure should be redesigned to match a policy-ready
 morphology, OR kept as-is and trained from scratch (slow). Note this in reasoning so
 the loop can ask the user redesign-vs-keep.
 
-MACHINERY (gearbox / worm drive / gear train / crank-slider / clock / cryptex):
+MACHINERY (gearbox / worm drive / gear train / clock / tourbillon / cryptex):
 When the object is a MECHANISM whose point is transmitting motion, do NOT test it by
-standing still — that proves nothing. Instead:
+standing still — that proves nothing. You are given a ROLE MAP (deterministic, from the
+URDF topology) naming every joint's role. OBEY IT:
 - Set "fixed_base": true (the mechanism is bench-mounted; it must not just topple).
-- Fill the "drive" block: choose "input_joint" = the crank/input the user turns
-  (prefer a joint the model marked as the driver; else the joint on a link named
-  crank/handle/input/winder; else the movable joint nearest the root). Use
-  "mode":"velocity" with a modest "target_velocity" (~3-6 rad/s) for a rotating
-  input, or "position_sweep" over the joint's range for a lever. Set
-  "self_collision": true so gears/teeth actually contact and mesh.
-- List "watch_joints" = the DOWNSTREAM movable joints that SHOULD move if the
-  transmission works (the gears/shafts the input drives). Set "min_watched_travel"
-  to a small angle (~0.05-0.2 rad) that counts as "it moved".
-- The mechanism PASSES when driving the input makes >=1 watched joint move without
-  the assembly jamming or exploding. Leave base_height small so it sits on the
-  ground; joint_pose can be empty (the drive block controls motion).
+- Drive EXACTLY the ONE "driver_input" from the role map as "input_joint". This is the
+  single real power source (the crank/handle/winder/mainspring). A real mechanism has ONE
+  input that PROPAGATES through the train — NEVER drive multiple joints at once, and NEVER
+  drive a "transmission" or "free_unrelated" joint.
+- Use "mode":"velocity" with a modest "target_velocity" (~3-6 rad/s) for a rotating input,
+  or "position_sweep" over the joint's range for a lever. Set "self_collision": true so
+  gears/teeth actually contact and MESH (gears couple by tooth contact, not by a joint).
+- Set "watch_joints" = the role map's "transmission" joints — the downstream gears the mesh
+  should drive. These are OBSERVED ONLY, never actuated. Set "min_watched_travel" to a small
+  angle (~0.05-0.2 rad) that counts as "it moved".
+- Declare "propagation_path" (the role map's ordered input->...->output chain) and
+  "output_joint" (the role map's output — the far end of the train). The test PASSES only
+  when driving the input makes motion REACH "output_joint" — NOT merely that "some watched
+  joint moved". A train that turns near the input but is dead at the output is a FAILURE.
 For a NON-machine (a bracket, a stool, a statue) leave "drive": null and use the
 static support/CoM stability reasoning above.
 
@@ -145,10 +148,14 @@ SPEC_SCHEMA = {
                         "watch_joints": {"type": "array", "items": {"type": "string"},
                             "description": "downstream joints that should move if it transmits"},
                         "min_watched_travel": {"type": "number",
-                            "description": "rad a watched joint must move to count as driven"}},
+                            "description": "rad a watched joint must move to count as driven"},
+                        "output_joint": {"type": "string",
+                            "description": "the far end of the train; motion must REACH this to pass"},
+                        "propagation_path": {"type": "array", "items": {"type": "string"},
+                            "description": "ordered input->...->output joint chain"}},
                     "required": ["input_joint", "mode", "target_velocity", "sweep",
                                  "duration_s", "self_collision", "watch_joints",
-                                 "min_watched_travel"]},
+                                 "min_watched_travel", "output_joint", "propagation_path"]},
                 "pass_criteria": {
                     "type": "object", "additionalProperties": False,
                     "properties": {
@@ -187,9 +194,20 @@ def _call(messages, base_url=None, api_key=None, model=None):
 
 
 def _robot_block(robot_info):
+    roles = robot_info.get("roles") or {}
+    role_txt = ""
+    if roles.get("driver_input"):
+        role_txt = (
+            f"\nROLE MAP (deterministic — obey it for a driven test):\n"
+            f"  driver_input (drive ONLY this): {roles.get('driver_input')}\n"
+            f"  output_joint (motion must reach): {roles.get('output_joint')}\n"
+            f"  transmission (watch, never drive): {roles.get('transmission')}\n"
+            f"  free_unrelated (ignore): {roles.get('free_unrelated')}\n"
+            f"  propagation_path: {roles.get('propagation_path')}\n")
     return (f"ROBOT: {robot_info.get('name','robot')}\n"
             f"JOINT NAMES ({len(robot_info.get('joints',[]))}): {robot_info.get('joints',[])}\n"
-            f"LINK NAMES ({len(robot_info.get('links',[]))}): {robot_info.get('links',[])}\n")
+            f"LINK NAMES ({len(robot_info.get('links',[]))}): {robot_info.get('links',[])}\n"
+            f"{role_txt}")
 
 
 def design(task, robot_info, test=None, *, base_url=None, api_key=None, model=None):
