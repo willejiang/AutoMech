@@ -41,6 +41,12 @@ type Maker2Result = {
   error?: string;
 };
 
+type SubArtifact = { sub_id: string; run_dir: string; ok: boolean };
+type PrecheckArtifact = {
+  ok: boolean;
+  violations: { kind: string; severity: string; sub_id?: string; detail?: string }[];
+};
+
 type Turn = {
   message: string;              // user's prompt / refine request for this turn
   lines: string[];             // live stdout while streaming
@@ -50,16 +56,25 @@ type Turn = {
   runDir: string;              // this turn's run_dir (for the NEXT refine's prior model)
   streaming: boolean;
   error?: string;
+  // Hierarchy (boss mode): per-subassembly builds + the geometric pre-check.
+  subs?: SubArtifact[];
+  precheck?: PrecheckArtifact;
 };
 
 const STAGES = [
+  { key: 'boss', label: 'Boss — split into subassemblies',
+    match: (l: string) => l.startsWith('[boss]') },
   { key: 'manager', label: 'Manager — decompose into links + joints',
-    match: (l: string) => l.startsWith('[1/3]') },
+    match: (l: string) => l.startsWith('[1/3]') || l.startsWith('[sub:') },
   { key: 'worker', label: 'CAD worker — generate SCAD + render STLs',
-    match: (l: string) => l.startsWith('[2/3]') },
+    match: (l: string) => l.startsWith('[2/3]') || l.includes('[worker]') },
+  { key: 'assembler', label: 'Assembler — stitch subassemblies',
+    match: (l: string) => l.startsWith('[assembler]') },
+  { key: 'precheck', label: 'Pre-check — verify geometry fits',
+    match: (l: string) => l.startsWith('[precheck]') },
   { key: 'judge', label: 'Judge — review the assembled model',
     match: (l: string) => l.startsWith('[judge]') || l.startsWith('[3/3]') },
-  { key: 'physics', label: 'Physics — PyBullet stability test',
+  { key: 'physics', label: 'Physics — drive + evaluate',
     match: (l: string) => l.startsWith('[physics]') },
 ] as const;
 
@@ -124,15 +139,29 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
     // attempt instead of waiting for the loop to finish.
     es.addEventListener('artifact', (e) => {
       const a = JSON.parse((e as MessageEvent).data) as {
-        kind: 'model' | 'physics';
+        kind: 'model' | 'physics' | 'subassembly' | 'assembled_model' | 'precheck';
         run_dir?: string; render_dir?: string;
         physics?: PhysicsResult | null;
+        sub_id?: string; ok?: boolean;
+        violations?: PrecheckArtifact['violations'];
       };
       const dir = a.render_dir || a.run_dir;
-      if (a.kind === 'model' && dir) {
-        // Fresh renderable model -> pull its GLB + SCAD; canvas jumps to it.
+      if ((a.kind === 'model' || a.kind === 'assembled_model') && dir) {
+        // A renderable model (single-machine iteration OR the assembled hierarchy)
+        // -> pull its GLB + SCAD; the canvas jumps to it.
         patchTurn(idx, { runDir: a.run_dir ?? dir });
         loadArtifacts(idx, dir);
+      } else if (a.kind === 'subassembly') {
+        // Hierarchy: accumulate each subassembly build (clickable in the card).
+        setTurns((prev) => prev.map((t, i) => {
+          if (i !== idx) return t;
+          const sub: SubArtifact = { sub_id: a.sub_id ?? '?',
+            run_dir: a.run_dir ?? '', ok: !!a.ok };
+          const rest = (t.subs ?? []).filter((s) => s.sub_id !== sub.sub_id);
+          return { ...t, subs: [...rest, sub] };
+        }));
+      } else if (a.kind === 'precheck') {
+        patchTurn(idx, { precheck: { ok: !!a.ok, violations: a.violations ?? [] } });
       } else if (a.kind === 'physics' && a.physics) {
         // Fresh recording -> merge physics into the turn's (possibly partial) result
         // and point its render_dir at this iteration so the panel plays this video.
@@ -261,6 +290,17 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
   const physics = physicsTurn?.result?.physics ?? null;
   const physicsRunDir = physicsTurn?.result?.render_dir || physicsTurn?.runDir || '';
 
+  // Hierarchy: a clicked subassembly overrides the canvas so the user can inspect
+  // one sub in isolation before it's assembled. Cleared when a new turn streams.
+  const [pickedSub, setPickedSub] = useState<{ id: string; blob: Blob } | null>(null);
+  const pickSub = useCallback((sub: SubArtifact) => {
+    if (!sub.run_dir) return;
+    fetch(`${apiUrl('run-maker2-glb')}?dir=${encodeURIComponent(sub.run_dir)}`)
+      .then((r) => (r.ok ? r.blob() : Promise.reject(r.statusText)))
+      .then((blob) => setPickedSub({ id: sub.sub_id, blob }))
+      .catch(() => {/* leave prior canvas */});
+  }, []);
+
   return (
     <div className="flex h-full min-h-full w-full flex-col bg-adam-bg-secondary-dark text-adam-text-primary">
       {/* Header */}
@@ -288,7 +328,7 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
                 <div className="text-sm text-adam-neutral-400">Loading conversation…</div>
               )}
               {turns.map((t, i) => (
-                <TurnCard key={i} turn={t} index={i} />
+                <TurnCard key={i} turn={t} index={i} onPickSub={pickSub} />
               ))}
               <div ref={endRef} />
             </div>
@@ -324,12 +364,21 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
         </div>
 
         {/* CENTER: orbitable colored solid (latest good render) */}
-        <div className="min-w-0 flex-1 bg-adam-neutral-950/30">
+        <div className="relative min-w-0 flex-1 bg-adam-neutral-950/30">
           <Maker2ModelCanvas
-            glbBlob={latestWithGlb?.glbBlob}
-            status={canvasFailed ? 'failed' : 'loading'}
-            failedReason={canvasFailed ? canvasFailReason : undefined}
+            glbBlob={pickedSub?.blob ?? latestWithGlb?.glbBlob}
+            status={canvasFailed && !pickedSub ? 'failed' : 'loading'}
+            failedReason={canvasFailed && !pickedSub ? canvasFailReason : undefined}
           />
+          {pickedSub && (
+            <div className="absolute left-3 top-3 flex items-center gap-2 rounded-full bg-adam-neutral-900/80 px-3 py-1 text-xs text-adam-text-primary shadow">
+              <span>subassembly: <span className="font-mono">{pickedSub.id}</span></span>
+              <button className="text-adam-blue hover:underline"
+                onClick={() => setPickedSub(null)}>
+                back to machine
+              </button>
+            </div>
+          )}
         </div>
 
         {/* RIGHT: physics evaluation (breakdown + recorded video), when present */}
@@ -348,7 +397,9 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
 }
 
 // One conversation turn: the user message, its pipeline progress, verdict, .scad.
-function TurnCard({ turn, index }: { turn: Turn; index: number }) {
+function TurnCard({ turn, index, onPickSub }: {
+  turn: Turn; index: number; onPickSub?: (sub: SubArtifact) => void;
+}) {
   const groups = splitIterations(turn.lines);
   const verdictPass = turn.result?.ok && turn.result?.judge?.passed !== false;
   return (
@@ -427,6 +478,48 @@ function TurnCard({ turn, index }: { turn: Turn; index: number }) {
               </li>
             ))}
           </ul>
+        )}
+
+        {/* Hierarchy: the subassemblies this turn built (click to inspect one). */}
+        {turn.subs && turn.subs.length > 0 && (
+          <div className="mt-2">
+            <div className="mb-1 text-[11px] font-semibold text-adam-neutral-400">
+              Subassemblies ({turn.subs.length})
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {[...turn.subs].sort((a, b) => a.sub_id.localeCompare(b.sub_id)).map((s) => (
+                <button
+                  key={s.sub_id}
+                  onClick={() => onPickSub?.(s)}
+                  title="View this subassembly on the canvas"
+                  className={cn(
+                    'rounded border px-2 py-0.5 font-mono text-[10px] transition-colors',
+                    s.ok
+                      ? 'border-adam-neutral-700 bg-adam-neutral-900/40 text-adam-neutral-200 hover:border-adam-blue hover:text-adam-blue'
+                      : 'border-red-800 bg-red-900/20 text-red-300 hover:border-red-500')}
+                >
+                  {s.ok ? '' : '✗ '}{s.sub_id}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Hierarchy: geometric pre-check result before physics. */}
+        {turn.precheck && (
+          <div className={cn('mt-2 rounded border px-2 py-1 text-[11px]',
+            turn.precheck.ok
+              ? 'border-green-800 bg-green-900/20 text-green-300'
+              : 'border-red-800 bg-red-900/20 text-red-300')}>
+            <span className="font-semibold">
+              Geometry pre-check: {turn.precheck.ok ? 'OK' : `${turn.precheck.violations.length} issue(s)`}
+            </span>
+            {!turn.precheck.ok && turn.precheck.violations.slice(0, 3).map((v, i) => (
+              <div key={i} className="mt-0.5 text-red-300/90">
+                · {v.kind}{v.sub_id ? ` (${v.sub_id})` : ''}: {v.detail}
+              </div>
+            ))}
+          </div>
         )}
 
         {turn.result && (

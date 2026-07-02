@@ -51,13 +51,18 @@ export const Route = createFileRoute('/api/run-maker2-glb')({
         }
 
         // VIDEO branch: a physics test's recorded MP4, with HTTP Range so the
-        // <video> element can seek/scrub. ?test=<i> picks the test (default 0).
+        // <video> element can seek/scrub. ?test=<i> picks the test (default 0);
+        // ?cam=<name> picks a camera view (default model.mp4 = the primary camera).
         // Read into a Buffer and slice (the clips are tiny, ~30KB): a Node stream
         // cast to a web ReadableStream doesn't play reliably in the browser.
         if (url.searchParams.get('file') === 'video') {
           const t = Number(url.searchParams.get('test') ?? '0');
           const idx = Number.isFinite(t) && t >= 0 ? Math.floor(t) : 0;
-          const mp4 = join(runDir, 'physics', `test_${idx}`, 'model.mp4');
+          // Sanitize cam to a bare filename (no path traversal); default primary.
+          const camRaw = url.searchParams.get('cam');
+          const cam = camRaw && /^[a-z0-9_-]+$/i.test(camRaw) ? camRaw : null;
+          const mp4 = join(runDir, 'physics', `test_${idx}`,
+            cam ? `${cam}.mp4` : 'model.mp4');
           if (!existsSync(mp4)) return json({ error: 'no recording' }, 404);
           const buf = readFileSync(mp4);
           const size = buf.length;

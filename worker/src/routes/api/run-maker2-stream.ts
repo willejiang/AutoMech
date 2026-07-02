@@ -14,9 +14,12 @@ const REPO_ROOT = resolve(process.cwd(), '..');
 
 // maker2/run.py prints these stage markers; the client classifies a line into a
 // stage group by these prefixes. Anything else is treated as verbose `log`.
+// Hierarchy (boss) mode adds [boss]/[sub:<id>]/[assembler]/[precheck]/[aggregate]
+// and reference tools add [tool]. `[sub:` (no closing bracket) catches [sub:crank].
 const STAGE_PREFIXES = [
   '[run]', '[1/3]', '[2/3]', '[3/3]', '[judge]', '[loop]', '[physics]',
   '[done]', '=====', 'RESULT:',
+  '[boss]', '[sub:', '[assembler]', '[precheck]', '[aggregate]', '[tool]',
 ];
 
 function sse(event: string, data: unknown): string {
