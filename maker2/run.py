@@ -472,7 +472,23 @@ def main() -> int:
                     choices=["rebuild", "retest", "reframe", "revise_scenario"],
                     help="force the entry stage; default 'rebuild' lets a follow-up be "
                          "auto-classified (skip the manager when it's not a redesign)")
+    ap.add_argument("--hierarchy", action="store_true",
+                    help="BOSS mode: split the machine into subassemblies (boss), build "
+                         "them in parallel under an interface contract, assemble, "
+                         "pre-check, and physics-test — with surgical per-sub re-runs. "
+                         "For machines too big for one manager (TBM, car).")
+    ap.add_argument("--per-sub-physics", action="store_true",
+                    help="(hierarchy) drive each subassembly on its own URDF before "
+                         "assembly, so a drivetrain fault localizes to that sub.")
     a = ap.parse_args()
+    if a.hierarchy:
+        from maker2.orchestrator_boss import run_boss
+        res = run_boss(a.prompt, a.out, do_physics=a.physics,
+                       per_sub_physics=a.per_sub_physics, thread=a.thread,
+                       log_fn=print)
+        if a.json:
+            print("RESULT_JSON:" + json.dumps(res))
+        return 0 if res.get("ok") else 1
     res = run(a.prompt, a.out, a.manager_only, a.allow_partial, a.model,
               do_judge=not a.no_judge, do_physics=a.physics, max_iters=a.max_iters,
               refine_message=a.refine_message, prior_model=a.prior_model,

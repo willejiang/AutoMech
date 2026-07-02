@@ -19,6 +19,7 @@ import json
 import os
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
 from .boss import frame_contract_for
 from .manager import decompose, load_model
@@ -182,6 +183,247 @@ def build_all_subassemblies(plan, settings, session_root, *,
                     f"({spec.id}: {'OK' if r.ok else 'FAIL'})")
 
     return {s.id: results[s.id] for s in plan.subassemblies if s.id in results}
+
+
+# --------------------------------------------------------------------------- #
+# Stage F: the surgical boss loop.
+# --------------------------------------------------------------------------- #
+
+def _sub_physics(sub, prompt, *, log_fn=print) -> dict:
+    """Drive ONE subassembly on its own URDF (each sub is a valid mechanism), so a
+    fault localizes to this sub_id BEFORE assembly. Returns run_physics' dict, or a
+    'no test' pass if the sub has no movable joints / physics is unavailable."""
+    from .physics import run_physics
+    movable = [j for j in sub.model.joints if j.type in ("revolute", "prismatic", "continuous")]
+    if not movable:
+        return {"passed": True, "verdict": "PASS", "summary": "no movable joints",
+                "blamed_kind": None}
+    try:
+        return run_physics(sub.ctx.urdf_path, f"{prompt} :: subassembly {sub.id}",
+                           sub.ctx.run_dir)
+    except Exception as e:
+        log_fn(f"[sub:{sub.id}] physics unavailable ({e}); skipping pre-check sim")
+        return {"passed": True, "verdict": "PASS", "summary": f"physics skipped: {e}",
+                "blamed_kind": None}
+
+
+def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
+             do_physics: bool = True, per_sub_physics: bool = False,
+             max_boss_iters: int = 0, thread: str | None = None,
+             log_fn=print) -> dict:
+    """The hierarchical pipeline end-to-end, with SURGICAL fault routing.
+
+    Infinite MAIN loop (like run.run's physics-driven loop): boss plan -> parallel
+    subassembly build -> [optional per-sub physics] -> assemble -> precheck ->
+    assembled physics -> aggregate. A failure re-runs the SMALLEST thing:
+      - a sub that didn't build / failed its own physics / a precheck 'sub' fault
+        -> re-run ONLY that manager (others reused from disk).
+      - a precheck 'interface' fault or an aggregated 'interface' physics fault
+        -> re-plan via the boss.
+    `max_boss_iters<=0` = infinite (stop by killing the process). Emits the stage
+    markers + ARTIFACTs the UI (Stage H) reads.
+    """
+    from . import assembler, boss, precheck as precheck_mod
+    from .config import Settings
+
+    settings = settings or Settings.load()
+    infinite = max_boss_iters <= 0
+
+    def log(m):
+        log_fn(m)
+
+    slug = _slug_for(prompt)
+    from datetime import datetime, timezone
+    session_root = os.path.abspath(os.path.join(out_dir, f"{slug}_boss"))
+    os.makedirs(session_root, exist_ok=True)
+    plan_path = os.path.join(session_root, "subassembly_plan.json")
+
+    result = {"ok": False, "run_dir": session_root, "render_dir": "",
+              "iterations": 0, "error": "", "hierarchy": True,
+              "subassemblies": [], "physics": None}
+
+    plan = None
+    feedback = None                       # boss re-plan feedback (interface faults)
+    feedback_by_sub: dict = {}            # per-sub manager feedback (sub faults)
+    reuse: set = set()                    # subs to load from disk (unchanged ones)
+    it = 0
+    while True:
+        log(f"\n===== ITERATION {it} (boss{' re-plan' if feedback else ''}) =====")
+
+        # 1. Boss plan (re-plan only when an interface fault set `feedback`).
+        if plan is None or feedback is not None:
+            try:
+                plan = boss.plan_machine(prompt, settings, plan_json_path=plan_path,
+                                        feedback=feedback, log_fn=log)
+            except boss.BossError as e:
+                result["error"] = f"boss failed: {e}"
+                log(f"[boss] FAILED: {e}")
+                break
+            feedback = None
+            reuse = set()                 # a fresh plan invalidates all built subs
+            feedback_by_sub = {}
+        result["iterations"] = it + 1
+
+        # 2. Build subassemblies in parallel (reusing unchanged ones from disk).
+        subs = build_all_subassemblies(plan, settings, session_root,
+                                       feedback_by_sub=feedback_by_sub, reuse=reuse,
+                                       log_fn=log)
+        result["subassemblies"] = [{"id": s.id, "ok": subs[s.id].ok,
+                                    "run_dir": subs[s.id].ctx.run_dir if subs[s.id].ctx else ""}
+                                   for s in plan.subassemblies]
+        failed = [sid for sid, r in subs.items() if not r.ok]
+        if failed:
+            for sid in failed:
+                feedback_by_sub[sid] = (subs[sid].error or "build failed") + \
+                    " — rebuild this subassembly."
+            reuse = {s.id for s in plan.subassemblies} - set(failed)
+            log(f"[boss] {len(failed)} subassembly(ies) failed to build "
+                f"{failed}; re-running only those.")
+            if not infinite and it >= max_boss_iters - 1:
+                result["error"] = f"subassemblies failed: {failed}"; break
+            it += 1; continue
+
+        # 3. (optional) Per-sub physics: localize a drivetrain fault to its sub_id
+        #    BEFORE stitching, so we never blame the assembly for a bad part.
+        if do_physics and per_sub_physics:
+            bad = {}
+            for s in plan.subassemblies:
+                pr = _sub_physics(subs[s.id], prompt, log_fn=log)
+                if pr.get("passed") is False:
+                    bad[s.id] = (pr.get("reason") or pr.get("summary") or "sub physics FAIL")
+            if bad:
+                feedback_by_sub.update({k: v + " — fix this subassembly's mechanism."
+                                        for k, v in bad.items()})
+                reuse = {s.id for s in plan.subassemblies} - set(bad)
+                log(f"[boss] per-sub physics FAILED for {list(bad)}; re-running those.")
+                if not infinite and it >= max_boss_iters - 1:
+                    result["error"] = f"sub physics failed: {list(bad)}"; break
+                it += 1; continue
+
+        # 4. Assemble the subassemblies into one URDF.
+        assembly_ctx = make_run_context(plan.name, session_root,
+                                        run_dir=os.path.join(session_root, "assembly"))
+        try:
+            final = assembler.assemble(plan, subs, assembly_ctx, log_fn=log)
+        except assembler.AssemblerError as e:
+            # A stitch failure is an interface/plan fault -> re-plan.
+            feedback = f"assembly failed: {e}"
+            log(f"[assembler] FAILED -> boss re-plan: {e}")
+            if not infinite and it >= max_boss_iters - 1:
+                result["error"] = f"assembly failed: {e}"; break
+            it += 1; continue
+        result["render_dir"] = assembly_ctx.run_dir
+        result["ok"] = True
+        log("ARTIFACT_JSON:" + json.dumps({
+            "kind": "assembled_model", "run_dir": assembly_ctx.run_dir,
+            "render_dir": assembly_ctx.run_dir}))
+
+        # 5. Geometric pre-check BEFORE physics.
+        rep = precheck_mod.precheck(plan, subs, assembly_ctx.urdf_path, log_fn=log)
+        log("ARTIFACT_JSON:" + json.dumps({
+            "kind": "precheck", "ok": rep.ok,
+            "violations": [{"kind": v.kind, "severity": v.severity,
+                            "sub_id": v.sub_id, "detail": v.detail} for v in rep.violations]}))
+        if not rep.ok:
+            iface = [v for v in rep.violations if v.severity == "interface"]
+            if iface:
+                feedback = "geometry pre-check failed (interface): " + \
+                    "; ".join(v.detail for v in iface)
+                log("[precheck] interface fault -> boss re-plan")
+            else:
+                for v in rep.violations:
+                    if v.sub_id:
+                        feedback_by_sub[v.sub_id] = f"geometry: {v.detail} — fix this subassembly."
+                blamed = {v.sub_id for v in rep.violations if v.sub_id}
+                reuse = {s.id for s in plan.subassemblies} - blamed
+                log(f"[precheck] sub fault -> re-running {sorted(blamed)}")
+            if not infinite and it >= max_boss_iters - 1:
+                result["error"] = f"precheck failed: {rep.summary()}"; break
+            it += 1; continue
+
+        # 6. Physics on the ASSEMBLED machine (multi-test + aggregate from Stage E).
+        if not do_physics:
+            log("[boss] assembled + precheck OK (physics not requested) -> done.")
+            break
+        from .physics import run_physics
+        log("[physics] evaluating the assembled machine ...")
+        try:
+            phys = run_physics(assembly_ctx.urdf_path, prompt, assembly_ctx.run_dir)
+        except Exception as e:
+            log(f"[physics] failed: {e}")
+            phys = {"passed": None, "blamed_kind": None, "summary": f"physics error: {e}"}
+        result["physics"] = phys
+        log("ARTIFACT_JSON:" + json.dumps({
+            "kind": "physics", "run_dir": assembly_ctx.run_dir,
+            "render_dir": assembly_ctx.run_dir, "passed": phys.get("passed"),
+            "physics": phys}))
+        if phys.get("passed"):
+            log("[boss] assembled physics PASS -> done.")
+            break
+        if phys.get("passed") is None:
+            log("[boss] physics errored/unavailable -> stop with current assembly.")
+            break
+
+        # 7. Route the physics failure. An 'interface' fault (motion didn't cross a
+        #    seam) -> boss re-plan; otherwise re-run the blamed subassembly(ies).
+        if not infinite and it >= max_boss_iters - 1:
+            result["error"] = f"physics failed: {phys.get('summary')}"; break
+        if phys.get("blamed_kind") == "interface":
+            feedback = f"the assembled machine failed physics at a SEAM: {phys.get('summary')}"
+            log("[boss] physics interface fault -> boss re-plan")
+        else:
+            blamed = _map_blamed_to_subs(phys.get("blamed_subs") or [], plan)
+            if blamed:
+                cm = phys.get("cause_map") or {}
+                for sid in blamed:
+                    feedback_by_sub[sid] = ("assembled physics blamed this subassembly: "
+                                            + str(cm.get(sid, phys.get("summary", ""))))
+                reuse = {s.id for s in plan.subassemblies} - set(blamed)
+                log(f"[boss] physics blamed subs {sorted(blamed)} -> re-running those.")
+            else:
+                # Couldn't localize -> re-plan (safest).
+                feedback = f"the assembled machine failed physics: {phys.get('summary')}"
+                log("[boss] physics fault not localized -> boss re-plan")
+        it += 1
+        continue
+
+    # ---- sidecar + result.json for the UI ----
+    try:
+        Path(session_root, "result.json").write_text(json.dumps(result, indent=2))
+        Path(session_root, "run.json").write_text(json.dumps({
+            "prompt": prompt, "model": settings.model, "hierarchy": True,
+            "thread": thread,
+            "created_at": datetime.now(timezone.utc).isoformat()}, indent=2))
+    except Exception as e:
+        log(f"[boss] could not write result.json: {e}")
+
+    log("-" * 56)
+    n_ok = sum(1 for s in result["subassemblies"] if s["ok"])
+    phys_ok = (result["physics"] or {}).get("passed")
+    overall = result["ok"] and (phys_ok is not False)   # None (not run) counts as ok
+    log(f"RESULT: {'PASS' if overall else 'FAIL'} "
+        f"— {n_ok}/{len(result['subassemblies'])} subassemblies over "
+        f"{result['iterations']} boss iteration(s). Bundle: {session_root}")
+    return result
+
+
+def _slug_for(prompt: str) -> str:
+    from .orchestrator import _slug
+    return _slug(prompt)
+
+
+def _map_blamed_to_subs(blamed, plan) -> set:
+    """Map physics-blamed subsystem ids to boss subassembly ids. The evaluator names
+    subsystems after the assembled model's namespaced links (e.g. 'sub_output_...'),
+    so a boss sub_id is blamed when a blamed subsystem string starts with it."""
+    sub_ids = [s.id for s in plan.subassemblies]
+    out = set()
+    for b in blamed:
+        bs = str(b)
+        for sid in sub_ids:
+            if bs == sid or bs.startswith(f"{sid}_") or sid in bs:
+                out.add(sid)
+    return out
 
 
 # --------------------------------------------------------------------------- #
