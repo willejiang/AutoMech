@@ -29,7 +29,8 @@ from .prompts.manager_prompt import (MANAGER_SYSTEM, build_manager_coarser,
                                      build_manager_evaluator_feedback,
                                      build_manager_prior_model,
                                      build_manager_refine,
-                                     build_manager_repair, build_manager_user)
+                                     build_manager_repair,
+                                     build_manager_subassembly, build_manager_user)
 
 
 _VALID_JOINT_TYPES = {"fixed", "revolute", "prismatic", "continuous"}
@@ -145,6 +146,36 @@ def parse_model(text: str) -> KinematicModel:
         links=[_link_from_dict(d, i) for i, d in enumerate(links)],
         joints=[_joint_from_dict(d, i) for i, d in enumerate(joints)],
     )
+
+
+def parse_frames_realized(text: str) -> list[dict]:
+    """Pull the optional `frames_realized` block out of a subassembly manager's
+    response (the SAME JSON object that carries links/joints). Each entry maps a
+    contract frame name to the real link the manager put there + the link-local
+    offset of that frame. Returns [] if absent/malformed — the caller (the boss
+    orchestrator) machine-checks it separately; parse_model ignores this key."""
+    try:
+        obj = json.loads(extract_json_object(text))
+    except (ValueError, json.JSONDecodeError):
+        return []
+    fr = obj.get("frames_realized")
+    if not isinstance(fr, list):
+        return []
+    out: list[dict] = []
+    for e in fr:
+        if not isinstance(e, dict):
+            continue
+        name = e.get("frame")
+        link = e.get("link")
+        if not isinstance(name, str) or not isinstance(link, str):
+            continue
+        out.append({
+            "frame": name.strip(),
+            "link": link.strip(),
+            "local_xyz_m": _as_tuple3(e.get("local_xyz_m"), (0.0, 0.0, 0.0)),
+            "local_rpy_rad": _as_tuple3(e.get("local_rpy_rad"), (0.0, 0.0, 0.0)),
+        })
+    return out
 
 
 # --------------------------------------------------------------------------- #
@@ -329,6 +360,7 @@ def decompose(product_prompt: str, settings, *, image_path: str | None = None,
               evaluator_feedback: str | None = None,
               refine_message: str | None = None,
               prior_model_json: str | None = None,
+              frame_contract=None,
               log_fn=None) -> KinematicModel:
     """Decompose a product prompt into a validated, persisted KinematicModel.
 
@@ -368,6 +400,12 @@ def decompose(product_prompt: str, settings, *, image_path: str | None = None,
         conv.add_user_message(build_manager_refine(refine_message))
         if log_fn:
             log_fn(f"[manager] applying user refine request: {refine_message[:80]}")
+    # Hierarchy: build ONE subassembly under the boss's interface/frame contract.
+    if frame_contract is not None:
+        conv.add_user_message(build_manager_subassembly(frame_contract))
+        if log_fn:
+            log_fn(f"[manager] subassembly '{getattr(frame_contract, 'sub_id', '?')}' "
+                   f"with {len(getattr(frame_contract, 'frames', []))} interface frame(s)")
 
     last_err = ""
     attempts = settings.manager_retries + 1
@@ -403,6 +441,14 @@ def decompose(product_prompt: str, settings, *, image_path: str | None = None,
             continue
         if model_json_path:
             save_model(model, model_json_path)
+        # Hierarchy: stash the manager's realized interface-frame placements on the
+        # model (a side-channel the boss orchestrator reads; not part of the URDF
+        # contract, so parse_model/_validate_model ignore it).
+        if frame_contract is not None:
+            model.frames_realized = parse_frames_realized(text)
+            if log_fn:
+                log_fn(f"[manager] realized {len(model.frames_realized)} interface "
+                       f"frame(s)")
         if log_fn:
             log_fn(f"[manager] OK on attempt {attempt}: "
                    f"{len(model.links)} links, {len(model.joints)} joints, "

@@ -212,3 +212,69 @@ tree (one root, every other link the child of exactly one joint).
 
 Output ONLY the COMPLETE updated JSON object, no prose, no markdown fences."""
 
+
+def build_manager_subassembly(frame_contract) -> str:
+    """Constrain this manager to build ONE SUBASSEMBLY under the boss's interface/
+    frame contract (Stage B of the hierarchy).
+
+    The boss has split a big machine into subassemblies and assigned this one a set
+    of INTERFACE FRAMES in GLOBAL coordinates (where this sub sits in the finished
+    machine). The manager must (1) build ONLY this subassembly's parts, in its own
+    local frame per the usual units/origin contract, (2) place a real link at each
+    interface frame, and (3) additionally return a `frames_realized` block saying
+    which link it put at each frame and that frame's offset in the link's LOCAL
+    frame — so the assembler can weld this sub to its neighbors.
+    """
+    fc = frame_contract
+    lines = []
+    for fr in getattr(fc, "frames", []):
+        x, y, z = fr.xyz_m
+        ax, ay, az = fr.axis
+        lines.append(
+            f'  - "{fr.name}" (role: {fr.role}): GLOBAL position '
+            f'[{x:.4f}, {y:.4f}, {z:.4f}] m, axis [{ax:.3f}, {ay:.3f}, {az:.3f}]')
+    frames_txt = "\n".join(lines) if lines else "  (none)"
+    origin = getattr(fc, "global_origin_note", "") or "(the machine's shared origin)"
+    return f"""\
+IMPORTANT — you are building ONE SUBASSEMBLY of a larger machine, not the whole
+machine. Build ONLY the parts of this subassembly; do NOT add the neighboring
+subassemblies. A separate assembler will join this subassembly to the others using
+the interface frames below, so those frames are a CONTRACT you must honor exactly.
+
+SUBASSEMBLY id: {getattr(fc, "sub_id", "?")}
+GLOBAL ORIGIN: {origin}
+
+INTERFACE FRAMES this subassembly must expose (positions are in GLOBAL machine
+coordinates about that origin):
+{frames_txt}
+
+RULES
+- Build this subassembly in ITS OWN local frame, following the usual units/origin
+  contract (mm geometry, joint xyz_m in meters, each part's attach point at its
+  local origin). You choose where this subassembly's own root/origin sits.
+- For EACH interface frame above, there must be a real LINK positioned so that the
+  frame lands at the given GLOBAL location when the machine is assembled. Typically
+  the frame coincides with a specific link (a housing mounting face, a gear center,
+  a shaft end).
+- Keep this subassembly a single connected tree (one root, every other link the
+  child of exactly one joint), same as always.
+
+In ADDITION to the normal JSON object (name, root_link, links, joints), include a
+top-level "frames_realized" array in the SAME JSON object, one entry per interface
+frame:
+
+  "frames_realized": [
+    {{
+      "frame": "<the interface frame name from the list above>",
+      "link":  "<the link in THIS subassembly that sits at that frame>",
+      "local_xyz_m":  [<x>, <y>, <z>],   // the frame point in that link's LOCAL frame, meters
+      "local_rpy_rad": [<r>, <p>, <y>]   // the frame orientation in that link's LOCAL frame
+    }}
+  ]
+
+If a frame is at a link's own local origin, local_xyz_m is [0,0,0].
+
+Output ONLY the JSON object (with links, joints, AND frames_realized), no prose, no
+markdown fences."""
+
+

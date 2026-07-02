@@ -79,6 +79,10 @@ class KinematicModel:
     root_link: str
     links: list[LinkSpec] = field(default_factory=list)
     joints: list[JointSpec] = field(default_factory=list)
+    # Hierarchy side-channel: when a subassembly manager builds under a boss frame
+    # contract, its realized interface-frame placements land here (not part of the
+    # URDF contract; model_to_dict/_validate_model ignore it). See maker2/boss.py.
+    frames_realized: list = field(default_factory=list, compare=False, repr=False)
 
     def link_by_name(self, name: str) -> "LinkSpec | None":
         return next((l for l in self.links if l.name == name), None)
