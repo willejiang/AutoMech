@@ -43,8 +43,12 @@ class Settings:
                                                    # retries (see worker.py).
     judger_max_tokens: int = 8000                 # the evaluator's verdict JSON is
                                                    # small (pass/reasons/
-                                                   # suggestions); well under the
-                                                   # gateway cap.
+                                                   # suggestions); well under the cap.
+    boss_max_tokens: int = 16000                  # the boss's SubassemblyPlan is
+                                                   # small (a handful of subs +
+                                                   # seams), but the gateway caps
+                                                   # output at 16000 regardless;
+                                                   # size to the cap.
     llm_timeout: int = 600                         # s per LLM request; a non-
                                                    # streaming send must finish the
                                                    # whole completion within this
@@ -71,6 +75,12 @@ class Settings:
     # ── Output / behavior ────────────────────────────────────────
     do_viz: bool = True                           # show assembled URDF at the end
     allow_partial: bool = False                   # succeed even if some links fail
+
+    # ── Hierarchy (boss -> managers -> assembler); off by default so the
+    #    single-manager pipeline is unchanged until --hierarchy flips it on. ──
+    enable_hierarchy: bool = False                # boss splits into subassemblies
+    subassembly_max_managers: int = 4             # parallel per-sub manager builds
+    enable_reference_tools: bool = False          # web/RAG reference lookup (Stage G)
 
     # ── Construction helpers ─────────────────────────────────────
 
@@ -129,3 +139,7 @@ class Settings:
     def judger_client(self):
         """An LLMClient sized for the evaluator's verdict JSON."""
         return self.make_client(self.judger_max_tokens)
+
+    def boss_client(self):
+        """An LLMClient sized for the boss's SubassemblyPlan output."""
+        return self.make_client(self.boss_max_tokens)

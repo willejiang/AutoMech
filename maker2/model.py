@@ -87,6 +87,112 @@ class KinematicModel:
         return [j for j in self.joints if j.parent == parent_name]
 
 
+# --------------------------------------------------------------------------- #
+# Hierarchy contract (boss -> managers -> assembler). A BOSS splits a big
+# machine into SUBASSEMBLIES (each one manager's job) and authors the INTERFACE/
+# FRAME CONTRACT: named mount frames in GLOBAL coordinates + the SEAMS that join
+# subassemblies (welds, and gear-mesh/power couplings). The assembler stitches
+# the per-subassembly KinematicModels into one final KinematicModel using this.
+# See maker2/boss.py and the plan at .claude/plans/precious-humming-wand.md.
+# --------------------------------------------------------------------------- #
+
+@dataclass
+class MountFrame:
+    """A named interface frame a subassembly exposes, in GLOBAL METERS. The boss
+    fixes where it is; the manager must place a real link there (reported back in
+    `frames_realized`). `role`: mount (structural), power_in/power_out (a shaft
+    end), mesh (a gear whose teeth couple across a seam)."""
+
+    name: str
+    xyz_m: tuple = (0.0, 0.0, 0.0)                   # GLOBAL translation, METERS
+    rpy_rad: tuple = (0.0, 0.0, 0.0)                # GLOBAL rotation, radians
+    axis: tuple = (0.0, 0.0, 1.0)                   # frame primary axis (e.g. shaft axis)
+    link: str = ""                                   # realized link (filled by the manager)
+    role: str = "mount"                              # mount|power_in|power_out|mesh
+
+
+@dataclass
+class SubassemblySpec:
+    """One subassembly the boss carves out: a brief for its manager + the frames
+    it must expose. `est_link_budget` keeps each manager under the output cap."""
+
+    id: str                                          # URDF-safe slug, unique
+    brief: str                                       # the manager's product prompt
+    function: str = ""                               # what it does (for planning)
+    frames: list = field(default_factory=list)      # list[MountFrame], GLOBAL coords
+    input_tags: list = field(default_factory=list)  # frame names that are power inputs
+    output_tags: list = field(default_factory=list) # frame names that are power outputs
+    est_link_budget: int = 30                        # keep <=35 so one manager fits
+
+
+@dataclass
+class SeamSpec:
+    """How two subassemblies join. `kind`:
+      "weld"  -> a fixed structural joint parent_frame -> child_frame.
+      "power" -> a motion crossing (gear mesh or shared shaft). For a gear MESH
+                 seam the structural link is still a weld between the housings;
+                 `mesh_pair` names the (drive_link, driven_link) that couple by
+                 tooth contact, and the geometric pre-check verifies their center
+                 distance == summed pitch radii."""
+
+    id: str
+    kind: str                                        # "weld" | "power"
+    parent_sub: str
+    parent_frame: str
+    child_sub: str
+    child_frame: str
+    joint_type: str = "fixed"                         # fixed for weld; continuous/revolute for a shared-DOF power seam
+    axis: tuple = (0.0, 0.0, 1.0)
+    lower: float | None = None
+    upper: float | None = None
+    effort: float = 10.0
+    velocity: float = 1.0
+    driver: bool = False                             # is this the machine's single power input?
+    owner_sub: str = ""                              # for a power seam, which sub owns the driving link
+    mesh_pair: tuple = ()                            # (drive_link, driven_link) for a gear-mesh seam
+
+
+@dataclass
+class SubassemblyPlan:
+    """The boss's decomposition: subassemblies + the seams that connect them into
+    ONE machine rooted at `root_sub` about a single global origin."""
+
+    name: str
+    root_sub: str
+    global_origin_note: str = ""
+    subassemblies: list = field(default_factory=list)   # list[SubassemblySpec]
+    seams: list = field(default_factory=list)           # list[SeamSpec]
+
+    def sub_by_id(self, sub_id: str) -> "SubassemblySpec | None":
+        return next((s for s in self.subassemblies if s.id == sub_id), None)
+
+
+@dataclass
+class FrameContract:
+    """What one manager is handed: its subassembly's frames (GLOBAL coords) + the
+    shared global origin, so it places the declared frames at the declared spots."""
+
+    sub_id: str
+    frames: list                                     # list[MountFrame]
+    global_origin_note: str = ""
+    input_tags: list = field(default_factory=list)
+    output_tags: list = field(default_factory=list)
+
+
+@dataclass
+class SubResult:
+    """One subassembly's build outcome (Stage B produces; the assembler + loop
+    consume). `sub_frames` is the manager's realized frame placements."""
+
+    id: str
+    ctx: object = None                               # RunContext for this sub's run dir
+    model: object = None                             # KinematicModel
+    results: list = field(default_factory=list)      # list[WorkerResult]
+    sub_frames: list = field(default_factory=list)   # realized frames [{frame, link, local_xyz_m, local_rpy_rad}]
+    ok: bool = False
+    error: str = ""
+
+
 @dataclass
 class StlReport:
     """Result of validating one STL file (see validation.check_stl)."""

@@ -1,0 +1,115 @@
+"""Boss agent prompt: split a big machine into subassemblies + an interface/frame
+contract (the input to the per-subassembly managers and the assembler)."""
+
+from __future__ import annotations
+
+from .schema import BOSS_SCHEMA_TEXT, BOSS_FEWSHOT_PRODUCT, BOSS_FEWSHOT_JSON
+
+
+BOSS_SYSTEM = f"""\
+You are the BOSS of an automated CAD pipeline. A single manager can only emit so
+much before hitting a hard output limit, so for a BIG machine you split it into
+SUBASSEMBLIES — each one a coherent unit that one manager builds on its own — and
+you author the INTERFACE/FRAME CONTRACT that lets the pieces be stitched back into
+one working machine.
+
+Your plan is a CONTRACT. Downstream, one manager builds each subassembly IN
+ISOLATION (it sees only its own brief + the interface frames you assign, never the
+other subassemblies), and a deterministic assembler joins the subassemblies using
+ONLY your seams and frame coordinates. So you alone own the global layout: where
+each subassembly sits, where its interfaces are, and how motion crosses between
+them.
+
+Think mechanically:
+- Group parts into subassemblies by FUNCTION (an input/crank stage, a gearbox, an
+  output stage, a chassis, a drivetrain, a steering unit, ...). Keep each under the
+  link budget so its manager fits in one response.
+- Fix ONE global origin. Every interface frame you declare is in GLOBAL coordinates
+  about that origin, so the assembler never has to guess where a subassembly goes.
+- Hold the machine together with WELD seams (fixed structural mates between frames).
+  The welds must connect every subassembly into one tree rooted at root_sub.
+- Where MOTION crosses a boundary, add a POWER seam. For meshing gears, the two
+  gears live in different subs and couple by tooth contact: keep a WELD holding the
+  housings so the gear centers sit exactly one mesh center-distance apart, and add a
+  separate POWER seam naming the meshing pair (mesh_pair) and the owning sub. The
+  gears mesh geometrically — never turn a gear pair into a joint.
+- Exactly one seam carries the machine's single power INPUT (driver:true).
+
+{BOSS_SCHEMA_TEXT}
+
+Output ONLY the JSON object. No commentary, no markdown fences."""
+
+
+def build_boss_user(product_prompt: str, has_image: bool = False) -> str:
+    """The boss's user message: the machine + a worked example."""
+    if has_image:
+        task = (
+            "NOW DO THIS ONE\n"
+            "The machine is shown in the ATTACHED IMAGE. Split the machine you SEE\n"
+            "into subassemblies. Use this text only as a hint about what it is:\n"
+            f'"{product_prompt}".'
+        )
+    else:
+        task = f'NOW DO THIS ONE\nMachine: "{product_prompt}"'
+    return f"""\
+Split this machine into subassemblies and author the interface/frame contract,
+following the schema and the global-coordinate rules exactly.
+
+EXAMPLE
+Machine: "{BOSS_FEWSHOT_PRODUCT}"
+Output:
+{BOSS_FEWSHOT_JSON}
+
+{task}
+Output:"""
+
+
+def build_boss_repair(error: str) -> str:
+    """Feedback appended after a parse/validation failure."""
+    return f"""\
+Your previous response could not be used:
+
+{error}
+
+Return a corrected JSON object that fixes this. Output ONLY the JSON object, no
+prose, no markdown fences."""
+
+
+def build_boss_coarser(error: str) -> str:
+    """Feedback appended after the response overran the output cap: ask for FEWER,
+    larger subassemblies so the plan fits."""
+    return f"""\
+Your previous response was TOO LONG and was cut off before it finished, so none of
+it could be used:
+
+{error}
+
+There is a hard limit on how much you can output in one response. Make the plan
+SMALLER: use FEWER, LARGER subassemblies (merge closely-related functions into one
+sub), keep each brief to a few sentences, and emit fewer seams — but still cover
+the whole machine, keep ONE global origin, and keep every non-root subassembly
+connected through a weld seam.
+
+Output ONLY the JSON object, no prose, no markdown fences."""
+
+
+def build_boss_feedback(feedback: str) -> str:
+    """Deliver an interface/assembly-level fault back to the boss for a re-plan.
+
+    Used when the assembled machine failed for a reason that is the BOSS's to fix
+    (misaligned mount frames, gears that can't mesh at the declared spacing, a seam
+    that doesn't hold) — as opposed to a single manager's build error.
+    """
+    return f"""\
+The plan you produced led to an ASSEMBLY/INTERFACE failure (not a single manager's
+build error):
+
+{feedback}
+
+Re-plan the SAME machine, fixing the interface contract so the subassemblies fit
+and motion crosses the seams correctly. Pay special attention to the GLOBAL frame
+coordinates (mount frames that must coincide, gear centers that must sit exactly
+one mesh center-distance apart on parallel axes). Keep the same schema, one global
+origin, and every non-root subassembly connected through a weld seam.
+
+Output ONLY the JSON object, no prose, no markdown fences."""

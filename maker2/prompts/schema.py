@@ -164,3 +164,147 @@ FEWSHOT_JSON = """\
     }
   ]
 }"""
+
+
+# --------------------------------------------------------------------------- #
+# BOSS schema + few-shot (hierarchy). The boss splits a big machine into
+# SUBASSEMBLIES (each one manager's job, <=35 links) and authors the INTERFACE/
+# FRAME CONTRACT: named mount frames in GLOBAL meters + the SEAMS that join the
+# subassemblies. The assembler stitches the per-sub URDFs deterministically from
+# this. See maker2/boss.py and .claude/plans/precious-humming-wand.md.
+# --------------------------------------------------------------------------- #
+
+BOSS_SCHEMA_TEXT = """\
+Return exactly one JSON object (no prose, no markdown fences) with this shape:
+
+{
+  "name": "<urdf-safe machine name, snake_case>",
+  "root_sub": "<id of the single ROOT subassembly everything hangs off>",
+  "global_origin_note": "<where the shared global origin is and axis convention>",
+  "subassemblies": [
+    {
+      "id": "<urdf-safe: lowercase, starts with a letter, [a-z0-9_] only, unique>",
+      "brief": "<one-paragraph product prompt for THIS subassembly's manager: what
+                 parts it contains and what it does; it is built in isolation>",
+      "function": "<what this subassembly does in the machine>",
+      "est_link_budget": <int <=35>,          // keep each manager under the output cap
+      "input_tags": ["<frame name that is a power INPUT>", ...],
+      "output_tags": ["<frame name that is a power OUTPUT>", ...],
+      "frames": [
+        {
+          "name": "<urdf-safe frame name, unique within the sub>",
+          "xyz_m": [<x>, <y>, <z>],   // GLOBAL METERS (shared origin), where this
+                                       // interface sits in the assembled machine
+          "rpy_rad": [<r>, <p>, <y>], // GLOBAL radians, fixed-axis XYZ
+          "axis": [<x>, <y>, <z>],    // frame primary axis (e.g. a shaft/gear axis)
+          "role": "<mount | power_in | power_out | mesh>"
+        }
+      ]
+    }
+  ],
+  "seams": [
+    {
+      "id": "<urdf-safe seam name>",
+      "kind": "<weld | power>",
+      "parent_sub": "<sub id>", "parent_frame": "<frame name on parent_sub>",
+      "child_sub":  "<sub id>", "child_frame":  "<frame name on child_sub>",
+      "joint_type": "<fixed for weld; continuous/revolute only for a shared-DOF power seam>",
+      "axis": [<x>, <y>, <z>],       // for a non-fixed power seam
+      "driver": <true|false>,         // true on the seam carrying the machine's single power input
+      "owner_sub": "<for a power seam, the sub that owns the DRIVING link>",
+      "mesh_pair": ["<drive_link>", "<driven_link>"]  // for a GEAR-MESH power seam only
+    }
+  ]
+}
+
+HARD RULES
+- Split the machine so EACH subassembly is a coherent unit a single manager can
+  build in <=35 links (est_link_budget). Prefer 2-6 subs for a mechanism, more for
+  a large machine. Do NOT emit one giant subassembly.
+- ONE global origin. EVERY frame's xyz_m/rpy_rad is in GLOBAL coordinates about
+  that origin, so the assembler can place subassemblies without guessing.
+- Exactly ONE root_sub. Every OTHER subassembly must be reachable through at least
+  one "weld" seam (welds form the structural tree that holds the machine together).
+- A "weld" seam is a fixed structural bolt/mate between two frames (joint_type
+  "fixed"). Use welds to hold housings/frames/bearing-blocks in place.
+- A "power" seam is where MOTION crosses a boundary. Two forms:
+    * GEAR MESH: two gears (one per sub) couple by tooth contact. The STRUCTURAL
+      link is STILL a weld between the housings holding the gear centers one mesh
+      center-distance apart; add a SEPARATE "power" seam with mesh_pair =
+      [drive_gear_link, driven_gear_link] and owner_sub = the driving sub. Do NOT
+      make the gear pair a joint — they mesh geometrically.
+    * SHARED SHAFT (advanced): a single shaft spanning two subs. Keep the rotating
+      DOF inside the owner sub; the seam is a weld carrying torque. (A true
+      articulating shared joint is not supported yet — don't emit joint_type
+      continuous/revolute on a seam unless the seam itself must rotate.)
+- Exactly ONE seam in the whole machine has driver:true — the single power input.
+- Every seam's frames must EXIST on the named subs, and each sub must list a frame
+  for every seam it participates in.
+
+FRAME PLACEMENT (critical — this is how blindly-built subs line up)
+- Each manager builds its subassembly ALONE in its own local frame, then reports
+  where it actually put each interface frame. You give the GLOBAL target; the
+  geometric pre-check verifies the managers' realized frames coincide.
+- For a gear-mesh seam, place the two mesh frames (role "mesh") at the two gear
+  CENTERS, exactly one meshing center-distance apart, on parallel axes."""
+
+
+# A minimal, valid worked example = the crank-gear -> driven-gear milestone: two
+# subs coupled by a GEAR MESH across a weld. `sub_crank` (crank + drive_gear) is
+# the root; `sub_output` (driven_gear + output_shaft) welds its housing to the
+# crank housing so the two gears mesh, and a "power" seam names the meshing pair.
+BOSS_FEWSHOT_PRODUCT = "a hand crank that turns a drive gear which meshes a driven gear on an output shaft"
+
+BOSS_FEWSHOT_JSON = """\
+{
+  "name": "crank_gear_train",
+  "root_sub": "sub_crank",
+  "global_origin_note": "origin at the drive-gear center on the base plane; +Z up, gear axes along +Z, the two gear centers lie on the X axis",
+  "subassemblies": [
+    {
+      "id": "sub_crank",
+      "brief": "A hand-crank input stage: a base/bearing-block, a crank handle on a short input shaft turning in the bearing, and a drive gear (module 2, 20 teeth, ~20 mm pitch radius) fixed on that shaft. The drive gear is the driver the user turns.",
+      "function": "input: convert the user's crank rotation into drive-gear rotation",
+      "est_link_budget": 6,
+      "input_tags": [],
+      "output_tags": ["drive_gear_center"],
+      "frames": [
+        {"name": "housing_mount", "xyz_m": [0.0, 0.0, 0.0], "rpy_rad": [0.0, 0.0, 0.0], "axis": [0.0, 0.0, 1.0], "role": "mount"},
+        {"name": "drive_gear_center", "xyz_m": [0.0, 0.0, 0.03], "rpy_rad": [0.0, 0.0, 0.0], "axis": [0.0, 0.0, 1.0], "role": "mesh"}
+      ]
+    },
+    {
+      "id": "sub_output",
+      "brief": "An output stage: a bearing-block, a driven gear (module 2, 20 teeth, ~20 mm pitch radius) on an output shaft turning in the bearing. The driven gear meshes the crank's drive gear; the output shaft is the mechanism output.",
+      "function": "output: receive motion from the drive gear and turn the output shaft",
+      "est_link_budget": 5,
+      "input_tags": ["driven_gear_center"],
+      "output_tags": [],
+      "frames": [
+        {"name": "housing_mount", "xyz_m": [0.04, 0.0, 0.0], "rpy_rad": [0.0, 0.0, 0.0], "axis": [0.0, 0.0, 1.0], "role": "mount"},
+        {"name": "driven_gear_center", "xyz_m": [0.04, 0.0, 0.03], "rpy_rad": [0.0, 0.0, 0.0], "axis": [0.0, 0.0, 1.0], "role": "mesh"}
+      ]
+    }
+  ],
+  "seams": [
+    {
+      "id": "weld_housings",
+      "kind": "weld",
+      "parent_sub": "sub_crank", "parent_frame": "housing_mount",
+      "child_sub": "sub_output", "child_frame": "housing_mount",
+      "joint_type": "fixed"
+    },
+    {
+      "id": "gear_mesh",
+      "kind": "power",
+      "parent_sub": "sub_crank", "parent_frame": "drive_gear_center",
+      "child_sub": "sub_output", "child_frame": "driven_gear_center",
+      "joint_type": "fixed",
+      "axis": [0.0, 0.0, 1.0],
+      "driver": true,
+      "owner_sub": "sub_crank",
+      "mesh_pair": ["drive_gear", "driven_gear"]
+    }
+  ]
+}"""
+
