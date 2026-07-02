@@ -252,6 +252,11 @@ RULES
 - Build this subassembly in ITS OWN local frame, following the usual units/origin
   contract (mm geometry, joint xyz_m in meters, each part's attach point at its
   local origin). You choose where this subassembly's own root/origin sits.
+- KEEP IT SMALL — a downstream worker must emit CAD code for ALL of this
+  subassembly's parts in ONE response capped at ~16000 tokens. If you emit too many
+  parts or over-complex geometry, the worker's code overruns the cap and the build
+  FAILS. Aim for a handful of parts (roughly 3-8), each with simple, buildable
+  geometry. Do not over-decompose here — this is only one subassembly of the machine.
 - For EACH interface frame above, there must be a real LINK positioned so that the
   frame lands at the given GLOBAL location when the machine is assembled. Typically
   the frame coincides with a specific link (a housing mounting face, a gear center,

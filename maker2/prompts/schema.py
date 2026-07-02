@@ -218,9 +218,11 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
 }
 
 HARD RULES
-- Split the machine so EACH subassembly is a coherent unit a single manager can
-  build in <=35 links (est_link_budget). Prefer 2-6 subs for a mechanism, more for
-  a large machine. Do NOT emit one giant subassembly.
+- Split the machine so EACH subassembly is a coherent unit ONE manager can build
+  AND one worker can emit CAD for, both under a ~16000-token cap. Keep
+  est_link_budget SMALL: <=8 for detailed geometry (gears/threads), never above 12.
+  Prefer MORE, smaller subassemblies over fewer big ones (the parallel build is
+  cheap). Do NOT emit one giant subassembly.
 - ONE global origin. EVERY frame's xyz_m/rpy_rad is in GLOBAL coordinates about
   that origin, so the assembler can place subassemblies without guessing.
 - Exactly ONE root_sub. Every OTHER subassembly must be reachable through at least
