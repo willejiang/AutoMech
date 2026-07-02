@@ -118,6 +118,36 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
       const dir = r.render_dir || r.run_dir;
       if (dir) loadArtifacts(idx, dir);
     });
+    // Per-iteration artifacts: the loop emits these as soon as a model is built
+    // (after the judge) or a recording is made (after physics), pass OR fail. Load
+    // them into THIS turn right away so the canvas + video always show the newest
+    // attempt instead of waiting for the loop to finish.
+    es.addEventListener('artifact', (e) => {
+      const a = JSON.parse((e as MessageEvent).data) as {
+        kind: 'model' | 'physics';
+        run_dir?: string; render_dir?: string;
+        physics?: PhysicsResult | null;
+      };
+      const dir = a.render_dir || a.run_dir;
+      if (a.kind === 'model' && dir) {
+        // Fresh renderable model -> pull its GLB + SCAD; canvas jumps to it.
+        patchTurn(idx, { runDir: a.run_dir ?? dir });
+        loadArtifacts(idx, dir);
+      } else if (a.kind === 'physics' && a.physics) {
+        // Fresh recording -> merge physics into the turn's (possibly partial) result
+        // and point its render_dir at this iteration so the panel plays this video.
+        setTurns((prev) => prev.map((t, i) => {
+          if (i !== idx) return t;
+          const merged: Maker2Result = {
+            ...(t.result ?? { ok: true }),
+            physics: a.physics ?? null,
+            render_dir: a.render_dir || t.result?.render_dir,
+            run_dir: a.run_dir || t.result?.run_dir,
+          };
+          return { ...t, result: merged };
+        }));
+      }
+    });
     es.addEventListener('error', (e) => {
       const data = (e as MessageEvent).data;
       if (data) {
@@ -241,7 +271,8 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
         <div className="min-w-0 flex-1">
           <div className="truncate text-sm font-medium">{prompt || turns[0]?.message}</div>
           <div className="text-xs text-adam-neutral-400">
-            articulated (maker2){model ? ` · ${model}` : ''} · max {iters} iter
+            articulated (maker2){model ? ` · ${model}` : ''} ·{' '}
+            {iters > 0 ? `max ${iters} iter` : 'loops until it works'}
             {turns.length > 1 ? ` · ${turns.length} turns` : ''}
           </div>
         </div>
@@ -318,7 +349,7 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
 
 // One conversation turn: the user message, its pipeline progress, verdict, .scad.
 function TurnCard({ turn, index }: { turn: Turn; index: number }) {
-  const stageStates = deriveStages(turn);
+  const groups = splitIterations(turn.lines);
   const verdictPass = turn.result?.ok && turn.result?.judge?.passed !== false;
   return (
     <div className="rounded-lg border border-adam-neutral-800 bg-adam-neutral-900/30">
@@ -339,22 +370,64 @@ function TurnCard({ turn, index }: { turn: Turn; index: number }) {
       </div>
 
       <div className="px-3 py-2">
-        <ul className="space-y-1">
-          {STAGES.map((s) => {
-            const st = stageStates[s.key];
-            return (
+        {/* Per-iteration pipeline: the closed loop can rebuild many times inside one
+            turn; show EACH manager->worker->judge->physics pass with its verdict so a
+            rebuild is visible, not collapsed into one row. */}
+        {groups.length > 0 ? (
+          <div className="space-y-2">
+            {groups.map((g, gi) => {
+              // An iteration is settled once a later one started or the run ended.
+              const settled = gi < groups.length - 1 || !turn.streaming;
+              const stageStates = deriveIterStages(g, settled);
+              return (
+                <div key={gi} className={cn(groups.length > 1 &&
+                  'rounded border border-adam-neutral-800/60 bg-adam-neutral-950/30 p-2')}>
+                  {groups.length > 1 && (
+                    <div className="mb-1 flex items-center gap-2 text-[11px] font-semibold text-adam-neutral-300">
+                      <span>Iteration {g.n + 1}</span>
+                      {g.judge && (
+                        <span className={g.judge === 'PASS' ? 'text-green-400' : 'text-red-400'}>
+                          judge {g.judge}
+                        </span>
+                      )}
+                      {g.physics && (
+                        <span className={g.physics === 'PASS' ? 'text-green-400' : 'text-red-400'}>
+                          · physics {g.physics}{g.physicsCause ? ` (${g.physicsCause})` : ''}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  <ul className="space-y-1">
+                    {STAGES.map((s) => {
+                      const st = stageStates[s.key];
+                      return (
+                        <li key={s.key} className="flex items-center gap-2 text-xs">
+                          <StageDot state={st} />
+                          <span className={cn(
+                            st === 'pending' && 'text-adam-neutral-500',
+                            st === 'active' && 'text-adam-text-primary',
+                            st === 'done' && 'text-adam-neutral-300')}>
+                            {s.label}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          // Reopened from disk (no live lines): a result means every stage ran.
+          <ul className="space-y-1">
+            {STAGES.map((s) => (
               <li key={s.key} className="flex items-center gap-2 text-xs">
-                <StageDot state={st} />
-                <span className={cn(
-                  st === 'pending' && 'text-adam-neutral-500',
-                  st === 'active' && 'text-adam-text-primary',
-                  st === 'done' && 'text-adam-neutral-300')}>
-                  {s.label}
-                </span>
+                <StageDot state={turn.result ? 'done' : 'pending'} />
+                <span className="text-adam-neutral-300">{s.label}</span>
               </li>
-            );
-          })}
-        </ul>
+            ))}
+          </ul>
+        )}
 
         {turn.result && (
           <div className="mt-2 space-y-1 text-[11px] text-adam-neutral-300">
@@ -403,19 +476,57 @@ function TurnCard({ turn, index }: { turn: Turn; index: number }) {
   );
 }
 
-function deriveStages(turn: Turn): Record<string, StageState> {
-  if (turn.result || (!turn.streaming && turn.lines.length === 0)) {
-    // Finished (or reopened read-only): a result means every stage ran.
-    const out: Record<string, StageState> = {};
-    STAGES.forEach((s) => { out[s.key] = turn.result ? 'done' : 'pending'; });
+// Split a turn's stdout into per-iteration groups. The closed loop prints
+// "===== ITERATION N (feedback: ...) =====" before each pass; everything before
+// the first such marker (the [run] preamble) is attached to iteration 0. Each
+// group also carries the judge/physics verdict parsed from that iteration's own
+// lines, so the sidebar can show "Iteration 2: judge FAIL -> rebuilt".
+type IterGroup = {
+  n: number;                   // iteration number as printed (0-based)
+  lines: string[];
+  judge?: 'PASS' | 'FAIL';
+  physics?: 'PASS' | 'FAIL' | 'ERROR';
+  physicsCause?: string;       // structure | scenario | framing (on FAIL)
+};
+
+const ITER_RE = /=====\s*ITERATION\s+(\d+)/i;
+
+function splitIterations(lines: string[]): IterGroup[] {
+  const groups: IterGroup[] = [];
+  let cur: IterGroup | null = null;
+  for (const line of lines) {
+    const m = line.match(ITER_RE);
+    if (m) {
+      cur = { n: Number(m[1]), lines: [] };
+      groups.push(cur);
+      continue;
+    }
+    if (!cur) { cur = { n: 0, lines: [] }; groups.push(cur); }
+    cur.lines.push(line);
+    // Verdicts printed within this iteration.
+    const jm = line.match(/\[judge\]\s+verdict:\s*(PASS|FAIL)/i);
+    if (jm) cur.judge = jm[1].toUpperCase() as 'PASS' | 'FAIL';
+    if (/\[loop\].*physics PASS/i.test(line)) cur.physics = 'PASS';
+    const pf = line.match(/\[loop\]\s*physics FAIL(?:\s*\(cause=([a-z]+)\))?/i);
+    if (pf) { cur.physics = 'FAIL'; if (pf[1]) cur.physicsCause = pf[1].toLowerCase(); }
+    if (/\[physics\]\s+failed:/i.test(line)) cur.physics = 'ERROR';
+  }
+  return groups;
+}
+
+// Stage state for ONE iteration's line group. `settled` means this iteration is
+// finished (a later iteration started, or the whole run ended) -> all-done.
+function deriveIterStages(g: IterGroup, settled: boolean): Record<string, StageState> {
+  const out: Record<string, StageState> = {};
+  if (settled) {
+    STAGES.forEach((s) => { out[s.key] = 'done'; });
     return out;
   }
   const seen = new Set<string>();
-  for (const line of turn.lines) {
+  for (const line of g.lines) {
     for (const s of STAGES) if (s.match(line)) seen.add(s.key);
   }
   const lastSeenIdx = Math.max(-1, ...STAGES.map((s, i) => (seen.has(s.key) ? i : -1)));
-  const out: Record<string, StageState> = {};
   STAGES.forEach((s, i) => {
     if (i < lastSeenIdx) out[s.key] = 'done';
     else if (i === lastSeenIdx) out[s.key] = 'active';

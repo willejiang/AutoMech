@@ -15,7 +15,9 @@ export const Route = createFileRoute('/maker2/$runId')({
   validateSearch: (search: Record<string, unknown>): Maker2Search => ({
     prompt: typeof search.prompt === 'string' ? search.prompt : '',
     model: typeof search.model === 'string' ? search.model : '',
-    iters: Number(search.iters) > 0 ? Number(search.iters) : 2,
+    // 0 = infinite loop (default); a positive value caps the loop (from /iters N).
+    iters: Number.isFinite(Number(search.iters)) && Number(search.iters) > 0
+      ? Number(search.iters) : 0,
     thread: typeof search.thread === 'string' ? search.thread : undefined,
     dir: typeof search.dir === 'string' ? search.dir : undefined,
   }),

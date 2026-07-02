@@ -342,7 +342,9 @@ export function PromptView() {
                     navigate({
                       to: '/maker2/$runId',
                       params: { runId: crypto.randomUUID() },
-                      search: { prompt: p, model, iters: iters ?? 2 },
+                      // iters 0 = infinite loop until judge+physics pass (default);
+                      // the user can cap it with /iters N in the prompt bar.
+                      search: { prompt: p, model, iters: iters ?? 0 },
                     })
                   }
                 />

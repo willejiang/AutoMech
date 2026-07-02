@@ -64,11 +64,116 @@ def _judge(prompt, model, results, ctx, settings):
                 "suggestions": "", "views": len(view_pngs)}
 
 
+def _append_thread(out_dir, thread, message, result, model_id):
+    """Append this run as a turn to output/threads/<thread>/thread.json."""
+    try:
+        from datetime import datetime, timezone
+        tdir = Path(out_dir, "threads", thread)
+        tdir.mkdir(parents=True, exist_ok=True)
+        tpath = tdir / "thread.json"
+        doc = json.loads(tpath.read_text()) if tpath.exists() else {
+            "id": thread, "created_at": datetime.now(timezone.utc).isoformat(),
+            "model": model_id, "turns": [],
+        }
+        judge = result.get("judge") or {}
+        doc["turns"].append({
+            "message": message,
+            "run_dir": result.get("run_dir", ""),
+            "render_dir": result.get("render_dir", ""),
+            "ok": bool(result.get("ok")),
+            "hard_failed": bool(result.get("hard_failed")),
+            "judge_passed": judge.get("passed"),
+            "entry": result.get("entry", "rebuild"),
+            "ts": datetime.now(timezone.utc).isoformat(),
+        })
+        tpath.write_text(json.dumps(doc, indent=2))
+        print(f"[thread] appended turn -> {tpath}")
+    except Exception as e:
+        print(f"[thread] could not update thread.json: {e}")
+
+
+def _run_skip(entry: str, prompt: str, message: str | None, prior_model: str,
+              settings, out_dir: str, do_physics: bool, thread: str | None) -> dict:
+    """Re-run ONLY the evaluator on the prior turn's already-built model — no
+    manager, no worker. `entry` is retest | reframe | revise_scenario. The prior
+    model's run_dir holds model.urdf + meshes/; we copy them into a fresh run dir so
+    this turn has its own result/video, then run physics."""
+    import shutil
+    from datetime import datetime, timezone
+    prior_dir = os.path.dirname(os.path.abspath(prior_model))
+    prior_urdf = os.path.join(prior_dir, "model.urdf")
+    result = {"ok": False, "run_dir": "", "urdf_path": "", "render_dir": "",
+              "hard_failed": False, "links": 0, "joints": 0, "movable_joints": 0,
+              "built": 0, "judge": None, "physics": None, "iterations": 1,
+              "error": "", "entry": entry}
+    if not os.path.exists(prior_urdf):
+        result["error"] = f"skip '{entry}': prior model has no URDF ({prior_urdf})"
+        print(f"[skip] {result['error']}")
+        return result
+
+    ctx = make_run_context(prompt, out_dir)
+    os.makedirs(ctx.meshes_dir, exist_ok=True)
+    shutil.copy2(prior_urdf, ctx.urdf_path)
+    if os.path.exists(os.path.join(prior_dir, "kinematic_model.json")):
+        shutil.copy2(os.path.join(prior_dir, "kinematic_model.json"),
+                     ctx.model_json_path)
+    prior_meshes = os.path.join(prior_dir, "meshes")
+    if os.path.isdir(prior_meshes):
+        for f in os.listdir(prior_meshes):
+            shutil.copy2(os.path.join(prior_meshes, f),
+                         os.path.join(ctx.meshes_dir, f))
+    result.update(run_dir=ctx.run_dir, urdf_path=ctx.urdf_path,
+                  render_dir=ctx.run_dir, ok=True)
+    print(f"[skip] entry={entry}: reusing prior model in {ctx.run_dir} "
+          f"(no manager/worker)")
+    # The reused model is renderable now -> show it on the canvas immediately.
+    print("ARTIFACT_JSON:" + json.dumps({
+        "kind": "model", "iter": 0, "run_dir": ctx.run_dir,
+        "render_dir": ctx.run_dir, "judge_passed": None}))
+
+    # The evaluator instruction: for reframe/revise_scenario, steer physics via the
+    # task text; run_physics' own VLM diagnosis + retries then handle the specifics.
+    task = prompt
+    if entry == "reframe" and message:
+        task = f"{prompt} [reframe the camera: {message}]"
+    elif entry == "revise_scenario" and message:
+        task = f"{prompt} [change the test: {message}]"
+
+    if do_physics:
+        try:
+            from maker2.physics import run_physics
+            result["physics"] = run_physics(ctx.urdf_path, task, ctx.run_dir)
+        except Exception as e:
+            print(f"[skip] physics failed: {e}")
+            result["physics"] = {"passed": None, "cause": "none",
+                                 "summary": f"physics error: {e}"}
+        phys = result["physics"] or {}
+        print("ARTIFACT_JSON:" + json.dumps({
+            "kind": "physics", "iter": 0, "run_dir": ctx.run_dir,
+            "render_dir": ctx.run_dir, "passed": phys.get("passed"),
+            "physics": phys}))
+    Path(ctx.run_dir, "result.json").write_text(json.dumps(result, indent=2))
+    try:
+        Path(ctx.run_dir, "run.json").write_text(json.dumps({
+            "prompt": prompt, "model": settings.model, "max_iters": 0,
+            "refine_message": message, "thread": thread, "entry": entry,
+            "created_at": datetime.now(timezone.utc).isoformat()}, indent=2))
+    except Exception:
+        pass
+    if thread:
+        _append_thread(out_dir, thread, message or prompt, result, settings.model)
+    print("-" * 56)
+    print(f"RESULT (skip:{entry}): physics="
+          f"{(result.get('physics') or {}).get('verdict')} Bundle: {ctx.run_dir}")
+    return result
+
+
 def run(prompt: str, out_dir: str = "output", manager_only: bool = False,
         allow_partial: bool = False, model: str | None = None,
         do_judge: bool = True, do_physics: bool = False,
-        max_iters: int = 2, refine_message: str | None = None,
-        prior_model: str | None = None, thread: str | None = None) -> dict:
+        max_iters: int = 0, refine_message: str | None = None,
+        prior_model: str | None = None, thread: str | None = None,
+        entry: str = "rebuild") -> dict:
     settings = Settings()
     settings.allow_partial = allow_partial
     if model:
@@ -91,6 +196,35 @@ def run(prompt: str, out_dir: str = "output", manager_only: bool = False,
             print(f"[run] could not read prior model ({e}); cold decompose")
     if refine_message:
         print(f"[run] refine message: {refine_message}")
+
+    # SKIP: a follow-up that isn't a redesign shouldn't restart the slow manager.
+    # If the caller didn't force --entry, classify the message to pick the cheapest
+    # correct entry (rebuild / retest / reframe / revise_scenario). The three
+    # non-rebuild entries re-run ONLY the evaluator on the prior model.
+    if refine_message and entry == "rebuild" and prior_model:
+        try:
+            from maker2.diagnose import classify_followup
+            gw = {"base_url": settings.base_url, "api_key": settings.api_key,
+                  "model": settings.model}
+            summary = ""
+            if prior_model_json:
+                try:
+                    pm = json.loads(prior_model_json)
+                    summary = (f"{pm.get('name','model')}: "
+                               f"{len(pm.get('links', []))} links, "
+                               f"{len(pm.get('joints', []))} joints")
+                except Exception:
+                    pass
+            c = classify_followup(refine_message, summary, None, gw)
+            entry = c["entry"]
+            print(f"[run] follow-up classified as '{entry}': {c['reason']}")
+        except Exception as e:
+            print(f"[run] follow-up classify failed ({e}); rebuilding")
+            entry = "rebuild"
+
+    if entry != "rebuild" and prior_model:
+        return _run_skip(entry, prompt, refine_message, prior_model, settings,
+                         out_dir, do_physics, thread)
 
     # The result reflects the BEST/LAST iteration. Each iteration gets its own dir.
     # `render_dir` tracks the last iteration that actually BUILT a renderable model
@@ -166,50 +300,113 @@ def run(prompt: str, out_dir: str = "output", manager_only: bool = False,
             patch["judge"] = _judge(prompt, model_obj, results, ctx, settings)
         return patch, ctx, results, model_obj
 
-    # ---- refine loop: re-decompose (manager) on a judge FAIL, up to max_iters ----
-    feedback = None
+    # ---- TWO NESTED LOOPS ----------------------------------------------------
+    # MAIN loop (always infinite): maker-subloop -> physics; a physics STRUCTURE
+    #   failure rebuilds. Stops only on physics PASS, a physics error, a hard build
+    #   failure, or the process being killed (the browser tab closing aborts the SSE).
+    #   `max_iters` does NOT cap this loop.
+    # MAKER subloop (capped by `max_iters`): manager(+feedback) -> worker -> judge.
+    #   Judge FAIL -> rebuild for appearance. If the judge keeps failing past
+    #   `max_iters`, we DON'T end the run — we fall through to physics with the
+    #   current model (an ugly-but-testable model still deserves a physics verdict).
+    #   `max_iters == 0` means INFINITE judge retries (never fall through until the
+    #   judge passes). The subloop counter RESETS every main iteration.
+    feedback = None                      # carried into the manager each rebuild
     last_ctx = None
-    for it in range(max(1, max_iters)):
-        patch, ctx, results, model_obj = _one_iteration(it, feedback)
-        result.update(patch)
-        result["iterations"] = it + 1
-        last_ctx = ctx
-        # Remember the last iteration that produced a renderable model, so the
-        # canvas can fall back to it if a later pass regresses or the judge fails.
-        if patch.get("ok"):
-            result["render_dir"] = ctx.run_dir
-        Path(ctx.run_dir, "result.json").write_text(json.dumps(result, indent=2))
+    judge_infinite = max_iters <= 0
+    total_it = 0                         # monotonic: unique run dir + UI iteration id
+    while True:                          # ===== MAIN LOOP (infinite) =====
+        sub_it = 0                       # reset the maker-subloop budget each main pass
+        last_judge = None                # last judge verdict this subloop (for feedback)
+        while True:                      # ----- MAKER SUBLOOP (capped) -----
+            patch, ctx, results, model_obj = _one_iteration(total_it, feedback)
+            result.update(patch)
+            result["iterations"] = total_it + 1
+            last_ctx = ctx
+            # Remember the last iteration that produced a renderable model, so the
+            # canvas can fall back to it if a later pass regresses or the judge fails.
+            if patch.get("ok"):
+                result["render_dir"] = ctx.run_dir
+            result["hard_failed"] = not result["render_dir"]
+            Path(ctx.run_dir, "result.json").write_text(json.dumps(result, indent=2))
 
-        judge = patch.get("judge")
-        if not patch["ok"]:
-            break                                 # build failed — don't keep looping
-        if manager_only:
+            # Tell the UI a renderable model exists NOW (regardless of judge verdict),
+            # so the canvas can show THIS iteration's build immediately.
+            if patch.get("ok"):
+                jp = (patch.get("judge") or {}).get("passed")
+                print("ARTIFACT_JSON:" + json.dumps({
+                    "kind": "model", "iter": total_it, "run_dir": ctx.run_dir,
+                    "render_dir": result["render_dir"], "judge_passed": jp}))
+
+            judge = patch.get("judge")
+            if not patch["ok"]:
+                break                    # build failed — leave the subloop (main breaks too)
+            if manager_only:
+                break
+
+            last_judge = judge
+            # Judge PASS -> leave the subloop and go test physics.
+            if judge is None or judge.get("passed"):
+                break
+            # Judge FAIL -> rebuild for appearance, UNLESS the cap says fall through.
+            if not judge_infinite and sub_it >= max_iters - 1:
+                print(f"[loop] judge still FAIL after {max_iters} maker attempt(s); "
+                      f"passing the current model to physics anyway.")
+                break
+            feedback = (judge.get("suggestions") or judge.get("reasons") or "").strip() or None
+            print(f"[loop] judge FAIL -> re-decomposing (maker attempt {sub_it+2}).")
+            sub_it += 1
+            total_it += 1
+            continue                     # ----- end MAKER SUBLOOP iteration -----
+
+        # A hard build failure or --manager-only ends the whole run.
+        if not patch["ok"] or manager_only:
             break
-        if judge is None or judge.get("passed"):
-            break                                 # judged PASS (or no judge) — done
-        if it == max(1, max_iters) - 1:
-            print(f"[loop] reached max_iters ({max_iters}) without a PASS verdict.")
-            break
-        # judge FAIL -> feed its suggestions to the manager for the next pass.
-        feedback = (judge.get("suggestions") or judge.get("reasons") or "").strip() or None
-        print(f"[loop] judge FAIL -> re-decomposing with feedback for iteration {it+1}.")
 
-    # A run is HARD-failed only if no iteration ever produced a renderable model.
-    # A judge-FAIL that still built is NOT hard-failed (we have a model to show).
-    result["hard_failed"] = not result["render_dir"]
-
-    # ---- physics ONCE on the last GOOD render (not a later crashed iteration) ----
-    if do_physics and result["render_dir"]:
+        # Gate 2: physics on the resulting model. FAIL(structure) rebuilds via the
+        # MAIN loop (which resets the maker subloop). scenario/framing were already
+        # retried inside run_physics, so anything failing here is treated structural.
+        if not do_physics:
+            break                        # judge phase done, physics not requested
         render_urdf = os.path.join(result["render_dir"], "model.urdf")
-        print("[physics] PyBullet stability test on maker2's URDF ...")
+        print("[physics] evaluating the assembled URDF ...")
         try:
             from maker2.physics import run_physics
             result["physics"] = run_physics(render_urdf, prompt, result["render_dir"])
         except Exception as e:
             print(f"[physics] failed: {e}")
-            result["physics"] = {"passed": None, "summary": f"physics error: {e}"}
-        if last_ctx is not None:
-            Path(last_ctx.run_dir, "result.json").write_text(json.dumps(result, indent=2))
+            result["physics"] = {"passed": None, "cause": "none",
+                                 "summary": f"physics error: {e}"}
+        Path(ctx.run_dir, "result.json").write_text(json.dumps(result, indent=2))
+
+        # The recording(s) exist NOW — surface them regardless of pass/fail.
+        phys = result["physics"] or {}
+        print("ARTIFACT_JSON:" + json.dumps({
+            "kind": "physics", "iter": total_it,
+            "run_dir": ctx.run_dir, "render_dir": result["render_dir"],
+            "passed": phys.get("passed"), "physics": phys}))
+        if phys.get("passed"):
+            print("[loop] physics PASS -> done.")
+            break
+        if phys.get("passed") is None:
+            print("[loop] physics errored/unavailable -> stop with current model.")
+            break
+        # physics FAIL -> rebuild via the MAIN loop. Feed the manager the physics
+        # reason AND the last judge suggestions (structure is the driver, but the
+        # appearance notes still help the next decomposition).
+        reason = (phys.get("reason") or phys.get("summary") or "").strip()
+        jsug = ""
+        if last_judge is not None:
+            jsug = (last_judge.get("suggestions") or last_judge.get("reasons") or "").strip()
+        feedback = (f"The physics test FAILED: {reason}. The mechanism must actually "
+                    f"work when driven — fix the structure so it does.")
+        if jsug:
+            feedback += f" Also address the appearance issues: {jsug}"
+        print(f"[loop] physics FAIL (cause={phys.get('cause')}) -> "
+              f"rebuilding (main iteration {total_it+2}).")
+        total_it += 1
+        continue                         # ===== end MAIN LOOP iteration =====
+
 
     # ---- history sidecar: make the run self-describing for the UI sidebar ----
     # result.json has no prompt/model, so the disk-scan lister can't title or
@@ -231,29 +428,7 @@ def run(prompt: str, out_dir: str = "output", manager_only: bool = False,
 
     # ---- thread: append this run as a turn so the UI can show a conversation ----
     if thread and result.get("run_dir"):
-        try:
-            from datetime import datetime, timezone
-            tdir = Path(out_dir, "threads", thread)
-            tdir.mkdir(parents=True, exist_ok=True)
-            tpath = tdir / "thread.json"
-            doc = json.loads(tpath.read_text()) if tpath.exists() else {
-                "id": thread, "created_at": datetime.now(timezone.utc).isoformat(),
-                "model": settings.model, "turns": [],
-            }
-            judge = result.get("judge") or {}
-            doc["turns"].append({
-                "message": refine_message or prompt,
-                "run_dir": result["run_dir"],
-                "render_dir": result.get("render_dir", ""),
-                "ok": bool(result.get("ok")),
-                "hard_failed": bool(result.get("hard_failed")),
-                "judge_passed": judge.get("passed"),
-                "ts": datetime.now(timezone.utc).isoformat(),
-            })
-            tpath.write_text(json.dumps(doc, indent=2))
-            print(f"[thread] appended turn -> {tpath}")
-        except Exception as e:
-            print(f"[thread] could not update thread.json: {e}")
+        _append_thread(out_dir, thread, refine_message or prompt, result, settings.model)
 
     print("-" * 56)
     print(f"RESULT: {'PASS' if result['ok'] else 'FAIL'} — "
@@ -282,19 +457,26 @@ def main() -> int:
     ap.add_argument("--no-judge", action="store_true", help="skip the appearance judge")
     ap.add_argument("--physics", action="store_true", help="also run a PyBullet stability test")
     ap.add_argument("--json", action="store_true", help="print result.json as the LAST line")
-    ap.add_argument("--max-iters", type=int, default=2,
-                    help="refine passes: judge FAIL -> re-decompose -> rebuild (default 2)")
+    ap.add_argument("--max-iters", type=int, default=0,
+                    help="MAKER-SUBLOOP cap: judge-FAIL rebuilds for appearance up to "
+                         "this many attempts, then falls through to physics anyway. "
+                         "0 = infinite judge retries. The MAIN loop (physics-driven "
+                         "rebuild) is always infinite regardless of this value.")
     ap.add_argument("--refine-message", default=None,
                     help="multi-turn: the user's change request for the prior model")
     ap.add_argument("--prior-model", default=None,
                     help="multi-turn: path to the prior turn's kinematic_model.json")
     ap.add_argument("--thread", default=None,
                     help="thread id: append this run as a turn to output/threads/<id>/thread.json")
+    ap.add_argument("--entry", default="rebuild",
+                    choices=["rebuild", "retest", "reframe", "revise_scenario"],
+                    help="force the entry stage; default 'rebuild' lets a follow-up be "
+                         "auto-classified (skip the manager when it's not a redesign)")
     a = ap.parse_args()
     res = run(a.prompt, a.out, a.manager_only, a.allow_partial, a.model,
               do_judge=not a.no_judge, do_physics=a.physics, max_iters=a.max_iters,
               refine_message=a.refine_message, prior_model=a.prior_model,
-              thread=a.thread)
+              thread=a.thread, entry=a.entry)
     if a.json:
         print("RESULT_JSON:" + json.dumps(res))
     return 0 if res.get("ok") else 1

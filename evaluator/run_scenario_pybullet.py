@@ -71,6 +71,11 @@ def _run_driven(rid, name_to_idx, spec, drive, frames, dur):
     nf = 0
     base0 = np.array(p.getBasePositionAndOrientation(rid)[0])
     cam_target, cam_dist = _frame_camera(rid)   # frame to the mechanism's size
+    # A framing-retry can tighten/re-angle the shot via the drive block, so a VLM
+    # that "couldn't see it" gets a better view without a rebuild.
+    cam_dist *= float(drive.get("cam_dist_scale", 1.0))
+    cam_yaw = float(drive.get("cam_yaw", 45))
+    cam_pitch = float(drive.get("cam_pitch", -45))
 
     for s in range(steps):
         if in_idx is not None:
@@ -99,7 +104,7 @@ def _run_driven(rid, name_to_idx, spec, drive, frames, dur):
 
         if s % cap_every == 0:
             w, h, px, _, _ = p.getCameraImage(640, 480,
-                viewMatrix=p.computeViewMatrixFromYawPitchRoll(cam_target, cam_dist, 45, -45, 0, 2),
+                viewMatrix=p.computeViewMatrixFromYawPitchRoll(cam_target, cam_dist, cam_yaw, cam_pitch, 0, 2),
                 projectionMatrix=p.computeProjectionMatrixFOV(60, 1.33, 0.02, 40))
             rgb = np.reshape(np.array(px, dtype=np.uint8), (h, w, 4))[..., :3]
             Image.fromarray(rgb).save(frames / f"rgb_{nf:04d}.png")

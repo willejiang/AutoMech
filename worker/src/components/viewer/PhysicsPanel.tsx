@@ -28,6 +28,8 @@ type PhysicsTest = {
   strategy?: string;
   verdict?: string;
   summary?: string;
+  cause?: string;
+  reason?: string;
   metrics?: PhysicsMetrics;
   video?: string | null;
 };
@@ -190,6 +192,18 @@ export function PhysicsPanel({ physics, runDir, running }: PhysicsPanelProps) {
           <div className="space-y-1 text-xs text-adam-neutral-300">
             <div className="text-adam-neutral-400">Stability test</div>
             <div>settled z = {fmt(m.end_z)} · tilt {fmt(m.max_tilt_deg)}° · drift {fmt(m.max_drift)} m</div>
+          </div>
+        )}
+
+        {test?.reason && (
+          <div className={cn('rounded border px-2 py-1 text-[11px]',
+            test.verdict === 'FAIL'
+              ? 'border-red-800 bg-red-900/20 text-red-300'
+              : 'border-adam-neutral-800 bg-adam-neutral-900/30 text-adam-neutral-300')}>
+            <span className="font-semibold">
+              Evaluator{test.cause && test.cause !== 'none' ? ` · ${test.cause}` : ''}:
+            </span>{' '}
+            {test.reason}
           </div>
         )}
 

@@ -96,6 +96,18 @@ export const Route = createFileRoute('/api/run-maker2-stream')({
                   }
                   continue;
                 }
+                // Per-iteration artifacts: a renderable model (after judge) or a sim
+                // recording (after physics) is ready NOW. The UI loads it immediately
+                // so the canvas/video track the loop instead of waiting for the end.
+                const am = line.match(/^ARTIFACT_JSON:(\{.*\})\s*$/);
+                if (am) {
+                  try {
+                    send(sse('artifact', JSON.parse(am[1])));
+                  } catch {
+                    send(sse('log', { raw: line }));
+                  }
+                  continue;
+                }
                 const isStage = STAGE_PREFIXES.some((pre) => line.startsWith(pre));
                 send(sse(isStage ? 'stage' : 'log', { raw: line }));
               }
