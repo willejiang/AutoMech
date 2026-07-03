@@ -27,6 +27,10 @@ from maker2 import viz
 def export_glb(urdf_path: str) -> bytes:
     """Assemble the URDF and return GLB bytes (binary glTF, colors preserved)."""
     robot = viz.load_robot(urdf_path)
+    # Same as the render paths (render_png/six_views): rescue any link that loaded
+    # WITHOUT a real material color (trimesh's default near-gray/white). Skipping
+    # this made the canvas GLB pale/washed-out with parts barely distinguishable.
+    viz._colorize_fallback(robot)
     data = robot.scene.export(file_type="glb")
     return data if isinstance(data, (bytes, bytearray)) else bytes(data)
 

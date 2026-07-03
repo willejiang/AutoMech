@@ -23,13 +23,12 @@ interface Maker2ModelCanvasProps {
 }
 
 function Model({ scene }: { scene: THREE.Object3D }) {
-  // <Stage> auto-frames the model but we supply our OWN lights (preset="rembrandt"
-  // + explicit directional key/fill below) instead of a bright HDRI environment,
-  // which was washing the surfaces out. Directional light gives shape + contrast so
-  // the structure reads clearly (closer to the PyBullet render).
+  // Use <Stage> ONLY to auto-center/frame the model (intensity 0 -> it adds no
+  // lights of its own). The light rig lives at the Canvas level so we control the
+  // directions — critically an OVERHEAD key so top-down / bird's-eye views are lit
+  // as well as the front (the watch is mostly flat top faces from above).
   return (
-    <Stage intensity={0.35} environment={null} preset="rembrandt"
-           adjustCamera={1.1} shadows={false}>
+    <Stage intensity={0} environment={null} adjustCamera={1.1} shadows={false}>
       <primitive object={scene} />
     </Stage>
   );
@@ -99,10 +98,19 @@ export function Maker2ModelCanvas({ glbBlob, status, failedReason }: Maker2Model
       className="h-full w-full"
       camera={{ position: [0, 0, 5], fov: 45 }}
       dpr={[1, 2]}
-      // Lower exposure so surfaces aren't blown out; <Stage>'s rembrandt rig then
-      // gives the model clear shape + contrast instead of a flat, washed-out HDRI.
-      gl={{ toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 0.8 }}
+      gl={{ toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.0 }}
     >
+      {/* Light-gray background. */}
+      <color attach="background" args={['#c8ccd2']} />
+      {/* Light rig covering ALL orbit angles. The DOMINANT key is OVERHEAD so a
+          top-down / bird's-eye view (mostly flat top faces) is well lit, not just
+          the front; front/back/side fills keep every other angle clear too. */}
+      <ambientLight intensity={0.55} />
+      <hemisphereLight args={[0xffffff, 0x30333c, 0.6]} />
+      <directionalLight position={[0, 10, 0.5]} intensity={1.5} />{/* overhead key */}
+      <directionalLight position={[0, -6, 2]} intensity={0.4} />{/* under-fill */}
+      <directionalLight position={[6, 3, 6]} intensity={0.7} />{/* front-right */}
+      <directionalLight position={[-6, 3, -6]} intensity={0.5} />{/* back-left */}
       <Suspense fallback={null}>
         <Model scene={scene} />
       </Suspense>
