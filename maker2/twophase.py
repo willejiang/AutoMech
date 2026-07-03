@@ -93,15 +93,28 @@ def stream_two_part(client, conv: Conversation, system: str, *,
     """
     accum = ""
     for _ in range(_MAX_NOTES_CONTINUE + 1):
+        prev_len = len(accum)
         messages = conv.get_messages_for_api(api_style=client.api_style)
         text, finish = client.send_collect(
             messages, system=system, on_delta=_heartbeat(log_fn, tag, "writing plan"))
         accum = (accum + text) if accum else text
         has_json = "{" in accum
+        made_progress = len(accum) - prev_len > 20   # real new content this round
 
         if finish == "length" and not has_json:
-            # Cut mid-NOTES: save what we have, feed the model its own partial, and
-            # ask it to keep writing the notes. Loop (bounded).
+            if not made_progress:
+                # The round burned the cap but produced ~no visible content — the
+                # model spent the whole budget on hidden thinking. Continuing would
+                # just repeat that. Stop and regenerate the JSON from whatever notes
+                # we have (thinking is bounded once effort is set on the client).
+                notes = _notes_of(accum)
+                _save(memory_path, notes)
+                if log_fn:
+                    log_fn(f"[{tag}] a notes round produced no content (cap spent on "
+                           f"hidden thinking); generating the JSON now")
+                return _regen_json(client, system, notes, regen_msg_fn, log_fn, tag)
+            # Cut mid-NOTES with real progress: save, feed the model its own partial,
+            # and ask it to keep writing the notes. Loop (bounded).
             _save(memory_path, accum)
             conv.add_assistant_message(text)
             if log_fn:

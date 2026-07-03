@@ -42,7 +42,7 @@ class Settings:
                                                    # the worker also streams with
                                                    # completion-continuation if a
                                                    # reply still overruns.
-    judger_max_tokens: int = 8000                 # the evaluator's verdict JSON is
+    judger_max_tokens: int = 16000                 # the evaluator's verdict JSON is
                                                    # small (pass/reasons/
                                                    # suggestions); well under the cap.
     boss_max_tokens: int = 32000                  # the boss's SubassemblyPlan is
@@ -110,11 +110,22 @@ class Settings:
         known = {f.name for f in fields(cls)}
         return cls(**{k: v for k, v in data.items() if k in known})
 
-    def make_client(self, max_tokens: int):
+    def make_client(self, max_tokens: int, thinking: str = "off"):
         """Construct an LLMClient bound to these settings (lazy import).
 
         Imported lazily so config.py stays importable without the package on
         the path (e.g. when only inspecting settings).
+
+        ``thinking`` maps to the gateway's reasoning budget ("off" | "on" |
+        "extended" -> reasoning_effort none | medium | high). For claude-opus-4.8
+        on the Copilot proxy this is LOAD-BEARING on a big prompt: with NO effort
+        set, the model runs an UNBOUNDED hidden thinking phase that consumes the
+        entire max_tokens before any content streams (empty, cap-truncated
+        response); setting effort BOUNDS the thinking so visible output actually
+        flows. Verified: a "create a car" boss plan returns 0 content at 32K with
+        effort unset, but a complete 8-subassembly plan (finish=stop) with
+        "extended". So the boss/manager (large structured outputs) run with
+        thinking on; the worker/judger stay off.
         """
         from maker2.llm.client import LLMClient
         return LLMClient(
@@ -124,13 +135,13 @@ class Settings:
             model=self.model,
             max_tokens=max_tokens,
             temperature=self.temperature,
-            thinking="off",
+            thinking=thinking,
             timeout=self.llm_timeout,
         )
 
     def manager_client(self):
         """An LLMClient sized for the manager's decomposition output."""
-        return self.make_client(self.manager_max_tokens)
+        return self.make_client(self.manager_max_tokens, thinking="extended")
 
     def worker_client(self):
         """An LLMClient sized for a worker's code output."""
@@ -142,4 +153,4 @@ class Settings:
 
     def boss_client(self):
         """An LLMClient sized for the boss's SubassemblyPlan output."""
-        return self.make_client(self.boss_max_tokens)
+        return self.make_client(self.boss_max_tokens, thinking="extended")
