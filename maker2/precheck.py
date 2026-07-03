@@ -179,6 +179,12 @@ def precheck(plan, subs: dict, assembled_urdf: str, *, log_fn=print) -> Precheck
                     kind="aabb_overlap", severity="interface",
                     detail=f"subs '{a}' and '{b}' interpenetrate but share no seam"))
 
+    # 4. PART INTERPENETRATION: rigid pieces occupying the same space. Within a sub
+    #    (severity "sub" -> re-run that manager) and across a WELD seam (severity
+    #    "interface" -> boss re-plan). Skips pairs joined by a joint (a shaft in a
+    #    bearing SHOULD overlap) and only flags GROSS overlap (see _part_overlaps).
+    violations.extend(_part_overlaps(robot, plan, subs, log))
+
     ok = len(violations) == 0
     if ok:
         log("OK: all seams aligned")
@@ -233,6 +239,122 @@ def _transform_aabb(bounds, T):
 def _aabb_overlap(ba, bb, margin=1e-4) -> bool:
     (lo_a, hi_a), (lo_b, hi_b) = ba, bb
     return bool(np.all(lo_a <= hi_b - margin) and np.all(lo_b <= hi_a - margin))
+
+
+# --------------------------------------------------------------------------- #
+# Part interpenetration (check #4)
+# --------------------------------------------------------------------------- #
+
+# Flag only GROSS overlap: the shared bounding volume must be at least this fraction
+# of the SMALLER part's bounding volume. Below this, treat as a legit tight/nested fit.
+_OVERLAP_FRAC = 0.30
+
+
+def _link_world_mesh(robot, link_name):
+    """A copy of a link's mesh transformed into world coords, or None."""
+    geom = robot.scene.geometry.get(link_name) if hasattr(robot, "scene") else None
+    if geom is None or not hasattr(geom, "bounds") or geom.bounds is None:
+        return None
+    try:
+        T = _world(robot, link_name)
+        m = geom.copy()
+        m.apply_transform(T)
+        return m
+    except Exception:
+        return None
+
+
+def _aabb_vol(bounds) -> float:
+    lo, hi = np.asarray(bounds[0]), np.asarray(bounds[1])
+    d = np.clip(hi - lo, 0, None)
+    return float(d[0] * d[1] * d[2])
+
+
+def _intersection_frac(ma, mb) -> float:
+    """Rough interpenetration score of two WORLD meshes in [0,1]: how much of the
+    SMALLER part's bounding volume is shared with the other. Uses the intersection-AABB
+    volume as a fraction of the smaller part's AABB volume — coarse but MONOTONIC and
+    robust (surface-point containment is unreliable for solids that share a boundary).
+    Enough to catch GROSS interpenetration; a tight nested fit stays well under the
+    threshold because its shared volume is small relative to the parts."""
+    loa, hia = np.asarray(ma.bounds[0]), np.asarray(ma.bounds[1])
+    lob, hib = np.asarray(mb.bounds[0]), np.asarray(mb.bounds[1])
+    lo_i = np.maximum(loa, lob)
+    hi_i = np.minimum(hia, hib)
+    if np.any(lo_i >= hi_i):
+        return 0.0
+    vi = _aabb_vol((lo_i, hi_i))
+    vs = min(_aabb_vol(ma.bounds), _aabb_vol(mb.bounds))
+    return (vi / vs) if vs > 0 else 0.0
+
+
+def _part_overlaps(robot, plan, subs: dict, log) -> list:
+    """Flag rigid parts that GROSSLY interpenetrate. Within a sub -> severity 'sub'
+    (re-run that manager); across a WELD seam -> severity 'interface' (boss re-plan).
+    Skips pairs joined by a joint (intended nesting like a shaft in a bearing) and only
+    flags overlap above _OVERLAP_FRAC. Logs every DROP so a suppressed overlap is
+    visible."""
+    out: list = []
+
+    for sub in plan.subassemblies:
+        sr = subs.get(sub.id)
+        model = getattr(sr, "model", None) if sr else None
+        if model is None:
+            continue
+        # joint-adjacent link pairs in THIS sub (namespaced) -> skip (intended overlap).
+        adj = set()
+        for j in model.joints:
+            adj.add(frozenset((_ns(sub.id, j.parent), _ns(sub.id, j.child))))
+        links = [_ns(sub.id, l.name) for l in model.links]
+        meshes = {ln: _link_world_mesh(robot, ln) for ln in links}
+        meshes = {k: v for k, v in meshes.items() if v is not None}
+        names = list(meshes)
+        worst = None
+        for i in range(len(names)):
+            for k in range(i + 1, len(names)):
+                a, b = names[i], names[k]
+                if frozenset((a, b)) in adj:
+                    continue
+                frac = _intersection_frac(meshes[a], meshes[b])
+                if frac >= _OVERLAP_FRAC:
+                    if worst is None or frac > worst[0]:
+                        worst = (frac, a, b)
+                elif frac > 0.05:
+                    log(f"drop small overlap {a}~{b} ({frac:.0%} < {_OVERLAP_FRAC:.0%})")
+        if worst:
+            frac, a, b = worst
+            out.append(Violation(
+                kind="part_overlap", severity="sub", sub_id=sub.id, value=frac,
+                detail=f"parts '{a}' and '{b}' interpenetrate ({frac:.0%} of the smaller "
+                       f"part is inside the other) — fix their placement"))
+
+    # Cross-WELD-seam gross overlap between two subs -> interface (boss re-plan).
+    for seam in plan.seams:
+        if seam.kind != "weld":
+            continue
+        pa, pb = subs.get(seam.parent_sub), subs.get(seam.child_sub)
+        ma = getattr(pa, "model", None) if pa else None
+        mb = getattr(pb, "model", None) if pb else None
+        if ma is None or mb is None:
+            continue
+        # Approximate each sub by its whole-geometry world AABB (from _sub_bounds) and
+        # check gross box interpenetration; a weld means they TOUCH, not overlap deeply.
+        bounds = _sub_bounds(robot, plan)
+        ba, bb = bounds.get(seam.parent_sub), bounds.get(seam.child_sub)
+        if ba is None or bb is None:
+            continue
+        lo_i = np.maximum(ba[0], bb[0]); hi_i = np.minimum(ba[1], bb[1])
+        if np.all(lo_i < hi_i):
+            vi = _aabb_vol((lo_i, hi_i))
+            vs = min(_aabb_vol(ba), _aabb_vol(bb))
+            frac = (vi / vs) if vs > 0 else 0.0
+            if frac >= _OVERLAP_FRAC:
+                out.append(Violation(
+                    kind="part_overlap", severity="interface", value=frac,
+                    detail=f"welded subs '{seam.parent_sub}' and '{seam.child_sub}' "
+                           f"interpenetrate ({frac:.0%} box overlap) — the seam places "
+                           f"them inside each other; re-plan the frame offsets"))
+    return out
 
 
 # --------------------------------------------------------------------------- #

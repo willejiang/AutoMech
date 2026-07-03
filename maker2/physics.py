@@ -5,9 +5,11 @@ The old version dropped the model from 0.5 m and PASSed if it didn't topple — 
 solid brick passed, and a gearbox was never actually driven. This version routes
 through the evaluator's planner:
 
-  strategy_selector.decide  -> pick static_stability / driven_mechanism / ... + a
-                               test set (via maker2's 8313 gateway)
-  scenario_designer.design  -> a scenario spec per test (a `drive` block for a
+  _environments(task, model) -> decide WHICH tests to run DETERMINISTICALLY from the
+                               model (one driven test per drivable subsystem, or a
+                               stand-still test) — no task-TYPE enum / no selector LLM
+  environment_designer.design_environment -> ONE call: pick the sim environment +
+                               emit the scenario spec for it (a `drive` block for a
                                machine: which input joint to turn, what downstream
                                joints should move)
   run_scenario_pybullet.run -> actually actuate + measure transmission (or hold +
@@ -361,65 +363,39 @@ def _gateway():
         return {"base_url": None, "api_key": None, "model": None}
 
 
-def _plan(task: str, model) -> list[dict] | None:
-    """Ask the strategy selector how to test this. Returns its `tests` list (each
-    driven test annotated with its subsystem's driver/transmission/output so the
-    designer targets the right input), or None if the planner/gateway is unavailable
-    (caller then does a static test)."""
+def _environments(task: str, model) -> list[dict] | None:
+    """Decide WHICH tests to run — deterministically, from the model (no task-TYPE
+    enum / no selector LLM). Each independent subsystem with a drivable input gets its
+    own driven test (tagged with that subsystem's driver/transmission/output so
+    _design_spec drives the right input); a model with no drivable input gets one
+    stand-still test. The per-test SCENARIO (including the sim environment) is authored
+    later by environment_designer inside _design_spec. Returns a list of test
+    descriptors, or None if we can't introspect the model (caller does a static test)."""
     try:
-        import strategy_selector
-        gw = _gateway()
-        robot_info = _robot_info(model)
-        d = strategy_selector.decide(task, robot_info,
-                                     base_url=gw["base_url"], api_key=gw["api_key"],
-                                     model=gw["model"])
-        print(f"[physics] strategy: {d.get('strategy')} | "
-              f"backend={d.get('sim_backend')} | dof={d.get('actuated_dof_count')} "
-              f"| tests={[t.get('name') for t in d.get('tests', [])]}")
-        tests = d.get("tests") or [{"name": d.get("strategy", "test"),
-                                    "goal": task, "strategy": d.get("strategy")}]
-        return _attach_subsystems(tests, robot_info.get("subsystems") or [])
+        subs = _subsystems(model) or []
+        tests: list[dict] = []
+        for sub in subs:
+            if not sub.get("driver"):
+                continue
+            t = {"name": sub["id"], "goal": f"drive the {sub['id']} subsystem"}
+            _tag_test(t, sub)
+            tests.append(t)
+        if tests:
+            print(f"[physics] {len(tests)} driven subsystem test(s): "
+                  f"{[t['name'] for t in tests]}")
+            return tests
+        # No drivable subsystem — fall back to a single stand-still test. (A genuine
+        # stool/statue; the environment_designer will keep drive=null.)
+        driver = _infer_driver(model)
+        if driver:
+            t = {"name": "drive", "goal": task, "driver": driver}
+            print(f"[physics] 1 driven test on inferred input '{driver}'")
+            return [t]
+        print("[physics] no drivable joint -> single stand-still test")
+        return [{"name": "stability", "goal": task}]
     except Exception as e:
-        print(f"[physics] planner unavailable ({e}); static stability test only")
+        print(f"[physics] could not introspect model ({e}); static stability test only")
         return None
-
-
-def _attach_subsystems(tests: list[dict], subs: list[dict]) -> list[dict]:
-    """Give each DRIVEN test the subsystem it exercises (so _design_spec drives that
-    subsystem's input), and ensure EVERY subsystem is covered — backfill a driven test
-    for any subsystem the planner didn't name. A single-subsystem model is unchanged
-    except its one driven test gets the subsystem's driver/output hints."""
-    if not subs:
-        return tests
-    driven = [t for t in tests if t.get("strategy") == "driven_mechanism"]
-    # Map each driven test to a subsystem by name match, else round-robin by order.
-    covered = set()
-    for i, t in enumerate(driven):
-        sub = _match_sub(t, subs) or subs[min(i, len(subs) - 1)]
-        _tag_test(t, sub)
-        covered.add(sub["id"])
-    # Backfill uncovered subsystems (only meaningful when there are >=2 subsystems).
-    for sub in subs:
-        if sub["id"] in covered:
-            continue
-        if len(subs) == 1 and driven:
-            continue  # single subsystem already has a driven test
-        t = {"name": sub["id"], "goal": f"drive the {sub['id']} subsystem",
-             "strategy": "driven_mechanism"}
-        _tag_test(t, sub)
-        tests.append(t)
-        covered.add(sub["id"])
-    return tests
-
-
-def _match_sub(test: dict, subs: list[dict]) -> dict | None:
-    name = (test.get("name") or "").lower()
-    for s in subs:
-        if s["id"] and (s["id"] in name or name in s["id"]):
-            return s
-        if s.get("driver") and s["driver"].lower() in name:
-            return s
-    return None
 
 
 def _tag_test(test: dict, sub: dict) -> None:
@@ -430,15 +406,26 @@ def _tag_test(test: dict, sub: dict) -> None:
 
 
 def _design_spec(task: str, model, test: dict) -> dict:
-    """scenario_designer -> a spec for this test. For a driven test, ENFORCE the role
-    map deterministically (the gateway often ignores schema keys / the role contract):
-    drive ONLY the true driver_input, watch the transmission joints, and declare the
-    propagation path to the output."""
-    from scenario_designer import design
+    """environment_designer -> a spec for this test (ONE call that picks the sim
+    environment + emits the scenario). For a DRIVEN test we still ENFORCE the role map
+    deterministically on top (the gateway often ignores schema keys / the role
+    contract): drive ONLY the true driver_input, watch the transmission joints, and
+    declare the propagation path to the output. `test` may carry a `subsystem` tag."""
+    from environment_designer import design_environment
     gw = _gateway()
-    spec = design(task, _robot_info(model), test,
-                  base_url=gw["base_url"], api_key=gw["api_key"], model=gw["model"])
-    if test.get("strategy") == "driven_mechanism":
+    subsystem = None
+    if test.get("subsystem"):
+        subsystem = {"id": test.get("subsystem"), "driver": test.get("driver"),
+                     "transmission": test.get("transmission"),
+                     "output_joint": test.get("output_joint")}
+    spec = design_environment(task, _robot_info(model), subsystem=subsystem,
+                              base_url=gw["base_url"], api_key=gw["api_key"],
+                              model=gw["model"])
+    # A driven test is now signalled by the model having a drivable input (the caller
+    # decides), not by a strategy enum — enforce the driver iff this test targets one.
+    driver_present = bool(test.get("driver") or _roles(model).get("driver_input"))
+    if driver_present and (test.get("strategy") == "driven_mechanism"
+                           or test.get("subsystem") or spec.get("drive")):
         roles = _roles(model)
         # A test may target a specific subsystem's driver (E-MULTI); else the model's.
         driver = test.get("driver") or roles.get("driver_input") or _infer_driver(model)
@@ -499,7 +486,7 @@ def run_physics(urdf_path: str, task: str, run_dir: str) -> dict:
     from diagnose import diagnose_physics, encode_mp4
 
     model = _load_model(run_dir)
-    tests = _plan(task, model) if model is not None else None
+    tests = _environments(task, model) if model is not None else None
 
     # No model or no plan -> the legacy single static stability test.
     if not tests:
@@ -608,14 +595,16 @@ def _run_one_test(i, test, urdf_path, task, model, run_dir, gw, log_lock):
             print(msg)
 
     try:
-        if test.get("strategy") == "driven_mechanism":
+        # A test targets a driver when it (or the model) has a drivable input; then
+        # _design_spec authors the environment AND enforces the drive. Otherwise it's a
+        # stand-still test (environment_designer keeps drive=null).
+        wants_drive = bool(test.get("driver") or test.get("subsystem"))
+        if wants_drive:
             spec = _design_spec(task, model, test)
-        elif test.get("strategy") in ("static_stability", None):
-            spec = _design_spec(task, model, test) if model is not None else _static_spec()
+        elif model is not None:
+            spec = _design_spec(task, model, test)
             spec.setdefault("drive", None)
         else:
-            log(f"[physics] test '{test.get('name')}' strategy "
-                f"'{test.get('strategy')}' not runnable here; stability proxy")
             spec = _static_spec()
     except Exception as e:
         log(f"[physics] designer failed for '{test.get('name')}' ({e}); static")
