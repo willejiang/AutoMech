@@ -188,20 +188,28 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
         scheduleLiveRender(idx, a.run_dir);
       } else if ((a.kind === 'model' || a.kind === 'assembled_model') && dir) {
         // A renderable model (single-machine iteration OR the assembled hierarchy).
-        // If we've been live-rendering this turn, skip the heavy GLB reload here
-        // (it would stall right before physics streams) but still refresh the SCAD.
         patchTurn(idx, { runDir: a.run_dir ?? dir });
-        setTurns((prev) => {
-          const already = prev[idx]?.liveRendered;
-          if (!already) loadArtifacts(idx, dir);
-          else {
-            // SCAD-only refresh; keep the live-built GLB on the canvas.
-            fetch(`${apiUrl('run-maker2-glb')}?dir=${encodeURIComponent(dir)}&file=scad`)
-              .then((r) => (r.ok ? r.text() : '')).then((s) => patchTurn(idx, { scad: s }))
-              .catch(() => {});
-          }
-          return prev;
-        });
+        // The ASSEMBLED model is a NEW, distinct GLB (namespaced links welded
+        // together) that the per-sub live renders never showed — so always load it
+        // in full. Only the single-machine 'model' respects the live-render skip
+        // (there its live GLB already IS the final model, and a reload would stall
+        // right before physics streams).
+        if (a.kind === 'assembled_model') {
+          patchTurn(idx, { liveRendered: false });
+          loadArtifacts(idx, dir);
+        } else {
+          setTurns((prev) => {
+            const already = prev[idx]?.liveRendered;
+            if (!already) loadArtifacts(idx, dir);
+            else {
+              // SCAD-only refresh; keep the live-built GLB on the canvas.
+              fetch(`${apiUrl('run-maker2-glb')}?dir=${encodeURIComponent(dir)}&file=scad`)
+                .then((r) => (r.ok ? r.text() : '')).then((s) => patchTurn(idx, { scad: s }))
+                .catch(() => {});
+            }
+            return prev;
+          });
+        }
       } else if (a.kind === 'subassembly') {
         // Hierarchy: accumulate each subassembly build (clickable in the card).
         setTurns((prev) => prev.map((t, i) => {
