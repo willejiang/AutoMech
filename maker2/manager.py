@@ -22,15 +22,17 @@ import re
 
 from .imageutil import ImageLoadError, load_image_block
 from .jsonutil import extract_json_object
-from .llm.client import LLMError, LLMTruncationError
+from .llm.client import LLMError
 from .llm.conversation import Conversation
 from .model import JointSpec, KinematicModel, LinkSpec
-from .prompts.manager_prompt import (MANAGER_SYSTEM, build_manager_coarser,
+from .prompts.manager_prompt import (MANAGER_SYSTEM,
                                      build_manager_evaluator_feedback,
+                                     build_manager_json_from_notes,
                                      build_manager_prior_model,
                                      build_manager_refine,
                                      build_manager_repair,
                                      build_manager_subassembly, build_manager_user)
+from .twophase import stream_two_part
 
 
 _VALID_JOINT_TYPES = {"fixed", "revolute", "prismatic", "continuous"}
@@ -407,17 +409,29 @@ def decompose(product_prompt: str, settings, *, image_path: str | None = None,
             log_fn(f"[manager] subassembly '{getattr(frame_contract, 'sub_id', '?')}' "
                    f"with {len(getattr(frame_contract, 'frames', []))} interface frame(s)")
 
+    # Scratch memory: the manager writes its decomposition as NOTES first (saved
+    # here) so a JSON cut can regenerate from the notes instead of dropping parts.
+    # Next to the model file; tagged by sub id in hierarchy mode.
+    from pathlib import Path
+    memory_path = (str(Path(model_json_path).parent / "manager_memory.md")
+                   if model_json_path else None)
+    tag = (f"sub:{getattr(frame_contract, 'sub_id', '?')}"
+           if frame_contract is not None else "manager")
+
     last_err = ""
     attempts = settings.manager_retries + 1
     for attempt in range(1, attempts + 1):
-        messages = conv.get_messages_for_api(api_style=client.api_style)
+        if log_fn:
+            log_fn(f"[manager] attempt {attempt}/{attempts}: decomposing (streaming)…")
+        # stream_two_part streams the NOTES-then-JSON response and RECOVERS a cap cut
+        # WITHOUT shrinking: continue the notes if cut mid-notes, else regenerate the
+        # JSON from the saved notes (so no shafts/bearings get dropped to fit). A
+        # truncation is no longer a failure here — any error below is a content error.
         try:
-            # STREAM (send_collect) rather than the non-streaming send: the gateway's
-            # non-streaming path returns EMPTY choices when a large decomposition is
-            # cut off (so the partial is lost + it truncates at a low effective cap),
-            # whereas streaming delivers the full content. finish=="length" flags a
-            # genuine cap hit so we can ask for a coarser model.
-            text, finish = client.send_collect(messages, system=MANAGER_SYSTEM)
+            text = stream_two_part(client, conv, MANAGER_SYSTEM,
+                                   memory_path=memory_path,
+                                   regen_msg_fn=build_manager_json_from_notes,
+                                   log_fn=log_fn, tag=tag)
         except LLMError as e:
             # send() failures (connection, HTTP, empty) aren't fixed by re-sending the
             # identical prompt, so fail fast with a clear message.
@@ -428,17 +442,9 @@ def decompose(product_prompt: str, settings, *, image_path: str | None = None,
             _validate_model(model)
         except (ValueError, ManagerError, json.JSONDecodeError) as e:
             last_err = str(e)
-            # If the reply was cut off at the output cap, the JSON is incomplete —
-            # ask for a coarser decomposition; otherwise it's a content error to repair.
-            if finish == "length":
-                if log_fn:
-                    log_fn(f"[manager] attempt {attempt}/{attempts} truncated at the "
-                           f"output cap; asking for a coarser decomposition")
-                conv.add_user_message(build_manager_coarser(last_err))
-            else:
-                if log_fn:
-                    log_fn(f"[manager] attempt {attempt}/{attempts} rejected: {last_err}")
-                conv.add_user_message(build_manager_repair(last_err))
+            if log_fn:
+                log_fn(f"[manager] attempt {attempt}/{attempts} rejected: {last_err}")
+            conv.add_user_message(build_manager_repair(last_err))
             continue
         if model_json_path:
             save_model(model, model_json_path)

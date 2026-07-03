@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from ..twophase import JSON_SENTINEL
 from .schema import SCHEMA_TEXT, FEWSHOT_PRODUCT, FEWSHOT_JSON
 
 
@@ -45,7 +46,32 @@ CASE EXAMPLE:
     BAD CASE: only the appearance of the clock is considered, and the internal gears, shafts, and bearings are not treated as separate physical parts. The joints may not be used correctly to connect these parts, resulting in a URDF that does not accurately represent the clock's functionality. This could lead to issues when simulating the clock in Isaac Sim, as it may not operate as expected.
 {SCHEMA_TEXT}
 
-Output ONLY the JSON object. No commentary, no markdown fences."""
+Respond in TWO parts, in this exact order:
+1. NOTES — a concise plaintext plan: the parts you will emit (every gear, shaft,
+   bearing, pin, etc.), their rough sizes, and the joints that connect them. This is
+   your scratchpad and is SAVED AS MEMORY; if you run out of room you will be asked
+   to CONTINUE these notes, so list the load-bearing parts and their connections
+   FIRST, and keep every real physical part — do NOT drop shafts/bearings to save
+   space, because you can always continue the notes.
+2. A line containing exactly:  {JSON_SENTINEL}
+3. The single JSON object described above. No prose and no markdown fences after the
+   sentinel — only the JSON object."""
+
+
+def build_manager_json_from_notes(notes: str) -> str:
+    """Regeneration message: the manager already wrote its decomposition as NOTES
+    (saved when its JSON overran the output cap); hand the notes back and ask for
+    ONLY the JSON now, so the whole output budget goes to the JSON — no need to drop
+    any parts."""
+    return f"""\
+Here is the decomposition you already worked out (your NOTES):
+
+{notes}
+
+Now output ONLY the single JSON object for this decomposition, in full, following the
+schema exactly — include EVERY part listed in the notes (all gears, shafts, bearings,
+pins). Do NOT repeat the notes, do NOT include the `{JSON_SENTINEL}` line, and do NOT
+use markdown fences — output only the JSON object."""
 
 # MANAGER_SYSTEM = f"""\
 # You are the MANAGER of an automated CAD pipeline. You turn a one-line product

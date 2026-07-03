@@ -3,6 +3,7 @@ contract (the input to the per-subassembly managers and the assembler)."""
 
 from __future__ import annotations
 
+from ..twophase import JSON_SENTINEL
 from .schema import BOSS_SCHEMA_TEXT, BOSS_FEWSHOT_PRODUCT, BOSS_FEWSHOT_JSON
 
 
@@ -49,7 +50,30 @@ a real functional unit, not just a few parts.
 
 {BOSS_SCHEMA_TEXT}
 
-Output ONLY the JSON object. No commentary, no markdown fences."""
+Respond in TWO parts, in this exact order:
+1. NOTES — a concise plaintext plan: the subassemblies you will emit, each one's
+   function and rough link budget, the global origin, and the seams (welds + gear
+   meshes) that join them, with the key frame coordinates. This is your scratchpad
+   and is SAVED AS MEMORY; if you run out of room you will be asked to CONTINUE these
+   notes, so put the load-bearing decisions (the subassembly split and the seams)
+   FIRST.
+2. A line containing exactly:  {JSON_SENTINEL}
+3. The single JSON object described above. No prose and no markdown fences after the
+   sentinel — only the JSON object."""
+
+
+def build_boss_json_from_notes(notes: str) -> str:
+    """Regeneration message: the boss already wrote its plan as NOTES (which we saved
+    when its JSON overran the output cap); hand the notes back and ask for ONLY the
+    JSON now, so the whole output budget goes to the JSON."""
+    return f"""\
+Here is the plan you already worked out (your NOTES):
+
+{notes}
+
+Now output ONLY the single JSON object that implements this plan, in full, following
+the schema exactly. Do NOT repeat the notes, do NOT include the `{JSON_SENTINEL}`
+line, and do NOT use markdown fences — output only the JSON object."""
 
 
 def build_boss_user(product_prompt: str, has_image: bool = False) -> str:

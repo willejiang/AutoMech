@@ -29,9 +29,10 @@ from .llm.client import LLMError
 from .llm.conversation import Conversation
 from .model import (FrameContract, MountFrame, SeamSpec, SubassemblyPlan,
                     SubassemblySpec)
-from .prompts.boss_prompt import (BOSS_SYSTEM, build_boss_coarser,
-                                  build_boss_feedback, build_boss_repair,
+from .prompts.boss_prompt import (BOSS_SYSTEM, build_boss_feedback,
+                                  build_boss_json_from_notes, build_boss_repair,
                                   build_boss_user)
+from .twophase import stream_two_part
 
 
 _VALID_JOINT_TYPES = {"fixed", "revolute", "prismatic", "continuous"}
@@ -391,27 +392,27 @@ def plan_machine(product_prompt: str, settings, *, image_path: str | None = None
         if log_fn:
             log_fn("[boss] re-planning from an interface/assembly fault")
 
+    # Scratch memory: the boss writes its plan as NOTES first (saved here) so a JSON
+    # cut can regenerate from the plan instead of shrinking it. Next to the plan file.
+    from pathlib import Path
+    memory_path = (str(Path(plan_json_path).parent / "boss_memory.md")
+                   if plan_json_path else None)
+
     last_err = ""
     attempts = settings.manager_retries + 1
     for attempt in range(1, attempts + 1):
-        messages = conv.get_messages_for_api(api_style=client.api_style)
         if log_fn:
             log_fn(f"[boss] attempt {attempt}/{attempts}: planning subassemblies "
                    f"(streaming)…")
-        # Live heartbeat: emit a [boss] progress line every ~1200 chars so the UI
-        # dot spins and the user sees the plan being generated, instead of a silent
-        # wait until the whole (large) response returns.
-        hb = {"chars": 0, "mark": 0}
-
-        def _beat(delta: str) -> None:
-            hb["chars"] += len(delta)
-            if log_fn and hb["chars"] - hb["mark"] >= 1200:
-                hb["mark"] = hb["chars"]
-                log_fn(f"[boss] …generating plan ({hb['chars']} chars)")
-
+        # stream_two_part streams the NOTES-then-JSON response and RECOVERS a cap cut
+        # without shrinking: continue the notes if cut mid-notes, else regenerate the
+        # JSON from the saved notes. So a truncation is no longer a failure here — any
+        # remaining error below is a genuine content/validation error to repair.
         try:
-            text, finish = client.send_collect(messages, system=BOSS_SYSTEM,
-                                               on_delta=_beat)
+            text = stream_two_part(client, conv, BOSS_SYSTEM,
+                                   memory_path=memory_path,
+                                   regen_msg_fn=build_boss_json_from_notes,
+                                   log_fn=log_fn, tag="boss")
         except LLMError as e:
             raise BossError(f"Boss LLM request failed: {e}") from e
         conv.add_assistant_message(text)
@@ -420,15 +421,9 @@ def plan_machine(product_prompt: str, settings, *, image_path: str | None = None
             _validate_plan(plan)
         except (ValueError, BossError, json.JSONDecodeError) as e:
             last_err = str(e)
-            if finish == "length":
-                if log_fn:
-                    log_fn(f"[boss] attempt {attempt}/{attempts} truncated at the "
-                           f"output cap; asking for fewer, larger subassemblies")
-                conv.add_user_message(build_boss_coarser(last_err))
-            else:
-                if log_fn:
-                    log_fn(f"[boss] attempt {attempt}/{attempts} rejected: {last_err}")
-                conv.add_user_message(build_boss_repair(last_err))
+            if log_fn:
+                log_fn(f"[boss] attempt {attempt}/{attempts} rejected: {last_err}")
+            conv.add_user_message(build_boss_repair(last_err))
             continue
         if plan_json_path:
             save_plan(plan, plan_json_path)
