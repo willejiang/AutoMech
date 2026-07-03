@@ -52,6 +52,10 @@ export const Route = createFileRoute('/api/run-maker2-stream')({
         if (threadId) args.push('--thread', threadId);
         if (refineMessage) args.push('--refine-message', refineMessage);
         if (priorModel) args.push('--prior-model', priorModel);
+        // A fresh run goes through the BOSS hierarchy (boss -> N managers ->
+        // assembler -> precheck). A refine reuses an existing single-machine
+        // model, so it stays on the single-manager path.
+        if (!refineMessage) args.push('--hierarchy');
 
         const stream = new ReadableStream<Uint8Array>({
           start(controller) {

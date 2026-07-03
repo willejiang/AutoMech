@@ -25,7 +25,7 @@ import re
 
 from .imageutil import ImageLoadError, load_image_block
 from .jsonutil import extract_json_object
-from .llm.client import LLMError, LLMTruncationError
+from .llm.client import LLMError
 from .llm.conversation import Conversation
 from .model import (FrameContract, MountFrame, SeamSpec, SubassemblyPlan,
                     SubassemblySpec)
@@ -395,14 +395,23 @@ def plan_machine(product_prompt: str, settings, *, image_path: str | None = None
     attempts = settings.manager_retries + 1
     for attempt in range(1, attempts + 1):
         messages = conv.get_messages_for_api(api_style=client.api_style)
+        if log_fn:
+            log_fn(f"[boss] attempt {attempt}/{attempts}: planning subassemblies "
+                   f"(streaming)…")
+        # Live heartbeat: emit a [boss] progress line every ~1200 chars so the UI
+        # dot spins and the user sees the plan being generated, instead of a silent
+        # wait until the whole (large) response returns.
+        hb = {"chars": 0, "mark": 0}
+
+        def _beat(delta: str) -> None:
+            hb["chars"] += len(delta)
+            if log_fn and hb["chars"] - hb["mark"] >= 1200:
+                hb["mark"] = hb["chars"]
+                log_fn(f"[boss] …generating plan ({hb['chars']} chars)")
+
         try:
-            text = client.send(messages, system=BOSS_SYSTEM)
-        except LLMTruncationError as e:
-            last_err = str(e)
-            if log_fn:
-                log_fn(f"[boss] attempt {attempt}/{attempts} truncated: {last_err}")
-            conv.add_user_message(build_boss_coarser(last_err))
-            continue
+            text, finish = client.send_collect(messages, system=BOSS_SYSTEM,
+                                               on_delta=_beat)
         except LLMError as e:
             raise BossError(f"Boss LLM request failed: {e}") from e
         conv.add_assistant_message(text)
@@ -411,9 +420,15 @@ def plan_machine(product_prompt: str, settings, *, image_path: str | None = None
             _validate_plan(plan)
         except (ValueError, BossError, json.JSONDecodeError) as e:
             last_err = str(e)
-            if log_fn:
-                log_fn(f"[boss] attempt {attempt}/{attempts} rejected: {last_err}")
-            conv.add_user_message(build_boss_repair(last_err))
+            if finish == "length":
+                if log_fn:
+                    log_fn(f"[boss] attempt {attempt}/{attempts} truncated at the "
+                           f"output cap; asking for fewer, larger subassemblies")
+                conv.add_user_message(build_boss_coarser(last_err))
+            else:
+                if log_fn:
+                    log_fn(f"[boss] attempt {attempt}/{attempts} rejected: {last_err}")
+                conv.add_user_message(build_boss_repair(last_err))
             continue
         if plan_json_path:
             save_plan(plan, plan_json_path)

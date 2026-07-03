@@ -177,7 +177,8 @@ class LLMClient:
         else:
             return self._send_openai(messages, system, stream=False)
 
-    def send_collect(self, messages: list[dict], system: str = "") -> tuple[str, str]:
+    def send_collect(self, messages: list[dict], system: str = "",
+                     on_delta=None) -> tuple[str, str]:
         """STREAM a completion and collect the full text + the finish reason.
 
         Returns (text, finish_reason) where finish_reason is normalized to "length"
@@ -185,9 +186,21 @@ class LLMClient:
         provider reported). Unlike send(), this captures the PARTIAL text even on a
         cap truncation — the non-streaming path returns empty choices on truncation,
         so streaming is the only way to get the partial for completion-continuation.
+
+        If ``on_delta`` is given, it is called with each text delta as it arrives
+        (for live progress/heartbeat logging). Exceptions from the callback are
+        swallowed so a logging hiccup never breaks generation.
         """
         parts: list[str] = []
         finish = "stop"
+
+        def _emit(chunk_text: str) -> None:
+            if on_delta and chunk_text:
+                try:
+                    on_delta(chunk_text)
+                except Exception:
+                    pass
+
         if self.api_style == "anthropic":
             body = self._anthropic_body(messages, system, stream=True)
             for chunk in self._http_stream(self._anthropic_url(),
@@ -197,6 +210,7 @@ class LLMClient:
                     d = chunk.get("delta", {})
                     if d.get("text"):
                         parts.append(d["text"])
+                        _emit(d["text"])
                 elif et == "message_delta":
                     sr = (chunk.get("delta", {}) or {}).get("stop_reason")
                     if sr:
@@ -212,6 +226,7 @@ class LLMClient:
                 content = (ch.get("delta", {}) or {}).get("content")
                 if content:
                     parts.append(content)
+                    _emit(content)
                 if ch.get("finish_reason"):
                     finish = ch["finish_reason"]
         return "".join(parts), finish
