@@ -69,6 +69,7 @@ const MODEL_PRICES: Record<
 
   // OpenAI — prompt-cache reads at 50% of input.
   'openai/gpt-5.4': { input: 5, output: 20, cacheRead: 2.5, cacheWrite: 5 },
+  'openai/gpt-5.5': { input: 5, output: 20, cacheRead: 2.5, cacheWrite: 5 },
 };
 
 const FALLBACK_MODEL_PRICE = { input: 15, output: 75 };

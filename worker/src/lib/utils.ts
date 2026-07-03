@@ -263,6 +263,15 @@ export const PARAMETRIC_MODELS: ModelConfig[] = [
     supportsThinking: true,
     supportsVision: true,
   },
+  {
+    id: 'openai/gpt-5.5',
+    name: 'GPT-5.5',
+    description: 'Newest OpenAI model, largest output budget',
+    provider: 'OpenAI',
+    supportsTools: true,
+    supportsThinking: true,
+    supportsVision: true,
+  },
 ];
 
 export const CREATIVE_MODELS: ModelConfig[] = [
