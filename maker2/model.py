@@ -181,6 +181,9 @@ class FrameContract:
     global_origin_note: str = ""
     input_tags: list = field(default_factory=list)
     output_tags: list = field(default_factory=list)
+    neighbors: list = field(default_factory=list)    # [{id, function, brief}] of the
+                                                     # OTHER subs, so this manager knows
+                                                     # what the rest of the machine builds
 
 
 @dataclass

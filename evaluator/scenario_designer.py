@@ -28,6 +28,23 @@ can accomplish the task in a simulator.
 You reason from first principles of rigid-body mechanics. Apply these GENERAL
 principles to whatever task you are given — do not rely on memorized task recipes:
 
+0. DEFINE SUCCESS FIRST (do this before anything else, in "success_definition").
+   Before you design any spec, decide what SUCCESS physically means for THIS task
+   and THIS object. Pick the mode and say why:
+     - STAY STILL / HOLD: the object should support itself, hold a pose, or not
+       topple (a stool, bracket, statue, a mounted structure). Success = it stays
+       up / stays put within tolerances. Usually "drive": null, static support/CoM.
+     - MOVE / ACTUATE: the object should physically move or change pose under its
+       own actuation (a limb reaching, a lever swinging, a slider extending, a gait).
+     - TRANSMIT MOTION: the object is a MECHANISM whose whole point is passing motion
+       from an input to an output (gearbox, clock, tourbillon, cryptex, worm drive).
+       Success = driving the ONE input makes motion REACH the output — NOT standing
+       still, and NOT merely "some part jiggles".
+   State which mode applies and the ONE observable that decides pass/fail (e.g.
+   "base height stays > 0.1 m", "output_joint rotates > 0.2 rad when input is
+   driven"). The rest of the spec must SERVE this definition — do not, for example,
+   set up a stand-still stability test for a gearbox whose success is transmission.
+
 1. SUPPORT & STABILITY. A body is statically stable only if its center of mass
    projects (along gravity) INSIDE its support polygon — the convex hull of the
    ground contact points. A support polygon with AREA (e.g. flat feet/palms,
@@ -104,6 +121,12 @@ SPEC_SCHEMA = {
             "type": "object",
             "additionalProperties": False,
             "properties": {
+                "success_definition": {"type": "string",
+                    "description": "FIRST decide what success physically means for "
+                                   "this task/object: STAY STILL/HOLD, MOVE/ACTUATE, "
+                                   "or TRANSMIT MOTION — and the ONE observable that "
+                                   "decides pass/fail. The rest of the spec must serve "
+                                   "this."},
                 "reasoning": {"type": "string"},
                 "base_orientation_euler": {
                     "type": "array", "items": {"type": "number"},
@@ -164,7 +187,8 @@ SPEC_SCHEMA = {
                         "survive_s": {"type": "number"}},
                     "required": ["min_base_height", "max_drift", "survive_s"]},
             },
-            "required": ["reasoning", "base_orientation_euler", "base_height",
+            "required": ["success_definition", "reasoning",
+                         "base_orientation_euler", "base_height",
                          "joint_pose", "high_friction_links", "control",
                          "duration_s", "fixed_base", "drive", "pass_criteria"],
         },
@@ -183,7 +207,7 @@ def _call(messages, base_url=None, api_key=None, model=None):
     r = c.chat.completions.create(
         model=model or model_id(),
         messages=messages, response_format=SPEC_SCHEMA,
-        max_completion_tokens=2000)
+        max_completion_tokens=16000)
     txt = (r.choices[0].message.content or "").strip()
     if not txt.lstrip().startswith("{"):        # gateway ignored the schema -> strip prose
         import re
@@ -247,4 +271,5 @@ if __name__ == "__main__":
         spec = design(a.task, ri)
     Path(a.out).write_text(json.dumps(spec, indent=2))
     print(f"[designer] wrote spec -> {a.out}")
+    print("success:", spec.get("success_definition", "")[:200])
     print("reasoning:", spec.get("reasoning", "")[:300])

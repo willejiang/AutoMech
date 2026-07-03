@@ -357,6 +357,8 @@ def frame_contract_for(plan: SubassemblyPlan, sub_id: str) -> FrameContract:
         global_origin_note=plan.global_origin_note,
         input_tags=list(sub.input_tags),
         output_tags=list(sub.output_tags),
+        neighbors=[{"id": o.id, "function": o.function, "brief": o.brief}
+                   for o in plan.subassemblies if o.id != sub_id],
     )
 
 

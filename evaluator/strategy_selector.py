@@ -60,6 +60,16 @@ A walkable quadruped: stand (hold pose), walk (forward locomotion), get_up (rise
 after a fall). A bridge: load-bearing, deflection. Each test = {name, goal,
 strategy}. The designer builds + runs each; the judge scores all.
 
+PURE MECHANISM = NO STATIC TEST. If the object is a MECHANISM whose purpose is
+internal motion transmission (a clock/watch movement, tourbillon, gearbox, gear
+train, cryptex, winch) and it has a drivable input, do NOT include a
+"static_stability" test and do NOT set the primary strategy to "static_stability".
+"Does it stand without toppling" proves nothing about a bench-mounted movement and
+just adds a meaningless failure. Make EVERY test "driven_mechanism" (one per
+subsystem) and set the primary strategy to "driven_mechanism". Only include a static
+test when holding a pose / not falling is genuinely part of the task (a stool, a
+statue, a standing robot).
+
 MULTIPLE SUBSYSTEMS: you may be given a SUBSYSTEMS list — independent functional
 units of the machine, each with its OWN power input (e.g. a car: engine, steering,
 drivetrain). When present with >1 entry, return ONE driven_mechanism test PER
@@ -187,7 +197,7 @@ def decide(task, robot_info, *, base_url=None, api_key=None, model=None):
         model=model or model_id(),
         messages=[{"role": "system", "content": SYSTEM},
                   {"role": "user", "content": msg}],
-        response_format=SCHEMA, max_completion_tokens=1200)
+        response_format=SCHEMA, max_completion_tokens=4000)
     return _coerce_decision(r.choices[0].message.content, subsystems=subs)
 
 

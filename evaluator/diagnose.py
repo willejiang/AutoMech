@@ -311,7 +311,7 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
             model=model or os.environ.get("AZURE_VLM_DEPLOYMENT", "claude-opus-4.8"),
             messages=[{"role": "system", "content": _DIAG_SYSTEM},
                       {"role": "user", "content": content}],
-            response_format=_DIAG_SCHEMA, max_completion_tokens=600)
+            response_format=_DIAG_SCHEMA, max_completion_tokens=16000)
         d = _parse_json(r.choices[0].message.content)
     except Exception as e:
         if hard_fail:

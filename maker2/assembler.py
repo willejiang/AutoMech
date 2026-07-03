@@ -30,7 +30,7 @@ import shutil
 import numpy as np
 import trimesh.transformations as tf
 
-from .manager import ManagerError, _validate_model
+from .manager import ManagerError, _validate_model, save_model
 from .model import JointSpec, KinematicModel, LinkSpec
 from .urdf_builder import build_urdf, validate_urdf
 
@@ -283,6 +283,15 @@ def assemble(plan, subs: dict, ctx, *, log_fn=print) -> KinematicModel:
         raise AssemblerError(f"assembled model is not a valid single tree: {e}") from e
 
     build_urdf(final, ctx)
+    # Save the assembled model next to model.urdf so the physics evaluator can load
+    # it (physics._load_model reads kinematic_model.json for joint/driver/role info).
+    # Without this the assembled run has NO model -> robot_info is empty -> the
+    # strategy selector defaults to a static-stability test and never drives the
+    # mechanism (the "why is the tourbillon just a still box" failure).
+    try:
+        save_model(final, ctx.model_json_path)
+    except Exception as e:
+        log(f"WARNING: could not save assembled kinematic_model.json: {e}")
     ok, err = validate_urdf(ctx.urdf_path, require_meshes=False)
     if not ok:
         raise AssemblerError(f"assembled URDF topology invalid: {err}")

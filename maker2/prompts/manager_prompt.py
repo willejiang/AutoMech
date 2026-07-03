@@ -261,6 +261,17 @@ def build_manager_subassembly(frame_contract) -> str:
             f'[{x:.4f}, {y:.4f}, {z:.4f}] m, axis [{ax:.3f}, {ay:.3f}, {az:.3f}]')
     frames_txt = "\n".join(lines) if lines else "  (none)"
     origin = getattr(fc, "global_origin_note", "") or "(the machine's shared origin)"
+    nbrs = getattr(fc, "neighbors", []) or []
+    if nbrs:
+        nb_lines = "\n".join(
+            f'  - {n.get("id","?")}: {n.get("function","") or n.get("brief","")[:100]}'
+            for n in nbrs)
+        neighbors_txt = (
+            "\nTHE REST OF THE MACHINE (built by OTHER managers — do NOT build these "
+            "parts yourself; this is context so your subassembly mates with them):\n"
+            f"{nb_lines}\n")
+    else:
+        neighbors_txt = ""
     return f"""\
 IMPORTANT — you are building ONE SUBASSEMBLY of a larger machine, not the whole
 machine. Build ONLY the parts of this subassembly; do NOT add the neighboring
@@ -269,7 +280,7 @@ the interface frames below, so those frames are a CONTRACT you must honor exactl
 
 SUBASSEMBLY id: {getattr(fc, "sub_id", "?")}
 GLOBAL ORIGIN: {origin}
-
+{neighbors_txt}
 INTERFACE FRAMES this subassembly must expose (positions are in GLOBAL machine
 coordinates about that origin):
 {frames_txt}
