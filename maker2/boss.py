@@ -204,10 +204,9 @@ def _validate_plan(plan: SubassemblyPlan) -> None:
                 problems.append(f"sub '{sub.id}' frame '{fr.name}' has invalid role "
                                 f"'{fr.role}' (expected one of {sorted(_VALID_ROLES)})")
         frames_by_sub[sub.id] = used_frames
-        if sub.est_link_budget > 12:
+        if sub.est_link_budget > 25:
             problems.append(f"sub '{sub.id}' est_link_budget {sub.est_link_budget} "
-                            f"> 12 (too big for one manager/worker under the 16000-token "
-                            f"cap — split it into more subassemblies)")
+                            f"> 25 (too big for one subassembly — split it into more)")
 
     # 3. Normalize seam ids; remap seam endpoints through the sub table.
     used_seams: set[str] = set()

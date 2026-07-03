@@ -412,22 +412,15 @@ def decompose(product_prompt: str, settings, *, image_path: str | None = None,
     for attempt in range(1, attempts + 1):
         messages = conv.get_messages_for_api(api_style=client.api_style)
         try:
-            text = client.send(messages, system=MANAGER_SYSTEM)
-        except LLMTruncationError as e:
-            # The decomposition was too large to fit in one response and the
-            # gateway returned nothing usable. Re-sending the identical prompt
-            # would just truncate again, so ask for a COARSER decomposition
-            # (fewer, larger parts) and retry within the budget.
-            last_err = str(e)
-            if log_fn:
-                log_fn(f"[manager] attempt {attempt}/{attempts} truncated: {last_err}")
-            conv.add_user_message(build_manager_coarser(last_err))
-            continue
+            # STREAM (send_collect) rather than the non-streaming send: the gateway's
+            # non-streaming path returns EMPTY choices when a large decomposition is
+            # cut off (so the partial is lost + it truncates at a low effective cap),
+            # whereas streaming delivers the full content. finish=="length" flags a
+            # genuine cap hit so we can ask for a coarser model.
+            text, finish = client.send_collect(messages, system=MANAGER_SYSTEM)
         except LLMError as e:
-            # Other send() failures (truncation aside: connection, HTTP, empty
-            # with no output) are not fixed by re-sending the identical prompt,
-            # so fail fast with a clear message rather than letting a raw
-            # LLMError abort the whole run.
+            # send() failures (connection, HTTP, empty) aren't fixed by re-sending the
+            # identical prompt, so fail fast with a clear message.
             raise ManagerError(f"Manager LLM request failed: {e}") from e
         conv.add_assistant_message(text)
         try:
@@ -435,9 +428,17 @@ def decompose(product_prompt: str, settings, *, image_path: str | None = None,
             _validate_model(model)
         except (ValueError, ManagerError, json.JSONDecodeError) as e:
             last_err = str(e)
-            if log_fn:
-                log_fn(f"[manager] attempt {attempt}/{attempts} rejected: {last_err}")
-            conv.add_user_message(build_manager_repair(last_err))
+            # If the reply was cut off at the output cap, the JSON is incomplete —
+            # ask for a coarser decomposition; otherwise it's a content error to repair.
+            if finish == "length":
+                if log_fn:
+                    log_fn(f"[manager] attempt {attempt}/{attempts} truncated at the "
+                           f"output cap; asking for a coarser decomposition")
+                conv.add_user_message(build_manager_coarser(last_err))
+            else:
+                if log_fn:
+                    log_fn(f"[manager] attempt {attempt}/{attempts} rejected: {last_err}")
+                conv.add_user_message(build_manager_repair(last_err))
             continue
         if model_json_path:
             save_model(model, model_json_path)

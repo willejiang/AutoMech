@@ -35,20 +35,17 @@ Think mechanically:
   gears mesh geometrically — never turn a gear pair into a joint.
 - Exactly one seam carries the machine's single power INPUT (driver:true).
 
-CRITICAL — DOWNSTREAM TOKEN BUDGET (this is a hard constraint, not a preference):
-Each subassembly you carve out is handed to ONE manager that must emit its whole
-kinematic model in a SINGLE response, and then ONE worker that must emit CAD code
-for ALL of that subassembly's parts in a SINGLE response. BOTH are capped at ~16000
-output tokens. If a subassembly is too big, the worker's code overruns the cap and
-the subassembly FAILS TO BUILD. So keep every subassembly SMALL and SIMPLE:
-- Prefer 3-6 parts per subassembly; keep est_link_budget <= 8 for a subassembly with
-  detailed geometry (gears/threads), and never above 12. Split anything larger into
-  MORE subassemblies rather than one big one.
-- If a functional unit is big (a whole gearbox, a full cutterhead), split it into
-  several subassemblies joined by weld seams (e.g. gearbox_housing + gear_train), so
-  no single manager/worker is overloaded.
-- Simpler parts per sub = more reliable builds. Favor more, smaller subassemblies
-  over fewer, denser ones — the parallel build makes many small subs cheap.
+GROUPING (size subassemblies sensibly, but do NOT starve them):
+Each subassembly goes to ONE manager (which streams its whole kinematic model) and a
+worker that generates the parts' CAD in parallel batches — so a subassembly can hold
+a real functional unit, not just a few parts.
+- Group by FUNCTION: an input/crank stage, a gear train, an escapement, a barrel, a
+  bridge/plate set, a chassis, a drivetrain, a steering unit, etc.
+- Aim for roughly 5-20 links per subassembly; never above 25. Split a genuinely large
+  unit (a whole gearbox + housing, a full cutterhead) into a few weld-joined
+  subassemblies — but do NOT over-split a simple mechanism into trivial 1-2 part subs.
+- Include every real part within a subassembly; the split is about FUNCTION, not about
+  dropping shafts/bearings to hit a count.
 
 {BOSS_SCHEMA_TEXT}
 
