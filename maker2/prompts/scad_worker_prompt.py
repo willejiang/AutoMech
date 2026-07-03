@@ -70,3 +70,76 @@ def build_scad_worker_retry(failed: list[tuple[str, str]]) -> str:
     lines.append("Remember: define each module at its local origin, one solid, "
                  "no top-level calls, no fusing.")
     return "\n".join(lines)
+
+
+def _link_line(l: "LinkSpec") -> str:
+    sz = ", ".join(f"{k}={v}" for k, v in (l.size_mm or {}).items())
+    return (f"- module {l.name}() : {l.description}"
+            + (f" | shape: {l.shape_hint}" if l.shape_hint else "")
+            + (f" | size_mm: {sz}" if sz else "")
+            + (f" | origin: {l.origin_note}" if l.origin_note else ""))
+
+
+def build_scad_worker_batch(model: KinematicModel, batch: list["LinkSpec"],
+                            done: list[str], peers: list[str]) -> str:
+    """Prompt for ONE batch of links, built in parallel with peer batches.
+
+    Gives the worker three context sections so parts stay coherent across the
+    parallel/waved build without waiting on anyone:
+      - already built (by PRIOR waves): names it should match in style/scale/fit.
+      - being built RIGHT NOW (peer batches this wave): names, so it doesn't
+        duplicate or collide conceptually.
+      - YOUR batch: the ONLY modules this call must define.
+    """
+    names = [l.name for l in batch]
+    lines = [f"PRODUCT: {model.name}", ""]
+    if done:
+        lines += ["ALREADY BUILT (earlier — match their style/scale so parts fit "
+                  "together): " + ", ".join(done), ""]
+    if peers:
+        lines += ["BEING BUILT RIGHT NOW by parallel colleagues (do NOT define these "
+                  "— just be consistent with them): " + ", ".join(peers), ""]
+    lines += [f"YOUR BATCH — define EXACTLY these {len(names)} module(s) and NOTHING "
+              f"else:"]
+    for l in batch:
+        lines.append(_link_line(l))
+    # Joints touching this batch, for spatial context only.
+    touch = [j for j in model.joints if j.parent in names or j.child in names]
+    if touch:
+        lines += ["", "JOINTS touching your parts (context only — do NOT encode in "
+                  "geometry):"]
+        for j in touch:
+            lines.append(f"- {j.name}: {j.type} {j.parent} -> {j.child}")
+    lines += [
+        "",
+        f"Write an OpenSCAD file defining ONLY the {len(names)} module(s) in YOUR "
+        "BATCH ({}), each at its own local origin per the rules. Do NOT define the "
+        "already-built or colleague modules. Define modules only; do not call them."
+        .format(", ".join(names)),
+    ]
+    return "\n".join(lines)
+
+
+def build_scad_worker_batch_retry(failed: list[tuple[str, str]]) -> str:
+    """Batch-scoped retry: fix only this batch's failed modules, return the whole
+    (batch) file with all its modules."""
+    lines = ["Some of YOUR batch's modules did not render to a valid STL. Fix these "
+             "and return the COMPLETE file with ALL your batch's modules:"]
+    for name, err in failed:
+        lines.append(f"- module {name}(): {err[:300]}")
+    lines.append("Remember: define each module at its local origin, one solid, "
+                 "no top-level calls, no fusing.")
+    return "\n".join(lines)
+
+
+def build_scad_worker_continue(remaining: list[str]) -> str:
+    """Continuation prompt: the previous reply was cut off at the output cap. The
+    already-COMPLETE modules were kept; ask for the rest, starting fresh (the caller
+    concatenates). `remaining` = module names not yet fully defined."""
+    return (
+        "Your previous reply was cut off at the output limit before you finished. "
+        "The complete modules you already wrote have been kept. CONTINUE from where "
+        "you stopped: output ONLY the remaining module(s) not yet fully defined "
+        f"({', '.join(remaining)}), each complete and at its own local origin. Do "
+        "NOT repeat the modules you already finished. Output raw OpenSCAD only — no "
+        "fences, no prose.")

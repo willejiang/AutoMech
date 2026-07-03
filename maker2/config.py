@@ -31,24 +31,24 @@ class Settings:
     api_key: str = "sk-xxx"                       # placeholder; override via env
     model: str = "claude-opus-4.8"
     temperature: float = 0.2
-    manager_max_tokens: int = 16000               # the gateway HARD-CAPS output
-                                                   # at 16000 tokens regardless of
-                                                   # what we ask; requesting more
-                                                   # is futile, so size to the cap
-    worker_max_tokens: int = 16000                # one part's FreeCAD code. Sized
-                                                   # to the gateway's hard cap so a
-                                                   # compound part has room; if a
-                                                   # reply still overruns, the
-                                                   # worker asks it to shrink and
-                                                   # retries (see worker.py).
+    manager_max_tokens: int = 32000               # claude-opus-4.8 supports 64K
+                                                   # output (per the Copilot proxy's
+                                                   # model limits); 32K gives large
+                                                   # decompositions room with
+                                                   # headroom under the real cap.
+    worker_max_tokens: int = 32000                # one subassembly's whole-batch
+                                                   # SCAD. 32K (under the 64K model
+                                                   # cap) so a detailed batch fits;
+                                                   # the worker also streams with
+                                                   # completion-continuation if a
+                                                   # reply still overruns.
     judger_max_tokens: int = 8000                 # the evaluator's verdict JSON is
                                                    # small (pass/reasons/
                                                    # suggestions); well under the cap.
-    boss_max_tokens: int = 16000                  # the boss's SubassemblyPlan is
-                                                   # small (a handful of subs +
-                                                   # seams), but the gateway caps
-                                                   # output at 16000 regardless;
-                                                   # size to the cap.
+    boss_max_tokens: int = 32000                  # the boss's SubassemblyPlan is
+                                                   # usually small, but 32K leaves
+                                                   # room for a many-subassembly
+                                                   # machine without truncating.
     llm_timeout: int = 600                         # s per LLM request; a non-
                                                    # streaming send must finish the
                                                    # whole completion within this

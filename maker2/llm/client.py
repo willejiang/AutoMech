@@ -177,6 +177,45 @@ class LLMClient:
         else:
             return self._send_openai(messages, system, stream=False)
 
+    def send_collect(self, messages: list[dict], system: str = "") -> tuple[str, str]:
+        """STREAM a completion and collect the full text + the finish reason.
+
+        Returns (text, finish_reason) where finish_reason is normalized to "length"
+        when the response was cut off at the output cap, else "stop" (or whatever the
+        provider reported). Unlike send(), this captures the PARTIAL text even on a
+        cap truncation — the non-streaming path returns empty choices on truncation,
+        so streaming is the only way to get the partial for completion-continuation.
+        """
+        parts: list[str] = []
+        finish = "stop"
+        if self.api_style == "anthropic":
+            body = self._anthropic_body(messages, system, stream=True)
+            for chunk in self._http_stream(self._anthropic_url(),
+                                           self._anthropic_headers(), body):
+                et = chunk.get("type")
+                if et == "content_block_delta":
+                    d = chunk.get("delta", {})
+                    if d.get("text"):
+                        parts.append(d["text"])
+                elif et == "message_delta":
+                    sr = (chunk.get("delta", {}) or {}).get("stop_reason")
+                    if sr:
+                        finish = "length" if sr == "max_tokens" else sr
+        else:
+            body = self._openai_body(messages, system, stream=True)
+            for chunk in self._http_stream(self._openai_url(),
+                                           self._openai_headers(), body):
+                choices = chunk.get("choices", [])
+                if not choices:
+                    continue
+                ch = choices[0]
+                content = (ch.get("delta", {}) or {}).get("content")
+                if content:
+                    parts.append(content)
+                if ch.get("finish_reason"):
+                    finish = ch["finish_reason"]
+        return "".join(parts), finish
+
     def stream(self, messages: list[dict], system: str = "") -> Generator[str, None, None]:
         """Send a streaming request. Yields text deltas as they arrive."""
         if self.api_style == "anthropic":

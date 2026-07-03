@@ -59,6 +59,11 @@ type Turn = {
   // Hierarchy (boss mode): per-subassembly builds + the geometric pre-check.
   subs?: SubArtifact[];
   precheck?: PrecheckArtifact;
+  // Live render: set once mesh_progress has driven a canvas render this turn, so
+  // the post-judge model artifact skips a redundant heavy GLB reload before physics.
+  liveRendered?: boolean;
+  meshBuilt?: number;
+  meshTotal?: number;
 };
 
 const STAGES = [
@@ -111,6 +116,35 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
       .catch(() => {});
   }, [patchTurn]);
 
+  // Live piece-by-piece render: fetch ONLY the GLB (no SCAD) for a run dir and drop
+  // it into the turn. Used by mesh_progress so the canvas fills as STLs land.
+  const loadGlbOnly = useCallback((idx: number, dir: string) => {
+    fetch(`${apiUrl('run-maker2-glb')}?dir=${encodeURIComponent(dir)}`)
+      .then((r) => (r.ok ? r.blob() : Promise.reject(r.statusText)))
+      .then((blob) => patchTurn(idx, { glbBlob: blob, liveRendered: true }))
+      .catch(() => {/* a partial/failed export just leaves the prior canvas */});
+  }, [patchTurn]);
+
+  // Throttle the live GLB re-export: coalesce a burst of mesh_progress events into
+  // at most one render every ~1.5s (each render re-assembles the URDF -> glTF), and
+  // always render the final state shortly after the last event.
+  const meshTimers = useRef<Map<number, { last: number; pending: number | null; dir: string }>>(new Map());
+  const scheduleLiveRender = useCallback((idx: number, dir: string) => {
+    const now = Date.now();
+    const st = meshTimers.current.get(idx) ?? { last: 0, pending: null, dir };
+    st.dir = dir;
+    if (st.pending) window.clearTimeout(st.pending);
+    const elapsed = now - st.last;
+    const fire = () => {
+      st.last = Date.now();
+      st.pending = null;
+      loadGlbOnly(idx, st.dir);
+    };
+    if (elapsed >= 1500) fire();
+    else st.pending = window.setTimeout(fire, 1500 - elapsed) as unknown as number;
+    meshTimers.current.set(idx, st);
+  }, [loadGlbOnly]);
+
   // Stream one turn (fresh or refine). `idx` is its position in `turns`.
   const streamTurn = useCallback((idx: number, params: URLSearchParams) => {
     const es = new EventSource(`${apiUrl('run-maker2-stream')}?${params.toString()}`);
@@ -139,18 +173,35 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
     // attempt instead of waiting for the loop to finish.
     es.addEventListener('artifact', (e) => {
       const a = JSON.parse((e as MessageEvent).data) as {
-        kind: 'model' | 'physics' | 'subassembly' | 'assembled_model' | 'precheck';
+        kind: 'model' | 'physics' | 'subassembly' | 'assembled_model' | 'precheck' | 'mesh_progress';
         run_dir?: string; render_dir?: string;
         physics?: PhysicsResult | null;
         sub_id?: string; ok?: boolean;
         violations?: PrecheckArtifact['violations'];
+        link?: string; built?: number; total?: number;
       };
       const dir = a.render_dir || a.run_dir;
-      if ((a.kind === 'model' || a.kind === 'assembled_model') && dir) {
-        // A renderable model (single-machine iteration OR the assembled hierarchy)
-        // -> pull its GLB + SCAD; the canvas jumps to it.
+      if (a.kind === 'mesh_progress' && a.run_dir) {
+        // A subassembly's STL just landed -> update the parts counter and (throttled)
+        // re-render the canvas so the model fills in piece-by-piece.
+        patchTurn(idx, { runDir: a.run_dir, meshBuilt: a.built, meshTotal: a.total });
+        scheduleLiveRender(idx, a.run_dir);
+      } else if ((a.kind === 'model' || a.kind === 'assembled_model') && dir) {
+        // A renderable model (single-machine iteration OR the assembled hierarchy).
+        // If we've been live-rendering this turn, skip the heavy GLB reload here
+        // (it would stall right before physics streams) but still refresh the SCAD.
         patchTurn(idx, { runDir: a.run_dir ?? dir });
-        loadArtifacts(idx, dir);
+        setTurns((prev) => {
+          const already = prev[idx]?.liveRendered;
+          if (!already) loadArtifacts(idx, dir);
+          else {
+            // SCAD-only refresh; keep the live-built GLB on the canvas.
+            fetch(`${apiUrl('run-maker2-glb')}?dir=${encodeURIComponent(dir)}&file=scad`)
+              .then((r) => (r.ok ? r.text() : '')).then((s) => patchTurn(idx, { scad: s }))
+              .catch(() => {});
+          }
+          return prev;
+        });
       } else if (a.kind === 'subassembly') {
         // Hierarchy: accumulate each subassembly build (clickable in the card).
         setTurns((prev) => prev.map((t, i) => {
@@ -478,6 +529,17 @@ function TurnCard({ turn, index, onPickSub }: {
               </li>
             ))}
           </ul>
+        )}
+
+        {/* Live worker progress: parts rendered so far (fills the canvas live). */}
+        {turn.streaming && typeof turn.meshTotal === 'number' && turn.meshTotal > 0 && (
+          <div className="mt-2 text-[11px] text-adam-neutral-400">
+            Rendering parts{' '}
+            <span className="font-mono text-adam-text-primary">
+              {turn.meshBuilt ?? 0}/{turn.meshTotal}
+            </span>{' '}
+            — assembling on the canvas as they finish…
+          </div>
         )}
 
         {/* Hierarchy: the subassemblies this turn built (click to inspect one). */}

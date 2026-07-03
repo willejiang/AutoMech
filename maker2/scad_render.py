@@ -43,6 +43,57 @@ def parse_modules(scad_text):
     return _MODULE_RE.findall(scad_text)
 
 
+def trim_to_complete_modules(scad_text: str) -> tuple[str, str]:
+    """Split a (possibly truncated) .scad into (complete_prefix, trailing_partial).
+
+    Scans top-level brace depth: `complete_prefix` is everything up to and including
+    the last point where depth returned to 0 (a fully-closed module); anything after
+    is an unfinished module the model was mid-writing when it got cut off. Used for
+    completion-continuation so we resume AFTER the last whole module and never keep a
+    half-written one. Ignores braces inside // and /* */ comments and "..." strings."""
+    depth = 0
+    last_complete = 0          # index just past the last depth->0 close
+    i, n = 0, len(scad_text)
+    in_line_comment = in_block_comment = in_string = False
+    while i < n:
+        c = scad_text[i]
+        two = scad_text[i:i + 2]
+        if in_line_comment:
+            if c == "\n":
+                in_line_comment = False
+        elif in_block_comment:
+            if two == "*/":
+                in_block_comment = False
+                i += 2
+                continue
+        elif in_string:
+            if c == "\\":
+                i += 2
+                continue
+            if c == '"':
+                in_string = False
+        elif two == "//":
+            in_line_comment = True
+            i += 2
+            continue
+        elif two == "/*":
+            in_block_comment = True
+            i += 2
+            continue
+        elif c == '"':
+            in_string = True
+        elif c == "{":
+            depth += 1
+        elif c == "}":
+            depth -= 1
+            if depth <= 0:
+                depth = 0
+                last_complete = i + 1
+        i += 1
+    return scad_text[:last_complete], scad_text[last_complete:]
+
+
+
 def render_module(oscad, scad_path, module_name, stl_path):
     """Render a single module to STL. Returns True on success.
 
