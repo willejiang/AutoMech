@@ -615,13 +615,16 @@ function TurnCard({ turn, index, onPickSub }: {
           </pre>
         )}
 
-        {/* live log while streaming; generated SCAD once available */}
-        {turn.streaming && turn.lines.length > 0 && !turn.scad && (
+        {/* Live log while streaming — kept visible the WHOLE time the turn runs, so
+            you can watch physics/boss/manager progress AFTER model.scad renders and
+            across a new iteration (the SCAD block below only shows once done, so it
+            never hides the live progress). */}
+        {turn.streaming && turn.lines.length > 0 && (
           <pre className="mt-2 max-h-40 overflow-auto rounded bg-adam-neutral-950/50 p-2 font-mono text-[10px] leading-relaxed text-adam-neutral-400">
             {turn.lines.slice(-40).join('\n')}
           </pre>
         )}
-        {turn.scad && (
+        {!turn.streaming && turn.scad && (
           <div className="mt-2 max-h-56 overflow-hidden rounded border border-adam-neutral-800">
             <StreamingCodeBlock code={turn.scad} isStreaming={false} filename="model.scad" />
           </div>

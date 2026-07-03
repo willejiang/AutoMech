@@ -1,4 +1,4 @@
-import { Environment, OrbitControls, Stage } from '@react-three/drei';
+import { OrbitControls, Stage } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { Suspense, useEffect, useState } from 'react';
 import * as THREE from 'three';
@@ -23,9 +23,13 @@ interface Maker2ModelCanvasProps {
 }
 
 function Model({ scene }: { scene: THREE.Object3D }) {
-  // <Stage> auto-frames + lights the model; OrbitControls gives orbit/zoom/roll.
+  // <Stage> auto-frames the model but we supply our OWN lights (preset="rembrandt"
+  // + explicit directional key/fill below) instead of a bright HDRI environment,
+  // which was washing the surfaces out. Directional light gives shape + contrast so
+  // the structure reads clearly (closer to the PyBullet render).
   return (
-    <Stage intensity={0.5} environment={null} adjustCamera={1.1} shadows={false}>
+    <Stage intensity={0.35} environment={null} preset="rembrandt"
+           adjustCamera={1.1} shadows={false}>
       <primitive object={scene} />
     </Stage>
   );
@@ -95,10 +99,12 @@ export function Maker2ModelCanvas({ glbBlob, status, failedReason }: Maker2Model
       className="h-full w-full"
       camera={{ position: [0, 0, 5], fov: 45 }}
       dpr={[1, 2]}
+      // Lower exposure so surfaces aren't blown out; <Stage>'s rembrandt rig then
+      // gives the model clear shape + contrast instead of a flat, washed-out HDRI.
+      gl={{ toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 0.8 }}
     >
       <Suspense fallback={null}>
         <Model scene={scene} />
-        <Environment preset="city" />
       </Suspense>
       <OrbitControls makeDefault enablePan enableZoom enableRotate />
     </Canvas>
