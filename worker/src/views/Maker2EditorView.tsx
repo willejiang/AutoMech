@@ -104,6 +104,11 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
     setTurns((prev) => prev.map((t, i) => (i === idx ? { ...t, ...patch } : t)));
   }, []);
 
+  // The subassembly the user is inspecting in isolation (overrides the canvas until
+  // "back to machine" or the assembled model arrives). Declared before streamTurn so
+  // its artifact handler can clear it.
+  const [pickedSub, setPickedSub] = useState<{ id: string; blob: Blob } | null>(null);
+
   const loadArtifacts = useCallback((idx: number, dir: string) => {
     const d = encodeURIComponent(dir);
     fetch(`${apiUrl('run-maker2-glb')}?dir=${d}`)
@@ -195,6 +200,10 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
         // (there its live GLB already IS the final model, and a reload would stall
         // right before physics streams).
         if (a.kind === 'assembled_model') {
+          // The full machine just got stitched — drop any subassembly the user was
+          // inspecting so the canvas returns to the whole machine (else pickedSub
+          // keeps overriding the assembled GLB).
+          setPickedSub(null);
           patchTurn(idx, { liveRendered: false });
           loadArtifacts(idx, dir);
         } else {
@@ -351,7 +360,6 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
 
   // Hierarchy: a clicked subassembly overrides the canvas so the user can inspect
   // one sub in isolation before it's assembled. Cleared when a new turn streams.
-  const [pickedSub, setPickedSub] = useState<{ id: string; blob: Blob } | null>(null);
   const pickSub = useCallback((sub: SubArtifact) => {
     if (!sub.run_dir) return;
     fetch(`${apiUrl('run-maker2-glb')}?dir=${encodeURIComponent(sub.run_dir)}`)
