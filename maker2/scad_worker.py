@@ -36,8 +36,14 @@ from .scad_render import (find_openscad, parse_modules, render_module_err,
 from .validation import check_stl
 
 
-_BATCH_SIZE = 3
-_MAX_CONTINUE = 4          # continuation rounds per generation before giving up
+# ONE worker per subassembly: a single call generates EVERY module for the model, so
+# one mind holds all the parts at once (parallel workers reason independently and put
+# parts in each other's space -> interpenetration). Overflow is handled by
+# completion-continuation (send_collect + trim_to_complete_modules), not by splitting
+# the work across parallel workers. With a large-output model (gpt-5.5, 128K) a whole
+# subassembly fits comfortably. Set very high so all links land in ONE batch.
+_BATCH_SIZE = 100000
+_MAX_CONTINUE = 8          # continuation rounds per generation (all links in one call)
 
 
 def _strip_fences(text: str) -> str:

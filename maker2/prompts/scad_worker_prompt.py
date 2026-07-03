@@ -117,6 +117,20 @@ def build_scad_worker_batch(model: KinematicModel, batch: list["LinkSpec"],
         "already-built or colleague modules. Define modules only; do not call them."
         .format(", ".join(names)),
     ]
+    # When this call owns the WHOLE model (no peers, no prior waves), it must keep the
+    # parts mutually consistent: each is built in its OWN local frame, but their SIZES
+    # must respect the joint offsets so that once assembled they mate WITHOUT two solids
+    # occupying the same space (a shaft must fit its bore, a gear must not swallow its
+    # neighbor). Reason about all parts together to avoid interpenetration.
+    if not peers and not done:
+        lines += [
+            "",
+            "You are building the ENTIRE assembly in one pass — hold all the parts in "
+            "mind together. Size each part from its size_mm and keep parts that share a "
+            "joint compatible (a shaft's diameter fits the bore it turns in; mating "
+            "faces meet, they do not overlap) so that when the joints place them, no "
+            "two solids interpenetrate.",
+        ]
     return "\n".join(lines)
 
 
