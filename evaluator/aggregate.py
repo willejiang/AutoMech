@@ -24,7 +24,8 @@ import os
 
 
 # cause severity for picking the "worst" failing test.
-_CAUSE_RANK = {"structure": 3, "scenario": 2, "framing": 1, "none": 0, None: 0}
+_CAUSE_RANK = {"structure": 3, "interface": 3, "scenario": 2, "camera": 1,
+               "none": 0, None: 0}
 
 
 def _sub_key(t: dict, idx: int) -> str:
@@ -36,8 +37,10 @@ def aggregate_verdicts(task, per_test, *, gw=None) -> dict:
     """Roll per-test verdicts into one overall verdict + cause map + blame.
 
     per_test: the list of test entries run_physics builds, each with at least
-              {verdict, cause, reason, subsystem?, name?, metrics?}.
-    Returns {passed, summary, cause_map, blamed_subs, blamed_kind}."""
+              {verdict, cause, reason, subsystem?, name?, metrics?, culprit_part?,
+               culprit_sub?}.
+    Returns {passed, summary, cause_map, blamed_subs, blamed_kind, culprit_parts,
+             culprit_subs}."""
     per_test = per_test or []
     passed = bool(per_test) and all(t.get("verdict") == "PASS" for t in per_test)
 
@@ -47,28 +50,39 @@ def aggregate_verdicts(task, per_test, *, gw=None) -> dict:
             "verdict": t.get("verdict"),
             "cause": t.get("cause", "none"),
             "reason": t.get("reason", ""),
+            "culprit_part": t.get("culprit_part", ""),
+            "culprit_sub": t.get("culprit_sub", ""),
             "output_reached": (t.get("metrics") or {}).get("output_reached"),
         }
 
     failing = [t for i, t in enumerate(per_test) if t.get("verdict") != "PASS"]
     blamed_subs = [_sub_key(t, i) for i, t in enumerate(per_test)
                    if t.get("verdict") != "PASS"]
+    # The exact culprit parts/subs the diagnoser named across the failing tests.
+    culprit_parts = [t.get("culprit_part") for t in failing if t.get("culprit_part")]
+    culprit_subs = list(dict.fromkeys(          # unique, order-preserving
+        [t.get("culprit_sub") for t in failing if t.get("culprit_sub")]))
 
     blamed_kind = None
     if failing:
-        # "interface" seam fault: a failing test whose OWN train transmitted (its
-        # output was reached / gears moved) yet the machine still fails -> the break is
-        # at the coupling BETWEEN subsystems, not inside this one. Otherwise take the
+        # An explicit "interface" diagnosis, OR a failing test whose OWN train
+        # transmitted (its output was reached / gears moved) yet the machine still
+        # fails -> the break is at the coupling BETWEEN subsystems. Otherwise take the
         # worst failing test's cause.
+        explicit_iface = any(t.get("cause") == "interface" for t in failing)
         seam = any((t.get("metrics") or {}).get("output_reached")
                    and (t.get("metrics") or {}).get("moved_count", 0) >= 1
                    for t in failing)
         worst = max(failing, key=lambda t: _CAUSE_RANK.get(t.get("cause"), 0))
-        blamed_kind = "interface" if seam and len(per_test) > 1 else worst.get("cause", "structure")
+        if explicit_iface or (seam and len(per_test) > 1):
+            blamed_kind = "interface"
+        else:
+            blamed_kind = worst.get("cause", "structure")
 
     summary = _summary(task, per_test, passed, blamed_subs, blamed_kind, gw)
     return {"passed": passed, "summary": summary, "cause_map": cause_map,
-            "blamed_subs": blamed_subs, "blamed_kind": blamed_kind}
+            "blamed_subs": blamed_subs, "blamed_kind": blamed_kind,
+            "culprit_parts": culprit_parts, "culprit_subs": culprit_subs}
 
 
 def _deterministic_summary(per_test, passed, blamed_subs, blamed_kind) -> str:

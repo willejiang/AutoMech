@@ -125,32 +125,43 @@ plus measured metrics AND a set of pre-computed METRIC SIGNALS. Decide, from wha
 ACTUALLY DO on screen AND the signals, whether the mechanism works for the task. Your visual
 verdict OVERRIDES the raw pass/fail, but you MUST respect the hard metric signals below.
 
-If it FAILS, classify the CAUSE precisely:
+If it FAILS, classify the CAUSE precisely AND name the exact culprit:
 - "structure": the MODEL is at fault — gears/teeth don't mesh, parts interpenetrate or
   fly apart, a needed part is missing or the wrong size, the drivetrain is not actually
   connected, OR the driven input joint is JAMMED and cannot rotate. Fixing this needs the
-  CAD to be redesigned.
+  CAD to be redesigned. Set "culprit_part" to the EXACT namespaced link/joint at fault
+  (link/joint names look like "<sub_id>_<name>", e.g. "sub_going_train_escape_wheel").
+  For a dead drivetrain, that is the FIRST joint in the propagation path whose downstream
+  travel is ~0 — the break point. Set "culprit_sub" to that part's "<sub_id>" prefix.
+- "interface": two subassemblies don't couple where they meet — a gear on one sub doesn't
+  reach the gear on another, a seam is misaligned. The individual subs may be fine; their
+  JUNCTION is wrong. Set culprit_sub to one side if identifiable, else "".
 - "scenario": the TEST is at fault — the wrong joint was driven, the velocity/params are
   absurd, the watched joints are wrong, so the test doesn't fairly exercise the machine.
-  The model may be fine; the TEST should be redesigned.
-- "framing": you CANNOT SEE the mechanism clearly enough to judge — it's too small/far,
+  The model may be fine; the TEST should be redesigned. culprit_part/sub = "".
+- "camera": you CANNOT SEE the mechanism clearly enough to judge — it's too small/far,
   off-frame, or occluded. The model and test may be fine; the CAMERA must be fixed.
+  culprit_part/sub = "".
+
+When the cause is not a single part (a whole-sub or interface fault), leave "culprit_part"
+empty but still set "culprit_sub" when you can identify the responsible subassembly.
 
 HARD RULES (these override your visual impression):
 1. If the signal INPUT_STALLED is true, the driven joint did NOT turn even though it was
-   commanded — the drivetrain is physically jammed. This is NEVER "framing". Return
+   commanded — the drivetrain is physically jammed. This is NEVER "camera". Return
    verdict=fail with cause "structure" (the input is blocked) unless the driven joint is
    clearly the WRONG joint to drive, in which case "scenario".
 2. If the signal FREE_SPIN is true, a downstream joint spun FAR faster than the input
    command could ever produce — it is flying loose / not actually meshed, not
-   transmitting. This is NEVER "framing"; it is "structure" (parts not connected).
-3. Only choose "framing" when the input DID move a reasonable amount (INPUT_MOVED true)
+   transmitting. This is NEVER "camera"; it is "structure" (parts not connected).
+3. Only choose "camera" when the input DID move a reasonable amount (INPUT_MOVED true)
    yet you still cannot see the resulting downstream motion. If the input didn't move,
    the problem is the mechanism or the test, not the camera.
 4. If the signal OUTPUT_DEAD is true, the input turned and some gears moved but motion
    NEVER REACHED the declared output joint — the drivetrain is broken MIDWAY (a missing
-   or non-meshing gear between the moving part and the output). This is NEVER "framing";
-   return verdict=fail with cause "structure".
+   or non-meshing gear between the moving part and the output). This is NEVER "camera";
+   return verdict=fail with cause "structure", and set culprit_part to the BREAK JOINT
+   named in the signals (the first path joint with ~0 travel).
 
 Always fill "reason" with a concrete one-sentence explanation. Respond ONLY with the JSON
 schema."""
@@ -164,10 +175,19 @@ _DIAG_SCHEMA = {
             "properties": {
                 "verdict": {"type": "string", "enum": ["pass", "fail"]},
                 "cause": {"type": "string",
-                          "enum": ["none", "structure", "scenario", "framing"]},
+                          "enum": ["none", "structure", "interface",
+                                   "scenario", "camera"]},
+                "culprit_part": {"type": "string",
+                    "description": "the EXACT namespaced link/joint at fault (e.g. "
+                                   "'sub_going_train_escape_wheel'), or '' if not a "
+                                   "single-part fault. For a dead drivetrain, name the "
+                                   "FIRST joint in the path whose downstream motion is 0."},
+                "culprit_sub": {"type": "string",
+                    "description": "the subassembly id the culprit part belongs to "
+                                   "(the '<sub_id>' namespace prefix), or '' if unknown."},
                 "reason": {"type": "string"},
             },
-            "required": ["verdict", "cause", "reason"],
+            "required": ["verdict", "cause", "culprit_part", "culprit_sub", "reason"],
         },
     },
 }
@@ -216,6 +236,11 @@ def _metric_signals(spec: dict, metrics: dict) -> dict:
     output_dead = bool(input_moved and moved_count >= 1
                        and output_reached is False)
 
+    # Break joint: the FIRST joint in the propagation path (input -> ... -> output) whose
+    # travel is ~0 while an upstream joint moved. That is the exact point the drivetrain
+    # dies -> the culprit part. Uses the ordered path + per-joint `watched` travel.
+    break_joint = _break_joint(drive, m, input_moved)
+
     notes = []
     if input_stalled:
         notes.append(f"INPUT_STALLED: input joint '{m.get('input_joint')}' moved only "
@@ -230,10 +255,73 @@ def _metric_signals(spec: dict, metrics: dict) -> dict:
                      f"the output joint '{m.get('output_joint')}' did NOT move "
                      f"(travel {m.get('output_travel')}) -> the train is broken midway "
                      f"(structure).")
+    if break_joint:
+        notes.append(f"BREAK_JOINT: '{break_joint}' is the first joint in the path whose "
+                     f"motion is ~0 while an upstream joint moved -> it is the exact "
+                     f"culprit part.")
     return {"input_moved": input_moved, "input_stalled": input_stalled,
             "free_spin": free_spin, "output_dead": output_dead,
+            "break_joint": break_joint,
             "output_reached": bool(output_reached) if output_reached is not None else None,
             "expected_input_travel": round(expected, 3), "notes": notes}
+
+
+_MOVE_EPS = 0.05          # rad; below this a joint is considered "did not move"
+
+
+def _break_joint(drive: dict, metrics: dict, input_moved: bool) -> str:
+    """The first joint in the propagation path whose travel is ~0 while an upstream
+    joint moved — the exact point the drivetrain dies. "" if none (or no path)."""
+    if not input_moved:
+        return ""
+    path = (drive or {}).get("propagation_path") or []
+    if not path:
+        return ""
+    watched = metrics.get("watched") or {}
+    input_joint = metrics.get("input_joint") or (drive or {}).get("input_joint")
+    it = abs(float(metrics.get("input_travel") or 0.0))
+
+    def travel(jn: str) -> float:
+        if jn == input_joint:
+            return it
+        if jn == metrics.get("output_joint"):
+            return abs(float(metrics.get("output_travel") or 0.0))
+        return abs(float(watched.get(jn, 0.0)))
+
+    moved_upstream = False
+    for jn in path:
+        t = travel(jn)
+        if t >= _MOVE_EPS:
+            moved_upstream = True
+        elif moved_upstream:
+            return jn          # first dead joint after something moved = the break
+    return ""
+
+
+def _culprit_sub_of(part: str, robot_info: dict) -> str:
+    """Infer the subassembly id from a namespaced link/joint name '<sub_id>_<name>'.
+    Matches the longest known sub id that prefixes `part`; else the first two tokens."""
+    if not part:
+        return ""
+    subs = [s.get("id", "") for s in (robot_info or {}).get("subsystems", []) if s.get("id")]
+    # subsystems ids are stems (e.g. 'going_train'); the namespaced link is
+    # 'sub_going_train_<link>'. Match the longest sub id that appears as a segment.
+    best = ""
+    for sid in subs:
+        if sid and (f"_{sid}_" in f"_{part}_" or part.startswith(f"sub_{sid}_")
+                    or part.startswith(f"{sid}_")):
+            if len(sid) > len(best):
+                best = sid
+    if best:
+        return best
+    # Fallback: strip a leading 'sub_' and take the id up to the last 2 underscores.
+    toks = part.split("_")
+    return "_".join(toks[:2]) if len(toks) > 2 else part
+
+
+def _diag(verdict, cause, reason, culprit_part="", culprit_sub=""):
+    return {"verdict": verdict, "cause": cause, "reason": str(reason)[:400],
+            "culprit_part": culprit_part or "", "culprit_sub": culprit_sub or ""}
 
 
 def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
@@ -262,15 +350,22 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
     sig = _metric_signals(spec, metrics)
     hard_fail = sig["input_stalled"] or sig["free_spin"] or sig["output_dead"]
     sig_note = " ".join(sig["notes"])
+    # Deterministic culprit from the metrics (independent of the VLM): the break joint.
+    det_part = sig.get("break_joint") or ""
+    if not det_part and sig["input_stalled"]:
+        det_part = (metrics or {}).get("input_joint") or (spec.get("drive") or {}).get("input_joint") or ""
+    det_sub = _culprit_sub_of(det_part, robot_info)
 
     if not view_frames:
         # No video to look at: trust the hard signals, else the metric verdict.
         if hard_fail:
-            return {"verdict": "fail", "cause": "structure",
-                    "reason": sig_note or "input jammed / parts loose (no frames)"}
-        return {"verdict": "pass" if raw_pass else "fail",
-                "cause": "none" if raw_pass else "structure",
-                "reason": "no frames to inspect; used metric verdict"}
+            return _diag("fail", "structure",
+                         sig_note or "input jammed / parts loose (no frames)",
+                         det_part, det_sub)
+        return _diag("pass" if raw_pass else "fail",
+                     "none" if raw_pass else "structure",
+                     "no frames to inspect; used metric verdict",
+                     "" if raw_pass else det_part, "" if raw_pass else det_sub)
 
     drive = (spec or {}).get("drive") or {}
     signals_txt = (
@@ -280,6 +375,7 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
         f"  FREE_SPIN: {sig['free_spin']}\n"
         f"  OUTPUT_REACHED: {sig['output_reached']}\n"
         f"  OUTPUT_DEAD (moved but output not reached): {sig['output_dead']}\n"
+        f"  BREAK_JOINT (first dead joint in the path): {sig.get('break_joint') or '(none)'}\n"
         f"  expected_input_travel_rad: {sig['expected_input_travel']}\n"
         + ("  " + sig_note + "\n" if sig_note else ""))
     ncam = len({c for c, _ in view_frames})
@@ -315,33 +411,44 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
         d = _parse_json(r.choices[0].message.content)
     except Exception as e:
         if hard_fail:
-            return {"verdict": "fail", "cause": "structure",
-                    "reason": sig_note or f"diagnosis call failed ({e})"}
-        return {"verdict": "pass" if raw_pass else "fail",
-                "cause": "none" if raw_pass else "structure",
-                "reason": f"diagnosis call failed ({e}); used metric verdict"}
+            return _diag("fail", "structure",
+                         sig_note or f"diagnosis call failed ({e})", det_part, det_sub)
+        return _diag("pass" if raw_pass else "fail",
+                     "none" if raw_pass else "structure",
+                     f"diagnosis call failed ({e}); used metric verdict",
+                     "" if raw_pass else det_part, "" if raw_pass else det_sub)
 
     verdict = _pick(d, ("verdict", "result", "pass_fail", "status"),
                     {"pass", "fail"}, "pass" if raw_pass else "fail")
     cause = _pick(d, ("cause", "category", "fault", "reason_category"),
-                  {"none", "structure", "scenario", "framing"},
+                  {"none", "structure", "interface", "scenario", "camera"},
                   "none" if verdict == "pass" else "structure")
     reason = (d.get("reason") or d.get("explanation") or d.get("detail") or "")
     reason = str(reason).strip()
+    culprit_part = str(d.get("culprit_part") or "").strip()
+    culprit_sub = str(d.get("culprit_sub") or "").strip()
 
     # Enforce the hard metric rules AFTER the model — a stalled input, a free-spinning
     # output, or motion that never reaches the declared output joint are physical facts
     # the VLM cannot override, and none of them is a camera issue.
     if hard_fail:
         verdict = "fail"
-        if cause not in ("structure", "scenario"):
+        if cause not in ("structure", "scenario", "interface"):
             cause = "structure"
         if not reason:
             reason = sig_note
-    elif cause == "framing" and not sig["input_moved"]:
+        # The metrics KNOW the exact break point — trust it over the VLM's guess.
+        if det_part:
+            culprit_part = det_part
+    elif cause == "camera" and not sig["input_moved"]:
         # It asked to reframe, but the input never moved -> reframing won't help; the
         # mechanism or the test is at fault, not the camera.
         cause = "structure"
-        reason = (reason + " (input did not move; not a framing issue)").strip()
+        reason = (reason + " (input did not move; not a camera issue)").strip()
+        if det_part:
+            culprit_part = det_part
 
-    return {"verdict": verdict, "cause": cause, "reason": reason[:400]}
+    # Backfill culprit_sub from the part namespace if the model left it blank.
+    if culprit_part and not culprit_sub:
+        culprit_sub = _culprit_sub_of(culprit_part, robot_info)
+    return _diag(verdict, cause, reason, culprit_part, culprit_sub)

@@ -31,8 +31,8 @@ from .model import (FrameContract, MountFrame, SeamSpec, SubassemblyPlan,
                     SubassemblySpec)
 from .prompts.boss_prompt import (BOSS_SYSTEM, build_boss_feedback,
                                   build_boss_json_from_notes, build_boss_prior_plan,
-                                  build_boss_refine, build_boss_repair,
-                                  build_boss_user)
+                                  build_boss_refine, build_boss_replan,
+                                  build_boss_repair, build_boss_user)
 from .twophase import stream_two_part
 
 
@@ -414,13 +414,20 @@ def plan_machine(product_prompt: str, settings, *, image_path: str | None = None
         images=images)
     if image_path and log_fn:
         log_fn(f"[boss] using input image: {image_path}")
-    if feedback:
-        conv.add_user_message(build_boss_feedback(feedback))
-        if log_fn:
-            log_fn("[boss] re-planning from an interface/assembly fault")
-    # Multi-turn refine: show the prior plan, then the user's requested change.
+    # Show the prior plan FIRST (both refine and fault re-plan build on it), so the
+    # boss keeps unchanged subassembly ids and they can be REUSED from disk.
     if prior_plan_json:
         conv.add_user_message(build_boss_prior_plan(prior_plan_json))
+    if feedback:
+        # A fault re-plan. With a prior plan present, ask the boss to change ONLY what
+        # the fault requires and keep every other sub's id/brief/frames EXACTLY
+        # (build_boss_replan); without one, fall back to the old from-scratch re-plan.
+        conv.add_user_message(
+            build_boss_replan(feedback) if prior_plan_json
+            else build_boss_feedback(feedback))
+        if log_fn:
+            log_fn("[boss] re-planning from a fault"
+                   + (" (keeping unchanged subassemblies)" if prior_plan_json else ""))
     if refine_message:
         conv.add_user_message(build_boss_refine(refine_message))
         if log_fn:

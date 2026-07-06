@@ -470,3 +470,120 @@ def decompose(product_prompt: str, settings, *, image_path: str | None = None,
 
     raise ManagerError(
         f"Manager failed after {attempts} attempts. Last error:\n{last_err}")
+
+
+# --------------------------------------------------------------------------- #
+# Item 4b — Claude-Code-style minimal editing at the MODEL level:
+#   should_rebuild : does this sub even need to change for the fault? (skip if not)
+#   decompose_patch: return a STRUCTURED PATCH (add/modify/remove links+joints) against
+#                    the prior model, so unchanged parts are kept and only the delta is
+#                    rebuilt.
+# --------------------------------------------------------------------------- #
+
+def should_rebuild(prior_model_json: str, fault_reason: str, settings,
+                   *, frame_contract=None, log_fn=None) -> bool:
+    """Ask the manager (cheaply) whether THIS subassembly must change to fix the fault,
+    or is unrelated and should be KEPT as-is. Returns True to rebuild, False to keep.
+    Defaults to True (rebuild) on any error — never skip on uncertainty."""
+    from .prompts.manager_prompt import build_manager_should_rebuild
+    try:
+        client = settings.manager_client()
+        conv = Conversation()
+        conv.add_user_message(build_manager_should_rebuild(prior_model_json, fault_reason,
+                                                           frame_contract))
+        text, _ = client.send_collect(conv.get_messages_for_api(api_style=client.api_style),
+                                      system=MANAGER_SYSTEM)
+        verdict = (text or "").strip().upper()
+        keep = verdict.startswith("KEEP") or "KEEP" in verdict.split()[:3]
+        if log_fn:
+            log_fn(f"[manager] skip-check: {'KEEP (reuse)' if keep else 'REBUILD'}")
+        return not keep
+    except Exception as e:
+        if log_fn:
+            log_fn(f"[manager] skip-check failed ({e}); rebuilding")
+        return True
+
+
+# Structured patch: add/modify/remove links and joints against a prior model.
+MODEL_PATCH_SCHEMA = {
+    "add_links": "list[LinkSpec]", "modify_links": "list[LinkSpec]",
+    "remove_links": "list[str]", "add_joints": "list[JointSpec]",
+    "modify_joints": "list[JointSpec]", "remove_joints": "list[str]",
+}
+
+
+def parse_patch(text: str) -> dict:
+    """Parse the manager's minimal PATCH JSON into typed add/modify/remove sets."""
+    obj = json.loads(extract_json_object(text))
+    return {
+        "add_links": [_link_from_dict(d, i) for i, d in enumerate(obj.get("add_links") or [])],
+        "modify_links": [_link_from_dict(d, i) for i, d in enumerate(obj.get("modify_links") or [])],
+        "remove_links": [str(n) for n in (obj.get("remove_links") or [])],
+        "add_joints": [_joint_from_dict(d, i) for i, d in enumerate(obj.get("add_joints") or [])],
+        "modify_joints": [_joint_from_dict(d, i) for i, d in enumerate(obj.get("modify_joints") or [])],
+        "remove_joints": [str(n) for n in (obj.get("remove_joints") or [])],
+    }
+
+
+def apply_patch(prior: KinematicModel, patch: dict) -> tuple[KinematicModel, set]:
+    """Apply a patch to a prior model deterministically. Returns (new_model,
+    changed_link_names) where changed = added + modified links (the ONLY links the
+    worker must (re)build; unchanged links keep their prior STLs). Then _validate_model."""
+    links = {l.name: l for l in prior.links}
+    joints = {j.name: j for j in prior.joints}
+    changed: set = set()
+    for l in patch.get("add_links", []) + patch.get("modify_links", []):
+        links[l.name] = l
+        changed.add(l.name)
+    for n in patch.get("remove_links", []):
+        links.pop(n, None)
+    for j in patch.get("add_joints", []) + patch.get("modify_joints", []):
+        joints[j.name] = j
+    for n in patch.get("remove_joints", []):
+        joints.pop(n, None)
+    new = KinematicModel(name=prior.name, root_link=prior.root_link,
+                         links=list(links.values()), joints=list(joints.values()))
+    _validate_model(new)                 # normalize + enforce single-tree invariant
+    # A validated model may have renamed/dropped a link; keep only changed links that
+    # survived validation.
+    survivors = {l.name for l in new.links}
+    return new, (changed & survivors)
+
+
+def decompose_patch(prior_model_json: str, fault_reason: str, settings,
+                    *, frame_contract=None, model_json_path=None,
+                    log_fn=None) -> tuple[KinematicModel, set]:
+    """Return a MINIMAL patched model + the set of changed link names, given the prior
+    model + the exact fault. The manager changes as FEW parts as possible (Claude-Code
+    style). Falls back to a full decompose if the patch can't be produced."""
+    from .prompts.manager_prompt import build_manager_patch
+    prior = parse_model(prior_model_json)
+    client = settings.manager_client()
+    attempts = settings.manager_retries + 1
+    conv = Conversation()
+    conv.add_user_message(build_manager_patch(prior_model_json, fault_reason,
+                                              frame_contract))
+    last_err = ""
+    for attempt in range(1, attempts + 1):
+        try:
+            text, _ = client.send_collect(
+                conv.get_messages_for_api(api_style=client.api_style),
+                system=MANAGER_SYSTEM)
+            patch = parse_patch(text)
+            model, changed = apply_patch(prior, patch)
+        except (LLMError, ValueError, ManagerError, json.JSONDecodeError) as e:
+            last_err = str(e)
+            if log_fn:
+                log_fn(f"[manager] patch attempt {attempt}/{attempts} rejected: {last_err}")
+            conv.add_user_message(build_manager_repair(last_err))
+            continue
+        if model_json_path:
+            save_model(model, model_json_path)
+        if frame_contract is not None:
+            model.frames_realized = parse_frames_realized(text)
+        if log_fn:
+            log_fn(f"[manager] patched: {len(changed)} link(s) changed "
+                   f"({sorted(changed)}), rest kept")
+        return model, changed
+    raise ManagerError(f"Manager patch failed after {attempts} attempts: {last_err}")
+

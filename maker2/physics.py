@@ -553,6 +553,8 @@ def run_physics(urdf_path: str, task: str, run_dir: str) -> dict:
             "cause_map": agg["cause_map"],
             "blamed_subs": agg["blamed_subs"],
             "blamed_kind": agg["blamed_kind"],
+            "culprit_parts": agg.get("culprit_parts", []),
+            "culprit_subs": agg.get("culprit_subs", []),
             "tests": per_test}
 
 
@@ -633,11 +635,11 @@ def _run_one_test(i, test, urdf_path, task, model, run_dir, gw, log_lock):
             f"cause={diagnosis['cause']} :: {diagnosis['reason'][:100]}")
         if diagnosis["verdict"] == "pass":
             break
-        if diagnosis["cause"] == "framing" and attempt < 2:
+        if diagnosis["cause"] == "camera" and attempt < 2:
             d = spec.setdefault("drive", {}) or {}
             d["cam_dist_scale"] = d.get("cam_dist_scale", 1.0) * 0.6
             d["cam_pitch"] = -60
-            log("[physics] framing fault -> reframing camera, re-recording")
+            log("[physics] camera fault -> reframing camera, re-recording")
             continue
         if diagnosis["cause"] == "scenario" and attempt < 2 and model is not None:
             try:
@@ -678,6 +680,8 @@ def _run_one_test(i, test, urdf_path, task, model, run_dir, gw, log_lock):
             "subsystem": test.get("subsystem"),
             "verdict": final_verdict, "metrics": m,
             "cause": diagnosis["cause"], "reason": diagnosis["reason"],
+            "culprit_part": diagnosis.get("culprit_part", ""),
+            "culprit_sub": diagnosis.get("culprit_sub", ""),
             "frames_dir": res.get("frames_dir") if res else None,
             "output_reached": m.get("output_reached"),
             "propagation": (spec.get("drive") or {}).get("propagation_path"),
@@ -694,7 +698,8 @@ def _aggregate(task, per_test, gw):
         passed = all(t.get("verdict") == "PASS" for t in per_test)
         return {"passed": passed,
                 "summary": " | ".join(t.get("summary", "") for t in per_test),
-                "cause_map": {}, "blamed_subs": [], "blamed_kind": None}
+                "cause_map": {}, "blamed_subs": [], "blamed_kind": None,
+                "culprit_parts": [], "culprit_subs": []}
 
 
 if __name__ == "__main__":

@@ -160,6 +160,27 @@ the starting point for the user's next request:
 {prior_plan_json}"""
 
 
+def build_boss_replan(fault: str) -> str:
+    """Fault re-plan that PRESERVES good work: the boss has the prior plan above; fix
+    ONLY the failing part and keep every other subassembly's id/brief/frames/seams
+    exactly, so the unchanged subs are reused from disk instead of rebuilt."""
+    return f"""\
+The assembled machine FAILED for this reason:
+
+{fault}
+
+The prior plan is shown above. Change ONLY what this fault requires. KEEP every
+subassembly that is NOT implicated EXACTLY as-is — same id, same brief, same frames,
+same seams — so it can be reused without rebuilding. Typical minimal fixes: adjust ONE
+seam's frame coordinates so two subs mate, correct ONE gear center distance, re-pose
+ONE subassembly. Do NOT rename or redesign unrelated subassemblies, and do NOT change
+the global origin. If the fault is truly a bad decomposition you may restructure — but
+default to the SMALLEST change that fixes it.
+
+Output ONLY the JSON object, no prose, no markdown fences."""
+
+
+
 def build_boss_refine(refine_message: str) -> str:
     """Deliver the USER's change request for the existing machine (multi-turn refine).
 

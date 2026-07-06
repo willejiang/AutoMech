@@ -320,3 +320,64 @@ Output ONLY the JSON object (with links, joints, AND frames_realized), no prose,
 markdown fences."""
 
 
+
+
+def build_manager_should_rebuild(prior_model_json: str, fault_reason: str,
+                                 frame_contract=None) -> str:
+    """Cheap keep-or-rebuild question: does THIS subassembly need to change to fix the
+    fault, or is it unrelated? The manager answers with a single word."""
+    sub_id = getattr(frame_contract, "sub_id", "this subassembly")
+    return f"""\
+You previously built subassembly '{sub_id}'. Here is its current kinematic model:
+
+{prior_model_json}
+
+The assembled machine failed for this reason:
+
+{fault_reason}
+
+Decide: does '{sub_id}' ITSELF need to change to fix this fault, or is the fault in a
+DIFFERENT subassembly / the coupling between subs (so this one should be kept exactly
+as-is and reused)?
+
+Answer with ONE word only:
+- "KEEP"    if this subassembly is fine and does not need changing.
+- "REBUILD" if this subassembly must change to fix the fault.
+
+Output only that one word."""
+
+
+def build_manager_patch(prior_model_json: str, fault_reason: str,
+                        frame_contract=None) -> str:
+    """Ask for a MINIMAL structured PATCH to the prior subassembly model — change as few
+    parts as possible (Claude-Code style), keep everything else untouched."""
+    sub_id = getattr(frame_contract, "sub_id", "this subassembly")
+    return f"""\
+You previously built subassembly '{sub_id}'. Here is its current kinematic model:
+
+{prior_model_json}
+
+It must change to fix this fault:
+
+{fault_reason}
+
+Return a MINIMAL PATCH — change as FEW parts as possible, exactly like editing a file.
+Do NOT restate the whole model. Output ONLY a single JSON object with these keys (any
+may be empty/omitted):
+
+{{
+  "add_links":    [ <full LinkSpec objects for NEW parts> ],
+  "modify_links": [ <full LinkSpec objects for parts whose geometry/size changes;
+                     use the SAME name as the existing part to replace it> ],
+  "remove_links": [ "<name of a part to delete>" ],
+  "add_joints":    [ <full JointSpec objects for new connections> ],
+  "modify_joints": [ <full JointSpec objects, same name, to change a connection> ],
+  "remove_joints": [ "<joint name to delete>" ]
+}}
+
+Only touch what the fault requires (e.g. resize ONE gear, add ONE missing shaft +
+its joint, fix ONE joint's offset). Every other part is kept automatically. Use the
+same names, units (mm sizes, meter joint offsets), and origin contract as the model
+above. Keep the subassembly a single connected tree after the patch.
+
+Output ONLY the JSON patch object, no prose, no markdown fences."""
