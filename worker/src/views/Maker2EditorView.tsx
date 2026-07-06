@@ -25,6 +25,8 @@ interface Maker2EditorViewProps {
   reopenThread?: boolean;
   // Legacy (pre-thread) run: read-only single view of one run_dir.
   viewDir?: string;
+  // Web search: run the maker2 agents with reference lookup enabled.
+  web?: boolean;
 }
 
 type Maker2Result = {
@@ -104,7 +106,7 @@ const emptyTurn = (message: string): Turn => ({
 });
 
 export function Maker2EditorView(props: Maker2EditorViewProps) {
-  const { prompt, model, iters, threadId, reopenThread, viewDir } = props;
+  const { prompt, model, iters, threadId, reopenThread, viewDir, web } = props;
   const navigate = useNavigate();
   const [turns, setTurns] = useState<Turn[]>([]);
   const [chatInput, setChatInput] = useState('');
@@ -362,8 +364,9 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
     setTurns([emptyTurn(prompt)]);
     const qs = new URLSearchParams({ prompt, iters: String(iters), thread: threadId });
     if (model) qs.set('model', model);
+    if (web) qs.set('web', '1');
     streamTurn(0, qs);
-  }, [reopenThread, viewDir, prompt, model, iters, threadId, streamTurn]);
+  }, [reopenThread, viewDir, prompt, model, iters, threadId, web, streamTurn]);
 
   // On unmount, close the stream AND reset the start guard so a StrictMode
   // remount re-opens a fresh EventSource (otherwise the double-mount closes the

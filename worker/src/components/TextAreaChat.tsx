@@ -16,6 +16,7 @@ import {
   Wand2,
   Box,
   Cog,
+  Globe,
   X,
 } from 'lucide-react';
 import {
@@ -85,6 +86,10 @@ interface TextAreaChatProps {
   // submit runs maker2 via onArticulated instead of the normal cadam chat.
   articulated?: boolean;
   setArticulated?: (v: boolean) => void;
+  // Web search: when on, the maker2 agents research standard dims / reference designs
+  // before building. Sticky across the session (stays on for following chats).
+  webSearch?: boolean;
+  setWebSearch?: (v: boolean) => void;
   maxIters?: number | null;
   setMaxIters?: (v: number | null) => void;
   onArticulated?: (prompt: string, maxIters: number | null) => void;
@@ -482,6 +487,8 @@ function TextAreaChat({
   onTypeChange,
   articulated = false,
   setArticulated,
+  webSearch = false,
+  setWebSearch,
   maxIters = null,
   setMaxIters,
   onArticulated,
@@ -1715,6 +1722,37 @@ function TextAreaChat({
                   {articulated
                     ? 'Articulated mode ON — send builds a URDF via maker2'
                     : 'Switch to Articulated (maker2) mode'}
+                </TooltipContent>
+              </Tooltip>
+            )}
+
+            {/* Web search toggle — only meaningful in Articulated mode. When on, the
+                boss/manager/worker research standard dims / reference designs before
+                building. Sticky: stays on for the following chats in this session. */}
+            {setWebSearch && articulated && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      'flex h-8 items-center gap-1.5 rounded-lg border border-[#2a2a2a] bg-adam-background-2 px-2 text-sm transition-colors',
+                      webSearch
+                        ? 'border-adam-blue/50 bg-adam-blue/10 text-adam-blue'
+                        : 'text-adam-text-secondary hover:bg-adam-bg-secondary-dark',
+                    )}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setWebSearch(!webSearch);
+                    }}
+                  >
+                    <Globe className="h-4 w-4" />
+                    <span className="hidden text-xs lg:inline">Web</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {webSearch
+                    ? 'Web search ON — agents look up real specs while building (stays on)'
+                    : 'Enable web search for the maker2 agents'}
                 </TooltipContent>
               </Tooltip>
             )}

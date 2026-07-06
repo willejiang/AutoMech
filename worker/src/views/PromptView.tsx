@@ -73,6 +73,15 @@ export function PromptView() {
   const [m2Prompt, setM2Prompt] = useState('');
   const [m2Running, setM2Running] = useState(false);
   const [articulated, setArticulated] = useState(false);
+  // Web search toggle — sticky across the session AND reloads (localStorage), so once
+  // the user turns it on it stays on for the following chats.
+  const [webSearch, setWebSearchState] = useState(
+    () => (typeof localStorage !== 'undefined'
+      && localStorage.getItem('maker2.webSearch') === '1'));
+  const setWebSearch = (v: boolean) => {
+    setWebSearchState(v);
+    try { localStorage.setItem('maker2.webSearch', v ? '1' : '0'); } catch { /* ignore */ }
+  };
   const [maxIters, setMaxIters] = useState<number | null>(null);
   const [m2Result, setM2Result] = useState<{
     ok: boolean; links?: number; movable_joints?: number; built?: number;
@@ -336,6 +345,8 @@ export function PromptView() {
                   onTypeChange={handleTypeChange}
                   articulated={articulated}
                   setArticulated={setArticulated}
+                  webSearch={webSearch}
+                  setWebSearch={setWebSearch}
                   maxIters={maxIters}
                   setMaxIters={setMaxIters}
                   onArticulated={(p, iters) =>
@@ -344,7 +355,8 @@ export function PromptView() {
                       params: { runId: crypto.randomUUID() },
                       // iters 0 = infinite loop until judge+physics pass (default);
                       // the user can cap it with /iters N in the prompt bar.
-                      search: { prompt: p, model, iters: iters ?? 0 },
+                      search: { prompt: p, model, iters: iters ?? 0,
+                                web: webSearch ? 1 : undefined },
                     })
                   }
                 />

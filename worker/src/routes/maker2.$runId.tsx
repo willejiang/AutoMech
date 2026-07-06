@@ -8,7 +8,7 @@ import { Maker2EditorView } from '@/views/Maker2EditorView';
 // read-only single view.
 type Maker2Search = {
   prompt: string; model: string; iters: number;
-  thread?: string; dir?: string;
+  thread?: string; dir?: string; web?: number;
 };
 
 export const Route = createFileRoute('/maker2/$runId')({
@@ -20,13 +20,14 @@ export const Route = createFileRoute('/maker2/$runId')({
       ? Number(search.iters) : 0,
     thread: typeof search.thread === 'string' ? search.thread : undefined,
     dir: typeof search.dir === 'string' ? search.dir : undefined,
+    web: Number(search.web) === 1 ? 1 : undefined,
   }),
   component: Maker2Page,
 });
 
 function Maker2Page() {
   const { runId } = Route.useParams();
-  const { prompt, model, iters, thread, dir } = Route.useSearch();
+  const { prompt, model, iters, thread, dir, web } = Route.useSearch();
   return (
     <div className="h-screen w-screen">
       <Maker2EditorView
@@ -36,6 +37,7 @@ function Maker2Page() {
         threadId={thread || runId}
         reopenThread={!!thread}
         viewDir={dir}
+        web={web === 1}
       />
     </div>
   );
