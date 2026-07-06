@@ -201,6 +201,8 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
                                        // interface sits in the assembled machine
           "rpy_rad": [<r>, <p>, <y>], // GLOBAL radians, fixed-axis XYZ
           "axis": [<x>, <y>, <z>],    // frame primary axis (e.g. a shaft/gear axis)
+          "shaft_dia_mm": <number>,   // HARD shaft/gear-pitch diameter in MM for a
+                                       // power_in/power_out/mesh frame (0 for a plain mount)
           "role": "<mount | power_in | power_out | mesh>"
         }
       ]
@@ -262,7 +264,23 @@ FRAME PLACEMENT (critical — this is how blindly-built subs line up)
   where it actually put each interface frame. You give the GLOBAL target; the
   geometric pre-check verifies the managers' realized frames coincide.
 - For a gear-mesh seam, place the two mesh frames (role "mesh") at the two gear
-  CENTERS, exactly one meshing center-distance apart, on parallel axes."""
+  CENTERS, exactly one meshing center-distance apart, on parallel axes.
+
+HARD INTERFACE POINTS (you OWN these; managers must NOT move them)
+- You define — and ONLY you define — the hard points where subassemblies couple:
+  every power_in / power_out / mesh frame carries its GLOBAL xyz_m, its `axis`, and
+  its `shaft_dia_mm` (the shaft diameter, or for a mesh the gear PITCH diameter).
+  These are immovable: a manager sizes its mating shaft/bore/gear to EXACTLY these
+  numbers and places the frame at EXACTLY that global pose. Workers must not offset
+  them.
+- You OWN gear center distance. For a gear mesh, the center distance = the sum of the
+  two gears' PITCH radii; set the two mesh frames that far apart and give each its
+  pitch diameter via shaft_dia_mm. If a later fault says two gears don't mesh, YOU
+  recompute the center distance and override BOTH subs' mesh-frame coords — the
+  managers do not negotiate it between themselves.
+- A shared shaft crossing a weld: give the power_out frame on the driving sub and the
+  power_in frame on the driven sub the SAME axis and the SAME shaft_dia_mm so the two
+  halves are the same shaft."""
 
 
 # A minimal, valid worked example = the crank-gear -> driven-gear milestone: two
@@ -285,8 +303,8 @@ BOSS_FEWSHOT_JSON = """\
       "input_tags": [],
       "output_tags": ["drive_gear_center"],
       "frames": [
-        {"name": "housing_mount", "xyz_m": [0.0, 0.0, 0.0], "rpy_rad": [0.0, 0.0, 0.0], "axis": [0.0, 0.0, 1.0], "role": "mount"},
-        {"name": "drive_gear_center", "xyz_m": [0.0, 0.0, 0.03], "rpy_rad": [0.0, 0.0, 0.0], "axis": [0.0, 0.0, 1.0], "role": "mesh"}
+        {"name": "housing_mount", "xyz_m": [0.0, 0.0, 0.0], "rpy_rad": [0.0, 0.0, 0.0], "axis": [0.0, 0.0, 1.0], "shaft_dia_mm": 0.0, "role": "mount"},
+        {"name": "drive_gear_center", "xyz_m": [0.0, 0.0, 0.03], "rpy_rad": [0.0, 0.0, 0.0], "axis": [0.0, 0.0, 1.0], "shaft_dia_mm": 40.0, "role": "mesh"}
       ]
     },
     {
@@ -297,8 +315,8 @@ BOSS_FEWSHOT_JSON = """\
       "input_tags": ["driven_gear_center"],
       "output_tags": [],
       "frames": [
-        {"name": "housing_mount", "xyz_m": [0.04, 0.0, 0.0], "rpy_rad": [0.0, 0.0, 0.0], "axis": [0.0, 0.0, 1.0], "role": "mount"},
-        {"name": "driven_gear_center", "xyz_m": [0.04, 0.0, 0.03], "rpy_rad": [0.0, 0.0, 0.0], "axis": [0.0, 0.0, 1.0], "role": "mesh"}
+        {"name": "housing_mount", "xyz_m": [0.04, 0.0, 0.0], "rpy_rad": [0.0, 0.0, 0.0], "axis": [0.0, 0.0, 1.0], "shaft_dia_mm": 0.0, "role": "mount"},
+        {"name": "driven_gear_center", "xyz_m": [0.04, 0.0, 0.03], "rpy_rad": [0.0, 0.0, 0.0], "axis": [0.0, 0.0, 1.0], "shaft_dia_mm": 40.0, "role": "mesh"}
       ]
     }
   ],

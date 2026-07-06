@@ -256,9 +256,13 @@ def build_manager_subassembly(frame_contract) -> str:
     for fr in getattr(fc, "frames", []):
         x, y, z = fr.xyz_m
         ax, ay, az = fr.axis
+        dia = getattr(fr, "shaft_dia_mm", 0.0) or 0.0
+        dia_txt = (f", shaft/gear dia {dia:.2f} mm (build the mating shaft/bore/gear "
+                   f"to EXACTLY this diameter)") if dia > 0 else ""
         lines.append(
             f'  - "{fr.name}" (role: {fr.role}): GLOBAL position '
-            f'[{x:.4f}, {y:.4f}, {z:.4f}] m, axis [{ax:.3f}, {ay:.3f}, {az:.3f}]')
+            f'[{x:.4f}, {y:.4f}, {z:.4f}] m, axis [{ax:.3f}, {ay:.3f}, {az:.3f}]'
+            f'{dia_txt}')
     frames_txt = "\n".join(lines) if lines else "  (none)"
     origin = getattr(fc, "global_origin_note", "") or "(the machine's shared origin)"
     nbrs = getattr(fc, "neighbors", []) or []
@@ -272,6 +276,8 @@ def build_manager_subassembly(frame_contract) -> str:
             f"{nb_lines}\n")
     else:
         neighbors_txt = ""
+    appearance = getattr(fc, "appearance_summary", "") or ""
+    appearance_txt = ("\n" + appearance + "\n") if appearance else ""
     return f"""\
 IMPORTANT — you are building ONE SUBASSEMBLY of a larger machine, not the whole
 machine. Build ONLY the parts of this subassembly; do NOT add the neighboring
@@ -280,7 +286,7 @@ the interface frames below, so those frames are a CONTRACT you must honor exactl
 
 SUBASSEMBLY id: {getattr(fc, "sub_id", "?")}
 GLOBAL ORIGIN: {origin}
-{neighbors_txt}
+{neighbors_txt}{appearance_txt}
 INTERFACE FRAMES this subassembly must expose (positions are in GLOBAL machine
 coordinates about that origin):
 {frames_txt}
@@ -298,6 +304,11 @@ RULES
   frame lands at the given GLOBAL location when the machine is assembled. Typically
   the frame coincides with a specific link (a housing mounting face, a gear center,
   a shaft end).
+- The interface frames are HARD POINTS fixed by the boss — treat them as immovable.
+  Where a frame gives a shaft/gear diameter, size YOUR mating shaft, bore, or gear to
+  EXACTLY that diameter and put it on the frame's axis, so the part meets its
+  neighbor across the seam. Do NOT invent a different position, axis, or diameter for
+  an interface; only the boss changes a hard point.
 - Keep this subassembly a single connected tree (one root, every other link the
   child of exactly one joint), same as always.
 

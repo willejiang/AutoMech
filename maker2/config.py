@@ -87,6 +87,10 @@ class Settings:
     enable_hierarchy: bool = False                # boss splits into subassemblies
     subassembly_max_managers: int = 4             # parallel per-sub manager builds
     enable_reference_tools: bool = False          # web/RAG reference lookup (Stage G)
+    enable_appearance_proxy: bool = False         # boss-side coarse CadQuery proxy of
+                                                   # the whole machine (per-sub bounding
+                                                   # primitives at global pose) handed to
+                                                   # managers as proportion context (1c)
 
     # ── Construction helpers ─────────────────────────────────────
 

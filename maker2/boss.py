@@ -74,6 +74,7 @@ def _frame_from_dict(d: dict, sub_id: str, idx: int) -> MountFrame:
         xyz_m=_as_tuple3(d.get("xyz_m"), (0.0, 0.0, 0.0)),
         rpy_rad=_as_tuple3(d.get("rpy_rad"), (0.0, 0.0, 0.0)),
         axis=_as_tuple3(d.get("axis"), (0.0, 0.0, 1.0)),
+        shaft_dia_mm=float(d.get("shaft_dia_mm") or 0.0),
         link=str(d.get("link") or ""),
         role=role,
     )
@@ -307,7 +308,8 @@ def _validate_plan(plan: SubassemblyPlan) -> None:
 
 def _frame_to_dict(fr: MountFrame) -> dict:
     return {"name": fr.name, "xyz_m": list(fr.xyz_m), "rpy_rad": list(fr.rpy_rad),
-            "axis": list(fr.axis), "link": fr.link, "role": fr.role}
+            "axis": list(fr.axis), "shaft_dia_mm": fr.shaft_dia_mm,
+            "link": fr.link, "role": fr.role}
 
 
 def plan_to_dict(plan: SubassemblyPlan) -> dict:
@@ -367,11 +369,16 @@ def load_plan(path: str) -> SubassemblyPlan:
         return parse_plan(f.read())
 
 
-def frame_contract_for(plan: SubassemblyPlan, sub_id: str) -> FrameContract:
-    """Build the FrameContract Stage B hands to one subassembly's manager."""
+def frame_contract_for(plan: SubassemblyPlan, sub_id: str,
+                       *, appearance_summary: str = "") -> FrameContract:
+    """Build the FrameContract Stage B hands to one subassembly's manager.
+    ``appearance_summary`` (1c) is the optional coarse whole-machine layout text."""
     sub = plan.sub_by_id(sub_id)
     if sub is None:
         raise BossError(f"no subassembly '{sub_id}' in plan")
+    # Fall back to a summary stashed on the plan by run_boss (1c) when the caller
+    # doesn't pass one explicitly — keeps build_subassembly's call site unchanged.
+    summary = appearance_summary or getattr(plan, "appearance_summary", "") or ""
     return FrameContract(
         sub_id=sub.id,
         frames=list(sub.frames),
@@ -380,6 +387,7 @@ def frame_contract_for(plan: SubassemblyPlan, sub_id: str) -> FrameContract:
         output_tags=list(sub.output_tags),
         neighbors=[{"id": o.id, "function": o.function, "brief": o.brief}
                    for o in plan.subassemblies if o.id != sub_id],
+        appearance_summary=summary,
     )
 
 

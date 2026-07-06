@@ -105,12 +105,20 @@ class MountFrame:
     """A named interface frame a subassembly exposes, in GLOBAL METERS. The boss
     fixes where it is; the manager must place a real link there (reported back in
     `frames_realized`). `role`: mount (structural), power_in/power_out (a shaft
-    end), mesh (a gear whose teeth couple across a seam)."""
+    end), mesh (a gear whose teeth couple across a seam).
+
+    For a power_in/power_out/mesh frame the boss also fixes the HARD interface
+    geometry the managers must not offset: `axis` is the shaft/gear axis and
+    `shaft_dia_mm` the shaft (or gear pitch) diameter, so both sides size a mating
+    shaft/bore/gear to the SAME numbers. These are the immovable hard points of the
+    interface contract (Session B item 1a)."""
 
     name: str
     xyz_m: tuple = (0.0, 0.0, 0.0)                   # GLOBAL translation, METERS
     rpy_rad: tuple = (0.0, 0.0, 0.0)                # GLOBAL rotation, radians
     axis: tuple = (0.0, 0.0, 1.0)                   # frame primary axis (e.g. shaft axis)
+    shaft_dia_mm: float = 0.0                        # hard shaft/gear-pitch diameter (MM),
+                                                     # 0 = not a shaft/gear interface
     link: str = ""                                   # realized link (filled by the manager)
     role: str = "mount"                              # mount|power_in|power_out|mesh
 
@@ -189,6 +197,9 @@ class FrameContract:
     neighbors: list = field(default_factory=list)    # [{id, function, brief}] of the
                                                      # OTHER subs, so this manager knows
                                                      # what the rest of the machine builds
+    appearance_summary: str = ""                     # optional coarse whole-machine
+                                                     # layout text (1c), for proportion
+                                                     # context; "" when disabled
 
 
 @dataclass
