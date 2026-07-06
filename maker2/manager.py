@@ -409,6 +409,12 @@ def decompose(product_prompt: str, settings, *, image_path: str | None = None,
             log_fn(f"[manager] subassembly '{getattr(frame_contract, 'sub_id', '?')}' "
                    f"with {len(getattr(frame_contract, 'frames', []))} interface frame(s)")
 
+    # Optional web-search research pre-step (gated by settings.enable_reference_tools):
+    # look up standard dimensions / part specs before decomposing.
+    from .tools import maybe_research
+    maybe_research(client, conv, settings,
+                   f"decompose into parts: {product_prompt}", log_fn=log_fn)
+
     # Scratch memory: the manager writes its decomposition as NOTES first (saved
     # here) so a JSON cut can regenerate from the notes instead of dropping parts.
     # Next to the model file; tagged by sub id in hierarchy mode.

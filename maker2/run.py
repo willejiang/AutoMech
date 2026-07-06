@@ -477,13 +477,22 @@ def main() -> int:
                          "them in parallel under an interface contract, assemble, "
                          "pre-check, and physics-test — with surgical per-sub re-runs. "
                          "For machines too big for one manager (TBM, car).")
+    ap.add_argument("--web", action="store_true",
+                    help="enable web-search reference lookup for the boss/manager/worker "
+                         "(they research standard dims / reference designs before "
+                         "building). Keyless (DuckDuckGo/Bing). Hierarchy mode.")
     ap.add_argument("--per-sub-physics", action="store_true",
                     help="(hierarchy) drive each subassembly on its own URDF before "
                          "assembly, so a drivetrain fault localizes to that sub.")
     a = ap.parse_args()
     if a.hierarchy:
         from maker2.orchestrator_boss import run_boss
-        res = run_boss(a.prompt, a.out, do_physics=a.physics,
+        settings = None
+        if a.web:
+            from maker2.config import Settings
+            settings = Settings.load()
+            settings.enable_reference_tools = True
+        res = run_boss(a.prompt, a.out, settings=settings, do_physics=a.physics,
                        per_sub_physics=a.per_sub_physics, thread=a.thread,
                        log_fn=print)
         if a.json:

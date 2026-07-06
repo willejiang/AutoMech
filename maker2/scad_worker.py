@@ -109,13 +109,17 @@ def _generate_batch_scad(client, conv, want_names, log_fn, tag) -> str:
 
 
 def _build_batch(idx, batch, model, done, peers, oscad, ctx, settings, client,
-                 counter, total, emit_lock, log_fn):
+                 counter, total, emit_lock, log_fn, research_note: str = ""):
     """Generate + render ONE batch (its own small .scad), retrying its failed
     modules. Returns list[WorkerResult] for the batch's links. Emits mesh_progress
     per built STL. Thread-safe (own conversation + own batch .scad file)."""
     names = [l.name for l in batch]
     batch_scad = Path(ctx.run_dir) / f"_batch_{idx}.scad"
     conv = Conversation()
+    if research_note:
+        conv.add_user_message(
+            "Reference facts from a web search (use where relevant for real "
+            f"dimensions/specs):\n{research_note[:4000]}")
     conv.add_user_message(build_scad_worker_batch(model, batch, done, peers))
     attempts = getattr(settings, "worker_retries", 1) + 1
     results: dict = {}
@@ -177,6 +181,12 @@ def build_all(model: KinematicModel, ctx: RunContext, settings,
     log_fn(f"[worker] model = {wsettings.model} | {total} links in "
            f"batches of {_BATCH_SIZE}")
 
+    # Optional web-search research (gated by settings.enable_reference_tools): look up
+    # standard part dimensions ONCE for this subassembly and thread the findings into
+    # each batch's prompt as context.
+    from .tools import research_findings
+    research_note = research_findings(client, wsettings, model.name, log_fn=log_fn)
+
     # Split links into batches, then group batches into waves of `max_workers`.
     batches = [model.links[i:i + _BATCH_SIZE]
                for i in range(0, total, _BATCH_SIZE)]
@@ -196,7 +206,7 @@ def build_all(model: KinematicModel, ctx: RunContext, settings,
             peers = [n for n in wave_names if n not in {l.name for l in batch}]
             return bi, _build_batch(bi, batch, model, list(done_names), peers,
                                     oscad, ctx, wsettings, client, counter, total,
-                                    emit_lock, log_fn)
+                                    emit_lock, log_fn, research_note=research_note)
 
         indexed = list(enumerate(wave, start=w))
         if len(wave) == 1:

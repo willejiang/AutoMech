@@ -414,6 +414,12 @@ def plan_machine(product_prompt: str, settings, *, image_path: str | None = None
         if log_fn:
             log_fn("[boss] re-planning from an interface/assembly fault")
 
+    # Optional web-search research pre-step (gated by settings.enable_reference_tools):
+    # look up reference designs / typical layouts before planning.
+    from .tools import maybe_research
+    maybe_research(client, conv, settings,
+                   f"plan the subassemblies of: {product_prompt}", log_fn=log_fn)
+
     # Scratch memory: the boss writes its plan as NOTES first (saved here) so a JSON
     # cut can regenerate from the plan instead of shrinking it. Next to the plan file.
     from pathlib import Path

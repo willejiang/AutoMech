@@ -56,6 +56,8 @@ export const Route = createFileRoute('/api/run-maker2-stream')({
         // assembler -> precheck). A refine reuses an existing single-machine
         // model, so it stays on the single-manager path.
         if (!refineMessage) args.push('--hierarchy');
+        // Web-search reference lookup (keyless), when the client asks for it.
+        if (url.searchParams.get('web') === '1') args.push('--web');
 
         const stream = new ReadableStream<Uint8Array>({
           start(controller) {
