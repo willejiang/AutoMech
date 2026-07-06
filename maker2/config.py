@@ -85,6 +85,10 @@ class Settings:
     # ── Hierarchy (boss -> managers -> assembler); off by default so the
     #    single-manager pipeline is unchanged until --hierarchy flips it on. ──
     enable_hierarchy: bool = False                # boss splits into subassemblies
+    enable_hierarchy_judge: bool = True           # VLM appearance judge on the assembled
+                                                   # machine before physics (catches parts
+                                                   # floating/disconnected — precheck and
+                                                   # physics do not)
     subassembly_max_managers: int = 4             # parallel per-sub manager builds
     enable_reference_tools: bool = False          # web/RAG reference lookup (Stage G)
     enable_appearance_proxy: bool = True          # boss-side coarse CadQuery proxy of

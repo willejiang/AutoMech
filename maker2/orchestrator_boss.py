@@ -53,8 +53,15 @@ def _sub_frames_to_dict(model) -> list:
     return out
 
 
-def _load_sub_from_disk(sub_id: str, session_root: str, log_fn=print) -> SubResult:
-    """Reload an already-built subassembly (for surgical re-runs that skip it)."""
+def _load_sub_from_disk(sub_id: str, session_root: str, log_fn=print,
+                        plan=None) -> SubResult:
+    """Reload an already-built subassembly (for surgical re-runs that skip it).
+
+    When ``plan`` is given, ALSO verify the sub realized every interface frame its
+    plan spec requires — a sub whose sub_frames.json is missing a contract frame
+    cannot be welded (the assembler would crash), so it is marked ok=False here and
+    gets REBUILT instead of reused. This is what stops a broken sub from being reused
+    forever in a crash loop."""
     run_dir = os.path.abspath(os.path.join(session_root, f"sub_{sub_id}"))
     ctx = make_run_context(sub_id, session_root, run_dir=run_dir)
     model_json = os.path.join(run_dir, "kinematic_model.json")
@@ -73,6 +80,19 @@ def _load_sub_from_disk(sub_id: str, session_root: str, log_fn=print) -> SubResu
         except Exception:
             frames = []
     ok, _ = validate_urdf(ctx.urdf_path, require_meshes=True)
+    # Frame-completeness: a reused sub MUST expose every interface frame its plan spec
+    # requires, or it can't be assembled. If any is unrealized, don't reuse — rebuild.
+    if ok and plan is not None:
+        spec = plan.sub_by_id(sub_id)
+        want = {fr.name for fr in (spec.frames if spec else [])}
+        got = {e.get("frame") for e in (frames or [])}
+        missing = sorted(want - got)
+        if missing:
+            log_fn(f"[sub:{sub_id}] prior build is missing interface frame(s) "
+                   f"{missing}; will REBUILD instead of reuse")
+            return SubResult(id=sub_id, ctx=ctx, model=model, results=[],
+                             sub_frames=frames, ok=False,
+                             error=f"unrealized interface frame(s): {missing}")
     log_fn(f"[sub:{sub_id}] reused from disk ({run_dir})")
     return SubResult(id=sub_id, ctx=ctx, model=model, results=[],
                      sub_frames=frames, ok=ok, error="")
@@ -112,7 +132,7 @@ def build_subassembly(spec, plan, settings, session_root, *,
         if not should_rebuild(prior_model_json, feedback, settings,
                               frame_contract=fc, log_fn=slog):
             slog("keeping prior build (fault is elsewhere) — reused from disk")
-            return _load_sub_from_disk(sub_id, session_root, log_fn=log_fn)
+            return _load_sub_from_disk(sub_id, session_root, log_fn=log_fn, plan=plan)
         try:
             model, changed, patch_meta = decompose_patch(
                 prior_model_json, feedback, settings,
@@ -298,10 +318,23 @@ def build_all_subassemblies(plan, settings, session_root, *,
         f"parallel; reusing {len(reuse)} from disk")
 
     results: dict = {}
-    # Reused subs first (cheap, synchronous disk loads).
-    for s in plan.subassemblies:
-        if s.id in reuse:
-            results[s.id] = _load_sub_from_disk(s.id, session_root, log_fn=log)
+    # Reused subs first (cheap, synchronous disk loads). A reused sub that fails
+    # frame-completeness (its prior build can't be assembled) is promoted to the build
+    # list right now, so it's REBUILT this iteration instead of crashing the assembler.
+    reuse_targets = [s for s in plan.subassemblies if s.id in reuse]
+    promoted: list = []
+    for s in reuse_targets:
+        r = _load_sub_from_disk(s.id, session_root, log_fn=log, plan=plan)
+        if r.ok:
+            results[s.id] = r
+        else:
+            promoted.append(s)
+            feedback_by_sub.setdefault(
+                s.id, (r.error or "prior build unusable") + " — rebuild this subassembly.")
+    if promoted:
+        log(f"[boss] {len(promoted)} reused sub(s) had an unusable prior build "
+            f"{[s.id for s in promoted]}; rebuilding them.")
+        to_build = to_build + promoted
 
     def work(spec) -> SubResult:
         return build_subassembly(spec, plan, settings, session_root,
@@ -577,6 +610,43 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
             if not infinite and it >= max_boss_iters - 1:
                 result["error"] = f"precheck failed: {rep.summary()}"; break
             it += 1; continue
+
+        # 5b. APPEARANCE JUDGE on the ASSEMBLED machine (boss mode had none — this is
+        #     the gate that catches parts floating in space / disconnected / wrong
+        #     proportions, which precheck (geometry-only) and physics (transmission-
+        #     only) miss). Render views + VLM verdict; on FAIL, feed the suggestions to
+        #     a boss re-plan (prior plan kept -> unchanged subs reuse).
+        if getattr(settings, "enable_hierarchy_judge", True):
+            try:
+                from .viz import render_six_views
+                from .judger import judge as _judge, JudgeError
+                views_dir = os.path.join(assembly_ctx.run_dir, "views")
+                view_pngs = {}
+                try:
+                    view_pngs = render_six_views(assembly_ctx.urdf_path, views_dir)
+                    log(f"[judge] rendered {len(view_pngs)} view(s) of the assembled machine")
+                except Exception as e:
+                    log(f"[judge] view render unavailable ({type(e).__name__}); judging text-only")
+                verdict = _judge(prompt, final, [], view_pngs, settings,
+                                 out_json_path=os.path.join(assembly_ctx.run_dir, "judge.json"),
+                                 log_fn=log)
+                log("ARTIFACT_JSON:" + json.dumps({
+                    "kind": "judge", "iter": it, "passed": verdict.passed,
+                    "reasons": verdict.reasons[:400], "suggestions": verdict.suggestions[:400]}))
+                if not verdict.passed:
+                    fb = (verdict.suggestions or verdict.reasons
+                          or "the assembled machine looks wrong")
+                    feedback = ("the assembled machine FAILED the appearance review "
+                                f"(parts floating/disconnected/mis-proportioned): {fb}")
+                    log(f"[judge] FAIL -> boss re-plan: {fb[:120]}")
+                    if not infinite and it >= max_boss_iters - 1:
+                        result["error"] = f"judge failed: {fb}"; break
+                    it += 1; continue
+                log("[judge] assembled appearance PASS")
+            except JudgeError as e:
+                log(f"[judge] verdict unavailable ({e}); continuing to physics")
+            except Exception as e:
+                log(f"[judge] skipped ({type(e).__name__}: {str(e)[:100]})")
 
         # 6. Physics on the ASSEMBLED machine (multi-test + aggregate from Stage E).
         if not do_physics:
