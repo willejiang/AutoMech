@@ -114,12 +114,13 @@ def build_subassembly(spec, plan, settings, session_root, *,
             slog("keeping prior build (fault is elsewhere) — reused from disk")
             return _load_sub_from_disk(sub_id, session_root, log_fn=log_fn)
         try:
-            model, changed = decompose_patch(prior_model_json, feedback, settings,
-                                             frame_contract=fc,
-                                             model_json_path=ctx.model_json_path,
-                                             log_fn=slog)
+            model, changed, patch_meta = decompose_patch(
+                prior_model_json, feedback, settings,
+                frame_contract=fc, model_json_path=ctx.model_json_path,
+                log_fn=slog)
             return _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings,
-                                       slog, only_links=changed, log_fn=log_fn)
+                                       slog, only_links=changed, patch_meta=patch_meta,
+                                       log_fn=log_fn)
         except Exception as e:
             slog(f"patch path failed ({e}); falling back to full rebuild")
 
@@ -135,11 +136,71 @@ def build_subassembly(spec, plan, settings, session_root, *,
                                only_links=None, log_fn=log_fn)
 
 
+def _edit_changed_links(model, ctx, run_dir, only_links, patch_meta, settings, slog):
+    """Item 2b: line-EDIT each MODIFIED link whose CadQuery script was persisted, rather
+    than regenerate it. Returns (edit_results, edited_names). A link is edited only if it
+    is in patch_meta['modify'], is in only_links, and has a prior <run>/cq/<link>.py; the
+    worker gets that script + the fault and returns the smallest change. On any failure
+    the link is left for the normal build (NOT added to edited_names)."""
+    from .cq_worker import rebuild_link
+    from .prompts.cq_worker_prompt import build_cq_worker_edit
+
+    modify = set((patch_meta or {}).get("modify") or set())
+    fault_by_link = (patch_meta or {}).get("fault_by_link") or {}
+    cq_dir = Path(run_dir) / "cq"
+    results: list = []
+    edited: set = set()
+    for l in model.links:
+        if l.name not in only_links or l.name not in modify:
+            continue
+        script_path = cq_dir / f"{l.name}.py"
+        if not script_path.exists():
+            continue                              # no prior script -> fresh build
+        try:
+            prior_script = script_path.read_text(encoding="utf-8")
+            client = settings.worker_client()
+            from .llm.conversation import Conversation
+            conv = Conversation()
+            conv.add_user_message(build_cq_worker_edit(
+                prior_script, l.name, fault_by_link.get(l.name, "fix this part")))
+            text, _ = client.send_collect(
+                conv.get_messages_for_api(api_style=client.api_style),
+                system="")
+            edited_script = _strip_cq_fences(text)
+            if "def build_" not in edited_script:
+                slog(f"2b: edit for '{l.name}' had no function; leaving for full build")
+                continue
+            r = rebuild_link(l, edited_script, ctx, run_dir, log_fn=slog)
+            if r.success:
+                results.append(r)
+                edited.add(l.name)
+                slog(f"2b: line-edited '{l.name}' (minimal change) — OK")
+            else:
+                slog(f"2b: edited '{l.name}' failed to export ({r.error[:80]}); "
+                     "leaving for full build")
+        except Exception as e:
+            slog(f"2b: edit of '{l.name}' errored ({e}); leaving for full build")
+    return results, edited
+
+
+def _strip_cq_fences(text: str) -> str:
+    t = (text or "").strip()
+    if t.startswith("```"):
+        body = t.split("\n", 1)[1] if "\n" in t else ""
+        if body.rstrip().endswith("```"):
+            body = body.rstrip()[:-3]
+        return body.strip()
+    return t
+
+
 def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
-                        *, only_links=None, log_fn=print) -> SubResult:
+                        *, only_links=None, patch_meta=None, log_fn=print) -> SubResult:
     """Shared tail of build_subassembly: URDF + frames + worker build + validate.
     ``only_links`` (a set) limits the worker to just the changed links (patch path);
-    None builds every link. Unchanged links keep their prior STLs (copied forward)."""
+    None builds every link. Unchanged links keep their prior STLs (copied forward).
+    ``patch_meta`` (item 2b) = {"modify": {names}, "add": {names}, "fault_by_link": {..}}
+    so a MODIFIED part's existing CadQuery script is line-EDITED (minimal change) instead
+    of regenerated; ADDED parts are freshly generated."""
     sub_id = spec.id
     build_urdf(model, ctx)
     ok, err = validate_urdf(ctx.urdf_path, require_meshes=False)
@@ -162,29 +223,45 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
     if missing:
         slog(f"WARNING: manager did not realize interface frame(s): {missing}")
 
-    # On a patch, build ONLY the changed links; the unchanged ones already have valid
-    # STLs on disk (from the prior build) that the URDF still references.
+    # Item 2b: for a MODIFIED link whose CadQuery script was persisted last build, do a
+    # minimal line-EDIT of that one part (keep the good work, change as few lines as
+    # possible) instead of regenerating it. Only when the backend is CadQuery and the
+    # script exists; everything else (added links, un-editable modifies) still goes
+    # through the normal worker build below.
+    edit_results: list = []
+    edited_names: set = set()
+    if (only_links is not None and patch_meta
+            and getattr(settings, "worker_backend", "cadquery") != "openscad"):
+        edit_results, edited_names = _edit_changed_links(
+            model, ctx, run_dir, only_links, patch_meta, settings, slog)
+
+    # On a patch, build ONLY the changed links NOT already handled by an edit; the
+    # unchanged ones already have valid STLs on disk that the URDF still references.
     to_build_model = model
     if only_links is not None:
         import copy
-        keep = [l for l in model.links if l.name in only_links]
-        if keep:
-            to_build_model = copy.copy(model)
-            to_build_model.links = keep
-            slog(f"patch build: (re)building {len(keep)} changed link(s), "
-                 f"keeping {len(model.links) - len(keep)} prior STL(s)")
+        keep = [l for l in model.links
+                if l.name in only_links and l.name not in edited_names]
+        to_build_model = copy.copy(model)
+        to_build_model.links = keep
+        slog(f"patch build: {len(edited_names)} link(s) line-edited, "
+             f"(re)building {len(keep)} link(s), keeping "
+             f"{len(model.links) - len(keep) - len(edited_names)} prior STL(s)")
 
-    slog(f"worker ({getattr(settings, 'worker_backend', 'cadquery')}): generating "
-         "geometry + exporting per-link STLs ...")
-    part_results = _worker_build_all(to_build_model, ctx, settings, log_fn=slog)
-    # Assemble the full per-link result list: built parts + assumed-ok unchanged parts.
+    if to_build_model.links:
+        slog(f"worker ({getattr(settings, 'worker_backend', 'cadquery')}): generating "
+             "geometry + exporting per-link STLs ...")
+        part_results = _worker_build_all(to_build_model, ctx, settings, log_fn=slog)
+    else:
+        part_results = []
+    # Assemble the full per-link result list: edited + built parts + assumed-ok unchanged.
     if only_links is not None:
-        built_names = {r.link_name for r in part_results}
+        handled = {r.link_name for r in part_results} | edited_names
         from .model import WorkerResult
-        results = list(part_results) + [
+        results = list(edit_results) + list(part_results) + [
             WorkerResult(link_name=l.name, success=True,
                          abs_mesh_path=os.path.join(ctx.meshes_dir, f"{l.name}.stl"))
-            for l in model.links if l.name not in built_names]
+            for l in model.links if l.name not in handled]
     else:
         results = part_results
     built = sum(1 for r in results if r.success)

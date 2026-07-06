@@ -525,12 +525,17 @@ def parse_patch(text: str) -> dict:
     }
 
 
-def apply_patch(prior: KinematicModel, patch: dict) -> tuple[KinematicModel, set]:
+def apply_patch(prior: KinematicModel, patch: dict) -> tuple[KinematicModel, set, dict]:
     """Apply a patch to a prior model deterministically. Returns (new_model,
-    changed_link_names) where changed = added + modified links (the ONLY links the
-    worker must (re)build; unchanged links keep their prior STLs). Then _validate_model."""
+    changed_link_names, patch_meta). ``changed`` = added + modified links (the ONLY
+    links the worker must (re)build; unchanged links keep their prior STLs).
+    ``patch_meta`` splits them so the worker can EDIT a modified part's existing script
+    (item 2b) vs freshly generate an added one: {"modify": {names}, "add": {names}}.
+    Then _validate_model."""
     links = {l.name: l for l in prior.links}
     joints = {j.name: j for j in prior.joints}
+    add_names: set = {l.name for l in patch.get("add_links", [])}
+    modify_names: set = {l.name for l in patch.get("modify_links", [])}
     changed: set = set()
     for l in patch.get("add_links", []) + patch.get("modify_links", []):
         links[l.name] = l
@@ -547,15 +552,20 @@ def apply_patch(prior: KinematicModel, patch: dict) -> tuple[KinematicModel, set
     # A validated model may have renamed/dropped a link; keep only changed links that
     # survived validation.
     survivors = {l.name for l in new.links}
-    return new, (changed & survivors)
+    changed &= survivors
+    meta = {"modify": modify_names & survivors, "add": add_names & survivors}
+    return new, changed, meta
 
 
 def decompose_patch(prior_model_json: str, fault_reason: str, settings,
                     *, frame_contract=None, model_json_path=None,
-                    log_fn=None) -> tuple[KinematicModel, set]:
-    """Return a MINIMAL patched model + the set of changed link names, given the prior
-    model + the exact fault. The manager changes as FEW parts as possible (Claude-Code
-    style). Falls back to a full decompose if the patch can't be produced."""
+                    log_fn=None) -> tuple[KinematicModel, set, dict]:
+    """Return a MINIMAL patched model + the set of changed link names + patch_meta,
+    given the prior model + the exact fault. The manager changes as FEW parts as
+    possible (Claude-Code style). ``patch_meta`` = {"modify": {names}, "add": {names},
+    "fault_by_link": {link: fault}} so the worker can EDIT a modified part's existing
+    script vs freshly generate an added one (item 2b). Falls back to a full decompose if
+    the patch can't be produced."""
     from .prompts.manager_prompt import build_manager_patch
     prior = parse_model(prior_model_json)
     client = settings.manager_client()
@@ -570,7 +580,7 @@ def decompose_patch(prior_model_json: str, fault_reason: str, settings,
                 conv.get_messages_for_api(api_style=client.api_style),
                 system=MANAGER_SYSTEM)
             patch = parse_patch(text)
-            model, changed = apply_patch(prior, patch)
+            model, changed, meta = apply_patch(prior, patch)
         except (LLMError, ValueError, ManagerError, json.JSONDecodeError) as e:
             last_err = str(e)
             if log_fn:
@@ -581,9 +591,13 @@ def decompose_patch(prior_model_json: str, fault_reason: str, settings,
             save_model(model, model_json_path)
         if frame_contract is not None:
             model.frames_realized = parse_frames_realized(text)
+        # The manager doesn't emit a per-link fault; attribute the whole fault to each
+        # changed link so a per-part edit (2b) still has the "what's wrong" context.
+        meta["fault_by_link"] = {name: fault_reason for name in changed}
         if log_fn:
             log_fn(f"[manager] patched: {len(changed)} link(s) changed "
-                   f"({sorted(changed)}), rest kept")
-        return model, changed
+                   f"(modify={sorted(meta['modify'])}, add={sorted(meta['add'])}), "
+                   f"rest kept")
+        return model, changed, meta
     raise ManagerError(f"Manager patch failed after {attempts} attempts: {last_err}")
 
