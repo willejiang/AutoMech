@@ -173,6 +173,8 @@ def run_tool_loop(client, conv, system: str, tools: list, executors: dict, *,
             log_fn(f"[tool] {m}")
 
     last_text = ""
+    did_any_call = False
+    nudged = False
     for _ in range(max_rounds):
         messages = conv.get_messages_for_api(api_style=client.api_style)
         try:
@@ -184,7 +186,17 @@ def run_tool_loop(client, conv, system: str, tools: list, executors: dict, *,
         if not resp.tool_calls:
             if resp.text:
                 conv.add_assistant_message(resp.text)
+            # The model sometimes returns a text-only PREAMBLE ("I'll search...")
+            # before actually emitting the tool call. If it hasn't searched yet and we
+            # have budget, nudge it to make the call now instead of bailing (once).
+            if not did_any_call and not nudged:
+                nudged = True
+                conv.add_user_message(
+                    "You said you would search but did not call the tool. Call "
+                    "web_search NOW with a concrete query — do not just describe it.")
+                continue
             return last_text
+        did_any_call = True
         # Record the assistant turn WITH its tool_calls so each tool_result has a
         # matching tool_use block (Anthropic rejects an orphan tool_result otherwise).
         conv.add_assistant_message(resp.text or "", tool_calls=[

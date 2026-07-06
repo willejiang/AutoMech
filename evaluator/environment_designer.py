@@ -131,12 +131,48 @@ def _call(messages, base_url=None, api_key=None, model=None):
     return json.loads(txt)
 
 
+def _web_research(task, robot_info, base_url=None, api_key=None, model=None):
+    """Web-search research turn returning collected result text (to inject as context
+    into the schema-locked design call). Best-effort; returns "" on any failure.
+
+    Uses maker2's LLMClient + run_tool_loop rather than the raw OpenAI SDK: the gateway
+    signals a tool call via finish_reason but does NOT populate the SDK's typed
+    .tool_calls, so the raw SDK never sees the call. LLMClient has a custom tool-call
+    parser that reads the raw JSON, so tool-calling actually works there (verified)."""
+    try:
+        from maker2.config import Settings
+        from maker2.llm.conversation import Conversation
+        from maker2.tools import (WEB_SEARCH_TOOL, EXECUTORS, run_tool_loop,
+                                  _RESEARCH_SYSTEM)
+    except Exception:
+        return ""
+    try:
+        s = Settings.load()
+        client = s.make_client(2000)          # small budget; research is text lookups
+        conv = Conversation()
+        conv.add_user_message(
+            f"Research realistic physics-test parameters (typical drive speeds/RPM, "
+            f"friction, gear ratios, expected torque, how it is bench-tested) for: "
+            f"{task} (robot: {robot_info.get('name', 'robot')}). A few focused searches, "
+            f"then stop.")
+        run_tool_loop(client, conv, _RESEARCH_SYSTEM, [WEB_SEARCH_TOOL], EXECUTORS,
+                      max_rounds=3)
+        notes = [Conversation.extract_text(m.get("content", ""))
+                 for m in conv.messages if m.get("role") == "tool_result"]
+        return "\n".join(n for n in notes if n).strip()
+    except Exception:
+        return ""
+
+
+
 def design_environment(task, robot_info, subsystem=None, *,
-                       base_url=None, api_key=None, model=None):
+                       base_url=None, api_key=None, model=None, web=False):
     """One call: choose the sim environment + emit the scenario spec for it.
 
     ``subsystem`` (optional) is one independent power unit of a multi-subsystem machine;
-    when given, the spec targets that subsystem's input. Returns the spec dict (same shape
+    when given, the spec targets that subsystem's input. ``web`` (from
+    enable_reference_tools) runs a web-search research turn first to look up realistic
+    test parameters, injected as context. Returns the spec dict (same shape
     scenario_designer.design returned, plus sim_backend + environment). The caller
     (physics._design_spec) still applies the deterministic driver enforcement on top.
     """
@@ -147,9 +183,15 @@ def design_environment(task, robot_info, subsystem=None, *,
         sub = (f"\n\nTHIS SUBSYSTEM: {sid}"
                + (f" (its power input is joint '{drv}')" if drv else "")
                + " — design the environment/spec for THIS subsystem's input only.")
+    research = ""
+    if web:
+        notes = _web_research(task, robot_info, base_url, api_key, model)
+        if notes:
+            research = ("\n\nWEB RESEARCH (realistic test parameters — use where "
+                        f"relevant):\n{notes[:3000]}")
     msgs = [{"role": "system", "content": SYSTEM},
             {"role": "user", "content":
-                f"TASK: {task}{sub}\n\n{_robot_block(robot_info)}\n"
+                f"TASK: {task}{sub}\n\n{_robot_block(robot_info)}{research}\n"
                 f"Decide the simulation environment and output the scenario spec. Use ONLY "
                 f"the real joint/link names above."}]
     return _call(msgs, base_url, api_key, model)

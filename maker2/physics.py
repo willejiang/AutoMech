@@ -358,9 +358,10 @@ def _gateway():
     try:
         from maker2.config import Settings
         s = Settings.load()
-        return {"base_url": s.base_url, "api_key": s.api_key, "model": s.model}
+        return {"base_url": s.base_url, "api_key": s.api_key, "model": s.model,
+                "web": bool(getattr(s, "enable_reference_tools", False))}
     except Exception:
-        return {"base_url": None, "api_key": None, "model": None}
+        return {"base_url": None, "api_key": None, "model": None, "web": False}
 
 
 def _environments(task: str, model) -> list[dict] | None:
@@ -420,7 +421,7 @@ def _design_spec(task: str, model, test: dict) -> dict:
                      "output_joint": test.get("output_joint")}
     spec = design_environment(task, _robot_info(model), subsystem=subsystem,
                               base_url=gw["base_url"], api_key=gw["api_key"],
-                              model=gw["model"])
+                              model=gw["model"], web=gw.get("web", False))
     # A driven test is now signalled by the model having a drivable input (the caller
     # decides), not by a strategy enum — enforce the driver iff this test targets one.
     driver_present = bool(test.get("driver") or _roles(model).get("driver_input"))
