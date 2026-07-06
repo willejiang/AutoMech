@@ -36,8 +36,8 @@ class Settings:
                                                    # model limits); 32K gives large
                                                    # decompositions room with
                                                    # headroom under the real cap.
-    worker_max_tokens: int = 32000                # one subassembly's whole-batch
-                                                   # SCAD. 32K (under the 64K model
+    worker_max_tokens: int = 128000                # one subassembly's whole-batch
+                                                   # SCAD. 128K (under the 128K model
                                                    # cap) so a detailed batch fits;
                                                    # the worker also streams with
                                                    # completion-continuation if a
