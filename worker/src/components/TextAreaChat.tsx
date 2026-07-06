@@ -1726,10 +1726,11 @@ function TextAreaChat({
               </Tooltip>
             )}
 
-            {/* Web search toggle — only meaningful in Articulated mode. When on, the
+            {/* Web search toggle — sits right next to Articulated. When on, the
                 boss/manager/worker research standard dims / reference designs before
-                building. Sticky: stays on for the following chats in this session. */}
-            {setWebSearch && articulated && (
+                building (applies to Articulated/maker2 runs). Sticky: stays on for the
+                following chats and across reloads. */}
+            {setWebSearch && (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
