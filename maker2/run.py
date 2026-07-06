@@ -494,7 +494,7 @@ def main() -> int:
             settings.enable_reference_tools = True
         res = run_boss(a.prompt, a.out, settings=settings, do_physics=a.physics,
                        per_sub_physics=a.per_sub_physics, thread=a.thread,
-                       log_fn=print)
+                       refine_message=a.refine_message, log_fn=print)
         if a.json:
             print("RESULT_JSON:" + json.dumps(res))
         return 0 if res.get("ok") else 1

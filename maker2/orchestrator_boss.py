@@ -210,6 +210,7 @@ def _sub_physics(sub, prompt, *, log_fn=print) -> dict:
 def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
              do_physics: bool = True, per_sub_physics: bool = False,
              max_boss_iters: int = 0, thread: str | None = None,
+             refine_message: str | None = None,
              log_fn=print) -> dict:
     """The hierarchical pipeline end-to-end, with SURGICAL fault routing.
 
@@ -220,8 +221,10 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
         -> re-run ONLY that manager (others reused from disk).
       - a precheck 'interface' fault or an aggregated 'interface' physics fault
         -> re-plan via the boss.
-    `max_boss_iters<=0` = infinite (stop by killing the process). Emits the stage
-    markers + ARTIFACTs the UI (Stage H) reads.
+    ``refine_message`` (multi-turn) re-plans the SAME machine with a user change,
+    loading the prior plan from this session and REUSING every subassembly whose id
+    the boss keeps (only changed subs rebuild). `max_boss_iters<=0` = infinite (stop
+    by killing the process). Emits the stage markers + ARTIFACTs the UI reads.
     """
     from . import assembler, boss, precheck as precheck_mod
     from .config import Settings
@@ -246,21 +249,53 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
     feedback = None                       # boss re-plan feedback (interface faults)
     feedback_by_sub: dict = {}            # per-sub manager feedback (sub faults)
     reuse: set = set()                    # subs to load from disk (unchanged ones)
+
+    # Multi-turn refine: load the prior plan from this session (same slug -> same
+    # session_root) so the boss updates it, and the ids it keeps can be REUSED from
+    # disk (only changed subs rebuild).
+    prior_plan_json = None
+    prior_sub_ids: set = set()
+    if refine_message and os.path.exists(plan_path):
+        try:
+            prior_plan_json = open(plan_path, encoding="utf-8").read()
+            prior_sub_ids = {s.id for s in boss.load_plan(plan_path).subassemblies}
+            log(f"[boss] refine: loaded prior plan ({len(prior_sub_ids)} subassemblies)")
+        except Exception as e:
+            log(f"[boss] refine: could not load prior plan ({e}); planning fresh")
+            refine_message = None
+    elif refine_message:
+        log("[boss] refine requested but no prior plan on disk; planning fresh")
+        refine_message = None
+
     it = 0
     while True:
         log(f"\n===== ITERATION {it} (boss{' re-plan' if feedback else ''}) =====")
 
-        # 1. Boss plan (re-plan only when an interface fault set `feedback`).
+        # 1. Boss plan (re-plan only when an interface fault set `feedback`; the FIRST
+        #    iteration also carries a refine change if this is a multi-turn refine).
         if plan is None or feedback is not None:
             try:
-                plan = boss.plan_machine(prompt, settings, plan_json_path=plan_path,
-                                        feedback=feedback, log_fn=log)
+                plan = boss.plan_machine(
+                    prompt, settings, plan_json_path=plan_path, feedback=feedback,
+                    refine_message=refine_message if it == 0 else None,
+                    prior_plan_json=prior_plan_json if it == 0 else None,
+                    log_fn=log)
             except boss.BossError as e:
                 result["error"] = f"boss failed: {e}"
                 log(f"[boss] FAILED: {e}")
                 break
+            # On a REFINE, reuse every sub whose id the boss kept AND that is built on
+            # disk — only new/changed subs rebuild. Otherwise a fresh plan rebuilds all.
+            if refine_message and it == 0:
+                kept = {s.id for s in plan.subassemblies} & prior_sub_ids
+                on_disk = {sid for sid in kept if os.path.exists(
+                    os.path.join(session_root, f"sub_{sid}", "kinematic_model.json"))}
+                reuse = on_disk
+                log(f"[boss] refine: reusing {len(reuse)} unchanged subassemblies, "
+                    f"rebuilding {len(plan.subassemblies) - len(reuse)}")
+            else:
+                reuse = set()             # a fresh/re-plan invalidates built subs
             feedback = None
-            reuse = set()                 # a fresh plan invalidates all built subs
             feedback_by_sub = {}
         result["iterations"] = it + 1
 

@@ -30,7 +30,8 @@ from .llm.conversation import Conversation
 from .model import (FrameContract, MountFrame, SeamSpec, SubassemblyPlan,
                     SubassemblySpec)
 from .prompts.boss_prompt import (BOSS_SYSTEM, build_boss_feedback,
-                                  build_boss_json_from_notes, build_boss_repair,
+                                  build_boss_json_from_notes, build_boss_prior_plan,
+                                  build_boss_refine, build_boss_repair,
                                   build_boss_user)
 from .twophase import stream_two_part
 
@@ -389,14 +390,18 @@ def frame_contract_for(plan: SubassemblyPlan, sub_id: str) -> FrameContract:
 def plan_machine(product_prompt: str, settings, *, image_path: str | None = None,
                  plan_json_path: str | None = None,
                  feedback: str | None = None,
+                 refine_message: str | None = None,
+                 prior_plan_json: str | None = None,
                  log_fn=None) -> SubassemblyPlan:
     """Split a machine prompt into a validated, persisted SubassemblyPlan.
 
     ``feedback`` (a later loop pass) delivers an interface/assembly-level fault and
-    asks the boss to re-plan. On truncation the boss is asked for FEWER, larger
-    subassemblies; on parse/validation failure the error is fed back as a repair
-    request, bounded by ``settings.manager_retries``. Raises BossError if no attempt
-    yields a valid plan.
+    asks the boss to re-plan. ``refine_message`` + ``prior_plan_json`` (multi-turn)
+    hand the boss its previous plan and the user's change so it UPDATES the plan
+    (keeping unchanged subs' ids so they can be reused). On truncation the boss is
+    asked for FEWER, larger subassemblies; on parse/validation failure the error is
+    fed back as a repair request, bounded by ``settings.manager_retries``. Raises
+    BossError if no attempt yields a valid plan.
     """
     client = settings.boss_client()
     conv = Conversation()
@@ -413,6 +418,13 @@ def plan_machine(product_prompt: str, settings, *, image_path: str | None = None
         conv.add_user_message(build_boss_feedback(feedback))
         if log_fn:
             log_fn("[boss] re-planning from an interface/assembly fault")
+    # Multi-turn refine: show the prior plan, then the user's requested change.
+    if prior_plan_json:
+        conv.add_user_message(build_boss_prior_plan(prior_plan_json))
+    if refine_message:
+        conv.add_user_message(build_boss_refine(refine_message))
+        if log_fn:
+            log_fn(f"[boss] refining the plan: {refine_message[:80]}")
 
     # Optional web-search research pre-step (gated by settings.enable_reference_tools):
     # look up reference designs / typical layouts before planning.

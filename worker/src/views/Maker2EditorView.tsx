@@ -388,14 +388,16 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
     setChatInput('');
     const idx = turns.length;
     setTurns((prev2) => [...prev2, emptyTurn(msg)]);
+    // Refine re-plans the SAME machine via the boss (server loads the prior plan from
+    // the session by slug and reuses unchanged subassemblies) — no prior-model path.
     const qs = new URLSearchParams({
-      prompt,                    // keep the original product as base context
+      prompt,                    // keep the original product (same slug -> same session)
       iters: String(iters),
       thread: threadId,
       refine: msg,
-      prior: `${prev.runDir}/kinematic_model.json`,
     });
     if (model) qs.set('model', model);
+    if (web) qs.set('web', '1');
     streamTurn(idx, qs);
   };
 

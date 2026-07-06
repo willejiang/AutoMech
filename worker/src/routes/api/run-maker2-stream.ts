@@ -38,7 +38,6 @@ export const Route = createFileRoute('/api/run-maker2-stream')({
         const iters = url.searchParams.get('iters') ?? undefined;
         const threadId = url.searchParams.get('thread') ?? undefined;
         const refineMessage = url.searchParams.get('refine') ?? undefined;
-        const priorModel = url.searchParams.get('prior') ?? undefined;
         if (!prompt) {
           return new Response(sse('error', { error: 'need prompt' }), {
             headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
@@ -51,11 +50,11 @@ export const Route = createFileRoute('/api/run-maker2-stream')({
         if (iters && Number(iters) > 0) args.push('--max-iters', iters);
         if (threadId) args.push('--thread', threadId);
         if (refineMessage) args.push('--refine-message', refineMessage);
-        if (priorModel) args.push('--prior-model', priorModel);
-        // A fresh run goes through the BOSS hierarchy (boss -> N managers ->
-        // assembler -> precheck). A refine reuses an existing single-machine
-        // model, so it stays on the single-manager path.
-        if (!refineMessage) args.push('--hierarchy');
+        // Both fresh runs AND refines go through the BOSS hierarchy. A refine re-plans
+        // the SAME machine with the change (run_boss loads the prior plan from the
+        // session and reuses unchanged subassemblies). The old single-manager
+        // --prior-model path is not used for hierarchy refines.
+        args.push('--hierarchy');
         // Web-search reference lookup (keyless), when the client asks for it.
         if (url.searchParams.get('web') === '1') args.push('--web');
 

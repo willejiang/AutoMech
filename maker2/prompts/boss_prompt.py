@@ -149,3 +149,35 @@ one mesh center-distance apart on parallel axes). Keep the same schema, one glob
 origin, and every non-root subassembly connected through a weld seam.
 
 Output ONLY the JSON object, no prose, no markdown fences."""
+
+
+def build_boss_prior_plan(prior_plan_json: str) -> str:
+    """Hand the boss the PREVIOUS plan as the starting point for a refine."""
+    return f"""\
+Here is the CURRENT subassembly plan (the one you produced for this machine). It is
+the starting point for the user's next request:
+
+{prior_plan_json}"""
+
+
+def build_boss_refine(refine_message: str) -> str:
+    """Deliver the USER's change request for the existing machine (multi-turn refine).
+
+    Distinct from build_boss_feedback (an internal fault): this is the human asking to
+    change the design they already have (e.g. "add a second rotor", "make the base
+    wider"). Update the plan to satisfy it, keeping everything the change does not
+    touch — same subassembly ids where possible, so unchanged subs can be REUSED from
+    disk instead of rebuilt."""
+    return f"""\
+The user wants this CHANGE to the current machine:
+
+"{refine_message}"
+
+Update the subassembly plan to satisfy it. Keep everything the change does NOT touch
+EXACTLY the same — same subassembly ids, briefs, frames, and seams for the parts the
+change doesn't affect (this lets unchanged subassemblies be reused without rebuilding).
+Only add, remove, resize, re-pose, or re-connect the subassemblies the change requires.
+Keep the same schema, one global origin, and every non-root subassembly connected
+through a weld seam.
+
+Output ONLY the JSON object, no prose, no markdown fences."""
