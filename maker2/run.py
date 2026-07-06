@@ -25,8 +25,18 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from maker2.config import Settings
 from maker2.manager import decompose
 from maker2.orchestrator import make_run_context
-from maker2.scad_worker import build_all
 from maker2.urdf_builder import build_urdf, scaffold_meshes, validate_urdf
+
+
+def _worker_build_all(model, ctx, settings, log_fn=print):
+    """Build geometry via the configured backend (settings.worker_backend): CadQuery
+    by default, OpenSCAD as the legacy fallback. Same build_all(...) contract."""
+    backend = getattr(settings, "worker_backend", "cadquery")
+    if backend == "openscad":
+        from maker2.scad_worker import build_all as _ba
+    else:
+        from maker2.cq_worker import build_all as _ba
+    return _ba(model, ctx, settings, log_fn=log_fn)
 
 
 def _load_dotenv():
@@ -280,8 +290,9 @@ def run(prompt: str, out_dir: str = "output", manager_only: bool = False,
             return patch, ctx, [], model_obj
 
         # Phase 2: the worker fills geometry FROM the manager's URDF.
-        print("[2/3] cadam SCAD worker: generating .scad + rendering per-link STLs ...")
-        results = build_all(model_obj, ctx, settings, log_fn=print)
+        print(f"[2/3] worker ({getattr(settings, 'worker_backend', 'cadquery')}): "
+              "generating geometry + exporting per-link STLs ...")
+        results = _worker_build_all(model_obj, ctx, settings, log_fn=print)
         built = sum(1 for r in results if r.success)
         patch["built"] = built
         for r in results:

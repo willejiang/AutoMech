@@ -1,0 +1,11 @@
+# maker2 host-side Python deps (the boss -> managers -> workers -> assembler
+# pipeline). The geometry worker defaults to CadQuery (settings.worker_backend);
+# OpenSCAD is a legacy fallback and needs the OpenSCAD CLI (OPENSCAD_BIN) instead.
+# FreeCAD modules (FreeCAD/Part/Sketcher/...) are provided by a FreeCAD install,
+# not pip. Evaluator/physics deps live in evaluator/requirements.txt.
+cadquery         # parametric CAD kernel (OpenCASCADE): the default geometry worker
+numpy
+openai
+trimesh          # STL validation (validation.check_stl) + mesh I/O
+yourdfpy         # URDF load/validate
+six

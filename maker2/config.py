@@ -53,6 +53,12 @@ class Settings:
                                                    # streaming send must finish the
                                                    # whole completion within this
 
+    # ── Geometry worker backend ──────────────────────────────────
+    worker_backend: str = "cadquery"              # "cadquery" (default; curved
+                                                   # geometry via OCCT) | "openscad"
+                                                   # (legacy fallback). The hierarchy
+                                                   # build dispatches on this.
+
     # ── FreeCAD subprocess ───────────────────────────────────────
     freecadcmd_path: str = _DEFAULT_FREECADCMD
     worker_timeout: int = 120                     # seconds per freecadcmd run
