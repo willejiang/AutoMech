@@ -127,6 +127,11 @@ class SubassemblySpec:
     input_tags: list = field(default_factory=list)  # frame names that are power inputs
     output_tags: list = field(default_factory=list) # frame names that are power outputs
     est_link_budget: int = 30                        # keep <=35 so one manager fits
+    instances: list = field(default_factory=list)   # for IDENTICAL repeated subs (4 rotors,
+                                                     # 6 legs): [{xyz_m:[3], rpy_rad:[3]}, ...]
+                                                     # one GLOBAL pose per copy. Built ONCE;
+                                                     # the assembler instantiates N times.
+                                                     # empty/len<=1 = a single instance.
 
 
 @dataclass

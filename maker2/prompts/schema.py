@@ -190,6 +190,10 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
       "est_link_budget": <int <=35>,          // keep each manager under the output cap
       "input_tags": ["<frame name that is a power INPUT>", ...],
       "output_tags": ["<frame name that is a power OUTPUT>", ...],
+      "instances": [                            // OPTIONAL — ONLY for a sub that REPEATS
+        {"xyz_m": [<x>,<y>,<z>], "rpy_rad": [<r>,<p>,<y>]},  // GLOBAL pose of copy #0's ROOT
+        {"xyz_m": [<x>,<y>,<z>], "rpy_rad": [<r>,<p>,<y>]}   // ... copy #1's root, etc.
+      ],                                        // omit or [] for a normal single sub
       "frames": [
         {
           "name": "<urdf-safe frame name, unique within the sub>",
@@ -224,6 +228,15 @@ HARD RULES
   25. Include every real part WITHIN each subassembly (don't drop shafts/bearings to
   hit a number). Prefer splitting a large machine into MORE subassemblies over a few
   huge ones, but do NOT over-split a simple mechanism into trivial 1-2 part subs.
+- IDENTICAL REPEATED SUBASSEMBLIES: when several subassemblies are the SAME (same
+  parts, differing ONLY in position/orientation — a quadcopter's 4 rotors, a hexapod's
+  6 legs, a car's 4 wheels), emit ONE subassembly and list each copy in "instances"
+  (the GLOBAL xyz_m/rpy_rad pose of that copy's ROOT), instead of N separate specs. It
+  is BUILT ONCE and the assembler stamps out the copies at those poses — this saves the
+  whole machine from N redundant builds. Give it ONE weld seam (parent = the hub it
+  bolts to, child = this sub); the assembler expands that seam into one weld per
+  instance. Only do this when the parts are TRULY identical; if copies differ in
+  geometry, keep them as separate subs.
 - ONE global origin. EVERY frame's xyz_m/rpy_rad is in GLOBAL coordinates about
   that origin, so the assembler can place subassemblies without guessing.
 - Exactly ONE root_sub. Every OTHER subassembly must be reachable through at least

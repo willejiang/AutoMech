@@ -96,7 +96,26 @@ def _sub_from_dict(d: dict, idx: int) -> SubassemblySpec:
         input_tags=[str(t) for t in (d.get("input_tags") or [])],
         output_tags=[str(t) for t in (d.get("output_tags") or [])],
         est_link_budget=int(d.get("est_link_budget", 30)),
+        instances=_instances_from_dict(d.get("instances"), sub_id),
     )
+
+
+def _instances_from_dict(value, sub_id: str) -> list:
+    """Normalize a sub's `instances` (repeated-copy poses) to [{xyz_m, rpy_rad}, ...].
+    Tolerant: a missing/empty list means a single instance."""
+    if not isinstance(value, list):
+        return []
+    out = []
+    for i, e in enumerate(value):
+        if not isinstance(e, dict):
+            raise ValueError(f"sub '{sub_id}' instances[{i}] is not an object")
+        xyz = e.get("xyz_m") or [0.0, 0.0, 0.0]
+        rpy = e.get("rpy_rad") or [0.0, 0.0, 0.0]
+        if len(xyz) != 3 or len(rpy) != 3:
+            raise ValueError(f"sub '{sub_id}' instances[{i}] needs 3-number xyz_m/rpy_rad")
+        out.append({"xyz_m": [float(x) for x in xyz],
+                    "rpy_rad": [float(x) for x in rpy]})
+    return out
 
 
 def _seam_from_dict(d: dict, idx: int) -> SeamSpec:
@@ -305,6 +324,7 @@ def plan_to_dict(plan: SubassemblyPlan) -> dict:
                 "input_tags": list(s.input_tags),
                 "output_tags": list(s.output_tags),
                 "frames": [_frame_to_dict(f) for f in s.frames],
+                "instances": [dict(inst) for inst in (s.instances or [])],
             }
             for s in plan.subassemblies
         ],
