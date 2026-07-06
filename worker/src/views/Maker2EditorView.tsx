@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { ArrowLeft, Send } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { StreamingCodeBlock } from '@/components/chat/StreamingCodeBlock';
@@ -64,6 +64,20 @@ type Turn = {
   liveRendered?: boolean;
   meshBuilt?: number;
   meshTotal?: number;
+  // Version history (boss mode): one entry per iteration, retained so the canvas
+  // arrows can scrub back to a previous design AND its physics recording. Keyed by
+  // the artifact's `iter`. selectedVersion indexes into `versions`; versionPinned
+  // means the user scrubbed (don't auto-follow the newest).
+  versions?: TurnVersion[];
+  selectedVersion?: number;
+  versionPinned?: boolean;
+};
+
+type TurnVersion = {
+  iter: number;
+  runDir: string;
+  glbBlob?: Blob;
+  physics?: Maker2Result['physics'] | null;
 };
 
 const STAGES = [
@@ -103,6 +117,27 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
   const patchTurn = useCallback((idx: number, patch: Partial<Turn>) => {
     setTurns((prev) => prev.map((t, i) => (i === idx ? { ...t, ...patch } : t)));
   }, []);
+
+  // Upsert one iteration's version snapshot (runDir / GLB / physics) into a turn's
+  // version history, so the canvas arrows can scrub back to it. `patch` merges into
+  // the existing entry for that `iter`. selectedVersion follows the newest unless the
+  // user has pinned it by scrubbing (versionPinned).
+  const upsertVersion = useCallback(
+    (idx: number, iter: number, patch: Partial<TurnVersion>) => {
+      setTurns((prev) => prev.map((t, i) => {
+        if (i !== idx) return t;
+        const versions = [...(t.versions ?? [])];
+        const at = versions.findIndex((v) => v.iter === iter);
+        if (at >= 0) versions[at] = { ...versions[at], ...patch };
+        else versions.push({ iter, runDir: '', ...patch });
+        versions.sort((x, y) => x.iter - y.iter);
+        const newestIdx = versions.length - 1;
+        const selectedVersion = t.versionPinned
+          ? (t.selectedVersion ?? newestIdx)
+          : newestIdx;
+        return { ...t, versions, selectedVersion };
+      }));
+    }, []);
 
   // The subassembly the user is inspecting in isolation (overrides the canvas until
   // "back to machine" or the assembled model arrives). Declared before streamTurn so
@@ -184,6 +219,7 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
         sub_id?: string; ok?: boolean;
         violations?: PrecheckArtifact['violations'];
         link?: string; built?: number; total?: number;
+        iter?: number;
       };
       const dir = a.render_dir || a.run_dir;
       if (a.kind === 'mesh_progress' && a.run_dir) {
@@ -206,6 +242,16 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
           setPickedSub(null);
           patchTurn(idx, { liveRendered: false });
           loadArtifacts(idx, dir);
+          // Retain this iteration as a scrubbable VERSION: store its dir + GLB so the
+          // canvas arrows can return to it later.
+          if (a.iter !== undefined) {
+            const it = a.iter;
+            upsertVersion(idx, it, { runDir: a.run_dir ?? dir });
+            fetch(`${apiUrl('run-maker2-glb')}?dir=${encodeURIComponent(dir)}`)
+              .then((r) => (r.ok ? r.blob() : Promise.reject(r.statusText)))
+              .then((blob) => upsertVersion(idx, it, { glbBlob: blob }))
+              .catch(() => {});
+          }
         } else {
           setTurns((prev) => {
             const already = prev[idx]?.liveRendered;
@@ -243,6 +289,14 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
           };
           return { ...t, result: merged };
         }));
+        // Attach this iteration's physics to its VERSION snapshot so scrubbing back
+        // also switches the physics recording to that version's dir.
+        if (a.iter !== undefined) {
+          upsertVersion(idx, a.iter, {
+            runDir: a.render_dir || a.run_dir || '',
+            physics: a.physics ?? null,
+          });
+        }
       }
     });
     es.addEventListener('error', (e) => {
@@ -358,6 +412,38 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
   const physics = physicsTurn?.result?.physics ?? null;
   const physicsRunDir = physicsTurn?.result?.render_dir || physicsTurn?.runDir || '';
 
+  // Version scrubbing: the turn that owns the version history shown in the canvas
+  // (the latest turn that has >1 retained version). The arrows step selectedVersion
+  // within it; the canvas + physics then follow the selected version's snapshot.
+  const versionTurnIdx = (() => {
+    for (let i = turns.length - 1; i >= 0; i--)
+      if ((turns[i].versions?.length ?? 0) > 0) return i;
+    return -1;
+  })();
+  const versionTurn = versionTurnIdx >= 0 ? turns[versionTurnIdx] : undefined;
+  const versionList = versionTurn?.versions ?? [];
+  const selIdx = versionTurn?.selectedVersion ?? (versionList.length - 1);
+  const selVersion = versionList[selIdx];
+  const hasVersions = versionList.length > 1;
+
+  // Canvas GLB: a picked subassembly wins; else the SELECTED version's GLB; else the
+  // latest rendered model.
+  const canvasGlb = pickedSub?.blob
+    ?? (hasVersions ? selVersion?.glbBlob : undefined)
+    ?? latestWithGlb?.glbBlob;
+  // Physics dir follows the selected version when scrubbing.
+  const shownPhysics = (hasVersions && selVersion?.physics) ? selVersion.physics : physics;
+  const shownPhysicsDir = (hasVersions && selVersion?.runDir) ? selVersion.runDir : physicsRunDir;
+
+  const selectVersion = (next: number) => {
+    if (versionTurnIdx < 0) return;
+    const clamped = Math.max(0, Math.min(versionList.length - 1, next));
+    setTurns((prev) => prev.map((t, i) =>
+      i === versionTurnIdx
+        ? { ...t, selectedVersion: clamped, versionPinned: clamped !== versionList.length - 1 }
+        : t));
+  };
+
   // Hierarchy: a clicked subassembly overrides the canvas so the user can inspect
   // one sub in isolation before it's assembled. Cleared when a new turn streams.
   const pickSub = useCallback((sub: SubArtifact) => {
@@ -433,7 +519,7 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
         {/* CENTER: orbitable colored solid (latest good render) */}
         <div className="relative min-w-0 flex-1 bg-adam-neutral-950/30">
           <Maker2ModelCanvas
-            glbBlob={pickedSub?.blob ?? latestWithGlb?.glbBlob}
+            glbBlob={canvasGlb}
             status={canvasFailed && !pickedSub ? 'failed' : 'loading'}
             failedReason={canvasFailed && !pickedSub ? canvasFailReason : undefined}
           />
@@ -446,14 +532,45 @@ export function Maker2EditorView(props: Maker2EditorViewProps) {
               </button>
             </div>
           )}
+          {/* Version scrubber: step through previous/later design iterations. The
+              canvas AND the physics recording follow the selected version. */}
+          {!pickedSub && hasVersions && (
+            <>
+              <button
+                aria-label="previous version"
+                disabled={selIdx <= 0}
+                onClick={() => selectVersion(selIdx - 1)}
+                className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-adam-neutral-900/80 p-2 text-adam-text-primary shadow hover:bg-adam-neutral-800 disabled:opacity-30"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <button
+                aria-label="next version"
+                disabled={selIdx >= versionList.length - 1}
+                onClick={() => selectVersion(selIdx + 1)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-adam-neutral-900/80 p-2 text-adam-text-primary shadow hover:bg-adam-neutral-800 disabled:opacity-30"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-adam-neutral-900/80 px-3 py-1 text-xs text-adam-text-primary shadow">
+                version {selIdx + 1} / {versionList.length}
+                {selIdx !== versionList.length - 1 && (
+                  <button className="ml-2 text-adam-blue hover:underline"
+                    onClick={() => selectVersion(versionList.length - 1)}>
+                    latest
+                  </button>
+                )}
+              </div>
+            </>
+          )}
         </div>
 
         {/* RIGHT: physics evaluation (breakdown + recorded video), when present */}
-        {physics && (
+        {shownPhysics && (
           <div className="w-[340px] shrink-0 border-l border-adam-neutral-800 bg-adam-bg-secondary-dark">
             <PhysicsPanel
-              physics={physics}
-              runDir={physicsRunDir}
+              physics={shownPhysics}
+              runDir={shownPhysicsDir}
               running={anyStreaming}
             />
           </div>

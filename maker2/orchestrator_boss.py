@@ -300,9 +300,12 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                     result["error"] = f"sub physics failed: {list(bad)}"; break
                 it += 1; continue
 
-        # 4. Assemble the subassemblies into one URDF.
-        assembly_ctx = make_run_context(plan.name, session_root,
-                                        run_dir=os.path.join(session_root, "assembly"))
+        # 4. Assemble the subassemblies into one URDF. Each iteration writes its OWN
+        #    dir (assembly_iter_<it>) so previous versions are RETAINED on disk and the
+        #    UI can scrub back to them (canvas + physics recording per version).
+        assembly_ctx = make_run_context(
+            plan.name, session_root,
+            run_dir=os.path.join(session_root, f"assembly_iter_{it}"))
         try:
             final = assembler.assemble(plan, subs, assembly_ctx, log_fn=log)
         except assembler.AssemblerError as e:
@@ -315,13 +318,13 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
         result["render_dir"] = assembly_ctx.run_dir
         result["ok"] = True
         log("ARTIFACT_JSON:" + json.dumps({
-            "kind": "assembled_model", "run_dir": assembly_ctx.run_dir,
+            "kind": "assembled_model", "iter": it, "run_dir": assembly_ctx.run_dir,
             "render_dir": assembly_ctx.run_dir}))
 
         # 5. Geometric pre-check BEFORE physics.
         rep = precheck_mod.precheck(plan, subs, assembly_ctx.urdf_path, log_fn=log)
         log("ARTIFACT_JSON:" + json.dumps({
-            "kind": "precheck", "ok": rep.ok,
+            "kind": "precheck", "iter": it, "ok": rep.ok,
             "violations": [{"kind": v.kind, "severity": v.severity,
                             "sub_id": v.sub_id, "detail": v.detail} for v in rep.violations]}))
         if not rep.ok:
@@ -354,7 +357,7 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
             phys = {"passed": None, "blamed_kind": None, "summary": f"physics error: {e}"}
         result["physics"] = phys
         log("ARTIFACT_JSON:" + json.dumps({
-            "kind": "physics", "run_dir": assembly_ctx.run_dir,
+            "kind": "physics", "iter": it, "run_dir": assembly_ctx.run_dir,
             "render_dir": assembly_ctx.run_dir, "passed": phys.get("passed"),
             "physics": phys}))
         if phys.get("passed"):
