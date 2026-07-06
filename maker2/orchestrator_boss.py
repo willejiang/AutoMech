@@ -25,8 +25,19 @@ from .boss import frame_contract_for
 from .manager import decompose, load_model
 from .model import SubResult
 from .orchestrator import make_run_context
-from .scad_worker import build_all
 from .urdf_builder import build_urdf, scaffold_meshes, validate_urdf
+
+
+def _worker_build_all(model, ctx, settings, log_fn):
+    """Dispatch geometry building to the configured backend (settings.worker_backend):
+    CadQuery by default (curved geometry), OpenSCAD as the legacy fallback. Both share
+    the build_all(model, ctx, settings, log_fn) -> list[WorkerResult] contract."""
+    backend = getattr(settings, "worker_backend", "cadquery")
+    if backend == "openscad":
+        from .scad_worker import build_all as _ba
+    else:
+        from .cq_worker import build_all as _ba
+    return _ba(model, ctx, settings, log_fn=log_fn)
 
 
 def _sub_frames_to_dict(model) -> list:
@@ -85,6 +96,33 @@ def build_subassembly(spec, plan, settings, session_root, *,
     def slog(msg: str) -> None:
         log_fn(f"[sub:{sub_id}] {msg}")
 
+    # Item 4b: if this sub was built before AND we're rebuilding it because of a fault,
+    # try a MINIMAL edit instead of a from-scratch rebuild: (1) let the manager KEEP it
+    # if the fault isn't about this sub, else (2) apply a structured PATCH and rebuild
+    # ONLY the changed links (unchanged links keep their prior STLs).
+    prior_model_json = None
+    prior_model_path = os.path.join(run_dir, "kinematic_model.json")
+    if feedback and os.path.exists(prior_model_path):
+        try:
+            prior_model_json = open(prior_model_path, encoding="utf-8").read()
+        except Exception:
+            prior_model_json = None
+    if prior_model_json:
+        from .manager import should_rebuild, decompose_patch
+        if not should_rebuild(prior_model_json, feedback, settings,
+                              frame_contract=fc, log_fn=slog):
+            slog("keeping prior build (fault is elsewhere) — reused from disk")
+            return _load_sub_from_disk(sub_id, session_root, log_fn=log_fn)
+        try:
+            model, changed = decompose_patch(prior_model_json, feedback, settings,
+                                             frame_contract=fc,
+                                             model_json_path=ctx.model_json_path,
+                                             log_fn=slog)
+            return _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings,
+                                       slog, only_links=changed, log_fn=log_fn)
+        except Exception as e:
+            slog(f"patch path failed ({e}); falling back to full rebuild")
+
     try:
         slog("manager: decomposing this subassembly under the frame contract ...")
         model = decompose(spec.brief, settings, model_json_path=ctx.model_json_path,
@@ -93,6 +131,16 @@ def build_subassembly(spec, plan, settings, session_root, *,
         slog(f"manager FAILED: {e}")
         return SubResult(id=sub_id, ctx=ctx, ok=False, error=f"manager: {e}")
 
+    return _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
+                               only_links=None, log_fn=log_fn)
+
+
+def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
+                        *, only_links=None, log_fn=print) -> SubResult:
+    """Shared tail of build_subassembly: URDF + frames + worker build + validate.
+    ``only_links`` (a set) limits the worker to just the changed links (patch path);
+    None builds every link. Unchanged links keep their prior STLs (copied forward)."""
+    sub_id = spec.id
     build_urdf(model, ctx)
     ok, err = validate_urdf(ctx.urdf_path, require_meshes=False)
     if not ok:
@@ -108,16 +156,37 @@ def build_subassembly(spec, plan, settings, session_root, *,
             json.dump(sub_frames, f, indent=2)
     except Exception as e:
         slog(f"could not write sub_frames.json: {e}")
-    # A missing/short realized-frame set is not fatal here (Stage D precheck will
-    # catch it) but is worth flagging: the assembler needs one per contract frame.
     want = {fr.name for fr in fc.frames}
     got = {e["frame"] for e in sub_frames}
     missing = sorted(want - got)
     if missing:
         slog(f"WARNING: manager did not realize interface frame(s): {missing}")
 
-    slog("cadam SCAD worker: generating .scad + rendering per-link STLs ...")
-    results = build_all(model, ctx, settings, log_fn=slog)
+    # On a patch, build ONLY the changed links; the unchanged ones already have valid
+    # STLs on disk (from the prior build) that the URDF still references.
+    to_build_model = model
+    if only_links is not None:
+        import copy
+        keep = [l for l in model.links if l.name in only_links]
+        if keep:
+            to_build_model = copy.copy(model)
+            to_build_model.links = keep
+            slog(f"patch build: (re)building {len(keep)} changed link(s), "
+                 f"keeping {len(model.links) - len(keep)} prior STL(s)")
+
+    slog(f"worker ({getattr(settings, 'worker_backend', 'cadquery')}): generating "
+         "geometry + exporting per-link STLs ...")
+    part_results = _worker_build_all(to_build_model, ctx, settings, log_fn=slog)
+    # Assemble the full per-link result list: built parts + assumed-ok unchanged parts.
+    if only_links is not None:
+        built_names = {r.link_name for r in part_results}
+        from .model import WorkerResult
+        results = list(part_results) + [
+            WorkerResult(link_name=l.name, success=True,
+                         abs_mesh_path=os.path.join(ctx.meshes_dir, f"{l.name}.stl"))
+            for l in model.links if l.name not in built_names]
+    else:
+        results = part_results
     built = sum(1 for r in results if r.success)
     ok2, err2 = validate_urdf(ctx.urdf_path, require_meshes=True)
     success = ((built == len(results)) or (getattr(settings, "allow_partial", False)
@@ -249,6 +318,9 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
     feedback = None                       # boss re-plan feedback (interface faults)
     feedback_by_sub: dict = {}            # per-sub manager feedback (sub faults)
     reuse: set = set()                    # subs to load from disk (unchanged ones)
+    last_plan_json = None                 # last successfully-built plan (reuse baseline
+                                          # for the NEXT fault re-plan)
+    replan_blamed: set = set()            # sub ids a fault blamed (must rebuild on re-plan)
 
     # Multi-turn refine: load the prior plan from this session (same slug -> same
     # session_root) so the boss updates it, and the ids it keeps can be REUSED from
@@ -274,30 +346,59 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
         # 1. Boss plan (re-plan only when an interface fault set `feedback`; the FIRST
         #    iteration also carries a refine change if this is a multi-turn refine).
         if plan is None or feedback is not None:
+            # Carry the prior plan on ANY re-plan (refine OR a fault) so the boss keeps
+            # unchanged subassembly ids and they can be reused. `last_plan_json` is the
+            # last successfully-built plan; on iteration 0 it's the refine's prior plan.
+            replan_prior = None
+            if refine_message and it == 0:
+                replan_prior = prior_plan_json
+            elif feedback is not None:
+                replan_prior = last_plan_json          # fault re-plan keeps the prior
             try:
                 plan = boss.plan_machine(
                     prompt, settings, plan_json_path=plan_path, feedback=feedback,
                     refine_message=refine_message if it == 0 else None,
-                    prior_plan_json=prior_plan_json if it == 0 else None,
+                    prior_plan_json=replan_prior,
                     log_fn=log)
             except boss.BossError as e:
                 result["error"] = f"boss failed: {e}"
                 log(f"[boss] FAILED: {e}")
                 break
-            # On a REFINE, reuse every sub whose id the boss kept AND that is built on
-            # disk — only new/changed subs rebuild. Otherwise a fresh plan rebuilds all.
-            if refine_message and it == 0:
-                kept = {s.id for s in plan.subassemblies} & prior_sub_ids
+            # Reuse every sub whose id the boss KEPT from the prior plan AND that is
+            # built on disk, MINUS the ids the fault blamed (those must rebuild). This
+            # preserves good work on both refines and fault re-plans.
+            if replan_prior:
+                try:
+                    prior_ids = {s.id for s in
+                                 boss.plan_from_dict(json.loads(replan_prior)).subassemblies}
+                except Exception:
+                    prior_ids = prior_sub_ids
+                kept = {s.id for s in plan.subassemblies} & prior_ids
                 on_disk = {sid for sid in kept if os.path.exists(
                     os.path.join(session_root, f"sub_{sid}", "kinematic_model.json"))}
-                reuse = on_disk
-                log(f"[boss] refine: reusing {len(reuse)} unchanged subassemblies, "
+                reuse = on_disk - replan_blamed
+                log(f"[boss] re-plan: reusing {len(reuse)} unchanged subassemblies, "
                     f"rebuilding {len(plan.subassemblies) - len(reuse)}")
             else:
-                reuse = set()             # a fresh/re-plan invalidates built subs
+                reuse = set()             # a truly-fresh plan invalidates built subs
             feedback = None
             feedback_by_sub = {}
+            replan_blamed = set()
         result["iterations"] = it + 1
+        # Remember this plan as the reuse baseline for the NEXT re-plan.
+        last_plan_json = json.dumps(boss.plan_to_dict(plan))
+
+        # 1b/1c. Coarse appearance proxy (flag-gated): a low-poly whole-machine base
+        #        look + a per-sub proportion summary threaded to every manager via the
+        #        frame contract. Stashed on the plan so frame_contract_for picks it up
+        #        without changing build_subassembly's call site.
+        if getattr(settings, "enable_appearance_proxy", False):
+            try:
+                from . import appearance
+                ap = appearance.build_appearance_proxy(plan, session_root, log_fn=log)
+                plan.appearance_summary = ap.get("summary_text", "")
+            except Exception as e:
+                log(f"[boss] appearance proxy skipped ({e})")
 
         # 2. Build subassemblies in parallel (reusing unchanged ones from disk).
         subs = build_all_subassemblies(plan, settings, session_root,
@@ -356,6 +457,23 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
             "kind": "assembled_model", "iter": it, "run_dir": assembly_ctx.run_dir,
             "render_dir": assembly_ctx.run_dir}))
 
+        # 4b. Silent overlap auto-nudge (Session B item 1b): separate any subassemblies
+        #     that interpenetrate but share NO seam so THIS assembly closes, and tell the
+        #     blamed managers to fix their placement next iteration (a nudge is a hint,
+        #     not a rebuild trigger — it never sets `feedback`).
+        try:
+            nudges = assembler.auto_nudge_overlaps(final, plan, subs, assembly_ctx,
+                                                   log_fn=log)
+        except Exception as e:
+            log(f"[assembler] auto-nudge skipped ({e})")
+            nudges = {}
+        for sid, dxyz in (nudges or {}).items():
+            mm = ", ".join(f"{v*1000:+.1f}" for v in dxyz)
+            feedback_by_sub[sid] = ((feedback_by_sub.get(sid, "") + " ") if
+                                    feedback_by_sub.get(sid) else "") + (
+                f"your subassembly was auto-moved [{mm}] mm to clear an overlapping "
+                "neighbor — fix its global placement so it does not interpenetrate.")
+
         # 5. Geometric pre-check BEFORE physics.
         rep = precheck_mod.precheck(plan, subs, assembly_ctx.urdf_path, log_fn=log)
         log("ARTIFACT_JSON:" + json.dumps({
@@ -367,7 +485,11 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
             if iface:
                 feedback = "geometry pre-check failed (interface): " + \
                     "; ".join(v.detail for v in iface)
-                log("[precheck] interface fault -> boss re-plan")
+                # Only the subs named in interface violations rebuild on the re-plan;
+                # the rest keep their ids and reuse from disk (prior plan is carried).
+                replan_blamed = {v.sub_id for v in iface if v.sub_id}
+                log(f"[precheck] interface fault -> boss re-plan (rebuild only "
+                    f"{sorted(replan_blamed) or 'affected subs'}; others reused)")
             else:
                 for v in rep.violations:
                     if v.sub_id:
@@ -402,26 +524,62 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
             log("[boss] physics errored/unavailable -> stop with current assembly.")
             break
 
-        # 7. Route the physics failure. An 'interface' fault (motion didn't cross a
-        #    seam) -> boss re-plan; otherwise re-run the blamed subassembly(ies).
+        # 7. Route the physics failure PRECISELY on the diagnoser's blame:
+        #    - structure with a named culprit sub/part -> re-run ONLY that sub (others
+        #      reuse from disk), handing the manager the exact culprit part.
+        #    - interface (motion didn't cross a seam) -> boss re-plan, but carry the
+        #      prior plan so unchanged subs keep their ids and reuse; only the two
+        #      seam subs rebuild.
+        #    - non-localized -> re-run the subs whose tests FAILED; re-plan (with prior
+        #      plan) only if NOTHING maps. We never wholesale-wipe good work.
         if not infinite and it >= max_boss_iters - 1:
             result["error"] = f"physics failed: {phys.get('summary')}"; break
-        if phys.get("blamed_kind") == "interface":
+        kind = phys.get("blamed_kind")
+        culprit_subs = _map_blamed_to_subs(phys.get("culprit_subs") or [], plan)
+        blamed = _map_blamed_to_subs(phys.get("blamed_subs") or [], plan)
+        cm = phys.get("cause_map") or {}
+        cparts = phys.get("culprit_parts") or []
+
+        if kind == "interface":
+            # Seam fault: re-plan minimally, keeping every non-seam sub (they reuse).
             feedback = f"the assembled machine failed physics at a SEAM: {phys.get('summary')}"
-            log("[boss] physics interface fault -> boss re-plan")
+            replan_blamed = culprit_subs or blamed   # only these rebuild after re-plan
+            log(f"[boss] physics interface fault -> boss re-plan (rebuild only "
+                f"{sorted(replan_blamed) or 'seam subs'}; others reused)")
+        elif (culprit_subs or blamed):
+            # Localized structure fault -> surgically re-run the blamed sub(s) only.
+            target = culprit_subs or blamed
+            for sid in target:
+                part = next((p for p in cparts
+                             if _map_blamed_to_subs([p], plan) == {sid}), "")
+                detail = str((cm.get(sid) or {}).get("reason", "")
+                             or phys.get("summary", ""))
+                feedback_by_sub[sid] = (
+                    "assembled physics blamed this subassembly"
+                    + (f"; the exact broken part is '{part}'" if part else "")
+                    + f": {detail}")
+            reuse = {s.id for s in plan.subassemblies} - set(target)
+            log(f"[boss] physics blamed subs {sorted(target)}"
+                + (f" (parts {cparts})" if cparts else "")
+                + " -> re-running only those.")
         else:
-            blamed = _map_blamed_to_subs(phys.get("blamed_subs") or [], plan)
-            if blamed:
-                cm = phys.get("cause_map") or {}
-                for sid in blamed:
-                    feedback_by_sub[sid] = ("assembled physics blamed this subassembly: "
-                                            + str(cm.get(sid, phys.get("summary", ""))))
-                reuse = {s.id for s in plan.subassemblies} - set(blamed)
-                log(f"[boss] physics blamed subs {sorted(blamed)} -> re-running those.")
+            # Couldn't localize. Re-run the subs whose tests failed (from cause_map)
+            # rather than wiping everything; fall back to a prior-plan re-plan only if
+            # even that is empty.
+            failed_keys = _map_blamed_to_subs(list(cm.keys()), plan) if cm else set()
+            failed_keys = {k for k in failed_keys
+                           if (cm.get(k) or {}).get("verdict") != "PASS"} or failed_keys
+            if failed_keys:
+                for sid in failed_keys:
+                    feedback_by_sub[sid] = ("physics failed; this subassembly's test did "
+                                            "not pass: " + str(phys.get("summary", "")))
+                reuse = {s.id for s in plan.subassemblies} - failed_keys
+                log(f"[boss] physics not part-localized -> re-running failed subs "
+                    f"{sorted(failed_keys)} (keeping the rest).")
             else:
-                # Couldn't localize -> re-plan (safest).
                 feedback = f"the assembled machine failed physics: {phys.get('summary')}"
-                log("[boss] physics fault not localized -> boss re-plan")
+                log("[boss] physics fault fully unlocalized -> boss re-plan (prior plan "
+                    "kept so unchanged subs still reuse).")
         it += 1
         continue
 
