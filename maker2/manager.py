@@ -1,15 +1,23 @@
 """Manager agent: one product prompt -> a validated KinematicModel.
 
 The manager is the only component that owns geometry RELATIONSHIPS. It asks the
-LLM for a plain-JSON decomposition (links + joints), parses it into the dataclass
-contract, then runs a pure-Python validation pass that the LLM cannot be trusted
-to satisfy on its own: URDF-safe unique names, a single connected tree (one root,
-no cycles, no orphans), valid joint types, and sane limits for articulated joints.
+LLM for a plain-JSON decomposition (links + parent-relative POSES, plus each
+link's DOF), parses it into the dataclass contract, then runs a pure-Python
+normalization pass that the LLM cannot be trusted to satisfy on its own:
+URDF-safe unique names + mesh_filename assignment.
+
+Pure contact (maker2-mujoco-contact): there are NO motors and NO joints between
+parts. The manager emits parts + relative poses; motion is a property of each
+part (LinkSpec.dof: fixed|spin|free) and transmission happens by real tooth
+contact in MuJoCo. So the model is legitimately a FOREST — the old single-tree/
+one-root/no-cycle validation is gone; only slug/dedup + weak name-existence
+checks remain.
 
 Validation MUTATES the model into a normalized, URDF-safe form (slugified/deduped
-names propagated into joint endpoints; root_link inferred; mesh_filename assigned)
-and raises ManagerError listing every problem at once. On failure the error text
-is fed back to the LLM as a repair request, bounded by Settings.manager_retries.
+names propagated into pose endpoints + mesh_pairs; root_link inferred;
+mesh_filename assigned) and raises ManagerError listing every problem at once. On
+failure the error text is fed back to the LLM as a repair request, bounded by
+Settings.manager_retries.
 
 We use plain JSON rather than native tool-calling because the local gateway's
 tool support is unverified; a single JSON object is trivial to validate + repair.
@@ -24,7 +32,7 @@ from .imageutil import ImageLoadError, load_image_block
 from .jsonutil import extract_json_object
 from .llm.client import LLMError
 from .llm.conversation import Conversation
-from .model import JointSpec, KinematicModel, LinkSpec
+from .model import KinematicModel, LinkSpec, PoseSpec
 from .prompts.manager_prompt import (MANAGER_SYSTEM,
                                      build_manager_evaluator_feedback,
                                      build_manager_json_from_notes,
@@ -35,9 +43,7 @@ from .prompts.manager_prompt import (MANAGER_SYSTEM,
 from .twophase import stream_two_part
 
 
-_VALID_JOINT_TYPES = {"fixed", "revolute", "prismatic", "continuous"}
-_NEEDS_LIMITS = {"revolute", "prismatic"}
-_NEEDS_AXIS = {"revolute", "prismatic", "continuous"}
+_VALID_DOF = {"fixed", "spin", "free"}
 _URDF_SAFE = re.compile(r"^[a-z][a-z0-9_]*$")
 
 
@@ -55,10 +61,6 @@ def _as_tuple3(value, default: tuple) -> tuple:
     if not isinstance(value, (list, tuple)) or len(value) != 3:
         raise ValueError(f"expected a 3-number list, got {value!r}")
     return tuple(float(x) for x in value)
-
-
-def _opt_float(value):
-    return None if value is None else float(value)
 
 
 def _parse_color(value) -> tuple:
@@ -90,6 +92,10 @@ def _link_from_dict(d: dict, idx: int) -> LinkSpec:
     size = d.get("size_mm") or {}
     if not isinstance(size, dict):
         raise ValueError(f"links[{idx}] '{name}': size_mm must be an object")
+    dof = str(d.get("dof") or "fixed").strip().lower()
+    if dof not in _VALID_DOF:
+        raise ValueError(f"links[{idx}] '{name}': dof '{dof}' invalid "
+                         f"(expected one of {sorted(_VALID_DOF)})")
     return LinkSpec(
         name=name.strip(),
         description=str(desc),
@@ -97,56 +103,68 @@ def _link_from_dict(d: dict, idx: int) -> LinkSpec:
         size_mm={str(k): v for k, v in size.items()},
         origin_note=str(d.get("origin_note") or ""),
         color=_parse_color(d.get("color")),
-    )
-
-
-def _joint_from_dict(d: dict, idx: int) -> JointSpec:
-    if not isinstance(d, dict):
-        raise ValueError(f"joints[{idx}] is not an object")
-    name = d.get("name")
-    if not isinstance(name, str) or not name.strip():
-        raise ValueError(f"joints[{idx}] is missing a non-empty 'name'")
-    jtype = d.get("type")
-    if not isinstance(jtype, str) or not jtype.strip():
-        raise ValueError(f"joints[{idx}] '{name}' is missing 'type'")
-    parent = d.get("parent")
-    child = d.get("child")
-    if not isinstance(parent, str) or not parent.strip():
-        raise ValueError(f"joints[{idx}] '{name}' is missing 'parent'")
-    if not isinstance(child, str) or not child.strip():
-        raise ValueError(f"joints[{idx}] '{name}' is missing 'child'")
-    return JointSpec(
-        name=name.strip(),
-        type=jtype.strip().lower(),
-        parent=parent.strip(),
-        child=child.strip(),
-        xyz_m=_as_tuple3(d.get("xyz_m"), (0.0, 0.0, 0.0)),
-        rpy_rad=_as_tuple3(d.get("rpy_rad"), (0.0, 0.0, 0.0)),
-        axis=_as_tuple3(d.get("axis"), (0.0, 0.0, 1.0)),
-        lower=_opt_float(d.get("lower")),
-        upper=_opt_float(d.get("upper")),
-        effort=float(d.get("effort", 10.0)),
-        velocity=float(d.get("velocity", 1.0)),
+        dof=dof,
+        spin_axis=_as_tuple3(d.get("spin_axis"), (0.0, 0.0, 1.0)),
         driver=bool(d.get("driver", False)),
     )
 
 
+def _pose_from_dict(d: dict, idx: int) -> PoseSpec:
+    if not isinstance(d, dict):
+        raise ValueError(f"poses[{idx}] is not an object")
+    name = d.get("name")
+    if not isinstance(name, str) or not name.strip():
+        raise ValueError(f"poses[{idx}] is missing a non-empty 'name'")
+    child = d.get("child")
+    if not isinstance(child, str) or not child.strip():
+        raise ValueError(f"poses[{idx}] '{name}' is missing 'child'")
+    parent = d.get("parent")
+    parent = parent.strip() if isinstance(parent, str) else ""
+    return PoseSpec(
+        name=name.strip(),
+        parent=parent,
+        child=child.strip(),
+        xyz_m=_as_tuple3(d.get("xyz_m"), (0.0, 0.0, 0.0)),
+        rpy_rad=_as_tuple3(d.get("rpy_rad"), (0.0, 0.0, 0.0)),
+    )
+
+
+def _mesh_pairs_from(obj: dict) -> list:
+    """Parse the optional `mesh_pairs` list: [[drive, driven], ...] -> [(str,str)]."""
+    raw = obj.get("mesh_pairs") or []
+    out: list = []
+    if isinstance(raw, list):
+        for e in raw:
+            if isinstance(e, (list, tuple)) and len(e) == 2:
+                a, b = e
+                if isinstance(a, str) and isinstance(b, str):
+                    out.append((a.strip(), b.strip()))
+    return out
+
+
 def parse_model(text: str) -> KinematicModel:
-    """Parse an LLM response into a (not-yet-validated) KinematicModel."""
+    """Parse an LLM response into a (not-yet-validated) KinematicModel.
+
+    Pure-contact contract: `links` (with dof) + `poses` (parent-relative placements)
+    + optional `mesh_pairs`. Accepts the legacy `joints` key as an alias for `poses`
+    so a saved pre-migration model still loads (its joint types collapse to poses)."""
     obj = json.loads(extract_json_object(text))
     if not isinstance(obj, dict):
         raise ValueError("top-level JSON value is not an object")
     links = obj.get("links")
-    joints = obj.get("joints")
+    poses = obj.get("poses")
+    if poses is None:
+        poses = obj.get("joints")            # legacy alias
     if not isinstance(links, list) or not links:
         raise ValueError("'links' must be a non-empty array")
-    if not isinstance(joints, list):
-        raise ValueError("'joints' must be an array")
+    if not isinstance(poses, list):
+        raise ValueError("'poses' must be an array")
     return KinematicModel(
         name=str(obj.get("name") or "product"),
         root_link=str(obj.get("root_link") or ""),
         links=[_link_from_dict(d, i) for i, d in enumerate(links)],
-        joints=[_joint_from_dict(d, i) for i, d in enumerate(joints)],
+        poses=[_pose_from_dict(d, i) for i, d in enumerate(poses)],
+        mesh_pairs=_mesh_pairs_from(obj),
     )
 
 
@@ -202,14 +220,15 @@ def _dedupe(slug: str, used: set) -> str:
 
 
 def _validate_model(model: KinematicModel) -> None:
-    """Normalize names + verify a single connected tree. Raises on problems.
+    """Normalize names + weakly validate a pure-contact FOREST. Raises on problems.
 
-    Mutates ``model`` in place: link names are slugified/deduped and the new
-    names are propagated into joint parent/child; joint names are slugified/
-    deduped; on success ``root_link`` is set and each link's ``mesh_filename``
-    is assigned. All detected problems are collected and raised together so the
-    repair prompt can fix everything in one round-trip.
-    """
+    Mutates ``model`` in place: link names are slugified/deduped and the new names
+    are propagated into pose parent/child, mesh_pairs, and root_link; pose names are
+    slugified/deduped; each link's ``mesh_filename`` is assigned. Because a
+    pure-contact model is legitimately a forest (parts placed by pose, motion by
+    contact — NOT a single joint tree), the old single-root/no-cycle/orphan checks
+    are gone. We only guard that every pose child/parent + root_link names a real
+    link, and pick a sensible root_link if the manager didn't name one."""
     problems: list[str] = []
 
     # 1. Normalize link names, building old -> new remap.
@@ -222,82 +241,40 @@ def _validate_model(model: KinematicModel) -> None:
         link.name = slug
     valid_links = set(used_links)
 
-    # 2. Remap joint endpoints through the same table; normalize joint names.
-    used_joints: set[str] = set()
-    for joint in model.joints:
-        slug = _dedupe(_slugify(joint.name, "joint"), used_joints)
-        used_joints.add(slug)
-        joint.name = slug
-        joint.parent = link_remap.get(joint.parent, _slugify(joint.parent, "link"))
-        joint.child = link_remap.get(joint.child, _slugify(joint.child, "link"))
+    def _remap(name: str) -> str:
+        return link_remap.get(name, _slugify(name, "link")) if name else ""
 
-    # 3. Endpoints must reference real links; no self-loops.
-    for j in model.joints:
-        if j.parent not in valid_links:
-            problems.append(f"joint '{j.name}' references unknown parent '{j.parent}'")
-        if j.child not in valid_links:
-            problems.append(f"joint '{j.name}' references unknown child '{j.child}'")
-        if j.parent == j.child:
-            problems.append(f"joint '{j.name}' connects link '{j.parent}' to itself")
+    # 2. Remap pose endpoints through the same table; normalize pose names.
+    used_poses: set[str] = set()
+    for pose in model.poses:
+        slug = _dedupe(_slugify(pose.name, "pose"), used_poses)
+        used_poses.add(slug)
+        pose.name = slug
+        pose.parent = _remap(pose.parent)
+        pose.child = _remap(pose.child)
 
-    # 4. Joint types + articulated-joint requirements.
-    for j in model.joints:
-        if j.type not in _VALID_JOINT_TYPES:
-            problems.append(
-                f"joint '{j.name}' has invalid type '{j.type}' "
-                f"(expected one of {sorted(_VALID_JOINT_TYPES)})")
-            continue
-        if j.type in _NEEDS_AXIS and tuple(j.axis) == (0.0, 0.0, 0.0):
-            problems.append(f"joint '{j.name}' ({j.type}) needs a non-zero axis")
-        if j.type in _NEEDS_LIMITS:
-            if j.lower is None or j.upper is None:
-                problems.append(
-                    f"joint '{j.name}' ({j.type}) needs both 'lower' and 'upper'")
-            elif j.lower >= j.upper:
-                problems.append(
-                    f"joint '{j.name}' ({j.type}) needs lower < upper "
-                    f"(got {j.lower} >= {j.upper})")
+    # 3. Remap mesh_pairs + root_link through the same table.
+    model.mesh_pairs = [(_remap(a), _remap(b)) for (a, b) in model.mesh_pairs]
+    model.root_link = _remap(model.root_link)
 
-    # 5. Each non-root link is the child of exactly one joint.
-    child_counts: dict[str, int] = {}
-    for j in model.joints:
-        if j.child in valid_links:
-            child_counts[j.child] = child_counts.get(j.child, 0) + 1
-    for name, count in child_counts.items():
-        if count > 1:
-            problems.append(f"link '{name}' is the child of {count} joints (must be 1)")
-
-    # 6. Exactly one root (a link that is never any joint's child).
-    roots = sorted(valid_links - set(child_counts))
-    if len(roots) == 0:
-        problems.append("no root link -- every link is a child (a cycle, not a tree)")
-    elif len(roots) > 1:
-        problems.append(
-            f"multiple root links {roots} -- the model is a forest, not one tree")
-
-    # 7. DFS from the single root: catch orphans + cycles.
-    if len(roots) == 1:
-        adjacency: dict[str, list[str]] = {}
-        for j in model.joints:
-            adjacency.setdefault(j.parent, []).append(j.child)
-        visited: set[str] = set()
-        stack = [roots[0]]
-        while stack:
-            node = stack.pop()
-            if node in visited:
-                problems.append(f"cycle detected at link '{node}'")
-                continue
-            visited.add(node)
-            stack.extend(adjacency.get(node, []))
-        orphans = sorted(valid_links - visited)
-        if orphans:
-            problems.append(f"links not connected to the root: {orphans}")
+    # 4. Weak guard: pose endpoints must reference real links; no self-loops.
+    for p in model.poses:
+        if p.parent and p.parent not in valid_links:
+            problems.append(f"pose '{p.name}' references unknown parent '{p.parent}'")
+        if p.child not in valid_links:
+            problems.append(f"pose '{p.name}' references unknown child '{p.child}'")
+        if p.parent and p.parent == p.child:
+            problems.append(f"pose '{p.name}' places link '{p.child}' relative to itself")
 
     if problems:
         raise ManagerError("Model validation failed:\n- " + "\n- ".join(problems))
 
-    # Success: finalize the normalized model.
-    model.root_link = roots[0]
+    # Success: finalize. Pick a root_link if unset/invalid — prefer a link that is
+    # never a pose child (a forest root); else the first link.
+    if model.root_link not in valid_links:
+        children = {p.child for p in model.poses}
+        roots = [l.name for l in model.links if l.name not in children]
+        model.root_link = roots[0] if roots else (model.links[0].name if model.links else "")
     for link in model.links:
         link.mesh_filename = f"meshes/{link.name}.stl"
 
@@ -320,26 +297,23 @@ def model_to_dict(model: KinematicModel) -> dict:
                 "origin_note": l.origin_note,
                 "color": list(l.color),
                 "mesh_filename": l.mesh_filename,
+                "dof": l.dof,
+                "spin_axis": list(l.spin_axis),
+                "driver": l.driver,
             }
             for l in model.links
         ],
-        "joints": [
+        "poses": [
             {
-                "name": j.name,
-                "type": j.type,
-                "parent": j.parent,
-                "child": j.child,
-                "xyz_m": list(j.xyz_m),
-                "rpy_rad": list(j.rpy_rad),
-                "axis": list(j.axis),
-                "lower": j.lower,
-                "upper": j.upper,
-                "effort": j.effort,
-                "velocity": j.velocity,
-                "driver": j.driver,
+                "name": p.name,
+                "parent": p.parent,
+                "child": p.child,
+                "xyz_m": list(p.xyz_m),
+                "rpy_rad": list(p.rpy_rad),
             }
-            for j in model.joints
+            for p in model.poses
         ],
+        "mesh_pairs": [list(pair) for pair in model.mesh_pairs],
     }
 
 
@@ -464,7 +438,7 @@ def decompose(product_prompt: str, settings, *, image_path: str | None = None,
                        f"frame(s)")
         if log_fn:
             log_fn(f"[manager] OK on attempt {attempt}: "
-                   f"{len(model.links)} links, {len(model.joints)} joints, "
+                   f"{len(model.links)} links, {len(model.poses)} poses, "
                    f"root='{model.root_link}'")
         return model
 
@@ -504,24 +478,32 @@ def should_rebuild(prior_model_json: str, fault_reason: str, settings,
         return True
 
 
-# Structured patch: add/modify/remove links and joints against a prior model.
+# Structured patch: add/modify/remove links and poses against a prior model.
 MODEL_PATCH_SCHEMA = {
     "add_links": "list[LinkSpec]", "modify_links": "list[LinkSpec]",
-    "remove_links": "list[str]", "add_joints": "list[JointSpec]",
-    "modify_joints": "list[JointSpec]", "remove_joints": "list[str]",
+    "remove_links": "list[str]", "add_poses": "list[PoseSpec]",
+    "modify_poses": "list[PoseSpec]", "remove_poses": "list[str]",
 }
 
 
 def parse_patch(text: str) -> dict:
-    """Parse the manager's minimal PATCH JSON into typed add/modify/remove sets."""
+    """Parse the manager's minimal PATCH JSON into typed add/modify/remove sets.
+    Accepts legacy `*_joints` keys as aliases for `*_poses`."""
     obj = json.loads(extract_json_object(text))
+
+    def _poses(key_new, key_old):
+        raw = obj.get(key_new)
+        if raw is None:
+            raw = obj.get(key_old) or []
+        return [_pose_from_dict(d, i) for i, d in enumerate(raw or [])]
+
     return {
         "add_links": [_link_from_dict(d, i) for i, d in enumerate(obj.get("add_links") or [])],
         "modify_links": [_link_from_dict(d, i) for i, d in enumerate(obj.get("modify_links") or [])],
         "remove_links": [str(n) for n in (obj.get("remove_links") or [])],
-        "add_joints": [_joint_from_dict(d, i) for i, d in enumerate(obj.get("add_joints") or [])],
-        "modify_joints": [_joint_from_dict(d, i) for i, d in enumerate(obj.get("modify_joints") or [])],
-        "remove_joints": [str(n) for n in (obj.get("remove_joints") or [])],
+        "add_poses": _poses("add_poses", "add_joints"),
+        "modify_poses": _poses("modify_poses", "modify_joints"),
+        "remove_poses": [str(n) for n in (obj.get("remove_poses") or obj.get("remove_joints") or [])],
     }
 
 
@@ -533,7 +515,7 @@ def apply_patch(prior: KinematicModel, patch: dict) -> tuple[KinematicModel, set
     (item 2b) vs freshly generate an added one: {"modify": {names}, "add": {names}}.
     Then _validate_model."""
     links = {l.name: l for l in prior.links}
-    joints = {j.name: j for j in prior.joints}
+    poses = {p.name: p for p in prior.poses}
     add_names: set = {l.name for l in patch.get("add_links", [])}
     modify_names: set = {l.name for l in patch.get("modify_links", [])}
     changed: set = set()
@@ -542,13 +524,14 @@ def apply_patch(prior: KinematicModel, patch: dict) -> tuple[KinematicModel, set
         changed.add(l.name)
     for n in patch.get("remove_links", []):
         links.pop(n, None)
-    for j in patch.get("add_joints", []) + patch.get("modify_joints", []):
-        joints[j.name] = j
-    for n in patch.get("remove_joints", []):
-        joints.pop(n, None)
+    for p in patch.get("add_poses", []) + patch.get("modify_poses", []):
+        poses[p.name] = p
+    for n in patch.get("remove_poses", []):
+        poses.pop(n, None)
     new = KinematicModel(name=prior.name, root_link=prior.root_link,
-                         links=list(links.values()), joints=list(joints.values()))
-    _validate_model(new)                 # normalize + enforce single-tree invariant
+                         links=list(links.values()), poses=list(poses.values()),
+                         mesh_pairs=list(prior.mesh_pairs))
+    _validate_model(new)                 # normalize + weak forest validation
     # A validated model may have renamed/dropped a link; keep only changed links that
     # survived validation.
     survivors = {l.name for l in new.links}

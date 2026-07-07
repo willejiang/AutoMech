@@ -43,12 +43,12 @@ So an overlap has exactly two possible root causes, and you pick the right fix p
    extrude direction).
 
 HARD RULES:
-- The INTERFACE FRAME parts listed below are FROZEN: never change their joint origin AND
-  never edit their CadQuery script (do not move, shrink, or reshape them). Their pose and
-  geometry are the contract the rest of the machine welds to — an edit to them is rejected.
-  If a frozen part overlaps a neighbor, fix the OTHER (non-frozen) part instead.
-- Prefer the SMALLEST change. Usually ONE joint edit OR ONE script edit clears a pair.
-- Do not rename parts, add parts, or restructure the tree. Do not fuse parts.
+- The INTERFACE FRAME parts listed below are FROZEN: never change their placement pose
+  AND never edit their CadQuery script (do not move, shrink, or reshape them). Their pose
+  and geometry are the contract the rest of the machine welds to — an edit to them is
+  rejected. If a frozen part overlaps a neighbor, fix the OTHER (non-frozen) part instead.
+- Prefer the SMALLEST change. Usually ONE pose edit OR ONE script edit clears a pair.
+- Do not rename parts, add parts, or restructure the placement. Do not fuse parts.
 - Edited scripts keep the convention: `import cadquery as cq`, exactly one
   `build_<name>()` returning one solid at its local origin, no module-scope calls, no
   file I/O.
@@ -59,7 +59,7 @@ Respond in TWO parts, in this exact order:
 2. A line containing exactly:  {JSON_SENTINEL}
 3. ONE JSON object with this shape (omit an array if empty; do NOT wrap in fences):
 {{
-  "pose_edits":   [{{"joint": "<joint name>", "xyz_m": [x, y, z], "rpy_rad": [r, p, y]}}],
+  "pose_edits":   [{{"pose": "<pose name>", "xyz_m": [x, y, z], "rpy_rad": [r, p, y]}}],
   "script_edits": [{{"link": "<link name>", "script": "import cadquery as cq\\n\\ndef build_<link>():\\n    ..."}}],
   "reason": "<one line: what you changed and why the parts now clear>"
 }}"""

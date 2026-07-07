@@ -20,7 +20,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from maker2.model import KinematicModel, LinkSpec, JointSpec, RunContext
+from maker2.model import KinematicModel, LinkSpec, PoseSpec, RunContext
 from maker2.urdf_builder import build_urdf, scaffold_meshes, validate_urdf
 from maker2.validation import check_stl
 from maker2.scad_render import render_module, find_openscad
@@ -51,12 +51,14 @@ def hand_model() -> KinematicModel:
                  origin_note="attach point at top, extends -Z",
                  mesh_filename="meshes/table_leg.stl"),
     ]
-    joints = [
-        JointSpec(name="top_to_leg", type="fixed", parent="table_top",
-                  child="table_leg", xyz_m=(0.18, 0.18, -0.01)),
+    poses = [
+        PoseSpec(name="place_top", parent="", child="table_top",
+                 xyz_m=(0.0, 0.0, 0.0)),
+        PoseSpec(name="top_to_leg", parent="table_top",
+                 child="table_leg", xyz_m=(0.18, 0.18, -0.01)),
     ]
     return KinematicModel(name="table", root_link="table_top",
-                          links=links, joints=joints)
+                          links=links, poses=poses)
 
 
 def main() -> int:

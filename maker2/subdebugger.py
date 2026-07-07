@@ -56,30 +56,31 @@ def _read_text(path: str, limit: int = 20000) -> str:
 
 
 def _apply_pose_edits(model, pose_edits: list, frozen_links, log_fn) -> int:
-    """Mutate matching joints' xyz_m/rpy_rad in place. Returns how many applied. A joint
+    """Mutate matching POSES' xyz_m/rpy_rad in place. Returns how many applied. A pose
     whose CHILD is an interface-frame link is FROZEN — moving it off its declared global
     frame would break the seam, so the edit is rejected (the debugger must fix the other
-    part instead)."""
-    by_name = {j.name: j for j in model.joints}
+    part instead). The patch still names the edge by "joint" for backward compat; it is
+    matched against pose names (which the legacy joint view mirrors 1:1)."""
+    by_name = {p.name: p for p in model.poses}
     n = 0
     for e in pose_edits or []:
-        jn = e.get("joint")
-        j = by_name.get(jn)
-        if j is None:
-            log_fn(f"[debugger] pose edit names unknown joint '{jn}'; skipped")
+        jn = e.get("joint") or e.get("pose")
+        p = by_name.get(jn)
+        if p is None:
+            log_fn(f"[debugger] pose edit names unknown pose '{jn}'; skipped")
             continue
-        if j.child in frozen_links:
-            log_fn(f"[debugger] REJECTED pose edit on '{jn}': child '{j.child}' realizes "
+        if p.child in frozen_links:
+            log_fn(f"[debugger] REJECTED pose edit on '{jn}': child '{p.child}' realizes "
                    "an interface frame (immovable)")
             continue
         xyz = e.get("xyz_m")
         rpy = e.get("rpy_rad")
         if isinstance(xyz, (list, tuple)) and len(xyz) == 3:
-            j.xyz_m = tuple(float(v) for v in xyz)
+            p.xyz_m = tuple(float(v) for v in xyz)
         if isinstance(rpy, (list, tuple)) and len(rpy) == 3:
-            j.rpy_rad = tuple(float(v) for v in rpy)
+            p.rpy_rad = tuple(float(v) for v in rpy)
         n += 1
-        log_fn(f"[debugger] moved joint '{jn}' -> xyz_m={list(j.xyz_m)}")
+        log_fn(f"[debugger] moved pose '{jn}' -> xyz_m={list(p.xyz_m)}")
     return n
 
 
@@ -134,9 +135,9 @@ def debug_sub(model, ctx, run_dir, spec, plan, user_prompt, conflicts, settings,
     """Run ONE debugging pass over a conflicted subassembly.
 
     Returns (model, changed_links, moved) where ``changed_links`` are parts re-rendered
-    from an edited script and ``moved`` is True if any joint pose changed (so the caller
-    must rebuild the URDF). The model is mutated in place for pose edits; on any failure
-    the model is returned unchanged so the caller can retry or fail up.
+    from an edited script and ``moved`` is True if any placement pose changed (so the
+    caller must rebuild the URDF). The model is mutated in place for pose edits; on any
+    failure the model is returned unchanged so the caller can retry or fail up.
     """
     fc = frame_contract
     if fc is None:

@@ -40,7 +40,16 @@ UNITS_CONVENTION = (
 
 @dataclass
 class LinkSpec:
-    """One rigid part. A worker fills `mesh_filename` with built geometry."""
+    """One rigid part. A worker fills `mesh_filename` with built geometry.
+
+    Pure-contact DOF (maker2-mujoco-contact): a part's motion is a property of the
+    PART, not a joint. `dof` says how this link may move relative to its pose-parent:
+      "fixed" -> welded to the parent/base (no DOF).
+      "spin"  -> rotates on an implied axle along `spin_axis` (a hinge in MuJoCo).
+      "free"  -> a free-floating body (6-DOF; settles under gravity/contact).
+    `driver=True` tags the ONE part the physics test actuates on its own DOF. There
+    are NO motors and NO joints between parts — transmission is by tooth contact.
+    """
 
     name: str                                       # URDF-safe: ^[a-z][a-z0-9_]*$
     description: str                                # brief for the worker LLM
@@ -49,11 +58,31 @@ class LinkSpec:
     origin_note: str = ""                           # e.g. "attach point at origin, +Z up"
     color: tuple = ()                               # display RGBA 0..1, () -> palette fallback
     mesh_filename: str = ""                         # RELATIVE "meshes/<name>.stl"
+    dof: str = "fixed"                              # "fixed" | "spin" | "free"
+    spin_axis: tuple = (0.0, 0.0, 1.0)             # rotation axis for dof=="spin"
+    driver: bool = False                            # the ONE part the physics test drives
+
+
+@dataclass
+class PoseSpec:
+    """A parent-relative placement EDGE — where `child`'s local origin sits relative
+    to `parent`'s origin. No DOF, no limits (motion lives on LinkSpec.dof). Replaces
+    the old JointSpec as the authoring contract; the legacy joint view is synthesized
+    from poses+dof by KinematicModel.joints for the PyBullet/URDF path during
+    migration (see maker2-mujoco-contact plan Phase 1)."""
+
+    name: str
+    parent: str                                     # LinkSpec.name ("" for a root)
+    child: str                                      # LinkSpec.name
+    xyz_m: tuple = (0.0, 0.0, 0.0)                  # origin translation, METERS
+    rpy_rad: tuple = (0.0, 0.0, 0.0)               # origin rotation, radians
 
 
 @dataclass
 class JointSpec:
-    """One joint connecting parent -> child. Authored entirely by the manager."""
+    """LEGACY kinematic edge. No longer authored by the manager — synthesized from
+    PoseSpec+LinkSpec.dof by KinematicModel.joints so the URDF builder + PyBullet
+    runner keep working during the MuJoCo migration. Phase 4 retires it from sim."""
 
     name: str
     type: str                                       # fixed|revolute|prismatic|continuous
@@ -67,18 +96,20 @@ class JointSpec:
     effort: float = 10.0
     velocity: float = 1.0
     driver: bool = False                            # the INPUT joint a user drives
-                                                     # (crank/handle); tags the joint
-                                                     # the physics test actuates
 
 
 @dataclass
 class KinematicModel:
-    """The manager's decomposition: a single-rooted tree of links + joints."""
+    """The manager's decomposition: a FOREST of links placed by parent-relative
+    poses. Pure contact — no joint tree, no single-root requirement. `mesh_pairs`
+    names the gear pairs MEANT to couple by tooth contact (the transmission-fail
+    detector needs this, since no joint encodes a mesh)."""
 
     name: str
     root_link: str
     links: list[LinkSpec] = field(default_factory=list)
-    joints: list[JointSpec] = field(default_factory=list)
+    poses: list[PoseSpec] = field(default_factory=list)
+    mesh_pairs: list = field(default_factory=list)  # [(drive_link, driven_link), ...]
     # Hierarchy side-channel: when a subassembly manager builds under a boss frame
     # contract, its realized interface-frame placements land here (not part of the
     # URDF contract; model_to_dict/_validate_model ignore it). See maker2/boss.py.
@@ -86,6 +117,36 @@ class KinematicModel:
 
     def link_by_name(self, name: str) -> "LinkSpec | None":
         return next((l for l in self.links if l.name == name), None)
+
+    def pose_to_child(self, child_name: str) -> "PoseSpec | None":
+        return next((p for p in self.poses if p.child == child_name), None)
+
+    def child_poses(self, parent_name: str) -> list["PoseSpec"]:
+        return [p for p in self.poses if p.parent == parent_name]
+
+    @property
+    def joints(self) -> list["JointSpec"]:
+        """LEGACY VIEW: synthesize URDF/PyBullet joints from poses + link dof so the
+        old sim/URDF path keeps working during the MuJoCo migration. A pose whose
+        CHILD link is dof=="spin" becomes a continuous joint on that link's spin_axis;
+        dof=="free" also maps to continuous (best-effort; the real 6-DOF lives in
+        MuJoCo); dof=="fixed" is a fixed joint. Poses with an empty parent (forest
+        roots) are skipped — the URDF builder welds those to the base separately."""
+        out: list[JointSpec] = []
+        dof_by_link = {l.name: l for l in self.links}
+        for p in self.poses:
+            if not p.parent:
+                continue
+            link = dof_by_link.get(p.child)
+            d = link.dof if link else "fixed"
+            axis = tuple(link.spin_axis) if link else (0.0, 0.0, 1.0)
+            jtype = "continuous" if d in ("spin", "free") else "fixed"
+            out.append(JointSpec(
+                name=p.name, type=jtype, parent=p.parent, child=p.child,
+                xyz_m=tuple(p.xyz_m), rpy_rad=tuple(p.rpy_rad),
+                axis=axis if jtype != "fixed" else (0.0, 0.0, 1.0),
+                driver=bool(link.driver) if link else False))
+        return out
 
     def child_joints(self, parent_name: str) -> list["JointSpec"]:
         return [j for j in self.joints if j.parent == parent_name]

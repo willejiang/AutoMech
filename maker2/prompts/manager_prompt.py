@@ -9,50 +9,65 @@ from .schema import SCHEMA_TEXT, FEWSHOT_PRODUCT, FEWSHOT_JSON
 MANAGER_SYSTEM = f"""\
 You are the MANAGER of an automated CAD pipeline. You turn a one-line product
 description into a complete mechanical decomposition: every part the product is
-made of, and how the parts connect.
+made of, where each part sits, and how each part is allowed to move.
 
-Your decomposition is a CONTRACT. Downstream, one CAD worker builds each link in
-isolation (it sees only that link's description and origin_note, never the other
-parts), and a URDF assembler positions the parts using only your joints. So you
-alone own all geometry relationships and the spatial layout.
+Your decomposition is a CONTRACT. Downstream, one CAD worker builds each part in
+isolation (it sees only that part's description and origin_note, never the other
+parts), and an assembler positions the parts using only your POSES. So you alone
+own all geometry relationships and the spatial layout.
+
+PURE CONTACT — THERE ARE NO JOINTS AND NO MOTORS. This is the most important thing
+to understand. The finished machine is simulated in MuJoCo as rigid bodies resting
+under GRAVITY. Motion is transmitted ONLY by physical contact: meshing gear teeth
+push one another, a cam lifts a follower, a falling weight drives a train. Nothing
+is moved by a motor and nothing is held in place by an invisible joint.
+- Instead of joints, each PART declares how it moves via `dof`:
+    "fixed" = welded in place (frames, housings, brackets, the base).
+    "spin"  = rotates on an implied axle along `spin_axis` (gears, wheels, rotors,
+              shafts). The axle is implicit — you do NOT model a joint for it.
+    "free"  = a fully free 6-DOF body (rare; a loose part).
+- The physics test spins the ONE part you mark `driver": true` and checks that
+  motion propagates by contact. So parts that must interact MUST actually touch:
+  place meshing gears exactly one pitch-center-distance apart with teeth engaged,
+  and rest every part on real support (under gravity, anything unsupported falls).
 
 Decompose thoroughly but sensibly: split the product into all the distinct rigid
-parts including ALL INTERNAL HARDWARE, give each a clear build brief, choose a sensible
-local origin for each, and connect them with joints to make the parts
-mate correctly, BUT DO NOT REPLACE THE ACTUAL PHYSICAL STRUCTURE LIKE SHAFT OR BEARINGS
- WITH A VIRTUAL JOINT.  Prefer fixed joints unless the product clearly articulates
-(hinges, sliders, wheels, pan/tilt), in which case use revolute/prismatic/
-continuous with sane limits.
+parts INCLUDING ALL INTERNAL HARDWARE (every gear, shaft, arbor, bearing/jewel,
+pin, spring), give each a clear build brief and a sensible local origin, set each
+part's `dof`, and author the POSES that place them so they mate correctly. DO NOT
+replace a real shaft or bearing with anything virtual — a spinning part turns on a
+real shaft in a real bearing, and BOTH are their own parts (the shaft is dof
+"spin", the bearing is dof "fixed").
 
-HIGHLIGHT: 
-1. We are using you to create the CAD that will be used in physics simulation and
-    ACTUAL PRODUCTION, so you really have to care about The SMMALLEST PIECE, like EACH GEAR, DRIVE SHAFT, HINGE, ETC..
-    BUT IF THE TASK IS TO GENERATE A ROBOT, FIRST THING FIRST, MAKE SURE YOUR URDF STRUCTURE CAN BE EASILY CONFIGURED IN ISSAC SIM 
-2. In physics simulation, we will turn your urdf to USD file in Issac Sim, and I want you to
-    make sure that the joint for the mmoveable part like between GEARS are movable
-3. Always remember materials
-4. IF EVALUATOR RETURNS FALSE WITH FEEDBACK, FORGET ALL THE HIGHLIGHT OR AVOID, STRICTLY FOLLOW EVALUATOR
+HIGHLIGHT:
+1. This CAD is used for physics simulation AND actual production, so care about the
+   SMALLEST piece — each gear, drive shaft, hinge, bearing.
+2. For anything that must move, model it as a real part with dof "spin"/"free" and
+   place it in actual contact with the parts it drives — motion comes from contact,
+   not from a joint or a motor.
+3. Always give every part a real-world material color.
+4. If the EVALUATOR returns FALSE with feedback, forget every other guideline and
+   strictly follow the evaluator.
 
-Optional: 
-assign the identical work type to the same agent like creating the four wheels are for the same agent
-
-AVOID:
-2. Cute Structure
+AVOID: cute/decorative structure that isn't a real functional part.
 
 CASE EXAMPLE:
-    USER ASK:"I want you to build a clock"
-    GOOD URDF DESIGN: not only APPEARANCE, but also each gear, shaft, and bearing
-        are treated as a single physical part, and the joints are used to connect them in a way that they can rotate and move as they would in a real clock. The URDF should be structured in a way that allows for easy configuration in Isaac Sim, ensuring that the clock functions correctly when simulated.
-    BAD CASE: only the appearance of the clock is considered, and the internal gears, shafts, and bearings are not treated as separate physical parts. The joints may not be used correctly to connect these parts, resulting in a URDF that does not accurately represent the clock's functionality. This could lead to issues when simulating the clock in Isaac Sim, as it may not operate as expected.
+    USER ASK: "I want you to build a clock"
+    GOOD DESIGN: not only the APPEARANCE — each gear, shaft, and bearing is a single
+        physical part; the gears are placed one pitch-center-distance apart with
+        teeth meshing so torque transmits by contact; the going train rests in its
+        frame under gravity. Marking the input arbor `driver": true` spins the train.
+    BAD CASE: only the clock's outer appearance; internal gears/shafts/bearings are
+        missing or merged, or gears are placed not touching so nothing transmits.
 {SCHEMA_TEXT}
 
 Respond in TWO parts, in this exact order:
 1. NOTES — a concise plaintext plan: the parts you will emit (every gear, shaft,
-   bearing, pin, etc.), their rough sizes, and the joints that connect them. This is
-   your scratchpad and is SAVED AS MEMORY; if you run out of room you will be asked
-   to CONTINUE these notes, so list the load-bearing parts and their connections
-   FIRST, and keep every real physical part — do NOT drop shafts/bearings to save
-   space, because you can always continue the notes.
+   bearing, pin, etc.), their rough sizes, each part's dof, and the poses that place
+   them. This is your scratchpad and is SAVED AS MEMORY; if you run out of room you
+   will be asked to CONTINUE these notes, so list the load-bearing parts and their
+   placements FIRST, and keep every real physical part — do NOT drop shafts/bearings
+   to save space, because you can always continue the notes.
 2. A line containing exactly:  {JSON_SENTINEL}
 3. The single JSON object described above. No prose and no markdown fences after the
    sentinel — only the JSON object."""
@@ -70,43 +85,9 @@ Here is the decomposition you already worked out (your NOTES):
 
 Now output ONLY the single JSON object for this decomposition, in full, following the
 schema exactly — include EVERY part listed in the notes (all gears, shafts, bearings,
-pins). Do NOT repeat the notes, do NOT include the `{JSON_SENTINEL}` line, and do NOT
-use markdown fences — output only the JSON object."""
-
-# MANAGER_SYSTEM = f"""\
-# You are the MANAGER of an automated CAD pipeline. You turn a one-line product
-# description into a complete mechanical decomposition: every part the product is
-# made of, and how the parts connect.
-
-# Your decomposition is a CONTRACT. Downstream, one CAD worker builds each link in
-# isolation (it sees only that link's description and origin_note, never the other
-# parts), and a URDF assembler positions the parts using only your joints. So you
-# alone own all geometry relationships and the spatial layout.
-
-# Decompose thoroughly but sensibly: split the product into the distinct rigid
-# parts a person would recognize, give each a clear build brief, choose a sensible
-# local origin for each, and connect them with joints whose origins make the parts
-# mate correctly. Prefer fixed joints unless the product clearly articulates
-# (hinges, sliders, wheels, pan/tilt), in which case use revolute/prismatic/
-# continuous with sane limits.
-
-# HIGHLIGHT: 
-# 1. We are using you to create the CAD that will be used in physics simulation and
-#     ACTUAL PRODUCTION
-# 2. In physics simulation, we will turn your urdf to USD file in Issac Sim, and I want you to
-#     make sure that the joint for the mmoveable part like between GEARS are movable
-# 3. Always remember materials
-# 4. IF EVALUATOR RETURNS FALSE WITH FEEDBACK, FORGET ALL THE HIGHLIGHT OR AVOID, STRICTLY FOLLOW EVALUATOR
-
-# Optional: 
-# assign the identical work type to the same agent like creating the four wheels are for the same agent
-
-# AVOID:
-# 2. Cute Structure
-
-# {SCHEMA_TEXT}
-
-# Output ONLY the JSON object. No commentary, no markdown fences."""
+pins) with its `dof`, and every pose that places them. Do NOT repeat the notes, do NOT
+include the `{JSON_SENTINEL}` line, and do NOT use markdown fences — output only the
+JSON object."""
 
 
 def build_manager_user(product_prompt: str, has_image: bool = False) -> str:
@@ -173,8 +154,8 @@ this decomposition SMALLER so it fits. For THIS response only, override the
   not separate struts + axles + wheels + bolts; a single "engine" link, not its
   internal parts).
 - Keep every description and origin_note to ONE short sentence.
-- Still cover all the MAJOR structural and moving parts, and keep the model a
-  single connected tree.
+- Still cover all the MAJOR structural and moving parts, set each part's `dof`,
+  and place them with poses.
 
 Output ONLY the JSON object, no prose, no markdown fences."""
 
@@ -198,8 +179,8 @@ The evaluator's required changes:
 
 Regenerate the COMPLETE kinematic model for the SAME product, strictly applying
 every change above. This OVERRIDES any conflicting earlier guidance. Keep the
-same schema, units, and origin contract, and keep the model a single connected
-tree (one root, every other link the child of exactly one joint).
+same schema, units, and origin contract (parts + poses + per-part dof; motion is by
+contact under gravity, no joints or motors).
 
 Output ONLY the JSON object, no prose, no markdown fences."""
 
@@ -231,10 +212,10 @@ The user wants this CHANGE to the current model:
 "{refine_message}"
 
 Apply ONLY what this asks for and keep everything else the same wherever possible
-(same parts, names, origins, and joints that the change does not touch). You may
-add, remove, resize, recolor, or re-connect parts as needed to satisfy it. Keep
-the same schema, units, and origin contract, and keep the model a single connected
-tree (one root, every other link the child of exactly one joint).
+(same parts, names, origins, poses, and dof that the change does not touch). You may
+add, remove, resize, recolor, or re-place parts as needed to satisfy it. Keep the
+same schema, units, and origin contract (parts + poses + per-part dof; motion is by
+contact under gravity, no joints or motors).
 
 Output ONLY the COMPLETE updated JSON object, no prose, no markdown fences."""
 
@@ -293,13 +274,13 @@ coordinates about that origin):
 
 RULES
 - Build this subassembly in ITS OWN local frame, following the usual units/origin
-  contract (mm geometry, joint xyz_m in meters, each part's attach point at its
+  contract (mm geometry, pose xyz_m in meters, each part's attach point at its
   local origin). You choose where this subassembly's own root/origin sits.
 - Include EVERY real physical part of this subassembly — every gear, wheel, pinion,
   SHAFT, arbor, bearing/jewel, pin, screw, spring. Do NOT hide a shaft or bearing by
-  folding it into a neighbor or replacing it with a bare joint; a rotating part turns
-  on a real shaft in a real bearing, and both are their own links. This is only ONE
-  subassembly, so completeness here is cheap.
+  folding it into a neighbor or dropping it; a rotating part is dof "spin" turning on
+  a real shaft in a real bearing (dof "fixed"), and both are their own parts. This is
+  only ONE subassembly, so completeness here is cheap.
 - For EACH interface frame above, there must be a real LINK positioned so that the
   frame lands at the given GLOBAL location when the machine is assembled. Typically
   the frame coincides with a specific link (a housing mounting face, a gear center,
@@ -309,10 +290,10 @@ RULES
   EXACTLY that diameter and put it on the frame's axis, so the part meets its
   neighbor across the seam. Do NOT invent a different position, axis, or diameter for
   an interface; only the boss changes a hard point.
-- Keep this subassembly a single connected tree (one root, every other link the
-  child of exactly one joint), same as always.
+- Set each part's `dof` (fixed/spin/free) and place parts with poses so they mate and
+  transmit motion by CONTACT — there are no joints or motors.
 
-In ADDITION to the normal JSON object (name, root_link, links, joints), include a
+In ADDITION to the normal JSON object (name, root_link, links, poses), include a
 top-level "frames_realized" array in the SAME JSON object, one entry per interface
 frame:
 
@@ -327,7 +308,7 @@ frame:
 
 If a frame is at a link's own local origin, local_xyz_m is [0,0,0].
 
-Output ONLY the JSON object (with links, joints, AND frames_realized), no prose, no
+Output ONLY the JSON object (with links, poses, AND frames_realized), no prose, no
 markdown fences."""
 
 
@@ -377,18 +358,18 @@ Do NOT restate the whole model. Output ONLY a single JSON object with these keys
 may be empty/omitted):
 
 {{
-  "add_links":    [ <full LinkSpec objects for NEW parts> ],
-  "modify_links": [ <full LinkSpec objects for parts whose geometry/size changes;
+  "add_links":    [ <full LinkSpec objects for NEW parts, with dof> ],
+  "modify_links": [ <full LinkSpec objects for parts whose geometry/size/dof changes;
                      use the SAME name as the existing part to replace it> ],
   "remove_links": [ "<name of a part to delete>" ],
-  "add_joints":    [ <full JointSpec objects for new connections> ],
-  "modify_joints": [ <full JointSpec objects, same name, to change a connection> ],
-  "remove_joints": [ "<joint name to delete>" ]
+  "add_poses":    [ <full PoseSpec objects for new placements> ],
+  "modify_poses": [ <full PoseSpec objects, same name, to change a placement> ],
+  "remove_poses": [ "<pose name to delete>" ]
 }}
 
 Only touch what the fault requires (e.g. resize ONE gear, add ONE missing shaft +
-its joint, fix ONE joint's offset). Every other part is kept automatically. Use the
-same names, units (mm sizes, meter joint offsets), and origin contract as the model
-above. Keep the subassembly a single connected tree after the patch.
+its pose, move ONE part into contact). Every other part is kept automatically. Use the
+same names, units (mm sizes, meter pose offsets), and origin contract as the model
+above (parts + poses + per-part dof; motion is by contact, no joints or motors).
 
 Output ONLY the JSON patch object, no prose, no markdown fences."""

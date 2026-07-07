@@ -1,9 +1,11 @@
 """The manager's output schema + a worked few-shot.
 
-The manager returns ONE JSON object describing the product as a kinematic tree
-of links and joints. We deliberately use plain JSON (not native tool-calling) —
-the gateway's tool support is unverified, and a single JSON object is easy to
-validate and repair.
+Pure-contact contract (maker2-mujoco-contact): the manager returns ONE JSON object
+describing the product as a set of PARTS placed by parent-relative POSES. There are
+NO joints and NO motors — a part's ability to move is a property of the PART
+(`dof`), and transmission happens by real tooth contact under gravity in MuJoCo. We
+deliberately use plain JSON (not native tool-calling) — the gateway's tool support
+is unverified, and a single JSON object is easy to validate and repair.
 """
 
 # Human-readable schema, restated inside the manager prompt so the model has the
@@ -13,7 +15,8 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
 
 {
   "name": "<urdf-safe robot/product name, snake_case>",
-  "root_link": "<name of the single root link>",
+  "root_link": "<name of the part that everything else is positioned relative to
+                 (usually the base/frame that rests on the ground)>",
   "links": [
     {
       "name": "<urdf-safe: lowercase, starts with a letter, [a-z0-9_] only>",
@@ -21,80 +24,85 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
       "shape_hint": "<box | cylinder | sphere | free text>",
       "size_mm": { "<dim>": <number>, ... },   // approx bounding size in MM
       "origin_note": "<where this part's LOCAL origin sits and which way it points>",
-      "color": [<r>, <g>, <b>]                  // 0..1 RGB; the part's real-world color
+      "color": [<r>, <g>, <b>],                 // 0..1 RGB; the part's real-world color
+      "dof": "<fixed | spin | free>",           // how this part MOVES (see below)
+      "spin_axis": [<x>, <y>, <z>],             // rotation axis for dof "spin" (unit vec)
+      "driver": <true|false>                    // true on the ONE part the test drives
     }
   ],
-  "joints": [
+  "poses": [
     {
-      "name": "<urdf-safe joint name>",
-      "type": "<fixed | revolute | prismatic | continuous>",
-      "parent": "<link name>",
-      "child": "<link name>",
+      "name": "<urdf-safe pose name>",
+      "parent": "<link name this pose is relative to, or \"\" for a base/root part>",
+      "child": "<link name being placed>",
       "xyz_m": [<x>, <y>, <z>],     // METERS: parent-origin -> child-origin
-      "rpy_rad": [<r>, <p>, <y>],   // radians, fixed-axis XYZ
-      "axis": [<x>, <y>, <z>],      // required for non-fixed joints (unit vector)
-      "lower": <number>,            // required for revolute/prismatic (rad or m)
-      "upper": <number>,            // required for revolute/prismatic
-      "effort": <number>,           // optional, default 10
-      "velocity": <number>,         // optional, default 1
-      "driver": <true|false>        // optional: true on the ONE input joint a user
-                                    // drives (crank/handle) — the physics test
-                                    // actuates it. Omit/false for all other joints.
+      "rpy_rad": [<r>, <p>, <y>]    // radians, fixed-axis XYZ
     }
+  ],
+  "mesh_pairs": [                    // OPTIONAL: gear pairs MEANT to mesh by teeth
+    ["<drive_gear_link>", "<driven_gear_link>"], ...
   ]
 }
 
+HOW PARTS MOVE (this REPLACES joints — there are NO joints and NO motors)
+- Every part declares a `dof`:
+    "fixed" -> welded in place relative to its parent (a frame, housing, bracket, the
+               base). Most structural parts are "fixed".
+    "spin"  -> rotates freely about an implied axle along `spin_axis` (a gear on a
+               shaft, a wheel on an axle, a rotor). Give it a `spin_axis` unit vector.
+    "free"  -> a free-floating body with full 6-DOF (a loose ball, a pendulum bob that
+               is not pinned). Use sparingly.
+- Motion is transmitted ONLY by physical contact under gravity: meshing gear teeth
+  push each other, a cam lifts a follower, a weight falls. Nothing is driven by a
+  motor or held by an invisible joint. So parts must actually TOUCH to interact.
+- Set `driver": true` on the SINGLE part the physics test spins to drive the machine
+  (the input gear/crank/rotor). The test applies torque to that part's own dof; every
+  downstream part moves ONLY if its teeth truly contact. At most one driver.
+- `mesh_pairs` lists the (drive, driven) gear pairs you INTEND to mesh, by link name.
+  This is how the checker knows two gears are supposed to couple (no joint says so).
+
 HARD RULES
-- Exactly ONE root link (a link that is never a joint's child).
-- The links + joints must form a single connected tree: every non-root link is
-  the child of exactly one joint; no cycles; no orphans.
-- Joint parent/child must reference link names that exist.
-- Link and joint names are unique and URDF-safe (^[a-z][a-z0-9_]*$).
-- "fixed" joints omit axis/lower/upper. "revolute"/"prismatic" REQUIRE a
-  non-zero axis and lower < upper. "continuous" needs an axis, no limits.
-- If the product is a MACHINE the user drives (a crank, winder, hand wheel, input
-  shaft), set "driver": true on the SINGLE input joint they turn. The physics test
-  drives that joint to check the mechanism transmits motion. At most one driver.
+- Link and pose names are unique and URDF-safe (^[a-z][a-z0-9_]*$).
+- Every pose `child` must be a real link name; `parent` is a real link name or "".
+- A part with no pose (or a pose with parent "") is a base/root part placed at the
+  origin. The model is a FOREST — you do NOT need one single connected tree.
+- "spin" parts need a non-zero `spin_axis`; "fixed"/"free" ignore it.
 
 UNITS / ORIGIN CONTRACT (critical — this is how blindly-built parts line up)
-- size_mm is in MILLIMETERS. Joint xyz_m is in METERS.
-- Each worker builds its part ALONE, in the part's own local frame, with the
-  part's joint-attachment point at the LOCAL ORIGIN (0,0,0). You decide, per
-  link, WHERE that origin is and write it in `origin_note` precisely (e.g.
-  "top face center at origin, body extends -Z").
-- You author every joint's `xyz_m` as the vector FROM the parent link's origin
-  TO the point where the child link's origin attaches. Workers never position
-  parts relative to each other — all spatial relationships live in your joints.
-- Pick origins and joint offsets so the assembled parts touch/mate without
-  floating gaps or overlaps.
+- size_mm is in MILLIMETERS. Pose xyz_m is in METERS.
+- Each worker builds its part ALONE, in the part's own local frame, with the part's
+  natural attach/rotation point at the LOCAL ORIGIN (0,0,0). You decide, per link,
+  WHERE that origin is and write it in `origin_note` precisely (e.g. "gear center on
+  the mid-plane at origin, teeth around +Z axis").
+- You author every pose's `xyz_m` as the vector FROM the parent link's origin TO where
+  the child link's origin sits. Workers never position parts relative to each other —
+  all spatial relationships live in your poses.
+- Place parts so they physically MATE the way they must function: meshing gears exactly
+  one pitch-center-distance apart with teeth touching; a shaft through its bearing
+  bore; a part resting ON the surface below it, not floating above or sunk into it.
+  Under gravity, anything unsupported will fall — give every part real support.
 
 COLOR
 - Give every link a `color` as [r, g, b] in 0..1 matching the part's real-world
   material (e.g. brushed metal ~[0.75,0.76,0.78], brass ~[0.80,0.62,0.20], black
   plastic ~[0.12,0.12,0.13]). Adjacent parts should differ enough to read apart.
 
-PHYSICAL HARDWARE IS A PART, NOT A JOINT (critical)
-- A joint is a massless kinematic relationship; it is NOT a physical object. Every
-  real piece of hardware must be its OWN link, even when a joint also acts there.
-- A rotating shaft/axle turns INSIDE a bearing (or bushing/journal). Emit BOTH:
-  the bearing (or housing) as a fixed link AND the shaft as a separate link, and
-  connect them with a continuous/revolute joint whose axis runs through the bore.
-  Do the same for hinge pins, gear-on-shaft, wheel-on-axle: the pin/shaft/axle is
-  a real link, the joint is on top of it. NEVER delete a shaft or bearing just
-  because a joint could represent the motion — the worked example below shows the
-  exact bearing_block + shaft + continuous-joint pattern to copy."""
+PHYSICAL HARDWARE IS A REAL PART (critical)
+- Every real piece of hardware is its OWN link. A rotating shaft/axle turns inside a
+  bearing (or bushing/journal): emit BOTH — the bearing/housing as a "fixed" link AND
+  the shaft as a separate link with dof "spin" on the bore axis. Do the same for a
+  gear-on-shaft, wheel-on-axle, hinge pin. NEVER delete a shaft or bearing — the
+  worked example below shows the exact bearing + shaft + spin pattern to copy."""
 
 
 # A complete, valid worked example used as a one-shot in the prompt. It is a
 # MOTORIZED TURNTABLE chosen deliberately to demonstrate the two things the
 # manager most often gets wrong:
-#   1. PHYSICAL HARDWARE IS A REAL PART, NOT A JOINT. A shaft turns *inside* a
-#      bearing. The bearing_block is its own link (fixed to the base); the shaft
-#      is its own link; the rotation is a continuous joint whose axis runs
-#      through the bearing bore. The joint and the bearing COEXIST -- the joint
-#      does not "replace" the bearing. Copy this pattern for every rotating
-#      shaft, axle, gear-on-shaft, hinge pin, etc.
-#   2. The origin contract: each part's attach point is its local origin; joint
+#   1. PHYSICAL HARDWARE IS A REAL PART. A shaft turns *inside* a bearing. The
+#      bearing_block is its own "fixed" link (on the base); the shaft is its own
+#      "spin" link on the bore axis; the bearing and the spinning shaft COEXIST.
+#      Copy this pattern for every rotating shaft, axle, gear-on-shaft, hinge pin.
+#   2. The origin contract: each part's attach point is its local origin; pose
 #      xyz_m (meters) is the parent-origin -> child-origin vector.
 FEWSHOT_PRODUCT = "a motorized turntable: a platter that spins on a shaft carried by a bearing block on a base"
 
@@ -105,64 +113,68 @@ FEWSHOT_JSON = """\
   "links": [
     {
       "name": "base",
-      "description": "A flat square base plate, 200 x 200 mm, 15 mm thick, that everything mounts to.",
+      "description": "A flat square base plate, 200 x 200 mm, 15 mm thick, that everything mounts to and that rests on the ground.",
       "shape_hint": "box",
       "size_mm": {"x": 200, "y": 200, "z": 15},
       "origin_note": "top-face center at local origin; slab extends -Z (0..-15mm), centered in X and Y (-100..100mm)",
-      "color": [0.30, 0.30, 0.32]
+      "color": [0.30, 0.30, 0.32],
+      "dof": "fixed"
     },
     {
       "name": "bearing_block",
-      "description": "A pillow-block bearing: a 50 mm cube with a 12 mm vertical bore through its center that the shaft rotates inside. A REAL part, not the joint.",
+      "description": "A pillow-block bearing: a 50 mm cube with a 12 mm vertical bore through its center that the shaft rotates inside. A REAL fixed part.",
       "shape_hint": "box",
       "size_mm": {"x": 50, "y": 50, "z": 50, "bore_dia": 12},
       "origin_note": "bottom-face center at local origin; block extends +Z (0..50mm); the 12mm bore runs vertically through the center",
-      "color": [0.20, 0.22, 0.25]
+      "color": [0.20, 0.22, 0.25],
+      "dof": "fixed"
     },
     {
       "name": "shaft",
-      "description": "A vertical drive shaft, 12 mm diameter, 90 mm long, that turns inside the bearing bore and carries the platter on top.",
+      "description": "A vertical drive shaft, 12 mm diameter, 90 mm long, that turns inside the bearing bore and carries the platter on top. This is the driver the test spins.",
       "shape_hint": "cylinder",
       "size_mm": {"radius": 6, "height": 90},
       "origin_note": "bottom face center at local origin; cylinder extends +Z (0..90mm), coaxial with the bearing bore",
-      "color": [0.75, 0.76, 0.78]
+      "color": [0.75, 0.76, 0.78],
+      "dof": "spin",
+      "spin_axis": [0.0, 0.0, 1.0],
+      "driver": true
     },
     {
       "name": "platter",
-      "description": "A round turntable platter, 160 mm diameter, 8 mm thick, fixed to the top of the shaft.",
+      "description": "A round turntable platter, 160 mm diameter, 8 mm thick, fixed on top of the shaft (rotates with it).",
       "shape_hint": "cylinder",
       "size_mm": {"radius": 80, "height": 8},
       "origin_note": "bottom-face center at local origin; disc extends +Z (0..8mm)",
-      "color": [0.10, 0.10, 0.11]
+      "color": [0.10, 0.10, 0.11],
+      "dof": "spin",
+      "spin_axis": [0.0, 0.0, 1.0]
     }
   ],
-  "joints": [
+  "poses": [
     {
-      "name": "base_to_bearing_block",
-      "type": "fixed",
+      "name": "place_bearing_block",
       "parent": "base",
       "child": "bearing_block",
       "xyz_m": [0.0, 0.0, 0.0],
       "rpy_rad": [0.0, 0.0, 0.0]
     },
     {
-      "name": "shaft_in_bearing",
-      "type": "continuous",
+      "name": "place_shaft",
       "parent": "bearing_block",
       "child": "shaft",
       "xyz_m": [0.0, 0.0, 0.0],
-      "rpy_rad": [0.0, 0.0, 0.0],
-      "axis": [0.0, 0.0, 1.0]
+      "rpy_rad": [0.0, 0.0, 0.0]
     },
     {
-      "name": "shaft_to_platter",
-      "type": "fixed",
+      "name": "place_platter",
       "parent": "shaft",
       "child": "platter",
       "xyz_m": [0.0, 0.0, 0.090],
       "rpy_rad": [0.0, 0.0, 0.0]
     }
-  ]
+  ],
+  "mesh_pairs": []
 }"""
 
 

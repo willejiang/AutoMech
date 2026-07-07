@@ -1,11 +1,16 @@
 """KinematicModel -> model.urdf via yourdfpy, plus mesh scaffolding + validation.
 
-The URDF is the integration contract: it is written *before* any geometry is
-built (so workers have empty mesh files to fill), and re-validated *after* the
-build (so we know every mesh resolves and loads).
+VISUAL-ONLY (maker2-mujoco-contact): the real simulation is MuJoCo contact under
+gravity (see maker2/mjcf_builder.py). This URDF is retained ONLY for the appearance
+judge render + the precheck AABB load — it maps every part to a placement in one
+tree so yourdfpy can assemble a scene. Because a pure-contact model is a FOREST
+(parts placed by pose, no single root), we inject a synthetic ``world`` base link
+and weld every forest-root part to it at its declared pose; every non-root part
+hangs off its pose-parent via a fixed joint (placement only — DOF is ignored here;
+the MJCF builder is what honors dof/contact).
 
 Units: workers build in mm; each <mesh> carries scale="0.001 0.001 0.001" so the
-mm geometry renders at meter scale. Joint origins are authored by the manager in
+mm geometry renders at meter scale. Pose origins are authored by the manager in
 meters and encoded into the 4x4 origin matrix with the URDF fixed-axis XYZ (sxyz)
 rpy convention — verified to round-trip through yourdfpy.
 """
@@ -17,14 +22,17 @@ import os
 import numpy as np
 import trimesh.transformations as tf
 from yourdfpy import (URDF, Robot, Link, Joint, Visual, Collision, Geometry,
-                      Mesh, Limit, Material, Color)
+                      Mesh, Material, Color)
 
-from .model import KinematicModel, JointSpec, LinkSpec, RunContext
+from .model import KinematicModel, LinkSpec, PoseSpec, RunContext
 
 
 # mm geometry -> meter URDF
 _MM_TO_M_SCALE = (0.001, 0.001, 0.001)
-_NONFIXED = {"revolute", "prismatic", "continuous"}
+
+# Synthetic base link that every forest-root part welds to (a pure-contact model
+# has no single root, but a URDF needs exactly one).
+_WORLD_LINK = "world"
 
 # Fallback palette (RGB 0..1) so a link the manager left uncolored still renders
 # as a distinct solid instead of the default gray. Indexed by link order.
@@ -40,11 +48,11 @@ def _rel_mesh(link: LinkSpec) -> str:
     return link.mesh_filename or f"meshes/{link.name}.stl"
 
 
-def _origin_matrix(joint: JointSpec) -> np.ndarray:
-    """4x4 homogeneous transform from a joint's xyz (m) + rpy (rad, sxyz)."""
-    rx, ry, rz = joint.rpy_rad
+def _origin_matrix(xyz_m, rpy_rad) -> np.ndarray:
+    """4x4 homogeneous transform from xyz (m) + rpy (rad, sxyz)."""
+    rx, ry, rz = rpy_rad
     m = tf.euler_matrix(rx, ry, rz, axes="sxyz")
-    m[:3, 3] = list(joint.xyz_m)
+    m[:3, 3] = list(xyz_m)
     return m
 
 
@@ -75,23 +83,47 @@ def _build_link(link: LinkSpec, idx: int) -> Link:
     )
 
 
-def _build_joint(j: JointSpec) -> Joint:
-    kwargs = dict(name=j.name, type=j.type, parent=j.parent, child=j.child,
-                  origin=_origin_matrix(j))
-    if j.type in _NONFIXED:
-        kwargs["axis"] = np.array(list(j.axis), dtype=float)
-        if j.type in ("revolute", "prismatic"):
-            kwargs["limit"] = Limit(effort=j.effort, velocity=j.velocity,
-                                    lower=j.lower, upper=j.upper)
-    return Joint(**kwargs)
+def _placement_joint(name: str, parent: str, child: str,
+                     xyz_m, rpy_rad) -> Joint:
+    """A fixed URDF joint that only PLACES the child under the parent (no DOF —
+    this URDF is visual/AABB-only; MuJoCo owns the real motion)."""
+    return Joint(name=name, type="fixed", parent=parent, child=child,
+                 origin=_origin_matrix(xyz_m, rpy_rad))
 
 
 def build_urdf(model: KinematicModel, ctx: RunContext) -> str:
-    """Build the URDF from the model and write it to ``ctx.urdf_path``."""
+    """Build a VISUAL-ONLY URDF from the model and write it to ``ctx.urdf_path``.
+
+    Every part is placed by a fixed joint (DOF is ignored — see module docstring).
+    A synthetic ``world`` base link is injected and each forest-root part (any link
+    that is never a pose child) is welded to it at its declared pose, so the
+    otherwise-rootless forest becomes the single tree yourdfpy requires."""
+    links = [_build_link(l, i) for i, l in enumerate(model.links)]
+    joints: list[Joint] = []
+    child_of = {p.child: p for p in model.poses}
+
+    # Non-root parts: place under their pose-parent (skip poses with no real parent —
+    # those parts are forest roots, handled by the world weld below).
+    for p in model.poses:
+        if p.parent and p.parent != _WORLD_LINK:
+            joints.append(_placement_joint(p.name, p.parent, p.child,
+                                           p.xyz_m, p.rpy_rad))
+
+    # Forest roots: any link with no incoming parented pose. Weld each to `world` at
+    # its own (empty-parent) pose if it has one, else at the origin.
+    root_names = [l.name for l in model.links
+                  if not (child_of.get(l.name) and child_of[l.name].parent
+                          and child_of[l.name].parent != _WORLD_LINK)]
+    for rn in root_names:
+        p = child_of.get(rn)
+        xyz = p.xyz_m if p else (0.0, 0.0, 0.0)
+        rpy = p.rpy_rad if p else (0.0, 0.0, 0.0)
+        joints.append(_placement_joint(f"world_to_{rn}", _WORLD_LINK, rn, xyz, rpy))
+
     robot = Robot(
         name=model.name,
-        links=[_build_link(l, i) for i, l in enumerate(model.links)],
-        joints=[_build_joint(j) for j in model.joints],
+        links=[Link(name=_WORLD_LINK)] + links,
+        joints=joints,
     )
     urdf = URDF(robot=robot, build_scene_graph=False, load_meshes=False)
     os.makedirs(os.path.dirname(ctx.urdf_path), exist_ok=True)

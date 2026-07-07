@@ -6,18 +6,18 @@ PYTHON so surgical re-runs re-assemble identically, the biggest artifact never
 hits the token cap, and the single-tree invariant is enforced by reusing
 manager._validate_model. It:
 
-  1. Namespaces every sub's links/joints -> "<sub_id>_<name>" (remapping endpoints,
+  1. Namespaces every sub's links/poses -> "<sub_id>_<name>" (remapping endpoints,
      root_link, mesh_filename).
   2. Consolidates each sub's meshes into one meshes/ dir (copy, not symlink -> Windows).
-  3. Concatenates all links + joints; the global root is the root of plan.root_sub.
-  4. Adds BRIDGE joints from the plan's seams:
-       weld  -> a fixed joint from the parent sub's realized frame link to the CHILD
-                sub's ROOT, with an origin computed so the two frames coincide.
-       power (gear MESH, the milestone) -> NO cross-seam joint; the housing weld holds
+  3. Concatenates all links + poses; the global root is the root of plan.root_sub.
+  4. Adds BRIDGE poses from the plan's seams:
+       weld  -> a fixed placement pose from the parent sub's realized frame link to the
+                CHILD sub's ROOT, with an origin computed so the two frames coincide.
+       power (gear MESH, the milestone) -> NO cross-seam pose; the housing weld holds
                 the gear centers one mesh-distance apart and the gears couple by tooth
-                contact (self_collision) at sim time.
-  5. Re-validates via manager._validate_model (single tree / no cycles / mesh_filename)
-     and writes model.urdf via build_urdf.
+                contact at sim time (the pair is recorded in the model's mesh_pairs).
+  5. Re-validates via manager._validate_model (name normalization + weak forest check /
+     mesh_filename) and writes model.urdf via build_urdf.
 
 See .claude/plans/precious-humming-wand.md.
 """
@@ -31,7 +31,7 @@ import numpy as np
 import trimesh.transformations as tf
 
 from .manager import ManagerError, _validate_model, save_model
-from .model import JointSpec, KinematicModel, LinkSpec
+from .model import KinematicModel, LinkSpec, PoseSpec
 from .urdf_builder import build_urdf, validate_urdf
 
 
@@ -60,17 +60,28 @@ def _decompose(m: np.ndarray):
 
 def _root_to_link(model: KinematicModel) -> dict:
     """Accumulate the transform from the sub's ROOT link to every link, by walking
-    the joint tree (root at identity). Uses each joint's own xyz_m/rpy_rad."""
+    the POSE forest (root at identity). Uses each pose's own xyz_m/rpy_rad. Links
+    unreachable from root_link (separate forest components) are seeded at identity so
+    they still get a transform."""
     children: dict[str, list] = {}
-    for j in model.joints:
-        children.setdefault(j.parent, []).append(j)
-    T: dict[str, np.ndarray] = {model.root_link: np.eye(4)}
-    stack = [model.root_link]
+    for p in model.poses:
+        if p.parent:
+            children.setdefault(p.parent, []).append(p)
+    T: dict[str, np.ndarray] = {}
+    # Seed every forest root (a link that is never a parented pose's child).
+    parented = {p.child for p in model.poses if p.parent}
+    roots = [l.name for l in model.links if l.name not in parented]
+    if model.root_link and model.root_link not in roots:
+        roots.append(model.root_link)
+    stack = []
+    for r in roots:
+        T[r] = np.eye(4)
+        stack.append(r)
     while stack:
         node = stack.pop()
-        for j in children.get(node, []):
-            T[j.child] = T[node] @ _mat(j.xyz_m, j.rpy_rad)
-            stack.append(j.child)
+        for p in children.get(node, []):
+            T[p.child] = T[node] @ _mat(p.xyz_m, p.rpy_rad)
+            stack.append(p.child)
     return T
 
 
@@ -136,20 +147,27 @@ def _namespaced_links(sub, meshes_dir: str, ns_id: str | None = None) -> list:
         out.append(LinkSpec(
             name=new_name, description=l.description, shape_hint=l.shape_hint,
             size_mm=dict(l.size_mm), origin_note=l.origin_note, color=l.color,
-            mesh_filename=rel))
+            mesh_filename=rel, dof=l.dof, spin_axis=tuple(l.spin_axis),
+            driver=l.driver))
     return out
 
 
-def _namespaced_joints(sub, ns_id: str | None = None) -> list:
+def _namespaced_poses(sub, ns_id: str | None = None) -> list:
+    """Namespace a sub's internal poses. A sub's own root-placement pose (parent "",
+    child = sub root) is DROPPED — the assembler owns where each sub root goes (via a
+    weld seam for non-root subs, or the origin for the root sub), so keeping the sub's
+    internal root pose would double-place its root."""
     ns_id = ns_id or sub.id
+    root = sub.model.root_link
     out = []
-    for j in sub.model.joints:
-        out.append(JointSpec(
-            name=_ns(ns_id, j.name), type=j.type,
-            parent=_ns(ns_id, j.parent), child=_ns(ns_id, j.child),
-            xyz_m=tuple(j.xyz_m), rpy_rad=tuple(j.rpy_rad), axis=tuple(j.axis),
-            lower=j.lower, upper=j.upper, effort=j.effort, velocity=j.velocity,
-            driver=j.driver))
+    for p in sub.model.poses:
+        if not p.parent and p.child == root:
+            continue                      # assembler places the sub root itself
+        out.append(PoseSpec(
+            name=_ns(ns_id, p.name),
+            parent=_ns(ns_id, p.parent) if p.parent else "",
+            child=_ns(ns_id, p.child),
+            xyz_m=tuple(p.xyz_m), rpy_rad=tuple(p.rpy_rad)))
     return out
 
 
@@ -175,15 +193,15 @@ def _global_frame_pose(plan, sub_id: str, frame_name: str) -> np.ndarray:
     raise AssemblerError(f"plan sub '{sub_id}' has no frame '{frame_name}'")
 
 
-def _bridge_joint(seam, plan, subs: dict, placed_root: dict, *,
-                  child_ns: str | None = None,
-                  child_root_global_override=None) -> tuple:
-    """A fixed WELD joint that places the child sub at the boss's GLOBAL layout.
+def _bridge_pose(seam, plan, subs: dict, placed_root: dict, *,
+                 child_ns: str | None = None,
+                 child_root_global_override=None) -> tuple:
+    """A fixed WELD pose that places the child sub at the boss's GLOBAL layout.
 
     The boss assigns each interface frame a GLOBAL pose; the child sub must sit so
     ITS child_frame lands at that global pose. With the parent sub already placed at
     placed_root[parent_sub] (root sub = identity), the weld hangs the child's ROOT
-    under the parent's realized frame link. Returns (JointSpec, child_root_global).
+    under the parent's realized frame link. Returns (PoseSpec, child_root_global).
 
     ``child_ns`` overrides the child's namespace (an instanced sub passes its per-copy
     id). ``child_root_global_override`` (an instance's fixed global root pose from
@@ -204,7 +222,7 @@ def _bridge_joint(seam, plan, subs: dict, placed_root: dict, *,
         # Child root pose in global so its frame lands at G_cf.
         child_root_global = G_cf @ tf.inverse_matrix(T_cRoot_cf)
 
-    # Express the weld origin relative to the PARENT's realized link (the joint parent):
+    # Express the weld origin relative to the PARENT's realized link (the pose parent):
     #   origin = (global->parentRoot) ∘ (parentRoot->pL)  then invert to pL frame,
     #   applied to child_root_global.
     parent_root_global = placed_root[seam.parent_sub]
@@ -212,13 +230,12 @@ def _bridge_joint(seam, plan, subs: dict, placed_root: dict, *,
     T_global_pL = parent_root_global @ r2l_parent[pL]
     T_origin = tf.inverse_matrix(T_global_pL) @ child_root_global
     xyz, rpy = _decompose(T_origin)
-    j = JointSpec(
+    p = PoseSpec(
         name=f"seam_{seam.id}_{child_ns}" if child_root_global_override is not None
              else f"seam_{seam.id}",
-        type="fixed",
         parent=_ns(parent.id, pL), child=_ns(child_ns, child.model.root_link),
         xyz_m=xyz, rpy_rad=rpy)
-    return j, child_root_global
+    return p, child_root_global
 
 
 # --------------------------------------------------------------------------- #
@@ -260,27 +277,32 @@ def assemble(plan, subs: dict, ctx, *, log_fn=print) -> KinematicModel:
                 inst_root_pose[ns_id] = _mat(s.instances[k]["xyz_m"],
                                              s.instances[k]["rpy_rad"])
 
-    # 1-3. Namespace + concatenate all links/joints; consolidate meshes. An instanced
+    # 1-3. Namespace + concatenate all links/poses; consolidate meshes. An instanced
     #    sub is built ONCE but stamped out once per instance (each copy gets its own
     #    namespaced links + STL copies; _validate_model keys mesh_filename off the link
     #    name, so per-instance copies are required).
     links: list = []
-    joints: list = []
+    poses: list = []
+    mesh_pairs: list = []
     for s in plan.subassemblies:
         sub = subs[s.id]
         for ns_id in ns_ids[s.id]:
             links.extend(_namespaced_links(sub, ctx.meshes_dir, ns_id=ns_id))
-            joints.extend(_namespaced_joints(sub, ns_id=ns_id))
+            poses.extend(_namespaced_poses(sub, ns_id=ns_id))
+            # Carry each sub's internal mesh_pairs (namespaced) into the final model so
+            # the transmission-fail detector sees within-sub gear meshes too.
+            for (a, b) in (sub.model.mesh_pairs or []):
+                mesh_pairs.append((_ns(ns_id, a), _ns(ns_id, b)))
     n_inst = sum(len(v) for v in ns_ids.values())
-    log(f"merged {len(links)} links + {len(joints)} internal joints from "
+    log(f"merged {len(links)} links + {len(poses)} internal poses from "
         f"{len(plan.subassemblies)} subassemblies ({n_inst} instance(s) total)")
 
-    # 4. Bridge joints from WELD seams (power/gear-mesh seams add no joint — the
-    #    housings are welded and the gears couple by contact at sim time). Process
-    #    welds ROOT-FIRST (BFS from root_sub) so each parent is placed before its
-    #    child, giving every sub its global root pose for the next hop. A weld whose
-    #    CHILD is an instanced sub expands into ONE weld per instance (each placed at
-    #    its own instances[k] global root pose).
+    # 4. Bridge poses from WELD seams (power/gear-mesh seams add no placement pose — the
+    #    housings are welded and the gears couple by contact at sim time; a power seam's
+    #    mesh_pair is recorded in mesh_pairs instead). Process welds ROOT-FIRST (BFS from
+    #    root_sub) so each parent is placed before its child, giving every sub its global
+    #    root pose for the next hop. A weld whose CHILD is an instanced sub expands into
+    #    ONE weld per instance (each placed at its own instances[k] global root pose).
     weld_by_parent: dict = {}
     for seam in plan.seams:
         if seam.kind == "weld":
@@ -298,10 +320,10 @@ def assemble(plan, subs: dict, ctx, *, log_fn=print) -> KinematicModel:
             try:
                 for ns_id in child_ids:
                     override = inst_root_pose.get(ns_id)   # instance -> fixed global pose
-                    j, child_root_global = _bridge_joint(
+                    p, child_root_global = _bridge_pose(
                         seam, plan, subs, placed_root,
                         child_ns=ns_id, child_root_global_override=override)
-                    joints.append(j)
+                    poses.append(p)
                     placed_root[ns_id] = child_root_global
                     n_weld += 1
             except AssemblerError:
@@ -310,39 +332,74 @@ def assemble(plan, subs: dict, ctx, *, log_fn=print) -> KinematicModel:
                 raise AssemblerError(f"seam '{seam.id}' bridge failed: {e}") from e
             seen.add(seam.child_sub)
             queue.append(seam.child_sub)
+    # A power/gear-mesh seam names a cross-sub meshing pair; record it (namespaced by
+    # each sub's own id) so the final model's mesh_pairs covers cross-seam meshes.
+    for seam in plan.seams:
+        if seam.kind == "power" and getattr(seam, "mesh_pair", ()):
+            mp = seam.mesh_pair
+            if len(mp) == 2:
+                mesh_pairs.append((_ns(seam.parent_sub, mp[0]),
+                                   _ns(seam.child_sub, mp[1])))
     n_power = sum(1 for s in plan.seams if s.kind == "power")
-    log(f"added {n_weld} weld bridge joint(s); {n_power} power/mesh seam(s) couple "
-        f"by contact (no joint)")
+    log(f"added {n_weld} weld bridge pose(s); {n_power} power/mesh seam(s) couple "
+        f"by contact (no pose)")
+
+    # The machine's single power INPUT is the driving link of the seam marked driver.
+    # Pure contact needs the driver flag on a LINK (the physics test spins that part's
+    # own dof); the boss marks it on a seam, so propagate it here. The driving link is
+    # the seam's mesh_pair[0] on its owner_sub (or the parent frame's realized link).
+    by_name = {l.name: l for l in links}
+    driver_seam = next((s for s in plan.seams if getattr(s, "driver", False)), None)
+    if driver_seam is not None:
+        owner = getattr(driver_seam, "owner_sub", "") or driver_seam.parent_sub
+        drive_link = ""
+        if getattr(driver_seam, "mesh_pair", ()) and len(driver_seam.mesh_pair) == 2:
+            drive_link = _ns(owner, driver_seam.mesh_pair[0])
+        if drive_link not in by_name:
+            # Fall back to the parent frame's realized link on the parent sub.
+            try:
+                pL, _ = _frame_in_root(subs[driver_seam.parent_sub],
+                                       driver_seam.parent_frame)
+                drive_link = _ns(driver_seam.parent_sub, pL)
+            except Exception:
+                drive_link = ""
+        dl = by_name.get(drive_link)
+        if dl is not None:
+            if dl.dof == "fixed":
+                dl.dof = "spin"          # a driven part must have a dof to actuate
+            dl.driver = True
+            log(f"marked '{drive_link}' as the machine driver (from seam "
+                f"'{driver_seam.id}')")
 
     # 5. Build the final model; the global root is the root sub's namespaced root.
     root_link = _ns(plan.root_sub, subs[plan.root_sub].model.root_link)
     final = KinematicModel(name=plan.name, root_link=root_link,
-                           links=links, joints=joints)
+                           links=links, poses=poses, mesh_pairs=mesh_pairs)
 
-    # Single-tree guard before validation: each non-root sub-root must have exactly
-    # one parent joint (its weld). Catches a plan whose welds don't span the machine.
-    # Instanced subs contribute one root per copy.
+    # Forest guard before validation: each non-root sub-root must be placed by exactly
+    # one weld pose. Catches a plan whose welds don't span the machine (a sub with no
+    # inbound weld would float at the origin). Instanced subs contribute one root per copy.
     non_root_sub_roots = {_ns(ns_id, subs[s.id].model.root_link)
                           for s in plan.subassemblies if s.id != plan.root_sub
                           for ns_id in ns_ids[s.id]}
-    child_count: dict = {}
-    for j in joints:
-        child_count[j.child] = child_count.get(j.child, 0) + 1
+    placed_count: dict = {}
+    for p in poses:
+        placed_count[p.child] = placed_count.get(p.child, 0) + 1
     for sr in non_root_sub_roots:
-        c = child_count.get(sr, 0)
+        c = placed_count.get(sr, 0)
         if c != 1:
             raise AssemblerError(
-                f"subassembly root link '{sr}' has {c} parent joints (must be 1) — "
-                f"the plan's weld seams do not form a single tree")
+                f"subassembly root link '{sr}' has {c} placement poses (must be 1) — "
+                f"the plan's weld seams do not form a connected placement")
 
     try:
-        _validate_model(final)          # normalizes + enforces the single-tree invariant
+        _validate_model(final)          # normalizes names + weak forest validation
     except ManagerError as e:
-        raise AssemblerError(f"assembled model is not a valid single tree: {e}") from e
+        raise AssemblerError(f"assembled model failed validation: {e}") from e
 
     build_urdf(final, ctx)
     # Save the assembled model next to model.urdf so the physics evaluator can load
-    # it (physics._load_model reads kinematic_model.json for joint/driver/role info).
+    # it (physics._load_model reads kinematic_model.json for pose/dof/driver info).
     # Without this the assembled run has NO model -> robot_info is empty -> the
     # strategy selector defaults to a static-stability test and never drives the
     # mechanism (the "why is the tourbillon just a still box" failure).
@@ -354,7 +411,7 @@ def assemble(plan, subs: dict, ctx, *, log_fn=print) -> KinematicModel:
     if not ok:
         raise AssemblerError(f"assembled URDF topology invalid: {err}")
     ok2, err2 = validate_urdf(ctx.urdf_path, require_meshes=True)
-    log(f"wrote {ctx.urdf_path} (links={len(final.links)}, joints={len(final.joints)}, "
+    log(f"wrote {ctx.urdf_path} (links={len(final.links)}, poses={len(final.poses)}, "
         f"root='{final.root_link}', meshes ok={ok2})")
     return final
 
@@ -370,17 +427,17 @@ _NUDGE_CLEAR_MARGIN_M = 0.002     # push this much past just-touching
 _NUDGE_MAX_PASSES = 4
 
 
-def _child_weld_joint(final, plan, subs, sub_id):
-    """The single weld JointSpec that places `sub_id`'s subtree (its inbound seam
-    joint, named seam_<seamid> with child = <sub_id>_<sub_root>), or None for the root
-    / an instanced sub. Nudging this joint's origin translates the whole subtree."""
+def _child_weld_pose(final, plan, subs, sub_id):
+    """The single weld PoseSpec that places `sub_id`'s subtree (its inbound seam
+    pose, named seam_<seamid> with child = <sub_id>_<sub_root>), or None for the root
+    / an instanced sub. Nudging this pose's origin translates the whole subtree."""
     sub = subs.get(sub_id)
     if sub is None or sub.model is None:
         return None
     child_root = _ns(sub_id, sub.model.root_link)
-    for j in final.joints:
-        if j.child == child_root and j.type == "fixed":
-            return j
+    for p in final.poses:
+        if p.child == child_root:
+            return p
     return None
 
 
@@ -525,7 +582,7 @@ def auto_nudge_overlaps(final, plan, subs, ctx, *, log_fn=print) -> dict:
                 child = a if depth.get(a, 0) >= depth.get(b, 0) else b
                 if child == plan.root_sub:
                     child = b if child == a else a
-                joint = _child_weld_joint(final, plan, subs, child)
+                joint = _child_weld_pose(final, plan, subs, child)
                 if joint is None:
                     continue
                 # Shortest-axis separation: push along the axis of MIN penetration by
@@ -616,7 +673,7 @@ def main() -> int:
         print(f"[assembler] FAILED: {e}")
         return 1
     print("-" * 56)
-    print(f"RESULT: assembled {len(final.links)} links / {len(final.joints)} joints "
+    print(f"RESULT: assembled {len(final.links)} links / {len(final.poses)} poses "
           f"-> {ctx.urdf_path}")
     return 0
 
