@@ -836,6 +836,37 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                 "neighbor — fix its global placement so it does not interpenetrate.")
 
         # 5. Geometric pre-check BEFORE physics.
+        # 5a. DETERMINISTIC ASSEMBLED-SUPPORT GATE (no LLM): the ONLY grounding/support
+        #     check — subs aren't free-standing, so support is a whole-machine property.
+        #     Weld chain to root_sub + the base must be the lowest structural part. A
+        #     failure is an interface fault -> boss re-plan.
+        from .benchmarks import format_errors as _fmt_gate
+        from .benchmarks.assembled_gate import assembled_gate
+        asm_all = assembled_gate(plan, assembly_ctx.urdf_path, log_fn=log)
+        # ERR_SUP_FLOAT (weld chain) is orientation-INDEPENDENT and blocks. ERR_SUP_GROUND
+        # (which sub is lowest) is orientation-DEPENDENT — a watch laid dial-down
+        # legitimately puts the motion works below the mainplate — so it only WARNS, it
+        # does not re-plan (validated: it false-fired on a real tourbillon).
+        asm_errs = [e for e in asm_all if e.code == "ERR_SUP_FLOAT"]
+        for e in asm_all:
+            blocking = e.code == "ERR_SUP_FLOAT"
+            log("ARTIFACT_JSON:" + json.dumps({
+                "kind": "gate", "layer": "assembled", "iter": it, "code": e.code,
+                "detail": e.detail, "culprit": e.culprit, "ok": (not blocking)}))
+            if not blocking:
+                log(f"[assembled] support gate WARN {e}")
+        if asm_errs:
+            feedback = ("the assembled machine failed automated support checks; fix "
+                        "exactly these and re-plan:\n" + _fmt_gate(asm_errs))
+            replan_blamed = {e.culprit for e in asm_errs if e.culprit
+                             and e.culprit in {s.id for s in plan.subassemblies}}
+            log(f"[assembled] support gate FAILED -> boss re-plan (rebuild "
+                f"{sorted(replan_blamed) or 'affected subs'}; others reused)")
+            if not infinite and it >= max_boss_iters - 1:
+                result["error"] = f"assembled support failed: {_fmt_gate(asm_errs)}"; break
+            it += 1; continue
+        log("[assembled] support gate PASSED (weld chain; grounding warned only)")
+
         rep = precheck_mod.precheck(plan, subs, assembly_ctx.urdf_path, log_fn=log)
         log("ARTIFACT_JSON:" + json.dumps({
             "kind": "precheck", "iter": it, "ok": rep.ok,
