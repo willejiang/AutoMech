@@ -76,6 +76,15 @@ class Settings:
                                                    # ground plane under gravity (literal).
                                                    # False pins the base to remove settle
                                                    # noise when only transmission matters.
+    score_weights: dict = None                    # override the keep-best score weights
+                                                   # (transmission/stability/overlap/judge);
+                                                   # None -> score.py's calibration draft
+                                                   # 0.45/0.25/0.15/0.15. Exposed so a
+                                                   # labeled-run sweep can retune it.
+    score_target: float = 0.9                     # boss stops when the design score
+                                                   # reaches this (score-gated iteration).
+    score_plateau: int = 3                        # stop after this many iterations with
+                                                   # no accepted improvement.
 
     # ── FreeCAD subprocess ───────────────────────────────────────
     freecadcmd_path: str = _DEFAULT_FREECADCMD

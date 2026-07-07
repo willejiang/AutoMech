@@ -77,6 +77,48 @@ def _sub_frames_to_dict(model, contract_frames=None) -> list:
     return out
 
 
+def _snapshot_best_subs(session_root: str, sub_ids, log_fn=print) -> str:
+    """Copy the current sub_<id>/ dirs into best_snapshot/ so a later REVERT can restore
+    the best-scoring geometry byte-for-byte (sub dirs are otherwise overwritten in place
+    on every rebuild). Returns the snapshot dir."""
+    import shutil
+    snap = os.path.join(session_root, "best_snapshot")
+    try:
+        if os.path.isdir(snap):
+            shutil.rmtree(snap, ignore_errors=True)
+        os.makedirs(snap, exist_ok=True)
+        for sid in sub_ids:
+            src = os.path.join(session_root, f"sub_{sid}")
+            if os.path.isdir(src):
+                shutil.copytree(src, os.path.join(snap, f"sub_{sid}"),
+                                dirs_exist_ok=True)
+    except Exception as e:
+        log_fn(f"[boss] best-snapshot failed ({e}); revert will reuse live disk state")
+    return snap
+
+
+def _restore_best_subs(session_root: str, sub_ids, log_fn=print) -> bool:
+    """Restore sub_<id>/ dirs from best_snapshot/ (the inverse of _snapshot_best_subs),
+    so a REVERT reuses the best geometry. Returns True if anything was restored."""
+    import shutil
+    snap = os.path.join(session_root, "best_snapshot")
+    if not os.path.isdir(snap):
+        return False
+    restored = False
+    for sid in sub_ids:
+        src = os.path.join(snap, f"sub_{sid}")
+        dst = os.path.join(session_root, f"sub_{sid}")
+        if os.path.isdir(src):
+            try:
+                if os.path.isdir(dst):
+                    shutil.rmtree(dst, ignore_errors=True)
+                shutil.copytree(src, dst, dirs_exist_ok=True)
+                restored = True
+            except Exception as e:
+                log_fn(f"[boss] restore of sub_{sid} failed ({e})")
+    return restored
+
+
 def _load_sub_from_disk(sub_id: str, session_root: str, log_fn=print,
                         plan=None) -> SubResult:
     """Reload an already-built subassembly (for surgical re-runs that skip it).
@@ -520,6 +562,16 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                                           # for the NEXT fault re-plan)
     replan_blamed: set = set()            # sub ids a fault blamed (must rebuild on re-plan)
 
+    # Keep-best / score-gated iteration (maker2-mujoco-contact Phase 5): keep an
+    # iteration's change ONLY if the numeric design score improves; else revert to the
+    # best-so-far subs and steer the next change differently. best_iter_reuse is the set
+    # of ALL sub ids to reload from disk to reconstruct the best assembly.
+    best_score = float("-inf")
+    best_iter_reuse: set = set()
+    iters_since_accept = 0
+    score_target = float(getattr(settings, "score_target", 0.9))
+    score_plateau = int(getattr(settings, "score_plateau", 3))
+
     # Multi-turn refine: load the prior plan from this session (same slug -> same
     # session_root) so the boss updates it, and the ids it keeps can be REUSED from
     # disk (only changed subs rebuild).
@@ -540,6 +592,7 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
     it = 0
     while True:
         log(f"\n===== ITERATION {it} (boss{' re-plan' if feedback else ''}) =====")
+        judge_verdict = None            # set by the appearance judge below; fed to score
 
         # 1. Boss plan (re-plan only when an interface fault set `feedback`; the FIRST
         #    iteration also carries a refine change if this is a multi-turn refine).
@@ -718,6 +771,7 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                 verdict = _judge(prompt, final, [], view_pngs, settings,
                                  out_json_path=os.path.join(assembly_ctx.run_dir, "judge.json"),
                                  log_fn=log)
+                judge_verdict = verdict           # fed into the keep-best score below
                 log("ARTIFACT_JSON:" + json.dumps({
                     "kind": "judge", "iter": it, "passed": verdict.passed,
                     "reasons": verdict.reasons[:400], "suggestions": verdict.suggestions[:400]}))
@@ -749,16 +803,73 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
             log(f"[physics] failed: {e}")
             phys = {"passed": None, "blamed_kind": None, "summary": f"physics error: {e}"}
         result["physics"] = phys
+
+        # ---- Keep-best / score-gated iteration (Phase 5) ----
+        # Compute a numeric design score from physics + precheck + the appearance judge.
+        # Keep this iteration's change ONLY if the score beats best-so-far; else REVERT
+        # to the best subs and steer the next change differently. Stop on target/plateau.
+        from .score import score as _score
+        eps = 1e-3
+        try:
+            s_val, s_break = _score(phys, rep, judge_verdict, settings)
+        except Exception as e:
+            log(f"[score] scoring failed ({e}); treating as neutral 0.0")
+            s_val, s_break = 0.0, {"score": 0.0, "terms": {}}
+        result["score"] = s_val
+        result["score_breakdown"] = s_break
+        log(f"[score] iteration {it}: score={s_val:.3f} "
+            f"(best={best_score if best_score > float('-inf') else 'none'}) "
+            f"terms={s_break.get('terms')}")
         log("ARTIFACT_JSON:" + json.dumps({
             "kind": "physics", "iter": it, "run_dir": assembly_ctx.run_dir,
             "render_dir": assembly_ctx.run_dir, "passed": phys.get("passed"),
-            "physics": phys}))
-        if phys.get("passed"):
-            log("[boss] assembled physics PASS -> done.")
-            break
+            "score": round(s_val, 4), "score_breakdown": s_break, "physics": phys}))
+
         if phys.get("passed") is None:
             log("[boss] physics errored/unavailable -> stop with current assembly.")
             break
+
+        accepted = s_val > best_score + eps
+        if accepted:
+            best_score = s_val
+            best_iter_reuse = {s.id for s in plan.subassemblies}
+            iters_since_accept = 0
+            # Snapshot the winning subs so a later revert restores THIS geometry (sub
+            # dirs are overwritten in place on rebuild, so reuse alone isn't enough).
+            _snapshot_best_subs(session_root, best_iter_reuse, log_fn=log)
+            log(f"[boss] ACCEPT iteration {it}: new best score {s_val:.3f}")
+        else:
+            iters_since_accept += 1
+            log(f"[boss] REJECT iteration {it}: score {s_val:.3f} did not beat best "
+                f"{best_score:.3f} -> revert to best + steer differently "
+                f"({iters_since_accept}/{score_plateau} since last improvement)")
+
+        # Stop conditions: target reached (must also PASS), max iters, or plateau.
+        if s_val >= score_target and phys.get("passed"):
+            log(f"[boss] score {s_val:.3f} >= target {score_target} and physics PASS "
+                f"-> done.")
+            break
+        if not infinite and it >= max_boss_iters - 1:
+            result["error"] = f"physics failed: {phys.get('summary')}"; break
+        if iters_since_accept >= score_plateau:
+            log(f"[boss] plateau: {score_plateau} iterations with no score improvement "
+                f"-> stop with best (score {best_score:.3f}).")
+            break
+
+        # On REVERT, restore the best iteration's subs from the snapshot and reuse them
+        # from disk; steer the NEXT change differently (do NOT follow this worse
+        # iteration's fault blame).
+        if not accepted and best_iter_reuse:
+            _restore_best_subs(session_root, best_iter_reuse, log_fn=log)
+            reuse = set(best_iter_reuse)
+            feedback = None
+            feedback_by_sub = {sid: (
+                f"the previous change LOWERED the design score to {s_val:.3f} (best is "
+                f"{best_score:.3f}); revert it and try a DIFFERENT fix for: "
+                f"{phys.get('summary', '')}") for sid in best_iter_reuse}
+            it += 1
+            continue
+
 
         # 7. Route the physics failure PRECISELY on the diagnoser's blame:
         #    - structure with a named culprit sub/part -> re-run ONLY that sub (others
