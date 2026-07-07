@@ -367,6 +367,52 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
         part_results = _worker_build_all(to_build_model, ctx, settings, log_fn=slog)
     else:
         part_results = []
+
+    # DETERMINISTIC WORKER GATE (no LLM): for each part the worker just built, check its
+    # CadQuery script honors the manager's declared dims and the STL is manifold. Only a
+    # HARD mesh failure (ERR_MANIFOLD) fails the sub up for a rebuild; ERR_DIM is a WARNING
+    # (the manager's size_mm is approximate — measured ~29% of valid parts legitimately
+    # deviate for clearances/pitch-vs-outer radius — so it is surfaced but does not block).
+    # CadQuery backend only (scripts live at <run>/cq/<link>.py).
+    if (part_results and getattr(settings, "worker_backend", "cadquery") != "openscad"):
+        from .benchmarks import format_errors
+        from .benchmarks.worker_gate import worker_gate
+        by_name = {l.name: l for l in to_build_model.links}
+        hard_errs: list = []
+        for r in part_results:
+            if not getattr(r, "success", False):
+                continue
+            link = by_name.get(r.link_name)
+            if link is None:
+                continue
+            script_path = Path(run_dir) / "cq" / f"{r.link_name}.py"
+            script_text = ""
+            if script_path.exists():
+                try:
+                    script_text = script_path.read_text(encoding="utf-8")
+                except OSError:
+                    script_text = ""
+            stl_path = os.path.join(ctx.meshes_dir, f"{r.link_name}.stl")
+            for e in worker_gate(script_text, link, stl_path):
+                blocking = e.code != "ERR_DIM"
+                log_fn("ARTIFACT_JSON:" + json.dumps({
+                    "kind": "gate", "layer": "worker", "sub_id": sub_id,
+                    "code": e.code, "detail": e.detail, "culprit": e.culprit,
+                    "ok": (not blocking)}))
+                if blocking:
+                    hard_errs.append(e)
+                else:
+                    slog(f"worker gate WARN {e}")
+        if hard_errs:
+            slog(f"worker gate FAILED with {len(hard_errs)} blocking issue(s):")
+            for e in hard_errs:
+                slog(f"  {e}")
+            return SubResult(id=sub_id, ctx=ctx, model=model, results=part_results,
+                             ok=False,
+                             error=("this subassembly's parts failed automated checks; fix "
+                                    "exactly these and rebuild:\n" + format_errors(hard_errs)))
+        slog("worker gate PASSED (manifold; dim divergences warned only)")
+
     # Assemble the full per-link result list: edited + built parts + assumed-ok unchanged.
     if only_links is not None:
         handled = {r.link_name for r in part_results} | edited_names
