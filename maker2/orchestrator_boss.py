@@ -360,13 +360,19 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
 
     # Conflict gate: right after the worker built this sub's STLs, check for rigid parts
     # that interpenetrate (the manager places parts blind; the worker owns the geometry —
-    # when they disagree, parts overlap). On a conflict, a debugger sees the WHOLE sub
-    # (prompt, brief, URDF, every part's CadQuery script) and moves/reshapes the offenders,
-    # then we recheck. If still stuck after the cap, FAIL UP so the boss re-plans this sub.
-    if (success and getattr(settings, "enable_sub_conflict_gate", True)
-            and getattr(settings, "worker_backend", "cadquery") != "openscad"):
+    # when they disagree, parts overlap). On a conflict, the debugger moves/reshapes the
+    # offenders, then we recheck. Deep-think (Phase 6) picks the depth: FULL (whole sub,
+    # extended thinking, sub_conflict_max_tries passes) vs SLIM (the 2 conflicting parts,
+    # thinking off, 1 pass). If still stuck after the cap, FAIL UP so the boss re-plans.
+    if success and getattr(settings, "enable_sub_conflict_gate", True):
         from . import subcheck, subdebugger
-        max_tries = max(1, getattr(settings, "sub_conflict_max_tries", 3))
+        dbg_mode = settings.debugger_mode() if hasattr(settings, "debugger_mode") else "full"
+        dbg_backend = (settings.effective_worker_backend()
+                       if hasattr(settings, "effective_worker_backend")
+                       else getattr(settings, "worker_backend", "cadquery"))
+        max_tries = (settings.debugger_max_tries()
+                     if hasattr(settings, "debugger_max_tries")
+                     else max(1, getattr(settings, "sub_conflict_max_tries", 3)))
         conflicts = subcheck.sub_conflicts(model, ctx.urdf_path, log_fn=slog)
         attempt = 0
         while conflicts and attempt < max_tries:
@@ -381,7 +387,7 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
             try:
                 model, _changed, moved = subdebugger.debug_sub(
                     model, ctx, run_dir, spec, plan, user_prompt, conflicts, settings,
-                    frame_contract=fc, log_fn=slog)
+                    frame_contract=fc, mode=dbg_mode, backend=dbg_backend, log_fn=slog)
             except subdebugger.SubDebuggerError as e:
                 slog(f"[conflict] debugger could not patch this pass ({e})")
                 break
@@ -540,6 +546,12 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
 
     settings = settings or Settings.load()
     infinite = max_boss_iters <= 0
+
+    # Deep-think toggle (Phase 6): derive the geometry backend from deep_think so the
+    # whole build path (worker + debugger) is driven by the one switch.
+    settings.worker_backend = settings.effective_worker_backend()
+    log_fn(f"[boss] deep_think={settings.deep_think} -> worker_backend="
+           f"{settings.worker_backend}, debugger={settings.debugger_mode()}")
 
     def log(m):
         log_fn(m)

@@ -58,6 +58,16 @@ class Settings:
                                                    # geometry via OCCT) | "openscad"
                                                    # (legacy fallback). The hierarchy
                                                    # build dispatches on this.
+    deep_think: bool = True                       # the single speed/power toggle
+                                                   # (maker2-mujoco-contact Phase 6):
+                                                   # True  -> CadQuery worker + FULL
+                                                   #          debugger (whole-sub context,
+                                                   #          extended thinking).
+                                                   # False -> OpenSCAD worker + SLIM
+                                                   #          debugger (2 conflicting parts,
+                                                   #          thinking off, 1 try).
+                                                   # run_boss derives worker_backend +
+                                                   # debugger_mode from this when set.
 
     # ── Physics engine (maker2-mujoco-contact) ───────────────────
     engine: str = "pybullet"                      # "pybullet" (default, legacy joint-
@@ -203,3 +213,20 @@ class Settings:
     def boss_client(self):
         """An LLMClient sized for the boss's SubassemblyPlan output."""
         return self.make_client(self.boss_max_tokens, thinking="extended")
+
+    # ── Deep-think toggle derivations (Phase 6) ──────────────────
+    def effective_worker_backend(self) -> str:
+        """The geometry backend to use: deep_think picks CadQuery, else OpenSCAD.
+        An explicit worker_backend other than the deep-think default still wins if the
+        caller set it deliberately — but the toggle is the intended control."""
+        return "cadquery" if self.deep_think else "openscad"
+
+    def debugger_mode(self) -> str:
+        """The subassembly debugger depth: FULL (whole-sub, extended thinking) when
+        deep_think, else SLIM (two conflicting parts, thinking off, one try)."""
+        return "full" if self.deep_think else "slim"
+
+    def debugger_max_tries(self) -> int:
+        """How many debugger passes per conflict: the full sub_conflict_max_tries when
+        deep_think, else 1 (slim is a single shallow pass)."""
+        return self.sub_conflict_max_tries if self.deep_think else 1

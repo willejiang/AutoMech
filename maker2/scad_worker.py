@@ -240,3 +240,23 @@ def build_all(model: KinematicModel, ctx: RunContext, settings,
     built = sum(1 for r in results if r.success)
     log_fn(f"[worker] done: {built}/{total} links built")
     return results
+
+
+def rebuild_link(link, script_text: str, ctx: RunContext, run_dir: str,
+                 log_fn=print) -> WorkerResult:
+    """Debugger hook (mirrors cq_worker.rebuild_link): (re-)render ONE link from an
+    already-edited OpenSCAD module and export meshes/<link>.stl. The debugger's script
+    edit contains a `module <link>()` definition; write it to <run>/scad/<link>.scad and
+    render just that module. Returns its WorkerResult."""
+    oscad = find_openscad()
+    if not oscad:
+        return WorkerResult(link_name=link.name, success=False,
+                            error="OpenSCAD CLI not found (set OPENSCAD_BIN)")
+    scad_dir = Path(run_dir) / "scad"
+    scad_dir.mkdir(parents=True, exist_ok=True)
+    scad_path = scad_dir / f"{link.name}.scad"
+    scad_path.write_text(_strip_fences(script_text), encoding="utf-8")
+    r = _render_link(oscad, str(scad_path), link, ctx)
+    log_fn(f"[scad-worker] rebuilt {link.name}: "
+           f"{'OK' if r.success else 'FAIL ' + (r.error or '')[:80]}")
+    return r

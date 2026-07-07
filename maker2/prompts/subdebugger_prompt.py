@@ -26,21 +26,26 @@ impossibility. Your job is to make the parts CLEAR each other while keeping the 
 faithful to what was asked, changing as LITTLE as possible.
 
 HOW THE PARTS ARE PLACED (the convention every part obeys):
-- Each part's CadQuery `build_<name>()` builds it in MILLIMETERS in its OWN local frame,
-  with its JOINT-ATTACHMENT POINT at the ORIGIN (0,0,0), primary axis along +Z unless the
+- Each part's `build_<name>()` builds it in MILLIMETERS in its OWN local frame, with its
+  natural attach/rotation point at the ORIGIN (0,0,0), primary axis along +Z unless the
   part's origin_note says otherwise.
-- A JOINT places a CHILD part relative to its PARENT: `xyz_m` (METERS) is the translation
+- A POSE places a CHILD part relative to its PARENT: `xyz_m` (METERS) is the translation
   of the child's origin, `rpy_rad` (radians) its rotation. This is the ONLY thing that
-  positions one part relative to another.
+  positions one part relative to another. Parts MOVE by their own dof (a "spin" part
+  rotates on an implied axle); motion transmits by CONTACT, not by joints or motors.
 
-So an overlap has exactly two possible root causes, and you pick the right fix per pair:
-1. WRONG PLACEMENT — the joint puts the child too close/inside the parent. FIX: change
-   that joint's `xyz_m` (and/or `rpy_rad`) to separate them along the shortest axis.
+Root causes you fix (pick the right one per fault):
+1. WRONG PLACEMENT — a pose puts a part too close/inside another, OR two gears that must
+   mesh are too far apart / not touching. FIX: change that pose's `xyz_m`/`rpy_rad` to
+   separate overlapping parts, or to bring meshing gears to exactly one pitch-center
+   distance so their teeth engage.
 2. OVERSIZED / MISORIENTED GEOMETRY — the part's solid reaches further from its attach
-   point than the placement assumed (e.g. it was drawn centered instead of based at the
-   origin, or extruded the wrong way, or simply too big). FIX: edit that ONE part's
-   CadQuery script minimally (a dimension, a translate to re-seat it at its origin, an
-   extrude direction).
+   point than the placement assumed. FIX: edit that ONE part's script minimally (a
+   dimension, a translate to re-seat it at its origin, an extrude direction).
+3. UNSUPPORTED / FLOATING — a part rests on nothing and would fall under gravity. FIX:
+   move it (pose) down onto real support, or add/extend the supporting part.
+4. JAM — meshing parts lock instead of moving. FIX: relieve the interference (resize a
+   tooth, widen a clearance) or re-space the pose so they roll rather than wedge.
 
 HARD RULES:
 - The INTERFACE FRAME parts listed below are FROZEN: never change their placement pose
@@ -81,16 +86,38 @@ def build_subdebugger_user(user_prompt: str, brief: str, frames: list,
                            model_json: str, urdf_text: str,
                            part_scripts: dict[str, str],
                            conflicts_desc: list[str],
-                           frozen_links=None) -> str:
+                           frozen_links=None, physics_metrics=None) -> str:
     """Assemble the full debugging context (the user's "let the debugger know
     everything"): the request, the boss brief + immovable frames, the model JSON, the
-    URDF, every part's CadQuery script, and the worst-first conflict list."""
+    URDF, every part's script, the worst-first conflict list, and (when a physics test
+    ran) the MuJoCo metrics so the debugger can name a floating/transmission/jam fault,
+    not only geometric overlap."""
     scripts_block = "\n\n".join(
         f"# ---- {name} ----\n{src}" for name, src in part_scripts.items()) or "(none)"
-    conflicts_block = "\n".join(f"  {i+1}. {d}" for i, d in enumerate(conflicts_desc))
+    conflicts_block = "\n".join(f"  {i+1}. {d}" for i, d in enumerate(conflicts_desc)) \
+        or "  (no rigid overlap — the fault is dynamic; see the physics metrics)"
     frozen = sorted(frozen_links or [])
     frozen_block = (", ".join(f"'{n}'" for n in frozen)
                     if frozen else "(none)")
+    phys_block = ""
+    if physics_metrics:
+        m = physics_metrics
+        hints = []
+        if m.get("exploded"):
+            hints.append("the assembly EXPLODED/JAMMED (a part flew off or locked)")
+        if m.get("moved_count") == 0 and (m.get("input_travel") or 0) > 0.05:
+            hints.append("the input turned but NOTHING downstream moved — a "
+                         "TRANSMISSION failure (gears not touching / too far apart)")
+        if m.get("output_reached") is False:
+            hints.append("motion did not REACH the output part")
+        if (m.get("input_travel") or 0) <= 0.05:
+            hints.append("the input barely turned under torque — a JAM at the input")
+        if float(m.get("max_tilt_deg") or 0) > 20:
+            hints.append(f"the assembly TILTED {m.get('max_tilt_deg')}deg — unstable/toppling")
+        phys_block = (
+            "\n\nPHYSICS TEST RESULT (MuJoCo, pure contact under gravity):\n"
+            f"  {m}\n"
+            + ("  Likely fault(s): " + "; ".join(hints) + "\n" if hints else ""))
     return f"""\
 The user asked for this machine:
 "{user_prompt}"
@@ -106,19 +133,19 @@ IMMOVABLE INTERFACE FRAMES for this subassembly:
 
 RIGID CONFLICTS detected in the assembled subassembly (worst first):
 {conflicts_block}
-
-CURRENT KINEMATIC MODEL (links + joint placements) as JSON:
+{phys_block}
+CURRENT KINEMATIC MODEL (links + poses + per-part dof) as JSON:
 {model_json}
 
 CURRENT URDF:
 {urdf_text}
 
-CURRENT CADQUERY SCRIPTS (one build_<name>() per part):
+CURRENT PART SCRIPTS (one build_<name>() per part):
 {scripts_block}
 
-Fix the conflict(s) with the SMALLEST change — move a part via its joint origin, or
-reshape a part's script, per the rules. Return your NOTES, then the sentinel line, then
-the single JSON patch object."""
+Fix the fault(s) with the SMALLEST change — move a part via its pose, or reshape a
+part's script, per the rules. Return your NOTES, then the sentinel line, then the single
+JSON patch object."""
 
 
 def build_subdebugger_json_from_notes(notes: str) -> str:

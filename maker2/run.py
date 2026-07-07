@@ -502,17 +502,23 @@ def main() -> int:
                     help="physics engine: 'pybullet' (default, legacy joint motors) or "
                          "'mujoco' (pure contact under gravity — transmission by tooth "
                          "contact, no motors). Requires --physics to take effect.")
+    ap.add_argument("--deep-think", dest="deep_think", action="store_true", default=None,
+                    help="deep-think ON: CadQuery worker + FULL debugger (thorough, slow).")
+    ap.add_argument("--no-deep-think", dest="deep_think", action="store_false",
+                    help="deep-think OFF: OpenSCAD worker + SLIM debugger (fast, shallow).")
     a = ap.parse_args()
     if a.hierarchy:
         from maker2.orchestrator_boss import run_boss
         settings = None
-        if a.web or a.engine:
+        if a.web or a.engine or a.deep_think is not None:
             from maker2.config import Settings
             settings = Settings.load()
             if a.web:
                 settings.enable_reference_tools = True
             if a.engine:
                 settings.engine = a.engine
+            if a.deep_think is not None:
+                settings.deep_think = a.deep_think
         res = run_boss(a.prompt, a.out, settings=settings, do_physics=a.physics,
                        per_sub_physics=a.per_sub_physics, thread=a.thread,
                        refine_message=a.refine_message, log_fn=print)
