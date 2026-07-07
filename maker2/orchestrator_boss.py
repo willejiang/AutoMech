@@ -455,18 +455,19 @@ def build_all_subassemblies(plan, settings, session_root, *,
 # Stage F: the surgical boss loop.
 # --------------------------------------------------------------------------- #
 
-def _sub_physics(sub, prompt, *, log_fn=print) -> dict:
+def _sub_physics(sub, prompt, *, settings=None, log_fn=print) -> dict:
     """Drive ONE subassembly on its own URDF (each sub is a valid mechanism), so a
     fault localizes to this sub_id BEFORE assembly. Returns run_physics' dict, or a
-    'no test' pass if the sub has no movable joints / physics is unavailable."""
+    'no test' pass if the sub has no movable parts / physics is unavailable."""
     from .physics import run_physics
-    movable = [j for j in sub.model.joints if j.type in ("revolute", "prismatic", "continuous")]
+    movable = [l for l in sub.model.links
+               if getattr(l, "dof", "fixed") in ("spin", "free")]
     if not movable:
-        return {"passed": True, "verdict": "PASS", "summary": "no movable joints",
+        return {"passed": True, "verdict": "PASS", "summary": "no movable parts",
                 "blamed_kind": None}
     try:
         return run_physics(sub.ctx.urdf_path, f"{prompt} :: subassembly {sub.id}",
-                           sub.ctx.run_dir)
+                           sub.ctx.run_dir, settings)
     except Exception as e:
         log_fn(f"[sub:{sub.id}] physics unavailable ({e}); skipping pre-check sim")
         return {"passed": True, "verdict": "PASS", "summary": f"physics skipped: {e}",
@@ -621,7 +622,7 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
         if do_physics and per_sub_physics:
             bad = {}
             for s in plan.subassemblies:
-                pr = _sub_physics(subs[s.id], prompt, log_fn=log)
+                pr = _sub_physics(subs[s.id], prompt, settings=settings, log_fn=log)
                 if pr.get("passed") is False:
                     bad[s.id] = (pr.get("reason") or pr.get("summary") or "sub physics FAIL")
             if bad:
@@ -742,7 +743,8 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
         from .physics import run_physics
         log("[physics] evaluating the assembled machine ...")
         try:
-            phys = run_physics(assembly_ctx.urdf_path, prompt, assembly_ctx.run_dir)
+            phys = run_physics(assembly_ctx.urdf_path, prompt, assembly_ctx.run_dir,
+                               settings)
         except Exception as e:
             log(f"[physics] failed: {e}")
             phys = {"passed": None, "blamed_kind": None, "summary": f"physics error: {e}"}

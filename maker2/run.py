@@ -152,7 +152,7 @@ def _run_skip(entry: str, prompt: str, message: str | None, prior_model: str,
     if do_physics:
         try:
             from maker2.physics import run_physics
-            result["physics"] = run_physics(ctx.urdf_path, task, ctx.run_dir)
+            result["physics"] = run_physics(ctx.urdf_path, task, ctx.run_dir, settings)
         except Exception as e:
             print(f"[skip] physics failed: {e}")
             result["physics"] = {"passed": None, "cause": "none",
@@ -183,9 +183,11 @@ def run(prompt: str, out_dir: str = "output", manager_only: bool = False,
         do_judge: bool = True, do_physics: bool = False,
         max_iters: int = 0, refine_message: str | None = None,
         prior_model: str | None = None, thread: str | None = None,
-        entry: str = "rebuild") -> dict:
+        entry: str = "rebuild", engine: str | None = None) -> dict:
     settings = Settings()
     settings.allow_partial = allow_partial
+    if engine:
+        settings.engine = engine
     if model:
         # The cadam UI passes provider-prefixed ids (e.g. "anthropic/claude-opus-4.8"),
         # but this gateway wants the bare name ("claude-opus-4.8") — strip the prefix.
@@ -383,7 +385,8 @@ def run(prompt: str, out_dir: str = "output", manager_only: bool = False,
         print("[physics] evaluating the assembled URDF ...")
         try:
             from maker2.physics import run_physics
-            result["physics"] = run_physics(render_urdf, prompt, result["render_dir"])
+            result["physics"] = run_physics(render_urdf, prompt, result["render_dir"],
+                                            settings)
         except Exception as e:
             print(f"[physics] failed: {e}")
             result["physics"] = {"passed": None, "cause": "none",
@@ -495,14 +498,21 @@ def main() -> int:
     ap.add_argument("--per-sub-physics", action="store_true",
                     help="(hierarchy) drive each subassembly on its own URDF before "
                          "assembly, so a drivetrain fault localizes to that sub.")
+    ap.add_argument("--engine", default=None, choices=["pybullet", "mujoco"],
+                    help="physics engine: 'pybullet' (default, legacy joint motors) or "
+                         "'mujoco' (pure contact under gravity — transmission by tooth "
+                         "contact, no motors). Requires --physics to take effect.")
     a = ap.parse_args()
     if a.hierarchy:
         from maker2.orchestrator_boss import run_boss
         settings = None
-        if a.web:
+        if a.web or a.engine:
             from maker2.config import Settings
             settings = Settings.load()
-            settings.enable_reference_tools = True
+            if a.web:
+                settings.enable_reference_tools = True
+            if a.engine:
+                settings.engine = a.engine
         res = run_boss(a.prompt, a.out, settings=settings, do_physics=a.physics,
                        per_sub_physics=a.per_sub_physics, thread=a.thread,
                        refine_message=a.refine_message, log_fn=print)
@@ -512,7 +522,7 @@ def main() -> int:
     res = run(a.prompt, a.out, a.manager_only, a.allow_partial, a.model,
               do_judge=not a.no_judge, do_physics=a.physics, max_iters=a.max_iters,
               refine_message=a.refine_message, prior_model=a.prior_model,
-              thread=a.thread, entry=a.entry)
+              thread=a.thread, entry=a.entry, engine=a.engine)
     if a.json:
         print("RESULT_JSON:" + json.dumps(res))
     return 0 if res.get("ok") else 1

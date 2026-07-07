@@ -479,10 +479,103 @@ def _summarize(test: dict, m: dict) -> str:
             f"drift {m.get('max_drift')}m")
 
 
-def run_physics(urdf_path: str, task: str, run_dir: str) -> dict:
-    """Category-aware physics on maker2's URDF. Returns the same shape the UI reads:
+def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings) -> dict:
+    """Pure-contact MuJoCo physics. Builds the MJCF from the run's model, runs the
+    MuJoCo scenario runner (subprocess, with in-process fallback), and returns the
+    same result shape run_physics does. No LLM environment_designer: pure contact
+    needs no scenario design — the driver is the model's driver PART and downstream
+    parts move only if their teeth truly contact."""
+    from diagnose import encode_mp4
+    from maker2 import mjcf_builder
+    from maker2.model import RunContext
+
+    model = _load_model(run_dir)
+    if model is None:
+        return {"passed": False, "verdict": "FAIL",
+                "summary": "no model to simulate", "metrics": {}, "tests": []}
+
+    # Build the MJCF next to the URDF. meshes live in run_dir/meshes.
+    ctx = RunContext(project_slug=model.name or "assembly", run_dir=run_dir,
+                     urdf_path=urdf_path, meshes_dir=os.path.join(run_dir, "meshes"),
+                     logs_dir=run_dir,
+                     model_json_path=os.path.join(run_dir, "kinematic_model.json"))
+    metrics_side: dict = {}
+    try:
+        mjcf = mjcf_builder.build_mjcf(model, ctx, settings=settings,
+                                       metrics=metrics_side, log_fn=print)
+    except Exception as e:
+        return {"passed": False, "verdict": "FAIL",
+                "summary": f"MJCF build failed: {e}", "metrics": {}, "tests": []}
+
+    out_base = str(Path(run_dir) / "physics" / "mujoco")
+    spec = {"duration_s": 4.0, "run_dir": run_dir,
+            "drive": {"torque": 0.5}}
+    # An output part = a spin/free link name-hinted as output, if any.
+    out_link = next((l.name for l in model.links
+                     if getattr(l, "dof", "fixed") in ("spin", "free")
+                     and _OUTPUT_HINT.search(l.name)), None)
+    if out_link:
+        spec["drive"]["output_link"] = out_link
+
+    res = _run_sim_mujoco(mjcf, spec, out_base, task)
+    m = dict(res.get("metrics", {}))
+    # Carry the decomposition-degraded flag into the metrics so the score sees it.
+    if metrics_side.get("contact_degraded"):
+        m["contact_degraded"] = True
+    if metrics_side.get("constrained_meshes"):
+        m["constrained_meshes"] = metrics_side["constrained_meshes"]
+
+    video = None
+    if res.get("frames_dir"):
+        mp4 = encode_mp4(res["frames_dir"], os.path.join(out_base, "model.mp4"))
+        if mp4:
+            video = "physics/mujoco/model.mp4"
+
+    entry = {"name": "drive", "strategy": "driven_mechanism",
+             "verdict": m.get("verdict"), "metrics": m,
+             "summary": _summarize({"name": "drive"}, m),
+             "frames_dir": res.get("frames_dir"), "video": video}
+    return {"passed": m.get("verdict") == "PASS", "verdict": m.get("verdict", "FAIL"),
+            "summary": entry["summary"], "metrics": m,
+            "frames_dir": res.get("frames_dir"), "video": video,
+            "tests": [entry]}
+
+
+def _run_sim_mujoco(mjcf, spec, out_base, task):
+    """Run the MuJoCo runner in a SUBPROCESS (isolates any GL/renderer state), reading
+    back sim_result.json. Falls back to in-process on subprocess failure."""
+    import run_scenario_mujoco as mjr
+    out = Path(out_base)
+    out.mkdir(parents=True, exist_ok=True)
+    spec_json = out / "spec.json"
+    spec_json.write_text(json.dumps(spec))
+    try:
+        r = subprocess.run(
+            [sys.executable, mjr.__file__, "--mjcf", mjcf,
+             "--spec", str(spec_json), "--out", out_base, "--task", task],
+            capture_output=True, text=True, timeout=600, cwd=str(_ROOT))
+        result_path = out / "sim_result.json"
+        if r.returncode == 0 and result_path.exists():
+            return json.loads(result_path.read_text())
+        print(f"[physics] mujoco subprocess rc={r.returncode}; "
+              f"stderr tail: {(r.stderr or '')[-200:]}")
+    except Exception as e:
+        print(f"[physics] mujoco subprocess failed ({e}); running in-process")
+    return mjr.run(mjcf, spec, out_base, task)
+
+
+def run_physics(urdf_path: str, task: str, run_dir: str, settings=None) -> dict:
+    """Category-aware physics on maker2's model. Returns the same shape the UI reads:
     {passed, verdict, summary, metrics, frames_dir}. `metrics` is the FINAL/primary
-    test; `summary` spans all tests run."""
+    test; `summary` spans all tests run.
+
+    Engine dispatch (maker2-mujoco-contact): when settings.engine == "mujoco", run the
+    pure-contact MuJoCo path (build the MJCF from the model, drive the driver PART's
+    own dof, transmission by tooth contact). Otherwise the legacy PyBullet path."""
+    engine = getattr(settings, "engine", "pybullet") if settings is not None else "pybullet"
+    if engine == "mujoco":
+        return _run_physics_mujoco(urdf_path, task, run_dir, settings)
+
     import run_scenario_pybullet as pyb
     from diagnose import diagnose_physics, encode_mp4
 
