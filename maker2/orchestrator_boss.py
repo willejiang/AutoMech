@@ -290,6 +290,31 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
     so a MODIFIED part's existing CadQuery script is line-EDITED (minimal change) instead
     of regenerated; ADDED parts are freshly generated."""
     sub_id = spec.id
+
+    # DETERMINISTIC MANAGER GATES (no LLM): schema validity (Phase 0) + per-sub overlap
+    # and pose-graph connectivity (Phase 1), on the manager's model BEFORE any URDF build
+    # or worker render. A failure fails the sub UP with the specific codes so the boss
+    # re-decomposes only this sub — routine geometry/schema faults skip the slow debugger.
+    # (Skipped on the patch path: only_links means a targeted re-render, not a fresh model.)
+    if only_links is None:
+        from .benchmarks import format_errors
+        from .benchmarks.schema_gate import manager_schema_gate
+        from .benchmarks.manager_gate import manager_gate
+        _pre_frames = _sub_frames_to_dict(model, fc.frames)
+        mgr_errs = manager_schema_gate(model) + manager_gate(model, _pre_frames, fc)
+        for e in mgr_errs:
+            log_fn("ARTIFACT_JSON:" + json.dumps({
+                "kind": "gate", "layer": "manager", "sub_id": sub_id, "code": e.code,
+                "detail": e.detail, "culprit": e.culprit, "ok": False}))
+        if mgr_errs:
+            slog(f"manager gate FAILED with {len(mgr_errs)} issue(s):")
+            for e in mgr_errs:
+                slog(f"  {e}")
+            return SubResult(id=sub_id, ctx=ctx, model=model, ok=False,
+                             error=("this subassembly failed automated checks; fix exactly "
+                                    "these and rebuild:\n" + format_errors(mgr_errs)))
+        slog("manager gate PASSED (schema + overlap + connectivity)")
+
     build_urdf(model, ctx)
     ok, err = validate_urdf(ctx.urdf_path, require_meshes=False)
     if not ok:
@@ -650,6 +675,33 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
         result["iterations"] = it + 1
         # Remember this plan as the reuse baseline for the NEXT re-plan.
         last_plan_json = json.dumps(boss.plan_to_dict(plan))
+
+        # 1a. DETERMINISTIC BOSS GATES (no LLM): schema validity (Phase 0) then plan-level
+        #     support + gear-mesh distance (Phase 2). A failure bounces the specific error
+        #     codes back to the BOSS for a re-plan BEFORE any manager runs — routine plan
+        #     faults never reach the slow debugger.
+        from .benchmarks import format_errors
+        from .benchmarks.schema_gate import boss_schema_gate
+        from .benchmarks.boss_gate import boss_gate
+        gate_errs = boss_schema_gate(plan) + boss_gate(plan)
+        for e in gate_errs:
+            log("ARTIFACT_JSON:" + json.dumps({
+                "kind": "gate", "layer": "boss", "code": e.code,
+                "detail": e.detail, "culprit": e.culprit, "ok": False}))
+        if gate_errs:
+            log(f"[boss] gate FAILED with {len(gate_errs)} issue(s); re-planning:")
+            for e in gate_errs:
+                log(f"[boss]   {e}")
+            feedback = ("the plan failed automated checks; fix exactly these and re-plan:\n"
+                        + format_errors(gate_errs))
+            # Blame the named subs so unchanged ones can still reuse on the re-plan.
+            replan_blamed = {e.culprit.split(":")[0] for e in gate_errs
+                             if e.culprit and e.culprit.split(":")[0]
+                             in {s.id for s in plan.subassemblies}}
+            if not infinite and it >= max_boss_iters - 1:
+                result["error"] = f"boss gate failed: {format_errors(gate_errs)}"; break
+            it += 1; continue
+        log("[boss] gate PASSED (schema + support + mesh distance)")
 
         # 1b/1c. Coarse appearance proxy (flag-gated): a low-poly whole-machine base
         #        look + a per-sub proportion summary threaded to every manager via the
