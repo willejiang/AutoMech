@@ -59,6 +59,24 @@ class Settings:
                                                    # (legacy fallback). The hierarchy
                                                    # build dispatches on this.
 
+    # ── Physics engine (maker2-mujoco-contact) ───────────────────
+    engine: str = "pybullet"                      # "pybullet" (default, legacy joint-
+                                                   # motor sim) | "mujoco" (pure contact
+                                                   # under gravity). The MuJoCo path
+                                                   # (mjcf_builder, convex_decomp,
+                                                   # run_scenario_mujoco) is ONLY imported
+                                                   # when this is "mujoco", so the default
+                                                   # run is unaffected until it flips.
+    allow_gear_constraint: bool = False           # escape hatch: if a specific gear pair
+                                                   # won't transmit by pure tooth contact,
+                                                   # add a MuJoCo <equality> gear-ratio
+                                                   # constraint for THAT pair. OFF by
+                                                   # default (defeats "literal contact").
+    base_rests_on_plane: bool = True              # MuJoCo: the assembly settles on the
+                                                   # ground plane under gravity (literal).
+                                                   # False pins the base to remove settle
+                                                   # noise when only transmission matters.
+
     # ── FreeCAD subprocess ───────────────────────────────────────
     freecadcmd_path: str = _DEFAULT_FREECADCMD
     worker_timeout: int = 120                     # seconds per freecadcmd run

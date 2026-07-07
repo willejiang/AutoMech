@@ -6,6 +6,12 @@
 cadquery         # parametric CAD kernel (OpenCASCADE): the default geometry worker
 numpy
 openai
-trimesh          # STL validation (validation.check_stl) + mesh I/O
+trimesh          # STL validation (validation.check_stl) + mesh I/O + convex decomp
 yourdfpy         # URDF load/validate
 six
+# MuJoCo pure-contact path (settings.engine="mujoco"). `mujoco` is required for that
+# path; `coacd` is an OPTIONAL quality upgrade for convex decomposition — without it,
+# convex_decomp falls back to trimesh V-HACD, then a convex hull (which sets
+# metrics["contact_degraded"]). The default engine is "pybullet" and needs neither.
+mujoco           # pure-contact physics (only imported when engine="mujoco")
+# coacd          # optional: better convex decomposition than the V-HACD/hull fallback
