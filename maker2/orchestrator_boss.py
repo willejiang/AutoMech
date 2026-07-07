@@ -301,19 +301,29 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
         from .benchmarks.schema_gate import manager_schema_gate
         from .benchmarks.manager_gate import manager_gate
         _pre_frames = _sub_frames_to_dict(model, fc.frames)
-        mgr_errs = manager_schema_gate(model) + manager_gate(model, _pre_frames, fc)
-        for e in mgr_errs:
+        all_errs = manager_schema_gate(model) + manager_gate(model, _pre_frames, fc)
+        # ERR_OVL from the PRE-render AABB check is a WARNING only: a bounding box grossly
+        # over-approximates non-boxy parts (radial ribs/spokes of a carriage box-overlap
+        # heavily while their thin geometry never touches — measured 44 AABB "overlaps" vs
+        # 0 real-mesh conflicts on a real cage). The authoritative overlap gate is the
+        # post-render subcheck on the real STLs (the conflict gate below). Schema codes +
+        # ERR_CONNECT (a genuinely unplaced part) still BLOCK.
+        mgr_errs = [e for e in all_errs if e.code != "ERR_OVL"]
+        for e in all_errs:
+            blocking = e.code != "ERR_OVL"
             log_fn("ARTIFACT_JSON:" + json.dumps({
                 "kind": "gate", "layer": "manager", "sub_id": sub_id, "code": e.code,
-                "detail": e.detail, "culprit": e.culprit, "ok": False}))
+                "detail": e.detail, "culprit": e.culprit, "ok": (not blocking)}))
+            if not blocking:
+                slog(f"manager gate WARN {e}")
         if mgr_errs:
-            slog(f"manager gate FAILED with {len(mgr_errs)} issue(s):")
+            slog(f"manager gate FAILED with {len(mgr_errs)} blocking issue(s):")
             for e in mgr_errs:
                 slog(f"  {e}")
             return SubResult(id=sub_id, ctx=ctx, model=model, ok=False,
                              error=("this subassembly failed automated checks; fix exactly "
                                     "these and rebuild:\n" + format_errors(mgr_errs)))
-        slog("manager gate PASSED (schema + overlap + connectivity)")
+        slog("manager gate PASSED (schema + connectivity; overlap warned only)")
 
     build_urdf(model, ctx)
     ok, err = validate_urdf(ctx.urdf_path, require_meshes=False)

@@ -24,12 +24,14 @@ _VALID_SEAM_KIND = {"weld", "power"}
 
 # Dimension keys that must be strictly positive per shape_hint. Free-text shapes are
 # skipped (we cannot know their required dims), and any dim present is checked for
-# non-negativity regardless of shape.
+# non-negativity regardless of shape. Each requirement is a TUPLE OF ALTERNATIVES — a
+# cylinder's radial size may be given as radius OR a diameter form (outer_dia/diameter),
+# so any one of the alternatives being positive satisfies it.
 _REQUIRED_DIMS = {
-    "box": ("x", "y", "z"),
-    "cube": ("x", "y", "z"),
-    "cylinder": ("radius", "height"),
-    "sphere": ("radius",),
+    "box": (("x",), ("y",), ("z",)),
+    "cube": (("x",), ("y",), ("z",)),
+    "cylinder": (("radius", "outer_dia", "diameter", "dia"), ("height", "length")),
+    "sphere": (("radius", "diameter", "dia"),),
 }
 
 
@@ -76,12 +78,16 @@ def manager_schema_gate(model) -> list[GateError]:
         hint = (getattr(l, "shape_hint", "") or "").strip().lower()
         req = _REQUIRED_DIMS.get(hint)
         if req is not None:
-            missing = [k for k in req if not _positive(size.get(k))]
+            # each element is a tuple of ALTERNATIVE keys; the requirement is met if ANY
+            # alternative is positive (e.g. a cylinder radius given as outer_dia).
+            missing = [alts for alts in req
+                       if not any(_positive(size.get(k)) for k in alts)]
             if missing:
+                want = [alts[0] for alts in missing]
                 errors.append(GateError(
                     "manager", "ERR_SCHEMA_MGR_DEGENERATE",
-                    f"link '{l.name}' (shape '{hint}') needs positive {list(req)}; "
-                    f"missing/zero: {missing} (size_mm={size})",
+                    f"link '{l.name}' (shape '{hint}') needs a positive {want} "
+                    f"(size_mm={size})",
                     l.name))
         else:
             bad = [k for k, v in size.items() if not _positive(v)]
