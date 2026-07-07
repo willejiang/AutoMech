@@ -351,12 +351,15 @@ export function PromptView() {
                   setMaxIters={setMaxIters}
                   onArticulated={(p, iters) =>
                     navigate({
-                      to: '/maker2/$runId',
+                      to: '/workbench/$runId',
                       params: { runId: crypto.randomUUID() },
                       // iters 0 = infinite loop until judge+physics pass (default);
-                      // the user can cap it with /iters N in the prompt bar.
+                      // the user can cap it with /iters N in the prompt bar. deep seeds
+                      // the workbench's deep-think toggle from its persisted preference.
                       search: { prompt: p, model, iters: iters ?? 0,
-                                web: webSearch ? 1 : undefined },
+                                deep: (typeof localStorage !== 'undefined'
+                                       && localStorage.getItem('maker2.deepThink') === '1')
+                                      ? 1 : undefined },
                     })
                   }
                 />
