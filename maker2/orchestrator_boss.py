@@ -40,16 +40,40 @@ def _worker_build_all(model, ctx, settings, log_fn):
     return _ba(model, ctx, settings, log_fn=log_fn)
 
 
-def _sub_frames_to_dict(model) -> list:
-    """The manager's realized interface frames, JSON-ready (from model.frames_realized)."""
+def _sub_frames_to_dict(model, contract_frames=None) -> list:
+    """The manager's realized interface frames, JSON-ready.
+
+    Primary source is ``model.frames_realized`` (the manager's own frame->link mapping).
+    FALLBACK: for any contract frame the manager DECLARED no realization for, but whose
+    name EXACTLY matches a link in the model (the manager's own convention — it names a
+    dedicated marker link after the frame), auto-realize it at that link's origin. This
+    keeps the assembler from crashing on "frame not realized" when the manager built the
+    frame link but forgot to emit the frames_realized entry — a common LLM lapse that
+    otherwise loops the whole boss pipeline forever."""
     out = []
+    seen: set = set()
     for e in getattr(model, "frames_realized", []) or []:
+        name = e.get("frame", "")
         out.append({
-            "frame": e.get("frame", ""),
+            "frame": name,
             "link": e.get("link", ""),
             "local_xyz_m": list(e.get("local_xyz_m", (0.0, 0.0, 0.0))),
             "local_rpy_rad": list(e.get("local_rpy_rad", (0.0, 0.0, 0.0))),
         })
+        if name:
+            seen.add(name)
+
+    if contract_frames:
+        link_names = {l.name for l in model.links}
+        for fr in contract_frames:
+            fname = getattr(fr, "name", "") or ""
+            if fname and fname not in seen and fname in link_names:
+                out.append({
+                    "frame": fname, "link": fname,
+                    "local_xyz_m": [0.0, 0.0, 0.0],
+                    "local_rpy_rad": [0.0, 0.0, 0.0],
+                })
+                seen.add(fname)
     return out
 
 
@@ -99,7 +123,8 @@ def _load_sub_from_disk(sub_id: str, session_root: str, log_fn=print,
 
 
 def build_subassembly(spec, plan, settings, session_root, *,
-                      feedback: str | None = None, log_fn=print) -> SubResult:
+                      feedback: str | None = None, user_prompt: str = "",
+                      log_fn=print) -> SubResult:
     """Build ONE subassembly under the boss's frame contract. Returns a SubResult.
 
     Runs the full single-subassembly pipeline into <session_root>/sub_<id>/:
@@ -140,7 +165,7 @@ def build_subassembly(spec, plan, settings, session_root, *,
                 log_fn=slog)
             return _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings,
                                        slog, only_links=changed, patch_meta=patch_meta,
-                                       log_fn=log_fn)
+                                       user_prompt=user_prompt, log_fn=log_fn)
         except Exception as e:
             slog(f"patch path failed ({e}); falling back to full rebuild")
 
@@ -153,7 +178,7 @@ def build_subassembly(spec, plan, settings, session_root, *,
         return SubResult(id=sub_id, ctx=ctx, ok=False, error=f"manager: {e}")
 
     return _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
-                               only_links=None, log_fn=log_fn)
+                               only_links=None, user_prompt=user_prompt, log_fn=log_fn)
 
 
 def _edit_changed_links(model, ctx, run_dir, only_links, patch_meta, settings, slog):
@@ -214,7 +239,8 @@ def _strip_cq_fences(text: str) -> str:
 
 
 def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
-                        *, only_links=None, patch_meta=None, log_fn=print) -> SubResult:
+                        *, only_links=None, patch_meta=None, user_prompt: str = "",
+                        log_fn=print) -> SubResult:
     """Shared tail of build_subassembly: URDF + frames + worker build + validate.
     ``only_links`` (a set) limits the worker to just the changed links (patch path);
     None builds every link. Unchanged links keep their prior STLs (copied forward).
@@ -231,7 +257,7 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
     scaffold_meshes(model, ctx)
 
     # Record the realized interface frames for the assembler (Stage C).
-    sub_frames = _sub_frames_to_dict(model)
+    sub_frames = _sub_frames_to_dict(model, fc.frames)
     try:
         with open(os.path.join(run_dir, "sub_frames.json"), "w", encoding="utf-8") as f:
             json.dump(sub_frames, f, indent=2)
@@ -289,6 +315,65 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
     success = ((built == len(results)) or (getattr(settings, "allow_partial", False)
                and built > 0)) and ok2
     slog(f"built {built}/{len(results)} links; URDF(with meshes) ok={ok2}")
+
+    # Conflict gate: right after the worker built this sub's STLs, check for rigid parts
+    # that interpenetrate (the manager places parts blind; the worker owns the geometry —
+    # when they disagree, parts overlap). On a conflict, a debugger sees the WHOLE sub
+    # (prompt, brief, URDF, every part's CadQuery script) and moves/reshapes the offenders,
+    # then we recheck. If still stuck after the cap, FAIL UP so the boss re-plans this sub.
+    if (success and getattr(settings, "enable_sub_conflict_gate", True)
+            and getattr(settings, "worker_backend", "cadquery") != "openscad"):
+        from . import subcheck, subdebugger
+        max_tries = max(1, getattr(settings, "sub_conflict_max_tries", 3))
+        conflicts = subcheck.sub_conflicts(model, ctx.urdf_path, log_fn=slog)
+        attempt = 0
+        while conflicts and attempt < max_tries:
+            attempt += 1
+            worst = conflicts[0]
+            slog(f"[conflict] {worst.part_a} <-> {worst.part_b} ({worst.frac:.0%}); "
+                 f"debugger attempt {attempt}/{max_tries}")
+            log_fn("ARTIFACT_JSON:" + json.dumps({
+                "kind": "conflict", "sub_id": sub_id, "attempt": attempt,
+                "pairs": [{"a": c.part_a, "b": c.part_b, "frac": round(c.frac, 3)}
+                          for c in conflicts]}))
+            try:
+                model, _changed, moved = subdebugger.debug_sub(
+                    model, ctx, run_dir, spec, plan, user_prompt, conflicts, settings,
+                    frame_contract=fc, log_fn=slog)
+            except subdebugger.SubDebuggerError as e:
+                slog(f"[conflict] debugger could not patch this pass ({e})")
+                break
+            if moved:
+                build_urdf(model, ctx)          # a pose changed -> regenerate the URDF
+            validate_urdf(ctx.urdf_path, require_meshes=True)
+            conflicts = subcheck.sub_conflicts(model, ctx.urdf_path, log_fn=slog)
+        if conflicts:
+            worst = conflicts[0]
+            slog(f"[conflict] UNRESOLVED after {attempt} pass(es): "
+                 f"{worst.part_a} vs {worst.part_b} ({worst.frac:.0%}) -> failing sub up")
+            return SubResult(id=sub_id, ctx=ctx, model=model, results=results,
+                             sub_frames=_sub_frames_to_dict(model, fc.frames), ok=False,
+                             error=(f"unresolved rigid conflict: {worst.part_a} and "
+                                    f"{worst.part_b} interpenetrate ({worst.frac:.0%}) — "
+                                    "fix their placement or geometry."))
+        if attempt:
+            # Cleared after >=1 debugger pass: the model/geometry moved, so persist the
+            # corrected model + refresh the realized interface frames (a pose edit can
+            # move them) so disk (which the assembler + any reuse read) matches.
+            slog(f"[conflict] cleared after {attempt} debugger pass(es)")
+            try:
+                from .manager import save_model
+                save_model(model, ctx.model_json_path)
+            except Exception as e:
+                slog(f"[conflict] could not persist debugged model: {e}")
+            sub_frames = _sub_frames_to_dict(model, fc.frames)
+            try:
+                with open(os.path.join(run_dir, "sub_frames.json"), "w",
+                          encoding="utf-8") as f:
+                    json.dump(sub_frames, f, indent=2)
+            except Exception as e:
+                slog(f"[conflict] could not rewrite sub_frames.json: {e}")
+
     return SubResult(id=sub_id, ctx=ctx, model=model, results=results,
                      sub_frames=sub_frames, ok=bool(success),
                      error="" if success else (err2 or f"{built}/{len(results)} links built"))
@@ -296,7 +381,8 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
 
 def build_all_subassemblies(plan, settings, session_root, *,
                             feedback_by_sub: dict | None = None,
-                            reuse: set = frozenset(), log_fn=print) -> dict:
+                            reuse: set = frozenset(), user_prompt: str = "",
+                            log_fn=print) -> dict:
     """Build every subassembly of `plan` IN PARALLEL. Returns {sub_id: SubResult}.
 
     Mirrors Orchestrator._run_workers: one ThreadPoolExecutor over all subs keeps
@@ -338,7 +424,8 @@ def build_all_subassemblies(plan, settings, session_root, *,
 
     def work(spec) -> SubResult:
         return build_subassembly(spec, plan, settings, session_root,
-                                 feedback=feedback_by_sub.get(spec.id), log_fn=log)
+                                 feedback=feedback_by_sub.get(spec.id),
+                                 user_prompt=user_prompt, log_fn=log)
 
     if to_build:
         with ThreadPoolExecutor(max_workers=n) as pool:
@@ -513,7 +600,7 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
         # 2. Build subassemblies in parallel (reusing unchanged ones from disk).
         subs = build_all_subassemblies(plan, settings, session_root,
                                        feedback_by_sub=feedback_by_sub, reuse=reuse,
-                                       log_fn=log)
+                                       user_prompt=prompt, log_fn=log)
         result["subassemblies"] = [{"id": s.id, "ok": subs[s.id].ok,
                                     "run_dir": subs[s.id].ctx.run_dir if subs[s.id].ctx else ""}
                                    for s in plan.subassemblies]
@@ -811,7 +898,8 @@ def main() -> int:
                             log_fn=print)
 
     print(f"[boss] session root: {session_root}")
-    subs = build_all_subassemblies(plan, settings, session_root, log_fn=print)
+    subs = build_all_subassemblies(plan, settings, session_root,
+                                   user_prompt=a.prompt, log_fn=print)
     print("-" * 56)
     ok = sum(1 for r in subs.values() if r.ok)
     print(f"RESULT: {ok}/{len(subs)} subassemblies built")

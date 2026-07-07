@@ -211,7 +211,7 @@ def _sub_bounds(robot, plan):
             except Exception:
                 continue
             # Pull this link's mesh bounds if present.
-            geom = robot.scene.geometry.get(l.name) if hasattr(robot, "scene") else None
+            geom = _geom_for(robot, l.name)
             if geom is None or not hasattr(geom, "bounds") or geom.bounds is None:
                 continue
             corners = _transform_aabb(geom.bounds, T)
@@ -250,9 +250,35 @@ def _aabb_overlap(ba, bb, margin=1e-4) -> bool:
 _OVERLAP_FRAC = 0.30
 
 
+def _geom_for(robot, link_name):
+    """Fetch a link's scene geometry, tolerant of yourdfpy's keyings. yourdfpy keys
+    robot.scene.geometry by '<link>_visual' (both sub and assembled URDFs — the visual
+    is named that in urdf_builder), sometimes by the mesh basename, or the bare link
+    name. Trying only the bare name (as this module used to) silently finds NOTHING, so
+    every overlap check vacuously passed. Mirrors assembler._sub_world_bounds._geom_for."""
+    if not hasattr(robot, "scene"):
+        return None
+    scene = robot.scene.geometry
+    base = ""
+    try:
+        link = next((l for l in robot.robot.links if l.name == link_name), None)
+        vis = link.visuals[0] if (link and getattr(link, "visuals", None)) else None
+        if vis and vis.geometry and getattr(vis.geometry, "mesh", None):
+            base = os.path.basename(vis.geometry.mesh.filename or "")
+    except Exception:
+        base = ""
+    for key in (f"{link_name}_visual", base or None, link_name):
+        if key and key in scene:
+            return scene[key]
+    for key in scene:                                    # last resort: prefix match
+        if key.startswith(link_name):
+            return scene[key]
+    return None
+
+
 def _link_world_mesh(robot, link_name):
     """A copy of a link's mesh transformed into world coords, or None."""
-    geom = robot.scene.geometry.get(link_name) if hasattr(robot, "scene") else None
+    geom = _geom_for(robot, link_name)
     if geom is None or not hasattr(geom, "bounds") or geom.bounds is None:
         return None
     try:

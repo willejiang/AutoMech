@@ -89,6 +89,12 @@ class Settings:
                                                    # machine before physics (catches parts
                                                    # floating/disconnected — precheck and
                                                    # physics do not)
+    enable_sub_conflict_gate: bool = True         # check each subassembly for rigid
+                                                   # part interpenetration right after it
+                                                   # builds, and run a debugger loop to
+                                                   # fix it before the sub is accepted
+    sub_conflict_max_tries: int = 3               # debugger passes before failing the
+                                                   # sub up to the boss for a re-plan
     subassembly_max_managers: int = 4             # parallel per-sub manager builds
     enable_reference_tools: bool = False          # web/RAG reference lookup (Stage G)
     enable_appearance_proxy: bool = True          # boss-side coarse CadQuery proxy of

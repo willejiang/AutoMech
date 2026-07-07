@@ -93,6 +93,8 @@ const STAGES = [
     match: (l: string) => l.startsWith('[assembler]') },
   { key: 'precheck', label: 'Pre-check — verify geometry fits',
     match: (l: string) => l.startsWith('[precheck]') },
+  { key: 'conflict', label: 'Conflict gate — fix interpenetrating parts',
+    match: (l: string) => l.includes('[conflict]') || l.includes('[debugger]') },
   { key: 'judge', label: 'Judge — review the assembled model',
     match: (l: string) => l.startsWith('[judge]') || l.startsWith('[3/3]') },
   { key: 'physics', label: 'Physics — drive + evaluate',
