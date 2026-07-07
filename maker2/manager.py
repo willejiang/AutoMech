@@ -106,6 +106,7 @@ def _link_from_dict(d: dict, idx: int) -> LinkSpec:
         dof=dof,
         spin_axis=_as_tuple3(d.get("spin_axis"), (0.0, 0.0, 1.0)),
         driver=bool(d.get("driver", False)),
+        material=str(d.get("material") or "steel").strip().lower() or "steel",
     )
 
 
@@ -300,6 +301,7 @@ def model_to_dict(model: KinematicModel) -> dict:
                 "dof": l.dof,
                 "spin_axis": list(l.spin_axis),
                 "driver": l.driver,
+                "material": l.material,
             }
             for l in model.links
         ],

@@ -27,7 +27,14 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
       "color": [<r>, <g>, <b>],                 // 0..1 RGB; the part's real-world color
       "dof": "<fixed | spin | free>",           // how this part MOVES (see below)
       "spin_axis": [<x>, <y>, <z>],             // rotation axis for dof "spin" (unit vec)
-      "driver": <true|false>                    // true on the ONE part the test drives
+      "driver": <true|false>,                   // true on the ONE part the test drives
+      "material": "<steel | brass | ruby | plastic | aluminum | titanium | rubber | wood | gold>"
+                                                // OPTIONAL; what the part is made of ->
+                                                // its mass (density x volume) + contact
+                                                // friction in the physics sim. Defaults to
+                                                // steel. Pick the real material (a ruby
+                                                // jewel is light + slippery; a brass plate
+                                                // is heavy; a rubber grip has high friction).
     }
   ],
   "poses": [

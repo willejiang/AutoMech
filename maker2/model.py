@@ -61,6 +61,10 @@ class LinkSpec:
     dof: str = "fixed"                              # "fixed" | "spin" | "free"
     spin_axis: tuple = (0.0, 0.0, 1.0)             # rotation axis for dof=="spin"
     driver: bool = False                            # the ONE part the physics test drives
+    material: str = "steel"                         # material class -> density + friction
+                                                     # (maker2/materials.py); MuJoCo mass =
+                                                     # density x mesh volume. Optional;
+                                                     # defaults to steel.
 
 
 @dataclass

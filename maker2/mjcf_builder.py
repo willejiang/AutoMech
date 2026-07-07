@@ -95,6 +95,24 @@ def _mesh_extents_m(src: str):
         return None
 
 
+def _mesh_volume_m3(src: str) -> float | None:
+    """Solid volume in CUBIC METERS of an STL authored in mm, or None on error. Uses the
+    mesh's own volume when watertight, else falls back to the convex-hull volume (a
+    reasonable proxy for a non-watertight union)."""
+    try:
+        import trimesh
+        mesh = trimesh.load(src, force="mesh")
+        v_mm3 = abs(float(mesh.volume)) if mesh.is_watertight else 0.0
+        if v_mm3 <= 0:
+            try:
+                v_mm3 = abs(float(mesh.convex_hull.volume))
+            except Exception:
+                return None
+        return v_mm3 / 1.0e9 if v_mm3 > 0 else None      # mm^3 -> m^3
+    except Exception:
+        return None
+
+
 def _is_hullable(src: str) -> bool:
     """MuJoCo convexifies every mesh geom; a coplanar/degenerate piece (a razor-thin
     disc, a zero-volume sliver) has no 3D hull and makes MjModel.from_xml* RAISE, which
@@ -107,12 +125,13 @@ def _is_hullable(src: str) -> bool:
     return min(ext) >= 5e-5
 
 
-def _add_geoms(body_el, link, piece_map, meshes_dir, mesh_names, asset_el):
+def _add_geoms(body_el, link, piece_map, meshes_dir, mesh_names, asset_el,
+               friction: str = _GEOM_FRICTION):
     """Attach one <geom> per convex piece (movable/meshing parts) or one for the
     part's own mesh. Registers each referenced <mesh> in <asset> once. A degenerate
     (coplanar) piece that MuJoCo cannot hull is replaced by a thin BOX geom of the same
     bounding size, so a razor-thin part collides approximately instead of crashing the
-    model load."""
+    model load. ``friction`` is the part's per-material contact triple."""
     pieces = piece_map.get(link.name)
     if pieces:
         sources = pieces
@@ -124,7 +143,7 @@ def _add_geoms(body_el, link, piece_map, meshes_dir, mesh_names, asset_el):
         c = link.color
         rgba = f"{c[0]:.3g} {c[1]:.3g} {c[2]:.3g} {c[3]:.3g}"
     for i, src in enumerate(sources):
-        common = {"friction": _GEOM_FRICTION, "solref": _GEOM_SOLREF,
+        common = {"friction": friction, "solref": _GEOM_SOLREF,
                   "margin": f"{_GEOM_MARGIN}", "condim": "4"}
         if rgba:
             common["rgba"] = rgba
@@ -177,10 +196,23 @@ def _emit_body(parent_el, link_name, model, links_by_name, children, piece_map,
         ET.SubElement(body, "freejoint", attrib={"name": f"{link_name}_free"})
     # dof == "fixed": no joint (welded to its parent body).
 
-    ET.SubElement(body, "inertial", attrib={
-        "pos": "0 0 0", "mass": "0.05",
-        "diaginertia": "1e-4 1e-4 1e-4"})  # placeholder; MuJoCo also infers from geom
-    _add_geoms(body, link, piece_map, meshes_dir, mesh_names, asset_el)
+    # Per-part mass from the material's density x the part's solid volume; fall back to
+    # the old flat placeholder when the STL/volume is unavailable so the model still loads.
+    from .materials import density_of, friction_of
+    mat = getattr(link, "material", "steel") or "steel"
+    own_stl = os.path.join(meshes_dir, f"{link_name}.stl")
+    vol_m3 = _mesh_volume_m3(own_stl) if os.path.exists(own_stl) else None
+    if vol_m3:
+        mass = max(density_of(mat) * vol_m3, 1e-6)       # kg; floor so MuJoCo is happy
+        ET.SubElement(body, "inertial", attrib={
+            "pos": "0 0 0", "mass": f"{mass:.6g}",
+            "diaginertia": "1e-4 1e-4 1e-4"})            # MuJoCo refines from geom
+    else:
+        ET.SubElement(body, "inertial", attrib={
+            "pos": "0 0 0", "mass": "0.05",
+            "diaginertia": "1e-4 1e-4 1e-4"})
+    _add_geoms(body, link, piece_map, meshes_dir, mesh_names, asset_el,
+               friction=friction_of(mat))
 
     for p in children.get(link_name, []):
         _emit_body(body, p.child, model, links_by_name, children, piece_map,
