@@ -19,6 +19,7 @@ import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as ConfirmEmailRouteImport } from './routes/confirm-email'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
+import { Route as WorkbenchRunIdRouteImport } from './routes/workbench.$runId'
 import { Route as Maker2RunIdRouteImport } from './routes/maker2.$runId'
 import { Route as ApiTitleGeneratorRouteImport } from './routes/api/title-generator'
 import { Route as ApiRunPhysicsTestRouteImport } from './routes/api/run-physics-test'
@@ -95,6 +96,11 @@ const LayoutIndexRoute = LayoutIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => LayoutRoute,
+} as any)
+const WorkbenchRunIdRoute = WorkbenchRunIdRouteImport.update({
+  id: '/workbench/$runId',
+  path: '/workbench/$runId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const Maker2RunIdRoute = Maker2RunIdRouteImport.update({
   id: '/maker2/$runId',
@@ -261,6 +267,7 @@ export interface FileRoutesByFullPath {
   '/api/run-physics-test': typeof ApiRunPhysicsTestRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
   '/maker2/$runId': typeof Maker2RunIdRoute
+  '/workbench/$runId': typeof WorkbenchRunIdRoute
   '/history': typeof LayoutAuthHistoryRoute
   '/settings': typeof LayoutAuthSettingsRoute
   '/subscription': typeof LayoutAuthSubscriptionRoute
@@ -298,6 +305,7 @@ export interface FileRoutesByTo {
   '/api/run-physics-test': typeof ApiRunPhysicsTestRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
   '/maker2/$runId': typeof Maker2RunIdRoute
+  '/workbench/$runId': typeof WorkbenchRunIdRoute
   '/history': typeof LayoutAuthHistoryRoute
   '/settings': typeof LayoutAuthSettingsRoute
   '/subscription': typeof LayoutAuthSubscriptionRoute
@@ -337,6 +345,7 @@ export interface FileRoutesById {
   '/api/run-physics-test': typeof ApiRunPhysicsTestRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
   '/maker2/$runId': typeof Maker2RunIdRoute
+  '/workbench/$runId': typeof WorkbenchRunIdRoute
   '/_layout/': typeof LayoutIndexRoute
   '/_layout/_auth/history': typeof LayoutAuthHistoryRoute
   '/_layout/_auth/settings': typeof LayoutAuthSettingsRoute
@@ -377,6 +386,7 @@ export interface FileRouteTypes {
     | '/api/run-physics-test'
     | '/api/title-generator'
     | '/maker2/$runId'
+    | '/workbench/$runId'
     | '/history'
     | '/settings'
     | '/subscription'
@@ -414,6 +424,7 @@ export interface FileRouteTypes {
     | '/api/run-physics-test'
     | '/api/title-generator'
     | '/maker2/$runId'
+    | '/workbench/$runId'
     | '/history'
     | '/settings'
     | '/subscription'
@@ -452,6 +463,7 @@ export interface FileRouteTypes {
     | '/api/run-physics-test'
     | '/api/title-generator'
     | '/maker2/$runId'
+    | '/workbench/$runId'
     | '/_layout/'
     | '/_layout/_auth/history'
     | '/_layout/_auth/settings'
@@ -490,6 +502,7 @@ export interface RootRouteChildren {
   ApiRunPhysicsTestRoute: typeof ApiRunPhysicsTestRoute
   ApiTitleGeneratorRoute: typeof ApiTitleGeneratorRoute
   Maker2RunIdRoute: typeof Maker2RunIdRoute
+  WorkbenchRunIdRoute: typeof WorkbenchRunIdRoute
   ApiJacksonPollockSplatRoute: typeof ApiJacksonPollockSplatRoute
 }
 
@@ -564,6 +577,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof LayoutIndexRouteImport
       parentRoute: typeof LayoutRoute
+    }
+    '/workbench/$runId': {
+      id: '/workbench/$runId'
+      path: '/workbench/$runId'
+      fullPath: '/workbench/$runId'
+      preLoaderRoute: typeof WorkbenchRunIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/maker2/$runId': {
       id: '/maker2/$runId'
@@ -821,6 +841,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiRunPhysicsTestRoute: ApiRunPhysicsTestRoute,
   ApiTitleGeneratorRoute: ApiTitleGeneratorRoute,
   Maker2RunIdRoute: Maker2RunIdRoute,
+  WorkbenchRunIdRoute: WorkbenchRunIdRoute,
   ApiJacksonPollockSplatRoute: ApiJacksonPollockSplatRoute,
 }
 export const routeTree = rootRouteImport

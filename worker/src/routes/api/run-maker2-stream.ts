@@ -19,7 +19,7 @@ const REPO_ROOT = resolve(process.cwd(), '..');
 const STAGE_PREFIXES = [
   '[run]', '[1/3]', '[2/3]', '[3/3]', '[judge]', '[loop]', '[physics]',
   '[done]', '=====', 'RESULT:',
-  '[boss]', '[sub:', '[assembler]', '[precheck]', '[aggregate]', '[tool]',
+  '[boss]', '[sub:', '[assembler]', '[precheck]', '[assembled]', '[aggregate]', '[tool]',
 ];
 
 function sse(event: string, data: unknown): string {
@@ -38,6 +38,7 @@ export const Route = createFileRoute('/api/run-maker2-stream')({
         const iters = url.searchParams.get('iters') ?? undefined;
         const threadId = url.searchParams.get('thread') ?? undefined;
         const refineMessage = url.searchParams.get('refine') ?? undefined;
+        const deep = url.searchParams.get('deep');   // "1" | "0" | null (unset)
         if (!prompt) {
           return new Response(sse('error', { error: 'need prompt' }), {
             headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
@@ -57,6 +58,10 @@ export const Route = createFileRoute('/api/run-maker2-stream')({
         args.push('--hierarchy');
         // Web-search reference lookup (keyless), when the client asks for it.
         if (url.searchParams.get('web') === '1') args.push('--web');
+        // Deep-think toggle: ON -> CadQuery worker + full debugger; OFF -> OpenSCAD +
+        // slim debugger. Only forwarded when the client set it explicitly.
+        if (deep === '1') args.push('--deep-think');
+        else if (deep === '0') args.push('--no-deep-think');
 
         const stream = new ReadableStream<Uint8Array>({
           start(controller) {
