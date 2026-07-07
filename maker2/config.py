@@ -70,13 +70,14 @@ class Settings:
                                                    # debugger_mode from this when set.
 
     # ── Physics engine (maker2-mujoco-contact) ───────────────────
-    engine: str = "pybullet"                      # "pybullet" (default, legacy joint-
-                                                   # motor sim) | "mujoco" (pure contact
-                                                   # under gravity). The MuJoCo path
+    engine: str = "mujoco"                        # "mujoco" (default on this branch:
+                                                   # pure contact under gravity, transmission
+                                                   # by tooth contact, no motors) | "pybullet"
+                                                   # (legacy joint-motor sim). The MuJoCo path
                                                    # (mjcf_builder, convex_decomp,
-                                                   # run_scenario_mujoco) is ONLY imported
-                                                   # when this is "mujoco", so the default
-                                                   # run is unaffected until it flips.
+                                                   # run_scenario_mujoco) builds its MJCF from
+                                                   # the model JSON; the visual URDF is kept
+                                                   # only for the appearance-judge render.
     allow_gear_constraint: bool = False           # escape hatch: if a specific gear pair
                                                    # won't transmit by pure tooth contact,
                                                    # add a MuJoCo <equality> gear-ratio

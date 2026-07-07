@@ -14,12 +14,12 @@ SCHEMA_TEXT = """\
 Return exactly one JSON object (no prose, no markdown fences) with this shape:
 
 {
-  "name": "<urdf-safe robot/product name, snake_case>",
+  "name": "<safe machine/product name, snake_case>",
   "root_link": "<name of the part that everything else is positioned relative to
                  (usually the base/frame that rests on the ground)>",
   "links": [
     {
-      "name": "<urdf-safe: lowercase, starts with a letter, [a-z0-9_] only>",
+      "name": "<safe slug: lowercase, starts with a letter, [a-z0-9_] only>",
       "description": "<what this part is; enough for a CAD worker to build it>",
       "shape_hint": "<box | cylinder | sphere | free text>",
       "size_mm": { "<dim>": <number>, ... },   // approx bounding size in MM
@@ -32,7 +32,7 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
   ],
   "poses": [
     {
-      "name": "<urdf-safe pose name>",
+      "name": "<safe pose name>",
       "parent": "<link name this pose is relative to, or \"\" for a base/root part>",
       "child": "<link name being placed>",
       "xyz_m": [<x>, <y>, <z>],     // METERS: parent-origin -> child-origin
@@ -62,7 +62,7 @@ HOW PARTS MOVE (this REPLACES joints — there are NO joints and NO motors)
   This is how the checker knows two gears are supposed to couple (no joint says so).
 
 HARD RULES
-- Link and pose names are unique and URDF-safe (^[a-z][a-z0-9_]*$).
+- Link and pose names are unique and safe slugs (^[a-z][a-z0-9_]*$).
 - Every pose `child` must be a real link name; `parent` is a real link name or "".
 - A part with no pose (or a pose with parent "") is a base/root part placed at the
   origin. The model is a FOREST — you do NOT need one single connected tree.
@@ -182,20 +182,20 @@ FEWSHOT_JSON = """\
 # BOSS schema + few-shot (hierarchy). The boss splits a big machine into
 # SUBASSEMBLIES (each one manager's job, <=35 links) and authors the INTERFACE/
 # FRAME CONTRACT: named mount frames in GLOBAL meters + the SEAMS that join the
-# subassemblies. The assembler stitches the per-sub URDFs deterministically from
-# this. See maker2/boss.py and .claude/plans/precious-humming-wand.md.
+# subassemblies. The assembler stitches the per-sub models into one KinematicModel
+# deterministically from this. See maker2/boss.py and the plan.
 # --------------------------------------------------------------------------- #
 
 BOSS_SCHEMA_TEXT = """\
 Return exactly one JSON object (no prose, no markdown fences) with this shape:
 
 {
-  "name": "<urdf-safe machine name, snake_case>",
+  "name": "<safe machine name, snake_case>",
   "root_sub": "<id of the single ROOT subassembly everything hangs off>",
   "global_origin_note": "<where the shared global origin is and axis convention>",
   "subassemblies": [
     {
-      "id": "<urdf-safe: lowercase, starts with a letter, [a-z0-9_] only, unique>",
+      "id": "<safe slug: lowercase, starts with a letter, [a-z0-9_] only, unique>",
       "brief": "<one-paragraph product prompt for THIS subassembly's manager: what
                  parts it contains and what it does; it is built in isolation>",
       "function": "<what this subassembly does in the machine>",
@@ -208,7 +208,7 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
       ],                                        // omit or [] for a normal single sub
       "frames": [
         {
-          "name": "<urdf-safe frame name, unique within the sub>",
+          "name": "<safe frame name, unique within the sub>",
           "xyz_m": [<x>, <y>, <z>],   // GLOBAL METERS (shared origin), where this
                                        // interface sits in the assembled machine
           "rpy_rad": [<r>, <p>, <y>], // GLOBAL radians, fixed-axis XYZ
@@ -222,7 +222,7 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
   ],
   "seams": [
     {
-      "id": "<urdf-safe seam name>",
+      "id": "<safe seam name>",
       "kind": "<weld | power>",
       "parent_sub": "<sub id>", "parent_frame": "<frame name on parent_sub>",
       "child_sub":  "<sub id>", "child_frame":  "<frame name on child_sub>",
