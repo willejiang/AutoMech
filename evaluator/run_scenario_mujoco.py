@@ -128,19 +128,24 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
         if ang is not None:
             watched_base[l.name] = ang
 
-    # Track exploded = any body flew far from its start (settle-relative).
+    # Track exploded = any body flew far from its start (settle-relative). Also keep the
+    # settle position of every body so we can attribute a FLOATING/EXPLODING fault to the
+    # specific part (its body name == the link name) for per-manager blame.
     xpos0 = d.xpos.copy()
 
     torque = float((spec.get("drive") or {}).get("torque", 0.5))
     cap_every = max(1, drive_steps // 40)
     nf = 0
     max_disp = 0.0
+    per_body_disp = np.zeros(m.nbody)
     if driver is not None and driver_dofadr is not None:
         for s in range(drive_steps):
             d.qfrc_applied[driver_dofadr] = torque
             mj.mj_step(m, d)
-            disp = float(np.max(np.linalg.norm(d.xpos - xpos0, axis=1))) if len(d.xpos) else 0.0
-            max_disp = max(max_disp, disp)
+            if len(d.xpos):
+                dvec = np.linalg.norm(d.xpos - xpos0, axis=1)
+                per_body_disp = np.maximum(per_body_disp, dvec)
+                max_disp = max(max_disp, float(dvec.max()))
             if s % cap_every == 0 and capture(nf):
                 nf += 1
         d.qfrc_applied[driver_dofadr] = 0.0
@@ -148,6 +153,10 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
         # No driver — a stand-still stability observation.
         for s in range(drive_steps):
             mj.mj_step(m, d)
+            if len(d.xpos):
+                dvec = np.linalg.norm(d.xpos - xpos0, axis=1)
+                per_body_disp = np.maximum(per_body_disp, dvec)
+                max_disp = max(max_disp, float(dvec.max()))
             if s % cap_every == 0 and capture(nf):
                 nf += 1
 
@@ -196,6 +205,22 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
         except Exception:
             pass
 
+    # Attribute a FLOATING/EXPLODING fault to specific parts: bodies whose settle-relative
+    # displacement is large (they fell off / flew apart / were never supported). Body name
+    # == link name, so this feeds per-manager blame downstream. Reported worst-first.
+    _FLOAT_M = 0.003            # >3 mm of drift from settle = not held in place
+    displaced_parts = []
+    try:
+        for b in range(1, m.nbody):          # skip world (body 0)
+            name = m.body(b).name
+            disp = float(per_body_disp[b])
+            if name and disp > _FLOAT_M:
+                displaced_parts.append({"part": name, "disp_mm": round(disp * 1000, 2)})
+        displaced_parts.sort(key=lambda e: e["disp_mm"], reverse=True)
+        displaced_parts = displaced_parts[:8]
+    except Exception:
+        displaced_parts = []
+
     if driver is not None:
         transmitted = (input_travel > 0.05 and moved >= 1 and not exploded)
         verdict = "PASS" if transmitted else "FAIL"
@@ -205,6 +230,7 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
             "input_travel": round(input_travel, 4),
             "moved_count": moved, "watched_count": watched_count,
             "output_reached": output_reached, "exploded": exploded,
+            "displaced_parts": displaced_parts,
             "end_z": round(end_z, 4), "max_tilt_deg": round(max_tilt, 2),
             "max_drift": round(max_disp, 4),
         }
@@ -215,6 +241,7 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
             "verdict": verdict, "survive_s": round(dur, 2),
             "end_z": round(end_z, 4), "max_tilt_deg": round(max_tilt, 2),
             "max_drift": round(max_disp, 4), "exploded": exploded,
+            "displaced_parts": displaced_parts,
         }
 
     res = {"task": task, "spec": spec, "metrics": metrics,

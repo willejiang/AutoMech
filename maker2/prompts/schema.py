@@ -55,6 +55,22 @@ HOW PARTS MOVE (this REPLACES joints — there are NO joints and NO motors)
 - Motion is transmitted ONLY by physical contact under gravity: meshing gear teeth
   push each other, a cam lifts a follower, a weight falls. Nothing is driven by a
   motor or held by an invisible joint. So parts must actually TOUCH to interact.
+- DEFAULT TO "fixed". The VAST MAJORITY of parts are structure and must be "fixed":
+  plates, bridges, cocks, posts/pillars, frames, brackets, housings, bearings, JEWELS,
+  screws, pins. A part is "spin" ONLY if it turns UNDER POWER relative to its parent —
+  essentially just the wheels, pinions, arbors/shafts, rotors, and a balance. If you
+  are unsure, it is "fixed". (A cage/carriage that rotates as a whole is ONE spin part
+  — its plates, bridges, posts, and jewels are "fixed" and welded to it, NOT their own
+  spin bodies. Marking structure "spin" makes those parts fly apart under gravity.)
+- COAXIAL PARTS THAT TURN TOGETHER = ONE spin part, not a stack of spin bodies. A wheel
+  + its pinion + the arbor they are pressed onto rotate as a unit: make the ARBOR the
+  single "spin" link and mark the wheel and pinion "fixed" (they are welded to the
+  arbor and placed on it). Never emit several "spin" parts at the SAME xy on the SAME
+  axis — as separate rigid bodies their solids interpenetrate.
+- A part must occupy its OWN space — no two parts share the same solid. A jewel/bearing
+  PRESSES INTO a hole in a plate: offset it in Z so it sits IN the bore, flush or
+  proud, not buried at the plate's own origin. Put a wheel and the plate below it at
+  DIFFERENT Z so they clear.
 - Set `driver": true` on the SINGLE part the physics test spins to drive the machine
   (the input gear/crank/rotor). The test applies torque to that part's own dof; every
   downstream part moves ONLY if its teeth truly contact. At most one driver.

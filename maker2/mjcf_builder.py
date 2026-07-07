@@ -84,32 +84,67 @@ def _quat_from_rpy(rpy) -> str:
     return f"{q[0]:.9g} {q[1]:.9g} {q[2]:.9g} {q[3]:.9g}"
 
 
+def _mesh_extents_m(src: str):
+    """(sx, sy, sz) bounding-box extents in METERS of an STL (mm), or None on error."""
+    try:
+        import trimesh
+        mesh = trimesh.load(src, force="mesh")
+        ext = mesh.bounding_box.extents  # mm
+        return (float(ext[0]) / 1000.0, float(ext[1]) / 1000.0, float(ext[2]) / 1000.0)
+    except Exception:
+        return None
+
+
+def _is_hullable(src: str) -> bool:
+    """MuJoCo convexifies every mesh geom; a coplanar/degenerate piece (a razor-thin
+    disc, a zero-volume sliver) has no 3D hull and makes MjModel.from_xml* RAISE, which
+    would kill the whole sim. Return False for such a piece so the caller substitutes a
+    box geom instead (one bad part must not crash the assembly)."""
+    ext = _mesh_extents_m(src)
+    if ext is None:
+        return False
+    # Need real thickness on all three axes to form a hull (0.05 mm floor).
+    return min(ext) >= 5e-5
+
+
 def _add_geoms(body_el, link, piece_map, meshes_dir, mesh_names, asset_el):
     """Attach one <geom> per convex piece (movable/meshing parts) or one for the
-    part's own mesh. Registers each referenced <mesh> in <asset> once."""
+    part's own mesh. Registers each referenced <mesh> in <asset> once. A degenerate
+    (coplanar) piece that MuJoCo cannot hull is replaced by a thin BOX geom of the same
+    bounding size, so a razor-thin part collides approximately instead of crashing the
+    model load."""
     pieces = piece_map.get(link.name)
     if pieces:
         sources = pieces
     else:
         own = os.path.join(meshes_dir, f"{link.name}.stl")
         sources = [own] if os.path.exists(own) and os.path.getsize(own) > 0 else []
+    rgba = ""
+    if len(getattr(link, "color", ()) or ()) == 4:
+        c = link.color
+        rgba = f"{c[0]:.3g} {c[1]:.3g} {c[2]:.3g} {c[3]:.3g}"
     for i, src in enumerate(sources):
-        mesh_name = f"{link.name}_m{i}"
-        if mesh_name not in mesh_names:
-            ET.SubElement(asset_el, "mesh", attrib={
-                "name": mesh_name, "file": os.path.abspath(src),
-                "scale": "0.001 0.001 0.001"})   # mm -> m
-            mesh_names.add(mesh_name)
-        rgba = ""
-        if len(getattr(link, "color", ()) or ()) == 4:
-            c = link.color
-            rgba = f"{c[0]:.3g} {c[1]:.3g} {c[2]:.3g} {c[3]:.3g}"
-        attrib = {"type": "mesh", "mesh": mesh_name,
-                  "friction": _GEOM_FRICTION, "solref": _GEOM_SOLREF,
+        common = {"friction": _GEOM_FRICTION, "solref": _GEOM_SOLREF,
                   "margin": f"{_GEOM_MARGIN}", "condim": "4"}
         if rgba:
-            attrib["rgba"] = rgba
-        ET.SubElement(body_el, "geom", attrib=attrib)
+            common["rgba"] = rgba
+        if _is_hullable(src):
+            mesh_name = f"{link.name}_m{i}"
+            if mesh_name not in mesh_names:
+                ET.SubElement(asset_el, "mesh", attrib={
+                    "name": mesh_name, "file": os.path.abspath(src),
+                    "scale": "0.001 0.001 0.001"})   # mm -> m
+                mesh_names.add(mesh_name)
+            ET.SubElement(body_el, "geom",
+                          attrib={"type": "mesh", "mesh": mesh_name, **common})
+        else:
+            # Degenerate piece -> a thin box of the same footprint (floor each half-size
+            # so MuJoCo still gets a valid collision volume).
+            ext = _mesh_extents_m(src) or (1e-3, 1e-3, 1e-3)
+            hx, hy, hz = (max(ext[0] / 2, 2.5e-4), max(ext[1] / 2, 2.5e-4),
+                          max(ext[2] / 2, 2.5e-4))
+            ET.SubElement(body_el, "geom", attrib={
+                "type": "box", "size": f"{hx:.6g} {hy:.6g} {hz:.6g}", **common})
 
 
 def _emit_body(parent_el, link_name, model, links_by_name, children, piece_map,
@@ -219,6 +254,10 @@ def build_mjcf(model, ctx, *, settings=None, metrics: dict | None = None,
     ET.SubElement(mujoco_el, "option", attrib={
         "gravity": "0 0 -9.81", "timestep": f"{_TIMESTEP}",
         "iterations": f"{_SOLVER_ITERS}", "solver": "Newton", "cone": "elliptic"})
+    # A many-part machine with convex-decomposed geoms generates FAR more contact
+    # constraints than MuJoCo's default arena holds ("Insufficient arena memory"). Give
+    # the solver a generous fixed arena so a busy assembly (a full watch train) loads.
+    ET.SubElement(mujoco_el, "size", attrib={"memory": "256M"})
     asset_el = ET.SubElement(mujoco_el, "asset")
     world = ET.SubElement(mujoco_el, "worldbody")
     ET.SubElement(world, "light", attrib={"pos": "0 0 3", "dir": "0 0 -1",

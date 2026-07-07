@@ -479,6 +479,50 @@ def _summarize(test: dict, m: dict) -> str:
             f"drift {m.get('max_drift')}m")
 
 
+def blame_faults(phys: dict, precheck_report=None, plan=None) -> dict:
+    """Attribute physics/geometry faults to specific subassemblies for per-manager
+    routing (answers "which manager is to blame"). Returns {sub_id: [reason, ...]}.
+
+    Sources:
+      - FLOATING/EXPLODING: metrics["displaced_parts"] (a part that drifted far from its
+        settle pose — unsupported, or a structure part wrongly marked spin so it flew
+        apart). Each entry's body name is the namespaced link `<sub_id>_<part>`.
+      - OVERLAP: precheck_report part_overlap/aabb_overlap violations (already carry
+        sub_id + the two parts).
+    Sub ids come from the plan; a part name is mapped to a sub by prefix (the assembler
+    namespaces links `<sub_id>_<name>`), longest-prefix-wins so nested ids don't collide."""
+    out: dict = {}
+    sub_ids = sorted((s.id for s in plan.subassemblies), key=len, reverse=True) \
+        if plan is not None else []
+
+    def _sub_of(part: str) -> str:
+        for sid in sub_ids:                       # longest id first
+            if part == sid or part.startswith(f"{sid}_"):
+                return sid
+        return ""
+
+    m = (phys or {}).get("metrics", {}) if isinstance(phys, dict) else {}
+    for e in (m.get("displaced_parts") or []):
+        part = e.get("part", "")
+        sid = _sub_of(part)
+        if not sid:
+            continue
+        bare = part[len(sid) + 1:] if part.startswith(f"{sid}_") else part
+        out.setdefault(sid, []).append(
+            f"part '{bare}' drifted {e.get('disp_mm')} mm from its settle pose — it is "
+            f"FLOATING/unsupported or was marked spin when it should be fixed (a "
+            f"structure part that flew apart). Make it 'fixed' and/or place it on real "
+            f"support.")
+
+    for v in getattr(precheck_report, "violations", []) or []:
+        if getattr(v, "kind", "") in ("part_overlap", "aabb_overlap"):
+            sid = getattr(v, "sub_id", "") or ""
+            if sid:
+                out.setdefault(sid, []).append(
+                    f"rigid OVERLAP ({getattr(v, 'value', 0):.0%}): {getattr(v, 'detail', '')}")
+    return out
+
+
 def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings) -> dict:
     """Pure-contact MuJoCo physics. Builds the MJCF from the run's model, runs the
     MuJoCo scenario runner (subprocess, with in-process fallback), and returns the
