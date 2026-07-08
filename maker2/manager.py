@@ -34,11 +34,13 @@ from .llm.client import LLMError
 from .llm.conversation import Conversation
 from .model import KinematicModel, LinkSpec, PoseSpec
 from .prompts.manager_prompt import (MANAGER_SYSTEM,
+                                     build_manager_coarser,
                                      build_manager_evaluator_feedback,
                                      build_manager_json_from_notes,
                                      build_manager_prior_model,
                                      build_manager_refine,
                                      build_manager_repair,
+                                     build_manager_repair_diff,
                                      build_manager_subassembly, build_manager_user)
 from .twophase import stream_two_part
 
@@ -473,48 +475,147 @@ def _slice_mjcf(block: str) -> str:
     return block.strip()
 
 
+def _manager_gate_errors(model, frame_contract):
+    """The PURE-PYTHON deterministic gate errors for a parsed model, used to (a) decide
+    whether an attempt is clean and (b) feed badness. No render, no LLM. Mirrors the
+    orchestrator's manager-gate block (schema + connectivity/overlap + frames-realized +
+    frame-drift) so the loop's notion of 'good' matches the gate that will judge the sub.
+    Imported lazily: benchmarks pulls in assembler/precheck (numpy), which we don't want at
+    manager import time, and it keeps manager usable without the benchmark deps."""
+    try:
+        from .benchmarks.schema_gate import manager_schema_gate
+        from .benchmarks.manager_gate import manager_gate, frame_drift_errors
+        from .benchmarks import GateError as _GateError
+    except Exception:
+        return []
+    errs = manager_schema_gate(model)
+    if frame_contract is not None:
+        frames = [{"frame": e.get("frame"), "link": e.get("link")}
+                  for e in (getattr(model, "frames_realized", []) or [])]
+        errs += manager_gate(model, frames, frame_contract)
+        realized = {e.get("frame") for e in (getattr(model, "frames_realized", []) or [])}
+        for fr in getattr(frame_contract, "frames", []) or []:
+            if fr.name not in realized:
+                errs.append(_GateError("manager", "ERR_FRAME_UNREALIZED",
+                                       f"interface frame '{fr.name}' is not realized", fr.name))
+        errs += frame_drift_errors(model, frame_contract)
+    else:
+        errs += manager_gate(model, [], None)
+    return errs
+
+
+# Gate codes that are advisory only (do NOT count against a "clean" attempt): the pre-render
+# overlap warning (unreliable on non-boxy parts) and the soft dimension-lock warning.
+_NONBLOCKING_CODES = {"ERR_OVL", "ERR_DIM"}
+
+
 def _decompose_loop(client, conv, settings, *, memory_path, tag, model_json_path=None,
                     frame_contract=None, log_fn=None) -> KinematicModel:
     """SEAM owned by Track 3 (badness keep-best + escalation). The attempt/retry control
-    loop: stream a NOTES→payload response, parse via _parse_manager_output, and on a
-    content error feed the error back as a repair request, bounded by
-    settings.manager_retries. Track 3 adds per-attempt badness keep-best + escalation."""
-    last_err = ""
+    loop: stream a NOTES→payload response, parse via _parse_manager_output, then score the
+    parsed model with the pure-Python gates + badness() (NO physics). MONOTONIC-IMPROVEMENT
+    contract (Part C.bis):
+      * a CLEAN attempt (no blocking gate errors) returns immediately (fast path).
+      * otherwise KEEP the lowest-badness attempt so far; feed the manager DIFF-CARRYING
+        feedback (build_manager_repair_diff) stating whether badness went up/down and which
+        checks moved, so retry N+1 is guided, not blind.
+      * at loop end, return the BEST attempt even if none was perfect — a partial improvement
+        beats a fresh failure (raise only if nothing ever parsed).
+      * on a PLATEAU (badness flat for _PLATEAU_K attempts), ESCALATE: ask for a coarser
+        decomposition (build_manager_coarser) instead of repeating the same approach.
+    Bounded by settings.manager_retries."""
+    from .badness import badness_breakdown, format_delta
+
     attempts = settings.manager_retries + 1
+    plateau_k = int(getattr(settings, "loop_plateau_k", 2))
+    eps = 1e-3
+    best_badness = float("inf")
+    best_model: KinematicModel | None = None
+    best_bd: dict = {}
+    prev_bd: dict = {}
+    last_err = ""
+    stall = 0                              # consecutive attempts with no badness improvement
+
     for attempt in range(1, attempts + 1):
         if log_fn:
             log_fn(f"[manager] attempt {attempt}/{attempts}: decomposing (streaming)…")
-        # stream_two_part streams the NOTES-then-JSON response and RECOVERS a cap cut
-        # WITHOUT shrinking: continue the notes if cut mid-notes, else regenerate the
-        # JSON from the saved notes (so no shafts/bearings get dropped to fit). A
-        # truncation is no longer a failure here — any error below is a content error.
         try:
             text = stream_two_part(client, conv, MANAGER_SYSTEM,
                                    memory_path=memory_path,
                                    regen_msg_fn=build_manager_json_from_notes,
                                    log_fn=log_fn, tag=tag)
         except LLMError as e:
-            # send() failures (connection, HTTP, empty) aren't fixed by re-sending the
-            # identical prompt, so fail fast with a clear message.
             raise ManagerError(f"Manager LLM request failed: {e}") from e
         conv.add_assistant_message(text)
+
+        # 1. Parse. A parse/validation failure yields no model to score -> feed the error
+        #    back (with the last badness delta if we have one) and retry.
         try:
             model = _parse_manager_output(text, frame_contract=frame_contract,
                                           log_fn=log_fn)
         except (ValueError, ManagerError, json.JSONDecodeError) as e:
             last_err = str(e)
             if log_fn:
-                log_fn(f"[manager] attempt {attempt}/{attempts} rejected: {last_err}")
-            conv.add_user_message(build_manager_repair(last_err))
+                log_fn(f"[manager] attempt {attempt}/{attempts} rejected (parse): {last_err}")
+            note = format_delta(prev_bd, best_bd) if best_bd else "no scored attempt yet"
+            conv.add_user_message(build_manager_repair_diff(last_err, note))
             continue
-        if model_json_path:
-            save_model(model, model_json_path)
-        if log_fn:
-            log_fn(f"[manager] OK on attempt {attempt}: "
-                   f"{len(model.links)} links, {len(model.poses)} poses, "
-                   f"root='{model.root_link}'")
-        return model
 
+        # 2. Score the parsed model with the pure gates + badness (no physics).
+        gate_errs = _manager_gate_errors(model, frame_contract)
+        blocking = [e for e in gate_errs if e.code not in _NONBLOCKING_CODES]
+        cur_bd = badness_breakdown(model, gate_errs, context={"fc": frame_contract})
+        cur_badness = cur_bd["total"]
+        if log_fn:
+            log_fn(f"[manager] attempt {attempt}: badness={cur_badness:.2f} "
+                   f"({len(blocking)} blocking gate issue(s)) terms={cur_bd['terms']}")
+
+        # 2a. CLEAN -> done. Return this model immediately (the fast path is preserved).
+        if not blocking:
+            if model_json_path:
+                save_model(model, model_json_path)
+            if log_fn:
+                log_fn(f"[manager] OK on attempt {attempt}: {len(model.links)} links, "
+                       f"{len(model.poses)} poses, root='{model.root_link}' "
+                       f"(badness {cur_badness:.2f}, clean)")
+            return model
+
+        # 2b. Not clean -> keep-best on badness.
+        if cur_badness < best_badness - eps:
+            best_badness, best_model, best_bd = cur_badness, model, cur_bd
+            stall = 0
+            if log_fn:
+                log_fn(f"[manager] attempt {attempt}: new best badness {cur_badness:.2f} "
+                       "(kept)")
+        else:
+            stall += 1
+            if log_fn:
+                log_fn(f"[manager] attempt {attempt}: badness {cur_badness:.2f} did not beat "
+                       f"best {best_badness:.2f} (revert to best; stall {stall}/{plateau_k})")
+
+        last_err = ("automated checks still failing:\n"
+                    + "\n".join(f"- {e}" for e in blocking[:12]))
+        delta_note = format_delta(prev_bd, cur_bd)
+        prev_bd = cur_bd
+
+        # 2c. Escalate on plateau: switch approach (coarsen) instead of retrying the same way.
+        if stall >= plateau_k and attempt < attempts:
+            stall = 0
+            if log_fn:
+                log_fn(f"[manager] plateau -> escalate: requesting a COARSER decomposition")
+            conv.add_user_message(build_manager_coarser(
+                last_err + "\n\n(the previous approach is not converging — simplify.)"))
+        else:
+            conv.add_user_message(build_manager_repair_diff(last_err, delta_note))
+
+    # Loop exhausted. Return the best imperfect model if we have one; else fail.
+    if best_model is not None:
+        if model_json_path:
+            save_model(best_model, model_json_path)
+        if log_fn:
+            log_fn(f"[manager] no clean attempt in {attempts}; returning BEST "
+                   f"(badness {best_badness:.2f}) so downstream gets the closest model")
+        return best_model
     raise ManagerError(
         f"Manager failed after {attempts} attempts. Last error:\n{last_err}")
 

@@ -111,6 +111,27 @@ class Settings:
     manager_retries: int = 2                      # JSON-repair attempts
     worker_retries: int = 3                       # rebuild attempts per part
     judger_retries: int = 2                       # verdict parse/repair attempts
+
+    # ── Monotonic-improvement loops (Part C.bis: badness keep-best + escalation) ──
+    loop_plateau_k: int = 2                       # a loop ESCALATES (changes approach:
+                                                   # coarsen / split / carve differently)
+                                                   # after this many attempts with no
+                                                   # badness improvement, instead of a
+                                                   # blind repeat. Used by manager
+                                                   # _decompose_loop, boss _plan_loop, and
+                                                   # the boss assembled keep-best.
+    sub_best_of: int = 2                          # C7: generate this many manager
+                                                   # decompositions per subassembly and
+                                                   # keep the LOWEST pre-render badness one
+                                                   # (pure-Python gates; no render). 1
+                                                   # disables best-of-N.
+    enable_sub_split: bool = True                 # C8: when a sub's realized link count /
+                                                   # est_link_budget exceeds
+                                                   # sub_split_threshold, halve it (run the
+                                                   # manager on two named halves and merge)
+                                                   # rather than overloading one manager.
+    sub_split_threshold: int = 12                 # C8: the link count above which a sub is
+                                                   # carved in two.
     judge_max_iterations: int = 3                 # generate->judge->refine passes
                                                    # before the --judge loop stops
                                                    # regardless of the verdict

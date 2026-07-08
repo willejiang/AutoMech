@@ -288,14 +288,19 @@ def _build_batch(idx, batch, model, done, peers, ctx, settings, client,
             else:
                 r = _render_link(batch_script, l, ctx, ctx.run_dir)
             prev = results.get(l.name)
-            results[l.name] = r
+            # C14 keep-best: never let a later FAILED retry overwrite an earlier SUCCESS for
+            # the same link (the batch is re-sent to fix OTHER parts, so a part that already
+            # rendered can regress). Keep the successful render; only replace when the new
+            # result is at least as good (success, or the first result for this link).
+            if r.success or prev is None or not prev.success:
+                results[l.name] = r
             if r.success and (prev is None or not prev.success):
                 with emit_lock:
                     counter[0] += 1
                     n = counter[0]
                 _emit_progress(l.name, n, total, ctx.run_dir, emit_lock)
-            if not r.success:
-                failed.append((l.name, r.error))
+            if not (results[l.name].success):
+                failed.append((l.name, results[l.name].error))
         if not failed:
             break
         if attempt < attempts:

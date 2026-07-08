@@ -221,14 +221,140 @@ def build_subassembly(spec, plan, settings, session_root, *,
 
     try:
         slog("manager: decomposing this subassembly under the frame contract ...")
-        model = decompose(spec.brief, settings, model_json_path=ctx.model_json_path,
-                          frame_contract=fc, evaluator_feedback=feedback, log_fn=slog)
+        model = _decompose_sub(spec, fc, settings, ctx, feedback=feedback, log_fn=slog)
     except Exception as e:
         slog(f"manager FAILED: {e}")
         return SubResult(id=sub_id, ctx=ctx, ok=False, error=f"manager: {e}")
 
     return _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
                                only_links=None, user_prompt=user_prompt, log_fn=log_fn)
+
+
+def _decompose_sub(spec, fc, settings, ctx, *, feedback=None, log_fn=print):
+    """Front door for building ONE sub's model: split it first if it is expected to be
+    oversized (C8), else best-of-N decompose (C7). Both keep-best on pre-render badness."""
+    threshold = int(getattr(settings, "sub_split_threshold", 12))
+    if (getattr(settings, "enable_sub_split", True)
+            and int(getattr(spec, "est_link_budget", 0) or 0) > threshold):
+        split = _split_decompose(spec, fc, settings, ctx, feedback=feedback, log_fn=log_fn)
+        if split is not None:
+            return split
+        log_fn("[split] halving did not improve on a single decomposition; using it")
+    return _decompose_best_of_n(spec, fc, settings, ctx, feedback=feedback, log_fn=log_fn)
+
+
+def _split_decompose(spec, fc, settings, ctx, *, feedback=None, log_fn=print):
+    """C8 — split an oversized subassembly. Rather than overload ONE manager call with a
+    10-26-link sub (where it forgets parts and drifts), run the manager TWICE on the same
+    brief + frame contract but each time instructed to author only HALF the parts — the
+    STRUCTURE/FRAMES half (mounts, plates, the interface frames) and the MECHANISM half
+    (gears, shafts, moving parts) — then MERGE the two KinematicModels.
+
+    SAFE BY CONSTRUCTION: on any problem (a half fails to decompose, or the merged model
+    doesn't validate) this returns None and the caller falls back to a single best-of-N
+    decomposition. The merged model's badness is logged so a poor split is visible; the
+    downstream manager gate + compile gate still judge it like any other model."""
+    from .manager import decompose, _validate_model, _manager_gate_errors, _NONBLOCKING_CODES
+    from .badness import badness
+    from .model import KinematicModel
+
+    halves = [
+        ("structure", "For THIS response author ONLY the STRUCTURAL parts of this "
+                      "subassembly: the mounting plates/frames/housings and EVERY interface "
+                      "frame the contract requires (place a real link at each). Do NOT author "
+                      "gears, shafts, or moving internals — another pass covers those."),
+        ("mechanism", "For THIS response author ONLY the MECHANISM parts of this "
+                      "subassembly: the gears, shafts, wheels and moving internals. Do NOT "
+                      "author the mounting plates/housings — another pass covers those. Still "
+                      "set each part's dof and place them with poses relative to the parts you "
+                      "author."),
+    ]
+    partials = []
+    for name, directive in halves:
+        fb = (feedback + "\n\n" + directive) if feedback else directive
+        try:
+            m = decompose(spec.brief, settings, model_json_path=None,
+                          frame_contract=fc, evaluator_feedback=fb, log_fn=log_fn)
+        except Exception as e:
+            log_fn(f"[split] {name} half failed ({e}); abandoning split")
+            return None
+        log_fn(f"[split] {name} half: {len(m.links)} links")
+        partials.append(m)
+
+    # Merge: concat links (dedup by name, first wins), concat poses + mesh_pairs, union
+    # frames_realized, keep the structure half's root. Then re-validate/normalize.
+    seen: set = set()
+    links = []
+    for m in partials:
+        for l in m.links:
+            if l.name not in seen:
+                seen.add(l.name)
+                links.append(l)
+    merged = KinematicModel(
+        name=partials[0].name,
+        root_link=partials[0].root_link,
+        links=links,
+        poses=[p for m in partials for p in m.poses],
+        mesh_pairs=[mp for m in partials for mp in m.mesh_pairs],
+    )
+    fr: dict = {}
+    for m in partials:
+        for e in getattr(m, "frames_realized", []) or []:
+            fr.setdefault(e.get("frame"), e)
+    merged.frames_realized = list(fr.values())
+    try:
+        _validate_model(merged)            # normalize + weak forest validation (may drop refs)
+    except Exception as e:
+        log_fn(f"[split] merged model failed validation ({e}); abandoning split")
+        return None
+
+    merged_b = badness(merged, _manager_gate_errors(merged, fc), context={"fc": fc})
+    log_fn(f"[split] merged {len(merged.links)} links, badness={merged_b:.2f}")
+    return merged
+
+
+def _decompose_best_of_n(spec, fc, settings, ctx, *, feedback=None, log_fn=print):
+    """C7 — best-of-N sub by gate badness. Generate up to settings.sub_best_of independent
+    manager decompositions of this subassembly and KEEP the one with the lowest pre-render
+    badness (pure-Python gates + badness(), no render). Each decompose() already keep-bests
+    its own retries; best-of-N adds independent SAMPLES on top so a single unlucky
+    decomposition doesn't decide the sub. N<=1 (or a single clean candidate) is just one
+    decompose. The winning model is (re)persisted to ctx.model_json_path.
+
+    NOTE the cost: N decompositions = N x (manager_retries+1) LLM calls, so keep N small
+    (default 2). Only used on the from-scratch path (the patch path stays a single edit)."""
+    from .manager import decompose, save_model, _manager_gate_errors, _NONBLOCKING_CODES
+    from .badness import badness
+
+    n = max(1, int(getattr(settings, "sub_best_of", 2)))
+    best = None                            # (badness, model)
+    for i in range(n):
+        try:
+            model = decompose(spec.brief, settings, model_json_path=ctx.model_json_path,
+                              frame_contract=fc, evaluator_feedback=feedback, log_fn=log_fn)
+        except Exception as e:
+            if n == 1 or best is None:
+                if i == n - 1 and best is None:
+                    raise                  # all candidates failed -> propagate
+                log_fn(f"[best-of-{n}] candidate {i+1} failed ({e}); trying another")
+                continue
+            log_fn(f"[best-of-{n}] candidate {i+1} failed ({e}); keeping earlier best")
+            continue
+        errs = _manager_gate_errors(model, fc)
+        blocking = [e for e in errs if e.code not in _NONBLOCKING_CODES]
+        b = badness(model, errs, context={"fc": fc})
+        log_fn(f"[best-of-{n}] candidate {i+1}/{n}: badness={b:.2f} "
+               f"({len(blocking)} blocking)")
+        if best is None or b < best[0]:
+            best = (b, model)
+        if not blocking:                   # a CLEAN candidate — no need to sample more
+            log_fn(f"[best-of-{n}] candidate {i+1} is clean; stop sampling")
+            break
+    b, model = best
+    save_model(model, ctx.model_json_path)
+    if n > 1:
+        log_fn(f"[best-of-{n}] kept the lowest-badness decomposition (badness {b:.2f})")
+    return model
 
 
 def _edit_changed_links(model, ctx, run_dir, only_links, patch_meta, settings, slog):
@@ -307,7 +433,7 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
     if only_links is None:
         from .benchmarks import format_errors
         from .benchmarks.schema_gate import manager_schema_gate
-        from .benchmarks.manager_gate import manager_gate
+        from .benchmarks.manager_gate import manager_gate, frame_drift_errors
         _pre_frames = _sub_frames_to_dict(model, fc.frames)
         all_errs = manager_schema_gate(model) + manager_gate(model, _pre_frames, fc)
         # FRAMES-REALIZED gate: every interface frame the boss contract requires must be
@@ -325,12 +451,20 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
                 "cannot weld this subassembly. Place a real link at that frame's GLOBAL "
                 "position and declare it in frames_realized (frame->link + local offset).",
                 fn))
-        # ERR_OVL from the PRE-render AABB check is a WARNING only: a bounding box grossly
-        # over-approximates non-boxy parts (radial ribs/spokes of a carriage box-overlap
-        # heavily while their thin geometry never touches — measured 44 AABB "overlaps" vs
-        # 0 real-mesh conflicts on a real cage). The authoritative overlap gate is the
-        # post-render subcheck on the real STLs (the conflict gate below). Schema codes +
-        # ERR_CONNECT (a genuinely unplaced part) still BLOCK.
+        # C6 — FRAME DRIFT (self-consistency): a frame can be 'realized' but on the wrong
+        # link / at the wrong offset, so its WORLD position drifts from the boss contract
+        # coord the assembler seats the sub by. Tighter than presence-only; BLOCKING.
+        all_errs.extend(frame_drift_errors(model, fc))
+        # ERR_OVL from the PRE-render AABB check stays a WARNING (verified: it cannot be
+        # made zero-false-positive). A DECLARED-box AABB grossly over-approximates non-boxy
+        # parts: a radial cage of 8 thin ribs (each a 2 mm x 330 mm cylinder) rotated about
+        # a common hub produces 44 near-total (95%+) box overlaps whose real 2 mm meshes only
+        # kiss at the center — and even an OBB/SAT check still reports 26/28 rib pairs
+        # overlapping, because thin rods through one hub genuinely share that space in the
+        # envelope. So blocking here would break every legitimate cage/spoke design. The
+        # AUTHORITATIVE overlap gate is the post-render real-mesh subcheck (the conflict gate
+        # below, which DOES fail the sub up) plus the C5 dry-run compile. Schema codes +
+        # ERR_CONNECT + the frame gates (all reliable on declared data) still BLOCK.
         mgr_errs = [e for e in all_errs if e.code != "ERR_OVL"]
         for e in all_errs:
             blocking = e.code != "ERR_OVL"
@@ -346,7 +480,7 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
             return SubResult(id=sub_id, ctx=ctx, model=model, ok=False,
                              error=("this subassembly failed automated checks; fix exactly "
                                     "these and rebuild:\n" + format_errors(mgr_errs)))
-        slog("manager gate PASSED (schema + connectivity; overlap warned only)")
+        slog("manager gate PASSED (schema + connectivity + frames; overlap warned only)")
 
     build_urdf(model, ctx)
     ok, err = validate_urdf(ctx.urdf_path, require_meshes=False)
@@ -526,6 +660,29 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
             except Exception as e:
                 slog(f"[conflict] could not rewrite sub_frames.json: {e}")
 
+    # C5 — DRY-RUN COMPILE GATE (the final sub gate): the real-mesh conflict gate above
+    # confirmed the parts don't interpenetrate; this confirms the sub actually LOADS in the
+    # simulator that will score it. build_mjcf + MjModel.from_xml_path is the ultimate
+    # zero-false-positive check — it IS the sim. A sub that won't compile fails UP so the
+    # boss/manager fixes the offending part instead of the assembler crashing later or a
+    # physics run wasting time on an unloadable machine. Full-build path only (the meshes
+    # must be on disk); guarded + degrade-safe inside compile_gate.
+    if success and only_links is None:
+        from .benchmarks import format_errors as _fmt_compile
+        from .benchmarks.compile_gate import compile_gate
+        comp_errs = compile_gate(model, ctx, settings, log_fn=slog)
+        for e in comp_errs:
+            log_fn("ARTIFACT_JSON:" + json.dumps({
+                "kind": "gate", "layer": "manager", "sub_id": sub_id, "code": e.code,
+                "detail": e.detail, "culprit": e.culprit, "ok": False}))
+        if comp_errs:
+            slog(f"compile gate FAILED: {comp_errs[0]}")
+            return SubResult(id=sub_id, ctx=ctx, model=model, results=results,
+                             sub_frames=_sub_frames_to_dict(model, fc.frames), ok=False,
+                             error=("this subassembly does not load in the simulator; fix "
+                                    "exactly this and rebuild:\n" + _fmt_compile(comp_errs)))
+        slog("compile gate PASSED (MJCF loads in MuJoCo)")
+
     return SubResult(id=sub_id, ctx=ctx, model=model, results=results,
                      sub_frames=sub_frames, ok=bool(success),
                      error="" if success else (err2 or f"{built}/{len(results)} links built"))
@@ -694,6 +851,15 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
     iters_since_accept = 0
     score_target = float(getattr(settings, "score_target", 0.9))
     score_plateau = int(getattr(settings, "score_plateau", 3))
+
+    # C15 — pre-physics whole-machine keep-best: track the lowest ASSEMBLED badness so a
+    # re-plan that does not get the machine closer to buildable can be recognized (and the
+    # boss steered to carve differently) BEFORE physics is ever reached. This is the missing
+    # link that made every pre-physics loop a blind retry; the existing physics score-loop
+    # below remains the FINAL keep-best once a score exists.
+    best_assembled_badness = float("inf")
+    assembled_stall = 0
+    plateau_k = int(getattr(settings, "loop_plateau_k", 2))
 
     # Multi-turn refine: load the prior plan from this session (same slug -> same
     # session_root) so the boss updates it, and the ids it keeps can be REUSED from
@@ -949,6 +1115,30 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                 result["error"] = f"precheck failed: {rep.summary()}"; break
             it += 1; continue
 
+        # C15/C16 — WHOLE-MACHINE keep-best (pre-physics). The machine assembled AND passed
+        # the geometry pre-check, so it is buildable enough to score deterministically. Track
+        # the lowest assembled badness; if this iteration did not get the machine closer to
+        # buildable for plateau_k iterations running, ESCALATE — steer the next re-plan to
+        # CARVE THE MACHINE DIFFERENTLY rather than re-tuning the same split. This makes the
+        # pre-physics loop monotonic; the physics score-loop below is the final keep-best.
+        asm_badness = _assembled_badness(plan, subs, rep, asm_errs)
+        escalate_carve = False
+        if asm_badness < best_assembled_badness - 1e-3:
+            best_assembled_badness = asm_badness
+            assembled_stall = 0
+            log(f"[boss] assembled badness {asm_badness:.2f} (new pre-physics best)")
+        else:
+            assembled_stall += 1
+            log(f"[boss] assembled badness {asm_badness:.2f} did not beat best "
+                f"{best_assembled_badness:.2f} (pre-physics stall "
+                f"{assembled_stall}/{plateau_k})")
+            if assembled_stall >= plateau_k:
+                assembled_stall = 0
+                escalate_carve = True
+                log("[boss] pre-physics plateau -> escalate: the next re-plan should CARVE "
+                    "THE MACHINE DIFFERENTLY (different subassembly boundaries), not re-tune "
+                    "the same split.")
+
         # 5b. APPEARANCE JUDGE on the ASSEMBLED machine (boss mode had none — this is
         #     the gate that catches parts floating in space / disconnected / wrong
         #     proportions, which precheck (geometry-only) and physics (transmission-
@@ -1036,6 +1226,11 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
             # dirs are overwritten in place on rebuild, so reuse alone isn't enough).
             _snapshot_best_subs(session_root, best_iter_reuse, log_fn=log)
             log(f"[boss] ACCEPT iteration {it}: new best score {s_val:.3f}")
+            # TRACK1: memory append hook here — on a newly-accepted best score, this is the
+            # "good-enough-to-remember" moment. Track 1 (RAG) appends each PASSING sub's
+            # skeleton + parts + a one-line "what worked" to the per-agent memory index.
+            # Available in scope: plan, subs, s_val, s_break, judge_verdict, phys, settings,
+            # session_root. Keep it best-effort (wrap in try/except; never fail the run).
         else:
             iters_since_accept += 1
             log(f"[boss] REJECT iteration {it}: score {s_val:.3f} did not beat best "
@@ -1125,6 +1320,14 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                 feedback = f"the assembled machine failed physics: {phys.get('summary')}"
                 log("[boss] physics fault fully unlocalized -> boss re-plan (prior plan "
                     "kept so unchanged subs still reuse).")
+        # C16 — if the pre-physics loop plateaued this iteration, steer the boss to carve
+        # differently on a re-plan instead of re-tuning the same split (escalate, don't
+        # repeat). Only meaningful when this iteration set a boss-level `feedback`.
+        if escalate_carve and feedback:
+            feedback += ("\n\nESCALATION: recent iterations have NOT gotten the machine "
+                         "closer to buildable with this subassembly split. CHANGE THE "
+                         "DECOMPOSITION — draw the subassembly boundaries differently (merge "
+                         "or re-partition subs), do not just re-tune the current split.")
         it += 1
         continue
 
@@ -1165,6 +1368,28 @@ def _map_blamed_to_subs(blamed, plan) -> set:
             if bs == sid or bs.startswith(f"{sid}_") or sid in bs:
                 out.add(sid)
     return out
+
+
+def _assembled_badness(plan, subs, rep, asm_errs) -> float:
+    """C15 — a WHOLE-MACHINE pre-physics badness so a boss re-plan can be kept only if the
+    assembled machine got CLOSER to buildable, bridging the gap until physics is reachable
+    (the physics score-loop then takes over as the final keep-best). Lower = closer. It is
+    built ONLY from RELIABLE assembled-stage signals:
+      * precheck violations, weighted by severity (interface faults dominate — the pieces
+        don't fit and the boss must re-plan; a 'sub' fault re-runs one manager),
+      * assembled_gate errors (weld-chain / grounding),
+      * the count of subs that failed to build (each a hard hole in the machine).
+    Deliberately EXCLUDES the per-sub declared-AABB overlap term (badness()'s overlap_vol):
+    on cage/spoke subs it is a huge unreliable artifact (see the ERR_OVL note) that would
+    swamp the real fit signals here. No LLM, no physics; reuses the precheck/assembled
+    reports already computed in the loop."""
+    total = 0.0
+    for v in getattr(rep, "violations", []) or []:
+        total += 6.0 if getattr(v, "severity", "") == "interface" else 3.0
+    total += 2.0 * len(asm_errs or [])
+    total += 4.0 * sum(1 for s in plan.subassemblies
+                       if not getattr(subs.get(s.id), "ok", False))
+    return round(total, 3)
 
 
 # --------------------------------------------------------------------------- #

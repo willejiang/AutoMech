@@ -25,10 +25,11 @@ from . import GateError
 # Fraction tolerance when matching a declared dim to a script literal.
 _DIM_TOL_FRAC = 0.06
 
-# size_mm keys that name a real geometric dimension the worker must honor. Keys not here
-# (e.g. free-form notes) are ignored.
+# size_mm keys that name a real geometric dimension the worker must honor, in CANONICAL
+# form (C2 — canonical_size folds aliases like gear_dia/pitch_diameter onto these before
+# the scan). Keys not here (free-form notes, tooth counts) are ignored.
 _MATING_KEYS = ("radius", "height", "x", "y", "z", "bore_dia", "outer_dia", "inner_dia",
-                "pitch_dia", "pitch_radius", "diameter", "length", "width", "thickness")
+                "pitch_dia", "pitch_radius", "length", "width", "thickness", "depth")
 
 
 def _script_numbers(script: str) -> list[float]:
@@ -77,7 +78,11 @@ def worker_gate(part_script_text: str, link_spec, stl_path: str) -> list[GateErr
     name = getattr(link_spec, "name", "?")
 
     # 1. Dimension lock — each declared mating dim must appear (within tol) in the script.
-    size = getattr(link_spec, "size_mm", {}) or {}
+    #    Fold the manager's free-form aliases (gear_dia/wheel_dia/...) onto canonical keys
+    #    first (C2) so a renamed-but-present dimension is still recognized.
+    from .vocab import canonical_size
+    size = canonical_size(getattr(link_spec, "size_mm", {}) or {},
+                          getattr(link_spec, "shape_hint", "") or "")
     if part_script_text:
         nums = _script_numbers(part_script_text)
         # A declared radius may be drawn as diameter/2 (and vice-versa), so match against

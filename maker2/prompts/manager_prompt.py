@@ -142,6 +142,22 @@ exactly `{MJCF_SENTINEL}`, then the MJCF XML skeleton. Output ONLY those, no pro
 markdown fences."""
 
 
+def build_manager_repair_diff(error: str, delta_note: str) -> str:
+    """Diff-carrying repair feedback (C13): the same repair request, PLUS a one-line
+    'gradient' telling the manager whether its last change got CLOSER to buildable and
+    which specific checks moved. This turns a blind retry into a guided one — the manager
+    sees the direction, not just another error string. ``delta_note`` comes from
+    badness.format_delta over consecutive attempts. Wraps build_manager_repair so a later
+    refactor of the base message still composes."""
+    base = build_manager_repair(error)
+    return (base + "\n\n"
+            "PROGRESS SIGNAL (lower is closer to a buildable model):\n"
+            f"  {delta_note}\n"
+            "If your last change made things WORSE, do NOT repeat it — revert that idea and "
+            "try a different fix. If it helped, keep going in that direction. Reduce the "
+            "specific checks named above.")
+
+
 def build_manager_coarser(error: str) -> str:
     """Feedback message appended after the response overran the output cap.
 

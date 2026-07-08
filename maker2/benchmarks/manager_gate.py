@@ -24,7 +24,18 @@ import numpy as np
 
 from . import GateError
 from ..assembler import _mat, _root_to_link
-from ..precheck import _OVERLAP_FRAC, _aabb_vol, _transform_aabb
+from ..precheck import _POS_TOL_M, _aabb_vol, _transform_aabb
+
+# Pre-render WARN threshold (C1): the DECLARED-box AABB over-approximates non-boxy parts
+# (a gear/cylinder envelope is a solid disc, but its real geometry may be spokes; a thin rib
+# rotated radially yields a huge diagonal AABB), so this pre-render overlap is a WARNING, not
+# a block — it CANNOT be made zero-false-positive (a valid 8-rib cage produces 44 near-total
+# box overlaps; even an OBB/SAT check still flags 26/28 rib pairs). The AUTHORITATIVE overlap
+# gate is the post-render real-mesh subcheck (precheck._OVERLAP_FRAC = 0.30 on REAL meshes,
+# which DOES fail the sub up). We raise the warn bar to 0.60 so only egregious declared
+# overlaps are surfaced and the log isn't flooded; the continuous overlap magnitude still
+# feeds badness() regardless of this cutoff.
+_PRE_OVERLAP_FRAC = 0.60
 
 
 def _local_aabb_m(link) -> tuple | None:
@@ -150,12 +161,54 @@ def manager_gate(model, sub_frames, frame_contract) -> list[GateError]:
             if frozenset((a, b)) in allowed:
                 continue
             frac = _overlap_frac(boxes[a], boxes[b])
-            if frac >= _OVERLAP_FRAC:
+            if frac >= _PRE_OVERLAP_FRAC:
                 worst_by_pair.append((frac, a, b))
     for frac, a, b in sorted(worst_by_pair, reverse=True):
         errors.append(GateError(
             "manager", "ERR_OVL",
-            f"parts '{a}' and '{b}' overlap ({frac:.0%} of the smaller part is inside "
-            "the other by declared size) — separate them or resize",
+            f"parts '{a}' and '{b}' grossly overlap ({frac:.0%} of the smaller part is "
+            "inside the other by declared size) — separate them or resize",
             f"{a}~{b}"))
     return errors
+
+
+def frame_drift_errors(model, frame_contract) -> list[GateError]:
+    """C6 — self-consistency on frames_realized: recompute each realized interface frame's
+    WORLD position from the owning link's pose and assert it matches the boss contract's
+    declared GLOBAL xyz_m within tolerance. This is strictly tighter than the presence-only
+    ERR_FRAME_UNREALIZED check (a frame can be 'realized' on the wrong link / at the wrong
+    offset and still be present). A drift beyond _POS_TOL_M -> ERR_FRAME_DRIFT (blocking).
+
+    Reuses assembler._root_to_link / _mat and precheck._POS_TOL_M. Frames the manager did
+    not realize at all are NOT flagged here (ERR_FRAME_UNREALIZED owns that); only a
+    realized-but-misplaced frame is a drift."""
+    frames = list(getattr(frame_contract, "frames", []) or [])
+    if not frames:
+        return []
+    realized = {e.get("frame"): e for e in (getattr(model, "frames_realized", []) or [])}
+    T = _root_to_link(model)
+    out: list[GateError] = []
+    for fr in frames:
+        entry = realized.get(fr.name)
+        if not entry:
+            continue                          # unrealized -> the other gate's job
+        link = entry.get("link")
+        Tlink = T.get(link)
+        if Tlink is None:
+            continue                          # link missing -> connectivity/unrealized gate
+        local = _mat(entry.get("local_xyz_m", (0, 0, 0)),
+                     entry.get("local_rpy_rad", (0, 0, 0)))
+        world = (Tlink @ local)[:3, 3]
+        want = np.array([float(v) for v in (getattr(fr, "xyz_m", None) or (0, 0, 0))])
+        drift = float(np.linalg.norm(world - want))
+        if drift > _POS_TOL_M:
+            out.append(GateError(
+                "manager", "ERR_FRAME_DRIFT",
+                f"interface frame '{fr.name}' is realized on link '{link}' but its WORLD "
+                f"position is {drift*1000:.1f} mm from the boss contract's required global "
+                f"position (tolerance {_POS_TOL_M*1000:.1f} mm) — the assembler places this "
+                "sub by the contract coord, so a drifted frame mis-seats the whole sub. "
+                "Move the link (or the frame's local offset) so the frame lands on the "
+                "contract position.",
+                fr.name))
+    return out

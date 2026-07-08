@@ -62,12 +62,13 @@ def manager_schema_gate(model) -> list[GateError]:
                     l.name))
         # DEGENERACY guard (the MjModel.from_xml crash case), NOT a naming policy.
         # Managers name dims freely (gear_dia, wheel_dia, tube_outer_dia, wheel_thk,
-        # length/width/thickness, ...), so we do NOT enumerate keys. Instead we ask the
-        # only question that matters: does the part have enough POSITIVE size to form a
-        # non-degenerate solid? Match dimensions by SEMANTICS (suffix), and flag only a
-        # genuinely empty/zero part.
-        size = getattr(l, "size_mm", {}) or {}
+        # length/width/thickness, ...), so we do NOT enumerate keys. We fold the known
+        # aliases onto canonical names first (C2) so the semantic match below is robust,
+        # then ask the only question that matters: does the part have enough POSITIVE size
+        # to form a non-degenerate solid? Flag only a genuinely empty/zero part.
+        from .vocab import canonical_size
         hint = (getattr(l, "shape_hint", "") or "").strip().lower()
+        size = canonical_size(getattr(l, "size_mm", {}) or {}, hint)
 
         def _has(pred) -> bool:
             return any(pred(k.lower()) and _positive(v) for k, v in size.items())

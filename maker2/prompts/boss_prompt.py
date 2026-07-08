@@ -111,6 +111,19 @@ Return a corrected JSON object that fixes this. Output ONLY the JSON object, no
 prose, no markdown fences."""
 
 
+def build_boss_repair_diff(error: str, delta_note: str) -> str:
+    """Diff-carrying repair feedback for the boss plan loop (C13): the repair request PLUS
+    a one-line note on whether the last plan got closer to a valid, buildable machine and
+    which checks moved. ``delta_note`` comes from badness.format_delta over consecutive
+    plan attempts. Wraps build_boss_repair so a base refactor still composes."""
+    base = build_boss_repair(error)
+    return (base + "\n\n"
+            "PROGRESS SIGNAL (lower is closer to a valid plan):\n"
+            f"  {delta_note}\n"
+            "If your last plan made things WORSE, do NOT repeat that change; try a different "
+            "split. Reduce the specific checks named above.")
+
+
 def build_boss_coarser(error: str) -> str:
     """Feedback appended after the response overran the output cap: ask for FEWER,
     larger subassemblies so the plan fits."""

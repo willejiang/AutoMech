@@ -29,10 +29,10 @@ from .llm.client import LLMError
 from .llm.conversation import Conversation
 from .model import (FrameContract, MountFrame, SeamSpec, SubassemblyPlan,
                     SubassemblySpec)
-from .prompts.boss_prompt import (BOSS_SYSTEM, build_boss_feedback,
+from .prompts.boss_prompt import (BOSS_SYSTEM, build_boss_coarser, build_boss_feedback,
                                   build_boss_json_from_notes, build_boss_prior_plan,
                                   build_boss_refine, build_boss_replan,
-                                  build_boss_repair, build_boss_user)
+                                  build_boss_repair, build_boss_repair_diff, build_boss_user)
 from .twophase import stream_two_part
 
 
@@ -466,22 +466,52 @@ def _boss_research(client, conv, settings, product_prompt, *, log_fn=None) -> No
                    collection="boss", log_fn=log_fn)
 
 
+def _plan_gate_badness(plan) -> tuple[float, list, dict]:
+    """A pre-build 'badness' for a parsed plan from the deterministic boss gates (schema +
+    support-chain + mesh-distance). Returns (badness, errors, breakdown). Lower = closer to
+    a valid, buildable plan. Pure-Python; imported lazily to keep boss import light."""
+    try:
+        from .benchmarks.schema_gate import boss_schema_gate
+        from .benchmarks.boss_gate import boss_gate
+    except Exception:
+        return 0.0, [], {"terms": {}, "count": 0}
+    errs = boss_schema_gate(plan) + boss_gate(plan)
+    # Weight support/interface faults (structural) above pure schema enum faults.
+    w = {"ERR_SUP_NOWELD": 5.0, "ERR_IFC_MESH_DIST": 4.0}
+    total = float(sum(w.get(e.code, 2.0) for e in errs))
+    by_code: dict = {}
+    for e in errs:
+        by_code[e.code] = by_code.get(e.code, 0) + 1
+    return total, errs, {"total": round(total, 3), "terms": by_code, "count": len(errs)}
+
+
 def _plan_loop(client, conv, settings, *, memory_path, plan_json_path=None,
                log_fn=None) -> SubassemblyPlan:
     """SEAM owned by Track 3 (badness keep-best + escalation). The attempt/retry control
-    loop: stream a NOTES→JSON response, parse+validate, and on a content error feed the
-    error back as a repair request, bounded by settings.manager_retries. Track 3 adds
-    per-attempt badness keep-best + escalation."""
-    last_err = ""
+    loop: stream a NOTES→JSON response, parse+validate, then score the plan with the
+    deterministic boss gates. MONOTONIC-IMPROVEMENT contract (Part C.bis):
+      * a CLEAN plan (no gate errors) returns immediately.
+      * otherwise KEEP the lowest-badness plan; feed the boss DIFF-CARRYING feedback stating
+        whether the last plan got closer + which checks moved.
+      * at loop end return the BEST plan even if imperfect (partial beats failure).
+      * on a plateau, ESCALATE by asking for FEWER/larger subassemblies (build_boss_coarser).
+    Bounded by settings.manager_retries."""
+    from .badness import format_delta
+
     attempts = settings.manager_retries + 1
+    plateau_k = int(getattr(settings, "loop_plateau_k", 2))
+    eps = 1e-3
+    best_badness = float("inf")
+    best_plan: SubassemblyPlan | None = None
+    best_bd: dict = {}
+    prev_bd: dict = {}
+    last_err = ""
+    stall = 0
+
     for attempt in range(1, attempts + 1):
         if log_fn:
             log_fn(f"[boss] attempt {attempt}/{attempts}: planning subassemblies "
                    f"(streaming)…")
-        # stream_two_part streams the NOTES-then-JSON response and RECOVERS a cap cut
-        # without shrinking: continue the notes if cut mid-notes, else regenerate the
-        # JSON from the saved notes. So a truncation is no longer a failure here — any
-        # remaining error below is a genuine content/validation error to repair.
         try:
             text = stream_two_part(client, conv, BOSS_SYSTEM,
                                    memory_path=memory_path,
@@ -490,22 +520,64 @@ def _plan_loop(client, conv, settings, *, memory_path, plan_json_path=None,
         except LLMError as e:
             raise BossError(f"Boss LLM request failed: {e}") from e
         conv.add_assistant_message(text)
+
+        # 1. Parse + normalize. A hard structural failure (unknown refs, unspanned weld
+        #    graph) raises here -> feed the error back and retry.
         try:
             plan = parse_plan(text)
             _validate_plan(plan)
         except (ValueError, BossError, json.JSONDecodeError) as e:
             last_err = str(e)
             if log_fn:
-                log_fn(f"[boss] attempt {attempt}/{attempts} rejected: {last_err}")
-            conv.add_user_message(build_boss_repair(last_err))
+                log_fn(f"[boss] attempt {attempt}/{attempts} rejected (parse): {last_err}")
+            note = format_delta(prev_bd, best_bd) if best_bd else "no scored plan yet"
+            conv.add_user_message(build_boss_repair_diff(last_err, note))
             continue
-        if plan_json_path:
-            save_plan(plan, plan_json_path)
-        if log_fn:
-            log_fn(f"[boss] OK on attempt {attempt}: {len(plan.subassemblies)} "
-                   f"subassemblies, {len(plan.seams)} seams, root='{plan.root_sub}'")
-        return plan
 
+        # 2. Score the plan with the deterministic gates.
+        cur_badness, errs, cur_bd = _plan_gate_badness(plan)
+        if log_fn:
+            log_fn(f"[boss] attempt {attempt}: plan badness={cur_badness:.2f} "
+                   f"({len(errs)} gate issue(s))")
+
+        # 2a. CLEAN -> done.
+        if not errs:
+            if plan_json_path:
+                save_plan(plan, plan_json_path)
+            if log_fn:
+                log_fn(f"[boss] OK on attempt {attempt}: {len(plan.subassemblies)} "
+                       f"subassemblies, {len(plan.seams)} seams, root='{plan.root_sub}' "
+                       "(clean)")
+            return plan
+
+        # 2b. keep-best on badness.
+        if cur_badness < best_badness - eps:
+            best_badness, best_plan, best_bd = cur_badness, plan, cur_bd
+            stall = 0
+        else:
+            stall += 1
+        last_err = ("plan failed automated checks:\n"
+                    + "\n".join(f"- {e}" for e in errs[:12]))
+        delta_note = format_delta(prev_bd, cur_bd)
+        prev_bd = cur_bd
+
+        # 2c. Escalate on plateau: fewer/larger subs.
+        if stall >= plateau_k and attempt < attempts:
+            stall = 0
+            if log_fn:
+                log_fn("[boss] plateau -> escalate: requesting FEWER, larger subassemblies")
+            conv.add_user_message(build_boss_coarser(
+                last_err + "\n\n(this split is not converging — merge related subs.)"))
+        else:
+            conv.add_user_message(build_boss_repair_diff(last_err, delta_note))
+
+    if best_plan is not None:
+        if plan_json_path:
+            save_plan(best_plan, plan_json_path)
+        if log_fn:
+            log_fn(f"[boss] no clean plan in {attempts}; returning BEST "
+                   f"(badness {best_badness:.2f})")
+        return best_plan
     raise BossError(
         f"Boss failed after {attempts} attempts. Last error:\n{last_err}")
 
