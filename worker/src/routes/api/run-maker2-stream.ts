@@ -56,6 +56,12 @@ export const Route = createFileRoute('/api/run-maker2-stream')({
         // session and reuses unchanged subassemblies). The old single-manager
         // --prior-model path is not used for hierarchy refines.
         args.push('--hierarchy');
+        // Local offline knowledge base (maker2/kb): the boss/manager/worker retrieve
+        // this project's output-format conventions + worked examples + prior passing
+        // designs via a kb_search tool. Always on — it is offline and cheap, and a
+        // missing/empty index degrades to a no-op (never fails the run). Requires a
+        // one-time `python -m maker2.kb.ingest` + the MiniLM cache on a fresh machine.
+        args.push('--kb');
         // Web-search reference lookup (keyless), when the client asks for it.
         if (url.searchParams.get('web') === '1') args.push('--web');
         // Deep-think toggle: ON -> CadQuery worker + full debugger; OFF -> OpenSCAD +
