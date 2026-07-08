@@ -17,7 +17,8 @@ manager._validate_model. It:
                 the gear centers one mesh-distance apart and the gears couple by tooth
                 contact at sim time (the pair is recorded in the model's mesh_pairs).
   5. Re-validates via manager._validate_model (name normalization + weak forest check /
-     mesh_filename) and writes model.urdf via build_urdf.
+     mesh_filename) and writes model.urdf (build_urdf, render/appearance) AND model.mjcf
+     (build_mjcf, the simulation compiler) from the same merged KinematicModel.
 
 See .claude/plans/precious-humming-wand.md.
 """
@@ -33,6 +34,21 @@ import trimesh.transformations as tf
 from .manager import ManagerError, _validate_model, save_model
 from .model import KinematicModel, LinkSpec, PoseSpec
 from .urdf_builder import build_urdf, validate_urdf
+
+
+def _write_assembled_mjcf(final, ctx, settings, log) -> None:
+    """Write the assembled machine's MJCF (model.mjcf) next to model.urdf, from the
+    SAME merged KinematicModel. build_mjcf is the sole simulation compiler (CoACD,
+    mm->m, mass, solver tuning) and physics rebuilds it authoritatively at run time;
+    this just persists a matching on-disk artifact so the assembled machine has an
+    MJCF, not only a (render-only) URDF. Best-effort — a failure here never breaks the
+    assembly, since physics does not depend on this file existing."""
+    try:
+        from .mjcf_builder import build_mjcf
+        path = build_mjcf(final, ctx, settings=settings, log_fn=log)
+        log(f"wrote assembled MJCF {path}")
+    except Exception as e:
+        log(f"WARNING: could not write assembled model.mjcf: {e}")
 
 
 class AssemblerError(RuntimeError):
@@ -242,7 +258,7 @@ def _bridge_pose(seam, plan, subs: dict, placed_root: dict, *,
 # Assemble
 # --------------------------------------------------------------------------- #
 
-def assemble(plan, subs: dict, ctx, *, log_fn=print) -> KinematicModel:
+def assemble(plan, subs: dict, ctx, *, settings=None, log_fn=print) -> KinematicModel:
     """Stitch the built subassemblies into one final KinematicModel + model.urdf.
 
     `subs` is {sub_id: SubResult} from orchestrator_boss.build_all_subassemblies.
@@ -413,6 +429,7 @@ def assemble(plan, subs: dict, ctx, *, log_fn=print) -> KinematicModel:
     ok2, err2 = validate_urdf(ctx.urdf_path, require_meshes=True)
     log(f"wrote {ctx.urdf_path} (links={len(final.links)}, poses={len(final.poses)}, "
         f"root='{final.root_link}', meshes ok={ok2})")
+    _write_assembled_mjcf(final, ctx, settings, log)
     return final
 
 
@@ -508,7 +525,7 @@ def _corners_world(bounds, T):
     return (h @ T.T)[:, :3]
 
 
-def auto_nudge_overlaps(final, plan, subs, ctx, *, log_fn=print) -> dict:
+def auto_nudge_overlaps(final, plan, subs, ctx, *, settings=None, log_fn=print) -> dict:
     """Silently separate subassemblies that interpenetrate but share NO seam, so the
     CURRENT assembled URDF always closes, and record each nudge for the manager to fix
     next iteration. Mutates `final` (weld joint origins) + rewrites model.urdf.
@@ -613,6 +630,7 @@ def auto_nudge_overlaps(final, plan, subs, ctx, *, log_fn=print) -> dict:
             save_model(final, ctx.model_json_path)
         except Exception as e:
             log(f"nudge: could not re-save kinematic_model.json: {e}")
+        _write_assembled_mjcf(final, ctx, settings, log)
         import json as _json
         print("ARTIFACT_JSON:" + _json.dumps({
             "kind": "auto_nudge", "run_dir": ctx.run_dir,

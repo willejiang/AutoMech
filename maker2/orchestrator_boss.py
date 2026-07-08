@@ -1026,7 +1026,8 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
             plan.name, session_root,
             run_dir=os.path.join(session_root, f"assembly_iter_{it}"))
         try:
-            final = assembler.assemble(plan, subs, assembly_ctx, log_fn=log)
+            final = assembler.assemble(plan, subs, assembly_ctx, settings=settings,
+                                       log_fn=log)
         except assembler.AssemblerError as e:
             # A stitch failure is an interface/plan fault -> re-plan.
             feedback = f"assembly failed: {e}"
@@ -1046,7 +1047,7 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
         #     not a rebuild trigger — it never sets `feedback`).
         try:
             nudges = assembler.auto_nudge_overlaps(final, plan, subs, assembly_ctx,
-                                                   log_fn=log)
+                                                   settings=settings, log_fn=log)
         except Exception as e:
             log(f"[assembler] auto-nudge skipped ({e})")
             nudges = {}
