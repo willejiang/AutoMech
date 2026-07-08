@@ -452,9 +452,12 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
                 "position and declare it in frames_realized (frame->link + local offset).",
                 fn))
         # C6 — FRAME DRIFT (self-consistency): a frame can be 'realized' but on the wrong
-        # link / at the wrong offset, so its WORLD position drifts from the boss contract
-        # coord the assembler seats the sub by. Tighter than presence-only; BLOCKING.
-        all_errs.extend(frame_drift_errors(model, fc))
+        # link / at the wrong offset. For the ROOT sub (pinned at the global origin) the
+        # frames must hit the contract's ABSOLUTE coords; for a WELDED CHILD (rigidly
+        # transformed onto its weld) only the RELATIVE layout of its frames must match the
+        # contract — the sub's own origin is not the global origin. BLOCKING.
+        _is_root = (sub_id == getattr(plan, "root_sub", None))
+        all_errs.extend(frame_drift_errors(model, fc, is_root=_is_root))
         # ERR_OVL from the PRE-render AABB check stays a WARNING (verified: it cannot be
         # made zero-false-positive). A DECLARED-box AABB grossly over-approximates non-boxy
         # parts: a radial cage of 8 thin ribs (each a 2 mm x 330 mm cylinder) rotated about

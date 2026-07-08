@@ -358,23 +358,36 @@ def _solid_intersection_frac(ma, mb) -> float:
 def _part_overlaps(robot, plan, subs: dict, log) -> list:
     """Flag rigid parts that GROSSLY interpenetrate. Within a sub -> severity 'sub'
     (re-run that manager); across a WELD seam -> severity 'interface' (boss re-plan).
-    Skips pairs joined by a joint (intended nesting like a shaft in a bearing) and only
-    flags overlap above _OVERLAP_FRAC. Logs every DROP so a suppressed overlap is
-    visible."""
+
+    Overlap is measured on the REAL mesh solids (_solid_intersection_frac, a manifold
+    boolean), NOT bounding boxes: a hollow part's bore/keyway/cut is empty, so a shaft in
+    a bearing bore, an oil seal a shaft passes through, or a whole sub NESTING inside
+    another (input-shaft assembly slotted into the housing) all read ~0 — only genuinely
+    interpenetrating metal scores high. Skips pose-adjacent pairs (intended nesting) and
+    only flags above _OVERLAP_FRAC. Logs every DROP so a suppressed overlap is visible."""
     out: list = []
 
-    for sub in plan.subassemblies:
-        sr = subs.get(sub.id)
-        model = getattr(sr, "model", None) if sr else None
+    def _sub_meshes(sub):
+        """{namespaced_link -> world mesh} for one sub, missing meshes dropped."""
+        model = getattr(subs.get(sub.id), "model", None)
         if model is None:
-            continue
-        # joint-adjacent link pairs in THIS sub (namespaced) -> skip (intended overlap).
-        adj = set()
-        for j in model.joints:
-            adj.add(frozenset((_ns(sub.id, j.parent), _ns(sub.id, j.child))))
-        links = [_ns(sub.id, l.name) for l in model.links]
-        meshes = {ln: _link_world_mesh(robot, ln) for ln in links}
-        meshes = {k: v for k, v in meshes.items() if v is not None}
+            return {}, set()
+        # pose-adjacent link pairs (namespaced) -> intended nesting, skip. Read model.poses
+        # DIRECTLY (not the lossy model.joints view, which DROPS forest-root poses).
+        adj = {frozenset((_ns(sub.id, p.parent), _ns(sub.id, p.child)))
+               for p in model.poses if p.parent and p.child}
+        m = {}
+        for l in model.links:
+            ln = _ns(sub.id, l.name)
+            wm = _link_world_mesh(robot, ln)
+            if wm is not None:
+                m[ln] = wm
+        return m, adj
+
+    sub_mesh_cache = {}
+    for sub in plan.subassemblies:
+        meshes, adj = _sub_meshes(sub)
+        sub_mesh_cache[sub.id] = meshes
         names = list(meshes)
         worst = None
         for i in range(len(names)):
@@ -382,7 +395,7 @@ def _part_overlaps(robot, plan, subs: dict, log) -> list:
                 a, b = names[i], names[k]
                 if frozenset((a, b)) in adj:
                     continue
-                frac = _intersection_frac(meshes[a], meshes[b])
+                frac = _solid_intersection_frac(meshes[a], meshes[b])
                 if frac >= _OVERLAP_FRAC:
                     if worst is None or frac > worst[0]:
                         worst = (frac, a, b)
@@ -393,34 +406,33 @@ def _part_overlaps(robot, plan, subs: dict, log) -> list:
             out.append(Violation(
                 kind="part_overlap", severity="sub", sub_id=sub.id, value=frac,
                 detail=f"parts '{a}' and '{b}' interpenetrate ({frac:.0%} of the smaller "
-                       f"part is inside the other) — fix their placement"))
+                       f"part's solid is inside the other) — fix their placement"))
 
-    # Cross-WELD-seam gross overlap between two subs -> interface (boss re-plan).
+    # Cross-WELD-seam gross overlap: check the REAL part solids of the two subs against
+    # each other (NOT whole-sub bounding boxes — two subs that legitimately NEST, like a
+    # shaft assembly inside a housing, have hugely overlapping AABBs but ~0 solid overlap).
+    # A genuine seam mis-placement that drives one sub's metal INTO the other's still trips.
     for seam in plan.seams:
         if seam.kind != "weld":
             continue
-        pa, pb = subs.get(seam.parent_sub), subs.get(seam.child_sub)
-        ma = getattr(pa, "model", None) if pa else None
-        mb = getattr(pb, "model", None) if pb else None
-        if ma is None or mb is None:
+        ma = sub_mesh_cache.get(seam.parent_sub, {})
+        mb = sub_mesh_cache.get(seam.child_sub, {})
+        if not ma or not mb:
             continue
-        # Approximate each sub by its whole-geometry world AABB (from _sub_bounds) and
-        # check gross box interpenetration; a weld means they TOUCH, not overlap deeply.
-        bounds = _sub_bounds(robot, plan)
-        ba, bb = bounds.get(seam.parent_sub), bounds.get(seam.child_sub)
-        if ba is None or bb is None:
-            continue
-        lo_i = np.maximum(ba[0], bb[0]); hi_i = np.minimum(ba[1], bb[1])
-        if np.all(lo_i < hi_i):
-            vi = _aabb_vol((lo_i, hi_i))
-            vs = min(_aabb_vol(ba), _aabb_vol(bb))
-            frac = (vi / vs) if vs > 0 else 0.0
-            if frac >= _OVERLAP_FRAC:
-                out.append(Violation(
-                    kind="part_overlap", severity="interface", value=frac,
-                    detail=f"welded subs '{seam.parent_sub}' and '{seam.child_sub}' "
-                           f"interpenetrate ({frac:.0%} box overlap) — the seam places "
-                           f"them inside each other; re-plan the frame offsets"))
+        worst = None
+        for an, amesh in ma.items():
+            for bn, bmesh in mb.items():
+                frac = _solid_intersection_frac(amesh, bmesh)
+                if frac >= _OVERLAP_FRAC and (worst is None or frac > worst[0]):
+                    worst = (frac, an, bn)
+        if worst:
+            frac, an, bn = worst
+            out.append(Violation(
+                kind="part_overlap", severity="interface", value=frac,
+                detail=f"welded subs '{seam.parent_sub}' and '{seam.child_sub}' "
+                       f"interpenetrate: parts '{an}' and '{bn}' overlap {frac:.0%} of the "
+                       f"smaller part's solid — the seam drives them into each other; "
+                       f"re-plan the frame offsets"))
     return out
 
 
