@@ -44,12 +44,14 @@ def _sub_frames_to_dict(model, contract_frames=None) -> list:
     """The manager's realized interface frames, JSON-ready.
 
     Primary source is ``model.frames_realized`` (the manager's own frame->link mapping).
-    FALLBACK: for any contract frame the manager DECLARED no realization for, but whose
-    name EXACTLY matches a link in the model (the manager's own convention — it names a
-    dedicated marker link after the frame), auto-realize it at that link's origin. This
-    keeps the assembler from crashing on "frame not realized" when the manager built the
-    frame link but forgot to emit the frames_realized entry — a common LLM lapse that
-    otherwise loops the whole boss pipeline forever."""
+    FALLBACKS for a frame the manager DECLARED no realization for (a common LLM lapse
+    that otherwise crashes the assembler and loops the whole boss pipeline):
+      1. name-match: a link named EXACTLY like the frame (the marker-link convention);
+      2. mount-role -> root link: a structural `mount` frame (a housing/bridge/plate
+         mounting face) is realized by the subassembly's ROOT link by convention, at the
+         root's local origin. This is safe (the root IS the structural body) and rescues
+         the frequent case where the manager built the housing but didn't declare it.
+    Frames still unrealized after these are reported by the manager gate (fail-fast)."""
     out = []
     seen: set = set()
     for e in getattr(model, "frames_realized", []) or []:
@@ -65,14 +67,20 @@ def _sub_frames_to_dict(model, contract_frames=None) -> list:
 
     if contract_frames:
         link_names = {l.name for l in model.links}
+        root = getattr(model, "root_link", "") or ""
         for fr in contract_frames:
             fname = getattr(fr, "name", "") or ""
-            if fname and fname not in seen and fname in link_names:
-                out.append({
-                    "frame": fname, "link": fname,
-                    "local_xyz_m": [0.0, 0.0, 0.0],
-                    "local_rpy_rad": [0.0, 0.0, 0.0],
-                })
+            if not fname or fname in seen:
+                continue
+            if fname in link_names:                       # 1. exact name-match
+                out.append({"frame": fname, "link": fname,
+                            "local_xyz_m": [0.0, 0.0, 0.0],
+                            "local_rpy_rad": [0.0, 0.0, 0.0]})
+                seen.add(fname)
+            elif getattr(fr, "role", "mount") == "mount" and root in link_names:
+                out.append({"frame": fname, "link": root,   # 2. mount -> root link
+                            "local_xyz_m": [0.0, 0.0, 0.0],
+                            "local_rpy_rad": [0.0, 0.0, 0.0]})
                 seen.add(fname)
     return out
 
@@ -302,6 +310,21 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
         from .benchmarks.manager_gate import manager_gate
         _pre_frames = _sub_frames_to_dict(model, fc.frames)
         all_errs = manager_schema_gate(model) + manager_gate(model, _pre_frames, fc)
+        # FRAMES-REALIZED gate: every interface frame the boss contract requires must be
+        # realized by a real link (after the auto-realize fallbacks). An unrealized frame
+        # makes the assembler crash on "frame not realized", which — with no gate — loops
+        # the whole pipeline for hours. Fail the sub FAST with the exact missing names so
+        # the manager re-runs knowing precisely what to place. This is BLOCKING.
+        from .benchmarks import GateError as _GateError
+        _realized = {e["frame"] for e in _pre_frames}
+        _missing = [fr.name for fr in fc.frames if fr.name not in _realized]
+        for fn in _missing:
+            all_errs.append(_GateError(
+                "manager", "ERR_FRAME_UNREALIZED",
+                f"interface frame '{fn}' is not realized by any link — the assembler "
+                "cannot weld this subassembly. Place a real link at that frame's GLOBAL "
+                "position and declare it in frames_realized (frame->link + local offset).",
+                fn))
         # ERR_OVL from the PRE-render AABB check is a WARNING only: a bounding box grossly
         # over-approximates non-boxy parts (radial ribs/spokes of a carriage box-overlap
         # heavily while their thin geometry never touches — measured 44 AABB "overlaps" vs
@@ -627,6 +650,13 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
 
     settings = settings or Settings.load()
     infinite = max_boss_iters <= 0
+    # SAFETY: even "infinite" gets a hard ceiling so a fundamentally-unbuildable plan
+    # (e.g. subs that never realize their interface frames) cannot loop for hours. And a
+    # no-progress counter bails if we keep failing WITHOUT ever reaching the physics score
+    # — repeating the same fault N times is not progress, it's a stuck loop.
+    hard_ceiling = getattr(settings, "max_total_iters", 40)
+    max_no_progress = getattr(settings, "max_no_progress_iters", 8)
+    no_progress = 0                       # consecutive iters that never scored
 
     # Deep-think toggle (Phase 6): derive the geometry backend from deep_think so the
     # whole build path (worker + debugger) is driven by the one switch.
@@ -684,7 +714,23 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
 
     it = 0
     while True:
+        # SAFETY ceiling: absolute cap even in "infinite" mode, plus a no-progress bail.
+        if it >= hard_ceiling:
+            result["error"] = (f"stopped after {it} iterations (hard ceiling {hard_ceiling}) "
+                               "without a passing design — the plan is likely unbuildable "
+                               "(check that subassemblies realize their interface frames)")
+            log(f"[boss] HARD CEILING {hard_ceiling} reached without success; giving up.")
+            break
+        if no_progress >= max_no_progress:
+            result["error"] = (f"stopped after {no_progress} consecutive iterations with no "
+                               "progress (never reached a physics score) — the pipeline is "
+                               "stuck re-running the same failing stage; check the last "
+                               "feedback for the blocking fault")
+            log(f"[boss] NO PROGRESS for {no_progress} iterations; giving up to avoid a "
+                "runaway loop.")
+            break
         log(f"\n===== ITERATION {it} (boss{' re-plan' if feedback else ''}) =====")
+        no_progress += 1                  # reset to 0 below once physics is reached
         judge_verdict = None            # set by the appearance judge below; fed to score
 
         # 1. Boss plan (re-plan only when an interface fault set `feedback`; the FIRST
@@ -954,6 +1000,7 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
             log(f"[physics] failed: {e}")
             phys = {"passed": None, "blamed_kind": None, "summary": f"physics error: {e}"}
         result["physics"] = phys
+        no_progress = 0                   # reached a physics score -> real progress
 
         # ---- Keep-best / score-gated iteration (Phase 5) ----
         # Compute a numeric design score from physics + precheck + the appearance judge.

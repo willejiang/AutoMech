@@ -96,6 +96,12 @@ class Settings:
                                                    # reaches this (score-gated iteration).
     score_plateau: int = 3                        # stop after this many iterations with
                                                    # no accepted improvement.
+    max_total_iters: int = 40                     # SAFETY: absolute ceiling even in
+                                                   # "infinite" mode, so an unbuildable
+                                                   # plan can't loop for hours.
+    max_no_progress_iters: int = 8                # SAFETY: give up after this many
+                                                   # consecutive iterations that never
+                                                   # reach a physics score (stuck loop).
 
     # ── FreeCAD subprocess ───────────────────────────────────────
     freecadcmd_path: str = _DEFAULT_FREECADCMD
