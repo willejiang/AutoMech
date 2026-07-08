@@ -82,6 +82,15 @@ export function PromptView() {
     setWebSearchState(v);
     try { localStorage.setItem('maker2.webSearch', v ? '1' : '0'); } catch { /* ignore */ }
   };
+  // Deep-think toggle — sticky across reloads. ON = CadQuery + full debugger (thorough,
+  // slower); OFF = OpenSCAD + slim debugger (faster). Chosen here at launch time.
+  const [deepThink, setDeepThinkState] = useState(
+    () => (typeof localStorage !== 'undefined'
+      && localStorage.getItem('maker2.deepThink') === '1'));
+  const setDeepThink = (v: boolean) => {
+    setDeepThinkState(v);
+    try { localStorage.setItem('maker2.deepThink', v ? '1' : '0'); } catch { /* ignore */ }
+  };
   const [maxIters, setMaxIters] = useState<number | null>(null);
   const [m2Result, setM2Result] = useState<{
     ok: boolean; links?: number; movable_joints?: number; built?: number;
@@ -347,6 +356,8 @@ export function PromptView() {
                   setArticulated={setArticulated}
                   webSearch={webSearch}
                   setWebSearch={setWebSearch}
+                  deepThink={deepThink}
+                  setDeepThink={setDeepThink}
                   maxIters={maxIters}
                   setMaxIters={setMaxIters}
                   onArticulated={(p, iters) =>
@@ -354,12 +365,10 @@ export function PromptView() {
                       to: '/workbench/$runId',
                       params: { runId: crypto.randomUUID() },
                       // iters 0 = infinite loop until judge+physics pass (default);
-                      // the user can cap it with /iters N in the prompt bar. deep seeds
-                      // the workbench's deep-think toggle from its persisted preference.
+                      // the user can cap it with /iters N in the prompt bar. deep = the
+                      // launch-screen deep-think toggle (CadQuery + full debugger).
                       search: { prompt: p, model, iters: iters ?? 0,
-                                deep: (typeof localStorage !== 'undefined'
-                                       && localStorage.getItem('maker2.deepThink') === '1')
-                                      ? 1 : undefined },
+                                deep: deepThink ? 1 : undefined },
                     })
                   }
                 />

@@ -17,6 +17,7 @@ import {
   Box,
   Cog,
   Globe,
+  Brain,
   X,
 } from 'lucide-react';
 import {
@@ -90,6 +91,10 @@ interface TextAreaChatProps {
   // before building. Sticky across the session (stays on for following chats).
   webSearch?: boolean;
   setWebSearch?: (v: boolean) => void;
+  // Deep-think: when on, maker2 runs the CadQuery worker + FULL debugger (thorough,
+  // slower); off runs OpenSCAD + a slim debugger (faster, shallower).
+  deepThink?: boolean;
+  setDeepThink?: (v: boolean) => void;
   maxIters?: number | null;
   setMaxIters?: (v: number | null) => void;
   onArticulated?: (prompt: string, maxIters: number | null) => void;
@@ -489,6 +494,8 @@ function TextAreaChat({
   setArticulated,
   webSearch = false,
   setWebSearch,
+  deepThink = false,
+  setDeepThink,
   maxIters = null,
   setMaxIters,
   onArticulated,
@@ -1754,6 +1761,37 @@ function TextAreaChat({
                   {webSearch
                     ? 'Web search ON — agents look up real specs while building (stays on)'
                     : 'Enable web search for the maker2 agents'}
+                </TooltipContent>
+              </Tooltip>
+            )}
+
+            {/* Deep-think toggle — sits next to Web. ON = CadQuery worker + FULL
+                debugger (thorough, slower); OFF = OpenSCAD + slim debugger (faster).
+                Sticky across reloads; applies to the NEXT Articulated run. */}
+            {setDeepThink && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      'flex h-8 items-center gap-1.5 rounded-lg border border-[#2a2a2a] bg-adam-background-2 px-2 text-sm transition-colors',
+                      deepThink
+                        ? 'border-adam-blue/50 bg-adam-blue/10 text-adam-blue'
+                        : 'text-adam-text-secondary hover:bg-adam-bg-secondary-dark',
+                    )}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDeepThink(!deepThink);
+                    }}
+                  >
+                    <Brain className="h-4 w-4" />
+                    <span className="hidden text-xs lg:inline">Deep-think</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {deepThink
+                    ? 'Deep-think ON — CadQuery + full debugger (thorough, slower)'
+                    : 'Deep-think OFF — OpenSCAD + slim debugger (faster). Click to enable.'}
                 </TooltipContent>
               </Tooltip>
             )}
