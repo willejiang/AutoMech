@@ -23,22 +23,6 @@ _VALID_DOF = {"fixed", "spin", "free"}
 _VALID_SEAM_KIND = {"weld", "power"}
 
 # Dimension keys that must be strictly positive per shape_hint. Free-text shapes are
-# skipped (we cannot know their required dims), and any dim present is checked for
-# non-negativity regardless of shape. Each requirement is a TUPLE OF ALTERNATIVES — a
-# cylinder's radial size may be given as radius OR a diameter form (outer_dia/diameter),
-# so any one of the alternatives being positive satisfies it.
-_REQUIRED_DIMS = {
-    # A box needs three orthogonal extents. Managers name them x/y/z OR
-    # length/width/thickness (or height/depth) depending on the part — accept the common
-    # aliases per axis so a validly-sized hand/plate isn't flagged degenerate.
-    "box": (("x", "length", "depth"), ("y", "width"), ("z", "height", "thickness")),
-    "cube": (("x", "length", "depth"), ("y", "width"), ("z", "height", "thickness")),
-    "cylinder": (("radius", "outer_dia", "diameter", "dia"),
-                 ("height", "length", "thickness")),
-    "sphere": (("radius", "diameter", "dia"),),
-}
-
-
 def _positive(v) -> bool:
     try:
         return float(v) > 0.0
@@ -76,29 +60,57 @@ def manager_schema_gate(model) -> list[GateError]:
                     "manager", "ERR_SCHEMA_MGR_NOAXIS",
                     f"spin link '{l.name}' has a zero/invalid spin_axis {axis}",
                     l.name))
-        # size_mm must be non-degenerate for a known shape (the MJCF-crash guard), and
-        # no declared dimension may be zero/negative for ANY shape.
+        # DEGENERACY guard (the MjModel.from_xml crash case), NOT a naming policy.
+        # Managers name dims freely (gear_dia, wheel_dia, tube_outer_dia, wheel_thk,
+        # length/width/thickness, ...), so we do NOT enumerate keys. Instead we ask the
+        # only question that matters: does the part have enough POSITIVE size to form a
+        # non-degenerate solid? Match dimensions by SEMANTICS (suffix), and flag only a
+        # genuinely empty/zero part.
         size = getattr(l, "size_mm", {}) or {}
         hint = (getattr(l, "shape_hint", "") or "").strip().lower()
-        req = _REQUIRED_DIMS.get(hint)
-        if req is not None:
-            # each element is a tuple of ALTERNATIVE keys; the requirement is met if ANY
-            # alternative is positive (e.g. a cylinder radius given as outer_dia).
-            missing = [alts for alts in req
-                       if not any(_positive(size.get(k)) for k in alts)]
-            if missing:
-                want = [alts[0] for alts in missing]
+
+        def _has(pred) -> bool:
+            return any(pred(k.lower()) and _positive(v) for k, v in size.items())
+
+        # any radial dim (radius / *_dia / *diameter / *_r) is positive?
+        radial = _has(lambda k: k == "radius" or k.endswith("radius")
+                      or k.endswith("dia") or k.endswith("diameter"))
+        # any axial/extent dim is positive?
+        axial = _has(lambda k: k in ("x", "y", "z", "h")
+                     or k.endswith(("height", "length", "width", "depth",
+                                    "thickness", "thk", "_h", "_z")))
+        # NON-size keys (tooth counts, module, ratios) are not extents — exclude them
+        # from the "any positive number" fallback so they can't mask a truly empty part.
+        _NON_SIZE = ("teeth", "count", "num", "module", "ratio", "pressure_angle",
+                     "angle", "pitch_count")
+        any_positive_size = _has(
+            lambda k: not any(t in k for t in _NON_SIZE))
+
+        if hint in ("cylinder",) and not (radial and axial):
+            errors.append(GateError(
+                "manager", "ERR_SCHEMA_MGR_DEGENERATE",
+                f"cylinder '{l.name}' lacks a positive radial ({'ok' if radial else 'MISSING'}) "
+                f"and/or axial ({'ok' if axial else 'MISSING'}) size (size_mm={size})",
+                l.name))
+        elif hint in ("sphere",) and not radial:
+            errors.append(GateError(
+                "manager", "ERR_SCHEMA_MGR_DEGENERATE",
+                f"sphere '{l.name}' has no positive radius/diameter (size_mm={size})",
+                l.name))
+        elif hint in ("box", "cube"):
+            # a box needs some positive extent; three is ideal but managers vary wildly,
+            # so require at least ONE positive extent (a truly empty box is the crash).
+            if not any_positive_size:
                 errors.append(GateError(
                     "manager", "ERR_SCHEMA_MGR_DEGENERATE",
-                    f"link '{l.name}' (shape '{hint}') needs a positive {want} "
-                    f"(size_mm={size})",
-                    l.name))
+                    f"box '{l.name}' has no positive extent (size_mm={size})", l.name))
         else:
-            bad = [k for k, v in size.items() if not _positive(v)]
-            if bad:
+            # unknown/free-form shape: only flag if it has NO positive size at all AND
+            # declared some size (an empty size_mm is allowed — the worker infers).
+            if size and not any_positive_size:
                 errors.append(GateError(
                     "manager", "ERR_SCHEMA_MGR_DEGENERATE",
-                    f"link '{l.name}' has non-positive size_mm dims {bad} (size_mm={size})",
+                    f"link '{l.name}' has no positive size dimension (size_mm={size})",
                     l.name))
 
     # mesh_pairs must name real links (else the transmission detector + MJCF break).
