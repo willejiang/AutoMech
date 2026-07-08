@@ -441,18 +441,34 @@ def plan_machine(product_prompt: str, settings, *, image_path: str | None = None
         if log_fn:
             log_fn(f"[boss] refining the plan: {refine_message[:80]}")
 
-    # Optional web-search research pre-step (gated by settings.enable_reference_tools):
-    # look up reference designs / typical layouts before planning.
-    from .tools import maybe_research
-    maybe_research(client, conv, settings,
-                   f"plan the subassemblies of: {product_prompt}", log_fn=log_fn)
+    # SEAM (Track 1): optional research pre-step.
+    _boss_research(client, conv, settings, product_prompt, log_fn=log_fn)
 
-    # Scratch memory: the boss writes its plan as NOTES first (saved here) so a JSON
-    # cut can regenerate from the plan instead of shrinking it. Next to the plan file.
+    # Scratch memory path for two-phase cap-cut recovery.
     from pathlib import Path
     memory_path = (str(Path(plan_json_path).parent / "boss_memory.md")
                    if plan_json_path else None)
 
+    # SEAM (Track 3): the attempt/retry control loop.
+    return _plan_loop(client, conv, settings, memory_path=memory_path,
+                      plan_json_path=plan_json_path, log_fn=log_fn)
+
+
+def _boss_research(client, conv, settings, product_prompt, *, log_fn=None) -> None:
+    """SEAM owned by Track 1 (RAG). Optional web-search / KB research pre-step (gated by
+    settings.enable_reference_tools): look up reference designs / typical layouts and
+    inject findings into ``conv`` before planning. Track 1 adds a kb_search offer here."""
+    from .tools import maybe_research
+    maybe_research(client, conv, settings,
+                   f"plan the subassemblies of: {product_prompt}", log_fn=log_fn)
+
+
+def _plan_loop(client, conv, settings, *, memory_path, plan_json_path=None,
+               log_fn=None) -> SubassemblyPlan:
+    """SEAM owned by Track 3 (badness keep-best + escalation). The attempt/retry control
+    loop: stream a NOTES→JSON response, parse+validate, and on a content error feed the
+    error back as a repair request, bounded by settings.manager_retries. Track 3 adds
+    per-attempt badness keep-best + escalation."""
     last_err = ""
     attempts = settings.manager_retries + 1
     for attempt in range(1, attempts + 1):

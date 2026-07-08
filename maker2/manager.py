@@ -354,6 +354,14 @@ def decompose(product_prompt: str, settings, *, image_path: str | None = None,
     failure feeds the error back as a repair request — bounded by
     ``settings.manager_retries`` (so initial + retries attempts total). Raises
     ManagerError if no attempt yields a valid model.
+
+    Track-0 refactor (see .claude/plans/precious-humming-wand.md Part E): the body is
+    split into three OWNED seams so three parallel tracks each edit a separate function:
+      * ``_manager_research``       — the optional web/KB research pre-step (Track 1).
+      * ``_parse_manager_output``   — parse the LLM text into a KinematicModel (Track 2).
+      * ``_decompose_loop``         — the attempt/retry control loop (Track 3).
+    This driver only assembles the conversation and calls them; it is behavior-identical
+    to the pre-split version.
     """
     client = settings.manager_client()
     conv = Conversation()
@@ -385,21 +393,52 @@ def decompose(product_prompt: str, settings, *, image_path: str | None = None,
             log_fn(f"[manager] subassembly '{getattr(frame_contract, 'sub_id', '?')}' "
                    f"with {len(getattr(frame_contract, 'frames', []))} interface frame(s)")
 
-    # Optional web-search research pre-step (gated by settings.enable_reference_tools):
-    # look up standard dimensions / part specs before decomposing.
-    from .tools import maybe_research
-    maybe_research(client, conv, settings,
-                   f"decompose into parts: {product_prompt}", log_fn=log_fn)
+    # SEAM (Track 1): optional research pre-step.
+    _manager_research(client, conv, settings, product_prompt, log_fn=log_fn)
 
-    # Scratch memory: the manager writes its decomposition as NOTES first (saved
-    # here) so a JSON cut can regenerate from the notes instead of dropping parts.
-    # Next to the model file; tagged by sub id in hierarchy mode.
+    # Scratch memory path for two-phase cap-cut recovery (tagged by sub id in hierarchy).
     from pathlib import Path
     memory_path = (str(Path(model_json_path).parent / "manager_memory.md")
                    if model_json_path else None)
     tag = (f"sub:{getattr(frame_contract, 'sub_id', '?')}"
            if frame_contract is not None else "manager")
 
+    # SEAM (Track 3): the attempt/retry control loop.
+    return _decompose_loop(client, conv, settings, memory_path=memory_path, tag=tag,
+                           model_json_path=model_json_path,
+                           frame_contract=frame_contract, log_fn=log_fn)
+
+
+def _manager_research(client, conv, settings, product_prompt, *, log_fn=None) -> None:
+    """SEAM owned by Track 1 (RAG). Optional web-search / KB research pre-step, gated by
+    settings.enable_reference_tools: look up standard dimensions / part specs and inject
+    findings into ``conv`` before decomposing. Track 1 adds a kb_search offer here."""
+    from .tools import maybe_research
+    maybe_research(client, conv, settings,
+                   f"decompose into parts: {product_prompt}", log_fn=log_fn)
+
+
+def _parse_manager_output(text: str, *, frame_contract=None, log_fn=None) -> KinematicModel:
+    """SEAM owned by Track 2 (MJCF-authoring). Turn the manager's raw LLM text into a
+    validated KinematicModel. Today: parse_model + _validate_model, plus frames_realized
+    in hierarchy mode. Track 2 swaps in the PARTS+MJCF-skeleton parser here. Raises
+    ValueError/ManagerError/JSONDecodeError on bad content (caught by the loop)."""
+    model = parse_model(text)
+    _validate_model(model)
+    if frame_contract is not None:
+        model.frames_realized = parse_frames_realized(text)
+        if log_fn:
+            log_fn(f"[manager] realized {len(model.frames_realized)} interface "
+                   f"frame(s)")
+    return model
+
+
+def _decompose_loop(client, conv, settings, *, memory_path, tag, model_json_path=None,
+                    frame_contract=None, log_fn=None) -> KinematicModel:
+    """SEAM owned by Track 3 (badness keep-best + escalation). The attempt/retry control
+    loop: stream a NOTES→payload response, parse via _parse_manager_output, and on a
+    content error feed the error back as a repair request, bounded by
+    settings.manager_retries. Track 3 adds per-attempt badness keep-best + escalation."""
     last_err = ""
     attempts = settings.manager_retries + 1
     for attempt in range(1, attempts + 1):
@@ -420,8 +459,8 @@ def decompose(product_prompt: str, settings, *, image_path: str | None = None,
             raise ManagerError(f"Manager LLM request failed: {e}") from e
         conv.add_assistant_message(text)
         try:
-            model = parse_model(text)
-            _validate_model(model)
+            model = _parse_manager_output(text, frame_contract=frame_contract,
+                                          log_fn=log_fn)
         except (ValueError, ManagerError, json.JSONDecodeError) as e:
             last_err = str(e)
             if log_fn:
@@ -430,14 +469,6 @@ def decompose(product_prompt: str, settings, *, image_path: str | None = None,
             continue
         if model_json_path:
             save_model(model, model_json_path)
-        # Hierarchy: stash the manager's realized interface-frame placements on the
-        # model (a side-channel the boss orchestrator reads; not part of the URDF
-        # contract, so parse_model/_validate_model ignore it).
-        if frame_contract is not None:
-            model.frames_realized = parse_frames_realized(text)
-            if log_fn:
-                log_fn(f"[manager] realized {len(model.frames_realized)} interface "
-                       f"frame(s)")
         if log_fn:
             log_fn(f"[manager] OK on attempt {attempt}: "
                    f"{len(model.links)} links, {len(model.poses)} poses, "
