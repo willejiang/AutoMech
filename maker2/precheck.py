@@ -314,6 +314,47 @@ def _intersection_frac(ma, mb) -> float:
     return (vi / vs) if vs > 0 else 0.0
 
 
+def _solid_intersection_frac(ma, mb) -> float:
+    """REAL solid-overlap score of two WORLD meshes in [0,1]: the volume of their actual
+    mesh boolean INTERSECTION as a fraction of the smaller part's solid volume.
+
+    This is the correct measure for rigid-conflict detection: unlike the AABB proxy
+    (_intersection_frac), it sees that a HOLLOW part's bore/keyway/cut is empty. A shaft
+    threaded through a bearing bore, a key seated in a keyway, a bearing pressed into a
+    housing bore, a plug passing through a hole — all have ~0 REAL overlap even though
+    their bounding boxes overlap heavily. Only two parts whose SOLID metal actually
+    interpenetrates score high.
+
+    Requires a mesh boolean engine (manifold3d). Falls back to the AABB proxy when the
+    boolean is unavailable or a part isn't watertight (a non-watertight mesh has no
+    well-defined solid volume) — so this never crashes the gate, it only degrades to the
+    old behavior for that one pair."""
+    # Cheap AABB pre-filter: disjoint boxes -> definitely no solid overlap. Skips the
+    # (relatively) expensive boolean for the common far-apart case.
+    loa, hia = np.asarray(ma.bounds[0]), np.asarray(ma.bounds[1])
+    lob, hib = np.asarray(mb.bounds[0]), np.asarray(mb.bounds[1])
+    if np.any(np.maximum(loa, lob) >= np.minimum(hia, hib)):
+        return 0.0
+    # A solid volume is only meaningful for watertight meshes; degrade gracefully.
+    if not (getattr(ma, "is_watertight", False) and getattr(mb, "is_watertight", False)):
+        return _intersection_frac(ma, mb)
+    try:
+        import trimesh
+        # A near-empty boolean result can have zero volume; trimesh's center-of-mass
+        # divide then warns harmlessly. Silence it — we guard the volume below anyway.
+        with np.errstate(divide="ignore", invalid="ignore"):
+            inter = trimesh.boolean.intersection([ma, mb], engine="manifold")
+            if inter is None or len(getattr(inter, "vertices", ())) == 0:
+                return 0.0
+            vi = float(inter.volume)
+    except Exception:
+        return _intersection_frac(ma, mb)
+    vs = min(float(ma.volume), float(mb.volume))
+    if vs <= 0:
+        return _intersection_frac(ma, mb)
+    return max(0.0, vi / vs)
+
+
 def _part_overlaps(robot, plan, subs: dict, log) -> list:
     """Flag rigid parts that GROSSLY interpenetrate. Within a sub -> severity 'sub'
     (re-run that manager); across a WELD seam -> severity 'interface' (boss re-plan).
