@@ -1226,11 +1226,23 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
             # dirs are overwritten in place on rebuild, so reuse alone isn't enough).
             _snapshot_best_subs(session_root, best_iter_reuse, log_fn=log)
             log(f"[boss] ACCEPT iteration {it}: new best score {s_val:.3f}")
-            # TRACK1: memory append hook here — on a newly-accepted best score, this is the
-            # "good-enough-to-remember" moment. Track 1 (RAG) appends each PASSING sub's
-            # skeleton + parts + a one-line "what worked" to the per-agent memory index.
-            # Available in scope: plan, subs, s_val, s_break, judge_verdict, phys, settings,
-            # session_root. Keep it best-effort (wrap in try/except; never fail the run).
+            # TRACK1: memory append hook — on a newly-accepted best score, remember each
+            # PASSING sub's skeleton + parts so future runs can retrieve a worked example
+            # (kb.search merges curated + memory). Best-effort, gated by enable_kb; a
+            # missing index / absent RAG deps is a silent no-op, never fails the run.
+            if getattr(settings, "enable_kb", False):
+                try:
+                    from . import kb
+                    note = ""
+                    if judge_verdict is not None:
+                        note = (getattr(judge_verdict, "memory_note", "")
+                                or (judge_verdict.reasons or "")[:200])
+                    passing_models = {sid: sr.model for sid, sr in subs.items()
+                                      if getattr(sr, "ok", False) and getattr(sr, "model", None)}
+                    kb.remember_passing_subs(passing_models, collection="manager",
+                                             score=s_val, note=note, log_fn=log)
+                except Exception as e:
+                    log(f"[kb] memory append skipped: {e}")
         else:
             iters_since_accept += 1
             log(f"[boss] REJECT iteration {it}: score {s_val:.3f} did not beat best "
