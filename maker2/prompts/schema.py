@@ -1,28 +1,41 @@
 """The manager's output schema + a worked few-shot.
 
-Pure-contact contract (maker2-mujoco-contact): the manager returns ONE JSON object
-describing the product as a set of PARTS placed by parent-relative POSES. There are
-NO joints and NO motors — a part's ability to move is a property of the PART
-(`dof`), and transmission happens by real tooth contact under gravity in MuJoCo. We
-deliberately use plain JSON (not native tool-calling) — the gateway's tool support
-is unverified, and a single JSON object is easy to validate and repair.
+Pure-contact contract (maker2-mujoco-contact): the manager describes the product as a
+set of PARTS placed by parent-relative poses. There are NO joints and NO motors — a
+part's ability to move is a property of the PART (`dof`), and transmission happens by
+real tooth contact under gravity in MuJoCo.
+
+Track 2 (see .claude/plans/precious-humming-wand.md Part A): the manager authors its
+decomposition in TWO blocks — a PARTS-list JSON object FIRST, then an MJCF-style XML
+skeleton. Parts-first forces the model to enumerate WHAT parts exist before reasoning
+about WHERE they go; the MJCF skeleton then places every part as a nested `<body>` and
+— because XML (unlike strict JSON) allows COMMENTS — forces a per-part comment stating
+its role, interface frame, and what it meshes with. A deterministic parser
+(`maker2/mjcf_skeleton.py`) converts the two blocks back into a `KinematicModel`, so the
+entire downstream pipeline (gates, assembler, `build_mjcf`, physics) is unchanged. The
+skeleton is a DESIGN document, NOT the compiled simulation MJCF.
 """
+
+# Sentinel separating the PARTS block from the MJCF block in the manager's payload. The
+# two-phase NOTES->payload split keys on the first "{", so PARTS (a JSON OBJECT) must come
+# first; this sentinel then marks where the XML skeleton begins.
+MJCF_SENTINEL = "=== MJCF ==="
 
 # Human-readable schema, restated inside the manager prompt so the model has the
 # exact field contract in front of it.
-SCHEMA_TEXT = """\
-Return exactly one JSON object (no prose, no markdown fences) with this shape:
+SCHEMA_TEXT = f"""\
+Author your decomposition in TWO blocks, in THIS order — a PARTS block, then an MJCF block.
 
-{
+BLOCK 1 — PARTS (a single JSON object; NO prose, NO markdown fences):
+
+{{
   "name": "<safe machine/product name, snake_case>",
-  "root_link": "<name of the part that everything else is positioned relative to
-                 (usually the base/frame that rests on the ground)>",
-  "links": [
-    {
-      "name": "<safe slug: lowercase, starts with a letter, [a-z0-9_] only>",
+  "parts": [
+    {{
+      "name": "<safe slug: lowercase, starts with a letter, [a-z0-9_] only, UNIQUE>",
       "description": "<what this part is; enough for a CAD worker to build it>",
       "shape_hint": "<box | cylinder | sphere | free text>",
-      "size_mm": { "<dim>": <number>, ... },   // approx bounding size in MM
+      "size_mm": {{ "<dim>": <number>, ... }},   // approx bounding size in MM
       "origin_note": "<where this part's LOCAL origin sits and which way it points>",
       "color": [<r>, <g>, <b>],                 // 0..1 RGB; the part's real-world color
       "dof": "<fixed | spin | free>",           // how this part MOVES (see below)
@@ -35,21 +48,50 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
                                                 // steel. Pick the real material (a ruby
                                                 // jewel is light + slippery; a brass plate
                                                 // is heavy; a rubber grip has high friction).
-    }
-  ],
-  "poses": [
-    {
-      "name": "<safe pose name>",
-      "parent": "<link name this pose is relative to, or \"\" for a base/root part>",
-      "child": "<link name being placed>",
-      "xyz_m": [<x>, <y>, <z>],     // METERS: parent-origin -> child-origin
-      "rpy_rad": [<r>, <p>, <y>]    // radians, fixed-axis XYZ
-    }
+    }}
   ],
   "mesh_pairs": [                    // OPTIONAL: gear pairs MEANT to mesh by teeth
-    ["<drive_gear_link>", "<driven_gear_link>"], ...
+    ["<drive_gear_part>", "<driven_gear_part>"], ...
   ]
-}
+}}
+
+Then a line containing EXACTLY:  {MJCF_SENTINEL}
+
+BLOCK 2 — MJCF (an MuJoCo-style XML skeleton; NO markdown fences):
+
+<mujoco model="<same name as above>">
+  <worldbody>
+    <!-- one COMMENT per part: its role, where its interface frame sits, what it meshes with -->
+    <body name="<part name>" pos="<x y z METERS>" quat="<w x y z>">
+      <!-- nested <body> for each part placed RELATIVE to this one -->
+      ...
+    </body>
+  </worldbody>
+</mujoco>
+
+THE MJCF SKELETON — RULES (this is a DESIGN skeleton; a builder recompiles the real sim)
+- ONE <body> per part in BLOCK 1, referenced by the SAME name. Every part in PARTS has
+  exactly one <body>, and every <body> names a real part — no extras, none missing.
+- NEST a <body> inside the body it is placed RELATIVE to (its parent). A body directly
+  under <worldbody> is a base/root part placed at the global origin. The model is a
+  FOREST — you do NOT need one single connected tree; several roots are fine.
+- `pos="x y z"` is in METERS: the vector FROM the parent body's origin TO this body's
+  origin (for a root, its offset from the global origin; usually "0 0 0"). `quat="w x y z"`
+  is the orientation (identity "1 0 0 0" unless the part is rotated).
+- DOF via the body's joint element (this REPLACES joints-between-parts; there are none):
+    dof "spin"  -> add  <joint type="hinge" axis="<x y z>" pos="0 0 0"/>  (the spin axle)
+    dof "free"  -> add  <freejoint/>
+    dof "fixed" -> add NOTHING (the body is welded to its parent).
+  The `axis` MUST equal the part's spin_axis in PARTS.
+- EVERY <body> carries an XML COMMENT (<!-- ... -->) on the line above it, stating the
+  part's role, where its interface frame sits, and what it meshes with / rests on and why
+  it is placed there. The comments are REQUIRED — they are how you reason about placement.
+
+INTERFACE FRAMES (subassembly mode) — declare each as a <site> INSIDE its owning body:
+    <site name="frame_<contract_frame_name>" pos="<x y z METERS>" euler="<r p y RAD>"/>
+  The site's PARENT body is the link that realizes the frame; its pos/euler are the frame
+  point in that body's LOCAL frame (meters / radians). Omit euler for an axis-aligned frame.
+  (When NOT building a subassembly, you need no sites.)
 
 HOW PARTS MOVE (this REPLACES joints — there are NO joints and NO motors)
 - Every part declares a `dof`:
@@ -71,8 +113,8 @@ HOW PARTS MOVE (this REPLACES joints — there are NO joints and NO motors)
   spin bodies. Marking structure "spin" makes those parts fly apart under gravity.)
 - COAXIAL PARTS THAT TURN TOGETHER = ONE spin part, not a stack of spin bodies. A wheel
   + its pinion + the arbor they are pressed onto rotate as a unit: make the ARBOR the
-  single "spin" link and mark the wheel and pinion "fixed" (they are welded to the
-  arbor and placed on it). Never emit several "spin" parts at the SAME xy on the SAME
+  single "spin" part and mark the wheel and pinion "fixed" (they are welded to the
+  arbor and nested under it). Never make several "spin" parts at the SAME xy on the SAME
   axis — as separate rigid bodies their solids interpenetrate.
 - A part must occupy its OWN space — no two parts share the same solid. A jewel/bearing
   PRESSES INTO a hole in a plate: offset it in Z so it sits IN the bore, flush or
@@ -81,39 +123,38 @@ HOW PARTS MOVE (this REPLACES joints — there are NO joints and NO motors)
 - Set `driver": true` on the SINGLE part the physics test spins to drive the machine
   (the input gear/crank/rotor). The test applies torque to that part's own dof; every
   downstream part moves ONLY if its teeth truly contact. At most one driver.
-- `mesh_pairs` lists the (drive, driven) gear pairs you INTEND to mesh, by link name.
+- `mesh_pairs` lists the (drive, driven) gear pairs you INTEND to mesh, by part name.
   This is how the checker knows two gears are supposed to couple (no joint says so).
 
 HARD RULES
-- Link and pose names are unique and safe slugs (^[a-z][a-z0-9_]*$).
-- Every pose `child` must be a real link name; `parent` is a real link name or "".
-- A part with no pose (or a pose with parent "") is a base/root part placed at the
-  origin. The model is a FOREST — you do NOT need one single connected tree.
-- "spin" parts need a non-zero `spin_axis`; "fixed"/"free" ignore it.
+- Part names are unique, safe slugs (^[a-z][a-z0-9_]*$). Body names in the MJCF match them.
+- Every nested body's parent is a real part; a top-level body is a base/root part.
+- "spin" parts need a non-zero `spin_axis` (and a matching hinge `axis` in the MJCF);
+  "fixed"/"free" parts get no <joint> (fixed) or a <freejoint> (free).
 
 UNITS / ORIGIN CONTRACT (critical — this is how blindly-built parts line up)
-- size_mm is in MILLIMETERS. Pose xyz_m is in METERS.
+- size_mm is in MILLIMETERS. Body `pos` is in METERS.
 - Each worker builds its part ALONE, in the part's own local frame, with the part's
-  natural attach/rotation point at the LOCAL ORIGIN (0,0,0). You decide, per link,
+  natural attach/rotation point at the LOCAL ORIGIN (0,0,0). You decide, per part,
   WHERE that origin is and write it in `origin_note` precisely (e.g. "gear center on
   the mid-plane at origin, teeth around +Z axis").
-- You author every pose's `xyz_m` as the vector FROM the parent link's origin TO where
-  the child link's origin sits. Workers never position parts relative to each other —
-  all spatial relationships live in your poses.
+- You author every body's `pos` as the vector FROM the parent part's origin TO where
+  this part's origin sits. Workers never position parts relative to each other — all
+  spatial relationships live in your body nesting + poses.
 - Place parts so they physically MATE the way they must function: meshing gears exactly
   one pitch-center-distance apart with teeth touching; a shaft through its bearing
   bore; a part resting ON the surface below it, not floating above or sunk into it.
   Under gravity, anything unsupported will fall — give every part real support.
 
 COLOR
-- Give every link a `color` as [r, g, b] in 0..1 matching the part's real-world
+- Give every part a `color` as [r, g, b] in 0..1 matching the part's real-world
   material (e.g. brushed metal ~[0.75,0.76,0.78], brass ~[0.80,0.62,0.20], black
   plastic ~[0.12,0.12,0.13]). Adjacent parts should differ enough to read apart.
 
 PHYSICAL HARDWARE IS A REAL PART (critical)
-- Every real piece of hardware is its OWN link. A rotating shaft/axle turns inside a
-  bearing (or bushing/journal): emit BOTH — the bearing/housing as a "fixed" link AND
-  the shaft as a separate link with dof "spin" on the bore axis. Do the same for a
+- Every real piece of hardware is its OWN part. A rotating shaft/axle turns inside a
+  bearing (or bushing/journal): emit BOTH — the bearing/housing as a "fixed" part AND
+  the shaft as a separate part with dof "spin" on the bore axis. Do the same for a
   gear-on-shaft, wheel-on-axle, hinge pin. NEVER delete a shaft or bearing — the
   worked example below shows the exact bearing + shaft + spin pattern to copy."""
 
@@ -122,83 +163,81 @@ PHYSICAL HARDWARE IS A REAL PART (critical)
 # MOTORIZED TURNTABLE chosen deliberately to demonstrate the two things the
 # manager most often gets wrong:
 #   1. PHYSICAL HARDWARE IS A REAL PART. A shaft turns *inside* a bearing. The
-#      bearing_block is its own "fixed" link (on the base); the shaft is its own
-#      "spin" link on the bore axis; the bearing and the spinning shaft COEXIST.
+#      bearing_block is its own "fixed" part (on the base); the shaft is its own
+#      "spin" part on the bore axis; the bearing and the spinning shaft COEXIST.
 #      Copy this pattern for every rotating shaft, axle, gear-on-shaft, hinge pin.
-#   2. The origin contract: each part's attach point is its local origin; pose
-#      xyz_m (meters) is the parent-origin -> child-origin vector.
+#   2. The origin contract: each part's attach point is its local origin; a body's
+#      pos (meters) is the parent-origin -> child-origin vector, and nesting is placement.
 FEWSHOT_PRODUCT = "a motorized turntable: a platter that spins on a shaft carried by a bearing block on a base"
 
-FEWSHOT_JSON = """\
-{
+# The few-shot is the SAME turntable authored in the new PARTS + MJCF form. This is the
+# golden example that teaches the format; it round-trips (maker2/tests/golden_mjcf_roundtrip.py)
+# to the SAME KinematicModel the old JSON few-shot produced.
+FEWSHOT_JSON = f"""\
+{{
   "name": "motorized_turntable",
-  "root_link": "base",
-  "links": [
-    {
+  "parts": [
+    {{
       "name": "base",
       "description": "A flat square base plate, 200 x 200 mm, 15 mm thick, that everything mounts to and that rests on the ground.",
       "shape_hint": "box",
-      "size_mm": {"x": 200, "y": 200, "z": 15},
+      "size_mm": {{"x": 200, "y": 200, "z": 15}},
       "origin_note": "top-face center at local origin; slab extends -Z (0..-15mm), centered in X and Y (-100..100mm)",
       "color": [0.30, 0.30, 0.32],
       "dof": "fixed"
-    },
-    {
+    }},
+    {{
       "name": "bearing_block",
       "description": "A pillow-block bearing: a 50 mm cube with a 12 mm vertical bore through its center that the shaft rotates inside. A REAL fixed part.",
       "shape_hint": "box",
-      "size_mm": {"x": 50, "y": 50, "z": 50, "bore_dia": 12},
+      "size_mm": {{"x": 50, "y": 50, "z": 50, "bore_dia": 12}},
       "origin_note": "bottom-face center at local origin; block extends +Z (0..50mm); the 12mm bore runs vertically through the center",
       "color": [0.20, 0.22, 0.25],
       "dof": "fixed"
-    },
-    {
+    }},
+    {{
       "name": "shaft",
       "description": "A vertical drive shaft, 12 mm diameter, 90 mm long, that turns inside the bearing bore and carries the platter on top. This is the driver the test spins.",
       "shape_hint": "cylinder",
-      "size_mm": {"radius": 6, "height": 90},
+      "size_mm": {{"radius": 6, "height": 90}},
       "origin_note": "bottom face center at local origin; cylinder extends +Z (0..90mm), coaxial with the bearing bore",
       "color": [0.75, 0.76, 0.78],
       "dof": "spin",
       "spin_axis": [0.0, 0.0, 1.0],
       "driver": true
-    },
-    {
+    }},
+    {{
       "name": "platter",
       "description": "A round turntable platter, 160 mm diameter, 8 mm thick, fixed on top of the shaft (rotates with it).",
       "shape_hint": "cylinder",
-      "size_mm": {"radius": 80, "height": 8},
+      "size_mm": {{"radius": 80, "height": 8}},
       "origin_note": "bottom-face center at local origin; disc extends +Z (0..8mm)",
       "color": [0.10, 0.10, 0.11],
       "dof": "spin",
       "spin_axis": [0.0, 0.0, 1.0]
-    }
-  ],
-  "poses": [
-    {
-      "name": "place_bearing_block",
-      "parent": "base",
-      "child": "bearing_block",
-      "xyz_m": [0.0, 0.0, 0.0],
-      "rpy_rad": [0.0, 0.0, 0.0]
-    },
-    {
-      "name": "place_shaft",
-      "parent": "bearing_block",
-      "child": "shaft",
-      "xyz_m": [0.0, 0.0, 0.0],
-      "rpy_rad": [0.0, 0.0, 0.0]
-    },
-    {
-      "name": "place_platter",
-      "parent": "shaft",
-      "child": "platter",
-      "xyz_m": [0.0, 0.0, 0.090],
-      "rpy_rad": [0.0, 0.0, 0.0]
-    }
+    }}
   ],
   "mesh_pairs": []
-}"""
+}}
+{MJCF_SENTINEL}
+<mujoco model="motorized_turntable">
+  <worldbody>
+    <!-- base: structural root plate resting on the ground; everything mounts to its top face at z=0 -->
+    <body name="base" pos="0 0 0" quat="1 0 0 0">
+      <!-- bearing_block: fixed pillow block bolted to the base top; its vertical bore carries the shaft -->
+      <body name="bearing_block" pos="0 0 0" quat="1 0 0 0">
+        <!-- shaft: the driver; spins on +Z inside the bearing bore, coaxial with the block -->
+        <body name="shaft" pos="0 0 0" quat="1 0 0 0">
+          <joint name="shaft_spin" type="hinge" axis="0 0 1" pos="0 0 0"/>
+          <!-- platter: seats on the shaft top (90mm up) and turns with it; no mesh, driven directly -->
+          <body name="platter" pos="0 0 0.090" quat="1 0 0 0">
+            <joint name="platter_spin" type="hinge" axis="0 0 1" pos="0 0 0"/>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+</mujoco>"""
 
 
 # --------------------------------------------------------------------------- #

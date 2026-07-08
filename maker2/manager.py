@@ -423,17 +423,54 @@ def _manager_research(client, conv, settings, product_prompt, *, log_fn=None) ->
 
 def _parse_manager_output(text: str, *, frame_contract=None, log_fn=None) -> KinematicModel:
     """SEAM owned by Track 2 (MJCF-authoring). Turn the manager's raw LLM text into a
-    validated KinematicModel. Today: parse_model + _validate_model, plus frames_realized
-    in hierarchy mode. Track 2 swaps in the PARTS+MJCF-skeleton parser here. Raises
-    ValueError/ManagerError/JSONDecodeError on bad content (caught by the loop)."""
-    model = parse_model(text)
+    validated KinematicModel.
+
+    The manager now authors its decomposition as TWO blocks — a PARTS JSON object, then a
+    line ``=== MJCF ===``, then an MJCF-style XML skeleton (see prompts/schema.py Part A).
+    We split on that sentinel, hand both halves to ``mjcf_skeleton_parser`` (the deterministic
+    inverse of mjcf_builder._emit_body), then run the EXISTING ``_validate_model`` so
+    slug/dedup/mesh_filename/forest normalization is byte-identical to the old JSON path.
+    ``frames_realized`` is derived from the skeleton's <site> elements by the parser.
+
+    Raises ValueError/ManagerError/JSONDecodeError on bad content (caught by the loop). A
+    malformed-XML ``ET.ParseError`` is re-raised as ``SkeletonError`` (a ValueError) so the
+    loop's existing ``except (ValueError, ManagerError, json.JSONDecodeError)`` catches it and
+    feeds the message back as a repair request — no change needed in the retry loop itself."""
+    import xml.etree.ElementTree as ET
+
+    from .mjcf_skeleton import SkeletonError, mjcf_skeleton_parser
+    from .prompts.schema import MJCF_SENTINEL
+
+    if MJCF_SENTINEL not in text:
+        raise SkeletonError(
+            f"missing the `{MJCF_SENTINEL}` separator: emit the PARTS JSON object, then a "
+            f"line with exactly `{MJCF_SENTINEL}`, then the MJCF XML skeleton")
+    parts_block, mjcf_block = text.split(MJCF_SENTINEL, 1)
+    mjcf_block = _slice_mjcf(mjcf_block)
+    try:
+        model = mjcf_skeleton_parser(mjcf_block, parts_block)
+    except ET.ParseError as e:
+        raise SkeletonError(f"the MJCF skeleton is not well-formed XML: {e}") from e
     _validate_model(model)
-    if frame_contract is not None:
-        model.frames_realized = parse_frames_realized(text)
-        if log_fn:
-            log_fn(f"[manager] realized {len(model.frames_realized)} interface "
-                   f"frame(s)")
+    if frame_contract is not None and log_fn:
+        log_fn(f"[manager] realized {len(model.frames_realized)} interface frame(s)")
     return model
+
+
+def _slice_mjcf(block: str) -> str:
+    """Trim the MJCF half of the payload to just its XML: from the first ``<mujoco`` (or
+    ``<worldbody`` if the wrapper is absent) through the matching close tag, dropping any
+    stray prose or fences the model added around it. Returns the block unchanged if no
+    recognizable root tag is present (letting the XML parser raise a clear error)."""
+    for open_tag, close_tag in (("<mujoco", "</mujoco>"), ("<worldbody", "</worldbody>")):
+        start = block.find(open_tag)
+        if start == -1:
+            continue
+        end = block.rfind(close_tag)
+        if end != -1:
+            return block[start:end + len(close_tag)]
+        return block[start:]
+    return block.strip()
 
 
 def _decompose_loop(client, conv, settings, *, memory_path, tag, model_json_path=None,

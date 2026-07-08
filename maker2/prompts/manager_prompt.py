@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from ..twophase import JSON_SENTINEL
-from .schema import SCHEMA_TEXT, FEWSHOT_PRODUCT, FEWSHOT_JSON
+from .schema import SCHEMA_TEXT, FEWSHOT_PRODUCT, FEWSHOT_JSON, MJCF_SENTINEL
 
 
 MANAGER_SYSTEM = f"""\
@@ -61,33 +61,43 @@ CASE EXAMPLE:
         missing or merged, or gears are placed not touching so nothing transmits.
 {SCHEMA_TEXT}
 
-Respond in TWO parts, in this exact order:
+Respond in THREE parts, in this exact order:
 1. NOTES — a concise plaintext plan: the parts you will emit (every gear, shaft,
-   bearing, pin, etc.), their rough sizes, each part's dof, and the poses that place
-   them. This is your scratchpad and is SAVED AS MEMORY; if you run out of room you
-   will be asked to CONTINUE these notes, so list the load-bearing parts and their
-   placements FIRST, and keep every real physical part — do NOT drop shafts/bearings
-   to save space, because you can always continue the notes.
+   bearing, pin, etc.), their rough sizes, each part's dof, and how they are placed
+   relative to one another. This is your scratchpad and is SAVED AS MEMORY; if you run
+   out of room you will be asked to CONTINUE these notes, so list the load-bearing parts
+   and their placements FIRST, and keep every real physical part — do NOT drop
+   shafts/bearings to save space, because you can always continue the notes.
 2. A line containing exactly:  {JSON_SENTINEL}
-3. The single JSON object described above. No prose and no markdown fences after the
-   sentinel — only the JSON object."""
+   then BLOCK 1 (the PARTS JSON object), then a line containing exactly:  {MJCF_SENTINEL}
+   then BLOCK 2 (the MJCF XML skeleton). Emit the PARTS object FIRST, then the
+   {MJCF_SENTINEL} line, then the skeleton. Every <body> in the skeleton carries an XML
+   comment on its role/frame/meshing, and every "spin" part has a <joint type="hinge">
+   with an axis matching its spin_axis. No markdown fences anywhere after {JSON_SENTINEL}
+   — only the PARTS object, the {MJCF_SENTINEL} line, and the XML."""
 
 
 def build_manager_json_from_notes(notes: str) -> str:
     """Regeneration message: the manager already wrote its decomposition as NOTES
-    (saved when its JSON overran the output cap); hand the notes back and ask for
-    ONLY the JSON now, so the whole output budget goes to the JSON — no need to drop
-    any parts."""
+    (saved when its payload overran the output cap); hand the notes back and ask for
+    ONLY the two payload blocks now, so the whole output budget goes to them — no need
+    to drop any parts."""
     return f"""\
 Here is the decomposition you already worked out (your NOTES):
 
 {notes}
 
-Now output ONLY the single JSON object for this decomposition, in full, following the
-schema exactly — include EVERY part listed in the notes (all gears, shafts, bearings,
-pins) with its `dof`, and every pose that places them. Do NOT repeat the notes, do NOT
-include the `{JSON_SENTINEL}` line, and do NOT use markdown fences — output only the
-JSON object."""
+Now output ONLY the two payload blocks for this decomposition, in full, following the
+schema exactly:
+1. BLOCK 1 — the PARTS JSON object: include EVERY part listed in the notes (all gears,
+   shafts, bearings, pins) with its `dof`, `spin_axis`, `size_mm`, `color`, and `material`.
+2. A line containing exactly:  {MJCF_SENTINEL}
+3. BLOCK 2 — the MJCF XML skeleton: one nested <body> per part (matching the PARTS names),
+   each with an XML comment on its role/frame/meshing, a <joint type="hinge"> for every
+   "spin" part, and a <freejoint> for every "free" part.
+
+Do NOT repeat the notes, do NOT include the `{JSON_SENTINEL}` line, and do NOT use markdown
+fences — output only the PARTS object, the `{MJCF_SENTINEL}` line, and the XML skeleton."""
 
 
 def build_manager_user(product_prompt: str, has_image: bool = False) -> str:
@@ -127,8 +137,9 @@ Your previous response could not be used:
 
 {error}
 
-Return a corrected JSON object that fixes this. Output ONLY the JSON object, no
-prose, no markdown fences."""
+Return a corrected decomposition that fixes this: the PARTS JSON object, then a line with
+exactly `{MJCF_SENTINEL}`, then the MJCF XML skeleton. Output ONLY those, no prose, no
+markdown fences."""
 
 
 def build_manager_coarser(error: str) -> str:
@@ -148,16 +159,17 @@ There is a hard limit on how much you can output in one response. You MUST make
 this decomposition SMALLER so it fits. For THIS response only, override the
 "smallest piece / each gear" guidance and decompose COARSELY:
 
-- Emit AT MOST 40 links total.
+- Emit AT MOST 40 parts total.
 - Do NOT break parts down to individual gears, fasteners, or tiny internals.
-  Represent each sub-mechanism as ONE link (e.g. a single "landing_gear" link,
-  not separate struts + axles + wheels + bolts; a single "engine" link, not its
+  Represent each sub-mechanism as ONE part (e.g. a single "landing_gear" part,
+  not separate struts + axles + wheels + bolts; a single "engine" part, not its
   internal parts).
 - Keep every description and origin_note to ONE short sentence.
 - Still cover all the MAJOR structural and moving parts, set each part's `dof`,
-  and place them with poses.
+  and place them as nested bodies in the skeleton.
 
-Output ONLY the JSON object, no prose, no markdown fences."""
+Output ONLY the PARTS JSON object, a line with exactly `{MJCF_SENTINEL}`, then the MJCF
+XML skeleton — no prose, no markdown fences."""
 
 
 def build_manager_evaluator_feedback(feedback: str) -> str:
@@ -177,12 +189,13 @@ The evaluator's required changes:
 
 {feedback}
 
-Regenerate the COMPLETE kinematic model for the SAME product, strictly applying
+Regenerate the COMPLETE decomposition for the SAME product, strictly applying
 every change above. This OVERRIDES any conflicting earlier guidance. Keep the
-same schema, units, and origin contract (parts + poses + per-part dof; motion is by
-contact under gravity, no joints or motors).
+same schema, units, and origin contract (PARTS object + MJCF skeleton + per-part dof;
+motion is by contact under gravity, no joints or motors).
 
-Output ONLY the JSON object, no prose, no markdown fences."""
+Output ONLY the PARTS JSON object, a line with exactly `{MJCF_SENTINEL}`, then the MJCF
+XML skeleton — no prose, no markdown fences."""
 
 
 def build_manager_prior_model(prior_model_json: str) -> str:
@@ -212,12 +225,13 @@ The user wants this CHANGE to the current model:
 "{refine_message}"
 
 Apply ONLY what this asks for and keep everything else the same wherever possible
-(same parts, names, origins, poses, and dof that the change does not touch). You may
+(same parts, names, origins, placements, and dof that the change does not touch). You may
 add, remove, resize, recolor, or re-place parts as needed to satisfy it. Keep the
-same schema, units, and origin contract (parts + poses + per-part dof; motion is by
-contact under gravity, no joints or motors).
+same schema, units, and origin contract (PARTS object + MJCF skeleton + per-part dof;
+motion is by contact under gravity, no joints or motors).
 
-Output ONLY the COMPLETE updated JSON object, no prose, no markdown fences."""
+Output ONLY the COMPLETE updated PARTS JSON object, a line with exactly `{MJCF_SENTINEL}`,
+then the updated MJCF XML skeleton — no prose, no markdown fences."""
 
 
 def build_manager_subassembly(frame_contract) -> str:
@@ -274,42 +288,43 @@ coordinates about that origin):
 
 RULES
 - Build this subassembly in ITS OWN local frame, following the usual units/origin
-  contract (mm geometry, pose xyz_m in meters, each part's attach point at its
+  contract (mm geometry, body pos in meters, each part's attach point at its
   local origin). You choose where this subassembly's own root/origin sits.
 - Include EVERY real physical part of this subassembly — every gear, wheel, pinion,
   SHAFT, arbor, bearing/jewel, pin, screw, spring. Do NOT hide a shaft or bearing by
   folding it into a neighbor or dropping it; a rotating part is dof "spin" turning on
   a real shaft in a real bearing (dof "fixed"), and both are their own parts. This is
   only ONE subassembly, so completeness here is cheap.
-- For EACH interface frame above, there must be a real LINK positioned so that the
+- For EACH interface frame above, there must be a real PART positioned so that the
   frame lands at the given GLOBAL location when the machine is assembled. Typically
-  the frame coincides with a specific link (a housing mounting face, a gear center,
+  the frame coincides with a specific part (a housing mounting face, a gear center,
   a shaft end).
 - The interface frames are HARD POINTS fixed by the boss — treat them as immovable.
   Where a frame gives a shaft/gear diameter, size YOUR mating shaft, bore, or gear to
   EXACTLY that diameter and put it on the frame's axis, so the part meets its
   neighbor across the seam. Do NOT invent a different position, axis, or diameter for
   an interface; only the boss changes a hard point.
-- Set each part's `dof` (fixed/spin/free) and place parts with poses so they mate and
-  transmit motion by CONTACT — there are no joints or motors.
+- Set each part's `dof` (fixed/spin/free) and nest bodies in the skeleton so they mate
+  and transmit motion by CONTACT — there are no joints or motors.
 
-In ADDITION to the normal JSON object (name, root_link, links, poses), include a
-top-level "frames_realized" array in the SAME JSON object, one entry per interface
-frame:
+DECLARE EACH INTERFACE FRAME AS A <site> in the MJCF skeleton, INSIDE the body of the
+part that realizes it:
 
-  "frames_realized": [
-    {{
-      "frame": "<the interface frame name from the list above>",
-      "link":  "<the link in THIS subassembly that sits at that frame>",
-      "local_xyz_m":  [<x>, <y>, <z>],   // the frame point in that link's LOCAL frame, meters
-      "local_rpy_rad": [<r>, <p>, <y>]   // the frame orientation in that link's LOCAL frame
-    }}
-  ]
+  <body name="<the part at this frame>" pos="..." quat="...">
+    ...
+    <site name="frame_<interface frame name from the list above>"
+          pos="<x y z>"        (the frame point in THIS part's LOCAL frame, METERS)
+          euler="<r p y>"/>    (the frame orientation in that part's LOCAL frame, RAD; omit if axis-aligned)
+  </body>
 
-If a frame is at a link's own local origin, local_xyz_m is [0,0,0].
+Emit exactly ONE <site> per interface frame listed above, and name it
+`frame_<name>` using the EXACT interface frame name. If a frame is at a part's own
+local origin, its site pos is "0 0 0". The assembler reads these sites to weld this
+subassembly to its neighbors, so every listed frame MUST have its site.
 
-Output ONLY the JSON object (with links, poses, AND frames_realized), no prose, no
-markdown fences."""
+Output ONLY the PARTS JSON object, then a line with exactly `{MJCF_SENTINEL}`, then the
+MJCF XML skeleton (with a <site> for every interface frame). No prose, no markdown
+fences."""
 
 
 
