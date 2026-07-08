@@ -27,3 +27,8 @@ out_*/
 # maker2 run artifacts
 output/
 maker2/**/__pycache__/
+
+# maker2 KB: commit the curated indices (small, regenerable via
+# `python -m maker2.kb.ingest`) but NOT the growing per-run memory indices,
+# which are machine-local runtime state accumulated on passing runs.
+maker2/kb/index/memory_*/

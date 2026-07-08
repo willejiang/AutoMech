@@ -411,11 +411,14 @@ def decompose(product_prompt: str, settings, *, image_path: str | None = None,
 
 def _manager_research(client, conv, settings, product_prompt, *, log_fn=None) -> None:
     """SEAM owned by Track 1 (RAG). Optional web-search / KB research pre-step, gated by
-    settings.enable_reference_tools: look up standard dimensions / part specs and inject
-    findings into ``conv`` before decomposing. Track 1 adds a kb_search offer here."""
+    settings.enable_reference_tools (web) and settings.enable_kb (local KB): look up
+    standard dimensions / part specs and the output-format conventions, and inject
+    findings into ``conv`` before decomposing. kb_search is pinned to the manager
+    collection."""
     from .tools import maybe_research
     maybe_research(client, conv, settings,
-                   f"decompose into parts: {product_prompt}", log_fn=log_fn)
+                   f"decompose into parts: {product_prompt}",
+                   collection="manager", log_fn=log_fn)
 
 
 def _parse_manager_output(text: str, *, frame_contract=None, log_fn=None) -> KinematicModel:

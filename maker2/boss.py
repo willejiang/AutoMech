@@ -455,12 +455,15 @@ def plan_machine(product_prompt: str, settings, *, image_path: str | None = None
 
 
 def _boss_research(client, conv, settings, product_prompt, *, log_fn=None) -> None:
-    """SEAM owned by Track 1 (RAG). Optional web-search / KB research pre-step (gated by
-    settings.enable_reference_tools): look up reference designs / typical layouts and
-    inject findings into ``conv`` before planning. Track 1 adds a kb_search offer here."""
+    """SEAM owned by Track 1 (RAG). Optional web-search / KB research pre-step, gated by
+    settings.enable_reference_tools (web) and settings.enable_kb (local KB): look up
+    reference designs / typical layouts and decomposition conventions, and inject
+    findings into ``conv`` before planning. kb_search is pinned to the boss
+    collection."""
     from .tools import maybe_research
     maybe_research(client, conv, settings,
-                   f"plan the subassemblies of: {product_prompt}", log_fn=log_fn)
+                   f"plan the subassemblies of: {product_prompt}",
+                   collection="boss", log_fn=log_fn)
 
 
 def _plan_loop(client, conv, settings, *, memory_path, plan_json_path=None,

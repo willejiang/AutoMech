@@ -1,15 +1,20 @@
 #!/usr/bin/env python3
-"""Web search as an LLM tool — a keyless executor + the tool loop that drives it.
+"""Reference tools as LLM tools — keyless web search + a local KB, and the tool loop.
 
-The gateway (:8313 Copilot proxy) has NO built-in web search but faithfully RELAYS
-tool-calling: offered a `web_search` function, the model calls it. So we define the
-tool here and implement the executor ourselves. It is KEYLESS — it scrapes the
-DuckDuckGo HTML endpoint (Bing HTML as a fallback) over the stdlib `urllib` the LLM
-client already uses, so there is no new dependency and no API key. Best-effort: any
-network/parse failure returns a short "search unavailable" string and NEVER raises
-into the agent loop.
+Two retrieval tools are offered to the agents' research pre-step, gated independently:
 
-Gated behind Settings.enable_reference_tools; when on, the boss/manager/worker run a
+  * ``web_search`` (Settings.enable_reference_tools) — the gateway (:8313 Copilot
+    proxy) has NO built-in web search but faithfully RELAYS tool-calling: offered a
+    ``web_search`` function, the model calls it. We implement the executor ourselves,
+    KEYLESS — it scrapes the DuckDuckGo HTML endpoint (Bing HTML fallback) over the
+    stdlib ``urllib`` the LLM client already uses, so there is no new dependency and
+    no API key.
+  * ``kb_search`` (Settings.enable_kb) — a local, offline retrieval over this
+    project's curated per-agent knowledge base (output format + conventions + worked
+    examples) plus a growing memory of passing runs (see maker2/kb).
+
+Both are best-effort: any network/parse/index failure returns a short "unavailable"
+string and NEVER raises into the agent loop. When on, the boss/manager/worker run a
 short research pre-step (run_tool_loop) that enriches the conversation with lookups
 before their normal generation.
 """
@@ -42,6 +47,32 @@ WEB_SEARCH_TOOL = {
                 "query": {"type": "string", "description": "the search query"},
                 "k": {"type": "integer",
                       "description": "number of results to return (default 5)"},
+            },
+            "required": ["query"],
+        },
+    },
+}
+
+
+KB_SEARCH_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "kb_search",
+        "description": "Search the LOCAL knowledge base for this project's OUTPUT "
+                       "FORMAT and conventions plus worked examples: the exact schema/"
+                       "field contract, the interface-frame (<site>) rules, canonical "
+                       "dimension names, gear layout math, hand-authored good "
+                       "skeletons, and (once it fills) designs from prior PASSING runs. "
+                       "Prefer this over web_search for anything about HOW to structure "
+                       "your output. Returns the most relevant passages as text.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string",
+                          "description": "what you want to look up (a concept, a part "
+                                         "type, or a brief of the thing you're building)"},
+                "k": {"type": "integer",
+                      "description": "number of passages to return (default 5)"},
             },
             "required": ["query"],
         },
@@ -158,6 +189,43 @@ EXECUTORS = {"web_search": web_search_exec}
 
 
 # --------------------------------------------------------------------------- #
+# Local KB executor (settings.enable_kb) — retrieval over the curated per-agent
+# collection + its growing memory. Failure-soft: any problem returns a short
+# "unavailable" string, never raises into the tool loop.
+# --------------------------------------------------------------------------- #
+
+def kb_search_exec(query: str, collection: str = "manager", k: int = 5) -> str:
+    """Search the local KB `collection` (+ its memory) and return a compact text
+    block of the top-k passages. Returns an 'unavailable' string on any failure."""
+    try:
+        from . import kb
+    except Exception as e:
+        return f"(kb unavailable: import failed — {e})"
+    try:
+        k = max(1, min(int(k or 5), 8))
+        if not kb.available():
+            return ("(kb unavailable: sentence-transformers / faiss-cpu not installed "
+                    "— run `pip install -r maker2/requirements.txt`)")
+        hits = kb.search(str(query), collection, k=k)
+        if not hits:
+            return (f"(kb: no matching passages for {query!r} in {collection!r} — "
+                    "the index may be empty or not yet built)")
+        return f"Knowledge-base passages for {query!r}:\n\n" + kb.format_hits(hits)
+    except Exception as e:
+        return f"(kb search unavailable for {query!r} — {e})"
+
+
+def _kb_bound(collection: str):
+    """A kb_search executor pinned to `collection`, so the agent always searches its
+    OWN collection even if the model omits/mis-sets the collection argument."""
+    def _exec(query: str, collection: str = collection, k: int = 5) -> str:
+        # Ignore any model-supplied collection; pin to the caller's agent collection.
+        return kb_search_exec(query, collection=_exec.__collection__, k=k)
+    _exec.__collection__ = collection
+    return _exec
+
+
+# --------------------------------------------------------------------------- #
 # Tool loop
 # --------------------------------------------------------------------------- #
 
@@ -220,45 +288,66 @@ def run_tool_loop(client, conv, system: str, tools: list, executors: dict, *,
 
 
 _RESEARCH_SYSTEM = (
-    "You are researching to build a mechanical CAD design well. Use the web_search "
-    "tool to look up anything genuinely useful — real reference designs, standard part "
-    "dimensions (gear modules, bearing/jewel sizes, thread specs), material choices, or "
-    "how a mechanism is typically laid out. Do a FEW focused searches at most, then STOP "
-    "(reply with a one-line 'done'). Do not design anything yet; just gather facts.")
+    "You are researching to build a mechanical CAD design well. Use the tools to look "
+    "up anything genuinely useful. Prefer kb_search (the local knowledge base) for the "
+    "OUTPUT FORMAT, conventions, dimension names, gear math, and worked examples; use "
+    "web_search for real-world reference designs, standard part dimensions (gear "
+    "modules, bearing/jewel sizes, thread specs), or materials. Do a FEW focused "
+    "lookups at most, then STOP (reply with a one-line 'done'). Do not design anything "
+    "yet; just gather facts.")
 
 
-def maybe_research(client, conv, settings, what: str, *, log_fn=None) -> None:
-    """If reference tools are enabled, run a short web-search research turn on `conv`
-    BEFORE the caller's normal generation, so useful facts land in the conversation as
-    context. Best-effort; never raises. `what` is a short description of the build task
-    (for the research prompt)."""
-    if not getattr(settings, "enable_reference_tools", False):
+def _research_toolset(settings, collection: str):
+    """Assemble the (tools, executors) offered in a research turn, per the enabled
+    flags: web_search when enable_reference_tools, kb_search (pinned to `collection`)
+    when enable_kb. Returns ([], {}) when neither is on."""
+    tools: list = []
+    executors: dict = {}
+    if getattr(settings, "enable_reference_tools", False):
+        tools.append(WEB_SEARCH_TOOL)
+        executors["web_search"] = web_search_exec
+    if getattr(settings, "enable_kb", False):
+        tools.append(KB_SEARCH_TOOL)
+        executors["kb_search"] = _kb_bound(collection)
+    return tools, executors
+
+
+def maybe_research(client, conv, settings, what: str, *, collection: str = "manager",
+                   log_fn=None) -> None:
+    """If web and/or KB reference tools are enabled, run a short research turn on
+    `conv` BEFORE the caller's normal generation, so useful facts land in the
+    conversation as context. `collection` pins kb_search to the calling agent's own
+    KB collection. Best-effort; never raises. `what` is a short task description."""
+    tools, executors = _research_toolset(settings, collection)
+    if not tools:
         return
     try:
         conv.add_user_message(
             f"Before you begin, research anything useful for this task: {what}")
-        run_tool_loop(client, conv, _RESEARCH_SYSTEM, [WEB_SEARCH_TOOL], EXECUTORS,
+        run_tool_loop(client, conv, _RESEARCH_SYSTEM, tools, executors,
                       max_rounds=4, log_fn=log_fn)
     except Exception as e:
         if log_fn:
             log_fn(f"[tool] research skipped: {e}")
 
 
-def research_findings(client, settings, what: str, *, log_fn=None) -> str:
+def research_findings(client, settings, what: str, *, collection: str = "worker",
+                      log_fn=None) -> str:
     """Like maybe_research but on a THROWAWAY conversation, returning the collected
-    search-result text (to inject as context into a caller that owns its own per-task
-    conversations, e.g. the SCAD worker's per-batch convs). Empty string when disabled
-    or on failure."""
-    if not getattr(settings, "enable_reference_tools", False):
+    tool-result text (to inject as context into a caller that owns its own per-task
+    conversations, e.g. the SCAD worker's per-batch convs). Empty string when both
+    web and KB are disabled or on failure."""
+    tools, executors = _research_toolset(settings, collection)
+    if not tools:
         return ""
     try:
         from .llm.conversation import Conversation
         conv = Conversation()
         conv.add_user_message(
-            f"Research standard dimensions / specs useful to build: {what}")
-        run_tool_loop(client, conv, _RESEARCH_SYSTEM, [WEB_SEARCH_TOOL], EXECUTORS,
+            f"Research standard dimensions / specs / conventions useful to build: {what}")
+        run_tool_loop(client, conv, _RESEARCH_SYSTEM, tools, executors,
                       max_rounds=3, log_fn=log_fn)
-        # Collect the tool_result contents (the actual search text) from the convo.
+        # Collect the tool_result contents (the actual retrieved text) from the convo.
         notes = [Conversation.extract_text(m.get("content", ""))
                  for m in conv.messages if m.get("role") == "tool_result"]
         return "\n".join(n for n in notes if n).strip()

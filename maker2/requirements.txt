@@ -15,3 +15,7 @@ six
 # metrics["contact_degraded"]). The default engine is "pybullet" and needs neither.
 mujoco           # pure-contact physics (only imported when engine="mujoco")
 # coacd          # optional: better convex decomposition than the V-HACD/hull fallback
+# Local offline RAG (settings.enable_kb; maker2/kb). CPU-only, no network at runtime.
+# Only imported when enable_kb is on; the pipeline runs without them otherwise.
+sentence-transformers   # all-MiniLM-L6-v2 embedder (~80MB), CPU
+faiss-cpu               # flat inner-product vector index per collection

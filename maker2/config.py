@@ -141,6 +141,13 @@ class Settings:
                                                    # sub up to the boss for a re-plan
     subassembly_max_managers: int = 4             # parallel per-sub manager builds
     enable_reference_tools: bool = False          # web/RAG reference lookup (Stage G)
+    enable_kb: bool = False                        # local offline retrieval (maker2/kb):
+                                                   # a curated per-agent knowledge base +
+                                                   # a growing memory of passing runs,
+                                                   # offered as a kb_search tool in the
+                                                   # boss/manager/worker research pre-step.
+                                                   # Independent of enable_reference_tools
+                                                   # (web); either/both may be on.
     enable_appearance_proxy: bool = True          # boss-side coarse CadQuery proxy of
                                                    # the whole machine (per-sub bounding
                                                    # primitives at global pose) rendered

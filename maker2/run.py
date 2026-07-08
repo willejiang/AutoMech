@@ -495,6 +495,12 @@ def main() -> int:
                     help="enable web-search reference lookup for the boss/manager/worker "
                          "(they research standard dims / reference designs before "
                          "building). Keyless (DuckDuckGo/Bing). Hierarchy mode.")
+    ap.add_argument("--kb", action="store_true",
+                    help="enable the LOCAL knowledge base (maker2/kb): the boss/manager/"
+                         "worker retrieve this project's output-format conventions + "
+                         "worked examples + prior passing designs via a kb_search tool. "
+                         "Offline; run `python -m maker2.kb.ingest` once to build it. "
+                         "Hierarchy mode.")
     ap.add_argument("--per-sub-physics", action="store_true",
                     help="(hierarchy) drive each subassembly on its own URDF before "
                          "assembly, so a drivetrain fault localizes to that sub.")
@@ -510,11 +516,13 @@ def main() -> int:
     if a.hierarchy:
         from maker2.orchestrator_boss import run_boss
         settings = None
-        if a.web or a.engine or a.deep_think is not None:
+        if a.web or a.engine or a.deep_think is not None or a.kb:
             from maker2.config import Settings
             settings = Settings.load()
             if a.web:
                 settings.enable_reference_tools = True
+            if a.kb:
+                settings.enable_kb = True
             if a.engine:
                 settings.engine = a.engine
             if a.deep_think is not None:
