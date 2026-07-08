@@ -28,9 +28,13 @@ _VALID_SEAM_KIND = {"weld", "power"}
 # cylinder's radial size may be given as radius OR a diameter form (outer_dia/diameter),
 # so any one of the alternatives being positive satisfies it.
 _REQUIRED_DIMS = {
-    "box": (("x",), ("y",), ("z",)),
-    "cube": (("x",), ("y",), ("z",)),
-    "cylinder": (("radius", "outer_dia", "diameter", "dia"), ("height", "length")),
+    # A box needs three orthogonal extents. Managers name them x/y/z OR
+    # length/width/thickness (or height/depth) depending on the part — accept the common
+    # aliases per axis so a validly-sized hand/plate isn't flagged degenerate.
+    "box": (("x", "length", "depth"), ("y", "width"), ("z", "height", "thickness")),
+    "cube": (("x", "length", "depth"), ("y", "width"), ("z", "height", "thickness")),
+    "cylinder": (("radius", "outer_dia", "diameter", "dia"),
+                 ("height", "length", "thickness")),
     "sphere": (("radius", "diameter", "dia"),),
 }
 
