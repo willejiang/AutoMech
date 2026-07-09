@@ -32,6 +32,8 @@ is derived, and a meshing pair must share the same module.
 ## Putting it together
 
 For a two-gear train that must mesh: pick a module, pick teeth counts for the ratio
-you want, compute C, place the driven gear's center C meters from the drive gear's
-center along the layout direction, and list the pair in `mesh_pairs`. State the
-center distance in the placing pose's comment so the intent is auditable.
+you want, give BOTH gears that `module` + `teeth`, and connect them with a
+`gear_spur_external` mate (with a `separation_axis`). The solver places the driven
+gear exactly one center distance C from the drive gear automatically — you do NOT
+compute or write C yourself. List the pair in `mesh_pairs` (a gear mate also adds it
+automatically).

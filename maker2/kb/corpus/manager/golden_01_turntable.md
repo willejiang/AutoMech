@@ -1,56 +1,45 @@
-# Golden skeleton: motorized turntable (bearing + shaft + platter)
+# Golden connection graph: motorized turntable (bearing + shaft + platter)
 
-Demonstrates the two things managers most often get wrong: (1) physical hardware is
-a real part — a shaft turns INSIDE a bearing, so the bearing_block is a fixed part
-on the base AND the shaft is its own spin part on the bore axis, coexisting; (2) the
-origin contract — each part's attach point is its local origin, and each pose xyz_m
-(meters) is the parent-origin -> child-origin vector.
+Demonstrates the two things managers most often get right with a connection graph:
+(1) physical hardware is a real part — a shaft turns INSIDE a bearing, so the
+bearing_block is a fixed part AND the shaft is its own spin part, connected by a
+`coaxial` mate; (2) you author NO coordinates — you declare which port connects to
+which, and the solver computes the positions.
 
-## PARTS
-[
-  { "name": "base", "shape_hint": "box",
-    "size_mm": { "x": 120, "y": 120, "z": 10 },
-    "origin_note": "center of the top face at origin; plate lies in the XY plane",
-    "color": [0.75, 0.76, 0.78], "material": "aluminum", "driver": false },
-  { "name": "bearing_block", "shape_hint": "cylinder",
-    "size_mm": { "radius": 15, "height": 20 },
-    "origin_note": "bore axis is +Z; origin at the block's base-face center",
-    "color": [0.30, 0.30, 0.32], "material": "steel", "driver": false },
-  { "name": "shaft", "shape_hint": "cylinder",
-    "size_mm": { "radius": 5, "height": 40 },
-    "origin_note": "cylinder axis is +Z; origin at the shaft's bottom-face center",
-    "color": [0.70, 0.70, 0.72], "material": "steel", "driver": true },
-  { "name": "platter", "shape_hint": "cylinder",
-    "size_mm": { "radius": 50, "height": 4 },
-    "origin_note": "disc axis is +Z; origin at the disc center on its mid-plane",
-    "color": [0.12, 0.12, 0.13], "material": "plastic", "driver": false }
-]
-mesh_pairs: []
+```json
+{
+  "name": "motorized_turntable",
+  "root_part": "base",
+  "parts": [
+    { "name": "base", "shape_hint": "box", "size_mm": { "x": 200, "y": 200, "z": 15 },
+      "origin_note": "top-face center at local origin; slab extends -Z",
+      "color": [0.30, 0.30, 0.32], "material": "aluminum", "dof": "fixed" },
+    { "name": "bearing_block", "shape_hint": "box", "size_mm": { "x": 50, "y": 50, "z": 50, "bore_dia": 12 },
+      "origin_note": "bottom-face center at local origin; a 12mm bore runs vertically through the center",
+      "color": [0.20, 0.22, 0.25], "material": "steel", "dof": "fixed" },
+    { "name": "shaft", "shape_hint": "cylinder", "size_mm": { "radius": 6, "height": 90 },
+      "origin_note": "bottom face center at local origin; cylinder extends +Z",
+      "color": [0.75, 0.76, 0.78], "material": "steel", "dof": "spin", "spin_axis": [0,0,1], "driver": true },
+    { "name": "platter", "shape_hint": "cylinder", "size_mm": { "radius": 80, "height": 8, "bore_dia": 12 },
+      "origin_note": "bottom-face center at local origin; disc extends +Z; 12mm center bore",
+      "color": [0.10, 0.10, 0.11], "material": "aluminum", "dof": "spin", "spin_axis": [0,0,1] }
+  ],
+  "mates": [
+    { "name": "block_on_base", "mate_type": "face_to_face",
+      "base_part": "base", "base_port": "face_pz",
+      "incoming_part": "bearing_block", "incoming_port": "face_nz" },
+    { "name": "shaft_in_block", "mate_type": "coaxial",
+      "base_part": "bearing_block", "base_port": "bore",
+      "incoming_part": "shaft", "incoming_port": "outer" },
+    { "name": "platter_on_shaft", "mate_type": "coaxial",
+      "base_part": "shaft", "base_port": "outer",
+      "incoming_part": "platter", "incoming_port": "bore", "offset_mm": 90 }
+  ],
+  "mesh_pairs": []
+}
+```
 
-## MJCF (placement skeleton)
-<mujoco>
-  <worldbody>
-    <!-- base: the fixed frame that rests on the ground; root_link. -->
-    <body name="base" pos="0 0 0.005">
-      <!-- bearing_block: fixed to the base, carries the shaft's bore. Its top is
-           at z = base_top(0.010) + block_height(0.020) = 0.030. -->
-      <body name="bearing_block" pos="0 0 0.010">
-        <!-- shaft: spins inside the bore about +Z; the ONE driver. Sits with its
-             bottom at the block base so it rises through the bore. -->
-        <body name="shaft" pos="0 0 0.000">
-          <joint type="hinge" axis="0 0 1"/>
-          <!-- platter: welded to the top of the shaft, turns with it. shaft top is
-               at z=0.040 above the shaft origin, so place the disc there. -->
-          <body name="platter" pos="0 0 0.040">
-            <site name="frame_top" pos="0 0 0.002" rpy="0 0 0"/>
-          </body>
-        </body>
-      </body>
-    </body>
-  </worldbody>
-</mujoco>
-
-Note the nesting encodes parentage: platter is a child of shaft (so it inherits the
-spin), shaft is a child of bearing_block, bearing_block is a child of base. The
-platter and shaft have NO joint of their own besides the shaft's hinge — the platter
-is fixed relative to the shaft and rides its rotation.
+The bearing block sits on the base (face_to_face), the shaft turns in its bore
+(coaxial), and the platter rides on top of the shaft (coaxial, slid 90 mm up the
+shaft via `offset_mm`). Every part connects back to the base root through the mates.
+The shaft is the driver; both it and the platter are `spin` on +Z.
