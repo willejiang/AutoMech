@@ -410,6 +410,14 @@ RULES
   frame lands at the given GLOBAL location when the machine is assembled. Typically
   the frame coincides with a specific part (a housing mounting face, a gear center,
   a shaft end).
+- SEPARATE SEATS: if this sub exposes SEVERAL mount frames at DIFFERENT positions (a
+  base/plate/bracket with several bearing holes, posts, or seats), each frame is its OWN
+  independent seat. Realize each with a DIFFERENT part, placed at that frame's position —
+  so the parts spread across the base instead of stacking at one spot. Do NOT connect the
+  seated parts to EACH OTHER (no shaft threading through them, no boss-to-boss mate): they
+  are independent supports that each just mate to the base. If a frame gives no shaft
+  diameter and this sub "holds no rotating parts", do NOT invent a shaft to link the
+  bearings — a bearing here is a standalone fixed part seated on the base at its frame.
 - The interface frames are HARD POINTS fixed by the boss — treat them as immovable.
   Where a frame gives a shaft/gear diameter, size YOUR mating shaft, bore, or gear to
   EXACTLY that diameter and put it on the frame's axis, so the part meets its

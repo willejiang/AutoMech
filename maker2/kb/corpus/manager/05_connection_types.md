@@ -84,12 +84,21 @@ The `click` here is just a small box/lever (no module, no teeth) — it needs no
 
 ## A shaft spanning TWO bearings
 
-A shaft running through two coaxial bearings is fine to describe NATURALLY: mate the shaft
-coaxially to BOTH bearings. A coaxial mate only fixes the shaft's AXIS (it leaves the slide
-along that axis free), so two bearings whose bores lie on the SAME axis line are compatible —
-the solver accepts it. Just make sure both bores are actually colinear (same axis, e.g. both
-along +Z); if the two bearings sit on DIFFERENT axis lines the shaft can't go through both
-and it IS a real conflict ("placed N mm apart perpendicular to the shared axis").
+FIRST CHECK: this pattern applies ONLY when a real SHAFT part lives in THIS subassembly and
+physically runs through both bearings. If this sub is a structural base that "holds no
+rotating parts" — just a plate + bearing bores/pedestals whose shafts live in OTHER subs —
+then there is NO shaft here: do NOT use this pattern, do NOT invent a shaft, and do NOT mate
+the bearings to each other. Each bearing is a standalone fixed part that seats on the base at
+its own frame (see "Independent supports" below). Using this shaft pattern on a bearings-only
+sub mates bearings coaxially through a phantom axis and over-constrains them.
+
+When a shaft IS present, a shaft running through two coaxial bearings is fine to describe
+NATURALLY: mate the shaft coaxially to BOTH bearings. A coaxial mate only fixes the shaft's
+AXIS (it leaves the slide along that axis free), so two bearings whose bores lie on the SAME
+axis line are compatible — the solver accepts it. Just make sure both bores are actually
+colinear (same axis, e.g. both along +Z); if the two bearings sit on DIFFERENT axis lines the
+shaft can't go through both and it IS a real conflict ("placed N mm apart perpendicular to
+the shared axis").
 
 Natural description (a loop, and that's OK now):
 ```json
