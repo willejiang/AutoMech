@@ -470,13 +470,26 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
         # below, which DOES fail the sub up) plus the C5 dry-run compile. Schema codes +
         # ERR_CONNECT + the frame gates (all reliable on declared data) still BLOCK.
         mgr_errs = [e for e in all_errs if e.code != "ERR_OVL"]
+        # ERR_OVL warnings come sorted worst-overlap-first from the gate. A dense coaxial
+        # assembly (a tourbillon cage: 20+ thin discs stacked on one axis at different
+        # heights) produces DOZENS of declared-box AABB overlaps that are mostly false
+        # positives — the real-mesh subcheck is authoritative. So emit the structured
+        # ARTIFACT_JSON for every one (the UI can show them all), but cap the human log to
+        # the worst few + a summary so a single sub can't flood the console with 175 lines.
+        _WARN_LOG_CAP = 8
+        _warn_shown = 0
+        _warn_total = sum(1 for e in all_errs if e.code == "ERR_OVL")
         for e in all_errs:
             blocking = e.code != "ERR_OVL"
             log_fn("ARTIFACT_JSON:" + json.dumps({
                 "kind": "gate", "layer": "manager", "sub_id": sub_id, "code": e.code,
                 "detail": e.detail, "culprit": e.culprit, "ok": (not blocking)}))
-            if not blocking:
+            if not blocking and _warn_shown < _WARN_LOG_CAP:
                 slog(f"manager gate WARN {e}")
+                _warn_shown += 1
+        if _warn_total > _warn_shown:
+            slog(f"manager gate WARN … +{_warn_total - _warn_shown} more overlap warning(s) "
+                 "(declared-box AABB; the post-render real-mesh check is authoritative)")
         if mgr_errs:
             slog(f"manager gate FAILED with {len(mgr_errs)} blocking issue(s):")
             for e in mgr_errs:
@@ -1042,6 +1055,38 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                 f"{failed}; re-running only those.")
             if not infinite and it >= max_boss_iters - 1:
                 result["error"] = f"subassemblies failed: {failed}"; break
+            it += 1; continue
+
+        # 2b. DISJOINT-PARTS gate: every physical part belongs to exactly ONE subassembly. If
+        #     the same part NAME was built in two subs, the boss duplicated it across sub
+        #     briefs — at assembly the two copies overlap 100% and the debugger can't fix it
+        #     (each copy is pinned to an interface frame, immovable, and no stage can delete a
+        #     duplicate). So catch it HERE and re-plan (a plan fault, not a per-sub build
+        #     fault) with the exact duplicated names, so the boss re-partitions parts disjointly.
+        part_subs: dict = {}
+        for s in plan.subassemblies:
+            sr = subs.get(s.id)
+            if sr is None or getattr(sr, "model", None) is None:
+                continue
+            for l in sr.model.links:
+                part_subs.setdefault(l.name, set()).add(s.id)
+        dup_parts = {name: sorted(ss) for name, ss in part_subs.items() if len(ss) > 1}
+        if dup_parts:
+            dup_list = "; ".join(f"'{n}' in {ss}" for n, ss in sorted(dup_parts.items()))
+            feedback = (
+                "duplicated parts across subassemblies — each physical part must be built in "
+                "EXACTLY ONE subassembly: " + dup_list + ". Assign each of these parts to the "
+                "ONE subassembly that owns it and remove it from the other(s). If a "
+                "subassembly needs to mount to that part, it references it only through an "
+                "interface frame (a shared mount/mesh frame) — it does NOT rebuild the part. "
+                "Re-plan with disjoint part sets.")
+            log_fn("ARTIFACT_JSON:" + json.dumps({
+                "kind": "gate", "layer": "boss", "iter": it, "code": "ERR_DUP_PARTS",
+                "detail": dup_list, "culprit": ",".join(sorted(dup_parts)), "ok": False}))
+            log(f"[boss] DISJOINT-PARTS gate FAILED -> re-plan: {len(dup_parts)} part(s) "
+                f"built in multiple subs ({dup_list})")
+            if not infinite and it >= max_boss_iters - 1:
+                result["error"] = f"duplicated parts across subassemblies: {dup_list}"; break
             it += 1; continue
 
         # 3. (optional) Per-sub physics: localize a drivetrain fault to its sub_id

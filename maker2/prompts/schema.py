@@ -452,6 +452,14 @@ HARD RULES
   25. Include every real part WITHIN each subassembly (don't drop shafts/bearings to
   hit a number). Prefer splitting a large machine into MORE subassemblies over a few
   huge ones, but do NOT over-split a simple mechanism into trivial 1-2 part subs.
+- DISJOINT PARTS: every physical part belongs to EXACTLY ONE subassembly. Do NOT list the
+  same part in two subs' briefs — e.g. the mainplate belongs to the chassis sub ONLY; the
+  gear-train sub does not also contain a mainplate. A part that a neighbor sub mounts to is
+  referenced only through an INTERFACE FRAME (a shared mount/mesh frame on the seam), never
+  rebuilt in the neighbor. Two subs that each build the same part produce two copies that
+  collide 100% at assembly and cannot be separated (both are pinned to the interface). When
+  you write each brief, make sure its part list does not repeat any part named in another
+  brief.
 - IDENTICAL REPEATED SUBASSEMBLIES: when several subassemblies are the SAME (same
   parts, differing ONLY in position/orientation — a quadcopter's 4 rotors, a hexapod's
   6 legs, a car's 4 wheels), emit ONE subassembly and list each copy in "instances"
