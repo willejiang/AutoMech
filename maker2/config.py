@@ -135,7 +135,7 @@ class Settings:
     judge_max_iterations: int = 3                 # generate->judge->refine passes
                                                    # before the --judge loop stops
                                                    # regardless of the verdict
-    max_workers: int = 6                          # builds kept in flight at once
+    max_workers: int = 9                          # builds kept in flight at once
                                                    # by the continuous worker pool.
                                                    # Each worker's LLM send retries
                                                    # with backoff, so the gateway
@@ -160,7 +160,7 @@ class Settings:
                                                    # fix it before the sub is accepted
     sub_conflict_max_tries: int = 3               # debugger passes before failing the
                                                    # sub up to the boss for a re-plan
-    subassembly_max_managers: int = 4             # parallel per-sub manager builds
+    subassembly_max_managers: int = 9             # parallel per-sub manager builds
     enable_reference_tools: bool = False          # web/RAG reference lookup (Stage G)
     enable_kb: bool = False                        # local offline retrieval (maker2/kb):
                                                    # a curated per-agent knowledge base +
@@ -175,6 +175,13 @@ class Settings:
                                                    # BEFORE the managers build detail, and
                                                    # handed to them as proportion context
                                                    # (1c). On by default.
+    manager_ir: bool = True                        # manager authors a CONNECTION GRAPH
+                                                   # (parts + mates) that mate_solver solves
+                                                   # into poses, instead of authoring an MJCF
+                                                   # skeleton (pos/quat). ON by default;
+                                                   # --no-manager-ir falls back to the MJCF
+                                                   # skeleton path (mjcf_skeleton.py). See
+                                                   # Part A of the plan.
 
     # ── Construction helpers ─────────────────────────────────────
 

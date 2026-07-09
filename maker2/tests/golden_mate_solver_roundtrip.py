@@ -276,6 +276,19 @@ def test_negatives():
     print("    OK — orphan / missing-sep-axis / unknown-port / no-pitch all raise")
 
 
+def test_shipped_fewshot():
+    print("[6] shipped IR_FEWSHOT_JSON solves …")
+    import json as _json
+
+    from maker2.prompts.schema import IR_FEWSHOT_JSON
+    model = solve_connection_graph(_json.loads(IR_FEWSHOT_JSON))
+    _validate_model(model)
+    names = {l.name for l in model.links}
+    if names != {"base", "bearing_block", "shaft", "platter"}:
+        _fail(f"shipped IR few-shot parts changed: {sorted(names)}")
+    print(f"    OK — shipped few-shot solves to {len(model.links)} parts, root='{model.root_link}'")
+
+
 def main() -> int:
     print("golden mate-solver round-trip\n" + "=" * 40)
     test_reducer()
@@ -283,6 +296,7 @@ def main() -> int:
     test_bevel()
     test_shaft_through_gear()
     test_negatives()
+    test_shipped_fewshot()
     print("=" * 40 + "\nALL GOLDEN CASES PASSED")
     return 0
 

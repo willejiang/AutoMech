@@ -241,6 +241,132 @@ FEWSHOT_JSON = f"""\
 
 
 # --------------------------------------------------------------------------- #
+# CONNECTION-GRAPH schema + few-shot (Part A, the DEFAULT authoring format when
+# settings.manager_ir is on). The manager declares PARTS + MATES ("part A's bore
+# mates coaxially to part B's shaft"); maker2/mate_solver.py SOLVES every part's
+# pose from the mates. The manager writes NO coordinates — no pos/quat, no nesting.
+# --------------------------------------------------------------------------- #
+
+IR_SCHEMA_TEXT = """\
+Return exactly ONE JSON object (no prose, no markdown fences) describing the product as
+PARTS joined by MATES. You do NOT write any coordinates — you declare which FEATURE of one
+part connects to which FEATURE of another, and a deterministic solver computes every part's
+position. This is far more reliable than placing parts by hand.
+
+{
+  "name": "<safe machine/product name, snake_case>",
+  "root_part": "<the ONE part pinned at the origin — usually the base/frame/housing>",
+  "parts": [
+    {
+      "name": "<safe slug: lowercase, starts with a letter, [a-z0-9_] only, UNIQUE>",
+      "description": "<what this part is; enough for a CAD worker to build it alone>",
+      "shape_hint": "<box | cylinder | gear | sphere | free text>",
+      "size_mm": { "<dim>": <number>, ... },   // approx size in MM (see size keys below)
+      "origin_note": "<where this part's LOCAL origin sits and which way it points>",
+      "color": [<r>, <g>, <b>],                 // 0..1 RGB; the part's real-world color
+      "dof": "<fixed | spin | free>",           // how this part MOVES (see below)
+      "spin_axis": [<x>, <y>, <z>],             // rotation axis for dof "spin" (unit vec)
+      "driver": <true|false>,                   // true on the ONE part the test drives
+      "material": "<steel|brass|ruby|plastic|aluminum|titanium|rubber|wood|gold>"
+    }
+  ],
+  "mates": [
+    {
+      "name": "<safe slug>",
+      "mate_type": "<see the MATE TYPES list below>",
+      "base_part": "<part name>",  "base_port": "<port on base_part>",
+      "incoming_part": "<part name>", "incoming_port": "<port on incoming_part>",
+      "offset_mm": <number>,        // OPTIONAL: slide the incoming part along the shared
+                                    //   axis (coaxial) or set a face gap (face_to_face)
+      "angle_rad": <number>,        // OPTIONAL: roll about the shared axis (indexing)
+      "separation_axis": "<+x|-x|+y|-y|+z|-z>",  // gears: direction from base gear center
+                                    //   to incoming gear center. REQUIRED when a gear
+                                    //   meshes with MORE THAN ONE other gear (a train).
+      "axis_angle_deg": <0|90>      // gears: 0 = parallel spur (default), 90 = bevel/worm
+    }
+  ],
+  "frames": [                       // subassembly mode ONLY: expose an interface frame
+    {"frame": "<contract frame name>", "part": "<part>", "port": "<port>"}
+  ]
+}
+
+PORTS ARE INFERRED — you do NOT declare them. Each part automatically has named ports from
+its shape; reference them by these names in your mates:
+- a CYLINDER / SHAFT / GEAR has:  `outer` (its outer surface, axis +Z), `bore` (its central
+  hole, if size_mm has a bore_dia), `end_a` (the -Z flat face), `end_b` (the +Z flat face),
+  and a GEAR also has `teeth` (its pitch circle).
+- a BOX / PLATE has:  `face_px`, `face_nx`, `face_py`, `face_ny`, `face_pz`, `face_nz` (the
+  six faces, named by outward normal), `center`, and `bore` if it has a bore_dia.
+(A part's primary axis is its local +Z, matching the build convention — so `outer`/`bore`/
+`teeth` all run along +Z.)
+
+MATE TYPES — pick the real mechanical connection:
+- `coaxial` — a shaft inside a bore / a gear on a shaft / a bearing on a shaft. Aligns the
+  two ports' axes and centers them; `offset_mm` slides the incoming part ALONG the axis
+  (e.g. a gear 30 mm up a shaft). Use this for shaft-through-a-gear's-hole:
+  `coaxial(gear.bore <- shaft.outer)`.
+- `face_to_face` — seat one flat face on another (a bearing on a plate, a cap on a housing,
+  a cover on a box). The faces meet front-to-front; `offset_mm` sets a gap.
+- `gear_spur_external` — two spur gears MESH on PARALLEL axes. The solver places the incoming
+  gear exactly one center-distance (sum of pitch radii) from the base gear along
+  `separation_axis`. Give BOTH gears a `module` + `teeth` (or a pitch diameter) so the pitch
+  radius is known. For a gear TRAIN, each mesh needs its own `separation_axis`.
+- `gear_bevel` / `worm` — gears on PERPENDICULAR axes (`axis_angle_deg`: 90). Use for a
+  right-angle drive (one gear horizontal, one vertical).
+- `press_fit`, `pin`, `key`, `bearing` (`ball_bearing`/`journal_bearing`), `bolted`,
+  `welded`, `threaded` — other real connections (coaxial or face family under the hood).
+
+HOW PARTS MOVE (this REPLACES joints — there are NO joints and NO motors)
+- Every part declares a `dof`:  "fixed" = welded to whatever it mates to (MOST parts:
+  plates, housings, brackets, bearings, jewels, screws, pins). "spin" = rotates about
+  `spin_axis` (gears, wheels, arbors, rotors, shafts). "free" = 6-DOF (rare). DEFAULT to
+  "fixed" — a part is "spin" ONLY if it turns under power.
+- COAXIAL PARTS THAT TURN TOGETHER = ONE spin part. A wheel + pinion + arbor pressed
+  together rotate as a unit: make the ARBOR the "spin" part and mate the wheel/pinion to it
+  as "fixed". Never stack several "spin" bodies on the same axis at the same place.
+- Set `driver": true` on the SINGLE part the physics test spins (the input gear/crank/rotor).
+  At most one driver.
+
+SIZE KEYS (use these names — the checks and port inference assume them):
+- `cylinder` -> { "radius": <mm>, "height": <mm> }   (add "bore_dia" if it has a hole)
+- `box`      -> { "x": <mm>, "y": <mm>, "z": <mm> }  (add "bore_dia" if it has a hole)
+- `gear`     -> { "module": <mm>, "teeth": <int>, "thickness": <mm>, "bore_dia": <mm> }
+- `sphere`   -> { "radius": <mm> }
+A gear is specified by module + teeth (pitch diameter = module * teeth); a meshing pair
+shares the SAME module.
+
+HARD RULES
+- Part names are unique, safe slugs (^[a-z][a-z0-9_]*$). Every mate names real parts + real
+  (inferred) ports. Every part must be reachable through the mates from `root_part` — a part
+  connected by NO mate would float and is rejected. Give every "spin" part a non-zero
+  `spin_axis`. At most one `driver`.
+- PHYSICAL HARDWARE IS A REAL PART: a rotating shaft turns inside a bearing — emit BOTH (the
+  bearing "fixed", the shaft "spin") and a `coaxial` mate between them. NEVER delete a shaft
+  or bearing. The worked example below shows the exact pattern."""
+
+
+# The turntable authored as a CONNECTION GRAPH — the golden few-shot for the IR format. It
+# SOLVES (maker2/tests/golden_mate_solver_roundtrip pattern) to the same turntable layout.
+IR_FEWSHOT_JSON = """\
+{
+  "name": "motorized_turntable",
+  "root_part": "base",
+  "parts": [
+    {"name": "base", "description": "A flat square base plate, 200 x 200 mm, 15 mm thick, that everything mounts to and rests on the ground.", "shape_hint": "box", "size_mm": {"x": 200, "y": 200, "z": 15}, "origin_note": "top-face center at local origin; slab extends -Z (0..-15mm)", "color": [0.30, 0.30, 0.32], "dof": "fixed"},
+    {"name": "bearing_block", "description": "A pillow-block bearing: a 50 mm cube with a 12 mm vertical bore the shaft rotates inside. A REAL fixed part.", "shape_hint": "box", "size_mm": {"x": 50, "y": 50, "z": 50, "bore_dia": 12}, "origin_note": "bottom-face center at local origin; block extends +Z (0..50mm); the 12mm bore runs vertically through the center", "color": [0.20, 0.22, 0.25], "dof": "fixed"},
+    {"name": "shaft", "description": "A vertical drive shaft, 12 mm diameter, 90 mm long, turning inside the bearing bore and carrying the platter. The driver the test spins.", "shape_hint": "cylinder", "size_mm": {"radius": 6, "height": 90}, "origin_note": "bottom face center at local origin; cylinder extends +Z (0..90mm)", "color": [0.75, 0.76, 0.78], "dof": "spin", "spin_axis": [0.0, 0.0, 1.0], "driver": true},
+    {"name": "platter", "description": "A round turntable platter, 160 mm diameter, 8 mm thick, with a 12 mm center bore, fixed on top of the shaft (rotates with it).", "shape_hint": "cylinder", "size_mm": {"radius": 80, "height": 8, "bore_dia": 12}, "origin_note": "bottom-face center at local origin; disc extends +Z (0..8mm)", "color": [0.10, 0.10, 0.11], "dof": "spin", "spin_axis": [0.0, 0.0, 1.0]}
+  ],
+  "mates": [
+    {"name": "block_on_base", "mate_type": "face_to_face", "base_part": "base", "base_port": "face_pz", "incoming_part": "bearing_block", "incoming_port": "face_nz"},
+    {"name": "shaft_in_block", "mate_type": "coaxial", "base_part": "bearing_block", "base_port": "bore", "incoming_part": "shaft", "incoming_port": "outer"},
+    {"name": "platter_on_shaft", "mate_type": "coaxial", "base_part": "shaft", "base_port": "outer", "incoming_part": "platter", "incoming_port": "bore", "offset_mm": 90}
+  ],
+  "mesh_pairs": []
+}"""
+
+
+# --------------------------------------------------------------------------- #
 # BOSS schema + few-shot (hierarchy). The boss splits a big machine into
 # SUBASSEMBLIES (each one manager's job, <=35 links) and authors the INTERFACE/
 # FRAME CONTRACT: named mount frames in GLOBAL meters + the SEAMS that join the

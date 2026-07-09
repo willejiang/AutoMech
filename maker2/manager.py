@@ -33,7 +33,7 @@ from .jsonutil import extract_json_object
 from .llm.client import LLMError
 from .llm.conversation import Conversation
 from .model import KinematicModel, LinkSpec, PoseSpec
-from .prompts.manager_prompt import (MANAGER_SYSTEM,
+from .prompts.manager_prompt import (MANAGER_SYSTEM, manager_system,
                                      build_manager_coarser,
                                      build_manager_evaluator_feedback,
                                      build_manager_json_from_notes,
@@ -372,7 +372,8 @@ def decompose(product_prompt: str, settings, *, image_path: str | None = None,
     except ImageLoadError as e:
         raise ManagerError(str(e)) from e
     conv.add_user_message(
-        build_manager_user(product_prompt, has_image=bool(image_path)),
+        build_manager_user(product_prompt, has_image=bool(image_path),
+                           manager_ir=getattr(settings, "manager_ir", True)),
         images=images)
     if image_path and log_fn:
         log_fn(f"[manager] using input image: {image_path}")
@@ -390,7 +391,8 @@ def decompose(product_prompt: str, settings, *, image_path: str | None = None,
             log_fn(f"[manager] applying user refine request: {refine_message[:80]}")
     # Hierarchy: build ONE subassembly under the boss's interface/frame contract.
     if frame_contract is not None:
-        conv.add_user_message(build_manager_subassembly(frame_contract))
+        conv.add_user_message(build_manager_subassembly(
+            frame_contract, manager_ir=getattr(settings, "manager_ir", True)))
         if log_fn:
             log_fn(f"[manager] subassembly '{getattr(frame_contract, 'sub_id', '?')}' "
                    f"with {len(getattr(frame_contract, 'frames', []))} interface frame(s)")
@@ -423,21 +425,35 @@ def _manager_research(client, conv, settings, product_prompt, *, log_fn=None) ->
                    collection="manager", log_fn=log_fn)
 
 
-def _parse_manager_output(text: str, *, frame_contract=None, log_fn=None) -> KinematicModel:
-    """SEAM owned by Track 2 (MJCF-authoring). Turn the manager's raw LLM text into a
-    validated KinematicModel.
+def _parse_manager_output(text: str, *, settings=None, frame_contract=None,
+                          log_fn=None) -> KinematicModel:
+    """Turn the manager's raw LLM text into a validated KinematicModel.
 
-    The manager now authors its decomposition as TWO blocks — a PARTS JSON object, then a
-    line ``=== MJCF ===``, then an MJCF-style XML skeleton (see prompts/schema.py Part A).
-    We split on that sentinel, hand both halves to ``mjcf_skeleton_parser`` (the deterministic
-    inverse of mjcf_builder._emit_body), then run the EXISTING ``_validate_model`` so
-    slug/dedup/mesh_filename/forest normalization is byte-identical to the old JSON path.
-    ``frames_realized`` is derived from the skeleton's <site> elements by the parser.
+    Two authoring formats, selected by ``settings.manager_ir`` (default ON):
 
-    Raises ValueError/ManagerError/JSONDecodeError on bad content (caught by the loop). A
-    malformed-XML ``ET.ParseError`` is re-raised as ``SkeletonError`` (a ValueError) so the
-    loop's existing ``except (ValueError, ManagerError, json.JSONDecodeError)`` catches it and
-    feeds the message back as a repair request — no change needed in the retry loop itself."""
+    * CONNECTION GRAPH (manager_ir on): a single JSON object of PARTS + MATES. Fed to
+      ``mate_solver.solve_connection_graph``, which SOLVES every part's pose from the mates
+      (no LLM-authored coordinates). See prompts/schema.py IR_SCHEMA_TEXT + Part A.
+    * MJCF SKELETON (manager_ir off — the ``--no-manager-ir`` fallback): PARTS JSON, a line
+      ``=== MJCF ===``, then an MJCF-style XML skeleton, split + fed to ``mjcf_skeleton_parser``.
+
+    Either path produces a raw KinematicModel that we run through the EXISTING
+    ``_validate_model`` (slug/dedup/mesh_filename/forest normalization), so the ENTIRE
+    downstream pipeline is byte-identical regardless of authoring format.
+
+    Raises ValueError/ManagerError/JSONDecodeError on bad content (caught by the loop):
+    ``MateSolveError`` (connection graph) and ``SkeletonError`` / re-raised ``ET.ParseError``
+    (skeleton) are all ValueError subclasses, so the loop's existing
+    ``except (ValueError, ManagerError, json.JSONDecodeError)`` feeds the message back as a
+    repair request with no change to the retry loop."""
+    if getattr(settings, "manager_ir", True):
+        from .mate_solver import solve_connection_graph_text
+        model = solve_connection_graph_text(text)
+        _validate_model(model)
+        if frame_contract is not None and log_fn:
+            log_fn(f"[manager] realized {len(model.frames_realized)} interface frame(s)")
+        return model
+
     import xml.etree.ElementTree as ET
 
     from .mjcf_skeleton import SkeletonError, mjcf_skeleton_parser
@@ -527,6 +543,7 @@ def _decompose_loop(client, conv, settings, *, memory_path, tag, model_json_path
     from .badness import badness_breakdown, format_delta
 
     attempts = settings.manager_retries + 1
+    _mgr_ir = getattr(settings, "manager_ir", True)
     plateau_k = int(getattr(settings, "loop_plateau_k", 2))
     eps = 1e-3
     best_badness = float("inf")
@@ -540,9 +557,10 @@ def _decompose_loop(client, conv, settings, *, memory_path, tag, model_json_path
         if log_fn:
             log_fn(f"[manager] attempt {attempt}/{attempts}: decomposing (streaming)…")
         try:
-            text = stream_two_part(client, conv, MANAGER_SYSTEM,
+            text = stream_two_part(client, conv, manager_system(_mgr_ir),
                                    memory_path=memory_path,
-                                   regen_msg_fn=build_manager_json_from_notes,
+                                   regen_msg_fn=lambda notes: build_manager_json_from_notes(
+                                       notes, manager_ir=_mgr_ir),
                                    log_fn=log_fn, tag=tag)
         except LLMError as e:
             raise ManagerError(f"Manager LLM request failed: {e}") from e
@@ -551,14 +569,15 @@ def _decompose_loop(client, conv, settings, *, memory_path, tag, model_json_path
         # 1. Parse. A parse/validation failure yields no model to score -> feed the error
         #    back (with the last badness delta if we have one) and retry.
         try:
-            model = _parse_manager_output(text, frame_contract=frame_contract,
-                                          log_fn=log_fn)
+            model = _parse_manager_output(text, settings=settings,
+                                          frame_contract=frame_contract, log_fn=log_fn)
         except (ValueError, ManagerError, json.JSONDecodeError) as e:
             last_err = str(e)
             if log_fn:
                 log_fn(f"[manager] attempt {attempt}/{attempts} rejected (parse): {last_err}")
             note = format_delta(prev_bd, best_bd) if best_bd else "no scored attempt yet"
-            conv.add_user_message(build_manager_repair_diff(last_err, note))
+            conv.add_user_message(build_manager_repair_diff(last_err, note,
+                                                            manager_ir=_mgr_ir))
             continue
 
         # 2. Score the parsed model with the pure gates + badness (no physics).
@@ -606,7 +625,8 @@ def _decompose_loop(client, conv, settings, *, memory_path, tag, model_json_path
             conv.add_user_message(build_manager_coarser(
                 last_err + "\n\n(the previous approach is not converging — simplify.)"))
         else:
-            conv.add_user_message(build_manager_repair_diff(last_err, delta_note))
+            conv.add_user_message(build_manager_repair_diff(last_err, delta_note,
+                                                            manager_ir=_mgr_ir))
 
     # Loop exhausted. Return the best imperfect model if we have one; else fail.
     if best_model is not None:
@@ -742,7 +762,7 @@ def decompose_patch(prior_model_json: str, fault_reason: str, settings,
             last_err = str(e)
             if log_fn:
                 log_fn(f"[manager] patch attempt {attempt}/{attempts} rejected: {last_err}")
-            conv.add_user_message(build_manager_repair(last_err))
+            conv.add_user_message(build_manager_repair(last_err, manager_ir=False))
             continue
         if model_json_path:
             save_model(model, model_json_path)

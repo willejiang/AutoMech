@@ -512,11 +512,14 @@ def main() -> int:
                     help="deep-think ON: CadQuery worker + FULL debugger (thorough, slow).")
     ap.add_argument("--no-deep-think", dest="deep_think", action="store_false",
                     help="deep-think OFF: OpenSCAD worker + SLIM debugger (fast, shallow).")
+    ap.add_argument("--no-manager-ir", dest="manager_ir", action="store_false", default=None,
+                    help="manager authors an MJCF skeleton (pos/quat) instead of a connection "
+                         "graph — the fallback. Default: connection graph (mate_solver).")
     a = ap.parse_args()
     if a.hierarchy:
         from maker2.orchestrator_boss import run_boss
         settings = None
-        if a.web or a.engine or a.deep_think is not None or a.kb:
+        if a.web or a.engine or a.deep_think is not None or a.kb or a.manager_ir is not None:
             from maker2.config import Settings
             settings = Settings.load()
             if a.web:
@@ -527,6 +530,8 @@ def main() -> int:
                 settings.engine = a.engine
             if a.deep_think is not None:
                 settings.deep_think = a.deep_think
+            if a.manager_ir is not None:
+                settings.manager_ir = a.manager_ir
         res = run_boss(a.prompt, a.out, settings=settings, do_physics=a.physics,
                        per_sub_physics=a.per_sub_physics, thread=a.thread,
                        refine_message=a.refine_message, log_fn=print)
