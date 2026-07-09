@@ -451,6 +451,25 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
                 "cannot weld this subassembly. Place a real link at that frame's GLOBAL "
                 "position and declare it in frames_realized (frame->link + local offset).",
                 fn))
+        # MOUNTS_PART enforcement: when the boss pinned a specific part to a seat frame
+        # (mounts_part), the manager MUST realize that frame with THAT part — otherwise the
+        # part isn't anchored to its hole and it drifts/overlaps other parts. A prompt asks
+        # for this; this gate makes it binding. BLOCKING.
+        _frame_link = {e["frame"]: e.get("link", "") for e in _pre_frames}
+        for fr in fc.frames:
+            want_part = (getattr(fr, "mounts_part", "") or "").strip()
+            if not want_part or fr.name not in _frame_link:
+                continue                       # no pin, or unrealized (owned by the check above)
+            got = _frame_link[fr.name]
+            if got != want_part:
+                all_errs.append(_GateError(
+                    "manager", "ERR_SEAT_PART",
+                    f"seat frame '{fr.name}' must be realized by part '{want_part}' (the boss "
+                    f"pinned that part to this hole), but it is realized by '{got}'. Make "
+                    f"'{want_part}' the part at frame '{fr.name}' and mate it so it lands at "
+                    f"the frame's position — this fixes each part to its own seat so they "
+                    f"don't stack at the origin and overlap.",
+                    fr.name))
         # C6 — FRAME DRIFT (self-consistency): a frame can be 'realized' but on the wrong
         # link / at the wrong offset. For the ROOT sub (pinned at the global origin) the
         # frames must hit the contract's ABSOLUTE coords; for a WELDED CHILD (rigidly

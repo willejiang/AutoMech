@@ -403,7 +403,8 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
           "axis": [<x>, <y>, <z>],    // frame primary axis (e.g. a shaft/gear axis)
           "shaft_dia_mm": <number>,   // HARD shaft/gear-pitch diameter in MM for a
                                        // power_in/power_out/mesh frame (0 for a plain mount)
-          "role": "<mount | power_in | power_out | mesh>"
+          "role": "<mount | power_in | power_out | mesh>",
+          "mounts_part": "<optional: the part inside THIS sub that seats at this frame>"
         }
       ]
     }
@@ -460,6 +461,20 @@ HARD RULES
   collide 100% at assembly and cannot be separated (both are pinned to the interface). When
   you write each brief, make sure its part list does not repeat any part named in another
   brief.
+- LABEL THE SEATS on a structural base. When a subassembly is a base/plate/bracket/chassis
+  that carries SEVERAL parts at distinct spots (three bearing holes, four mounting posts, a
+  row of jewel seats), declare ONE frame PER seat at that seat's own distinct `xyz_m`, and
+  set `mounts_part` to the part that sits there. This pins each part to its hole so the
+  manager places them at the right SPREAD-OUT positions instead of guessing (guessing stacks
+  them all at the origin, they overlap, and nothing can separate parts pinned to a seat).
+  Example — a plate with 3 bearing holes 40 mm apart:
+    frames: [
+      {"name":"seat_input",  "xyz_m":[0.00,0,0], "mounts_part":"bearing_input",  "role":"mount"},
+      {"name":"seat_middle", "xyz_m":[0.04,0,0], "mounts_part":"bearing_middle", "role":"mount"},
+      {"name":"seat_output", "xyz_m":[0.08,0,0], "mounts_part":"bearing_output", "role":"mount"}
+    ]
+  This matters MORE the less regular the base is — for an irregular chassis only YOU know
+  where each hole goes, so you MUST label every seat with its position + part.
 - IDENTICAL REPEATED SUBASSEMBLIES: when several subassemblies are the SAME (same
   parts, differing ONLY in position/orientation — a quadcopter's 4 rotors, a hexapod's
   6 legs, a car's 4 wheels), emit ONE subassembly and list each copy in "instances"

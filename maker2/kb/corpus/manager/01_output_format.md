@@ -77,3 +77,13 @@ Port naming is forgiving, so prefer the natural name and it will resolve:
   a bearing bore via a coaxial mate; a part resting on the surface below via a
   face_to_face mate. Every part must connect (through mates) to the rest — an
   unconnected part is rejected.
+- COMMON BASE, parallel not chained: when many parts sit on ONE base (a plate with
+  several bosses / bearing seats / pillars, a bracket carrying several posts), mate
+  EACH of them to the base INDEPENDENTLY — the base is the single shared anchor and the
+  parts fan off it in parallel. Do NOT chain them to each other (boss → next boss →
+  next boss); chaining fixes each part's position by TWO paths (its own base mate plus
+  the neighbor's) and over-constrains it. "Connect to the rest" is satisfied by
+  connecting to the BASE, not to sibling parts. Their relative spacing comes from WHERE
+  each one mates on the base (its face position / `offset_mm`), not from mating one to
+  the next. Example: three bearing bosses 40 mm apart on a plate = three separate
+  face_to_face mates to the plate at x=0, 40, 80 — never boss_a→boss_b→boss_c.

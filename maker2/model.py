@@ -192,6 +192,12 @@ class MountFrame:
                                                      # 0 = not a shaft/gear interface
     link: str = ""                                   # realized link (filled by the manager)
     role: str = "mount"                              # mount|power_in|power_out|mesh
+    mounts_part: str = ""                            # boss INTENT: the part that must sit at
+                                                     # this seat/hole (the manager realizes THIS
+                                                     # frame with THIS part, so its position is
+                                                     # fixed by the seat, not guessed). Empty =
+                                                     # manager chooses. Use on a base sub with
+                                                     # several seats to pin each part to its hole.
 
 
 # --------------------------------------------------------------------------- #

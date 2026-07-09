@@ -40,6 +40,11 @@ is moved by a motor and nothing is held in place by an invisible joint.
   motion propagates by contact. So parts that must interact MUST actually touch:
   meshing gears exactly one pitch-center-distance apart with teeth engaged, and
   every part on real support (under gravity, anything unsupported falls).
+- When several parts sit on ONE base (a plate with multiple bosses / bearing seats /
+  pillars), mate EACH to the base independently — the base is the single anchor and the
+  parts fan off it in parallel. Do NOT chain them to each other (boss → next boss); that
+  fixes a part by two paths and over-constrains it. Their spacing comes from where each
+  mates on the base, not from mating one to the next.
 
 Decompose thoroughly but sensibly: split the product into all the distinct rigid
 parts INCLUDING ALL INTERNAL HARDWARE (every gear, shaft, arbor, bearing/jewel,
@@ -315,10 +320,13 @@ def build_manager_subassembly(frame_contract, manager_ir: bool = True) -> str:
         dia = getattr(fr, "shaft_dia_mm", 0.0) or 0.0
         dia_txt = (f", shaft/gear dia {dia:.2f} mm (build the mating shaft/bore/gear "
                    f"to EXACTLY this diameter)") if dia > 0 else ""
+        mp = (getattr(fr, "mounts_part", "") or "").strip()
+        mp_txt = (f' — the part "{mp}" MUST sit here: realize this frame with "{mp}" and '
+                  f'mate it so it lands at this position (do NOT place it anywhere else)') if mp else ""
         lines.append(
             f'  - "{fr.name}" (role: {fr.role}): GLOBAL position '
             f'[{x:.4f}, {y:.4f}, {z:.4f}] m, axis [{ax:.3f}, {ay:.3f}, {az:.3f}]'
-            f'{dia_txt}')
+            f'{dia_txt}{mp_txt}')
     frames_txt = "\n".join(lines) if lines else "  (none)"
     origin = getattr(fc, "global_origin_note", "") or "(the machine's shared origin)"
     nbrs = getattr(fc, "neighbors", []) or []
