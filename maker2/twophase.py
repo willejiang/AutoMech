@@ -133,7 +133,18 @@ def stream_two_part(client, conv: Conversation, system: str, *,
             return _regen_json(client, system, notes, regen_msg_fn, log_fn, tag)
 
         # finish == "stop" (or anything non-length): the response completed.
-        _save(memory_path, _notes_of(accum) if has_json else accum)
+        if not has_json:
+            # The model finished politely after writing ONLY notes (or an empty reply) and
+            # never emitted the `{` — returning this as-is makes the caller's parse throw
+            # "no JSON object found" and burns the whole attempt. The notes ARE the plan, so
+            # regenerate the JSON from them (same path as a mid-JSON cap cut) instead.
+            notes = _notes_of(accum)
+            _save(memory_path, notes)
+            if log_fn:
+                log_fn(f"[{tag}] response ended with notes but no JSON; generating the "
+                       f"JSON from the plan")
+            return _regen_json(client, system, notes, regen_msg_fn, log_fn, tag)
+        _save(memory_path, _notes_of(accum))
         return accum
 
     # Notes-continuation budget exhausted without ever reaching the JSON. Treat the

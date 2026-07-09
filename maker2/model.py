@@ -118,6 +118,12 @@ class KinematicModel:
     # contract, its realized interface-frame placements land here (not part of the
     # URDF contract; model_to_dict/_validate_model ignore it). See maker2/boss.py.
     frames_realized: list = field(default_factory=list, compare=False, repr=False)
+    # Boss-compiler output: after the assembler places every subassembly by welding its
+    # ports, the solved WORLD pose of each interface frame lands here as
+    # {"sub": id, "frame": name, "xyz_m": [3], "rpy_rad": [3]}. This is the coordinate
+    # source the post-assemble gates (gear-mesh distance) read — the boss no longer
+    # authors these; the compiler solves them. See assembler.assemble.
+    assembly_frames_world: list = field(default_factory=list, compare=False, repr=False)
 
     def link_by_name(self, name: str) -> "LinkSpec | None":
         return next((l for l in self.links if l.name == name), None)
@@ -272,7 +278,20 @@ class SeamSpec:
                  seam the structural link is still a weld between the housings;
                  `mesh_pair` names the (drive_link, driven_link) that couple by
                  tooth contact, and the geometric pre-check verifies their center
-                 distance == summed pitch radii."""
+                 distance == summed pitch radii.
+
+    NUMBER-FREE MATE VOCABULARY (optional; when set, a boss-level seam-solver places the
+    child from the parent's REALIZED port instead of the parent frame's boss coordinate —
+    so the child cannot drift from where its neighbor actually sits). `mate_type`:
+      "insert" -> a shaft/pin END goes coaxially into a bore/hole (barrel arbor -> plate
+                  hole). Coaxial + seated; `offset_mm` sets the axial seat depth.
+      "seat"   -> a flat FACE seats on a face (a plate/bridge on a ledge). A bare face is
+                  rotation-free, so `extra_pins` names the dowel pairs that kill the spin.
+      "mesh"   -> two gears couple by teeth; center distance = sum of pitch radii (derived
+                  from geometry, not authored). Equivalent to a "power"/mesh_pair seam.
+    `parent_port`/`child_port` name a geometry-backed port each sub realizes (a hole, a
+    shaft end, a gear center). When empty, parent_frame/child_frame are used (legacy path).
+    `clock_rad` rolls the child about the mate axis (0 = don't-care, the common case)."""
 
     id: str
     kind: str                                        # "weld" | "power"
@@ -289,6 +308,13 @@ class SeamSpec:
     driver: bool = False                             # is this the machine's single power input?
     owner_sub: str = ""                              # for a power seam, which sub owns the driving link
     mesh_pair: tuple = ()                            # (drive_link, driven_link) for a gear-mesh seam
+    # ── number-free mate fields (optional; empty = legacy frame-coordinate placement) ──
+    mate_type: str = ""                               # ""|insert|seat|mesh — how the ports mate
+    parent_port: str = ""                             # named port on parent_sub (hole/face/gear)
+    child_port: str = ""                              # named port on child_sub (shaft end/face/gear)
+    offset_mm: float = 0.0                            # insert seat depth / seat face gap (LOCAL mm)
+    clock_rad: float = 0.0                            # roll about the mate axis (0 = don't-care)
+    extra_pins: tuple = ()                            # ((parent_port, child_port), ...) anti-spin dowels
 
 
 @dataclass

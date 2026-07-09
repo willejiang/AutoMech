@@ -63,10 +63,31 @@ def _support_errors(plan) -> list[GateError]:
     return out
 
 
-def _mesh_distance_errors(plan) -> list[GateError]:
-    """For each gear-mesh power seam, center distance between the two frames must equal
-    the sum of their pitch radii (from shaft_dia_mm)."""
+def _mesh_distance_errors_world(plan, frames_world) -> list[GateError]:
+    """For each gear-mesh power seam, center distance between the two frames' SOLVED WORLD
+    positions must equal the sum of their pitch radii (from shaft_dia_mm). Reads the
+    compiler's `assembly_frames_world` (post-assemble) — the boss no longer authors the
+    gear-center coordinates, so this VALIDATES the placement the weld produced rather than
+    the boss's guess. `frames_world` is a list of {sub, frame, xyz_m, rpy_rad}; the `sub`
+    key is the namespaced sub id, so we match on frame name within the seam's parent/child
+    sub (an instanced sub is matched on its base id prefix)."""
     out: list[GateError] = []
+    # Index solved world positions by (sub_id_prefix, frame_name). The compiler keys by the
+    # namespaced ns_id (== sub id for non-instanced subs), so a direct + prefix match covers
+    # both. Store the first world xyz seen for each (sub, frame).
+    by_key: dict = {}
+    for e in (frames_world or []):
+        by_key[(e.get("sub"), e.get("frame"))] = e.get("xyz_m")
+
+    def _world_of(sub_id, frame_name):
+        if (sub_id, frame_name) in by_key:
+            return by_key[(sub_id, frame_name)]
+        # instanced sub: match the first copy whose ns_id starts with "<sub_id>_"
+        for (k_sub, k_fr), v in by_key.items():
+            if k_fr == frame_name and (k_sub == sub_id or str(k_sub).startswith(sub_id + "_")):
+                return v
+        return None
+
     for seam in plan.seams:
         if seam.kind != "power" or not seam.mesh_pair or len(seam.mesh_pair) != 2:
             continue
@@ -77,29 +98,38 @@ def _mesh_distance_errors(plan) -> list[GateError]:
         pf = _frame_on(p_sub, seam.parent_frame)
         cf = _frame_on(c_sub, seam.child_frame)
         if pf is None or cf is None:
-            continue                         # frame existence is the schema/frame gate's job
+            continue
         dia_p = float(getattr(pf, "shaft_dia_mm", 0.0) or 0.0)
         dia_c = float(getattr(cf, "shaft_dia_mm", 0.0) or 0.0)
         if dia_p <= 0 or dia_c <= 0:
-            # Boss didn't fix pitch diameters on a mesh seam — can't verify spacing here;
-            # the post-build precheck degenerate-gap check remains the backstop.
-            continue
-        want_m = (dia_p + dia_c) / 2.0 / 1000.0     # sum of pitch radii, mm -> m
-        dp = tuple(float(v) for v in (pf.xyz_m or (0, 0, 0)))
-        dc = tuple(float(v) for v in (cf.xyz_m or (0, 0, 0)))
-        center_d = math.dist(dp, dc)
+            continue                         # can't verify without pitch diameters
+        wp = _world_of(seam.parent_sub, seam.parent_frame)
+        wc = _world_of(seam.child_sub, seam.child_frame)
+        if wp is None or wc is None:
+            continue                         # frame not solved -> assembler/frame gate's job
+        want_m = (dia_p + dia_c) / 2.0 / 1000.0
+        center_d = math.dist([float(v) for v in wp], [float(v) for v in wc])
         if want_m > 0 and abs(center_d - want_m) > _MESH_TOL_FRAC * want_m:
             out.append(GateError(
                 "boss", "ERR_IFC_MESH_DIST",
-                f"mesh seam '{seam.id}': frames are {center_d*1000:.1f} mm apart but the "
-                f"pitch radii sum to {want_m*1000:.1f} mm "
-                f"(>{_MESH_TOL_FRAC:.0%} off -> teeth won't engage); move the frames or "
-                "fix the pitch diameters",
+                f"mesh seam '{seam.id}': the assembled gear centers are {center_d*1000:.1f} "
+                f"mm apart but the pitch radii sum to {want_m*1000:.1f} mm "
+                f"(>{_MESH_TOL_FRAC:.0%} off -> teeth won't engage); adjust the weld seam's "
+                "frames/offset so the two gear centers land one pitch-center-distance apart, "
+                "or fix the pitch diameters",
                 seam.id))
     return out
 
 
+def mesh_distance_errors(plan, frames_world) -> list[GateError]:
+    """POST-ASSEMBLE gear-mesh distance gate: validate every mesh seam on the compiler's
+    solved world frames (`model.assembly_frames_world`). Public entry for the orchestrator."""
+    return _mesh_distance_errors_world(plan, frames_world)
+
+
 def boss_gate(plan) -> list[GateError]:
-    """Deterministic plan-level checks: support chain (ERR_SUP_NOWELD) + gear-mesh
-    distance (ERR_IFC_MESH_DIST). Returns [] on pass."""
-    return _support_errors(plan) + _mesh_distance_errors(plan)
+    """Deterministic PRE-BUILD plan-level check: support chain (ERR_SUP_NOWELD) only. The
+    gear-mesh distance check moved to `mesh_distance_errors` (post-assemble) because the boss
+    no longer authors gear-center coordinates — spacing is validated on the solved assembly,
+    not the plan. Returns [] on pass."""
+    return _support_errors(plan)

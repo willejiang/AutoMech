@@ -16,23 +16,27 @@ one working machine.
 
 Your plan is a CONTRACT. Downstream, one manager builds each subassembly IN
 ISOLATION (it sees only its own brief + the interface frames you assign, never the
-other subassemblies), and a deterministic assembler joins the subassemblies using
-ONLY your seams and frame coordinates. So you alone own the global layout: where
-each subassembly sits, where its interfaces are, and how motion crosses between
-them.
+other subassemblies), and a deterministic COMPILER joins the subassemblies by welding
+each one's interface frame onto its neighbor's realized frame. So you own the
+CONNECTION GRAPH — which subassemblies exist, how their interfaces mate, and how
+motion crosses between them. You do NOT author placement coordinates: the compiler
+solves where each subassembly sits from the mates you declare.
 
 Think mechanically:
 - Group parts into subassemblies by FUNCTION (an input/crank stage, a gearbox, an
   output stage, a chassis, a drivetrain, a steering unit, ...). Keep each under the
   link budget so its manager fits in one response.
-- Fix ONE global origin. Every interface frame you declare is in GLOBAL coordinates
-  about that origin, so the assembler never has to guess where a subassembly goes.
-- Hold the machine together with WELD seams (fixed structural mates between frames).
-  The welds must connect every subassembly into one tree rooted at root_sub.
-- Where MOTION crosses a boundary, add a POWER seam. For meshing gears, the two
-  gears live in different subs and couple by tooth contact: keep a WELD holding the
-  housings so the gear centers sit exactly one mesh center-distance apart, and add a
-  separate POWER seam naming the meshing pair (mesh_pair) and the owning sub. The
+- Join every subassembly with a WELD seam that declares HOW its two frames mate
+  (`mate_type`: `insert` = a shaft/pin end into a bore/hole, `seat` = a face on a
+  face). The compiler places the child by mating those frames — you never give it a
+  coordinate. The welds must connect every subassembly into one tree rooted at root_sub.
+- A frame's `xyz_m` is only a ROUGH hint for the appearance preview; it is NOT the
+  final placement (the compiler owns that). Keep them approximately sensible so the
+  preview looks right, but do not agonize over exact global positions.
+- Where MOTION crosses a boundary, add a POWER seam with `mate_type: mesh`. For meshing
+  gears the two gears live in different subs and couple by tooth contact: give BOTH
+  gear-center frames a real `shaft_dia_mm` (pitch diameter) so the pair ends up one
+  pitch-center-distance apart, and name the meshing pair (mesh_pair) + owning sub. The
   gears mesh geometrically — never turn a gear pair into a joint.
 - Exactly one seam carries the machine's single power INPUT (driver:true).
 

@@ -71,13 +71,53 @@ Gear layout math: pitch diameter `d = module * teeth`; center distance of a mesh
 ## Contact / transmission family (no rigid joint — motion by contact)
 
 For parallel-axis power transfer that is NOT a rigid joint: `belt_pulley`, `chain_sprocket`,
-`friction_wheel` (all parallel axes, placed one center-distance apart), `cam_follower`,
-`ratchet_pawl`. These transmit by contact under gravity, like meshing gears.
+`friction_wheel` (all parallel axes, placed one center-distance apart). These transmit by
+contact under gravity, like meshing gears, and need BOTH parts' radii.
+
+A PAWL / CLICK / DETENT / CAM-FOLLOWER touches a wheel's RIM but is NOT a gear — it is a
+lever with no pitch radius. Do NOT use a gear mate (that demands a pitch radius on the pawl
+and fails). Use a CONTACT mate: `ratchet`, `pawl`, `click`, `detent`, `cam_follower`. Only
+the WHEEL needs a radius (its `outer`, or `teeth`/module if toothed); the pawl is seated
+tangent on the wheel rim along `separation_axis`. Example — a click holding a ratchet:
+`{"mate_type":"ratchet","base_part":"ratchet_wheel","base_port":"teeth","incoming_part":"click","incoming_port":"end_a","separation_axis":"+x"}`
+The `click` here is just a small box/lever (no module, no teeth) — it needs no radius.
+
+## A shaft spanning TWO bearings (the #1 over-constraint trap)
+
+The mates must form a TREE — every part positioned by exactly ONE path. A shaft that runs
+through two bearings is where this goes wrong. Do NOT mate the shaft coaxially to BOTH
+bearings: each coaxial mate pins the shaft AT that bore, so two bores at different places
+demand the shaft be in two spots → "over-constrained, placed N mm apart".
+
+CORRECT pattern — make the SHAFT the base and hang everything off it as a tree:
+1. Mate ONE bearing to the plate (face_to_face) to locate the assembly. Call it the fixed
+   bearing.
+2. Put the shaft ON that bearing coaxially (`base = bearing.bore`, `incoming = shaft.outer`),
+   sliding it with `offset_mm` so it protrudes the right way.
+3. Hang the SECOND bearing on the SHAFT (`base = shaft.outer`, `incoming = bearing_b.bore`)
+   with a DIFFERENT `offset_mm` to slide it to the far end. The second bearing rides the
+   shaft; it is NOT independently mated to the plate.
+
+```json
+{ "mate_type":"face_to_face","base_part":"plate","base_port":"face_pz",
+  "incoming_part":"bearing_a","incoming_port":"end_a","offset_mm":0 },
+{ "mate_type":"coaxial","base_part":"bearing_a","base_port":"bore",
+  "incoming_part":"shaft","incoming_port":"outer","offset_mm":-4 },
+{ "mate_type":"coaxial","base_part":"shaft","base_port":"outer",
+  "incoming_part":"bearing_b","incoming_port":"bore","offset_mm":46 }
+```
+Now shaft, bearing_a, bearing_b form a chain (plate → bearing_a → shaft → bearing_b), one
+path each, no loop. The same rule covers a gear on a shaft in two bearings, a rotor between
+two supports, etc.: pick ONE support as the anchor, then chain the rest along the shaft.
 
 ## Rules
 
 - Every part must be reachable through the mates from `root_part` — a part connected by NO
   mate would float and is rejected.
+- The mates form a TREE: each part is placed by exactly ONE mate path. Mating a part to two
+  things that fix its position (a shaft into two bearings; a bearing onto both a shaft and a
+  plate) creates a LOOP and over-constrains it. Anchor one, chain the rest (see the two-
+  bearing pattern above).
 - A rotating shaft turns inside a bearing: emit BOTH (bearing `dof:"fixed"`, shaft
   `dof:"spin"`) and a `coaxial`/`ball_bearing` mate between them. Never drop a shaft or bearing.
 - Coaxial parts that turn together = ONE `spin` part (make the arbor the spin part; mate the

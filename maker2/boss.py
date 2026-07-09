@@ -133,6 +133,32 @@ def _seam_from_dict(d: dict, idx: int) -> SeamSpec:
     mp = d.get("mesh_pair") or ()
     if mp and (not isinstance(mp, (list, tuple)) or len(mp) != 2):
         raise ValueError(f"seams[{idx}] '{sid.strip()}': mesh_pair must be [drive, driven]")
+    kind = str(d.get("kind")).strip().lower()
+    mate_type = str(d.get("mate_type") or "").strip().lower()
+    if mate_type and mate_type not in ("insert", "seat", "mesh"):
+        raise ValueError(f"seams[{idx}] '{sid.strip()}': mate_type must be one of "
+                         f"insert|seat|mesh (got '{mate_type}')")
+    # mate_type is REQUIRED on a WELD seam: the boss authors the connection graph, and the
+    # compiler places each sub by welding its port onto its neighbor's realized port — there
+    # is no coordinate fallback anymore, so a weld with no mate_type cannot be placed.
+    if kind == "weld" and mate_type not in ("insert", "seat"):
+        raise ValueError(
+            f"seams[{idx}] '{sid.strip()}': a weld seam needs mate_type 'insert' (a "
+            f"shaft/pin end into a bore/hole) or 'seat' (a face resting on a face). The boss "
+            f"no longer authors placement coordinates; every weld MUST declare how its two "
+            f"frames mate so the compiler can place the child.")
+    # extra_pins: an optional list of [parent_port, child_port] anti-spin dowel pairs.
+    raw_pins = d.get("extra_pins") or ()
+    pins: list = []
+    if raw_pins:
+        if not isinstance(raw_pins, (list, tuple)):
+            raise ValueError(f"seams[{idx}] '{sid.strip()}': extra_pins must be a list of "
+                             "[parent_port, child_port] pairs")
+        for j, pr in enumerate(raw_pins):
+            if not isinstance(pr, (list, tuple)) or len(pr) != 2:
+                raise ValueError(f"seams[{idx}] '{sid.strip()}': extra_pins[{j}] must be "
+                                 "[parent_port, child_port]")
+            pins.append((str(pr[0]).strip(), str(pr[1]).strip()))
     return SeamSpec(
         id=sid.strip(),
         kind=str(d.get("kind")).strip().lower(),
@@ -149,6 +175,12 @@ def _seam_from_dict(d: dict, idx: int) -> SeamSpec:
         driver=bool(d.get("driver", False)),
         owner_sub=str(d.get("owner_sub") or "").strip(),
         mesh_pair=tuple(str(x).strip() for x in mp) if mp else (),
+        mate_type=mate_type,
+        parent_port=str(d.get("parent_port") or "").strip(),
+        child_port=str(d.get("child_port") or "").strip(),
+        offset_mm=float(d.get("offset_mm", 0.0)),
+        clock_rad=float(d.get("clock_rad", 0.0)),
+        extra_pins=tuple(pins),
     )
 
 
@@ -339,6 +371,12 @@ def plan_to_dict(plan: SubassemblyPlan) -> dict:
                 "parent_frame": s.parent_frame,
                 "child_sub": s.child_sub,
                 "child_frame": s.child_frame,
+                "mate_type": s.mate_type,
+                "parent_port": s.parent_port,
+                "child_port": s.child_port,
+                "offset_mm": s.offset_mm,
+                "clock_rad": s.clock_rad,
+                "extra_pins": [list(pr) for pr in (s.extra_pins or ())],
                 "joint_type": s.joint_type,
                 "axis": list(s.axis),
                 "lower": s.lower,

@@ -200,63 +200,71 @@ def _sub_instance_ids(spec, base_id: str) -> list[str]:
 # Bridge joints from seams
 # --------------------------------------------------------------------------- #
 
-def _global_frame_pose(plan, sub_id: str, frame_name: str) -> np.ndarray:
-    """The boss's GLOBAL pose (4x4) for a subassembly's interface frame."""
-    sub = plan.sub_by_id(sub_id)
-    for f in (sub.frames if sub else []):
-        if f.name == frame_name:
-            return _mat(f.xyz_m, f.rpy_rad)
-    raise AssemblerError(f"plan sub '{sub_id}' has no frame '{frame_name}'")
-
-
-def _bridge_pose(seam, plan, subs: dict, placed_root: dict, *,
-                 child_ns: str | None = None,
-                 child_root_global_override=None) -> tuple:
-    """A fixed WELD pose that places the child sub at the boss's GLOBAL layout.
-
-    The boss assigns each interface frame a GLOBAL pose; the child sub must sit so
-    ITS child_frame lands at that global pose. With the parent sub already placed at
-    placed_root[parent_sub] (root sub = identity), the weld hangs the child's ROOT
-    under the parent's realized frame link. Returns (PoseSpec, child_root_global).
-
-    ``child_ns`` overrides the child's namespace (an instanced sub passes its per-copy
-    id). ``child_root_global_override`` (an instance's fixed global root pose from
-    instances[k]) bypasses the frame-derived placement so identical copies land at
-    their declared poses.
-    """
+def _bridge_pose_instance(seam, subs: dict, placed_root: dict, *,
+                          child_ns: str, child_root_global) -> tuple:
+    """A fixed WELD pose that places ONE INSTANCE copy of the child sub at its declared
+    per-copy GLOBAL root pose (``child_root_global`` from instances[k]). N identical copies
+    live at N distinct absolute poses, which a single port mate cannot express — so instances
+    are the one remaining place an absolute coordinate is authored. The pose is expressed
+    relative to the PARENT's realized frame link (the pose parent) so the forest is consistent
+    with the port-based welds. Returns (PoseSpec, child_root_global)."""
     parent = subs[seam.parent_sub]
     child = subs[seam.child_sub]
-    child_ns = child_ns or child.id
-    pL, T_pRoot_pf = _frame_in_root(parent, seam.parent_frame)      # parent frame in parent-root
-
-    if child_root_global_override is not None:
-        child_root_global = child_root_global_override
-    else:
-        cL, T_cRoot_cf = _frame_in_root(child, seam.child_frame)    # child frame in child-root
-        # Where the child's own frame must land, in GLOBAL coords (the boss's intent).
-        G_cf = _global_frame_pose(plan, seam.child_sub, seam.child_frame)
-        # Child root pose in global so its frame lands at G_cf.
-        child_root_global = G_cf @ tf.inverse_matrix(T_cRoot_cf)
-
-    # Express the weld origin relative to the PARENT's realized link (the pose parent):
-    #   origin = (global->parentRoot) ∘ (parentRoot->pL)  then invert to pL frame,
-    #   applied to child_root_global.
+    pL, _T_pRoot_pf = _frame_in_root(parent, seam.parent_frame)     # parent frame's link
     parent_root_global = placed_root[seam.parent_sub]
     r2l_parent = _root_to_link(parent.model)
     T_global_pL = parent_root_global @ r2l_parent[pL]
     T_origin = tf.inverse_matrix(T_global_pL) @ child_root_global
     xyz, rpy = _decompose(T_origin)
     p = PoseSpec(
-        name=f"seam_{seam.id}_{child_ns}" if child_root_global_override is not None
-             else f"seam_{seam.id}",
+        name=f"seam_{seam.id}_{child_ns}",
         parent=_ns(parent.id, pL), child=_ns(child_ns, child.model.root_link),
         xyz_m=xyz, rpy_rad=rpy)
     return p, child_root_global
 
 
-# --------------------------------------------------------------------------- #
-# Assemble
-# --------------------------------------------------------------------------- #
+def _bridge_pose_from_ports(seam, subs: dict, placed_root: dict, *,
+                            child_ns: str | None = None) -> tuple:
+    """NUMBER-FREE weld: place the child sub by welding its realized ``child_port`` onto the
+    parent's realized ``parent_port`` IN WORLD — no boss coordinate. This is the boss-level
+    analogue of ``mate_solver._resolve_coaxial``: the parent is already placed, so its port's
+    world pose is known; the child hangs so its own port lands exactly there. Because the
+    child mates to where the parent's frame is ACTUALLY realized (not where the boss said in
+    absolute coords), a boss/realization mismatch cannot fling the child away — the seam is
+    rigid by construction.
+
+    Ports default to the seam's frames (``parent_frame``/``child_frame``) when the port
+    fields are unset, so a seam only needs ``mate_type`` set to opt in. ``offset_mm`` slides
+    the child along the shared port axis (e.g. an insert seat depth). Returns (PoseSpec,
+    child_root_global) with the same shape as ``_bridge_pose_instance``."""
+    parent = subs[seam.parent_sub]
+    child = subs[seam.child_sub]
+    child_ns = child_ns or child.id
+    p_port = getattr(seam, "parent_port", "") or seam.parent_frame
+    c_port = getattr(seam, "child_port", "") or seam.child_frame
+
+    pL, T_pRoot_pf = _frame_in_root(parent, p_port)          # parent port in parent-root
+    cL, T_cRoot_cf = _frame_in_root(child, c_port)           # child port in child-root
+    # Parent port in WORLD (parent already placed at placed_root[parent_sub]).
+    parent_root_global = placed_root[seam.parent_sub]
+    T_world_pf = parent_root_global @ T_pRoot_pf
+    # Optional axial seat: slide the child along the shared (parent-port +Z) axis.
+    off = np.eye(4)
+    off[2, 3] = float(getattr(seam, "offset_mm", 0.0)) / 1000.0
+    # Child root so its port lands on the parent port (+ optional seat offset).
+    child_root_global = T_world_pf @ off @ tf.inverse_matrix(T_cRoot_cf)
+
+    # Express the weld origin relative to the PARENT's realized port LINK (the pose parent),
+    # matching the instance placer's parenting so the pose forest is identical in shape.
+    r2l_parent = _root_to_link(parent.model)
+    T_global_pL = parent_root_global @ r2l_parent[pL]
+    T_origin = tf.inverse_matrix(T_global_pL) @ child_root_global
+    xyz, rpy = _decompose(T_origin)
+    p = PoseSpec(
+        name=f"seam_{seam.id}" if child_ns == child.id else f"seam_{seam.id}_{child_ns}",
+        parent=_ns(parent.id, pL), child=_ns(child_ns, child.model.root_link),
+        xyz_m=xyz, rpy_rad=rpy)
+    return p, child_root_global
 
 def assemble(plan, subs: dict, ctx, *, settings=None, log_fn=print) -> KinematicModel:
     """Stitch the built subassemblies into one final KinematicModel + model.urdf.
@@ -336,9 +344,18 @@ def assemble(plan, subs: dict, ctx, *, settings=None, log_fn=print) -> Kinematic
             try:
                 for ns_id in child_ids:
                     override = inst_root_pose.get(ns_id)   # instance -> fixed global pose
-                    p, child_root_global = _bridge_pose(
-                        seam, plan, subs, placed_root,
-                        child_ns=ns_id, child_root_global_override=override)
+                    if override is not None:
+                        # An INSTANCE copy sits at its own declared per-copy global pose —
+                        # the one remaining place an absolute coordinate is authored (N
+                        # identical copies at N distinct poses can't be a single port mate).
+                        p, child_root_global = _bridge_pose_instance(
+                            seam, subs, placed_root,
+                            child_ns=ns_id, child_root_global=override)
+                    else:
+                        # Number-free placement: weld the child's frame onto the parent's
+                        # REALIZED frame (mate_type is required on every non-instance weld).
+                        p, child_root_global = _bridge_pose_from_ports(
+                            seam, subs, placed_root, child_ns=ns_id)
                     poses.append(p)
                     placed_root[ns_id] = child_root_global
                     n_weld += 1
@@ -391,6 +408,28 @@ def assemble(plan, subs: dict, ctx, *, settings=None, log_fn=print) -> Kinematic
     root_link = _ns(plan.root_sub, subs[plan.root_sub].model.root_link)
     final = KinematicModel(name=plan.name, root_link=root_link,
                            links=links, poses=poses, mesh_pairs=mesh_pairs)
+
+    # Compiler output: the SOLVED world pose of every subassembly interface frame, from
+    # the placement just computed (placed_root[sub] = that sub's world pose). Post-assemble
+    # gates (gear-mesh center distance) read THIS instead of the boss's authored xyz_m —
+    # the boss no longer owns coordinates, the compiler does. Non-instance subs use their
+    # sub_id key; an instanced sub contributes one entry per copy (keyed by copy ns_id).
+    afw: list = []
+    for s in plan.subassemblies:
+        sub = subs[s.id]
+        for ns_id in ns_ids[s.id]:
+            root_world = placed_root.get(ns_id)
+            if root_world is None:
+                continue
+            for fr in (s.frames or []):
+                try:
+                    _lnk, T_root_frame = _frame_in_root(sub, fr.name)
+                except AssemblerError:
+                    continue                       # unrealized frame -> other gate's job
+                xyz, rpy = _decompose(root_world @ T_root_frame)
+                afw.append({"sub": ns_id, "frame": fr.name,
+                            "xyz_m": list(xyz), "rpy_rad": list(rpy)})
+    final.assembly_frames_world = afw
 
     # Forest guard before validation: each non-root sub-root must be placed by exactly
     # one weld pose. Catches a plan whose welds don't span the machine (a sub with no

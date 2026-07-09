@@ -56,6 +56,16 @@ Each part automatically has named ports from its shape; reference them in mates:
 - BOX / PLATE: `face_px/nx/py/ny/pz/nz`, `center`, `bore` (if it has a `bore_dia`).
 A part's primary axis is its local +Z.
 
+Port naming is forgiving, so prefer the natural name and it will resolve:
+- On a CYLINDER you may use `face_pz`/`face_nz` for the two flat ends (they alias
+  `end_b`/`end_a`); `face_px/nx/py/ny` alias the round `outer` wall.
+- On a BOX you may use `end_b`/`end_a` for the +Z/-Z faces (they alias `face_pz`/`face_nz`).
+- A descriptive `shape_hint` still gets full ports: a part sized with `x`/`y`/`z` is
+  treated as a BOX (keeps its six faces) and one sized with `radius`/`diameter` as a
+  CYLINDER (keeps `outer`/`end_a`/`end_b`) — even if the hint is "bridge", "cock",
+  "click", "pallet", "arbor", "jewel", etc. You do not lose ports by naming a part
+  descriptively. (A part with NO usable size keys falls back to a single `center` port.)
+
 ## Units and origin contract
 
 - `size_mm` is in MILLIMETERS. You do NOT write any meter coordinates — the solver

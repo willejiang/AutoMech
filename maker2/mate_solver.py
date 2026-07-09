@@ -9,7 +9,7 @@ ENTIRE downstream pipeline (manager._validate_model, the gates, assembler, build
 physics) is unchanged.
 
 The mate math mirrors AssemCAD's closed-form resolve `T = L_b · R_flip · R_alpha · L_c^-1`
-and the boss's already-proven subassembly-level mate compiler `assembler._bridge_pose`
+and the boss's already-proven subassembly-level mate compiler `assembler._bridge_pose_from_ports`
 (assembler.py:212-254). Ports are usually INFERRED from a part's shape_hint+size_mm
 (`infer_ports`); a PortSpec in the IR overrides inference for that one part.
 
@@ -59,8 +59,13 @@ _PARALLEL_GEAR_MATES = {
 _ANGLED_GEAR_MATES = {"gear_bevel", "miter", "worm", "gear_crossed_helical", "gear_hypoid"}
 # Internal-mesh gears use C = |r_a - r_b| instead of r_a + r_b.
 _INTERNAL_GEAR_MATES = {"gear_spur_internal"}
+# Tangential CONTACT (no pitch radius): a pawl/click/detent/cam-follower TOUCHES a wheel's
+# rim. Positioned tangent to the base part's OUTER radius; the incoming part needs no radius
+# (a click is a lever, not a gear). Couples by contact at sim time like a gear does.
+_CONTACT_MATES = {"ratchet", "pawl", "click", "detent", "cam_follower", "contact",
+                  "escapement", "tangent"}
 # Every gear/contact mate auto-registers a mesh_pair for the transmission detector.
-_MESH_PAIR_MATES = _PARALLEL_GEAR_MATES | _ANGLED_GEAR_MATES
+_MESH_PAIR_MATES = _PARALLEL_GEAR_MATES | _ANGLED_GEAR_MATES | _CONTACT_MATES
 
 
 class MateSolveError(ValueError):
@@ -162,19 +167,47 @@ def _bore_dia_mm(link) -> float | None:
     return None
 
 
+def _has_box_dims(link) -> bool:
+    """True if size_mm carries prismatic x/y/z extents (so an unknown-hint part is a box)."""
+    sz = getattr(link, "size_mm", {}) or {}
+    return any(_mm(sz.get(k)) for k in ("x", "y", "z"))
+
+
 def infer_ports(link) -> dict:
     """Convention ports for a part from shape_hint+size_mm. Cylinder/gear: `outer` + `bore`
     (both +Z axis at origin) + `end_a`/`end_b` (the two flat faces at -/+ half-height) + a
     `teeth` port on a gear (carrying pitch radius). Box: six `face_{px,nx,py,ny,pz,nz}` +
     `center`. The workers' convention (model.py) is the part's primary axis = local +Z, so
-    the bore/outer/teeth axis is +Z. Explicit PortSpec in the IR overrides these by name."""
+    the bore/outer/teeth axis is +Z. Explicit PortSpec in the IR overrides these by name.
+
+    Shape recognition is FORGIVING: managers write descriptive shape_hints ("bridge",
+    "cock", "click", "pallet lever") that are geometrically a box or a cylinder. Rather than
+    collapse those to a bare `center` port (which then makes every mate that references a
+    face/end fail), we (a) recognize a broad set of prismatic/round synonyms, and (b) fall
+    back to the SIZE keys — x/y/z -> box, radius/diameter -> cylinder — so a part keeps its
+    real ports even under a free-text hint. Cylinders ALSO expose `face_*` aliases (a round
+    plate's top face is intuitively `face_pz`, but the canonical name is `end_b`)."""
     hint = (getattr(link, "shape_hint", "") or "").strip().lower()
     ports: dict = {}
     z = (0.0, 0.0, 1.0)
 
+    _CYL_HINTS = ("cylinder", "cyl", "disc", "disk", "shaft", "rod", "tube", "ring",
+                  "bearing", "annulus", "arbor", "pinion", "pin", "post", "pillar",
+                  "staff", "jewel", "washer", "spacer", "bushing", "collar", "wheel",
+                  "barrel", "drum", "cap", "hub", "boss", "stem", "spring", "hairspring")
+    _BOX_HINTS = ("box", "cube", "block", "plate", "slab", "bridge", "cock", "click",
+                  "pallet", "lever", "arm", "bracket", "beam", "bar", "fork", "finger",
+                  "tab", "lug", "clip", "spline", "key", "cover", "base")
+
     is_gear = "gear" in hint or _gear_pitch_radius_mm(link) is not None
-    is_cyl = is_gear or hint in ("cylinder", "cyl", "disc", "disk", "shaft", "rod", "tube",
-                                 "ring", "bearing", "annulus") or _radius_mm(link) is not None
+    _hint_is_box = any(w in hint for w in _BOX_HINTS)
+    _hint_is_cyl = any(w in hint for w in _CYL_HINTS)
+    # Box wins only when the hint clearly reads box AND the part isn't a gear/round; else a
+    # radius or a round synonym -> cylinder. Unknown hint: decide by which dims are present.
+    is_cyl = (is_gear or _hint_is_cyl or _radius_mm(link) is not None
+              or (not _hint_is_box and not _has_box_dims(link)))
+    if _hint_is_box and not is_gear and _radius_mm(link) is None:
+        is_cyl = False
 
     if is_cyl:
         r = _radius_mm(link) or 0.0
@@ -190,6 +223,12 @@ def infer_ports(link) -> dict:
         ports["end_b"] = PortSpec(name="end_b", type="flat_face",
                                   xyz_mm=(0.0, 0.0, h / 2.0 if h else 0.0),
                                   axis=z, normal_sign=1.0)
+        # face_* aliases: a manager reaching for a box face on a round plate should resolve.
+        # +Z/-Z faces map to the two flat ends; the four radial faces map to the outer wall.
+        ports["face_pz"] = ports["end_b"]
+        ports["face_nz"] = ports["end_a"]
+        for _fn in ("face_px", "face_nx", "face_py", "face_ny"):
+            ports[_fn] = ports["outer"]
         if is_gear:
             pr = _gear_pitch_radius_mm(link) or 0.0
             ports["teeth"] = PortSpec(name="teeth", type="gear_mesh", axis=z,
@@ -197,7 +236,7 @@ def infer_ports(link) -> dict:
         del half  # (kept the mm form in xyz_mm above; half unused)
         return ports
 
-    if hint in ("box", "cube", "block", "plate", "slab"):
+    if _hint_is_box or _has_box_dims(link):
         sz = getattr(link, "size_mm", {}) or {}
         x, y, zt = _mm(sz.get("x")) or 0.0, _mm(sz.get("y")) or 0.0, _mm(sz.get("z")) or 0.0
         faces = {
@@ -212,12 +251,17 @@ def infer_ports(link) -> dict:
             ports[nm] = PortSpec(name=nm, type="flat_face", xyz_mm=pos, axis=nrm,
                                  normal_sign=1.0)
         ports["center"] = PortSpec(name="center", type="flat_face", axis=z)
+        # end_a/end_b aliases: a box's ±Z faces answer to the cylinder end names too, so a
+        # mate authored either way resolves symmetrically with the cylinder branch.
+        ports["end_b"] = ports["face_pz"]
+        ports["end_a"] = ports["face_nz"]
         bore = _bore_dia_mm(link)
         if bore:
             ports["bore"] = PortSpec(name="bore", type="bore", axis=z, diameter_mm=bore)
         return ports
 
-    # Unknown shape: give it a center port + an optional bore so it can still be mated.
+    # Unknown shape with NO usable dims: give it a center port + an optional bore so it can
+    # still be mated (rare — most parts hit the box/cylinder branch above via dims).
     ports["center"] = PortSpec(name="center", type="flat_face", axis=z)
     bore = _bore_dia_mm(link)
     if bore:
@@ -354,6 +398,45 @@ def _resolve_gear(T_base, base_link, base_port, incoming_link, incoming_port,
     return target @ roll @ tf.inverse_matrix(Lc)
 
 
+def _resolve_contact(T_base, base_link, base_port, incoming_link, incoming_port,
+                     mate: MateSpec) -> np.ndarray:
+    """Place a pawl/click/detent/follower TANGENT to the wheel's rim (no pitch radius).
+
+    Unlike a gear mesh (which needs BOTH parts' pitch radii), a contact mate only needs the
+    WHEEL's outer radius: the other part is set so its contact port sits on the wheel rim,
+    one wheel-radius from the wheel center along the separation direction. The pawl needs no
+    radius (it is a lever). `offset_mm` nudges the contact point radially (a slight preload);
+    `angle_rad` rolls the incoming part.
+
+    ORDER-AGNOSTIC: the BFS may traverse this edge from either side, so whichever of the two
+    parts actually has a radius is treated as the wheel (kept at T_base's port), and the
+    other is seated on its rim. This keeps a pawl tangent to the wheel regardless of which
+    part the graph reached first."""
+    r_base = base_port.pitch_radius_mm or _radius_mm(base_link) or 0.0
+    r_in = incoming_port.pitch_radius_mm or _radius_mm(incoming_link) or 0.0
+    if r_base <= 0 and r_in <= 0:
+        raise MateSolveError(
+            f"contact mate '{mate.name}': neither '{base_link.name}' nor "
+            f"'{incoming_link.name}' has an outer radius — give the WHEEL a radius/diameter "
+            f"(or module+teeth) so the pawl/follower can be seated on its rim")
+    # The already-placed base part is at T_base; we only ever return the INCOMING part's
+    # world transform. If the base is the wheel (has radius), seat the incoming on its rim.
+    # If instead the INCOMING is the wheel and the base is the pawl, seat the wheel so its
+    # rim touches the base pawl's contact port (the pawl is the fixed reference here).
+    wheel_is_base = r_base > 0
+    r_wheel = r_base if wheel_is_base else r_in
+    ref_center_w = (T_base @ _port_local_frame(base_port))[:3, 3]
+    ref_axis_w = _unit((T_base @ _port_local_frame(base_port))[:3, 2])
+    sep = _separation_dir(mate, ref_axis_w)
+    sep = _unit(sep - np.dot(sep, ref_axis_w) * ref_axis_w)   # perpendicular to the axis
+    C = (r_wheel + float(mate.offset_mm)) / 1000.0
+    contact_w = ref_center_w + C * sep
+    target = _frame_from_axis(ref_axis_w, contact_w)
+    roll = _rot_about((0, 0, 1), mate.angle_rad)
+    Lc = _port_local_frame(incoming_port)
+    return target @ roll @ tf.inverse_matrix(Lc)
+
+
 def _resolve_mate(mate: MateSpec, T_base, base_link, base_ports, incoming_link,
                   incoming_ports) -> np.ndarray:
     """Dispatch to the resolver for this mate's family and return the incoming part's world
@@ -372,6 +455,8 @@ def _resolve_mate(mate: MateSpec, T_base, base_link, base_ports, incoming_link,
     mt = mate.mate_type
     if mt in _PARALLEL_GEAR_MATES or mt in _ANGLED_GEAR_MATES:
         return _resolve_gear(T_base, base_link, bp, incoming_link, ip, mate)
+    if mt in _CONTACT_MATES:
+        return _resolve_contact(T_base, base_link, bp, incoming_link, ip, mate)
     Lb, Lc = _port_local_frame(bp), _port_local_frame(ip)
     if mt in _COAXIAL_MATES:
         return _resolve_coaxial(T_base, Lb, Lc, mate)
@@ -508,8 +593,15 @@ def solve_connection_graph(ir: dict) -> KinematicModel:
                 if drift > _POS_TOL_M:
                     raise MateSolveError(
                         f"over-constrained: part '{other}' is placed {drift*1000:.1f} mm apart "
-                        f"by two conflicting mate paths (one via mate '{m.name}'). Remove or "
-                        f"fix one of the mates that positions '{other}'.")
+                        f"by two conflicting mate paths (one via mate '{m.name}'). Every part "
+                        f"must be positioned by exactly ONE path (a TREE, no loops). This is "
+                        f"usually a shaft in TWO bearings/supports: don't mate the shaft to "
+                        f"both (each coaxial mate pins the shaft AT that bore, so two bores "
+                        f"in different places contradict). Instead make the SHAFT the base and "
+                        f"hang each bearing ON it with a different `offset_mm` to slide them "
+                        f"apart along the axis, and mate only ONE bearing to the plate — the "
+                        f"shaft and the other bearing ride along as a tree. Remove or re-root "
+                        f"one of the mates positioning '{other}'.")
                 continue
             T_world[other] = T_other
             placement_parent[other] = base_p

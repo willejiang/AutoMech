@@ -172,32 +172,41 @@ def manager_gate(model, sub_frames, frame_contract) -> list[GateError]:
     return errors
 
 
-def frame_drift_errors(model, frame_contract, is_root: bool = True) -> list[GateError]:
-    """C6 — self-consistency on frames_realized: check each realized interface frame's
-    WORLD position (recomputed from the owning link's pose) against the boss contract.
+def frame_drift_errors(model, frame_contract, is_root: bool = True,
+                       realized_frames=None) -> list[GateError]:
+    """C6 — self-consistency on frames_realized: check the RELATIVE layout of each realized
+    interface frame against the boss contract (the vector between any two realized frames
+    must match the vector between them in the contract).
 
-    The check DIFFERS by the sub's role, because the assembler places subs differently:
+    The boss no longer authors absolute frame coordinates — the compiler places each sub by
+    welding its ports onto its neighbor's realized ports (assembler._bridge_pose_from_ports),
+    so a sub's GLOBAL position is the compiler's job, not something to check against a boss
+    xyz_m. What the contract still constrains is a sub's INTERNAL frame layout: a rigid
+    placement preserves relative offsets, so the vector between two realized frames must
+    equal the contract's vector between them. A relative mismatch -> ERR_FRAME_DRIFT; a
+    uniform offset (all frames shifted by the same vector) is fine (the weld transform).
 
-    * ROOT sub (is_root=True): the assembler pins its root at the GLOBAL origin, so the
-      realized frames must land on the contract's ABSOLUTE xyz_m within _POS_TOL_M. An
-      absolute drift -> ERR_FRAME_DRIFT.
-
-    * WELDED CHILD (is_root=False): the assembler RIGIDLY TRANSFORMS the whole sub so its
-      weld frame mates to the parent — the sub's own origin is NOT the global origin, so
-      the absolute contract coords are the sub's TARGET pose, not where the manager must
-      author. A child authored around its own local origin is CORRECT even though every
-      frame is offset from the global coord by the (as-yet-unknown) weld transform. What
-      MUST hold is INTERNAL CONSISTENCY: the vector between any two realized frames must
-      equal the vector between those same two frames in the contract (a rigid transform
-      preserves relative offsets). A relative mismatch -> ERR_FRAME_DRIFT; a uniform
-      absolute offset (all frames shifted by the same vector) is fine and NOT flagged.
+    ``is_root`` is accepted for call-site compatibility but no longer changes behavior: the
+    former absolute root-position branch is gone with boss-authored coordinates. Root and
+    welded child are checked identically (relative-only).
 
     Reuses assembler._root_to_link / _mat and precheck._POS_TOL_M. Frames the manager did
-    not realize at all are NOT flagged here (ERR_FRAME_UNREALIZED owns that)."""
+    not realize at all are NOT flagged here (ERR_FRAME_UNREALIZED owns that).
+
+    ``realized_frames`` (a list of {frame, link, local_xyz_m, local_rpy_rad} dicts) OVERRIDES
+    ``model.frames_realized`` when given. Callers pass the SAME fallback-resolved frames the
+    assembler welds with (_sub_frames_to_dict output) — otherwise a sub whose manager
+    declared NO frames_realized but was auto-rescued by a fallback (e.g. every mount frame
+    collapsed onto the root at local origin) is never drift-checked here, because raw
+    model.frames_realized is empty. Checking the RESOLVED frames catches that collapse: the
+    contract places the frames apart, the fallback realizes them at one point -> drift."""
     frames = list(getattr(frame_contract, "frames", []) or [])
     if not frames:
         return []
-    realized = {e.get("frame"): e for e in (getattr(model, "frames_realized", []) or [])}
+    if realized_frames is not None:
+        realized = {e.get("frame"): e for e in realized_frames}
+    else:
+        realized = {e.get("frame"): e for e in (getattr(model, "frames_realized", []) or [])}
     T = _root_to_link(model)
 
     def _world_of(fr):
@@ -216,28 +225,15 @@ def frame_drift_errors(model, frame_contract, is_root: bool = True) -> list[Gate
         return np.array([float(v) for v in (getattr(fr, "xyz_m", None) or (0, 0, 0))])
 
     out: list[GateError] = []
-    if is_root:
-        for fr in frames:
-            world = _world_of(fr)
-            if world is None:
-                continue                      # unrealized/unreachable -> other gate's job
-            drift = float(np.linalg.norm(world - _want_of(fr)))
-            if drift > _POS_TOL_M:
-                out.append(GateError(
-                    "manager", "ERR_FRAME_DRIFT",
-                    f"interface frame '{fr.name}' is realized on link "
-                    f"'{realized[fr.name].get('link')}' but its WORLD position is "
-                    f"{drift*1000:.1f} mm from the boss contract's required global position "
-                    f"(tolerance {_POS_TOL_M*1000:.1f} mm) — this is the ROOT subassembly, "
-                    "pinned at the global origin, so its frames must sit at the contract "
-                    "coords. Move the link (or the frame's local offset) onto the contract "
-                    "position.",
-                    fr.name))
-        return out
-
-    # Welded child: compare RELATIVE offsets against a common reference frame. Pick the
-    # first realized frame as the reference; every other realized frame's offset FROM it
-    # must match the contract's offset within tolerance (a rigid weld preserves this).
+    # RELATIVE-offset check for EVERY sub (root and welded child alike). The boss no longer
+    # authors absolute frame coordinates — the compiler places each sub by welding its ports,
+    # so a sub's global position is the compiler's job, not something to check against a boss
+    # xyz_m. What the contract still constrains is the RELATIVE layout of a sub's own frames:
+    # the vector between any two realized frames must match the vector between them in the
+    # contract (a rigid placement preserves this). Pick the first realized frame as the
+    # reference; every other realized frame's offset FROM it must match the contract's offset.
+    # (`is_root` is kept for call-site compatibility but no longer changes behavior — the
+    # former absolute root-position check is gone with boss-authored coordinates.)
     realized_frames = [fr for fr in frames if _world_of(fr) is not None]
     if len(realized_frames) < 2:
         return out                            # 0-1 frames: nothing relative to check
@@ -253,8 +249,8 @@ def frame_drift_errors(model, frame_contract, is_root: bool = True) -> list[Gate
                 f"interface frame '{fr.name}' is {drift*1000:.1f} mm out of position "
                 f"RELATIVE to frame '{ref.name}' (tolerance {_POS_TOL_M*1000:.1f} mm): the "
                 f"contract places them {np.round(rel_want*1000, 1)} mm apart but this sub "
-                f"realizes them {np.round(rel_world*1000, 1)} mm apart. This welded "
-                "subassembly may sit anywhere globally, but its frames' RELATIVE layout "
-                "must match the contract. Fix the offending link/frame offset.",
+                f"realizes them {np.round(rel_world*1000, 1)} mm apart. The sub may sit "
+                "anywhere globally, but its frames' RELATIVE layout must match the contract. "
+                "Fix the offending link/frame offset.",
                 fr.name))
     return out

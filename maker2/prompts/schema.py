@@ -414,6 +414,10 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
       "kind": "<weld | power>",
       "parent_sub": "<sub id>", "parent_frame": "<frame name on parent_sub>",
       "child_sub":  "<sub id>", "child_frame":  "<frame name on child_sub>",
+      "mate_type": "<REQUIRED on a weld: insert | seat (mesh on a power seam); how the two frames join>",
+      "parent_port": "<the frame on parent_sub this seam mates (defaults to parent_frame)>",
+      "child_port":  "<the frame on child_sub this seam mates (defaults to child_frame)>",
+      "offset_mm": <number>,          // insert seat depth / seat face gap along the mate axis
       "joint_type": "<fixed for weld; continuous/revolute only for a shared-DOF power seam>",
       "axis": [<x>, <y>, <z>],       // for a non-fixed power seam
       "driver": <true|false>,         // true on the seam carrying the machine's single power input
@@ -424,6 +428,24 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
 }
 
 HARD RULES
+- EVERY WELD SEAM MUST SET `mate_type` (REQUIRED — a weld without it is rejected). You author
+  the CONNECTION GRAPH, not coordinates: the compiler places each sub by welding its frame
+  ONTO its neighbor's REALIZED frame, so the child sits exactly where its neighbor actually
+  is and a frame error cannot fling it across the machine. Pick the mate_type by the real
+  mechanical join:
+    * "insert" — a shaft/pin/arbor END goes into a bore/hole (a bearing seat, a plate hole,
+                 a jewel). Coaxial + seated; `offset_mm` = how deep it seats.
+    * "seat"   — a flat FACE rests on a face (a plate on a ledge, a bridge on posts, a cover
+                 on a housing). `offset_mm` = the face gap (usually 0).
+    * "mesh"   — two gears couple by teeth (on a "power" seam, alongside mesh_pair).
+  You do NOT author final placement coordinates. A frame's `xyz_m` is only a ROUGH hint for
+  the appearance preview — the compiler solves the real placement from the mated frames. Set
+  `parent_port`/`child_port` only if the mated frame differs from parent_frame/child_frame;
+  otherwise they default to the seam's frames.
+- MESH SPACING comes from geometry, not coordinates: on a `mesh` seam give BOTH gear-center
+  frames a real `shaft_dia_mm` (pitch diameter). The two gears must end up one pitch-center-
+  distance apart (sum of pitch radii) — this is validated on the assembled machine, so choose
+  the weld frames + `offset_mm` that carry the driven gear to that distance.
 - Split the machine into coherent functional subassemblies (an input/crank stage, a
   gear train, an escapement, a barrel, a chassis, a drivetrain, ...). Size each so it
   is a sensible unit for one manager + worker — roughly up to ~20 links; never above
@@ -526,6 +548,9 @@ BOSS_FEWSHOT_JSON = """\
       "kind": "weld",
       "parent_sub": "sub_crank", "parent_frame": "housing_mount",
       "child_sub": "sub_output", "child_frame": "housing_mount",
+      "mate_type": "seat",
+      "parent_port": "housing_mount", "child_port": "housing_mount",
+      "offset_mm": 0.0,
       "joint_type": "fixed"
     },
     {
@@ -533,6 +558,7 @@ BOSS_FEWSHOT_JSON = """\
       "kind": "power",
       "parent_sub": "sub_crank", "parent_frame": "drive_gear_center",
       "child_sub": "sub_output", "child_frame": "driven_gear_center",
+      "mate_type": "mesh",
       "joint_type": "fixed",
       "axis": [0.0, 0.0, 1.0],
       "driver": true,

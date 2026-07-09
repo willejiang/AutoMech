@@ -457,7 +457,8 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
         # transformed onto its weld) only the RELATIVE layout of its frames must match the
         # contract — the sub's own origin is not the global origin. BLOCKING.
         _is_root = (sub_id == getattr(plan, "root_sub", None))
-        all_errs.extend(frame_drift_errors(model, fc, is_root=_is_root))
+        all_errs.extend(frame_drift_errors(model, fc, is_root=_is_root,
+                                           realized_frames=_pre_frames))
         # ERR_OVL from the PRE-render AABB check stays a WARNING (verified: it cannot be
         # made zero-false-positive). A DECLARED-box AABB grossly over-approximates non-boxy
         # parts: a radial cage of 8 thin ribs (each a 2 mm x 330 mm cylinder) rotated about
@@ -662,6 +663,44 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
                     json.dump(sub_frames, f, indent=2)
             except Exception as e:
                 slog(f"[conflict] could not rewrite sub_frames.json: {e}")
+
+    # POST-DEBUGGER FRAME RE-VALIDATION: the pre-render frame gates (ERR_FRAME_UNREALIZED +
+    # C6 drift) ran on the manager's PRE-debug model. The conflict-debugger above can move
+    # poses, re-save the model, and rewrite sub_frames.json — so a frame that was realized
+    # at the right offset can drift, or a fallback-realized frame can vanish, with no gate
+    # re-check. Re-run those exact frame checks on the FINAL model so the assembler never
+    # welds a sub whose frames silently moved (the "3 subs float 24 mm away" failure). Same
+    # guard as the pre-debug gate (fresh full build only); BLOCKING — fail the sub UP.
+    if success and only_links is None:
+        from .benchmarks import GateError as _GateError
+        from .benchmarks import format_errors as _fmt_frames
+        from .benchmarks.manager_gate import frame_drift_errors as _frame_drift
+        _final_frames = _sub_frames_to_dict(model, fc.frames)
+        _realized_now = {e["frame"] for e in _final_frames}
+        _frame_errs = [
+            _GateError("manager", "ERR_FRAME_UNREALIZED",
+                       f"interface frame '{fr.name}' is not realized by any link after the "
+                       "debugger pass — the assembler cannot weld this subassembly. Place a "
+                       "real link at that frame's position and declare it in frames_realized.",
+                       fr.name)
+            for fr in fc.frames if fr.name not in _realized_now]
+        _is_root = (sub_id == getattr(plan, "root_sub", None))
+        _frame_errs.extend(_frame_drift(model, fc, is_root=_is_root,
+                                        realized_frames=_final_frames))
+        for e in _frame_errs:
+            log_fn("ARTIFACT_JSON:" + json.dumps({
+                "kind": "gate", "layer": "manager", "sub_id": sub_id, "code": e.code,
+                "detail": e.detail, "culprit": e.culprit, "ok": False}))
+        if _frame_errs:
+            slog(f"post-debugger frame gate FAILED with {len(_frame_errs)} issue(s):")
+            for e in _frame_errs:
+                slog(f"  {e}")
+            return SubResult(id=sub_id, ctx=ctx, model=model, results=results,
+                             sub_frames=_final_frames, ok=False,
+                             error=("this subassembly's interface frames drifted or went "
+                                    "unrealized after the geometry fix; correct exactly "
+                                    "these and rebuild:\n" + _fmt_frames(_frame_errs)))
+        slog("post-debugger frame gate PASSED (all contract frames realized + in place)")
 
     # C5 — DRY-RUN COMPILE GATE (the final sub gate): the real-mesh conflict gate above
     # confirmed the parts don't interpenetrate; this confirms the sub actually LOADS in the
@@ -1044,6 +1083,24 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
             "kind": "assembled_model", "iter": it, "run_dir": assembly_ctx.run_dir,
             "render_dir": assembly_ctx.run_dir}))
 
+        # 4a. POST-ASSEMBLE gear-mesh distance gate: the boss no longer authors gear-center
+        #     coordinates, so mesh spacing is validated on the COMPILER'S solved world frames
+        #     (final.assembly_frames_world), not the plan. If two meshing gears didn't land
+        #     one pitch-center-distance apart, the weld geometry is wrong -> re-plan (same
+        #     path as an AssemblerError). Deterministic, no LLM.
+        from .benchmarks.boss_gate import mesh_distance_errors as _mesh_dist
+        _mesh_errs = _mesh_dist(plan, getattr(final, "assembly_frames_world", []))
+        for e in _mesh_errs:
+            log_fn("ARTIFACT_JSON:" + json.dumps({
+                "kind": "gate", "layer": "boss", "code": e.code, "detail": e.detail,
+                "culprit": e.culprit, "ok": False}))
+        if _mesh_errs:
+            feedback = "assembly mesh check failed: " + "; ".join(e.detail for e in _mesh_errs)
+            log(f"[assembler] mesh distance FAILED -> boss re-plan: {_mesh_errs[0].detail}")
+            if not infinite and it >= max_boss_iters - 1:
+                result["error"] = feedback; break
+            it += 1; continue
+
         # 4b. Silent overlap auto-nudge (Session B item 1b): separate any subassemblies
         #     that interpenetrate but share NO seam so THIS assembly closes, and tell the
         #     blamed managers to fix their placement next iteration (a nudge is a hint,
@@ -1237,12 +1294,30 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
             if getattr(settings, "enable_kb", False):
                 try:
                     from . import kb
+                    from .benchmarks.manager_gate import frame_drift_errors as _fd
                     note = ""
                     if judge_verdict is not None:
                         note = (getattr(judge_verdict, "memory_note", "")
                                 or (judge_verdict.reasons or "")[:200])
-                    passing_models = {sid: sr.model for sid, sr in subs.items()
-                                      if getattr(sr, "ok", False) and getattr(sr, "model", None)}
+                    # A sub good enough to SHIP is not automatically good enough to TEACH:
+                    # a remembered design is retrieved as a worked example, so promote only
+                    # subs that ALSO realize every contract frame in place (zero drift /
+                    # unrealized on the hardened, fallback-resolved check). This stops a
+                    # marginal sub that squeaked past the ship bar (e.g. collapsed mount
+                    # frames) from becoming a poisoned exemplar that steers future runs wrong.
+                    passing_models = {}
+                    for sid, sr in subs.items():
+                        if not (getattr(sr, "ok", False) and getattr(sr, "model", None)):
+                            continue
+                        _fc = frame_contract_for(plan, sid)
+                        _is_root = (sid == getattr(plan, "root_sub", None))
+                        _drift = _fd(sr.model, _fc, is_root=_is_root,
+                                     realized_frames=getattr(sr, "sub_frames", None) or None)
+                        if _drift:
+                            log(f"[kb] NOT teaching '{sid}': {len(_drift)} frame issue(s) "
+                                "(ships, but not a clean exemplar)")
+                            continue
+                        passing_models[sid] = sr.model
                     kb.remember_passing_subs(passing_models, collection="manager",
                                              score=s_val, note=note, log_fn=log)
                 except Exception as e:
