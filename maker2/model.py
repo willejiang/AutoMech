@@ -188,6 +188,63 @@ class MountFrame:
     role: str = "mount"                              # mount|power_in|power_out|mesh
 
 
+# --------------------------------------------------------------------------- #
+# Connection-graph contract (Part A, .claude/plans/precious-humming-wand.md).
+# The manager describes a subassembly as PARTS joined by MATES ("part A's bore
+# mates coaxially to part B's shaft") instead of authoring each part's pose.
+# maker2/mate_solver.py compiles parts+mates -> a KinematicModel (the same output
+# mjcf_skeleton_parser produces), so everything downstream is unchanged. Ports are
+# usually INFERRED from a part's shape_hint+size_mm (mate_solver.infer_ports); a
+# PortSpec is authored only to OVERRIDE that inference for one part.
+# --------------------------------------------------------------------------- #
+
+@dataclass
+class PortSpec:
+    """A geometry-backed connection interface on a part, in the part's LOCAL frame
+    (AssemCAD 'Port'). `type` picks the geometry (bore/shaft/gear_mesh/flat_face/...);
+    `xyz_mm`+`axis` are the port's SE(3) origin/primary-axis; the remaining fields are
+    the type-specific params a mate needs (bore/shaft diameter, face normal sign, gear
+    pitch radius). Mostly inferred; authored only to override."""
+
+    name: str                                        # unique within the part
+    type: str = "flat_face"                          # bore|shaft|gear_mesh|flat_face|thread|
+                                                     #   press_fit|clearance_hole|cylindrical
+    xyz_mm: tuple = (0.0, 0.0, 0.0)                  # port origin, MM (part-local) — the SE(3) L
+    axis: tuple = (0.0, 0.0, 1.0)                   # port primary axis (unit), part-local
+    diameter_mm: float = 0.0                         # bore/shaft/thread nominal dia (phi)
+    depth_mm: float = 0.0                            # bore/hole depth (0 = through)
+    pitch_radius_mm: float = 0.0                     # gear_mesh pitch radius
+    normal_sign: float = 1.0                         # flat_face: +1 outward along +axis
+
+
+@dataclass
+class MateSpec:
+    """An executable connection between two ports (AssemCAD 'Mate'). `base` is the
+    ALREADY-placed part; `incoming` is the part THIS mate positions. `mate_type` picks
+    the resolver in mate_solver (coaxial/face_to_face/gear_*/...). `offset_mm` slides
+    along a shared axis / sets a face gap; `angle_rad` rolls about it; `flip` anti-aligns
+    face normals. Gear/skew fields: `axis_angle_deg` = angle between the two part axes
+    (0=parallel, 90=perpendicular/bevel/worm); `separation_axis` = direction from base
+    center to incoming center (REQUIRED when a part mates with >1 peer, e.g. a gear
+    train); `offset_e_mm` = axis offset for hypoid/skew."""
+
+    name: str
+    mate_type: str                                   # coaxial|revolute|cylindrical|face_to_face|
+                                                     #   coaxial_face|gear_spur_external|
+                                                     #   gear_spur_internal|gear_bevel|worm|
+                                                     #   press_fit|bolted|welded|... (see catalog)
+    base_part: str                                   # LinkSpec.name (parent — placed first)
+    base_port: str                                   # PortSpec.name on base_part
+    incoming_part: str                               # LinkSpec.name (child — solved by this mate)
+    incoming_port: str                               # PortSpec.name on incoming_part
+    offset_mm: float = 0.0                            # slide along shared axis / face gap (MM)
+    angle_rad: float = 0.0                            # roll about shared axis (indexing)
+    flip: bool = True                                # face_to_face: anti-align normals
+    axis_angle_deg: float = 0.0                       # gear axis angle (0=parallel, 90=bevel/worm)
+    separation_axis: tuple = ()                       # dir base->incoming center; () = infer
+    offset_e_mm: float = 0.0                          # hypoid/skew axis offset (MM)
+
+
 @dataclass
 class SubassemblySpec:
     """One subassembly the boss carves out: a brief for its manager + the frames
