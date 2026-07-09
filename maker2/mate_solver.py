@@ -586,22 +586,37 @@ def solve_connection_graph(ir: dict) -> KinematicModel:
             T_other = _resolve_mate(eff, T_world[base_p], base_link, base_ports,
                                     in_link, in_ports)
             if other in T_world:
-                # Closing edge: the graph already placed `other`. Accept if it AGREES (a
-                # redundant constraint, e.g. a shaft coaxial to two bearings); reject a real
-                # conflict (two paths demanding different poses).
-                drift = float(np.linalg.norm(T_world[other][:3, 3] - T_other[:3, 3]))
-                if drift > _POS_TOL_M:
+                # Closing edge: the graph already placed `other` via another path. A redundant
+                # mate is a CONSTRAINT, not necessarily a conflict — the AssemCAD principle is
+                # that a mate REMOVES dof, it doesn't fully pin a part. A COAXIAL mate (shaft in
+                # a bore) removes the 2 perpendicular translations + 2 perpendicular rotations
+                # but LEAVES the axial slide + spin free. So a shaft coaxial to TWO colinear
+                # bearings is compatible: the two mates agree on the AXIS LINE; they may disagree
+                # on where along it the part sits (the free dof), and that is fine. We therefore
+                # reject only the PERPENDICULAR component of the drift (axes not colinear = a real
+                # geometric conflict) for a coaxial-family mate; along-axis drift is allowed.
+                # Face / gear mates fully locate the mate point, so they keep the strict check.
+                delta = T_world[other][:3, 3] - T_other[:3, 3]
+                if eff.mate_type in _COAXIAL_MATES:
+                    # Shared axis in world = the base port's +Z (the coaxial axis).
+                    axis_w = _unit((T_world[base_p] @ _port_local_frame(base_ports.get(eff.base_port)))[:3, 2])
+                    perp = delta - np.dot(delta, axis_w) * axis_w   # component off the axis line
+                    conflict = float(np.linalg.norm(perp)) > _POS_TOL_M
+                    detail_axis = (" — the two mate paths put it on DIFFERENT axis lines "
+                                   f"({np.linalg.norm(perp)*1000:.1f} mm apart perpendicular to "
+                                   "the shared axis)")
+                else:
+                    conflict = float(np.linalg.norm(delta)) > _POS_TOL_M
+                    detail_axis = ""
+                if conflict:
                     raise MateSolveError(
-                        f"over-constrained: part '{other}' is placed {drift*1000:.1f} mm apart "
-                        f"by two conflicting mate paths (one via mate '{m.name}'). Every part "
-                        f"must be positioned by exactly ONE path (a TREE, no loops). This is "
-                        f"usually a shaft in TWO bearings/supports: don't mate the shaft to "
-                        f"both (each coaxial mate pins the shaft AT that bore, so two bores "
-                        f"in different places contradict). Instead make the SHAFT the base and "
-                        f"hang each bearing ON it with a different `offset_mm` to slide them "
-                        f"apart along the axis, and mate only ONE bearing to the plate — the "
-                        f"shaft and the other bearing ride along as a tree. Remove or re-root "
-                        f"one of the mates positioning '{other}'.")
+                        f"over-constrained: part '{other}' is placed {np.linalg.norm(delta)*1000:.1f} "
+                        f"mm apart by two conflicting mate paths (one via mate '{m.name}')"
+                        f"{detail_axis}. Every part must be positioned consistently. This is often "
+                        f"a shaft mated to two bearings whose bores are NOT colinear, or a part "
+                        f"mated to two things that fix its position differently: align the two "
+                        f"bores on one axis, or remove/re-root one of the mates positioning "
+                        f"'{other}'.")
                 continue
             T_world[other] = T_other
             placement_parent[other] = base_p

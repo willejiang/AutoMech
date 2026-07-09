@@ -82,33 +82,31 @@ tangent on the wheel rim along `separation_axis`. Example — a click holding a 
 `{"mate_type":"ratchet","base_part":"ratchet_wheel","base_port":"teeth","incoming_part":"click","incoming_port":"end_a","separation_axis":"+x"}`
 The `click` here is just a small box/lever (no module, no teeth) — it needs no radius.
 
-## A shaft spanning TWO bearings (the #1 over-constraint trap)
+## A shaft spanning TWO bearings
 
-The mates must form a TREE — every part positioned by exactly ONE path. A shaft that runs
-through two bearings is where this goes wrong. Do NOT mate the shaft coaxially to BOTH
-bearings: each coaxial mate pins the shaft AT that bore, so two bores at different places
-demand the shaft be in two spots → "over-constrained, placed N mm apart".
+A shaft running through two coaxial bearings is fine to describe NATURALLY: mate the shaft
+coaxially to BOTH bearings. A coaxial mate only fixes the shaft's AXIS (it leaves the slide
+along that axis free), so two bearings whose bores lie on the SAME axis line are compatible —
+the solver accepts it. Just make sure both bores are actually colinear (same axis, e.g. both
+along +Z); if the two bearings sit on DIFFERENT axis lines the shaft can't go through both
+and it IS a real conflict ("placed N mm apart perpendicular to the shared axis").
 
-CORRECT pattern — make the SHAFT the base and hang everything off it as a tree:
-1. Mate ONE bearing to the plate (face_to_face) to locate the assembly. Call it the fixed
-   bearing.
-2. Put the shaft ON that bearing coaxially (`base = bearing.bore`, `incoming = shaft.outer`),
-   sliding it with `offset_mm` so it protrudes the right way.
-3. Hang the SECOND bearing on the SHAFT (`base = shaft.outer`, `incoming = bearing_b.bore`)
-   with a DIFFERENT `offset_mm` to slide it to the far end. The second bearing rides the
-   shaft; it is NOT independently mated to the plate.
-
+Natural description (a loop, and that's OK now):
 ```json
 { "mate_type":"face_to_face","base_part":"plate","base_port":"face_pz",
   "incoming_part":"bearing_a","incoming_port":"end_a","offset_mm":0 },
+{ "mate_type":"face_to_face","base_part":"plate","base_port":"face_pz",
+  "incoming_part":"bearing_b","incoming_port":"end_a","offset_mm":0 },
 { "mate_type":"coaxial","base_part":"bearing_a","base_port":"bore",
-  "incoming_part":"shaft","incoming_port":"outer","offset_mm":-4 },
+  "incoming_part":"shaft","incoming_port":"outer" },
 { "mate_type":"coaxial","base_part":"shaft","base_port":"outer",
-  "incoming_part":"bearing_b","incoming_port":"bore","offset_mm":46 }
+  "incoming_part":"bearing_b","incoming_port":"bore" }
 ```
-Now shaft, bearing_a, bearing_b form a chain (plate → bearing_a → shaft → bearing_b), one
-path each, no loop. The same rule covers a gear on a shaft in two bearings, a rotor between
-two supports, etc.: pick ONE support as the anchor, then chain the rest along the shaft.
+
+Independent supports do NOT mate to each other. Three bearing pedestals on a plate each seat
+on the PLATE (face_to_face, plate as base) — never mate one pedestal to the next as if a
+shaft ran pedestal-to-pedestal (that invents a constraint that isn't real and over-constrains
+them). The shafts they carry live in other subs; a pedestal only needs its own seat + bore.
 
 ## Rules
 

@@ -44,7 +44,6 @@ _ERR_WEIGHTS: dict[str, float] = {
     "ERR_CONNECT": 10.0,                   # an unplaced part floats at the origin
     # frames — the assembler cannot weld the sub without these.
     "ERR_FRAME_UNREALIZED": 9.0,
-    "ERR_FRAME_DRIFT": 5.0,
     # compile — the ultimate gate: the sim itself refuses to load it.
     "ERR_COMPILE": 15.0,
     # geometry — softer; the real-mesh subcheck is the authority.
@@ -61,7 +60,6 @@ _DEFAULT_ERR_WEIGHT = 4.0
 # overlap or a cm of drift lands near a single soft-error weight (~a few units) — i.e. the
 # gradient is on the same scale the loops descend, not a rounding-to-zero afterthought.
 _W_OVERLAP_VOL = 5.0e6        # 2e-7 m^3 (a 5 mm part fully overlapping) -> ~1.0
-_W_FRAME_DRIFT = 300.0        # per meter of summed frame world-pos drift (~0.3 per mm)
 _W_UNREALIZED = 9.0           # per contract frame with no realizing link (mirrors the code)
 _W_NONMANIFOLD = 7.0          # per non-manifold part (mirrors ERR_MANIFOLD)
 
@@ -107,37 +105,25 @@ def _overlap_volume(model) -> float:
     return float(total)
 
 
-def _frame_drift(model, fc) -> tuple[float, int]:
-    """(summed world-pos drift in meters, count of unrealized contract frames) for the
-    boss frame contract ``fc``. A realized frame's world position is its owning link's
-    world transform composed with the frame's link-local offset; drift is its distance
-    to the contract's declared global xyz_m. Frames the manager never realized are
-    counted separately (they have no world position to compare)."""
+def _unrealized_frames(model, fc) -> int:
+    """Count of boss-contract frames the manager never realized (no frames_realized entry,
+    or an entry on a link unreachable from the root). Frame POSITION drift is NOT scored
+    anymore: the boss authors no placement coordinates (a frame's xyz_m is a rough hint), so
+    there is no authoritative position to measure drift against — only whether every required
+    frame is realized at all still matters (an unrealized frame breaks the assembler)."""
     frames = list(getattr(fc, "frames", []) or [])
     if not frames:
-        return 0.0, 0
-    from .assembler import _mat, _root_to_link
+        return 0
+    from .assembler import _root_to_link
 
     realized = {e.get("frame"): e for e in (getattr(model, "frames_realized", []) or [])}
     T = _root_to_link(model)
-    drift = 0.0
     unrealized = 0
     for fr in frames:
         entry = realized.get(fr.name)
-        if not entry:
+        if not entry or T.get(entry.get("link")) is None:
             unrealized += 1
-            continue
-        link = entry.get("link")
-        Tlink = T.get(link)
-        if Tlink is None:
-            unrealized += 1
-            continue
-        local = _mat(entry.get("local_xyz_m", (0, 0, 0)),
-                     entry.get("local_rpy_rad", (0, 0, 0)))
-        world = (Tlink @ local)[:3, 3]
-        want = np.array([float(v) for v in (getattr(fr, "xyz_m", None) or (0, 0, 0))])
-        drift += float(np.linalg.norm(world - want))
-    return drift, unrealized
+    return unrealized
 
 
 def _nonmanifold_count(part_results) -> int:
@@ -175,11 +161,8 @@ def badness_breakdown(model, gate_errors, context=None) -> dict:
 
     if fc is not None:
         try:
-            drift, unrealized = _frame_drift(model, fc)
-            terms["frame_drift"] = round(_W_FRAME_DRIFT * drift, 4)
-            terms["unrealized_frames"] = round(_W_UNREALIZED * unrealized, 4)
+            terms["unrealized_frames"] = round(_W_UNREALIZED * _unrealized_frames(model, fc), 4)
         except Exception:
-            terms["frame_drift"] = 0.0
             terms["unrealized_frames"] = 0.0
 
     if part_results is not None:

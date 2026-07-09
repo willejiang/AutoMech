@@ -174,83 +174,21 @@ def manager_gate(model, sub_frames, frame_contract) -> list[GateError]:
 
 def frame_drift_errors(model, frame_contract, is_root: bool = True,
                        realized_frames=None) -> list[GateError]:
-    """C6 — self-consistency on frames_realized: check the RELATIVE layout of each realized
-    interface frame against the boss contract (the vector between any two realized frames
-    must match the vector between them in the contract).
+    """RETIRED (returns []). This used to flag ERR_FRAME_DRIFT when a sub's realized frames
+    didn't match the RELATIVE layout of the boss contract's frame coordinates.
 
-    The boss no longer authors absolute frame coordinates — the compiler places each sub by
-    welding its ports onto its neighbor's realized ports (assembler._bridge_pose_from_ports),
-    so a sub's GLOBAL position is the compiler's job, not something to check against a boss
-    xyz_m. What the contract still constrains is a sub's INTERNAL frame layout: a rigid
-    placement preserves relative offsets, so the vector between two realized frames must
-    equal the contract's vector between them. A relative mismatch -> ERR_FRAME_DRIFT; a
-    uniform offset (all frames shifted by the same vector) is fine (the weld transform).
+    That check is no longer valid: the boss authors NO placement coordinates — it authors a
+    connection graph of typed mates, and a frame's `xyz_m` is only a ROUGH preview hint (see
+    prompts/schema.py). There is therefore no authoritative relative-layout contract to check
+    the manager against. The boss routinely leaves two frames at the same hint coordinate
+    (e.g. an input gear and an output pinion both at z=60) even though the manager MUST stack
+    them at different heights on the shaft — so this check flagged correct sub geometry as
+    drift and blocked good subs.
 
-    ``is_root`` is accepted for call-site compatibility but no longer changes behavior: the
-    former absolute root-position branch is gone with boss-authored coordinates. Root and
-    welded child are checked identically (relative-only).
-
-    Reuses assembler._root_to_link / _mat and precheck._POS_TOL_M. Frames the manager did
-    not realize at all are NOT flagged here (ERR_FRAME_UNREALIZED owns that).
-
-    ``realized_frames`` (a list of {frame, link, local_xyz_m, local_rpy_rad} dicts) OVERRIDES
-    ``model.frames_realized`` when given. Callers pass the SAME fallback-resolved frames the
-    assembler welds with (_sub_frames_to_dict output) — otherwise a sub whose manager
-    declared NO frames_realized but was auto-rescued by a fallback (e.g. every mount frame
-    collapsed onto the root at local origin) is never drift-checked here, because raw
-    model.frames_realized is empty. Checking the RESOLVED frames catches that collapse: the
-    contract places the frames apart, the fallback realizes them at one point -> drift."""
-    frames = list(getattr(frame_contract, "frames", []) or [])
-    if not frames:
-        return []
-    if realized_frames is not None:
-        realized = {e.get("frame"): e for e in realized_frames}
-    else:
-        realized = {e.get("frame"): e for e in (getattr(model, "frames_realized", []) or [])}
-    T = _root_to_link(model)
-
-    def _world_of(fr):
-        """Realized WORLD position of a contract frame, or None if not realized/reachable."""
-        entry = realized.get(fr.name)
-        if not entry:
-            return None
-        Tlink = T.get(entry.get("link"))
-        if Tlink is None:
-            return None
-        local = _mat(entry.get("local_xyz_m", (0, 0, 0)),
-                     entry.get("local_rpy_rad", (0, 0, 0)))
-        return (Tlink @ local)[:3, 3]
-
-    def _want_of(fr):
-        return np.array([float(v) for v in (getattr(fr, "xyz_m", None) or (0, 0, 0))])
-
-    out: list[GateError] = []
-    # RELATIVE-offset check for EVERY sub (root and welded child alike). The boss no longer
-    # authors absolute frame coordinates — the compiler places each sub by welding its ports,
-    # so a sub's global position is the compiler's job, not something to check against a boss
-    # xyz_m. What the contract still constrains is the RELATIVE layout of a sub's own frames:
-    # the vector between any two realized frames must match the vector between them in the
-    # contract (a rigid placement preserves this). Pick the first realized frame as the
-    # reference; every other realized frame's offset FROM it must match the contract's offset.
-    # (`is_root` is kept for call-site compatibility but no longer changes behavior — the
-    # former absolute root-position check is gone with boss-authored coordinates.)
-    realized_frames = [fr for fr in frames if _world_of(fr) is not None]
-    if len(realized_frames) < 2:
-        return out                            # 0-1 frames: nothing relative to check
-    ref = realized_frames[0]
-    ref_world, ref_want = _world_of(ref), _want_of(ref)
-    for fr in realized_frames[1:]:
-        rel_world = _world_of(fr) - ref_world          # realized offset from the reference
-        rel_want = _want_of(fr) - ref_want             # contract offset from the reference
-        drift = float(np.linalg.norm(rel_world - rel_want))
-        if drift > _POS_TOL_M:
-            out.append(GateError(
-                "manager", "ERR_FRAME_DRIFT",
-                f"interface frame '{fr.name}' is {drift*1000:.1f} mm out of position "
-                f"RELATIVE to frame '{ref.name}' (tolerance {_POS_TOL_M*1000:.1f} mm): the "
-                f"contract places them {np.round(rel_want*1000, 1)} mm apart but this sub "
-                f"realizes them {np.round(rel_world*1000, 1)} mm apart. The sub may sit "
-                "anywhere globally, but its frames' RELATIVE layout must match the contract. "
-                "Fix the offending link/frame offset.",
-                fr.name))
-    return out
+    Authority now splits cleanly: the manager owns its INTERNAL geometry (part sizes + mate
+    offsets), the boss owns TOPOLOGY (which subs, which seams), and cross-sub gear spacing is
+    validated post-assemble on the compiler's SOLVED coordinates (boss_gate.mesh_distance_errors),
+    not on boss hints. A frame the manager never realizes is still caught by
+    ERR_FRAME_UNREALIZED (emitted separately by each caller). The signature is kept so callers
+    need no change."""
+    return []
