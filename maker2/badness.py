@@ -44,6 +44,7 @@ _ERR_WEIGHTS: dict[str, float] = {
     "ERR_CONNECT": 10.0,                   # an unplaced part floats at the origin
     # frames — the assembler cannot weld the sub without these.
     "ERR_FRAME_UNREALIZED": 9.0,
+    "ERR_FRAME_DRIFT": 8.0,                # contract-apart frames realized coincident (collapse)
     # compile — the ultimate gate: the sim itself refuses to load it.
     "ERR_COMPILE": 15.0,
     # geometry — softer; the real-mesh subcheck is the authority.

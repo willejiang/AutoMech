@@ -174,21 +174,64 @@ def manager_gate(model, sub_frames, frame_contract) -> list[GateError]:
 
 def frame_drift_errors(model, frame_contract, is_root: bool = True,
                        realized_frames=None) -> list[GateError]:
-    """RETIRED (returns []). This used to flag ERR_FRAME_DRIFT when a sub's realized frames
-    didn't match the RELATIVE layout of the boss contract's frame coordinates.
+    """COLLAPSE check (directional): flag when two contract frames the boss placed APART are
+    realized at the SAME point. That is always a bug — a frame marks a distinct interface
+    (a bearing hole, a mount seat), and two different holes cannot sit at one spot. When it
+    happens, downstream seams weld onto a collapsed frame and the mated subs stack (e.g. three
+    shafts all land at the plate origin, floating above their real bearings).
 
-    That check is no longer valid: the boss authors NO placement coordinates — it authors a
-    connection graph of typed mates, and a frame's `xyz_m` is only a ROUGH preview hint (see
-    prompts/schema.py). There is therefore no authoritative relative-layout contract to check
-    the manager against. The boss routinely leaves two frames at the same hint coordinate
-    (e.g. an input gear and an output pinion both at z=60) even though the manager MUST stack
-    them at different heights on the shaft — so this check flagged correct sub geometry as
-    drift and blocked good subs.
+    This is the NARROW, one-directional restoration of the old drift gate. It does NOT check
+    absolute positions and does NOT flag the reverse case (contract frames COINCIDENT but
+    realized apart) — that reverse case was the real false positive (the boss leaves an input
+    gear and output pinion at the same lazy z hint while the manager correctly stacks them, and
+    the manager is right). We only flag contract-apart -> realized-coincident.
 
-    Authority now splits cleanly: the manager owns its INTERNAL geometry (part sizes + mate
-    offsets), the boss owns TOPOLOGY (which subs, which seams), and cross-sub gear spacing is
-    validated post-assemble on the compiler's SOLVED coordinates (boss_gate.mesh_distance_errors),
-    not on boss hints. A frame the manager never realizes is still caught by
-    ERR_FRAME_UNREALIZED (emitted separately by each caller). The signature is kept so callers
-    need no change."""
-    return []
+    ``realized_frames`` (list of {frame, link, local_xyz_m, ...}) overrides model.frames_realized;
+    callers pass the fallback-resolved frames the assembler welds with, so a fallback that
+    collapses every mount frame onto the root at origin is caught here."""
+    frames = list(getattr(frame_contract, "frames", []) or [])
+    if len(frames) < 2:
+        return []
+    if realized_frames is not None:
+        realized = {e.get("frame"): e for e in realized_frames}
+    else:
+        realized = {e.get("frame"): e for e in (getattr(model, "frames_realized", []) or [])}
+    T = _root_to_link(model)
+
+    def _world_of(fr):
+        entry = realized.get(fr.name)
+        if not entry:
+            return None
+        Tlink = T.get(entry.get("link"))
+        if Tlink is None:
+            return None
+        local = _mat(entry.get("local_xyz_m", (0, 0, 0)),
+                     entry.get("local_rpy_rad", (0, 0, 0)))
+        return (Tlink @ local)[:3, 3]
+
+    def _want_of(fr):
+        return np.array([float(v) for v in (getattr(fr, "xyz_m", None) or (0, 0, 0))])
+
+    realized_frames_l = [fr for fr in frames if _world_of(fr) is not None]
+    out: list[GateError] = []
+    # For every PAIR the contract places apart (> tolerance), the realization must ALSO place
+    # them apart. If the realized pair is coincident, the frames collapsed -> block.
+    for i in range(len(realized_frames_l)):
+        for j in range(i + 1, len(realized_frames_l)):
+            fa, fb = realized_frames_l[i], realized_frames_l[j]
+            want_sep = float(np.linalg.norm(_want_of(fa) - _want_of(fb)))
+            if want_sep <= _POS_TOL_M:
+                continue                      # contract itself coincides them -> nothing to check
+            got_sep = float(np.linalg.norm(_world_of(fa) - _world_of(fb)))
+            if got_sep <= _POS_TOL_M:
+                out.append(GateError(
+                    "manager", "ERR_FRAME_DRIFT",
+                    f"interface frames '{fa.name}' and '{fb.name}' are realized at the SAME "
+                    f"point but the contract places them {want_sep*1000:.1f} mm apart — they "
+                    f"collapsed (likely both realized on the root/plate at its origin instead "
+                    f"of on their own parts). Realize each frame on the actual part at that "
+                    f"interface (its bearing/seat/hole) so they are distinct; otherwise the "
+                    f"subs that mate to them stack on top of each other.",
+                    fb.name))
+                break                         # one collapse report per frame is enough
+    return out

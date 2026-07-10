@@ -554,7 +554,8 @@ def _plan_loop(client, conv, settings, *, memory_path, plan_json_path=None,
         try:
             text = stream_two_part(client, conv, BOSS_SYSTEM,
                                    memory_path=memory_path,
-                                   regen_msg_fn=build_boss_json_from_notes,
+                                   regen_msg_fn=lambda notes: build_boss_json_from_notes(
+                                       notes, product_prompt),
                                    log_fn=log_fn, tag="boss")
         except LLMError as e:
             raise BossError(f"Boss LLM request failed: {e}") from e

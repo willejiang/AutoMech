@@ -66,18 +66,27 @@ Respond in TWO parts, in this exact order:
    sentinel — only the JSON object."""
 
 
-def build_boss_json_from_notes(notes: str) -> str:
+def build_boss_json_from_notes(notes: str, product_prompt: str = "") -> str:
     """Regeneration message: the boss already wrote its plan as NOTES (which we saved
     when its JSON overran the output cap); hand the notes back and ask for ONLY the
-    JSON now, so the whole output budget goes to the JSON."""
+    JSON now, so the whole output budget goes to the JSON.
+
+    Re-states the PRODUCT so the fresh regen conversation implements the machine the
+    notes describe — not the schema's worked EXAMPLE. Without this, the boss has been
+    seen to abandon its own (correct) notes and copy the gear-reducer few-shot instead,
+    because on regen the few-shot is the only concrete JSON in context."""
+    prod = (f'You are decomposing THIS machine: "{product_prompt.strip()}".\n\n'
+            if product_prompt.strip() else "")
     return f"""\
-Here is the plan you already worked out (your NOTES):
+{prod}Here is the plan you already worked out (your NOTES):
 
 {notes}
 
-Now output ONLY the single JSON object that implements this plan, in full, following
-the schema exactly. Do NOT repeat the notes, do NOT include the `{JSON_SENTINEL}`
-line, and do NOT use markdown fences — output only the JSON object."""
+Now output ONLY the single JSON object that implements THESE NOTES, in full, following
+the schema exactly. The schema's worked example shows FORMAT ONLY — do NOT copy its
+machine; implement the notes above (every subassembly and seam you listed). Do NOT
+repeat the notes, do NOT include the `{JSON_SENTINEL}` line, and do NOT use markdown
+fences — output only the JSON object."""
 
 
 def build_boss_user(product_prompt: str, has_image: bool = False) -> str:
