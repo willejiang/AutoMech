@@ -490,7 +490,8 @@ def plan_machine(product_prompt: str, settings, *, image_path: str | None = None
 
     # SEAM (Track 3): the attempt/retry control loop.
     return _plan_loop(client, conv, settings, memory_path=memory_path,
-                      plan_json_path=plan_json_path, log_fn=log_fn)
+                      plan_json_path=plan_json_path, product_prompt=product_prompt,
+                      log_fn=log_fn)
 
 
 def _boss_research(client, conv, settings, product_prompt, *, log_fn=None) -> None:
@@ -525,7 +526,7 @@ def _plan_gate_badness(plan) -> tuple[float, list, dict]:
 
 
 def _plan_loop(client, conv, settings, *, memory_path, plan_json_path=None,
-               log_fn=None) -> SubassemblyPlan:
+               product_prompt="", log_fn=None) -> SubassemblyPlan:
     """SEAM owned by Track 3 (badness keep-best + escalation). The attempt/retry control
     loop: stream a NOTES→JSON response, parse+validate, then score the plan with the
     deterministic boss gates. MONOTONIC-IMPROVEMENT contract (Part C.bis):
