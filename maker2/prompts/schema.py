@@ -479,6 +479,13 @@ HARD RULES
   collide 100% at assembly and cannot be separated (both are pinned to the interface). When
   you write each brief, make sure its part list does not repeat any part named in another
   brief.
+- UNIQUE NAMES for per-stage copies: part NAMES must be unique across the WHOLE machine, even
+  when two subs legitimately have their OWN copy of a generic part. A two-stage reducer's input
+  and output shafts each have their own bearings, retaining collar, key, spacer — these are
+  DISTINCT parts, so give them stage-unique names ('input_bearing_lower', 'output_bearing_lower'
+  — never 'bearing_lower' in both). Reusing a generic name across stages reads as one duplicated
+  part and is rejected. Prefix generic hardware (bearings, collars, keys, screws, spacers) with
+  its owning stage/sub.
 - LABEL THE SEATS on a structural base. When a subassembly is a base/plate/bracket/chassis
   that carries SEVERAL parts at distinct spots (three bearing holes, four mounting posts, a
   row of jewel seats), declare ONE frame PER seat at that seat's own distinct `xyz_m`, and

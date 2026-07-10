@@ -1093,12 +1093,16 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
         if dup_parts:
             dup_list = "; ".join(f"'{n}' in {ss}" for n, ss in sorted(dup_parts.items()))
             feedback = (
-                "duplicated parts across subassemblies — each physical part must be built in "
-                "EXACTLY ONE subassembly: " + dup_list + ". Assign each of these parts to the "
-                "ONE subassembly that owns it and remove it from the other(s). If a "
-                "subassembly needs to mount to that part, it references it only through an "
-                "interface frame (a shared mount/mesh frame) — it does NOT rebuild the part. "
-                "Re-plan with disjoint part sets.")
+                "duplicated part NAMES across subassemblies — a part name must be UNIQUE across "
+                "the whole machine: " + dup_list + ". This is almost always because two "
+                "subassemblies each legitimately have their OWN copy of a generic part (its own "
+                "bearings, retaining collar, key, spacer, screw) but you gave both copies the "
+                "SAME name. FIX: give each copy a STAGE-UNIQUE name — e.g. 'bearing_lower' in the "
+                "input and output stages becomes 'input_bearing_lower' and 'output_bearing_lower'. "
+                "Each stage still builds its own part; they just need distinct names. "
+                "ONLY if the two subassemblies truly mean the SAME single physical part (rare) "
+                "should you instead remove it from one and reference it through a shared interface "
+                "frame. Re-plan so every part name is unique.")
             log_fn("ARTIFACT_JSON:" + json.dumps({
                 "kind": "gate", "layer": "boss", "iter": it, "code": "ERR_DUP_PARTS",
                 "detail": dup_list, "culprit": ",".join(sorted(dup_parts)), "ok": False}))
