@@ -290,8 +290,8 @@ position. This is far more reliable than placing parts by hand.
   ]
 }
 
-PORTS ARE INFERRED — you do NOT declare them. Each part automatically has named ports from
-its shape; reference them by these names in your mates:
+PORTS ARE INFERRED BY DEFAULT — you usually do NOT declare them. Each part automatically has
+named ports from its shape; reference them by these names in your mates:
 - a CYLINDER / SHAFT / GEAR has:  `outer` (its outer surface, axis +Z), `bore` (its central
   hole, if size_mm has a bore_dia), `end_a` (the -Z flat face), `end_b` (the +Z flat face),
   and a GEAR also has `teeth` (its pitch circle).
@@ -299,6 +299,21 @@ its shape; reference them by these names in your mates:
   six faces, named by outward normal), `center`, and `bore` if it has a bore_dia.
 (A part's primary axis is its local +Z, matching the build convention — so `outer`/`bore`/
 `teeth` all run along +Z.)
+
+DECLARE EXPLICIT PORTS when a part must expose SEVERAL mount points at DIFFERENT positions —
+the critical case is a BASE/PLATE/BRACKET carrying several parts (3 bearing holes, 4 posts, a
+row of seats). The inferred `face_pz`/`center` are ALL at the plate center, so mating several
+parts to them stacks them on top of each other. Instead add a `ports` array to that part, one
+named port PER seat at that seat's own `xyz_mm` (part-local, mm), then mate each seated part to
+its OWN port so they spread out. Example — a plate with 3 bearing holes 40 mm apart:
+  { "name":"plate", "shape_hint":"box", "size_mm":{"x":100,"y":40,"z":4},
+    "ports":[
+      {"name":"hole_1","type":"bore","xyz_mm":[0,0,2], "axis":[0,0,1],"diameter_mm":8},
+      {"name":"hole_2","type":"bore","xyz_mm":[40,0,2],"axis":[0,0,1],"diameter_mm":8},
+      {"name":"hole_3","type":"bore","xyz_mm":[80,0,2],"axis":[0,0,1],"diameter_mm":8}
+    ] }
+then mate bearing_1→hole_1, bearing_2→hole_2, bearing_3→hole_3. Take the hole positions from
+the boss's seat frames (their GLOBAL positions minus this sub's origin give the local xyz_mm).
 
 MATE TYPES — pick the real mechanical connection:
 - `coaxial` — a shaft inside a bore / a gear on a shaft / a bearing on a shaft. Aligns the

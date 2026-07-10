@@ -4,13 +4,29 @@ You describe a machine as PARTS joined by MATES. Each mate says "part A's PORT c
 part B's PORT" and a deterministic solver computes the positions. This is the menu of
 mate types, grounded in standard machine design. Pick the REAL mechanical connection.
 
-Every part automatically has INFERRED PORTS from its shape — you never declare ports, just
-reference them by name:
+Every part automatically has INFERRED PORTS from its shape — usually you just reference them
+by name (you only DECLARE ports for the multi-seat base case, below):
 - a CYLINDER / SHAFT / GEAR: `outer` (outer surface, +Z axis), `bore` (central hole, if
   size_mm has `bore_dia`), `end_a` (-Z face), `end_b` (+Z face); a GEAR also has `teeth`.
 - a BOX / PLATE: `face_px/nx/py/ny/pz/nz` (six faces by outward normal), `center`, and
   `bore` if it has a `bore_dia`.
 A part's primary axis is its local +Z, so `outer`/`bore`/`teeth` all run along +Z.
+
+DECLARE EXPLICIT PORTS for a multi-seat base. The inferred `face_pz`/`center` of a plate are
+ALL at the plate center, so mating several parts to them STACKS them. When a base/plate/
+bracket carries several parts at different spots (3 bearing holes, 4 posts, a row of seats),
+add a `ports` array to that part — one named port per seat at that seat's own `xyz_mm` — and
+mate each seated part to its OWN port so they spread out:
+```json
+{ "name":"plate","shape_hint":"box","size_mm":{"x":100,"y":40,"z":4},
+  "ports":[
+    {"name":"hole_1","type":"bore","xyz_mm":[0,0,2],"axis":[0,0,1],"diameter_mm":8},
+    {"name":"hole_2","type":"bore","xyz_mm":[40,0,2],"axis":[0,0,1],"diameter_mm":8},
+    {"name":"hole_3","type":"bore","xyz_mm":[80,0,2],"axis":[0,0,1],"diameter_mm":8}
+  ] }
+```
+then mate bearing_1→hole_1, bearing_2→hole_2, bearing_3→hole_3. Read the hole positions off
+the boss's seat frames. (golden_04_escapement shows this with two pivot ports on a plate.)
 
 ## Shaft / bore / hub family (all COAXIAL — the two axes align and center)
 

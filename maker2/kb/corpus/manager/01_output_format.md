@@ -48,13 +48,18 @@ A mate:
   (REQUIRED when a gear meshes >1 other gear).
 - `axis_angle_deg` — gears: 0 = parallel spur (default), 90 = bevel/worm.
 
-## Ports are INFERRED — you never declare them
+## Ports are INFERRED (but DECLARE them for a multi-seat base)
 
 Each part automatically has named ports from its shape; reference them in mates:
 - CYLINDER / SHAFT / GEAR: `outer`, `bore` (if it has a `bore_dia`), `end_a` (-Z face),
   `end_b` (+Z face); a GEAR also has `teeth`.
 - BOX / PLATE: `face_px/nx/py/ny/pz/nz`, `center`, `bore` (if it has a `bore_dia`).
 A part's primary axis is its local +Z.
+
+EXCEPTION — a base carrying several parts: the inferred `face_pz`/`center` are all at the
+plate CENTER, so mating several parts there stacks them. Give such a base an explicit `ports`
+array (one named port per seat at its own `xyz_mm`) and mate each part to its own port so they
+spread. See connection-types doc for the plate-with-3-holes example.
 
 Port naming is forgiving, so prefer the natural name and it will resolve:
 - On a CYLINDER you may use `face_pz`/`face_nz` for the two flat ends (they alias
