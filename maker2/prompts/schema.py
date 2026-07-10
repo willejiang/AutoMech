@@ -458,10 +458,13 @@ HARD RULES
   the appearance preview — the compiler solves the real placement from the mated frames. Set
   `parent_port`/`child_port` only if the mated frame differs from parent_frame/child_frame;
   otherwise they default to the seam's frames.
-- MESH SPACING comes from geometry, not coordinates: on a `mesh` seam give BOTH gear-center
-  frames a real `shaft_dia_mm` (pitch diameter). The two gears must end up one pitch-center-
-  distance apart (sum of pitch radii) — this is validated on the assembled machine, so choose
-  the weld frames + `offset_mm` that carry the driven gear to that distance.
+- MESH SPACING is SOLVED for you — do NOT compute or place it. On a `mesh` seam you only
+  NAME the two meshing gear PARTS (`mesh_pair`). The compiler reads each gear's real pitch
+  radius from the BUILT part (its module x teeth) and places the two subassemblies exactly one
+  pitch-center-distance apart automatically. You do NOT author gear-center coordinates and you
+  do NOT need `shaft_dia_mm` for spacing (the field is legacy; leave it 0). The ONE rule you
+  must respect: BOTH gears in a mesh pair must share the same MODULE (tooth size) or they
+  cannot mesh at any spacing.
 - Split the machine into coherent functional subassemblies (an input/crank stage, a
   gear train, an escapement, a barrel, a chassis, a drivetrain, ...). Size each so it
   is a sensible unit for one manager + worker — roughly up to ~20 links; never above
@@ -528,16 +531,15 @@ FRAME PLACEMENT (critical — this is how blindly-built subs line up)
 
 HARD INTERFACE POINTS (you OWN these; managers must NOT move them)
 - You define — and ONLY you define — the hard points where subassemblies couple:
-  every power_in / power_out / mesh frame carries its GLOBAL xyz_m, its `axis`, and
-  its `shaft_dia_mm` (the shaft diameter, or for a mesh the gear PITCH diameter).
-  These are immovable: a manager sizes its mating shaft/bore/gear to EXACTLY these
-  numbers and places the frame at EXACTLY that global pose. Workers must not offset
-  them.
-- You OWN gear center distance. For a gear mesh, the center distance = the sum of the
-  two gears' PITCH radii; set the two mesh frames that far apart and give each its
-  pitch diameter via shaft_dia_mm. If a later fault says two gears don't mesh, YOU
-  recompute the center distance and override BOTH subs' mesh-frame coords — the
-  managers do not negotiate it between themselves.
+  every power_in / power_out / mesh frame carries its `axis`. For a plain shaft mount also
+  give its `shaft_dia_mm` (the shaft diameter). A mesh frame does NOT need a diameter — the
+  compiler reads the gear's pitch radius from the BUILT gear part.
+- You do NOT own gear center distance — the COMPILER solves it. For a gear mesh you only NAME
+  the two meshing gear parts (`mesh_pair` on the `mesh` seam); the compiler places the two
+  subs one pitch-center-distance apart (sum of the built gears' pitch radii) automatically.
+  Do NOT author or override gear-center coordinates. If a fault says two gears don't mesh, it
+  is almost always a MODULE mismatch (different tooth sizes) — fix the modules so BOTH gears in
+  the pair share one module; do not try to move them.
 - A shared shaft crossing a weld: give the power_out frame on the driving sub and the
   power_in frame on the driven sub the SAME axis and the SAME shaft_dia_mm so the two
   halves are the same shaft."""

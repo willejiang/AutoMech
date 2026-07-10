@@ -1152,6 +1152,42 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
         #     (final.assembly_frames_world), not the plan. If two meshing gears didn't land
         #     one pitch-center-distance apart, the weld geometry is wrong -> re-plan (same
         #     path as an AssemblerError). Deterministic, no LLM.
+
+        # 4a-0. MODULE-CONSISTENCY gate: two gears mesh ONLY if they share the same module
+        #       (tooth size). A pair with mismatched modules cannot mesh at ANY spacing, so
+        #       catch it here (read module off the BUILT gear parts named by mesh_pair) and
+        #       route to a re-plan before the spacing check. Deterministic, no LLM.
+        _mod_errs = []
+        for _seam in plan.seams:
+            _mp = getattr(_seam, "mesh_pair", ()) or ()
+            if _seam.kind != "power" or len(_mp) != 2:
+                continue
+            _psub = subs.get(_seam.parent_sub); _csub = subs.get(_seam.child_sub)
+            if not _psub or not _csub or _psub.model is None or _csub.model is None:
+                continue
+            def _mod_of(_sub, _ln):
+                _lk = next((l for l in _sub.model.links if l.name == _ln), None)
+                try:
+                    return float((_lk.size_mm or {}).get("module")) if _lk else None
+                except (TypeError, ValueError):
+                    return None
+            _mp0 = _mod_of(_psub, _mp[0]); _mp1 = _mod_of(_csub, _mp[1])
+            if _mp0 and _mp1 and abs(_mp0 - _mp1) > 1e-6:
+                _mod_errs.append((_seam, _mp[0], _mp0, _mp[1], _mp1))
+        if _mod_errs:
+            _s, _a, _ma, _b, _mb = _mod_errs[0]
+            _detail = (f"gears '{_a}' (module {_ma:g}) and '{_b}' (module {_mb:g}) are meshed "
+                       f"by seam '{_s.id}' but have DIFFERENT modules — different tooth sizes "
+                       f"cannot mesh at any spacing. Give both gears the same module.")
+            log_fn("ARTIFACT_JSON:" + json.dumps({
+                "kind": "gate", "layer": "boss", "code": "ERR_MESH_MODULE",
+                "detail": _detail, "culprit": f"{_a}~{_b}", "ok": False}))
+            feedback = "assembly mesh check failed: " + _detail
+            log(f"[assembler] mesh MODULE mismatch -> boss re-plan: {_detail}")
+            if not infinite and it >= max_boss_iters - 1:
+                result["error"] = feedback; break
+            it += 1; continue
+
         from .benchmarks.boss_gate import mesh_distance_errors as _mesh_dist
         _mesh_errs = _mesh_dist(plan, getattr(final, "assembly_frames_world", []))
         for e in _mesh_errs:
