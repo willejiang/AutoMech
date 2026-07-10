@@ -355,7 +355,37 @@ def _classify_subs(plan, subs: dict):
     return gear_ids, base_id
 
 
-def _place_mesh_cluster(plan, subs: dict, gear_ids: set, log) -> dict:
+def _base_bore_dir(plan, subs, base_id, parent_gear_sub, child_gear_sub):
+    """World-ish direction from the parent gear stage's base bore to the child stage's base
+    bore, read from the base's insert-weld mount frames (`xyz_m`). This is the layout the
+    base was built for; using it as the mesh separation keeps the solved gear cluster ALIGNED
+    with the bores that hold it (instead of an arbitrary perpendicular). Returns a 3-vector or
+    None when the base / its bores can't be resolved."""
+    if base_id is None or base_id not in subs:
+        return None
+    base = subs[base_id]
+
+    def bore_xyz(gear_sub):
+        seam = next((s for s in plan.seams
+                     if s.kind == "weld" and getattr(s, "mate_type", "") == "insert"
+                     and s.parent_sub == base_id and s.child_sub == gear_sub), None)
+        if seam is None:
+            return None
+        spec = next((s for s in plan.subassemblies if s.id == base_id), None)
+        if spec is None:
+            return None
+        f = next((f for f in (spec.frames or []) if f.name == seam.parent_frame), None)
+        return np.asarray(f.xyz_m, float) if f is not None else None
+
+    a = bore_xyz(parent_gear_sub)
+    b = bore_xyz(child_gear_sub)
+    if a is None or b is None:
+        return None
+    d = b - a
+    return d if float(np.linalg.norm(d)) > 1e-9 else None
+
+
+def _place_mesh_cluster(plan, subs: dict, gear_ids: set, base_id, log) -> dict:
     """Solve world root poses for the gear-stage cluster so every meshing pair sits at true
     center-distance C=(r_a+r_b) (radii from the BUILT gears), axes parallel, separation
     perpendicular to the gear axis. Returns {sub_id: 4x4 world root pose} for gear subs.
@@ -402,11 +432,16 @@ def _place_mesh_cluster(plan, subs: dict, gear_ids: set, log) -> dict:
             axis_w = _unit(Tp[:3, :3] @ axis_p_root)
             center_p_w = (Tp @ np.append(center_p_root, 1.0))[:3]
 
-            # Separation perpendicular to the gear axis (deterministic, honors a seam
-            # separation_axis hint if present).
-            sep = getattr(seam, "axis", None)
-            sep = np.asarray(sep, float) if (isinstance(sep, (list, tuple)) and len(sep) == 3) \
-                else (np.array([1.0, 0, 0]) if abs(axis_w[0]) < 0.9 else np.array([0, 1.0, 0]))
+            # Separation direction: prefer the BASE's bore-to-bore layout (the direction the
+            # housing was built for) so the solved gear cluster ALIGNS with its bores; then an
+            # explicit seam separation_axis; else a deterministic perpendicular of the axis.
+            sep = _base_bore_dir(plan, subs, base_id, seam.parent_sub, seam.child_sub)
+            if sep is None:
+                sa = getattr(seam, "separation_axis", None) or getattr(seam, "axis", None)
+                sep = (np.asarray(sa, float)
+                       if (isinstance(sa, (list, tuple)) and len(sa) == 3)
+                       else (np.array([1.0, 0, 0]) if abs(axis_w[0]) < 0.9
+                             else np.array([0, 1.0, 0])))
             sep = _unit(sep - np.dot(sep, axis_w) * axis_w)
             if float(np.linalg.norm(sep)) < 1e-9:
                 sep = _unit(np.cross(axis_w, [0, 0, 1.0]) if abs(axis_w[2]) < 0.9
@@ -523,7 +558,7 @@ def assemble(plan, subs: dict, ctx, *, settings=None, log_fn=print) -> Kinematic
     # center-distance FIRST (radii from the built gears), so gears provably mesh; the passive
     # base is then a follower (below). Gear stages placed here are skipped by the weld-BFS.
     gear_ids, base_id = _classify_subs(plan, subs)
-    mesh_placed = _place_mesh_cluster(plan, subs, gear_ids, log_fn) if gear_ids else {}
+    mesh_placed = _place_mesh_cluster(plan, subs, gear_ids, base_id, log_fn) if gear_ids else {}
 
     placed_root: dict = {plan.root_sub: np.eye(4)}
     placed_root.update(mesh_placed)                 # gear stages solved by mesh
