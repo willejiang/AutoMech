@@ -148,14 +148,32 @@ part's script, per the rules. Return your NOTES, then the sentinel line, then th
 JSON patch object."""
 
 
-def build_subdebugger_json_from_notes(notes: str) -> str:
-    """Regeneration message when the JSON overran the output cap: hand the notes back and
-    ask for ONLY the JSON patch now."""
+def build_subdebugger_json_from_notes(notes: str, conflicts_desc: list[str] | None = None,
+                                      frozen_links=None) -> str:
+    """Regeneration message when the JSON overran the output cap OR the whole budget was
+    spent on hidden thinking so the NOTES came back EMPTY.
+
+    Re-states the CONFLICTS and FROZEN parts so the regen call still has the fault to fix
+    even when ``notes`` is empty. Without this, an empty-notes regen shows the model only a
+    bare "output the patch" request; it then hallucinates "no conflict data was provided"
+    and returns an empty patch (the debugger burns every pass doing nothing and the sub
+    fails up). Mirrors the boss regen-fidelity fix."""
+    conflicts_block = "\n".join(f"  {i+1}. {d}" for i, d in enumerate(conflicts_desc or [])) \
+        or "  (see the NOTES above)"
+    frozen = sorted(frozen_links or [])
+    frozen_block = (", ".join(f"'{n}'" for n in frozen) if frozen else "(none)")
+    notes_block = (f"Here is the plan you already worked out (your NOTES):\n\n{notes}\n\n"
+                   if (notes or "").strip()
+                   else "(Your notes came back empty — your reasoning budget was spent "
+                        "before you wrote them. Work directly from the conflicts below.)\n\n")
     return f"""\
-Here is the plan you already worked out (your NOTES):
+{notes_block}RIGID CONFLICTS you must fix (worst first) — separate these interpenetrating
+parts by editing a non-frozen part's pose or script:
+{conflicts_block}
 
-{notes}
+FROZEN parts (never move or reshape these — fix the OTHER part in each pair): {frozen_block}
 
-Now output ONLY the single JSON patch object that implements this plan, following the
-shape exactly. Do NOT repeat the notes, do NOT include the `{JSON_SENTINEL}` line, and do
-NOT use markdown fences — output only the JSON object."""
+Now output ONLY the single JSON patch object ({{"pose_edits": [...], "script_edits": [...],
+"reason": "..."}}) that clears these conflicts, following the shape exactly. Do NOT repeat
+the notes, do NOT include the `{JSON_SENTINEL}` line, and do NOT use markdown fences —
+output only the JSON object."""

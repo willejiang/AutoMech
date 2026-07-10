@@ -200,7 +200,8 @@ def debug_sub(model, ctx, run_dir, spec, plan, user_prompt, conflicts, settings,
     try:
         text = stream_two_part(client, conv, SUBDEBUGGER_SYSTEM,
                                memory_path=memory_path,
-                               regen_msg_fn=build_subdebugger_json_from_notes,
+                               regen_msg_fn=lambda notes: build_subdebugger_json_from_notes(
+                                   notes, conflicts_desc, frozen_links),
                                log_fn=log_fn, tag=tag)
     except LLMError as e:
         raise SubDebuggerError(f"debugger LLM request failed: {e}") from e
