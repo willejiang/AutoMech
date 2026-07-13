@@ -43,19 +43,40 @@ def _worker_build_all(model, ctx, settings, log_fn):
 def _sub_frames_to_dict(model, contract_frames=None) -> list:
     """The manager's realized interface frames, JSON-ready.
 
-    Primary source is ``model.frames_realized`` (the manager's own frame->link mapping).
-    FALLBACKS for a frame the manager DECLARED no realization for (a common LLM lapse
-    that otherwise crashes the assembler and loops the whole boss pipeline):
+    PRIORITY 0 — GEOMETRY-BACKED BINDING (option B): a `mount` frame with a `mounts_part` is
+    realized DETERMINISTICALLY on that part's link, overriding the manager's own realization.
+    The boss's binding ("this seat is the bearing X") is authoritative: the part is built at
+    its real place, so the frame lives there — no LLM realization step to get wrong. This
+    makes the housing correct on the FIRST pass (the manager builds the bearings right and the
+    boss binds each frame to one; the assembler just uses the binding). The manager kept
+    collapsing these to the origin; this removes it from the loop.
+
+    Then ``model.frames_realized`` supplies unbound frames (power/mesh shaft-end/gear frames),
+    with FALLBACKS for a frame the manager declared nothing for:
       1. name-match: a link named EXACTLY like the frame (the marker-link convention);
-      2. mount-role -> root link: a structural `mount` frame (a housing/bridge/plate
-         mounting face) is realized by the subassembly's ROOT link by convention, at the
-         root's local origin. This is safe (the root IS the structural body) and rescues
-         the frequent case where the manager built the housing but didn't declare it.
+      2. mount-role -> root link: ONLY a `mount` frame with NO mounts_part (a genuine
+         structural mounting face) is realized by the ROOT link at its origin.
     Frames still unrealized after these are reported by the manager gate (fail-fast)."""
     out = []
     seen: set = set()
+
+    # PRIORITY 0: bound mount frames -> their mounts_part link (authoritative binding).
+    link_names0 = {l.name for l in model.links}
+    for fr in (contract_frames or []):
+        fname = getattr(fr, "name", "") or ""
+        mp = (getattr(fr, "mounts_part", "") or "").strip()
+        if not fname or fname in seen or not mp:
+            continue
+        if mp in link_names0:
+            out.append({"frame": fname, "link": mp,
+                        "local_xyz_m": [0.0, 0.0, 0.0], "local_rpy_rad": [0.0, 0.0, 0.0]})
+            seen.add(fname)
+        # a mounts_part that names a NON-existent link -> leave unrealized (gate catches it).
+
     for e in getattr(model, "frames_realized", []) or []:
         name = e.get("frame", "")
+        if name in seen:
+            continue                          # a bound frame already realized above
         out.append({
             "frame": name,
             "link": e.get("link", ""),
@@ -81,11 +102,8 @@ def _sub_frames_to_dict(model, contract_frames=None) -> list:
                   and not (getattr(fr, "mounts_part", "") or "").strip()
                   and root in link_names):
                 # 2. mount -> root link, ONLY for a seat with NO mounts_part (a genuine
-                # structural mounting FACE on the root body). A mount frame that DOES name a
-                # mounts_part must be realized on that specific part; if the manager failed to,
-                # do NOT silently collapse it onto the root origin (that buries the mated shaft
-                # in the body — the reducer-bearing bug). Leave it unrealized so the fail-fast
-                # frame gate catches it and rebuilds the sub.
+                # structural mounting FACE on the root body). A bound seat is handled by
+                # PRIORITY 0 above; if its part is missing it stays unrealized (gate catches).
                 out.append({"frame": fname, "link": root,
                             "local_xyz_m": [0.0, 0.0, 0.0],
                             "local_rpy_rad": [0.0, 0.0, 0.0]})
