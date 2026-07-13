@@ -53,6 +53,15 @@ part's `dof`. DO NOT replace a real shaft or bearing with anything virtual — a
 spinning part turns on a real shaft in a real bearing, and BOTH are their own parts
 (the shaft is dof "spin", the bearing is dof "fixed").
 
+OMIT TORQUE-LOCK HARDWARE on a gear/wheel-on-shaft mount: do NOT add a KEY, keyway,
+setscrew, spline, or retaining collar to lock a gear/pinion/wheel to its shaft. This is
+a pure-CONTACT sim — torque transfers gear-to-gear by tooth contact, not through a key,
+so a key does nothing the physics uses. Worse, a key must sit at the shaft surface, which
+is INSIDE the solid gear hub, and the gear is a frozen interface part with no keyway slot
+— so the key ALWAYS interpenetrates the gear ~80% and no debugger can clear it (the gear
+can't be re-cut). Mount a gear on its shaft by placing it COAXIALLY at its axial position;
+the gear + shaft simply share the axle. Skip keys, keyways, and retaining collars entirely.
+
 HIGHLIGHT:
 1. This CAD is used for physics simulation AND actual production, so care about the
    SMALLEST piece — each gear, drive shaft, hinge, bearing.
