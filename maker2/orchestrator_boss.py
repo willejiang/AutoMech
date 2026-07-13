@@ -1127,10 +1127,7 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                 log_fn("ARTIFACT_JSON:" + json.dumps({
                     "kind": "gate", "layer": "manager", "sub_id": e.culprit,
                     "code": e.code, "detail": e.detail, "ok": False}))
-            blamed = {e.culprit for e in _agree_errs}
-            # map blamed frame -> owning sub for a targeted rebuild
-            blamed_subs = {s.id for s in plan.subassemblies
-                           for fr in (s.frames or []) if fr.name in blamed}
+            blamed_subs = {e.culprit for e in _agree_errs}   # culprit = the misrealizing sub
             for sid in blamed_subs:
                 feedback_by_sub[sid] = (_agree_errs[0].detail + " — rebuild this subassembly, "
                                         "realizing its interface frame on the real part.")

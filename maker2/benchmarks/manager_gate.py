@@ -312,5 +312,5 @@ def seam_frame_agreement_errors(plan, sub_results: dict) -> list[GateError]:
                 f"must sit ON '{mp}' (its real bearing/bore/seat), but it was realized elsewhere "
                 f"(likely collapsed to the sub's root/origin). Realize '{frame_name}' on '{mp}' "
                 f"so the sub welded here does not bury itself in this body.",
-                frame_name))
+                sub_id))               # culprit = the sub that misrealized the frame
     return out
