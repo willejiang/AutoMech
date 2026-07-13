@@ -112,6 +112,25 @@ python -m maker2.run "a hand-cranked gear reducer" --json --physics
 # or use the UI: cd worker && npm run dev → toggle "Articulated" in the prompt bar
 ```
 
+### Hierarchical (boss → managers → assembler) — big machines
+
+The block above is the single-manager path. For a machine too large for one manager to
+emit in one response (a full watch, a multi-stage gearbox, a tourbillon), pass
+`--hierarchy`: a **boss** LLM splits the machine into subassemblies and authors a
+connection graph of typed seams (**no placement coordinates**); one **manager** builds
+each subassembly in isolation; a deterministic **assembler/compiler** stitches them into
+one machine. Gear meshes are solved by the compiler — it places each meshing subassembly
+at the true center-distance read from the built gears (`module × teeth`), so gears engage
+by construction rather than by the boss guessing coordinates.
+
+```bash
+python -m maker2.run "create a two-stage gear reducer" --hierarchy --kb --deep-think --json
+```
+
+See **[`maker2/PIPELINE.md`](maker2/PIPELINE.md)** for the full hierarchical workflow: every
+agent's I/O, the deterministic compilers/gates between them, and how each gate's rejection
+routes back (per-sub rebuild vs. boss re-plan).
+
 ---
 
 ## The three tiers (what runs where)
