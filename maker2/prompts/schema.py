@@ -398,7 +398,9 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
   "global_origin_note": "<where the shared global origin is and axis convention>",
   "subassemblies": [
     {
-      "id": "<safe slug: lowercase, starts with a letter, [a-z0-9_] only, unique>",
+      "id": "<safe slug: lowercase, starts with a letter, [a-z0-9_] only, unique. This is a
+              PERMANENT IDENTIFIER: on any re-plan, reuse the prior plan's ids verbatim —
+              never rename a subassembly you are keeping (renaming forces a full rebuild)>",
       "brief": "<one-paragraph product prompt for THIS subassembly's manager: what
                  parts it contains and what it does; it is built in isolation>",
       "function": "<what this subassembly does in the machine>",

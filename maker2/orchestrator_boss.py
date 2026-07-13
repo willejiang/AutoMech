@@ -1091,26 +1091,21 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                 part_subs.setdefault(l.name, set()).add(s.id)
         dup_parts = {name: sorted(ss) for name, ss in part_subs.items() if len(ss) > 1}
         if dup_parts:
+            # NOTE: this is WARN-only, not a re-plan trigger. The assembler namespaces every
+            # link as "<sub_id>_<name>", so two subs each owning a part called 'bearing_lower'
+            # become 'input_stage_bearing_lower' vs 'output_stage_bearing_lower' — DISTINCT in
+            # the final model, no collision. Rejecting this raw-name overlap was a FALSE
+            # POSITIVE that forced a boss re-plan; the boss then re-partitioned + RENAMED its
+            # subs, which defeated the id-based reuse and made the SAME fault recur under new
+            # names every iteration -> the run looped to the no-progress cap. The only real
+            # risk (the SAME shared physical part built twice, landing two copies at one
+            # interface frame) is a geometry overlap, which the overlap/precheck gates own.
             dup_list = "; ".join(f"'{n}' in {ss}" for n, ss in sorted(dup_parts.items()))
-            feedback = (
-                "duplicated part NAMES across subassemblies — a part name must be UNIQUE across "
-                "the whole machine: " + dup_list + ". This is almost always because two "
-                "subassemblies each legitimately have their OWN copy of a generic part (its own "
-                "bearings, retaining collar, key, spacer, screw) but you gave both copies the "
-                "SAME name. FIX: give each copy a STAGE-UNIQUE name — e.g. 'bearing_lower' in the "
-                "input and output stages becomes 'input_bearing_lower' and 'output_bearing_lower'. "
-                "Each stage still builds its own part; they just need distinct names. "
-                "ONLY if the two subassemblies truly mean the SAME single physical part (rare) "
-                "should you instead remove it from one and reference it through a shared interface "
-                "frame. Re-plan so every part name is unique.")
             log_fn("ARTIFACT_JSON:" + json.dumps({
                 "kind": "gate", "layer": "boss", "iter": it, "code": "ERR_DUP_PARTS",
-                "detail": dup_list, "culprit": ",".join(sorted(dup_parts)), "ok": False}))
-            log(f"[boss] DISJOINT-PARTS gate FAILED -> re-plan: {len(dup_parts)} part(s) "
-                f"built in multiple subs ({dup_list})")
-            if not infinite and it >= max_boss_iters - 1:
-                result["error"] = f"duplicated parts across subassemblies: {dup_list}"; break
-            it += 1; continue
+                "detail": dup_list, "culprit": ",".join(sorted(dup_parts)), "ok": True}))
+            log(f"[boss] disjoint-parts WARN (namespaced, not blocking): {len(dup_parts)} "
+                f"part name(s) reused across subs ({dup_list})")
 
         # 3. (optional) Per-sub physics: localize a drivetrain fault to its sub_id
         #    BEFORE stitching, so we never blame the assembly for a bad part.

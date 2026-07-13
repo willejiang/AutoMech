@@ -457,7 +457,8 @@ def plan_machine(product_prompt: str, settings, *, image_path: str | None = None
     except ImageLoadError as e:
         raise BossError(str(e)) from e
     conv.add_user_message(
-        build_boss_user(product_prompt, has_image=bool(image_path)),
+        build_boss_user(product_prompt, has_image=bool(image_path),
+                        include_example=not (feedback and prior_plan_json)),
         images=images)
     if image_path and log_fn:
         log_fn(f"[boss] using input image: {image_path}")

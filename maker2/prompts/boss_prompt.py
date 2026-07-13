@@ -89,8 +89,15 @@ repeat the notes, do NOT include the `{JSON_SENTINEL}` line, and do NOT use mark
 fences — output only the JSON object."""
 
 
-def build_boss_user(product_prompt: str, has_image: bool = False) -> str:
-    """The boss's user message: the machine + a worked example."""
+def build_boss_user(product_prompt: str, has_image: bool = False,
+                    include_example: bool = True) -> str:
+    """The boss's user message: the machine + (on a first plan) a worked example.
+
+    ``include_example`` is False on a fault RE-PLAN: the prior plan is shown right after
+    this message as the thing to edit, and the few-shot's own sub ids (``sub_crank`` …)
+    otherwise compete with the prior plan's ids and pull the boss into RENAMING its subs
+    every re-plan — which defeats id-based reuse and loops the run. On a re-plan the boss
+    should copy the prior plan's ids verbatim, so the exemplar is withheld."""
     if has_image:
         task = (
             "NOW DO THIS ONE\n"
@@ -100,16 +107,18 @@ def build_boss_user(product_prompt: str, has_image: bool = False) -> str:
         )
     else:
         task = f'NOW DO THIS ONE\nMachine: "{product_prompt}"'
-    return f"""\
-Split this machine into subassemblies and author the interface/frame contract,
-following the schema and the global-coordinate rules exactly.
-
+    example = (f"""\
 EXAMPLE
 Machine: "{BOSS_FEWSHOT_PRODUCT}"
 Output:
 {BOSS_FEWSHOT_JSON}
 
-{task}
+""" if include_example else "")
+    return f"""\
+Split this machine into subassemblies and author the interface/frame contract,
+following the schema and the global-coordinate rules exactly.
+
+{example}{task}
 Output:"""
 
 
@@ -195,13 +204,19 @@ The assembled machine FAILED for this reason:
 
 {fault}
 
-The prior plan is shown above. Change ONLY what this fault requires. KEEP every
-subassembly that is NOT implicated EXACTLY as-is — same id, same brief, same frames,
-same seams — so it can be reused without rebuilding. Typical minimal fixes: adjust ONE
-seam's frame coordinates so two subs mate, correct ONE gear center distance, re-pose
-ONE subassembly. Do NOT rename or redesign unrelated subassemblies, and do NOT change
-the global origin. If the fault is truly a bad decomposition you may restructure — but
-default to the SMALLEST change that fixes it.
+The prior plan is shown above. A subassembly `id` is a PERMANENT IDENTIFIER, not a
+descriptive label — the pipeline reuses each already-built subassembly by matching its id
+to the prior plan. So COPY every subassembly's id from the prior plan VERBATIM. Change
+ONLY what this fault requires; keep every subassembly that is NOT implicated EXACTLY as-is
+(same id, same brief, same frames, same seams) so it is reused instead of rebuilt.
+
+DO NOT rename any subassembly. DO NOT re-split or re-group the machine. Renaming even an
+unchanged sub forces the whole machine to rebuild and makes this same fault recur — it is
+the single most common cause of a stuck loop. Typical minimal fixes: adjust ONE seam's
+frames so two subs mate, correct ONE gear's module/teeth, re-pose ONE subassembly.
+
+Only if the fault is LITERALLY "a required subassembly is missing" may you ADD a new sub
+(with a new id) — and even then, keep every existing id unchanged.
 
 Output ONLY the JSON object, no prose, no markdown fences."""
 
