@@ -25,9 +25,19 @@ _ISO_ANGLES = (np.deg2rad(60.0), 0.0, np.deg2rad(45.0))
 
 
 def load_robot(urdf_path: str) -> "yourdfpy.URDF":
-    """Load the URDF with meshes + scene graph (the assembled product)."""
+    """Load the URDF with meshes + scene graph (the assembled product).
+
+    Pin the mesh filename handler to the URDF's OWN directory so a relative
+    ``meshes/*.stl`` resolves against the sub's run dir, NOT the process CWD. Without
+    this, loading from a different CWD (e.g. the web app's repo root) fails every mesh
+    ('Unable to resolve filename'), yielding a robot with no geometry — which silently
+    breaks the conflict subcheck (it then compares empty meshes and reports a bogus,
+    unchanging overlap that no debugger pose edit can clear)."""
+    import os
+    base = os.path.dirname(os.path.abspath(urdf_path))
     return yourdfpy.URDF.load(urdf_path, load_meshes=True,
-                              build_scene_graph=True, force_mesh=True)
+                              build_scene_graph=True, force_mesh=True,
+                              filename_handler=lambda fname: os.path.join(base, fname))
 
 
 # Fallback palette (RGB 0..255) used ONLY for a mesh that somehow loaded with no
