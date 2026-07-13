@@ -40,6 +40,30 @@ def _worker_build_all(model, ctx, settings, log_fn):
     return _ba(model, ctx, settings, log_fn=log_fn)
 
 
+def _try_contract_repair(kind, detail, plan, subs, settings, log_fn) -> bool:
+    """Gate-fault debugger: fix a CONTRACT (naming/realization) fault IN PLACE instead of a full
+    boss re-plan. Deterministic repair first (fault_repair), then an LLM contract-debugger
+    fallback (gated by settings.enable_contract_debugger, default on). Returns True if anything
+    was repaired (caller should RETRY the failed gate/assemble); False -> fall back to re-plan."""
+    from . import fault_repair
+    rr = fault_repair.repair_contract_fault(kind, plan, subs, detail, log_fn=log_fn)
+    if not rr.repaired and getattr(settings, "enable_contract_debugger", True):
+        try:
+            from . import contract_debugger
+            rr = contract_debugger.debug_contract_fault(kind, detail, plan, subs, settings,
+                                                        log_fn=log_fn)
+        except Exception as e:
+            log_fn(f"[repair] contract-debugger errored ({type(e).__name__}: {e}); re-planning")
+            return False
+    if rr.repaired:
+        log_fn(f"[repair] contract fault fixed in place ({rr.note.strip() or 'see above'}) — "
+               f"retrying without a boss re-plan")
+        log_fn("ARTIFACT_JSON:" + json.dumps({
+            "kind": "gate", "layer": "repair", "code": "CONTRACT_REPAIRED",
+            "detail": rr.note.strip(), "ok": True}))
+    return rr.repaired
+
+
 def _sub_frames_to_dict(model, contract_frames=None) -> list:
     """The manager's realized interface frames, JSON-ready.
 
@@ -1145,6 +1169,16 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                 log_fn("ARTIFACT_JSON:" + json.dumps({
                     "kind": "gate", "layer": "manager", "sub_id": e.culprit,
                     "code": e.code, "detail": e.detail, "ok": False}))
+            # Gate-fault debugger first: a collapsed seat is a realization fault fixable IN PLACE
+            # (re-point the frame onto its real bore) — no rebuild, no re-plan.
+            if _try_contract_repair("frame_agree", _agree_errs[0].detail, plan, subs, settings, log):
+                _agree_errs2 = _seam_agree(plan, subs)
+                if not _agree_errs2:
+                    log("[boss] frame-agreement repaired in place (no rebuild)")
+                    _agree_errs = []
+                else:
+                    _agree_errs = _agree_errs2
+        if _agree_errs:
             blamed_subs = {e.culprit for e in _agree_errs}   # culprit = the misrealizing sub
             for sid in blamed_subs:
                 feedback_by_sub[sid] = (_agree_errs[0].detail + " — rebuild this subassembly, "
@@ -1183,12 +1217,26 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
             final = assembler.assemble(plan, subs, assembly_ctx, settings=settings,
                                        log_fn=log)
         except assembler.AssemblerError as e:
-            # A stitch failure is an interface/plan fault -> re-plan.
-            feedback = f"assembly failed: {e}"
-            log(f"[assembler] FAILED -> boss re-plan: {e}")
-            if not infinite and it >= max_boss_iters - 1:
-                result["error"] = f"assembly failed: {e}"; break
-            it += 1; continue
+            # A stitch failure is usually a CONTRACT fault (a naming/realization mismatch), not a
+            # real design flaw. Try the gate-fault debugger (deterministic repair, then LLM)
+            # BEFORE a full boss re-plan: fix the mesh_pair/frame in place and RETRY the assemble.
+            if _try_contract_repair("assembler", str(e), plan, subs, settings, log):
+                try:
+                    final = assembler.assemble(plan, subs, assembly_ctx, settings=settings,
+                                               log_fn=log)
+                    log("[assembler] re-assembled after contract repair (no re-plan)")
+                except assembler.AssemblerError as e2:
+                    feedback = f"assembly failed: {e2}"
+                    log(f"[assembler] FAILED after repair -> boss re-plan: {e2}")
+                    if not infinite and it >= max_boss_iters - 1:
+                        result["error"] = f"assembly failed: {e2}"; break
+                    it += 1; continue
+            else:
+                feedback = f"assembly failed: {e}"
+                log(f"[assembler] FAILED -> boss re-plan: {e}")
+                if not infinite and it >= max_boss_iters - 1:
+                    result["error"] = f"assembly failed: {e}"; break
+                it += 1; continue
         result["render_dir"] = assembly_ctx.run_dir
         result["ok"] = True
         log("ARTIFACT_JSON:" + json.dumps({
