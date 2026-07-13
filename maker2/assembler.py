@@ -322,12 +322,29 @@ def _link_in_root(sub, link_name: str):
     return axis_root, center_root
 
 
-def _gear_link(sub, mesh_pair, which: int):
-    """The gear LinkSpec named by a seam's mesh_pair[which] in `sub`, or None."""
-    if not mesh_pair or len(mesh_pair) != 2:
-        return None
-    name = mesh_pair[which]
-    return next((l for l in sub.model.links if l.name == name), None)
+def _gear_link(sub, seam, which: int):
+    """The gear LinkSpec that a power seam's mesh FRAME is realized on (role-based identity),
+    with the `mesh_pair` part NAME as a legacy fallback. `which` is 0 for the parent gear, 1 for
+    the child gear.
+
+    Role-based first: the boss names the mesh by FRAME (parent_frame/child_frame, e.g.
+    gear1_center), and the manager realizes that frame ON its actual gear link (whatever it named
+    it — large_gear, stage1_pinion, ...). Reading the gear FROM the realized frame means the boss
+    never has to guess the manager's gear part name (the same class of bug fixed for seat bores).
+    Falls back to `mesh_pair[which]` by name only when the frame isn't realized on a link."""
+    frame_name = seam.parent_frame if which == 0 else seam.child_frame
+    if frame_name:
+        try:
+            link_name, _ = _frame_realized(sub, frame_name)
+            lk = next((l for l in sub.model.links if l.name == link_name), None)
+            if lk is not None:
+                return lk
+        except AssemblerError:
+            pass                              # frame not realized -> fall back to mesh_pair name
+    mp = getattr(seam, "mesh_pair", ()) or ()
+    if len(mp) == 2:
+        return next((l for l in sub.model.links if l.name == mp[which]), None)
+    return None
 
 
 def _classify_subs(plan, subs: dict):
@@ -412,12 +429,14 @@ def _place_mesh_cluster(plan, subs: dict, gear_ids: set, base_id, log) -> dict:
                 continue
             parent = subs[seam.parent_sub]
             child = subs[seam.child_sub]
-            gp = _gear_link(parent, seam.mesh_pair, 0)
-            gc = _gear_link(child, seam.mesh_pair, 1)
+            gp = _gear_link(parent, seam, 0)
+            gc = _gear_link(child, seam, 1)
             if gp is None or gc is None:
                 raise AssemblerError(
-                    f"power seam '{seam.id}': mesh_pair {seam.mesh_pair} names a gear not "
-                    f"found in its sub")
+                    f"power seam '{seam.id}': could not resolve the meshing gears — the mesh "
+                    f"frames '{seam.parent_frame}'/'{seam.child_frame}' were not realized on a "
+                    f"gear link and mesh_pair {seam.mesh_pair} names no built gear. Realize each "
+                    f"mesh frame on its gear.")
             r_p = _gear_pitch_r_mm(gp)
             r_c = _gear_pitch_r_mm(gc)
             if not r_p or not r_c:

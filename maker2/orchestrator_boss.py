@@ -1203,25 +1203,28 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
 
         # 4a-0. MODULE-CONSISTENCY gate: two gears mesh ONLY if they share the same module
         #       (tooth size). A pair with mismatched modules cannot mesh at ANY spacing, so
-        #       catch it here (read module off the BUILT gear parts named by mesh_pair) and
-        #       route to a re-plan before the spacing check. Deterministic, no LLM.
+        #       catch it here (read module off the BUILT gear parts, resolved role-based via the
+        #       mesh FRAME, not the boss's guessed mesh_pair name) and route to a re-plan before
+        #       the spacing check. Deterministic, no LLM.
+        from .assembler import _gear_link as _mesh_gear_link
         _mod_errs = []
         for _seam in plan.seams:
-            _mp = getattr(_seam, "mesh_pair", ()) or ()
-            if _seam.kind != "power" or len(_mp) != 2:
+            if _seam.kind != "power":
                 continue
             _psub = subs.get(_seam.parent_sub); _csub = subs.get(_seam.child_sub)
             if not _psub or not _csub or _psub.model is None or _csub.model is None:
                 continue
-            def _mod_of(_sub, _ln):
-                _lk = next((l for l in _sub.model.links if l.name == _ln), None)
+            _gp = _mesh_gear_link(_psub, _seam, 0); _gc = _mesh_gear_link(_csub, _seam, 1)
+            if _gp is None or _gc is None:
+                continue                          # unresolved -> the assembler gate owns it
+            def _mod_of(_lk):
                 try:
-                    return float((_lk.size_mm or {}).get("module")) if _lk else None
+                    return float((_lk.size_mm or {}).get("module"))
                 except (TypeError, ValueError):
                     return None
-            _mp0 = _mod_of(_psub, _mp[0]); _mp1 = _mod_of(_csub, _mp[1])
+            _mp0 = _mod_of(_gp); _mp1 = _mod_of(_gc)
             if _mp0 and _mp1 and abs(_mp0 - _mp1) > 1e-6:
-                _mod_errs.append((_seam, _mp[0], _mp0, _mp[1], _mp1))
+                _mod_errs.append((_seam, _gp.name, _mp0, _gc.name, _mp1))
         if _mod_errs:
             _s, _a, _ma, _b, _mb = _mod_errs[0]
             _detail = (f"gears '{_a}' (module {_ma:g}) and '{_b}' (module {_mb:g}) are meshed "
