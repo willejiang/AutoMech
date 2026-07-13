@@ -69,6 +69,14 @@ def _frame_from_dict(d: dict, sub_id: str, idx: int) -> MountFrame:
     if not isinstance(name, str) or not name.strip():
         raise ValueError(f"{sub_id}.frames[{idx}] is missing a non-empty 'name'")
     role = str(d.get("role") or "mount").strip().lower()
+    mounts_part = str(d.get("mounts_part") or "").strip()
+    if role == "mount" and not mounts_part:
+        raise ValueError(
+            f"{sub_id}.frames[{idx}] '{name.strip()}' has role 'mount' but no 'mounts_part' — "
+            "every mount/seat frame MUST name the specific part inside this subassembly (a "
+            "bearing/bore/post/seat) that physically sits at it, so the manager realizes the "
+            "frame ON that part instead of collapsing it to the sub origin. Set mounts_part to "
+            "that part's name.")
     return MountFrame(
         name=name.strip(),
         xyz_m=_as_tuple3(d.get("xyz_m"), (0.0, 0.0, 0.0)),
@@ -77,7 +85,7 @@ def _frame_from_dict(d: dict, sub_id: str, idx: int) -> MountFrame:
         shaft_dia_mm=float(d.get("shaft_dia_mm") or 0.0),
         link=str(d.get("link") or ""),
         role=role,
-        mounts_part=str(d.get("mounts_part") or "").strip(),
+        mounts_part=mounts_part,
     )
 
 

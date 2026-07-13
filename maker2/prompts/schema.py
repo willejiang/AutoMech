@@ -421,7 +421,9 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
           "shaft_dia_mm": <number>,   // HARD shaft/gear-pitch diameter in MM for a
                                        // power_in/power_out/mesh frame (0 for a plain mount)
           "role": "<mount | power_in | power_out | mesh>",
-          "mounts_part": "<optional: the part inside THIS sub that seats at this frame>"
+          "mounts_part": "<REQUIRED for role==mount: the specific part inside THIS sub (a
+                          bearing/bore/post/seat) that physically sits at this frame. A mount
+                          frame WITHOUT it is rejected. Omit only for power_in/power_out/mesh.>"
         }
       ]
     }
@@ -488,12 +490,16 @@ HARD RULES
   — never 'bearing_lower' in both). Reusing a generic name across stages reads as one duplicated
   part and is rejected. Prefix generic hardware (bearings, collars, keys, screws, spacers) with
   its owning stage/sub.
-- LABEL THE SEATS on a structural base. When a subassembly is a base/plate/bracket/chassis
-  that carries SEVERAL parts at distinct spots (three bearing holes, four mounting posts, a
-  row of jewel seats), declare ONE frame PER seat at that seat's own distinct `xyz_m`, and
-  set `mounts_part` to the part that sits there. This pins each part to its hole so the
-  manager places them at the right SPREAD-OUT positions instead of guessing (guessing stacks
-  them all at the origin, they overlap, and nothing can separate parts pinned to a seat).
+- LABEL THE SEATS on a structural base — MANDATORY. Every `role:"mount"` frame MUST set
+  `mounts_part` to the specific part inside its sub (a bearing, bore, post, seat) that
+  physically sits at that hole. A mount frame without `mounts_part` is REJECTED at plan time.
+  Reason: without a bound part the manager cannot know which built feature realizes the
+  frame, so it collapses every unrealized seat onto the sub's ORIGIN — three bearing seats
+  all land at [0,0,0], and the shafts that weld to them bury themselves in the housing body.
+  Binding each seat to its part forces the manager to realize the frame ON that part's real
+  location. When a base carries SEVERAL parts at distinct spots (three bearing holes, four
+  posts, a row of seats), declare ONE frame PER seat at its own distinct `xyz_m` with its
+  own `mounts_part`.
   Example — a plate with 3 bearing holes 40 mm apart:
     frames: [
       {"name":"seat_input",  "xyz_m":[0.00,0,0], "mounts_part":"bearing_input",  "role":"mount"},

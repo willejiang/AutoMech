@@ -235,3 +235,82 @@ def frame_drift_errors(model, frame_contract, is_root: bool = True,
                     fb.name))
                 break                         # one collapse report per frame is enough
     return out
+
+
+def _part_world_in_sub(sub_result, part_name: str):
+    """World position (in the sub's own root frame) of a part's link origin, via
+    _root_to_link. None if the part isn't a reachable link."""
+    model = getattr(sub_result, "model", None)
+    if model is None:
+        return None
+    T = _root_to_link(model)
+    Tlink = T.get(part_name)
+    return Tlink[:3, 3] if Tlink is not None else None
+
+
+def _realized_world_in_sub(sub_result, frame_name: str):
+    """World position (in the sub's own root frame) of a realized interface frame, from the
+    sub's persisted frames (sub_frames.json / model.frames_realized). None if unresolved."""
+    model = getattr(sub_result, "model", None)
+    entries = getattr(sub_result, "sub_frames", None) or []
+    if model is None:
+        return None
+    entry = next((e for e in entries if e.get("frame") == frame_name), None)
+    if not entry:
+        return None
+    T = _root_to_link(model)
+    Tlink = T.get(entry.get("link"))
+    if Tlink is None:
+        return None
+    local = _mat(entry.get("local_xyz_m", (0, 0, 0)), entry.get("local_rpy_rad", (0, 0, 0)))
+    return (Tlink @ local)[:3, 3]
+
+
+def seam_frame_agreement_errors(plan, sub_results: dict) -> list[GateError]:
+    """GEOMETRY-BACKED SEAT check: a `mount` frame binds to a real part via `mounts_part`
+    (the bearing/bore/seat that physically sits at that hole). The manager must realize the
+    frame ON that part's location — not collapse it to the sub's root origin. When it does
+    collapse (the reducer bug: three seats all realized on `lower_body` at [0,0,0] while their
+    bearings sit at Y=0/80/160), the shaft welded to that seat buries itself in the housing.
+
+    For each seam whose parent/child frame names a `mounts_part`, compare the frame's REALIZED
+    world position (in its sub) to where `mounts_part` actually sits (in its sub). A gap
+    > _POS_TOL_M means the manager did not realize the frame on its bound part ->
+    ERR_SEAM_DISAGREE (route to a targeted rebuild of that sub). This is the deterministic
+    checksum the two isolated managers lack."""
+    out: list[GateError] = []
+    frame_of = {(s.id, fr.name): fr for s in plan.subassemblies for fr in (s.frames or [])}
+
+    def _check(sub_id, frame_name):
+        fr = frame_of.get((sub_id, frame_name))
+        res = sub_results.get(sub_id)
+        if fr is None or res is None:
+            return None
+        mp = (getattr(fr, "mounts_part", "") or "").strip()
+        if not mp:
+            return None                       # no bound part -> nothing to verify here
+        fw = _realized_world_in_sub(res, frame_name)
+        pw = _part_world_in_sub(res, mp)
+        if fw is None or pw is None:
+            return None                       # unrealized / missing part -> other gates own it
+        gap = float(np.linalg.norm(fw - pw))
+        return (gap, mp) if gap > _POS_TOL_M else None
+
+    for seam in plan.seams:
+        if seam.kind not in ("weld", "power"):
+            continue
+        for sub_id, frame_name in ((seam.parent_sub, seam.parent_frame),
+                                   (seam.child_sub, seam.child_frame)):
+            hit = _check(sub_id, frame_name)
+            if hit is None:
+                continue
+            gap, mp = hit
+            out.append(GateError(
+                "manager", "ERR_SEAM_DISAGREE",
+                f"seam '{seam.id}': subassembly '{sub_id}' realized interface frame "
+                f"'{frame_name}' {gap*1000:.1f} mm away from its bound part '{mp}' — the frame "
+                f"must sit ON '{mp}' (its real bearing/bore/seat), but it was realized elsewhere "
+                f"(likely collapsed to the sub's root/origin). Realize '{frame_name}' on '{mp}' "
+                f"so the sub welded here does not bury itself in this body.",
+                frame_name))
+    return out

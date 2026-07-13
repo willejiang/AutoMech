@@ -77,8 +77,16 @@ def _sub_frames_to_dict(model, contract_frames=None) -> list:
                             "local_xyz_m": [0.0, 0.0, 0.0],
                             "local_rpy_rad": [0.0, 0.0, 0.0]})
                 seen.add(fname)
-            elif getattr(fr, "role", "mount") == "mount" and root in link_names:
-                out.append({"frame": fname, "link": root,   # 2. mount -> root link
+            elif (getattr(fr, "role", "mount") == "mount"
+                  and not (getattr(fr, "mounts_part", "") or "").strip()
+                  and root in link_names):
+                # 2. mount -> root link, ONLY for a seat with NO mounts_part (a genuine
+                # structural mounting FACE on the root body). A mount frame that DOES name a
+                # mounts_part must be realized on that specific part; if the manager failed to,
+                # do NOT silently collapse it onto the root origin (that buries the mated shaft
+                # in the body — the reducer-bearing bug). Leave it unrealized so the fail-fast
+                # frame gate catches it and rebuilds the sub.
+                out.append({"frame": fname, "link": root,
                             "local_xyz_m": [0.0, 0.0, 0.0],
                             "local_rpy_rad": [0.0, 0.0, 0.0]})
                 seen.add(fname)
@@ -1106,6 +1114,32 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                 "detail": dup_list, "culprit": ",".join(sorted(dup_parts)), "ok": True}))
             log(f"[boss] disjoint-parts WARN (namespaced, not blocking): {len(dup_parts)} "
                 f"part name(s) reused across subs ({dup_list})")
+
+        # 2c. CROSS-SUB FRAME-AGREEMENT gate: the two subs a seam joins are built in isolation;
+        #     verify both realized their shared interface frame on the SAME feature (each landed
+        #     where the boss declared it). Catches a manager collapsing a seat onto its root
+        #     origin (the shaft then buries itself in the housing). Deterministic, no LLM ->
+        #     boss re-plan (rebuild the blamed sub).
+        from .benchmarks.manager_gate import seam_frame_agreement_errors as _seam_agree
+        _agree_errs = _seam_agree(plan, subs)
+        if _agree_errs:
+            for e in _agree_errs:
+                log_fn("ARTIFACT_JSON:" + json.dumps({
+                    "kind": "gate", "layer": "manager", "sub_id": e.culprit,
+                    "code": e.code, "detail": e.detail, "ok": False}))
+            blamed = {e.culprit for e in _agree_errs}
+            # map blamed frame -> owning sub for a targeted rebuild
+            blamed_subs = {s.id for s in plan.subassemblies
+                           for fr in (s.frames or []) if fr.name in blamed}
+            for sid in blamed_subs:
+                feedback_by_sub[sid] = (_agree_errs[0].detail + " — rebuild this subassembly, "
+                                        "realizing its interface frame on the real part.")
+            reuse = {s.id for s in plan.subassemblies} - blamed_subs
+            log(f"[boss] frame-agreement FAILED -> rebuild {sorted(blamed_subs)}: "
+                f"{_agree_errs[0].detail[:100]}")
+            if not infinite and it >= max_boss_iters - 1:
+                result["error"] = f"frame disagreement: {_agree_errs[0].detail}"; break
+            it += 1; continue
 
         # 3. (optional) Per-sub physics: localize a drivetrain fault to its sub_id
         #    BEFORE stitching, so we never blame the assembly for a bad part.
