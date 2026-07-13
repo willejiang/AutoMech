@@ -320,9 +320,9 @@ def build_manager_subassembly(frame_contract, manager_ir: bool = True) -> str:
         dia = getattr(fr, "shaft_dia_mm", 0.0) or 0.0
         dia_txt = (f", shaft/gear dia {dia:.2f} mm (build the mating shaft/bore/gear "
                    f"to EXACTLY this diameter)") if dia > 0 else ""
-        mp = (getattr(fr, "mounts_part", "") or "").strip()
-        mp_txt = (f' — the part "{mp}" MUST sit here: realize this frame with "{mp}" and '
-                  f'mate it so it lands at this position (do NOT place it anywhere else)') if mp else ""
+        mp_txt = (' — realize this frame ON a bore port you cut in your body at this position '
+                  '(name the port yourself); it must sit here, not at the body origin') \
+                 if (getattr(fr, "role", "mount") == "mount") else ""
         lines.append(
             f'  - "{fr.name}" (role: {fr.role}): GLOBAL position '
             f'[{x:.4f}, {y:.4f}, {z:.4f}] m, axis [{ax:.3f}, {ay:.3f}, {az:.3f}]'
@@ -410,14 +410,21 @@ RULES
   frame lands at the given GLOBAL location when the machine is assembled. Typically
   the frame coincides with a specific part (a housing mounting face, a gear center,
   a shaft end).
-- SEPARATE SEATS: if this sub exposes SEVERAL mount frames at DIFFERENT positions (a
-  base/plate/bracket with several bearing holes, posts, or seats), each frame is its OWN
-  independent seat. Realize each with a DIFFERENT part, placed at that frame's position —
-  so the parts spread across the base instead of stacking at one spot. Do NOT connect the
-  seated parts to EACH OTHER (no shaft threading through them, no boss-to-boss mate): they
-  are independent supports that each just mate to the base. If a frame gives no shaft
-  diameter and this sub "holds no rotating parts", do NOT invent a shaft to link the
-  bearings — a bearing here is a standalone fixed part seated on the base at its frame.
+- SEPARATE SEATS — YOU OWN THE BORE. If this sub is a base/plate/bracket/housing that exposes
+  SEVERAL mount frames at DIFFERENT positions (several bearing bores, posts, seats), each frame
+  is its OWN independent seat that YOU realize. For EACH such seat frame the boss gives (name +
+  GLOBAL position + bore diameter), do this:
+    1. On your structural BODY part (the plate/housing block), declare a positioned `bore` PORT
+       at that seat's LOCAL position (the frame's global xyz_m minus this sub's origin), with
+       `diameter_mm` = the frame's shaft diameter and the frame's axis. Give the port your own
+       name (e.g. "bore_seat_input") — YOU own it; the boss does not name your parts.
+    2. Realize THAT seat frame at the SAME local position on the body (frames_realized entry
+       with the bore's local_xyz_m) — so the frame sits ON the bore you cut, not at the body
+       origin. This is the ONLY correct realization; collapsing several seats onto the body
+       origin makes the shafts that weld to them bury inside the body.
+  Declare ONE bore port + ONE realization PER seat so the seats spread across the base. Do NOT
+  connect the seated parts to each other (no shaft threading them). A bearing seat is a bore in
+  your body at the frame's position — a feature of the body, not a separate free-standing part.
 - The interface frames are HARD POINTS fixed by the boss — treat them as immovable.
   Where a frame gives a shaft/gear diameter, size YOUR mating shaft, bore, or gear to
   EXACTLY that diameter and put it on the frame's axis, so the part meets its

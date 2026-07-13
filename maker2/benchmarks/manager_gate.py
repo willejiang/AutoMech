@@ -237,17 +237,6 @@ def frame_drift_errors(model, frame_contract, is_root: bool = True,
     return out
 
 
-def _part_world_in_sub(sub_result, part_name: str):
-    """World position (in the sub's own root frame) of a part's link origin, via
-    _root_to_link. None if the part isn't a reachable link."""
-    model = getattr(sub_result, "model", None)
-    if model is None:
-        return None
-    T = _root_to_link(model)
-    Tlink = T.get(part_name)
-    return Tlink[:3, 3] if Tlink is not None else None
-
-
 def _realized_world_in_sub(sub_result, frame_name: str):
     """World position (in the sub's own root frame) of a realized interface frame, from the
     sub's persisted frames (sub_frames.json / model.frames_realized). None if unresolved."""
@@ -267,50 +256,58 @@ def _realized_world_in_sub(sub_result, frame_name: str):
 
 
 def seam_frame_agreement_errors(plan, sub_results: dict) -> list[GateError]:
-    """GEOMETRY-BACKED SEAT check: a `mount` frame binds to a real part via `mounts_part`
-    (the bearing/bore/seat that physically sits at that hole). The manager must realize the
-    frame ON that part's location — not collapse it to the sub's root origin. When it does
-    collapse (the reducer bug: three seats all realized on `lower_body` at [0,0,0] while their
-    bearings sit at Y=0/80/160), the shaft welded to that seat buries itself in the housing.
+    """SEAT-COLLAPSE checksum: a base/housing that carries several seats must realize each seat
+    frame at its OWN bore position, not collapse them all onto the sub origin. The boss names
+    the seats by frame + position (it does NOT name the builder's parts); the builder cuts a
+    bore port per seat and realizes the frame there. This gate verifies the builder actually
+    spread them: for every PAIR of a sub's interface frames the boss placed APART (their xyz_m
+    differ > tol), the REALIZED positions must ALSO be apart. If two seats the boss placed apart
+    are realized coincident (the collapse-to-origin bug: three seats all on `lower_body` at
+    [0,0,0] while their bores should be at Y=0/80/160), the shafts welded to them bury in the
+    body -> ERR_SEAM_DISAGREE, targeted rebuild of that sub.
 
-    For each seam whose parent/child frame names a `mounts_part`, compare the frame's REALIZED
-    world position (in its sub) to where `mounts_part` actually sits (in its sub). A gap
-    > _POS_TOL_M means the manager did not realize the frame on its bound part ->
-    ERR_SEAM_DISAGREE (route to a targeted rebuild of that sub). This is the deterministic
-    checksum the two isolated managers lack."""
+    One-directional (contract-apart -> realized-coincident only), mirroring frame_drift_errors:
+    the reverse (contract-coincident, realized-apart) is a known false positive."""
     out: list[GateError] = []
-    frame_of = {(s.id, fr.name): fr for s in plan.subassemblies for fr in (s.frames or [])}
-
-    def _check(sub_id, frame_name):
-        fr = frame_of.get((sub_id, frame_name))
-        res = sub_results.get(sub_id)
-        if fr is None or res is None:
-            return None
-        mp = (getattr(fr, "mounts_part", "") or "").strip()
-        if not mp:
-            return None                       # no bound part -> nothing to verify here
-        fw = _realized_world_in_sub(res, frame_name)
-        pw = _part_world_in_sub(res, mp)
-        if fw is None or pw is None:
-            return None                       # unrealized / missing part -> other gates own it
-        gap = float(np.linalg.norm(fw - pw))
-        return (gap, mp) if gap > _POS_TOL_M else None
-
+    seam_frames: dict = {}                     # sub_id -> set of frame names used by a seam
     for seam in plan.seams:
         if seam.kind not in ("weld", "power"):
             continue
-        for sub_id, frame_name in ((seam.parent_sub, seam.parent_frame),
-                                   (seam.child_sub, seam.child_frame)):
-            hit = _check(sub_id, frame_name)
-            if hit is None:
+        seam_frames.setdefault(seam.parent_sub, set()).add(seam.parent_frame)
+        seam_frames.setdefault(seam.child_sub, set()).add(seam.child_frame)
+
+    for s in plan.subassemblies:
+        res = sub_results.get(s.id)
+        if res is None:
+            continue
+        used = seam_frames.get(s.id, set())
+        # Only frames that actually participate in a seam (an interface that gets welded).
+        frames = [fr for fr in (s.frames or []) if fr.name in used]
+        realized = [(fr, _realized_world_in_sub(res, fr.name)) for fr in frames]
+        realized = [(fr, w) for fr, w in realized if w is not None]
+        for i in range(len(realized)):
+            for j in range(i + 1, len(realized)):
+                fa, wa = realized[i]
+                fb, wb = realized[j]
+                want = float(np.linalg.norm(
+                    np.array([float(v) for v in (fa.xyz_m or (0, 0, 0))])
+                    - np.array([float(v) for v in (fb.xyz_m or (0, 0, 0))])))
+                if want <= _POS_TOL_M:
+                    continue                    # boss placed them coincident -> nothing to check
+                got = float(np.linalg.norm(wa - wb))
+                if got <= _POS_TOL_M:
+                    out.append(GateError(
+                        "manager", "ERR_SEAM_DISAGREE",
+                        f"subassembly '{s.id}' realized interface seats '{fa.name}' and "
+                        f"'{fb.name}' at the SAME point, but the boss placed them "
+                        f"{want*1000:.1f} mm apart — the seats collapsed (likely all realized on "
+                        f"the body root at its origin instead of on their own bore positions). "
+                        f"Cut a distinct bore port for each seat at its position and realize "
+                        f"each frame there, so the parts welded to them do not stack/bury in "
+                        f"this body.",
+                        s.id))                  # culprit = the sub that collapsed its seats
+                    break                       # one report per sub is enough
+            else:
                 continue
-            gap, mp = hit
-            out.append(GateError(
-                "manager", "ERR_SEAM_DISAGREE",
-                f"seam '{seam.id}': subassembly '{sub_id}' realized interface frame "
-                f"'{frame_name}' {gap*1000:.1f} mm away from its bound part '{mp}' — the frame "
-                f"must sit ON '{mp}' (its real bearing/bore/seat), but it was realized elsewhere "
-                f"(likely collapsed to the sub's root/origin). Realize '{frame_name}' on '{mp}' "
-                f"so the sub welded here does not bury itself in this body.",
-                sub_id))               # culprit = the sub that misrealized the frame
+            break
     return out

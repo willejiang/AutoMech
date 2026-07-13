@@ -43,16 +43,16 @@ def _worker_build_all(model, ctx, settings, log_fn):
 def _sub_frames_to_dict(model, contract_frames=None) -> list:
     """The manager's realized interface frames, JSON-ready.
 
-    PRIORITY 0 — GEOMETRY-BACKED BINDING (option B): a `mount` frame with a `mounts_part` is
-    realized DETERMINISTICALLY on that part's link, overriding the manager's own realization.
-    The boss's binding ("this seat is the bearing X") is authoritative: the part is built at
-    its real place, so the frame lives there — no LLM realization step to get wrong. This
-    makes the housing correct on the FIRST pass (the manager builds the bearings right and the
-    boss binds each frame to one; the assembler just uses the binding). The manager kept
-    collapsing these to the origin; this removes it from the loop.
+    PRIORITY 0 — BUILDER-OWNED BINDING: a `mount` frame whose `mounts_part` names a link that
+    ACTUALLY EXISTS in this sub is realized on that link. The boss no longer authors
+    `mounts_part` (it cannot know the builder's part names — that guess was the seating bug);
+    this only fires when the MANAGER itself named one of its OWN parts for the frame, which is a
+    valid builder-owned binding (no cross-agent name guess). A `mounts_part` that names a
+    non-existent link is ignored (the manager's frames_realized / fallbacks handle the frame).
 
-    Then ``model.frames_realized`` supplies unbound frames (power/mesh shaft-end/gear frames),
-    with FALLBACKS for a frame the manager declared nothing for:
+    Then ``model.frames_realized`` (the manager's own frame->link+offset, which supports a
+    positioned local offset so a seat lands at a bore's position) supplies the rest, with
+    FALLBACKS for a frame the manager declared nothing for:
       1. name-match: a link named EXACTLY like the frame (the marker-link convention);
       2. mount-role -> root link: ONLY a `mount` frame with NO mounts_part (a genuine
          structural mounting face) is realized by the ROOT link at its origin.
@@ -60,7 +60,7 @@ def _sub_frames_to_dict(model, contract_frames=None) -> list:
     out = []
     seen: set = set()
 
-    # PRIORITY 0: bound mount frames -> their mounts_part link (authoritative binding).
+    # PRIORITY 0: a mount frame bound (by the MANAGER, to its own real part) -> that link.
     link_names0 = {l.name for l in model.links}
     for fr in (contract_frames or []):
         fname = getattr(fr, "name", "") or ""
@@ -71,7 +71,7 @@ def _sub_frames_to_dict(model, contract_frames=None) -> list:
             out.append({"frame": fname, "link": mp,
                         "local_xyz_m": [0.0, 0.0, 0.0], "local_rpy_rad": [0.0, 0.0, 0.0]})
             seen.add(fname)
-        # a mounts_part that names a NON-existent link -> leave unrealized (gate catches it).
+        # a mounts_part naming a NON-existent link -> ignore; frames_realized/fallbacks handle it.
 
     for e in getattr(model, "frames_realized", []) or []:
         name = e.get("frame", "")

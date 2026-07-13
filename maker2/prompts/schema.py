@@ -421,9 +421,10 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
           "shaft_dia_mm": <number>,   // HARD shaft/gear-pitch diameter in MM for a
                                        // power_in/power_out/mesh frame (0 for a plain mount)
           "role": "<mount | power_in | power_out | mesh>",
-          "mounts_part": "<REQUIRED for role==mount: the specific part inside THIS sub (a
-                          bearing/bore/post/seat) that physically sits at this frame. A mount
-                          frame WITHOUT it is rejected. Omit only for power_in/power_out/mesh.>"
+          "mounts_part": "<OPTIONAL and rarely set by you — leave empty. It names a part inside
+                          the SAME sub that realizes this frame; only the sub that BUILDS the
+                          seat knows its part names, so YOU do not author it. Identify a seat by
+                          its frame NAME + position + shaft_dia_mm, not by a part name.>"
         }
       ]
     }
@@ -490,24 +491,24 @@ HARD RULES
   — never 'bearing_lower' in both). Reusing a generic name across stages reads as one duplicated
   part and is rejected. Prefix generic hardware (bearings, collars, keys, screws, spacers) with
   its owning stage/sub.
-- LABEL THE SEATS on a structural base — MANDATORY. Every `role:"mount"` frame MUST set
-  `mounts_part` to the specific part inside its sub (a bearing, bore, post, seat) that
-  physically sits at that hole. A mount frame without `mounts_part` is REJECTED at plan time.
-  Reason: without a bound part the manager cannot know which built feature realizes the
-  frame, so it collapses every unrealized seat onto the sub's ORIGIN — three bearing seats
-  all land at [0,0,0], and the shafts that weld to them bury themselves in the housing body.
-  Binding each seat to its part forces the manager to realize the frame ON that part's real
-  location. When a base carries SEVERAL parts at distinct spots (three bearing holes, four
-  posts, a row of seats), declare ONE frame PER seat at its own distinct `xyz_m` with its
-  own `mounts_part`.
-  Example — a plate with 3 bearing holes 40 mm apart:
+- SEATS ON A STRUCTURAL BASE — name the INTERFACE, not the builder's parts. When a base/
+  plate/bracket/housing carries several parts at distinct spots (three bearing bores, four
+  posts, a row of seats), declare ONE `role:"mount"` frame PER seat at its own distinct
+  `xyz_m`, with the seat's bore `shaft_dia_mm`. You author WHERE each interface is (frame name
+  + global position + bore diameter + axis) — you do NOT name the base's internal parts. The
+  SUBASSEMBLY THAT BUILDS THE BASE owns the geometry: its manager cuts a bore PORT on its body
+  at each seat's position and realizes that seat frame there. You cannot know the builder's
+  part names, so do NOT invent a `mounts_part` for another sub's or the base's internal parts —
+  the frame NAME (e.g. seat_input/seat_inter/seat_output) is the shared identity both you and
+  the builder use. Keep frame names structural/role-like so the builder reads the same role.
+  Example — a plate with 3 bearing seats 40 mm apart (position + diameter only, no part names):
     frames: [
-      {"name":"seat_input",  "xyz_m":[0.00,0,0], "mounts_part":"bearing_input",  "role":"mount"},
-      {"name":"seat_middle", "xyz_m":[0.04,0,0], "mounts_part":"bearing_middle", "role":"mount"},
-      {"name":"seat_output", "xyz_m":[0.08,0,0], "mounts_part":"bearing_output", "role":"mount"}
+      {"name":"seat_input",  "xyz_m":[0.00,0,0], "axis":[1,0,0], "shaft_dia_mm":20, "role":"mount"},
+      {"name":"seat_middle", "xyz_m":[0.04,0,0], "axis":[1,0,0], "shaft_dia_mm":20, "role":"mount"},
+      {"name":"seat_output", "xyz_m":[0.08,0,0], "axis":[1,0,0], "shaft_dia_mm":20, "role":"mount"}
     ]
-  This matters MORE the less regular the base is — for an irregular chassis only YOU know
-  where each hole goes, so you MUST label every seat with its position + part.
+  This matters MORE the less regular the base is — for an irregular chassis only YOU know where
+  each seat goes, so you MUST declare every seat frame with its position + diameter.
 - IDENTICAL REPEATED SUBASSEMBLIES: when several subassemblies are the SAME (same
   parts, differing ONLY in position/orientation — a quadcopter's 4 rotors, a hexapod's
   6 legs, a car's 4 wheels), emit ONE subassembly and list each copy in "instances"
