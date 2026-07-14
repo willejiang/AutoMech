@@ -272,6 +272,33 @@ export const PARAMETRIC_MODELS: ModelConfig[] = [
     supportsThinking: true,
     supportsVision: true,
   },
+  {
+    id: 'openai/gpt-5.6-sol',
+    name: 'GPT-5.6 Sol',
+    description: 'GPT-5.6 (Sol variant) — strongest OpenAI tier for hard CAD reasoning',
+    provider: 'OpenAI',
+    supportsTools: true,
+    supportsThinking: true,
+    supportsVision: true,
+  },
+  {
+    id: 'openai/gpt-5.6-terra',
+    name: 'GPT-5.6 Terra',
+    description: 'GPT-5.6 (Terra variant) — strongest OpenAI tier for hard CAD reasoning',
+    provider: 'OpenAI',
+    supportsTools: true,
+    supportsThinking: true,
+    supportsVision: true,
+  },
+  {
+    id: 'openai/gpt-5.6-luna',
+    name: 'GPT-5.6 Luna',
+    description: 'GPT-5.6 (Luna variant) — strongest OpenAI tier for hard CAD reasoning',
+    provider: 'OpenAI',
+    supportsTools: true,
+    supportsThinking: true,
+    supportsVision: true,
+  },
 ];
 
 export const CREATIVE_MODELS: ModelConfig[] = [
