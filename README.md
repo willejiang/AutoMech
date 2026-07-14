@@ -1,5 +1,7 @@
 # PhysCAD Researcher / AutoMech
 
+> 🎉🏆 **Our AutoMech project won 2nd place in the Hardware AI Innovation track at the Microsoft Global Intern Hackathon 2026!** 🎉🥈
+
 **Task-oriented CAD generation, closed-loop with physics.** Instead of producing
 geometry that merely *looks* plausible, every design is simulated in **NVIDIA Isaac
 Sim** under the user's actual task and judged by a vision model. Failures come back
