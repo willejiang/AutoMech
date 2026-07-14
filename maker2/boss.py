@@ -78,6 +78,7 @@ def _frame_from_dict(d: dict, sub_id: str, idx: int) -> MountFrame:
         link=str(d.get("link") or ""),
         role=role,
         mounts_part=str(d.get("mounts_part") or "").strip(),
+        host_plane=str(d.get("host_plane") or "").strip().upper(),
     )
 
 
@@ -342,7 +343,8 @@ def _validate_plan(plan: SubassemblyPlan) -> None:
 def _frame_to_dict(fr: MountFrame) -> dict:
     return {"name": fr.name, "xyz_m": list(fr.xyz_m), "rpy_rad": list(fr.rpy_rad),
             "axis": list(fr.axis), "shaft_dia_mm": fr.shaft_dia_mm,
-            "link": fr.link, "role": fr.role, "mounts_part": fr.mounts_part}
+            "link": fr.link, "role": fr.role, "mounts_part": fr.mounts_part,
+            "host_plane": fr.host_plane}
 
 
 def plan_to_dict(plan: SubassemblyPlan) -> dict:

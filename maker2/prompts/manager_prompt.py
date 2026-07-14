@@ -434,6 +434,10 @@ RULES
   Declare ONE bore port + ONE realization PER seat so the seats spread across the base. Do NOT
   connect the seated parts to each other (no shaft threading them). A bearing seat is a bore in
   your body at the frame's position — a feature of the body, not a separate free-standing part.
+  You need only place each seat APPROXIMATELY along the right wall/axis: the assembler relocates
+  every seat frame onto its SOLVED shaft before welding, so getting the exact xyz is not critical —
+  what matters is that the seats stay SPREAD (never collapsed onto the body origin) and share the
+  boss's through-shaft `axis`.
 - The interface frames are HARD POINTS fixed by the boss — treat them as immovable.
   Where a frame gives a shaft/gear diameter, size YOUR mating shaft, bore, or gear to
   EXACTLY that diameter and put it on the frame's axis, so the part meets its

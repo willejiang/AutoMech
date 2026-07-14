@@ -509,6 +509,11 @@ HARD RULES
     ]
   This matters MORE the less regular the base is — for an irregular chassis only YOU know where
   each seat goes, so you MUST declare every seat frame with its position + diameter.
+  SEAT POSITION IS ASSEMBLER-OWNED: `axis` (the through-shaft direction) is what must be right;
+  the assembler relocates each seat frame onto its SOLVED shaft, so a seat's absolute `xyz_m` is
+  advisory (used for spacing/preview, not for the final weld). You MAY add an optional
+  `"host_plane":"YZ"|"XZ"|"XY"` naming the wall the bore pierces (a bore is a hole in a PLANE, along
+  its `axis`) — authoring clarity only; the assembler does not need it to place the shaft.
 - IDENTICAL REPEATED SUBASSEMBLIES: when several subassemblies are the SAME (same
   parts, differing ONLY in position/orientation — a quadcopter's 4 rotors, a hexapod's
   6 legs, a car's 4 wheels), emit ONE subassembly and list each copy in "instances"

@@ -198,6 +198,12 @@ class MountFrame:
                                                      # fixed by the seat, not guessed). Empty =
                                                      # manager chooses. Use on a base sub with
                                                      # several seats to pin each part to its hole.
+    host_plane: str = ""                             # "YZ"|"XZ"|"XY" — for a bore/seat, the wall
+                                                     # plane the hole pierces (through-axis = its
+                                                     # normal). Authoring clarity + appearance
+                                                     # preview only; NOT required for correctness
+                                                     # (bore position is assembler-owned, derived
+                                                     # from the mated shaft). Empty = infer from axis.
 
 
 # --------------------------------------------------------------------------- #

@@ -399,7 +399,10 @@ def _base_bore_dir(plan, subs, base_id, parent_gear_sub, child_gear_sub):
     if a is None or b is None:
         return None
     d = b - a
-    return d if float(np.linalg.norm(d)) > 1e-9 else None
+    # Guard: if the two bore declarations are collapsed / near-coincident (a common boss/manager
+    # lapse), this direction is meaningless — return None so the seam separation_axis / boss-axis
+    # fallback governs the mesh separation instead of a degenerate hint.
+    return d if float(np.linalg.norm(d)) > 1e-3 else None
 
 
 def _place_mesh_cluster(plan, subs: dict, gear_ids: set, base_id, log) -> dict:
@@ -507,6 +510,64 @@ def _derive_base_pose(plan, subs: dict, base_id: str, placed_root: dict, log):
         f"(bore '{seam.parent_frame}' <- shaft '{seam.child_frame}')")
 
 
+def _override_base_bores(plan, subs: dict, base_id: str, placed_root: dict, log) -> None:
+    """DETERMINISTIC bore placement: the assembler OWNS where each housing bore sits, derived from
+    the shaft it mates — NOT from where the manager built/realized its bearing.
+
+    The weld path (`_bridge_pose_from_ports`) reads only the REALIZED seat pose from
+    ``base.sub_frames``, never the boss's declared axis. The housing manager routinely realizes all
+    seats collapsed on the body root at origin (built its bearings on the wrong axis), so shafts
+    weld at the origin and float outside the housing. Here, for each insert seam, we REWRITE the
+    base's realized seat frame so it lands at the mated shaft's already-solved WORLD pose. The
+    weld-BFS then places each shaft at its own bore. This mirrors `_place_mesh_cluster`: derive from
+    real solved geometry, ignore the manager's coordinates.
+
+    Must run AFTER the shaft cluster is in ``placed_root`` and the base root is pinned (either at
+    origin when the base IS root_sub, or by `_derive_base_pose`), and BEFORE the weld-BFS so the
+    corrected frames are consumed. Mutates ``base.sub_frames`` in place (read live by
+    `_frame_realized`); no re-persist needed."""
+    base = subs.get(base_id)
+    if base is None or base.model is None:
+        return
+    T_base_root = placed_root.get(base_id)
+    if T_base_root is None:
+        return
+    inv_base = tf.inverse_matrix(T_base_root)
+    r2l = _root_to_link(base.model)
+    entries = {e.get("frame"): e for e in (base.sub_frames or [])}
+    n = 0
+    for seam in plan.seams:
+        if seam.kind != "weld" or getattr(seam, "mate_type", "") != "insert":
+            continue
+        if seam.parent_sub != base_id or seam.child_sub not in placed_root:
+            continue
+        child = subs.get(seam.child_sub)
+        if child is None or child.model is None:
+            continue
+        try:
+            _cL, T_cRoot_cf = _frame_in_root(child, seam.child_frame)   # shaft frame in child-root
+        except AssemblerError:
+            continue
+        T_world_shaft = placed_root[seam.child_sub] @ T_cRoot_cf        # shaft frame in WORLD
+        entry = entries.get(seam.parent_frame)
+        if entry is None:
+            continue                                                   # unrealized -> gate owns it
+        bore_link = entry.get("link")
+        T_root_bore_link = r2l.get(bore_link)
+        if T_root_bore_link is None:
+            continue
+        # want: T_base_root @ (r2l[bore_link] @ local_new) == T_world_shaft
+        local_new = tf.inverse_matrix(T_root_bore_link) @ inv_base @ T_world_shaft
+        xyz, rpy = _decompose(local_new)
+        entry["local_xyz_m"] = list(xyz)
+        entry["local_rpy_rad"] = list(rpy)
+        n += 1
+        log(f"[mesh] bore '{seam.parent_frame}' on base '{base_id}' relocated onto solved shaft "
+            f"'{seam.child_sub}.{seam.child_frame}' (deterministic; ignores manager bore coords)")
+    if n:
+        log(f"deterministic bore placement: {n} housing seat(s) relocated onto their shafts")
+
+
 def assemble(plan, subs: dict, ctx, *, settings=None, log_fn=print) -> KinematicModel:
     """Stitch the built subassemblies into one final KinematicModel + model.urdf.
 
@@ -582,6 +643,18 @@ def assemble(plan, subs: dict, ctx, *, settings=None, log_fn=print) -> Kinematic
     placed_root: dict = {plan.root_sub: np.eye(4)}
     placed_root.update(mesh_placed)                 # gear stages solved by mesh
     n_weld = 0
+
+    # DETERMINISTIC BORE PLACEMENT (must run BEFORE the weld-BFS so the corrected seat frames are
+    # welded). The base is pinned first — at origin if it IS root_sub, else derived as a follower of
+    # the solved cluster — then each of its bores is relocated onto its mated shaft's solved world
+    # pose. This undoes the housing manager's collapsed/wrong-axis seat realization, which the weld
+    # layer would otherwise place shafts at (floating outside the housing).
+    if base_id is not None and mesh_placed:
+        if base_id != plan.root_sub and base_id not in placed_root:
+            _derive_base_pose(plan, subs, base_id, placed_root, log_fn)
+        placed_root.setdefault(base_id, np.eye(4))
+        _override_base_bores(plan, subs, base_id, placed_root, log_fn)
+
     queue = [plan.root_sub]
     seen = {plan.root_sub} | set(mesh_placed)       # mesh-placed subs are already positioned
     queue.extend(k for k in mesh_placed if k != plan.root_sub)
@@ -642,12 +715,9 @@ def assemble(plan, subs: dict, ctx, *, settings=None, log_fn=print) -> Kinematic
     log(f"added {n_weld} weld bridge pose(s); {n_power} power/mesh seam(s) couple "
         f"by contact (no pose)")
 
-    # SOLVE-THEN-BUILD: place the passive base as a follower of the solved gear cluster, so
-    # its bores land on the solved shaft positions (instead of the boss inventing bore coords
-    # the gears must match). Only when the base is a NON-root follower — if the base is the
-    # root sub it stays pinned at the origin and the gears are placed absolutely around it.
-    if base_id is not None and base_id != plan.root_sub and mesh_placed:
-        _derive_base_pose(plan, subs, base_id, placed_root, log_fn)
+    # (Base pose + deterministic bore placement already ran BEFORE the weld-BFS above, so the
+    # welded seat frames are the shaft-derived ones. The old post-BFS _derive_base_pose call here
+    # was too late to affect the weld and is removed.)
 
     # The machine's single power INPUT is the driving link of the seam marked driver.
     # Pure contact needs the driver flag on a LINK (the physics test spins that part's
