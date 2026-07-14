@@ -945,13 +945,26 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
     log_fn(f"[boss] deep_think={settings.deep_think} -> worker_backend="
            f"{settings.worker_backend}, debugger={settings.debugger_mode()}")
 
-    def log(m):
-        log_fn(m)
-
     slug = _slug_for(prompt)
     from datetime import datetime, timezone
     session_root = os.path.abspath(os.path.join(out_dir, f"{slug}_boss"))
     os.makedirs(session_root, exist_ok=True)
+
+    # Tee every log line to <session_root>/run.log so the backend has the SAME full
+    # transcript the UI's RAW LOG shows (fresh file per run — truncated on open).
+    _run_log_path = os.path.join(session_root, "run.log")
+    try:
+        _run_log_fh = open(_run_log_path, "w", encoding="utf-8", buffering=1)
+    except Exception:
+        _run_log_fh = None
+
+    def log(m):
+        log_fn(m)
+        if _run_log_fh is not None:
+            try:
+                _run_log_fh.write(str(m) + "\n")
+            except Exception:
+                pass
     plan_path = os.path.join(session_root, "subassembly_plan.json")
 
     result = {"ok": False, "run_dir": session_root, "render_dir": "",

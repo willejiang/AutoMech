@@ -82,6 +82,10 @@ def _coacd_pieces(mesh: "trimesh.Trimesh") -> list["trimesh.Trimesh"] | None:
     except ImportError:
         return None
     try:
+        try:
+            coacd.set_log_level("error")
+        except Exception:
+            pass
         cmesh = coacd.Mesh(mesh.vertices, mesh.faces)
         parts = coacd.run_coacd(cmesh, threshold=_COACD_THRESHOLD)
         out = []
@@ -179,6 +183,7 @@ def decompose_model(model, meshes_dir: str, *, metrics: dict | None = None,
         if link.name not in movers:
             continue
         stl = os.path.join(meshes_dir, f"{link.name}.stl")
+        log_fn(f"[convex] decomposing {link.name} ...")
         pieces = decompose_part(stl, meshes_dir, link.name,
                                 metrics=metrics, log_fn=log_fn)
         if pieces:

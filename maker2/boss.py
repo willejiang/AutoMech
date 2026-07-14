@@ -266,6 +266,11 @@ def _validate_plan(plan: SubassemblyPlan) -> None:
 
     # 3. Normalize seam ids; remap seam endpoints through the sub table.
     used_seams: set[str] = set()
+    # Look up a (sub_id, frame_name) -> MountFrame so an insert weld can inherit its bore's
+    # authoritative axis (the boss often leaves seam.axis at a default that contradicts the
+    # seat's declared axis; the seat axis — the direction a shaft runs through its bore — wins).
+    frame_lut = {(sub.id, fr.name): fr
+                 for sub in plan.subassemblies for fr in sub.frames}
     for seam in plan.seams:
         slug = _dedupe(_slugify(seam.id, "seam"), used_seams)
         used_seams.add(slug)
@@ -274,6 +279,12 @@ def _validate_plan(plan: SubassemblyPlan) -> None:
         seam.child_sub = sub_remap.get(seam.child_sub, _slugify(seam.child_sub, "sub"))
         if seam.owner_sub:
             seam.owner_sub = sub_remap.get(seam.owner_sub, _slugify(seam.owner_sub, "sub"))
+        if seam.kind == "weld" and getattr(seam, "mate_type", "") == "insert":
+            pfr = frame_lut.get((seam.parent_sub, seam.parent_frame))
+            if pfr is not None:
+                ax = tuple(float(x) for x in pfr.axis)
+                if sum(a * a for a in ax) > 1e-12:
+                    seam.axis = ax
 
     # 4. root_sub remap + existence.
     plan.root_sub = sub_remap.get(plan.root_sub, _slugify(plan.root_sub, "sub"))
@@ -492,9 +503,67 @@ def plan_machine(product_prompt: str, settings, *, image_path: str | None = None
                    if plan_json_path else None)
 
     # SEAM (Track 3): the attempt/retry control loop.
-    return _plan_loop(client, conv, settings, memory_path=memory_path,
+    plan = _plan_loop(client, conv, settings, memory_path=memory_path,
                       plan_json_path=plan_json_path, product_prompt=product_prompt,
                       log_fn=log_fn)
+    # On a FAULT re-plan, the boss is told to keep every unchanged sub's interface frames
+    # verbatim — but LLMs routinely rename them anyway (input_shaft_mount -> input_mount),
+    # which breaks disk reuse and drives the stuck re-plan loop. Deterministically restore
+    # the prior interface-frame NAMES for any sub whose frame COUNT is unchanged (the
+    # re-plan's legitimate edits are seam offsets / poses / gear params, not the interface
+    # contract), rewriting seam references to match. LLM disobedience can't defeat this.
+    if feedback and prior_plan_json:
+        try:
+            changed = _lock_interface_frame_names(plan, prior_plan_json, log_fn=log_fn)
+            if changed and plan_json_path:
+                save_plan(plan, plan_json_path)   # re-persist so disk matches the locked names
+        except Exception as e:
+            if log_fn:
+                log_fn(f"[boss] frame-name lock skipped ({type(e).__name__}: {e})")
+    return plan
+
+
+def _lock_interface_frame_names(plan, prior_plan_json: str, *, log_fn=None) -> bool:
+    """Restore each unchanged sub's interface-frame names to the prior plan's, so a fault
+    re-plan reuses on-disk builds instead of rebuilding them. Position-aligned per sub
+    (the boss keeps frame ORDER when it renames), gated on equal frame count. Also rewrites
+    every seam's parent_frame/child_frame that referenced a renamed frame. Returns True if
+    any name was restored."""
+    try:
+        prior = json.loads(prior_plan_json)
+    except Exception:
+        return False
+    prior_subs = prior.get("subassemblies") or prior.get("subs") or []
+    prior_names_by_id: dict[str, list[str]] = {}
+    for ps in prior_subs:
+        pid = ps.get("id")
+        names = [f.get("name") for f in (ps.get("frames") or []) if f.get("name")]
+        if pid and names:
+            prior_names_by_id[pid] = names
+
+    rename: dict[tuple[str, str], str] = {}   # (sub_id, new_name) -> prior_name
+    for sub in plan.subassemblies:
+        prior_names = prior_names_by_id.get(sub.id)
+        if not prior_names or len(prior_names) != len(sub.frames):
+            continue
+        for i, fr in enumerate(sub.frames):
+            old = prior_names[i]
+            if fr.name != old:
+                rename[(sub.id, fr.name)] = old
+                if log_fn:
+                    log_fn(f"[boss] frame-name lock: {sub.id}.{fr.name} -> {old} "
+                           f"(restored from prior plan; keeps disk reuse)")
+                fr.name = old
+    if not rename:
+        return False
+    for seam in plan.seams:
+        pnew = rename.get((seam.parent_sub, seam.parent_frame))
+        if pnew:
+            seam.parent_frame = pnew
+        cnew = rename.get((seam.child_sub, seam.child_frame))
+        if cnew:
+            seam.child_frame = cnew
+    return True
 
 
 def _boss_research(client, conv, settings, product_prompt, *, log_fn=None) -> None:
