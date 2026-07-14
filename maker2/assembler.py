@@ -555,6 +555,8 @@ def _place_mesh_cluster(plan, subs: dict, gear_ids: set, base_id, log) -> dict:
             placed[seam.child_sub] = Tc
             log(f"[mesh] placed '{seam.child_sub}' at C={C*1000:.1f}mm from "
                 f"'{seam.parent_sub}' (r={r_p:.1f}+{r_c:.1f}) so '{gp.name}'~'{gc.name}' mesh")
+            log(f"[mesh] DIAG '{seam.child_sub}' world center={np.round(center_c_w,4)} "
+                f"sep={np.round(sep,3)} (parent center={np.round(center_p_w,4)})")
             seen.add(seam.child_sub)
             queue.append(seam.child_sub)
     return {k: v for k, v in placed.items() if k in gear_ids}

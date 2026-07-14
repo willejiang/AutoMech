@@ -946,8 +946,13 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
            f"{settings.worker_backend}, debugger={settings.debugger_mode()}")
 
     slug = _slug_for(prompt)
-    from datetime import datetime, timezone
-    session_root = os.path.abspath(os.path.join(out_dir, f"{slug}_boss"))
+    from datetime import datetime
+    # Each run gets its OWN directory (slug + start timestamp). Without the stamp every run of
+    # the same prompt reused ONE dir, so successive runs layered their sub_*/plan/run.log on top
+    # of each other and the data read back was a mix of several runs. The stamp is computed once
+    # per run_boss call, so all iterations of THIS run still share the one directory.
+    _stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    session_root = os.path.abspath(os.path.join(out_dir, f"{slug}_boss_{_stamp}"))
     os.makedirs(session_root, exist_ok=True)
 
     # Tee every log line to <session_root>/run.log so the backend has the SAME full
