@@ -661,14 +661,12 @@ def _chassis_boxes(base_sub) -> list:
 
 def _regen_box_stl(path: str, extents_m, center_world_m) -> bool:
     """Overwrite `path` with an axis-aligned box mesh of the given extents (meters),
-    translated so its center sits at center_world_m (meters). The STL is written in
-    MILLIMETERS to match the worker's STL contract (the MJCF applies scale=0.001 mm->m to
-    every mesh), so we multiply by 1000 before export. Deterministic; no LLM. Returns True
+    translated so its center sits at center_world_m. Deterministic; no LLM. Returns True
     on success."""
     try:
         import trimesh
-        mesh = trimesh.creation.box(extents=tuple(float(e) * 1000.0 for e in extents_m))
-        mesh.apply_translation(tuple(float(c) * 1000.0 for c in center_world_m))
+        mesh = trimesh.creation.box(extents=tuple(float(e) for e in extents_m))
+        mesh.apply_translation(tuple(float(c) for c in center_world_m))
         mesh.export(path)
         return True
     except Exception:
