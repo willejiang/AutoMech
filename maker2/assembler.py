@@ -408,13 +408,8 @@ def _base_bore_dir(plan, subs, base_id, parent_gear_sub, child_gear_sub):
 
 def _rot_a_to_b(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     """4x4 rotation taking unit vector a onto unit vector b (identity if already aligned;
-    180° about any perpendicular if antiparallel). Returns identity for a degenerate input
-    (zero-length or NaN vector) so a bad upstream axis can never inject NaN into the cluster."""
-    a = np.asarray(a, float); b = np.asarray(b, float)
-    if (not np.all(np.isfinite(a))) or (not np.all(np.isfinite(b))) \
-            or float(np.dot(a, a)) < 1e-18 or float(np.dot(b, b)) < 1e-18:
-        return np.eye(4)
-    a = _unit(a); b = _unit(b)
+    180° about any perpendicular if antiparallel)."""
+    a = _unit(np.asarray(a, float)); b = _unit(np.asarray(b, float))
     c = float(np.dot(a, b))
     if c > 1 - 1e-9:
         return np.eye(4)
@@ -424,8 +419,6 @@ def _rot_a_to_b(a: np.ndarray, b: np.ndarray) -> np.ndarray:
             perp = np.cross(a, [0, 1.0, 0])
         return tf.rotation_matrix(np.pi, _unit(perp))
     v = np.cross(a, b)
-    if float(np.linalg.norm(v)) < 1e-12:
-        return np.eye(4)
     return tf.rotation_matrix(float(np.arccos(max(-1.0, min(1.0, c)))), _unit(v))
 
 
@@ -641,12 +634,10 @@ def _cluster_world_aabb(plan, subs: dict, gear_ids: set, placed_root: dict, base
                     for sz in (-1, 1):
                         corner_local = center_local + R @ (he * (sx, sy, sz))
                         pw = (T_sub @ np.append(corner_local, 1.0))[:3]
-                        if not np.all(np.isfinite(pw)):
-                            continue                       # a NaN placed_root can't bound anything
                         lo = np.minimum(lo, pw)
                         hi = np.maximum(hi, pw)
                         seen_any = True
-    if not seen_any or not (np.all(np.isfinite(lo)) and np.all(np.isfinite(hi))):
+    if not seen_any:
         return None
     return lo, hi
 
