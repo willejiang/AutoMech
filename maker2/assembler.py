@@ -25,6 +25,7 @@ See .claude/plans/precious-humming-wand.md.
 
 from __future__ import annotations
 
+import json
 import os
 import shutil
 
@@ -337,7 +338,10 @@ def _gear_link(sub, seam, which: int):
         try:
             link_name, _ = _frame_realized(sub, frame_name)
             lk = next((l for l in sub.model.links if l.name == link_name), None)
-            if lk is not None:
+            # A manager may realize a mesh frame on the shaft/bearing that carries the
+            # gear. Accept role-based identity only when the built link is actually a gear;
+            # otherwise continue to the explicit mesh_pair fallback.
+            if lk is not None and _gear_pitch_r_mm(lk):
                 return lk
         except AssemblerError:
             pass                              # frame not realized -> fall back to mesh_pair name
@@ -732,29 +736,59 @@ def assemble(plan, subs: dict, ctx, *, settings=None, log_fn=print) -> Kinematic
         if seam.kind == "weld":
             weld_by_parent.setdefault(seam.parent_sub, []).append(seam)
 
-    # SOLVE-THEN-BUILD: if subs are coupled by gear meshes, place the meshing cluster at true
-    # center-distance FIRST (radii from the built gears), so gears provably mesh; the passive
-    # base is then a follower (below). Gear stages placed here are skipped by the weld-BFS.
+    # One cross-sub placement authority. The legacy closed-form solver may seed libslvs,
+    # but its poses are never accepted by the authoritative backend as fallback output.
     gear_ids, base_id = _classify_subs(plan, subs)
-    mesh_placed = _place_mesh_cluster(plan, subs, gear_ids, base_id, log_fn) if gear_ids else {}
+    seed_placed = _place_mesh_cluster(plan, subs, gear_ids, base_id, log_fn) if gear_ids else {}
+    backend = getattr(settings, "cross_sub_solver", "slvs") if settings is not None else "slvs"
+    if gear_ids and backend == "slvs":
+        from .slvs_adapter import report_dict, solve_cross_sub_placements, SlvsSolveError
+        helpers = {"frame_in_root": _frame_in_root, "link_in_root": _link_in_root,
+                   "gear_link": _gear_link, "gear_radius": _gear_pitch_r_mm}
+        try:
+            solved, problem = solve_cross_sub_placements(
+                plan, subs, seed_placed, gear_ids, base_id,
+                helpers=helpers, log_fn=log_fn)
+        except SlvsSolveError as e:
+            try:
+                os.makedirs(ctx.run_dir, exist_ok=True)
+                with open(os.path.join(ctx.run_dir, "assembly_constraint_report.json"), "w",
+                          encoding="utf-8") as f:
+                    json.dump({"backend": "slvs", "authority": "libslvs",
+                               "status": "failed", "error": str(e)}, f, indent=2)
+            except Exception:
+                pass
+            raise AssemblerError(f"authoritative libslvs solve failed: {e}") from e
+        mesh_placed = solved.placements
+        try:
+            os.makedirs(ctx.run_dir, exist_ok=True)
+            with open(os.path.join(ctx.run_dir, "assembly_constraint_report.json"), "w",
+                      encoding="utf-8") as f:
+                json.dump(report_dict(solved, problem), f, indent=2)
+        except Exception as e:
+            raise AssemblerError(f"could not persist authoritative constraint report: {e}") from e
+    elif gear_ids and backend == "closed_form":
+        mesh_placed = seed_placed
+        log_fn("[slvs] WARNING: using explicit legacy closed_form backend")
+    elif gear_ids:
+        raise AssemblerError(f"unknown cross_sub_solver '{backend}'")
+    else:
+        mesh_placed = {}
 
     placed_root: dict = {plan.root_sub: np.eye(4)}
-    placed_root.update(mesh_placed)                 # gear stages solved by mesh
+    placed_root.update(mesh_placed)
     n_weld = 0
 
-    # DETERMINISTIC BORE PLACEMENT (must run BEFORE the weld-BFS so the corrected seat frames are
-    # welded). The base is pinned first — at origin if it IS root_sub, else derived as a follower of
-    # the solved cluster — then each of its bores is relocated onto its mated shaft's solved world
-    # pose. This undoes the housing manager's collapsed/wrong-axis seat realization, which the weld
-    # layer would otherwise place shafts at (floating outside the housing).
-    if base_id is not None and mesh_placed:
+    # In slvs mode the simultaneous constraint solution already owns all shaft/housing
+    # placement. Running a per-bore override would introduce a second source of truth.
+    if backend == "closed_form" and base_id is not None and mesh_placed:
         if base_id != plan.root_sub and base_id not in placed_root:
             _derive_base_pose(plan, subs, base_id, placed_root, log_fn)
         placed_root.setdefault(base_id, np.eye(4))
         _override_base_bores(plan, subs, base_id, placed_root, log_fn)
-    else:
-        log_fn(f"[mesh] deterministic bore placement SKIPPED: base_id={base_id!r} "
-               f"mesh_placed={sorted(mesh_placed) if mesh_placed else '(empty)'}")
+    elif backend == "slvs" and base_id is not None:
+        placed_root.setdefault(base_id, np.eye(4))
+        log_fn("[slvs] housing mount constraints solved simultaneously; legacy bore override disabled")
 
     queue = [plan.root_sub]
     seen = {plan.root_sub} | set(mesh_placed)       # mesh-placed subs are already positioned

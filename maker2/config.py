@@ -58,6 +58,8 @@ class Settings:
                                                    # geometry via OCCT) | "openscad"
                                                    # (legacy fallback). The hierarchy
                                                    # build dispatches on this.
+    cross_sub_solver: str = "slvs"               # authoritative cross-sub placement:
+                                                   # "slvs" (required) | "closed_form" (legacy debug)
     deep_think: bool = True                       # the single speed/power toggle
                                                    # (maker2-mujoco-contact Phase 6):
                                                    # True  -> CadQuery worker + FULL
