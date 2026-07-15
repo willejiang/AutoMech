@@ -46,6 +46,9 @@ class RigidStageSpec:
     target_anchor_m: tuple
     target_axis: tuple
     gear_centers_local_m: dict = field(default_factory=dict)
+    mount_seam_id: str = ""
+    housing_frame: str = ""
+    shaft_frame: str = ""
 
 
 @dataclass

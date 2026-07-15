@@ -8,7 +8,7 @@ def candidates():
  d={'type':'housing_multibore_pattern','sub':'housing','link':'shell','centers':[0,-80,-200]}
  assert _cid(d)==_cid(dict(d))
  s='bores = [(0.0,20.0),(-70.0,25.0),(-140.0,30.0)]\n'
- assert _parse_bores(s)[2][2][0]==-140.0
+ assert _parse_bores(s)['bores'][2][0]==-140.0
 
 def rollback():
  root=tempfile.mkdtemp();open(os.path.join(root,'x'),'w').write('old')

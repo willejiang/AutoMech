@@ -117,10 +117,20 @@ def build_cross_sub_problem(plan, subs, seed, gear_ids, base_id, *,
             raise SlvsSolveError(f"stage '{sid}' mount frame unresolved: {e}") from e
         target_fr = _frame_spec(plan, base_id, seam.parent_frame)
         target_axis = _unit(target_fr.axis if target_fr is not None else T_target[:3, 2])
-        local_axis = _unit(T_local_anchor[:3, 2])
+        # frames_realized.rpy is an authoring hint and is often rotated incorrectly.
+        # Resolve the actual rotating shaft/carrier link (mount frames are frequently on a
+        # fixed bearing whose spin_axis is zero), then transform its axis into sub-root.
+        candidates=[l for l in subs[sid].model.links
+                    if (getattr(l,'dof','')=='spin' or 'shaft' in l.name.lower())
+                    and np.linalg.norm(np.asarray(getattr(l,'spin_axis',(0,0,0)),float))>1e-9]
+        carrier=next((l for l in candidates if 'shaft' in l.name.lower()),candidates[0] if candidates else None)
+        if carrier is None: raise SlvsSolveError(f"stage '{sid}' has no built shaft axis")
+        local_axis, _shaft_center = link_in_root(subs[sid], carrier.name)
+        local_axis = _unit(local_axis)
         stage = RigidStageSpec(sid, np.asarray(seed[sid]).tolist(),
                                tuple(T_local_anchor[:3, 3]), tuple(local_axis),
-                               tuple(T_target[:3, 3]), tuple(target_axis), {})
+                               tuple(T_target[:3, 3]), tuple(target_axis), {},
+                               seam.id, seam.parent_frame, seam.child_frame)
         stages[sid] = stage
         O, A = f"{sid}:anchor", f"{sid}:axis_end"
         seed_O = (np.asarray(seed[sid]) @ np.append(T_local_anchor[:3, 3], 1.0))[:3]
@@ -287,15 +297,47 @@ def diagnose_authoritative_solution(problem, placements, result):
     return pairs
 
 
+def _suggested_mount_targets(problem):
+    """Targets that preserve the closed-form seed's internally consistent rigid cluster,
+    gauged onto the current input mount. These are candidate facts, never fallback poses."""
+    if not problem.gear_pairs:
+        return {}
+    datum = problem.gear_pairs[0]["parent_sub"]
+    ds = problem.stages[datum]
+    Td = np.asarray(ds.seed_transform, float)
+    seed_d = (Td @ np.append(ds.local_anchor_m, 1.0))[:3]
+    seed_axis = _unit(Td[:3, :3] @ np.asarray(ds.local_axis))
+    target_axis = _unit(ds.target_axis)
+    R = _rot_a_to_b(seed_axis, target_axis)
+    target_d = np.asarray(ds.target_anchor_m)
+    out = {}
+    for sid, st in problem.stages.items():
+        T = np.asarray(st.seed_transform, float)
+        p = (T @ np.append(st.local_anchor_m, 1.0))[:3]
+        out[sid] = (target_d + R @ (p - seed_d)).tolist()
+    return out
+
+
 def failure_report_dict(problem, result, placements, error):
     pairs = diagnose_authoritative_solution(problem, placements, result) if placements else []
+    suggested = _suggested_mount_targets(problem) if problem else {}
+    stages = ({sid: {"local_anchor_m": list(st.local_anchor_m),
+                     "target_anchor_m": list(st.target_anchor_m),
+                     "target_axis": list(st.target_axis),
+                     "suggested_target_anchor_m": suggested.get(sid),
+                     "mount_seam_id": st.mount_seam_id,
+                     "housing_frame": st.housing_frame,
+                     "shaft_frame": st.shaft_frame,
+                     "gear_centers_local_m": {k:list(v) for k,v in st.gear_centers_local_m.items()}}
+               for sid,st in problem.stages.items()} if problem else {})
     core = {"backend": "slvs", "authority": "libslvs", "status": "failed",
             "error": str(error), "solver": {"status": result.status if result else "not_run",
             "raw_status": result.raw_status if result else -1, "dof": result.dof if result else -1,
             "expected_dof": problem.expected_dof if problem else -1,
             "failed_constraint_ids": result.failed_constraint_ids if result else [],
             "constraint_handles": ((result.diagnostics or {}).get("constraint_handles", {}) if result else {})},
-            "base_id": problem.base_id if problem else "", "gear_pairs": pairs}
+            "base_id": problem.base_id if problem else "", "stages": stages,
+            "gear_pairs": pairs}
     raw = json.dumps(core, sort_keys=True, separators=(",", ":")).encode()
     core["failure_id"] = "slvs_" + hashlib.sha256(raw).hexdigest()[:16]
     return core

@@ -15,6 +15,6 @@ def security():
 
 def bore_parse():
  s='''def build():\n    bores = [(0.0,20.0),(-70.0,25.0),(-140.0,30.0)]\n    return bores\n'''
- p=_parse_bores(s);assert p and p[2][1]==[-70.0,25.0]
+ p=_parse_bores(s);assert p and p['bores'][1]==[-70.0,25.0]
 
 if __name__=='__main__':security();bore_parse();print('golden assembly analyzer tools: PASS')

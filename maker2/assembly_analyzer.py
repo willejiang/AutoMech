@@ -80,6 +80,12 @@ def analyze_failure(session_root,report,candidates,settings,log_fn=print,report_
  rel_report=(os.path.relpath(report_path,session_root) if report_path else 'assembly_constraint_report.json')
  conv=Conversation();conv.add_user_message(f"Failure {report.get('failure_id')}. Report path: {rel_report}. Investigate current session with tools before deciding.")
  client=settings.make_client(getattr(settings,'analyzer_max_tokens',16000),thinking='extended');text=run_tool_loop(client,conv,ANALYZER_SYSTEM,tools,ex,max_rounds=getattr(settings,'solver_analyzer_max_rounds',12),log_fn=log_fn,text_only_nudge='Call a read/search tool now; do not answer before investigating.')
+ # Tool budget may end on a preamble/tool call. Force one final no-tools synthesis turn.
+ try:
+  conv.add_user_message('Investigation is over. Return the required final JSON object now; no prose and no more tools.')
+  final,_=client.send_collect(conv.get_messages_for_api(api_style=client.api_style),system=ANALYZER_SYSTEM)
+  text=final or text
+ except Exception: pass
  try:decision=json.loads(extract_json_object(text))
  except Exception:decision={'failure_id':report.get('failure_id'),'decision':'escalate','classification':'topology','root_cause':'Analyzer returned invalid JSON','layer':'boss_topology','culprits':[],'evidence':[],'selected_candidate_id':None,'confidence':'low','explanation':text,'escalation_reason':'invalid_output'}
  cid=decision.get('selected_candidate_id');
