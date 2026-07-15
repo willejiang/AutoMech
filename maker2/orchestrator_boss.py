@@ -1235,26 +1235,65 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
             final = assembler.assemble(plan, subs, assembly_ctx, settings=settings,
                                        log_fn=log)
         except assembler.AssemblerError as e:
-            # A stitch failure is usually a CONTRACT fault (a naming/realization mismatch), not a
-            # real design flaw. Try the gate-fault debugger (deterministic repair, then LLM)
-            # BEFORE a full boss re-plan: fix the mesh_pair/frame in place and RETRY the assemble.
-            if _try_contract_repair("assembler", str(e), plan, subs, settings, log):
+            repaired = False
+            if (getattr(e, "kind", "") == "authoritative_solver"
+                    and getattr(settings, "enable_solver_failure_analyzer", True)
+                    and getattr(e, "failure_report", None)):
                 try:
-                    final = assembler.assemble(plan, subs, assembly_ctx, settings=settings,
-                                               log_fn=log)
-                    log("[assembler] re-assembled after contract repair (no re-plan)")
-                except assembler.AssemblerError as e2:
-                    feedback = f"assembly failed: {e2}"
-                    log(f"[assembler] FAILED after repair -> boss re-plan: {e2}")
+                    from .assembly_repair import generate_repair_candidates, apply_candidate
+                    from .assembly_analyzer import analyze_failure
+                    candidates = generate_repair_candidates(e.failure_report, plan, subs, settings)
+                    decision = analyze_failure(session_root, e.failure_report, candidates,
+                                               settings, log, report_path=e.report_path)
+                    log("ARTIFACT_JSON:" + json.dumps({
+                        "kind": "assembly_analysis", "iter": it,
+                        "failure_id": e.failure_report.get("failure_id"),
+                        "decision": decision}))
+                    cid = (decision.get("selected_candidate_id")
+                           if decision.get("decision") == "repair" else None)
+                    cand = next((c for c in candidates
+                                 if c.candidate_id == cid and c.allowed), None)
+                    if cand is not None:
+                        from .assembly_repair import LocalRepairTransaction
+                        log(f"[analyzer] selected {cand.candidate_id}: {cand.rationale}")
+                        affected=cand.rebuild_scope.get("subassemblies",[])
+                        with LocalRepairTransaction(subs,affected) as tx:
+                            try:
+                                apply_candidate(cand, subs, settings, log)
+                                repair_ctx = make_run_context(
+                                    plan.name, session_root,
+                                    run_dir=os.path.join(assembly_ctx.run_dir, "local_repair_1"))
+                                final = assembler.assemble(plan, subs, repair_ctx,
+                                                           settings=settings, log_fn=log)
+                                assembly_ctx = repair_ctx
+                                repaired = True
+                                log(f"[analyzer] localized repair solved in iteration {it}")
+                            except Exception:
+                                tx.rollback()
+                                raise
+                    else:
+                        log(f"[analyzer] escalation: {decision.get('escalation_reason') or decision.get('root_cause')}")
+                except Exception as ae:
+                    log(f"[analyzer] local repair failed safely ({type(ae).__name__}: {ae})")
+            if not repaired:
+                # Structural/name faults retain the existing deterministic-then-LLM repair.
+                if _try_contract_repair("assembler", str(e), plan, subs, settings, log):
+                    try:
+                        final = assembler.assemble(plan, subs, assembly_ctx,
+                                                   settings=settings, log_fn=log)
+                        log("[assembler] re-assembled after contract repair (no re-plan)")
+                    except assembler.AssemblerError as e2:
+                        feedback = f"assembly failed: {e2}"
+                        log(f"[assembler] FAILED after repair -> boss re-plan: {e2}")
+                        if not infinite and it >= max_boss_iters - 1:
+                            result["error"] = f"assembly failed: {e2}"; break
+                        it += 1; continue
+                else:
+                    feedback = f"assembly failed: {e}"
+                    log(f"[assembler] FAILED -> boss re-plan: {e}")
                     if not infinite and it >= max_boss_iters - 1:
-                        result["error"] = f"assembly failed: {e2}"; break
+                        result["error"] = f"assembly failed: {e}"; break
                     it += 1; continue
-            else:
-                feedback = f"assembly failed: {e}"
-                log(f"[assembler] FAILED -> boss re-plan: {e}")
-                if not infinite and it >= max_boss_iters - 1:
-                    result["error"] = f"assembly failed: {e}"; break
-                it += 1; continue
         result["render_dir"] = assembly_ctx.run_dir
         result["ok"] = True
         log("ARTIFACT_JSON:" + json.dumps({

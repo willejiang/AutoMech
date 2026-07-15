@@ -5,6 +5,7 @@ come from a single libslvs constraint solve and backend-independent validation.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 from dataclasses import asdict
@@ -22,7 +23,12 @@ _AXIS_TOL_DEG = 0.1
 
 
 class SlvsSolveError(RuntimeError):
-    pass
+    def __init__(self, message, *, problem=None, result=None, placements=None, failure_report=None):
+        super().__init__(message)
+        self.problem = problem
+        self.result = result
+        self.placements = placements
+        self.failure_report = failure_report
 
 
 def _unit(v):
@@ -182,6 +188,11 @@ def build_cross_sub_problem(plan, subs, seed, gear_ids, base_id, *,
                                           provenance={"seam": seam.id}))
         gear_pairs.append({"seam_id": seam.id, "parent_sub": seam.parent_sub,
                            "child_sub": seam.child_sub, "parent_entity": pe, "child_entity": ce,
+                           "parent_part": gp.name, "child_part": gc.name,
+                           "parent_mesh_frame": seam.parent_frame,
+                           "child_mesh_frame": seam.child_frame,
+                           "parent_pitch_radius_mm": float(rp),
+                           "child_pitch_radius_mm": float(rc),
                            "target_m": target})
     return AssemblyConstraintProblem(stages=stages, entities=entities, constraints=constraints,
                                      gear_pairs=gear_pairs, expected_dof=0, base_id=base_id)
@@ -251,6 +262,45 @@ def reconstruct_placements(problem, result):
     return out
 
 
+def diagnose_authoritative_solution(problem, placements, result):
+    pairs = []
+    for gp in problem.gear_pairs:
+        ps, cs = problem.stages[gp["parent_sub"]], problem.stages[gp["child_sub"]]
+        pn, cn = gp["parent_part"], gp["child_part"]
+        pa = (placements[gp["parent_sub"]] @ np.append(ps.gear_centers_local_m[pn], 1.0))[:3]
+        pb = (placements[gp["child_sub"]] @ np.append(cs.gear_centers_local_m[cn], 1.0))[:3]
+        d = pb - pa
+        axis = _unit(placements[gp["parent_sub"]][:3, :3] @ np.asarray(ps.local_axis))
+        axial = float(np.dot(d, axis))
+        radial = float(np.linalg.norm(d - axial * axis))
+        actual = float(np.linalg.norm(d))
+        # Spur-gear center distance is measured perpendicular to the common shaft
+        # axis. Axial offset changes face overlap, not pitch-center distance.
+        pairs.append({**gp, "required_distance_mm": gp["target_m"] * 1000.0,
+                      "actual_distance_mm": actual * 1000.0,
+                      "signed_residual_mm": (radial - gp["target_m"]) * 1000.0,
+                      "absolute_residual_mm": abs(radial - gp["target_m"]) * 1000.0,
+                      "radial_distance_mm": radial * 1000.0, "axial_delta_mm": axial * 1000.0,
+                      "parent_world_center_m": pa.tolist(), "child_world_center_m": pb.tolist(),
+                      "parent_local_offset_m": list(ps.gear_centers_local_m[pn]),
+                      "child_local_offset_m": list(cs.gear_centers_local_m[cn])})
+    return pairs
+
+
+def failure_report_dict(problem, result, placements, error):
+    pairs = diagnose_authoritative_solution(problem, placements, result) if placements else []
+    core = {"backend": "slvs", "authority": "libslvs", "status": "failed",
+            "error": str(error), "solver": {"status": result.status if result else "not_run",
+            "raw_status": result.raw_status if result else -1, "dof": result.dof if result else -1,
+            "expected_dof": problem.expected_dof if problem else -1,
+            "failed_constraint_ids": result.failed_constraint_ids if result else [],
+            "constraint_handles": ((result.diagnostics or {}).get("constraint_handles", {}) if result else {})},
+            "base_id": problem.base_id if problem else "", "gear_pairs": pairs}
+    raw = json.dumps(core, sort_keys=True, separators=(",", ":")).encode()
+    core["failure_id"] = "slvs_" + hashlib.sha256(raw).hexdigest()[:16]
+    return core
+
+
 def validate_authoritative_solution(problem, placements, result):
     errors = []
     if result.status != "okay": errors.append(f"status={result.status}")
@@ -271,7 +321,10 @@ def validate_authoritative_solution(problem, placements, result):
         cn = gp["child_entity"].split(":gear:", 1)[1]
         pa = (placements[gp["parent_sub"]] @ np.append(ps.gear_centers_local_m[pn], 1.0))[:3]
         pb = (placements[gp["child_sub"]] @ np.append(cs.gear_centers_local_m[cn], 1.0))[:3]
-        err = abs(float(np.linalg.norm(pa-pb)) - gp["target_m"])
+        d = pb - pa
+        axis = _unit(placements[gp["parent_sub"]][:3, :3] @ np.asarray(ps.local_axis))
+        radial = float(np.linalg.norm(d - np.dot(d, axis) * axis))
+        err = abs(radial - gp["target_m"])
         residuals[gp["seam_id"]] = err
         if err > _POS_TOL_M: errors.append(f"gear_distance:{gp['seam_id']}:{err*1000:.3f}mm")
     if errors: raise SlvsSolveError("; ".join(errors))
@@ -281,18 +334,29 @@ def validate_authoritative_solution(problem, placements, result):
 def solve_cross_sub_placements(plan, subs, seed, gear_ids, base_id, *, helpers, log_fn=print):
     ok, reason = slvs_available()
     if not ok: raise SlvsSolveError(f"py-slvs unavailable: {reason}")
-    problem = build_cross_sub_problem(plan, subs, seed, gear_ids, base_id, **helpers)
-    result = solve_problem(problem)
-    placements = reconstruct_placements(problem, result)
-    residuals = validate_authoritative_solution(problem, placements, result)
+    problem = result = placements = None
+    try:
+        problem = build_cross_sub_problem(plan, subs, seed, gear_ids, base_id, **helpers)
+        result = solve_problem(problem)
+        placements = reconstruct_placements(problem, result)
+        residuals = validate_authoritative_solution(problem, placements, result)
+    except SlvsSolveError as e:
+        report = failure_report_dict(problem, result, placements, e)
+        raise SlvsSolveError(str(e), problem=problem, result=result, placements=placements,
+                             failure_report=report) from e
     log_fn(f"[slvs] authoritative solve OK: stages={len(placements)} constraints={len(problem.constraints)} dof={result.dof}")
     return PlacementResult(placements, result, residuals, "slvs"), problem
 
 
 def report_dict(placement, problem):
-    return {"backend": placement.backend, "authority": "libslvs", "status": placement.solve.status,
+    pairs = diagnose_authoritative_solution(problem, placement.placements, placement.solve)
+    core = {"backend": placement.backend, "authority": "libslvs", "status": placement.solve.status,
             "raw_status": placement.solve.raw_status, "dof": placement.solve.dof,
             "failed_constraints": placement.solve.failed_constraint_ids,
             "entity_count": len(problem.entities), "constraint_count": len(problem.constraints),
+            "base_id": problem.base_id, "gear_pairs": pairs,
             "gear_residuals_m": placement.residuals,
             "placements": {k: np.asarray(v).tolist() for k, v in placement.placements.items()}}
+    core["failure_id"] = "slvs_" + hashlib.sha256(json.dumps(core, sort_keys=True,
+        separators=(",", ":")).encode()).hexdigest()[:16]
+    return core

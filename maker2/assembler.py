@@ -54,6 +54,11 @@ def _write_assembled_mjcf(final, ctx, settings, log) -> None:
 
 class AssemblerError(RuntimeError):
     """The subassemblies could not be stitched into one valid machine."""
+    def __init__(self, message, *, kind="assembler", failure_report=None, report_path=""):
+        super().__init__(message)
+        self.kind = kind
+        self.failure_report = failure_report
+        self.report_path = report_path
 
 
 # --------------------------------------------------------------------------- #
@@ -750,15 +755,18 @@ def assemble(plan, subs: dict, ctx, *, settings=None, log_fn=print) -> Kinematic
                 plan, subs, seed_placed, gear_ids, base_id,
                 helpers=helpers, log_fn=log_fn)
         except SlvsSolveError as e:
+            report = e.failure_report or {"backend": "slvs", "authority": "libslvs",
+                                          "status": "failed", "error": str(e)}
+            report_path = os.path.join(ctx.run_dir, "assembly_constraint_report.json")
             try:
                 os.makedirs(ctx.run_dir, exist_ok=True)
-                with open(os.path.join(ctx.run_dir, "assembly_constraint_report.json"), "w",
-                          encoding="utf-8") as f:
-                    json.dump({"backend": "slvs", "authority": "libslvs",
-                               "status": "failed", "error": str(e)}, f, indent=2)
+                with open(report_path, "w", encoding="utf-8") as f:
+                    json.dump(report, f, indent=2)
             except Exception:
-                pass
-            raise AssemblerError(f"authoritative libslvs solve failed: {e}") from e
+                report_path = ""
+            raise AssemblerError(f"authoritative libslvs solve failed: {e}",
+                                 kind="authoritative_solver", failure_report=report,
+                                 report_path=report_path) from e
         mesh_placed = solved.placements
         try:
             os.makedirs(ctx.run_dir, exist_ok=True)

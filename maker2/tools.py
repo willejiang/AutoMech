@@ -230,7 +230,7 @@ def _kb_bound(collection: str):
 # --------------------------------------------------------------------------- #
 
 def run_tool_loop(client, conv, system: str, tools: list, executors: dict, *,
-                  max_rounds: int = 4, log_fn=None) -> str:
+                  max_rounds: int = 4, log_fn=None, text_only_nudge=None) -> str:
     """Drive tool-calling: send the conversation with `tools`; for each ToolCall the
     model makes, run executors[name](**arguments) and feed the result back via
     conv.add_tool_result. Repeat until the model stops calling tools (return its text)
@@ -259,7 +259,7 @@ def run_tool_loop(client, conv, system: str, tools: list, executors: dict, *,
             # have budget, nudge it to make the call now instead of bailing (once).
             if not did_any_call and not nudged:
                 nudged = True
-                conv.add_user_message(
+                conv.add_user_message(text_only_nudge or
                     "You said you would search but did not call the tool. Call "
                     "web_search NOW with a concrete query — do not just describe it.")
                 continue

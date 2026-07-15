@@ -18,6 +18,7 @@ must be CC-licensed or public-domain; record it below with its license.
 - `corpus/boss/01_decomposition.md` — subassembly/seam/one-driver conventions.
 - `corpus/worker/01_manifold_idioms.md` — CadQuery/OpenSCAD manifold-safe patterns.
 - `corpus/evaluator/01_test_design.md` — physics-test design + failure taxonomy.
+- `corpus/analyzer/golden_01_multibore_housing.md` — localized multi-bore housing diagnosis/repair case.
 
 These are the format/convention docs the plan calls out as the actual compliance
 gap; they carry no external license.
