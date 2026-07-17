@@ -441,6 +441,8 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
       "mate_type": "<REQUIRED on a weld: insert | seat (mesh on a power seam); how the two frames join>",
       "parent_port": "<the frame on parent_sub this seam mates (defaults to parent_frame)>",
       "child_port":  "<the frame on child_sub this seam mates (defaults to child_frame)>",
+      "rear_parent_frame": "<OPTIONAL rear housing bore-plane frame for a through-shaft>",
+      "rear_child_frame": "<OPTIONAL matching rear shaft/bearing datum; set both rear fields or neither>",
       "offset_mm": <number>,          // insert seat depth / seat face gap along the mate axis
       "joint_type": "<fixed for weld; continuous/revolute only for a shared-DOF power seam>",
       "axis": [<x>, <y>, <z>],       // for a non-fixed power seam
@@ -466,6 +468,14 @@ HARD RULES
   the appearance preview — the compiler solves the real placement from the mated frames. Set
   `parent_port`/`child_port` only if the mated frame differs from parent_frame/child_frame;
   otherwise they default to the seam's frames.
+- THROUGH-SHAFT REAR DATUM: when one shaft is supported by FRONT and REAR walls/bearings,
+  declare both front and rear mount frames on the housing and on the shaft stage. Keep ONE weld
+  seam using the front pair for placement, and set `rear_parent_frame`/`rear_child_frame` on that
+  seam to the rear pair. The rear pair is a point-on-plane validation datum, NOT a second weld.
+  Never omit it for a shaft crossing two housing walls; otherwise collars/gears can penetrate the
+  rear plate even when the gear center distance is correct. Rear axes must be parallel to the front
+  insert axis. Frame xyz values remain topology/layout hints; the deterministic solver validates the
+  realized rear datum.
 - MESH SPACING is SOLVED for you — do NOT compute or place it. On a `mesh` seam you only
   NAME the two meshing gear PARTS (`mesh_pair`). The compiler reads each gear's real pitch
   radius from the BUILT part (its module x teeth) and places the two subassemblies exactly one

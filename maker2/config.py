@@ -159,7 +159,7 @@ class Settings:
     enable_solver_failure_analyzer: bool = True   # self-directed read-only investigation before Boss
     analyzer_max_tokens: int = 16000
     solver_analyzer_max_rounds: int = 12
-    solver_local_repair_max_attempts: int = 2
+    solver_local_repair_max_attempts: int = 12
     enable_solver_pose_repair: bool = True
     enable_solver_module_repair: bool = False
     enable_solver_seat_geometry_repair: bool = True

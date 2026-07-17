@@ -340,17 +340,25 @@ def _gear_face_center_offset_mm(link) -> float | None:
     note = str(getattr(link, "origin_note", "") or "").lower()
     centered = any(x in note for x in ("mid-plane", "mid plane", "midplane", "mid-thickness",
                                         "mid thickness", "gear center", "pinion center",
+                                        "gear pitch-plane center", "gear pitch plane center",
+                                        "pitch-plane center", "pitch plane center",
                                         "disc centered", "centered on z=0",
                                         "centered at local origin", "bore centered"))
     at_negative_face = any(x in note for x in ("origin at end_a", "origin at end a",
                                                 "origin at the -z face", "origin at -z face",
                                                 "origin at the -z (", "origin at the rear (-z)",
                                                 "-z face center at local origin",
+                                                "front face (-z) at local origin",
+                                                "front face (-z) at the local origin",
+                                                "origin at front face (-z)",
                                                 "bottom-face center at local origin",
                                                 "bottom face center at local origin"))
     at_positive_face = any(x in note for x in ("origin at end_b", "origin at end b",
                                                 "origin at the +z face", "origin at +z face",
                                                 "origin at the +z (", "origin at the front (+z)",
+                                                "rear face (+z) at local origin",
+                                                "rear face (+z) at the local origin",
+                                                "origin at rear face (+z)",
                                                 "top-face center at local origin",
                                                 "top face center at local origin"))
     if centered and not (at_negative_face or at_positive_face):
@@ -407,7 +415,7 @@ def _gear_link(sub, seam, which: int):
 def _classify_subs(plan, subs: dict):
     """Return (gear_sub_ids: set, base_sub_id or None). A gear stage is an endpoint of a
     power seam with a 2-tuple mesh_pair; a passive base has no mesh endpoint and parents at
-    least one weld 'insert' seam. Returns (set(), None) when there is no gear cluster."""
+    least one typed structural weld seam. Returns (set(), None) when there is no gear cluster."""
     gear_ids: set = set()
     for seam in plan.seams:
         if seam.kind == "power" and len(getattr(seam, "mesh_pair", ()) or ()) == 2:
@@ -415,18 +423,13 @@ def _classify_subs(plan, subs: dict):
             gear_ids.add(seam.child_sub)
     if not gear_ids:
         return set(), None
-    base_id = None
-    for s in plan.subassemblies:
-        if s.id in gear_ids:
-            continue
-        parents_insert = any(
-            seam.kind == "weld" and seam.parent_sub == s.id
-            and getattr(seam, "mate_type", "") == "insert"
-            for seam in plan.seams)
-        if parents_insert:
-            base_id = s.id
-            break
-    return gear_ids, base_id
+    root_id = getattr(plan, "root_sub", None)
+    root_is_structural_base = (root_id not in gear_ids and any(
+        seam.kind == "weld" and seam.parent_sub == root_id
+        and seam.child_sub in gear_ids
+        and getattr(seam, "mate_type", "") in ("insert", "seat")
+        for seam in plan.seams))
+    return gear_ids, (root_id if root_is_structural_base else None)
 
 
 def _base_bore_dir(plan, subs, base_id, parent_gear_sub, child_gear_sub):

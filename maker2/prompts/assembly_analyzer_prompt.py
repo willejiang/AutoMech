@@ -15,8 +15,17 @@ Distinguish abstract frame edits from physical CAD geometry. For a precheck fail
 plate/bearing overlap is repairable only by an allowed simulated candidate that cuts the physical
 front/rear plate bores on the authoritative solved shaft lines, synchronizes all six realized seat
 frames from those same centers, preserves cutter dimensions, passes margin/web checks, and rebuilds
-only its declared links. Never substitute a bearing shift, frame-only move, threshold suppression, or
-arbitrary source edit. Finish with ONE JSON object
+only its declared links. A removable plug/breather collision is repairable by an allowed simulated
+accessory-relocation candidate that preserves all solved seat and gear frames and reruns real-solid
+precheck. Never substitute a bearing shift, frame-only move, threshold suppression, or arbitrary source
+edit. An axial gear-pose candidate is valid only when the reported radial center-distance
+error is at most 2 mm; otherwise it cannot clear the authoritative failure and must not be selected. Treat
+`mount_layout.pairs[].layout_mismatch: true` as authoritative evidence of a housing mount-layout fault;
+`collapsed` remains the narrower coincident-mount signal. For `rear_mount_plane`, preserve the
+single front weld and all gear poses; never propose a second weld. When Python provides an allowed
+simulated rear_mount_axial_alignment candidate, select it to move only the failing rear bearing/datum
+along the local shaft axis. Missing paired rear topology must escalate to the boss, while unrealized rear
+frames belong to their manager. Finish with ONE JSON object
 containing: failure_id, decision (repair|escalate), classification
 (pose|frame_binding|geometry|topology|size), root_cause, layer, culprits, evidence,
 selected_candidate_id, confidence (low|medium|high), explanation, escalation_reason."""

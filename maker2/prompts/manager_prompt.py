@@ -340,6 +340,11 @@ def build_manager_subassembly(frame_contract, manager_ir: bool = True) -> str:
             f'[{x:.4f}, {y:.4f}, {z:.4f}] m, axis [{ax:.3f}, {ay:.3f}, {az:.3f}]'
             f'{dia_txt}{mp_txt}')
     frames_txt = "\n".join(lines) if lines else "  (none)"
+    through=getattr(fc,"through_mounts",[]) or []
+    through_txt=("\nTHROUGH-SHAFT DATUM PAIRS (realize both on physical front/rear bores or bearings; "
+                 "the rear point is validation-only, not a second weld):\n"+
+                 "\n".join(f'  - seam {x["seam_id"]}: front "{x["front_frame"]}" -> rear "{x["rear_frame"]}"'
+                            for x in through)+"\n") if through else ""
     origin = getattr(fc, "global_origin_note", "") or "(the machine's shared origin)"
     nbrs = getattr(fc, "neighbors", []) or []
     if nbrs:
@@ -409,7 +414,7 @@ GLOBAL ORIGIN: {origin}
 INTERFACE FRAMES this subassembly must expose (positions are in GLOBAL machine
 coordinates about that origin):
 {frames_txt}
-
+{through_txt}
 RULES
 - Build this subassembly in ITS OWN local frame (mm geometry, each part's attach point
   at its local origin). You choose where this subassembly's own root/origin sits. Round/axial
@@ -445,6 +450,11 @@ RULES
   every seat frame onto its SOLVED shaft before welding, so getting the exact xyz is not critical —
   what matters is that the seats stay SPREAD (never collapsed onto the body origin) and share the
   boss's through-shaft `axis`.
+- For every THROUGH-SHAFT pair above, realize the front and rear frames at distinct physical
+  datums on the SAME shaft line: housing frames on the front/rear bore planes, stage frames on
+  front/rear bearing or shaft points. Round parts remain LOCAL +Z; therefore make the realized
+  front->rear vector parallel to the realizing front frame's LOCAL +Z axis. The assembler later
+  rotates that local axis onto the boss's GLOBAL contract axis.
 - The interface frames are HARD POINTS fixed by the boss — treat them as immovable.
   Where a frame gives a shaft/gear diameter, size YOUR mating shaft, bore, or gear to
   EXACTLY that diameter and put it on the frame's axis, so the part meets its

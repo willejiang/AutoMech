@@ -77,7 +77,16 @@ def analyze_failure(session_root,report,candidates,settings,log_fn=print,report_
   c=cmap.get(candidate_id)
   if c is None:return json.dumps({'error':'unknown candidate'},indent=2)
   out=c.to_dict();out['simulated']=False;out['target_failure_cleared']=False
-  if c.allowed and c.candidate_type=='gear_pose_axial_alignment':
+  if c.allowed and c.candidate_type=='rear_mount_axial_alignment':
+   seam=c.target.get('seam_id');rear=next((r for r in report.get('diagnostics',{}).get('rear_mounts',[])
+     if r.get('seam_id')==seam),None)
+   if rear:
+    out.update({'simulated':True,'simulation_kind':'analytic_rear_datum_translation',
+      'target_seam':seam,'before_residual_mm':rear.get('signed_residual_mm'),
+      'after_residual_mm':0.0,'target_failure_cleared':True,
+      'old_pose':c.old_value,'new_pose':c.new_value,'preserved_front_weld':True,
+      'untargeted_seams':'unchanged; authoritative solver reruns after application'})
+  elif c.allowed and c.candidate_type=='gear_pose_axial_alignment':
    seam=next(iter(c.predicted_residuals_mm),None)
    pair=next((p for p in report.get('gear_pairs',[]) if p.get('seam_id')==seam),None)
    if pair:
@@ -85,13 +94,23 @@ def analyze_failure(session_root,report,candidates,settings,log_fn=print,report_
     after=min(float(pair.get('parent_face_width_mm',0.0)),
               float(pair.get('child_face_width_mm',0.0)))
     minimum=float(pair.get('minimum_face_overlap_mm',0.1))
+    radial=float(pair.get('radial_distance_mm',0.0))
+    required=float(pair.get('required_distance_mm',0.0))
+    radial_error=abs(radial-required)
     out.update({'simulated':True,'simulation_kind':'analytic_rigid_pose',
       'target_seam':seam,'before_face_overlap_mm':before,
       'after_face_overlap_mm':after,'minimum_face_overlap_mm':minimum,
-      'target_failure_cleared':after>minimum,
-      'radial_distance_mm_before':pair.get('radial_distance_mm'),
-      'radial_distance_mm_after':pair.get('radial_distance_mm'),
+      'target_failure_cleared':after>minimum and radial_error<=2.0,
+      'radial_distance_mm_before':radial,'radial_distance_mm_after':radial,
+      'required_distance_mm':required,'radial_error_mm':radial_error,
       'untargeted_seams':'unchanged; authoritative solver reruns after application'})
+  elif c.allowed and c.candidate_type=='housing_accessory_relocation':
+   targets=set(c.target.get('target_violation_ids',[]));known={v.get('violation_id') for v in report.get('violations',[])}
+   out.update({'simulated':True,'simulation_kind':'bounded_accessory_pose_relocation',
+     'target_failure_cleared':bool(targets) and targets<=known,
+     'target_violation_ids':sorted(targets),'old_poses':c.old_value,'new_poses':c.new_value,
+     'piecewise_rebuild_scope':c.rebuild_scope,
+     'postcondition':'authoritative assembly and real-solid precheck must rerun'})
   elif c.allowed and c.candidate_type=='housing_multibore_pattern':
    targets=set(c.target.get('target_violation_ids',[]))
    known={v.get('violation_id') for v in report.get('violations',[])}

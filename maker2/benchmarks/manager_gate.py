@@ -198,16 +198,17 @@ def frame_drift_errors(model, frame_contract, is_root: bool = True,
         realized = {e.get("frame"): e for e in (getattr(model, "frames_realized", []) or [])}
     T = _root_to_link(model)
 
+    def _frame_pose(fr):
+        entry=realized.get(fr.name)
+        if not entry:return None
+        Tlink=T.get(entry.get("link"))
+        if Tlink is None:return None
+        local=_mat(entry.get("local_xyz_m",(0,0,0)),entry.get("local_rpy_rad",(0,0,0)))
+        return Tlink@local
+
     def _world_of(fr):
-        entry = realized.get(fr.name)
-        if not entry:
-            return None
-        Tlink = T.get(entry.get("link"))
-        if Tlink is None:
-            return None
-        local = _mat(entry.get("local_xyz_m", (0, 0, 0)),
-                     entry.get("local_rpy_rad", (0, 0, 0)))
-        return (Tlink @ local)[:3, 3]
+        pose=_frame_pose(fr)
+        return None if pose is None else pose[:3,3]
 
     def _want_of(fr):
         return np.array([float(v) for v in (getattr(fr, "xyz_m", None) or (0, 0, 0))])
@@ -234,6 +235,21 @@ def frame_drift_errors(model, frame_contract, is_root: bool = True,
                     f"subs that mate to them stack on top of each other.",
                     fb.name))
                 break                         # one collapse report per frame is enough
+    for pair in getattr(frame_contract,"through_mounts",[]) or []:
+        ff=next((f for f in frames if f.name==pair.get('front_frame')),None)
+        rf=next((f for f in frames if f.name==pair.get('rear_frame')),None)
+        if ff is None or rf is None:continue
+        wf,wr=_world_of(ff),_world_of(rf)
+        if wf is None or wr is None:continue
+        d=wr-wf;sep=float(np.linalg.norm(d));front_pose=_frame_pose(ff)
+        axis=(front_pose[:3,:3]@np.array([0.,0.,1.])) if front_pose is not None else np.asarray(ff.axis,float)
+        n=float(np.linalg.norm(axis))
+        if sep<=_POS_TOL_M:
+            out.append(GateError("manager","ERR_FRAME_DRIFT",
+              f"through-shaft frames '{ff.name}'/'{rf.name}' collapse at one point",rf.name));continue
+        if n<1e-12 or float(np.linalg.norm(d-(np.dot(d,axis/n))*axis/n))>_POS_TOL_M:
+            out.append(GateError("manager","ERR_FRAME_DRIFT",
+              f"through-shaft frames '{ff.name}'/'{rf.name}' are not on one axis",rf.name))
     return out
 
 

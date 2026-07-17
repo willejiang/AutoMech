@@ -251,17 +251,42 @@ def _line_plane_intersection_local(T_plate_world, point_world, axis_world):
     return [float(q[1]*1000.0),float(q[2]*1000.0)]
 
 
+def _housing_accessory_candidate(report,base,res):
+    violations=[v for v in report.get('violations',[]) if v.get('kind')=='part_overlap'
+                and v.get('severity')=='interface'
+                and any(x in str(v.get('parent_local_link','')).lower()
+                        for x in ('plug','breather','vent'))]
+    if not violations:return None
+    poses={p.child:p for p in res.model.poses};moves={};old={};links=[]
+    for v in violations:
+        name=v.get('parent_local_link','');pose=poses.get(name);link=next((l for l in res.model.links if l.name==name),None)
+        if pose is None or link is None:return None
+        radius=float((link.size_mm or {}).get('radius',0.0))/1000.0
+        if radius<=0:return None
+        xyz=np.asarray(pose.xyz_m,float);direction=(-1.0 if xyz[1]>0 else 1.0)
+        shift=max(0.05,4.0*radius);new=xyz.copy();new[1]+=direction*shift
+        old[name]=xyz.tolist();moves[name]=new.tolist();links.append(name)
+    targets=[v['violation_id'] for v in violations]
+    data={'type':'housing_accessory_relocation','sub':base,'moves':moves,'targets':sorted(targets)}
+    return RepairCandidate('accessories_'+_cid(data),'housing_accessory_relocation',
+      {'sub_id':base,'moves':moves,'target_violation_ids':targets,'physical_links':[]},old,moves,
+      {x:0.0 for x in targets},'model_pose_patch',{'subassemblies':[base],'links':[]},True,
+      'Relocate removable housing accessories laterally outside the solved gear envelopes')
+
+
 def generate_precheck_repair_candidates(report, plan, subs, assembly_ctx, settings):
-    """Build one conservative physical housing-bore repair from a structured precheck report."""
+    """Build conservative local repairs from a structured precheck report."""
     if not getattr(settings,'enable_precheck_housing_geometry_repair',True):return []
     violations=[v for v in report.get('violations',[]) if v.get('kind')=='part_overlap'
                 and v.get('severity')=='interface' and v.get('shaft_role') in ('input','inter','output')]
-    roles={v.get('shaft_role') for v in violations}
-    if roles != {'input','inter','output'}:return []
     base_ids={v.get('involved_sub_ids',[None])[0] for v in violations}
     if len(base_ids)!=1:return []
     base=next(iter(base_ids));res=subs.get(base)
     if not res or not res.ctx or not res.model:return []
+    accessory=_housing_accessory_candidate(report,base,res)
+    if accessory:return [accessory]
+    roles={v.get('shaft_role') for v in violations}
+    if roles != {'input','inter','output'}:return []
     report_path=os.path.join(assembly_ctx.run_dir,'assembly_constraint_report.json')
     try: solved=json.load(open(report_path,encoding='utf-8'))
     except Exception:return []
@@ -365,28 +390,68 @@ def precheck_repair_acceptance(before, after, candidate):
             'fully_clean':bool(after.get('ok',False))}
 
 
+def _rear_mount_candidates(report,subs):
+    if report.get('diagnostics',{}).get('failure_kind')!='rear_mount_plane':return []
+    out=[]
+    for r in report.get('diagnostics',{}).get('rear_mounts',[]):
+        if r.get('passed',True):continue
+        sid=r.get('sub_id');res=subs.get(sid)
+        if not res or not res.model:continue
+        rear_frame=r.get('shaft_frame')
+        entry=next((e for e in (res.sub_frames or []) if e.get('frame')==rear_frame),None)
+        if entry is None:continue
+        child=entry.get('link');pose=next((p for p in res.model.poses if p.child==child),None)
+        if pose is None:continue
+        from .assembler import _mat
+        axis=np.asarray(report.get('stages',{}).get(sid,{}).get('local_axis',(0,0,1)),float)
+        axis=_mat((0,0,0),pose.rpy_rad)[:3,:3]@axis;n=float(np.linalg.norm(axis))
+        residual=float(r.get('signed_residual_mm',0.0))/1000.0
+        if n<1e-12 or not math.isfinite(residual) or abs(residual)<1e-9:continue
+        axis=axis/n;old=np.asarray(pose.xyz_m,float);new=old-residual*axis
+        data={'type':'rear_mount_axial_alignment','sub':sid,'pose':pose.name,
+              'new':new.tolist(),'seam':r['seam_id']}
+        out.append(RepairCandidate('rear_'+_cid(data),'rear_mount_axial_alignment',
+          {'sub_id':sid,'part':child,'pose':pose.name,'frame':rear_frame,'seam_id':r['seam_id']},
+          old.tolist(),new.tolist(),{r['seam_id']:abs(residual)*1000.0},'model_pose_patch',
+          {'subassemblies':[sid],'links':[]},True,
+          f"Move rear datum '{rear_frame}' axially by {-residual*1000.0:.3f} mm onto its housing plane"))
+    return out
+
+
 def generate_repair_candidates(report, plan, subs, settings):
     out=[]
+    out.extend(_rear_mount_candidates(report,subs))
     pose_allowed=(report.get('diagnostics',{}).get('failure_kind')=='gear_face_overlap'
                   and getattr(settings,'enable_solver_pose_repair',True))
     for p in report.get('gear_pairs',[]):
+        radial_error=abs(float(p.get('radial_distance_mm',0.0))-
+                         float(p.get('required_distance_mm',0.0)))
         c=_pose_candidate(p,subs,allowed=pose_allowed and
+                          radial_error <= 2.0 and
                           float(p.get('face_overlap_mm',1.0)) <=
                           float(p.get('minimum_face_overlap_mm',0.1)))
         if c:out.append(c)
     c=_multibore_candidate(report,subs)
     if c and getattr(settings,'enable_solver_seat_geometry_repair',True):out.append(c)
-    return sorted(out,key=lambda c:(not c.allowed,max(c.predicted_residuals_mm.values() or [1e9]),c.candidate_id))
+    return sorted(out,key=lambda c:(not c.allowed,-max(c.predicted_residuals_mm.values() or [0.0]),c.candidate_id))
 
 class LocalRepairTransaction:
-    """Byte-for-byte disk + in-memory snapshot for the candidate's affected subs."""
+    """Byte-for-byte disk + in-memory checkpoint for bounded local repair.
+
+    ``commit`` advances the rollback point after an authoritative rerun proves a strict
+    improvement. A later independent failure can then roll back only the rejected step,
+    rather than erasing every earlier accepted repair in the same analyzer sequence.
+    """
     def __init__(self, subs, sub_ids):
-        self.subs=subs; self.ids=set(sub_ids); self.mem={}; self.tmp=tempfile.mkdtemp(prefix='maker2_local_repair_')
+        self.subs=subs; self.ids=set(sub_ids); self.mem={};self.tmp=tempfile.mkdtemp(prefix='maker2_local_repair_')
     def __enter__(self):
+        self.commit();return self
+    def commit(self):
+        self.mem={}
         for sid in self.ids:
-            r=self.subs[sid]; self.mem[sid]=(copy.deepcopy(r.model),copy.deepcopy(r.sub_frames),copy.deepcopy(r.results),r.ok,r.error)
-            if r.ctx and os.path.isdir(r.ctx.run_dir): shutil.copytree(r.ctx.run_dir,os.path.join(self.tmp,sid))
-        return self
+            r=self.subs[sid];self.mem[sid]=(copy.deepcopy(r.model),copy.deepcopy(r.sub_frames),copy.deepcopy(r.results),r.ok,r.error)
+            dst=os.path.join(self.tmp,sid);shutil.rmtree(dst,ignore_errors=True)
+            if r.ctx and os.path.isdir(r.ctx.run_dir):shutil.copytree(r.ctx.run_dir,dst)
     def rollback(self):
         for sid,(m,f,rs,ok,err) in self.mem.items():
             r=self.subs[sid];r.model,r.sub_frames,r.results,r.ok,r.error=m,f,rs,ok,err
@@ -399,12 +464,37 @@ class LocalRepairTransaction:
         return False
 
 
+def solver_repair_acceptance(before,after,candidate):
+    """Accept one failed-solver rerun only when its targeted failure clears and no new
+    failure signature appears. Independent remaining failures are allowed and become the
+    next analyzer attempt; accepted progress is checkpointed by LocalRepairTransaction."""
+    def keys(report):
+        out=set()
+        for raw in str(report.get('error','')).split(';'):
+            parts=[x.strip() for x in raw.strip().split(':')]
+            if not parts or not parts[0]:continue
+            out.add(':'.join(parts[:2]) if len(parts)>1 else parts[0])
+        return out
+    targets=set(candidate.predicted_residuals_mm)
+    if candidate.candidate_type=='rear_mount_axial_alignment':
+        wanted={f'rear_mount_plane:{x}' for x in targets}
+    elif candidate.candidate_type=='gear_pose_axial_alignment':
+        wanted={f'gear_face_overlap:{x}' for x in targets}
+    else:
+        wanted={k for k in keys(before) if any(k.endswith(':'+x) for x in targets)}
+    bk,ak=keys(before),keys(after);remaining=wanted&ak;new=ak-bk
+    return {'accepted':bool(wanted) and not remaining and not new,
+            'target_failure_keys':sorted(wanted),'targets_remaining':sorted(remaining),
+            'new_failure_keys':sorted(new),'before_failure_keys':sorted(bk),
+            'after_failure_keys':sorted(ak)}
+
+
 def apply_candidate(candidate, subs, settings, log_fn=print):
     """Apply one Python-owned candidate and refresh only its declared local scope."""
     from .urdf_builder import build_urdf, validate_urdf
     if not candidate.allowed:
         raise ValueError('candidate is blocked')
-    if candidate.candidate_type=='gear_pose_axial_alignment':
+    if candidate.candidate_type in ('gear_pose_axial_alignment','rear_mount_axial_alignment'):
         res=subs[candidate.target['sub_id']]
         p=next(x for x in res.model.poses if x.name==candidate.target['pose'])
         p.xyz_m=tuple(candidate.new_value)
@@ -412,6 +502,17 @@ def apply_candidate(candidate, subs, settings, log_fn=print):
         build_urdf(res.model,res.ctx)
         ok,err=validate_urdf(res.ctx.urdf_path,require_meshes=True)
         if not ok: raise RuntimeError(f'pose patch URDF invalid: {err}')
+        return {res.id}
+    if candidate.candidate_type=='housing_accessory_relocation':
+        res=subs[candidate.target['sub_id']];moves=candidate.target.get('moves',{})
+        changed=set()
+        for p in res.model.poses:
+            if p.child in moves:
+                p.xyz_m=tuple(float(x) for x in moves[p.child]);changed.add(p.child)
+        if changed!=set(moves):raise RuntimeError('not every accessory pose was relocated')
+        save_model(res.model,res.ctx.model_json_path)
+        build_urdf(res.model,res.ctx);ok,err=validate_urdf(res.ctx.urdf_path,require_meshes=True)
+        if not ok:raise RuntimeError(f'accessory relocation URDF invalid: {err}')
         return {res.id}
     if candidate.candidate_type=='housing_multibore_pattern':
         from .cq_worker import rebuild_link

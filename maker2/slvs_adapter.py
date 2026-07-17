@@ -93,7 +93,6 @@ def _insert_seam(plan, base_id, child_id):
         try:
             pa, ca = _unit(pf.axis), _unit(cf.axis)
             return (pf.role == "mount" and cf.role in ("mount", "power_in", "power_out")
-                    and float(pf.shaft_dia_mm) > 0 and float(cf.shaft_dia_mm) > 0
                     and abs(float(np.dot(pa, ca))) >= .99)
         except Exception:
             return False
@@ -172,12 +171,29 @@ def build_cross_sub_problem(plan, subs, seed, gear_ids, base_id, *,
                                tuple(T_local_anchor[:3, 3]), tuple(local_axis),
                                tuple(T_target[:3, 3]), tuple(target_axis), {},
                                seam.id, seam.parent_frame, seam.child_frame)
+        rear=None
+        if getattr(seam,'rear_parent_frame','') and getattr(seam,'rear_child_frame',''):
+            try:
+                _rl,T_local_rear=frame_in_root(subs[sid],seam.rear_child_frame)
+                _hl,T_target_rear=frame_in_root(subs[base_id],seam.rear_parent_frame)
+                rear_fr=_frame_spec(plan,base_id,seam.rear_parent_frame)
+                rear_axis=_unit(rear_fr.axis)
+            except Exception as e:
+                preflight_error(f"stage '{sid}' rear mount frame unresolved: {e}","rear_mount_realization")
+            local_delta=T_local_rear[:3,3]-T_local_anchor[:3,3]
+            radial=local_delta-float(np.dot(local_delta,local_axis))*local_axis
+            if float(np.linalg.norm(radial))>_MOUNT_LAYOUT_TOL_M:
+                preflight_error(f"stage '{sid}' rear datum is off the shaft axis","rear_mount_realization")
+            rear={'seam_id':seam.id,'sub_id':sid,'housing_frame':seam.rear_parent_frame,
+                  'shaft_frame':seam.rear_child_frame,'local_point_m':T_local_rear[:3,3].tolist(),
+                  'target_point_m':T_target_rear[:3,3].tolist(),'target_axis':rear_axis.tolist(),
+                  'constraint_id':f'{seam.id}:rear_plane','tolerance_mm':_MOUNT_LAYOUT_TOL_M*1000.0}
         stages[sid] = stage
         stage_carriers[sid] = carrier.name
         mount_records.append({
             "sid": sid, "seam": seam, "stage": stage,
             "T_local_anchor": T_local_anchor, "T_target": T_target,
-            "target_axis": target_axis, "local_axis": local_axis,
+            "target_axis": target_axis, "local_axis": local_axis,"rear":rear,
             "diagnostic": {"stage": sid, "seam": seam.id,
                            "housing_frame": seam.parent_frame,
                            "shaft_frame": seam.child_frame,
@@ -194,18 +210,24 @@ def build_cross_sub_problem(plan, subs, seed, gear_ids, base_id, *,
             rb = np.asarray(b["diagnostic"]["realized_position_m"])
             contract_sep = float(np.linalg.norm(cb - ca))
             realized_sep = float(np.linalg.norm(rb - ra))
+            layout_error = abs(realized_sep - contract_sep)
+            layout_limit = max(_MOUNT_LAYOUT_TOL_M, 0.15 * contract_sep)
             collapsed = (contract_sep > _MOUNT_LAYOUT_TOL_M and
                          realized_sep <= _MOUNT_LAYOUT_TOL_M)
+            layout_mismatch = contract_sep > _MOUNT_LAYOUT_TOL_M and layout_error > layout_limit
             pair = {"stages": [a["sid"], b["sid"]],
                     "housing_frames": [a["seam"].parent_frame, b["seam"].parent_frame],
                     "contract_separation_mm": contract_sep * 1000.0,
                     "realized_separation_mm": realized_sep * 1000.0,
-                    "collapsed": collapsed}
+                    "layout_error_mm": layout_error * 1000.0,
+                    "layout_limit_mm": layout_limit * 1000.0,
+                    "collapsed": collapsed,
+                    "layout_mismatch": layout_mismatch}
             mount_pairs.append(pair)
-            if collapsed:
+            if layout_mismatch:
                 preflight_error("housing mount frames "
                                 f"'{a['seam'].parent_frame}' and '{b['seam'].parent_frame}' "
-                                f"collapsed to {realized_sep*1000:.3f} mm despite a "
+                                f"realize {realized_sep*1000:.3f} mm apart despite a "
                                 f"{contract_sep*1000:.3f} mm contract separation",
                                 "housing_mount_layout", mount_pairs)
 
@@ -236,10 +258,22 @@ def build_cross_sub_problem(plan, subs, seed, gear_ids, base_id, *,
             ConstraintSpec(f"{seam.id}:axis", ConstraintKind.COINCIDENT,
                            (A, target_end), provenance={"seam": seam.id}),
         ])
+        rear=record.get('rear')
+        if rear:
+            rid=f"{sid}:rear_datum";local_rear=np.asarray(rear['local_point_m'])
+            axial=float(np.dot(local_rear-np.asarray(stage.local_anchor_m),local_axis))
+            constraints.extend([
+              ConstraintSpec(f"{seam.id}:rear_on_axis",ConstraintKind.POINT_ON_LINE,
+                             (O,f"{sid}:axis"),enforced_by_solver=False,provenance={'seam':seam.id,'rear_datum':rid}),
+              ConstraintSpec(rear['constraint_id'],ConstraintKind.PROJECTED_DISTANCE,
+                             (O,A,f"{sid}:axis"),-axial,enforced_by_solver=False,
+                             provenance={'seam':seam.id,'rear_parent_frame':rear['housing_frame'],
+                                         'rear_child_frame':rear['shaft_frame']})])
 
     problem_diagnostics = {"phase": "ready", "mount_layout": {
         "tolerance_mm": _MOUNT_LAYOUT_TOL_M * 1000.0,
-        "mounts": [r["diagnostic"] for r in mount_records], "pairs": mount_pairs}}
+        "mounts": [r["diagnostic"] for r in mount_records], "pairs": mount_pairs},
+        "rear_mounts":[r['rear'] for r in mount_records if r.get('rear')]}
     gear_pairs = []
     for seam in plan.seams:
         if seam.kind != "power":
@@ -478,6 +512,7 @@ def failure_report_dict(problem, result, placements, error):
     pairs = diagnose_authoritative_solution(problem, placements, result) if placements else []
     suggested = _suggested_mount_targets(problem) if problem else {}
     stages = ({sid: {"local_anchor_m": list(st.local_anchor_m),
+                     "local_axis": list(st.local_axis),
                      "target_anchor_m": list(st.target_anchor_m),
                      "target_axis": list(st.target_axis),
                      "suggested_target_anchor_m": suggested.get(sid),
@@ -511,6 +546,20 @@ def validate_authoritative_solution(problem, placements, result):
                 not np.allclose(R.T @ R, np.eye(3), atol=1e-6) or
                 abs(np.linalg.det(R)-1.0) > 1e-6): errors.append(f"bad_se3:{sid}")
     residuals = {}
+    rear_failures=[]
+    for rear in problem.diagnostics.get('rear_mounts',[]):
+        T=placements.get(rear['sub_id'])
+        if T is None:continue
+        solved=(np.asarray(T)@np.append(rear['local_point_m'],1.0))[:3]
+        target=np.asarray(rear['target_point_m']);axis=_unit(rear['target_axis'])
+        signed=float(np.dot(solved-target,axis));absolute=abs(signed)
+        rear.update({'solved_point_m':solved.tolist(),'signed_residual_mm':signed*1000.0,
+                     'absolute_residual_mm':absolute*1000.0,'passed':absolute<=_MOUNT_LAYOUT_TOL_M,
+                     'enforced_by_solver':False})
+        residuals[rear['constraint_id']]=absolute
+        if absolute>_MOUNT_LAYOUT_TOL_M:
+            errors.append(f"rear_mount_plane:{rear['seam_id']}:{absolute*1000:.3f}mm")
+            rear_failures.append(rear['seam_id'])
     for gp in problem.gear_pairs:
         # Validate the RECONSTRUCTED rigid stages, not the point variables alone. This
         # catches any loss introduced when mapping solved anchor/axis back to root SE(3).
@@ -526,7 +575,8 @@ def validate_authoritative_solution(problem, placements, result):
             errors.append(f"gear_face_overlap:{gp['seam_id']}:{overlap*1000:.3f}mm")
     if errors:
         problem.diagnostics.update({"phase": "post_solve", "failure_kind":
-            ("gear_face_overlap" if any(x.startswith("gear_face_overlap:") for x in errors)
+            ("rear_mount_plane" if rear_failures
+             else "gear_face_overlap" if any(x.startswith("gear_face_overlap:") for x in errors)
              else "gear_axis_alignment" if any(x.startswith("gear_axis_alignment:") for x in errors)
              else "gear_distance")})
         raise SlvsSolveError("; ".join(errors))

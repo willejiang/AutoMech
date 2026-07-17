@@ -122,6 +122,14 @@ def _world(robot, link: str) -> np.ndarray:
     return robot.get_transform(frame_to=link, frame_from=robot.base_link)
 
 
+def _realized_frame_in_root(sub,frame_name):
+    entry=next((e for e in (sub.sub_frames or []) if e.get('frame')==frame_name),None)
+    if entry is None or sub.model is None:return None
+    from .assembler import _mat,_root_to_link
+    T=_root_to_link(sub.model).get(entry.get('link'))
+    return None if T is None else T@_mat(entry.get('local_xyz_m',(0,0,0)),entry.get('local_rpy_rad',(0,0,0)))
+
+
 def _realized_link(sub, frame_name: str) -> str | None:
     for e in (sub.sub_frames or []):
         if e.get("frame") == frame_name:
@@ -179,6 +187,29 @@ def precheck(plan, subs: dict, assembled_urdf: str, *, log_fn=print) -> Precheck
             violations.append(Violation(
                 kind="frame_misalign", severity="sub", sub_id=miss,
                 detail=f"seam '{seam.id}': frame not realized on '{miss}'"))
+
+    # 1b. Optional through-shaft rear datum: the solved rear shaft point must lie on the
+    # rear housing bore plane. The front pair remains the only placement weld.
+    for seam in plan.seams:
+        rp=getattr(seam,'rear_parent_frame','');rc=getattr(seam,'rear_child_frame','')
+        if seam.kind!='weld' or not (rp and rc):continue
+        ps,cs=subs.get(seam.parent_sub),subs.get(seam.child_sub)
+        if not ps or not cs:continue
+        Pl=_realized_frame_in_root(ps,rp);Cl=_realized_frame_in_root(cs,rc)
+        if Pl is None or Cl is None:continue
+        try:
+            Pw=_world(robot,_ns(seam.parent_sub,ps.model.root_link))@Pl
+            Cw=_world(robot,_ns(seam.child_sub,cs.model.root_link))@Cl
+            pfr=next(f for f in plan.sub_by_id(seam.parent_sub).frames if f.name==rp)
+            axis=np.asarray(pfr.axis,float);axis=axis/np.linalg.norm(axis)
+            signed=float(np.dot(Cw[:3,3]-Pw[:3,3],axis));err=abs(signed)
+        except Exception:continue
+        if err>_POS_TOL_M:
+            violations.append(Violation(kind='rear_mount_plane',severity='interface',sub_id=seam.parent_sub,
+              seam_id=seam.id,involved_sub_ids=[seam.parent_sub,seam.child_sub],value=err,
+              threshold=_POS_TOL_M,observations={'rear_parent_frame':rp,'rear_child_frame':rc,
+              'signed_residual_mm':signed*1000.0},detail=f"seam '{seam.id}' rear shaft datum misses "
+              f"rear housing plane by {err*1000:.1f} mm"))
 
     # 2. Gear-MESH power seams: the two gear centers must be ~one mesh center-distance
     #    (sum of pitch radii) apart, else the teeth can't engage.
@@ -370,7 +401,7 @@ def _intersection_frac(ma, mb) -> float:
     return (vi / vs) if vs > 0 else 0.0
 
 
-def _solid_intersection_frac(ma, mb) -> float:
+def _solid_intersection_frac(ma, mb, log_fn=None) -> float:
     """REAL solid-overlap score of two WORLD meshes in [0,1]: the volume of their actual
     mesh boolean INTERSECTION as a fraction of the smaller part's solid volume.
 
@@ -381,34 +412,50 @@ def _solid_intersection_frac(ma, mb) -> float:
     their bounding boxes overlap heavily. Only two parts whose SOLID metal actually
     interpenetrates score high.
 
-    Requires a mesh boolean engine (manifold3d). Falls back to the AABB proxy when the
-    boolean is unavailable or a part isn't watertight (a non-watertight mesh has no
-    well-defined solid volume) — so this never crashes the gate, it only degrades to the
-    old behavior for that one pair."""
+    Manifold booleans require volume meshes. CadQuery can export a valid annulus as two
+    consistently-wound shells that trimesh does not label watertight; use its watertight
+    convex hull for the boolean operand in that case. This closes tessellation seams while
+    preserving holes in the other operand, unlike the old AABB fallback which made every
+    slender part inside a hollow housing look 100% embedded. AABB remains the last resort
+    when no usable solid can be formed."""
     # Cheap AABB pre-filter: disjoint boxes -> definitely no solid overlap. Skips the
     # (relatively) expensive boolean for the common far-apart case.
     loa, hia = np.asarray(ma.bounds[0]), np.asarray(ma.bounds[1])
     lob, hib = np.asarray(mb.bounds[0]), np.asarray(mb.bounds[1])
     if np.any(np.maximum(loa, lob) >= np.minimum(hia, hib)):
         return 0.0
-    # A solid volume is only meaningful for watertight meshes; degrade gracefully.
-    if not (getattr(ma, "is_watertight", False) and getattr(mb, "is_watertight", False)):
-        return _intersection_frac(ma, mb)
+    operands=[]
+    repaired=[]
+    for mesh in (ma,mb):
+        if getattr(mesh,"is_watertight",False) and float(getattr(mesh,"volume",0.0))>0:
+            operands.append(mesh)
+            continue
+        try:
+            solid=mesh.convex_hull
+            if not solid.is_watertight or float(solid.volume)<=0:
+                raise ValueError("convex hull is not a usable volume")
+            operands.append(solid);repaired.append(True)
+        except Exception:
+            if log_fn:log_fn("[conflict] AABB fallback: mesh has no usable solid volume")
+            return _intersection_frac(ma,mb)
     try:
         import trimesh
         # A near-empty boolean result can have zero volume; trimesh's center-of-mass
         # divide then warns harmlessly. Silence it — we guard the volume below anyway.
         with np.errstate(divide="ignore", invalid="ignore"):
-            inter = trimesh.boolean.intersection([ma, mb], engine="manifold")
-            if inter is None or len(getattr(inter, "vertices", ())) == 0:
+            inter=trimesh.boolean.intersection(operands,engine="manifold")
+            if inter is None or len(getattr(inter,"vertices",()))==0:
                 return 0.0
-            vi = float(inter.volume)
-    except Exception:
-        return _intersection_frac(ma, mb)
-    vs = min(float(ma.volume), float(mb.volume))
-    if vs <= 0:
-        return _intersection_frac(ma, mb)
-    return max(0.0, vi / vs)
+            vi=float(inter.volume)
+    except Exception as e:
+        if log_fn:log_fn(f"[conflict] AABB fallback: solid boolean failed ({type(e).__name__})")
+        return _intersection_frac(ma,mb)
+    vs=min(float(x.volume) for x in operands)
+    if vs<=0:
+        if log_fn:log_fn("[conflict] AABB fallback: repaired solid has zero volume")
+        return _intersection_frac(ma,mb)
+    if repaired and log_fn:log_fn("[conflict] repaired non-watertight mesh with convex hull")
+    return max(0.0,vi/vs)
 
 
 def _part_overlaps(robot, plan, subs: dict, log) -> list:
@@ -451,7 +498,7 @@ def _part_overlaps(robot, plan, subs: dict, log) -> list:
                 a, b = names[i], names[k]
                 if frozenset((a, b)) in adj:
                     continue
-                frac = _solid_intersection_frac(meshes[a], meshes[b])
+                frac = _solid_intersection_frac(meshes[a], meshes[b], log_fn=log)
                 if frac >= _OVERLAP_FRAC:
                     if worst is None or frac > worst[0]:
                         worst = (frac, a, b)
@@ -482,7 +529,7 @@ def _part_overlaps(robot, plan, subs: dict, log) -> list:
         worst = None
         for an, amesh in ma.items():
             for bn, bmesh in mb.items():
-                frac = _solid_intersection_frac(amesh, bmesh)
+                frac = _solid_intersection_frac(amesh, bmesh, log_fn=log)
                 if frac >= _OVERLAP_FRAC and (worst is None or frac > worst[0]):
                     worst = (frac, an, bn)
         if worst:

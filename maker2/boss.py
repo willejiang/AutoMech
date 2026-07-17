@@ -183,6 +183,8 @@ def _seam_from_dict(d: dict, idx: int) -> SeamSpec:
         offset_mm=float(d.get("offset_mm", 0.0)),
         clock_rad=float(d.get("clock_rad", 0.0)),
         extra_pins=tuple(pins),
+        rear_parent_frame=str(d.get("rear_parent_frame") or "").strip(),
+        rear_child_frame=str(d.get("rear_child_frame") or "").strip(),
     )
 
 
@@ -279,6 +281,10 @@ def _validate_plan(plan: SubassemblyPlan) -> None:
         seam.child_sub = sub_remap.get(seam.child_sub, _slugify(seam.child_sub, "sub"))
         if seam.owner_sub:
             seam.owner_sub = sub_remap.get(seam.owner_sub, _slugify(seam.owner_sub, "sub"))
+        if getattr(seam,"rear_parent_frame",""):
+            seam.rear_parent_frame = _slugify(seam.rear_parent_frame,"frame")
+        if getattr(seam,"rear_child_frame",""):
+            seam.rear_child_frame = _slugify(seam.rear_child_frame,"frame")
         if seam.kind == "weld" and getattr(seam, "mate_type", "") == "insert":
             pfr = frame_lut.get((seam.parent_sub, seam.parent_frame))
             if pfr is not None:
@@ -307,6 +313,28 @@ def _validate_plan(plan: SubassemblyPlan) -> None:
         elif seam.child_frame not in frames_by_sub.get(seam.child_sub, set()):
             problems.append(f"seam '{seam.id}' child_frame '{seam.child_frame}' "
                             f"is not a frame on '{seam.child_sub}'")
+        rear_parent=getattr(seam,"rear_parent_frame","")
+        rear_child=getattr(seam,"rear_child_frame","")
+        if bool(rear_parent)!=bool(rear_child):
+            problems.append(f"seam '{seam.id}' must set both rear_parent_frame and rear_child_frame")
+        elif rear_parent:
+            if seam.kind!='weld':
+                problems.append(f"seam '{seam.id}' rear datum pair is only valid on a weld seam")
+            if rear_parent==seam.parent_frame or rear_child==seam.child_frame:
+                problems.append(f"seam '{seam.id}' rear datum frames must differ from its front frames")
+            if rear_parent not in frames_by_sub.get(seam.parent_sub,set()):
+                problems.append(f"seam '{seam.id}' rear_parent_frame '{rear_parent}' is not a frame on '{seam.parent_sub}'")
+            if rear_child not in frames_by_sub.get(seam.child_sub,set()):
+                problems.append(f"seam '{seam.id}' rear_child_frame '{rear_child}' is not a frame on '{seam.child_sub}'")
+            p0,p1=frame_lut.get((seam.parent_sub,seam.parent_frame)),frame_lut.get((seam.parent_sub,rear_parent))
+            c0,c1=frame_lut.get((seam.child_sub,seam.child_frame)),frame_lut.get((seam.child_sub,rear_child))
+            if all(x is not None for x in (p0,p1,c0,c1)):
+                axes=[]
+                for fr in (p0,p1,c0,c1):
+                    a=tuple(float(x) for x in fr.axis);n=sum(x*x for x in a)**.5
+                    axes.append(tuple(x/n for x in a) if n>1e-12 else ())
+                if any(not a for a in axes) or any(abs(sum(x*y for x,y in zip(axes[0],a)))<.99 for a in axes[1:]):
+                    problems.append(f"seam '{seam.id}' front/rear datum axes must be nonzero and parallel")
         if seam.parent_sub == seam.child_sub:
             problems.append(f"seam '{seam.id}' connects sub '{seam.parent_sub}' to itself")
         if seam.joint_type not in _VALID_JOINT_TYPES:
@@ -391,6 +419,8 @@ def plan_to_dict(plan: SubassemblyPlan) -> dict:
                 "offset_mm": s.offset_mm,
                 "clock_rad": s.clock_rad,
                 "extra_pins": [list(pr) for pr in (s.extra_pins or ())],
+                "rear_parent_frame": getattr(s,"rear_parent_frame",""),
+                "rear_child_frame": getattr(s,"rear_child_frame",""),
                 "joint_type": s.joint_type,
                 "axis": list(s.axis),
                 "lower": s.lower,
@@ -431,6 +461,16 @@ def frame_contract_for(plan: SubassemblyPlan, sub_id: str,
     # Fall back to a summary stashed on the plan by run_boss (1c) when the caller
     # doesn't pass one explicitly — keeps build_subassembly's call site unchanged.
     summary = appearance_summary or getattr(plan, "appearance_summary", "") or ""
+    through=[]
+    for seam in plan.seams:
+        rp=getattr(seam,"rear_parent_frame","");rc=getattr(seam,"rear_child_frame","")
+        if not (rp and rc):continue
+        if seam.parent_sub==sub_id:
+            through.append({'seam_id':seam.id,'front_frame':seam.parent_frame,
+                            'rear_frame':rp,'neighbor_sub':seam.child_sub,'side':'parent'})
+        elif seam.child_sub==sub_id:
+            through.append({'seam_id':seam.id,'front_frame':seam.child_frame,
+                            'rear_frame':rc,'neighbor_sub':seam.parent_sub,'side':'child'})
     return FrameContract(
         sub_id=sub.id,
         frames=list(sub.frames),
@@ -440,6 +480,7 @@ def frame_contract_for(plan: SubassemblyPlan, sub_id: str,
         neighbors=[{"id": o.id, "function": o.function, "brief": o.brief}
                    for o in plan.subassemblies if o.id != sub_id],
         appearance_summary=summary,
+        through_mounts=through,
     )
 
 
@@ -563,6 +604,10 @@ def _lock_interface_frame_names(plan, prior_plan_json: str, *, log_fn=None) -> b
         cnew = rename.get((seam.child_sub, seam.child_frame))
         if cnew:
             seam.child_frame = cnew
+        rpnew=rename.get((seam.parent_sub,getattr(seam,'rear_parent_frame','')))
+        if rpnew:seam.rear_parent_frame=rpnew
+        rcnew=rename.get((seam.child_sub,getattr(seam,'rear_child_frame','')))
+        if rcnew:seam.rear_child_frame=rcnew
     return True
 
 

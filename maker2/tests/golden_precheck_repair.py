@@ -86,6 +86,19 @@ def candidate_and_blocks():
     assert not generate_precheck_repair_candidates(web_report,web_plan,web_subs,web_ctx,SimpleNamespace(enable_precheck_housing_geometry_repair=True))
 
 
+def accessory_candidate():
+    report,plan,subs,ctx=_fixture()
+    res=subs['housing'];res.model.links.append(LinkSpec('fill_plug','plug','cylinder',{'radius':8,'height':18}))
+    res.model.poses.append(PoseSpec('plug_pose','front_plate','fill_plug',(0,.015,.02),(0,0,0)))
+    report['violations']=[{'kind':'part_overlap','severity':'interface','shaft_role':'output',
+      'violation_id':'v_plug','seam_id':'weld_output','involved_sub_ids':['housing','output_stage'],
+      'parent_local_link':'fill_plug','child_local_link':'output_gear','overlap_fraction':1.0}]
+    candidates=generate_precheck_repair_candidates(report,plan,subs,ctx,
+      SimpleNamespace(enable_precheck_housing_geometry_repair=True))
+    assert len(candidates)==1 and candidates[0].candidate_type=='housing_accessory_relocation'
+    assert candidates[0].new_value['fill_plug'][1] < 0
+
+
 def acceptance():
     candidate=RepairCandidate('c','housing_multibore_pattern',{'target_violation_ids':['a']},None,None,{},'',{},True,'')
     before={'ok':False,'aggregate_overlap':.5,'violations':[{'violation_id':'a','kind':'part_overlap','severity':'interface','seam_id':'s','involved_sub_ids':['h','i'],'parent_link':'p','child_link':'b'}]}
@@ -98,5 +111,5 @@ def acceptance():
 
 
 if __name__=='__main__':
-    structured_ids();script_parse();candidate_and_blocks();acceptance()
+    structured_ids();script_parse();candidate_and_blocks();accessory_candidate();acceptance()
     print('golden precheck repair: PASS')

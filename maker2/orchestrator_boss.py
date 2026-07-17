@@ -122,6 +122,21 @@ def _sub_frames_to_dict(model, contract_frames=None) -> list:
                             "local_xyz_m": [0.0, 0.0, 0.0],
                             "local_rpy_rad": [0.0, 0.0, 0.0]})
                 seen.add(fname)
+                continue
+            # 2. semantic hardware match. Through-shaft frames are commonly named
+            # input_rear_bearing_datum while the manager part is input_rear_bearing.
+            # Prefer that physical datum over collapsing every mount onto the root.
+            noise={"datum","frame","seat","mount","interface"}
+            ft=set(fname.lower().split("_"))-noise
+            ranked=[]
+            for lname in link_names:
+                lt=set(lname.lower().split("_"))-noise;score=len(ft & lt)
+                if score:ranked.append((score,lname))
+            ranked.sort(reverse=True)
+            if ranked and ranked[0][0]>=2 and (len(ranked)==1 or ranked[0][0]>ranked[1][0]):
+                out.append({"frame":fname,"link":ranked[0][1],
+                            "local_xyz_m":[0.0,0.0,0.0],"local_rpy_rad":[0.0,0.0,0.0]})
+                seen.add(fname)
             elif (getattr(fr, "role", "mount") == "mount"
                   and not (getattr(fr, "mounts_part", "") or "").strip()
                   and root in link_names):
@@ -680,7 +695,8 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
     ok2, err2 = validate_urdf(ctx.urdf_path, require_meshes=True)
     success = ((built == len(results)) or (getattr(settings, "allow_partial", False)
                and built > 0)) and ok2
-    slog(f"built {built}/{len(results)} links; URDF(with meshes) ok={ok2}")
+    slog(f"built {built}/{len(results)} links; URDF(with meshes) ok={ok2}"
+         + (f" ({err2})" if not ok2 and err2 else ""))
 
     # Conflict gate: right after the worker built this sub's STLs, check for rigid parts
     # that interpenetrate (the manager places parts blind; the worker owns the geometry —
@@ -1240,14 +1256,17 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                     and getattr(settings, "enable_solver_failure_analyzer", True)
                     and getattr(e, "failure_report", None)):
                 try:
-                    from .assembly_repair import (LocalRepairTransaction, apply_candidate,
-                                                  generate_repair_candidates)
+                    from .assembly_repair import (LocalRepairTransaction,apply_candidate,
+                        generate_repair_candidates,solver_repair_acceptance)
                     from .assembly_analyzer import analyze_failure
-                    max_local=max(1,int(getattr(settings,"solver_local_repair_max_attempts",2)))
+                    configured=max(1,int(getattr(settings,"solver_local_repair_max_attempts",2)))
+                    # One candidate per currently failing key, plus the configured floor. The
+                    # report may expose several independent rear/gear failures sequentially.
+                    max_local=max(configured,len(str(e.failure_report.get('error','')).split(';'))+2)
                     current_report=e.failure_report
                     current_report_path=e.report_path
                     initial=generate_repair_candidates(current_report,plan,subs,settings)
-                    affected=sorted({sid for c in initial if c.allowed
+                    affected=sorted({sid for c in initial
                                      for sid in c.rebuild_scope.get("subassemblies",[])})
                     with LocalRepairTransaction(subs,affected) as tx:
                         for local_attempt in range(1,max_local+1):
@@ -1268,9 +1287,10 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                             if cand is None:
                                 log(f"[analyzer] escalation: {decision.get('escalation_reason') or decision.get('root_cause')}")
                                 break
-                            if any(sid not in affected for sid in
-                                   cand.rebuild_scope.get("subassemblies",[])):
-                                raise RuntimeError("candidate escaped the local repair transaction scope")
+                            escaped=[sid for sid in cand.rebuild_scope.get("subassemblies",[])
+                                     if sid not in affected]
+                            if escaped:
+                                tx.ids.update(escaped);tx.commit();affected.extend(escaped)
                             log(f"[analyzer] attempt {local_attempt}/{max_local} selected "
                                 f"{cand.candidate_id}: {cand.rationale}")
                             apply_candidate(cand,subs,settings,log)
@@ -1284,10 +1304,17 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                                 if (getattr(next_error,"kind","")!="authoritative_solver"
                                         or not getattr(next_error,"failure_report",None)):
                                     raise
+                                acceptance=solver_repair_acceptance(current_report,
+                                    next_error.failure_report,cand)
+                                if not acceptance['accepted']:
+                                    tx.rollback()
+                                    log(f"[analyzer] attempt {local_attempt} rejected and rolled back: {acceptance}")
+                                    break
+                                tx.commit()
                                 current_report=next_error.failure_report
                                 current_report_path=next_error.report_path
-                                log(f"[analyzer] attempt {local_attempt} improved but "
-                                    f"authoritative validation still fails: {next_error}")
+                                log(f"[analyzer] attempt {local_attempt} accepted as strict improvement; "
+                                    f"checkpointed with remaining failures: {current_report.get('error')}")
                                 continue
                             assembly_ctx=repair_ctx
                             repaired=True
@@ -1295,7 +1322,9 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                                 f"after {local_attempt} attempt(s)")
                             break
                         if not repaired:
-                            tx.rollback()
+                            # Keep the last checkpointed strict improvements. Only the most
+                            # recent rejected step is rolled back at its rejection site.
+                            log("[analyzer] localized sequence stopped with accepted checkpoints preserved")
                 except Exception as ae:
                     log(f"[analyzer] local repair failed safely ({type(ae).__name__}: {ae})")
             if not repaired:

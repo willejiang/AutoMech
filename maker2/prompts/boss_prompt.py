@@ -30,6 +30,9 @@ Think mechanically:
   (`mate_type`: `insert` = a shaft/pin end into a bore/hole, `seat` = a face on a
   face). The compiler places the child by mating those frames — you never give it a
   coordinate. The welds must connect every subassembly into one tree rooted at root_sub.
+- A shaft supported by FRONT and REAR housing walls needs paired datums on both subs. Keep ONE
+  front weld for placement and set that seam's `rear_parent_frame`/`rear_child_frame` to the
+  rear housing bore plane and rear shaft/bearing point. Never add a second rear weld.
 - A frame's `xyz_m` is only a ROUGH hint for the appearance preview; it is NOT the
   final placement (the compiler owns that). Keep them approximately sensible so the
   preview looks right, but do not agonize over exact global positions.

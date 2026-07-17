@@ -327,6 +327,8 @@ class SeamSpec:
     offset_mm: float = 0.0                            # insert seat depth / seat face gap (LOCAL mm)
     clock_rad: float = 0.0                            # roll about the mate axis (0 = don't-care)
     extra_pins: tuple = ()                            # ((parent_port, child_port), ...) anti-spin dowels
+    rear_parent_frame: str = ""                       # optional rear housing bore-plane datum
+    rear_child_frame: str = ""                        # optional rear shaft/bearing datum; validation only
 
 
 @dataclass
@@ -360,6 +362,8 @@ class FrameContract:
     appearance_summary: str = ""                     # optional coarse whole-machine
                                                      # layout text (1c), for proportion
                                                      # context; "" when disabled
+    through_mounts: list = field(default_factory=list) # [{seam_id, front_frame, rear_frame,
+                                                     #   neighbor_sub, side}] validation pairs
 
 
 @dataclass
