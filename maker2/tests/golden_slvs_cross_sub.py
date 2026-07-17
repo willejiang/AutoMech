@@ -9,6 +9,7 @@ from types import SimpleNamespace
 from maker2.constraint_ir import (AssemblyConstraintProblem, ConstraintKind,
                                   ConstraintSolveResult, ConstraintSpec, EntityKind, EntitySpec,
                                   RigidStageSpec)
+from maker2.constraint_solver import solve_problem as shared_solve_problem
 from maker2.slvs_adapter import (solve_problem, SlvsSolveError, _rot_a_to_b, _se3,
                                  build_cross_sub_problem, failure_report_dict,
                                  reconstruct_placements, validate_authoritative_solution)
@@ -16,6 +17,7 @@ from maker2.assembler import _classify_subs,_gear_face_center_offset_mm
 
 
 def native_solve():
+    assert solve_problem is shared_solve_problem
     # Three authoritative housing targets and three stage anchors/axes; two gear centers
     # with an exact 80 mm distance. This exercises the native API and zero-DOF contract.
     es=[]; cs=[]

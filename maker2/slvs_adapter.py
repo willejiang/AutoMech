@@ -8,29 +8,19 @@ from __future__ import annotations
 import hashlib
 import json
 import math
-from dataclasses import asdict
-
 import numpy as np
 import trimesh.transformations as tf
 
 from .constraint_ir import (AssemblyConstraintProblem, ConstraintKind, ConstraintSolveResult,
                             ConstraintSpec, EntityKind, EntitySpec, PlacementResult,
                             RigidStageSpec)
+from .constraint_solver import SlvsSolveError, slvs_available, solve_problem
 
 _GAUGE_M = 0.100
 _POS_TOL_M = 1e-6
 _MOUNT_LAYOUT_TOL_M = 0.002
 _MIN_FACE_OVERLAP_M = 0.0001
 _AXIS_TOL_DEG = 0.1
-
-
-class SlvsSolveError(RuntimeError):
-    def __init__(self, message, *, problem=None, result=None, placements=None, failure_report=None):
-        super().__init__(message)
-        self.problem = problem
-        self.result = result
-        self.placements = placements
-        self.failure_report = failure_report
 
 
 def _unit(v):
@@ -63,14 +53,6 @@ def _rot_a_to_b(a, b):
         return tf.rotation_matrix(math.pi, _unit(p))[:3, :3]
     v = _unit(np.cross(a, b))
     return tf.rotation_matrix(math.acos(c), v)[:3, :3]
-
-
-def slvs_available():
-    try:
-        from py_slvs import slvs
-        return True, getattr(slvs, "__file__", "py_slvs.slvs")
-    except Exception as e:
-        return False, f"{type(e).__name__}: {e}"
 
 
 def _frame_spec(plan, sid, name):
@@ -365,51 +347,6 @@ def build_cross_sub_problem(plan, subs, seed, gear_ids, base_id, *,
     return AssemblyConstraintProblem(stages=stages, entities=entities, constraints=constraints,
                                      gear_pairs=gear_pairs, expected_dof=0, base_id=base_id,
                                      diagnostics=problem_diagnostics)
-
-
-def solve_problem(problem):
-    from py_slvs import slvs
-    S = slvs.System()
-    handles = {}
-    constraint_handles = {}
-    fixed_group, solve_group = 1, 2
-    for e in problem.entities:
-        if e.kind == EntityKind.POINT_3D:
-            handles[e.id] = S.addPoint3dV(*[v * 1000.0 for v in e.initial_m],
-                                          group=fixed_group if e.fixed else solve_group)
-    for e in problem.entities:
-        if e.kind == EntityKind.LINE_3D:
-            handles[e.id] = S.addLineSegment(handles[e.refs[0]], handles[e.refs[1]], group=solve_group)
-    for c in problem.constraints:
-        if not c.enforced_by_solver:
-            continue
-        h = None
-        if c.kind == ConstraintKind.COINCIDENT:
-            h = S.addPointsCoincident(handles[c.entities[0]], handles[c.entities[1]], group=solve_group)
-        elif c.kind == ConstraintKind.DISTANCE:
-            h = S.addPointsDistance(c.value_m * 1000.0, handles[c.entities[0]], handles[c.entities[1]],
-                                    group=solve_group)
-        elif c.kind == ConstraintKind.POINT_ON_LINE:
-            h = S.addPointOnLine(handles[c.entities[0]], handles[c.entities[1]], group=solve_group)
-        elif c.kind == ConstraintKind.PROJECTED_DISTANCE:
-            h = S.addPointsProjectDistance(c.value_m * 1000.0, handles[c.entities[0]],
-                                           handles[c.entities[1]], handles[c.entities[2]],
-                                           group=solve_group)
-        else:
-            raise SlvsSolveError(f"unsupported IR constraint {c.kind}")
-        constraint_handles[int(h)] = c.id
-    raw = int(S.solve(group=solve_group, reportFailed=True, findFreeParams=True))
-    status = {0: "okay", 1: "inconsistent", 2: "didnt_converge", 3: "too_many_unknowns",
-              4: "init_error", 5: "redundant"}.get(raw, f"unknown_{raw}")
-    failed = [constraint_handles.get(int(h), f"handle:{int(h)}") for h in S.Failed]
-    points = {}
-    for e in problem.entities:
-        if e.kind != EntityKind.POINT_3D:
-            continue
-        h = handles[e.id]
-        points[e.id] = tuple(S.getParam(S.getEntityParam(h, i)).val / 1000.0 for i in range(3))
-    return ConstraintSolveResult(status, raw, int(S.Dof), points, failed,
-                                 {"entity_handles": len(handles), "constraint_handles": constraint_handles})
 
 
 def reconstruct_placements(problem, result):
