@@ -1129,6 +1129,27 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
             it += 1; continue
         log("[boss] gate PASSED (schema + support + mesh distance)")
 
+        # 1a. Authoritative geometry compile (flag-gated): for recognized topology,
+        #     freeze a coherent zero-DOF hardpoint contract BEFORE any manager runs.
+        #     The compiler and its gates are authoritative over every derived number;
+        #     unrecognized topology falls back to the legacy hierarchy. Stashed on the
+        #     plan so downstream stages can consume the frozen contract.
+        plan.hardpoint_contract = None
+        compiler_mode = getattr(settings, "geometry_compiler_mode", "auto")
+        if compiler_mode != "legacy":
+            try:
+                from .design.bridge import compile_from_plan
+                _compiled, _contract = compile_from_plan(
+                    plan, prompt, mode=compiler_mode,
+                    out_dir=os.path.join(session_root, "design"), log_fn=log)
+                if _contract is not None:
+                    plan.hardpoint_contract = _contract
+            except Exception as e:
+                if compiler_mode == "required":
+                    result["error"] = f"geometry compile failed: {e}"
+                    break
+                log(f"[boss] geometry compile skipped ({e}); using legacy_hierarchy")
+
         # 1b/1c. Coarse appearance proxy (flag-gated): a low-poly whole-machine base
         #        look + a per-sub proportion summary threaded to every manager via the
         #        frame contract. Stashed on the plan so frame_contract_for picks it up

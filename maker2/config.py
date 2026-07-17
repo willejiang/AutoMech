@@ -194,6 +194,14 @@ class Settings:
                                                    # --no-manager-ir falls back to the MJCF
                                                    # skeleton path (mjcf_skeleton.py). See
                                                    # Part A of the plan.
+    geometry_compiler_mode: str = "auto"           # auto | legacy | required. In `auto`, a
+                                                   # recognized two-stage reducer topology is
+                                                   # compiled to a frozen zero-DOF hardpoint
+                                                   # contract BEFORE managers fan out;
+                                                   # unrecognized topology falls back to the
+                                                   # legacy hierarchy. `required` errors if the
+                                                   # topology is not compilable; `legacy` skips
+                                                   # the compiler entirely.
 
     # ── Construction helpers ─────────────────────────────────────
 
