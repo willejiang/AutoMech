@@ -19,6 +19,8 @@ from .constraint_ir import (AssemblyConstraintProblem, ConstraintKind, Constrain
 
 _GAUGE_M = 0.100
 _POS_TOL_M = 1e-6
+_MOUNT_LAYOUT_TOL_M = 0.002
+_MIN_FACE_OVERLAP_M = 0.0001
 _AXIS_TOL_DEG = 0.1
 
 
@@ -99,24 +101,55 @@ def _insert_seam(plan, base_id, child_id):
 
 
 def build_cross_sub_problem(plan, subs, seed, gear_ids, base_id, *,
-                            frame_in_root, link_in_root, gear_link, gear_radius):
+                            frame_in_root, link_in_root, gear_link, gear_radius,
+                            gear_face_width, gear_face_center_offset=lambda _link: 0.0):
     """Build the authoritative reducer problem. Housing targets are hard constraints."""
     if not gear_ids or base_id is None or base_id != plan.root_sub:
         raise SlvsSolveError("slvs MVP requires one root housing and a gear cluster")
     stages = {}
     entities = []
     constraints = []
+    mount_records = []
+    stage_carriers = {}
+    def preflight_error(message, kind, pairs=None):
+        diagnostics = {"phase": "preflight", "failure_kind": kind,
+                       "mount_layout": {"tolerance_mm": _MOUNT_LAYOUT_TOL_M * 1000.0,
+                                        "mounts": [r["diagnostic"] for r in mount_records],
+                                        "pairs": pairs or []}}
+        problem = AssemblyConstraintProblem(stages=stages, entities=entities,
+                                            constraints=constraints, expected_dof=0,
+                                            base_id=base_id, diagnostics=diagnostics)
+        raise SlvsSolveError(message, problem=problem)
+
+    seen_mount_frames = set()
     for sid in sorted(gear_ids):
         seam = _insert_seam(plan, base_id, sid)
         if seam is None:
-            raise SlvsSolveError(f"stage '{sid}' has no housing shaft-mount seam")
+            preflight_error(f"stage '{sid}' has no housing shaft-mount seam", "housing_mount_layout")
+        if not seam.parent_frame or seam.parent_frame in seen_mount_frames:
+            preflight_error(f"stage '{sid}' has missing or duplicate housing mount frame "
+                            f"'{seam.parent_frame}'", "housing_mount_layout")
+        seen_mount_frames.add(seam.parent_frame)
+        target_fr = _frame_spec(plan, base_id, seam.parent_frame)
+        shaft_fr = _frame_spec(plan, sid, seam.child_frame)
+        if target_fr is None or shaft_fr is None:
+            preflight_error(f"stage '{sid}' mount frame contract is incomplete", "housing_mount_layout")
         try:
             _shaft_link, T_local_anchor = frame_in_root(subs[sid], seam.child_frame)
             _base_link, T_target = frame_in_root(subs[base_id], seam.parent_frame)
         except Exception as e:
-            raise SlvsSolveError(f"stage '{sid}' mount frame unresolved: {e}") from e
-        target_fr = _frame_spec(plan, base_id, seam.parent_frame)
-        target_axis = _unit(target_fr.axis if target_fr is not None else T_target[:3, 2])
+            preflight_error(f"stage '{sid}' mount frame unresolved: {e}", "housing_mount_layout")
+        if not _se3(T_local_anchor) or not _se3(T_target):
+            preflight_error(f"stage '{sid}' mount frame has an invalid transform", "housing_mount_layout")
+        try:
+            target_axis = _unit(target_fr.axis)
+            contract_target = np.asarray(target_fr.xyz_m, float)
+        except Exception as e:
+            preflight_error(f"stage '{sid}' housing mount contract is invalid: {e}",
+                            "housing_mount_layout")
+        if contract_target.shape != (3,) or not np.all(np.isfinite(contract_target)):
+            preflight_error(f"stage '{sid}' housing mount contract position is invalid",
+                            "housing_mount_layout")
         # frames_realized.rpy is an authoring hint and is often rotated incorrectly.
         # Resolve the actual rotating shaft/carrier link (mount frames are frequently on a
         # fixed bearing whose spin_axis is zero), then transform its axis into sub-root.
@@ -124,17 +157,66 @@ def build_cross_sub_problem(plan, subs, seed, gear_ids, base_id, *,
                     if (getattr(l,'dof','')=='spin' or 'shaft' in l.name.lower())
                     and np.linalg.norm(np.asarray(getattr(l,'spin_axis',(0,0,0)),float))>1e-9]
         carrier=next((l for l in candidates if 'shaft' in l.name.lower()),candidates[0] if candidates else None)
-        if carrier is None: raise SlvsSolveError(f"stage '{sid}' has no built shaft axis")
-        local_axis, _shaft_center = link_in_root(subs[sid], carrier.name)
-        local_axis = _unit(local_axis)
-        stage = RigidStageSpec(sid, np.asarray(seed[sid]).tolist(),
+        if carrier is None:
+            preflight_error(f"stage '{sid}' has no built shaft axis", "housing_mount_layout")
+        try:
+            local_axis, _shaft_center = link_in_root(subs[sid], carrier.name)
+            local_axis = _unit(local_axis)
+        except Exception as e:
+            preflight_error(f"stage '{sid}' built shaft axis is invalid: {e}",
+                            "housing_mount_layout")
+        seed_T = np.asarray(seed.get(sid), float)
+        if not _se3(seed_T):
+            preflight_error(f"stage '{sid}' has an invalid seed transform", "housing_mount_layout")
+        stage = RigidStageSpec(sid, seed_T.tolist(),
                                tuple(T_local_anchor[:3, 3]), tuple(local_axis),
                                tuple(T_target[:3, 3]), tuple(target_axis), {},
                                seam.id, seam.parent_frame, seam.child_frame)
         stages[sid] = stage
+        stage_carriers[sid] = carrier.name
+        mount_records.append({
+            "sid": sid, "seam": seam, "stage": stage,
+            "T_local_anchor": T_local_anchor, "T_target": T_target,
+            "target_axis": target_axis, "local_axis": local_axis,
+            "diagnostic": {"stage": sid, "seam": seam.id,
+                           "housing_frame": seam.parent_frame,
+                           "shaft_frame": seam.child_frame,
+                           "contract_position_m": contract_target.tolist(),
+                           "realized_position_m": T_target[:3, 3].tolist(),
+                           "contract_axis": target_axis.tolist()}})
+
+    mount_pairs = []
+    for i, a in enumerate(mount_records):
+        for b in mount_records[i + 1:]:
+            ca = np.asarray(a["diagnostic"]["contract_position_m"])
+            cb = np.asarray(b["diagnostic"]["contract_position_m"])
+            ra = np.asarray(a["diagnostic"]["realized_position_m"])
+            rb = np.asarray(b["diagnostic"]["realized_position_m"])
+            contract_sep = float(np.linalg.norm(cb - ca))
+            realized_sep = float(np.linalg.norm(rb - ra))
+            collapsed = (contract_sep > _MOUNT_LAYOUT_TOL_M and
+                         realized_sep <= _MOUNT_LAYOUT_TOL_M)
+            pair = {"stages": [a["sid"], b["sid"]],
+                    "housing_frames": [a["seam"].parent_frame, b["seam"].parent_frame],
+                    "contract_separation_mm": contract_sep * 1000.0,
+                    "realized_separation_mm": realized_sep * 1000.0,
+                    "collapsed": collapsed}
+            mount_pairs.append(pair)
+            if collapsed:
+                preflight_error("housing mount frames "
+                                f"'{a['seam'].parent_frame}' and '{b['seam'].parent_frame}' "
+                                f"collapsed to {realized_sep*1000:.3f} mm despite a "
+                                f"{contract_sep*1000:.3f} mm contract separation",
+                                "housing_mount_layout", mount_pairs)
+
+    for record in mount_records:
+        sid, seam, stage = record["sid"], record["seam"], record["stage"]
+        T_local_anchor, T_target = record["T_local_anchor"], record["T_target"]
+        target_axis, local_axis = record["target_axis"], record["local_axis"]
         O, A = f"{sid}:anchor", f"{sid}:axis_end"
-        seed_O = (np.asarray(seed[sid]) @ np.append(T_local_anchor[:3, 3], 1.0))[:3]
-        seed_A = seed_O + _GAUGE_M * (np.asarray(seed[sid])[:3, :3] @ local_axis)
+        seed_T = np.asarray(stage.seed_transform)
+        seed_O = (seed_T @ np.append(T_local_anchor[:3, 3], 1.0))[:3]
+        seed_A = seed_O + _GAUGE_M * (seed_T[:3, :3] @ local_axis)
         entities.extend([EntitySpec(O, EntityKind.POINT_3D, tuple(seed_O)),
                          EntitySpec(A, EntityKind.POINT_3D, tuple(seed_A)),
                          EntitySpec(f"{sid}:axis", EntityKind.LINE_3D, refs=(O, A))])
@@ -155,6 +237,9 @@ def build_cross_sub_problem(plan, subs, seed, gear_ids, base_id, *,
                            (A, target_end), provenance={"seam": seam.id}),
         ])
 
+    problem_diagnostics = {"phase": "ready", "mount_layout": {
+        "tolerance_mm": _MOUNT_LAYOUT_TOL_M * 1000.0,
+        "mounts": [r["diagnostic"] for r in mount_records], "pairs": mount_pairs}}
     gear_pairs = []
     for seam in plan.seams:
         if seam.kind != "power":
@@ -166,8 +251,25 @@ def build_cross_sub_problem(plan, subs, seed, gear_ids, base_id, *,
         rp, rc = gear_radius(gp), gear_radius(gc)
         if not rp or not rc:
             raise SlvsSolveError(f"power seam '{seam.id}' missing pitch radii")
+        wp, wc = gear_face_width(gp), gear_face_width(gc)
+        op, oc = gear_face_center_offset(gp), gear_face_center_offset(gc)
+        if not wp or not wc or op is None or oc is None:
+            problem = AssemblyConstraintProblem(
+                stages=stages, entities=entities, constraints=constraints,
+                gear_pairs=gear_pairs, expected_dof=0, base_id=base_id,
+                diagnostics={**problem_diagnostics, "phase": "preflight",
+                             "failure_kind": "gear_face_geometry",
+                             "gear_face_geometry": {"seam": seam.id,
+                                "parent_part": gp.name, "child_part": gc.name,
+                                "parent_face_width_mm": wp,
+                                "child_face_width_mm": wc,
+                                "parent_face_center_offset_mm": op,
+                                "child_face_center_offset_mm": oc}})
+            raise SlvsSolveError(f"power seam '{seam.id}' missing unambiguous gear face geometry",
+                                 problem=problem)
         paxis, pcenter = link_in_root(pa, gp.name)
         caxis, ccenter = link_in_root(ch, gc.name)
+        gear_axis_signs = {}
         for sid, stage, axis, center, gear in ((seam.parent_sub, stages[seam.parent_sub], paxis, pcenter, gp),
                                                 (seam.child_sub, stages[seam.child_sub], caxis, ccenter, gc)):
             la = np.asarray(stage.local_axis)
@@ -175,9 +277,25 @@ def build_cross_sub_problem(plan, subs, seed, gear_ids, base_id, *,
             axial = float(np.dot(radial, la))
             off = radial - axial * la
             if np.linalg.norm(off) > 1e-4:
-                raise SlvsSolveError(f"gear '{sid}.{gear.name}' center is not on its stage shaft axis")
-            if abs(abs(float(np.dot(_unit(axis), la))) - 1.0) > 1e-4:
+                problem = AssemblyConstraintProblem(
+                    stages=stages, entities=entities, constraints=constraints,
+                    gear_pairs=gear_pairs, expected_dof=0, base_id=base_id,
+                    diagnostics={**problem_diagnostics, "phase": "preflight",
+                      "failure_kind": "gear_off_shaft_axis",
+                      "gear_off_shaft_axis": {"seam": seam.id, "sub_id": sid,
+                        "part": gear.name, "carrier": stage_carriers.get(sid, ""),
+                        "gear_center_local_m": np.asarray(center).tolist(),
+                        "shaft_anchor_local_m": list(stage.local_anchor_m),
+                        "stage_axis_local": la.tolist(),
+                        "radial_offset_mm": (off * 1000.0).tolist(),
+                        "radial_distance_mm": float(np.linalg.norm(off) * 1000.0)}})
+                raise SlvsSolveError(
+                    f"gear '{sid}.{gear.name}' center is not on its stage shaft axis",
+                    problem=problem)
+            axis_dot = float(np.dot(_unit(axis), la))
+            if abs(abs(axis_dot) - 1.0) > 1e-4:
                 raise SlvsSolveError(f"gear '{sid}.{gear.name}' axis disagrees with its stage shaft axis")
+            gear_axis_signs[sid] = 1.0 if axis_dot >= 0 else -1.0
             stage.gear_centers_local_m[gear.name] = tuple(center)
             eid = f"{sid}:gear:{gear.name}"
             seed_center = (np.asarray(seed[sid]) @ np.append(center, 1.0))[:3]
@@ -203,9 +321,16 @@ def build_cross_sub_problem(plan, subs, seed, gear_ids, base_id, *,
                            "child_mesh_frame": seam.child_frame,
                            "parent_pitch_radius_mm": float(rp),
                            "child_pitch_radius_mm": float(rc),
+                           "parent_face_width_mm": float(wp),
+                           "child_face_width_mm": float(wc),
+                           "parent_face_center_offset_mm": float(op),
+                           "child_face_center_offset_mm": float(oc),
+                           "parent_gear_axis_sign": gear_axis_signs[seam.parent_sub],
+                           "child_gear_axis_sign": gear_axis_signs[seam.child_sub],
                            "target_m": target})
     return AssemblyConstraintProblem(stages=stages, entities=entities, constraints=constraints,
-                                     gear_pairs=gear_pairs, expected_dof=0, base_id=base_id)
+                                     gear_pairs=gear_pairs, expected_dof=0, base_id=base_id,
+                                     diagnostics=problem_diagnostics)
 
 
 def solve_problem(problem):
@@ -272,18 +397,37 @@ def reconstruct_placements(problem, result):
     return out
 
 
+def _gear_pair_geometry(problem, placements, gp):
+    ps, cs = problem.stages[gp["parent_sub"]], problem.stages[gp["child_sub"]]
+    pn, cn = gp["parent_part"], gp["child_part"]
+    Tp, Tc = placements[gp["parent_sub"]], placements[gp["child_sub"]]
+    pa = (Tp @ np.append(ps.gear_centers_local_m[pn], 1.0))[:3]
+    pb = (Tc @ np.append(cs.gear_centers_local_m[cn], 1.0))[:3]
+    paxis = _unit(Tp[:3, :3] @ np.asarray(ps.local_axis))
+    caxis = _unit(Tc[:3, :3] @ np.asarray(cs.local_axis))
+    axis_dot = float(np.dot(paxis, caxis))
+    axis_angle = math.degrees(math.acos(np.clip(abs(axis_dot), -1.0, 1.0)))
+    pface = pa + paxis * gp.get("parent_gear_axis_sign", 1.0) * \
+        gp.get("parent_face_center_offset_mm", 0.0) / 1000.0
+    cface = pb + caxis * gp.get("child_gear_axis_sign", 1.0) * \
+        gp.get("child_face_center_offset_mm", 0.0) / 1000.0
+    origin_delta = pb - pa
+    d = cface - pface
+    axial = float(np.dot(d, paxis))
+    radial = float(np.linalg.norm(origin_delta - np.dot(origin_delta, paxis) * paxis))
+    wp = gp["parent_face_width_mm"] / 1000.0
+    wc = gp["child_face_width_mm"] / 1000.0
+    face_overlap = max(0.0, min(wp / 2.0, axial + wc / 2.0) -
+                       max(-wp / 2.0, axial - wc / 2.0))
+    return ps, cs, pn, cn, pa, pb, radial, axial, face_overlap, axis_angle, axis_dot
+
+
 def diagnose_authoritative_solution(problem, placements, result):
     pairs = []
     for gp in problem.gear_pairs:
-        ps, cs = problem.stages[gp["parent_sub"]], problem.stages[gp["child_sub"]]
-        pn, cn = gp["parent_part"], gp["child_part"]
-        pa = (placements[gp["parent_sub"]] @ np.append(ps.gear_centers_local_m[pn], 1.0))[:3]
-        pb = (placements[gp["child_sub"]] @ np.append(cs.gear_centers_local_m[cn], 1.0))[:3]
-        d = pb - pa
-        axis = _unit(placements[gp["parent_sub"]][:3, :3] @ np.asarray(ps.local_axis))
-        axial = float(np.dot(d, axis))
-        radial = float(np.linalg.norm(d - axial * axis))
-        actual = float(np.linalg.norm(d))
+        ps, cs, pn, cn, pa, pb, radial, axial, overlap, axis_angle, axis_dot = \
+            _gear_pair_geometry(problem, placements, gp)
+        actual = float(np.linalg.norm(pb - pa))
         # Spur-gear center distance is measured perpendicular to the common shaft
         # axis. Axial offset changes face overlap, not pitch-center distance.
         pairs.append({**gp, "required_distance_mm": gp["target_m"] * 1000.0,
@@ -291,7 +435,19 @@ def diagnose_authoritative_solution(problem, placements, result):
                       "signed_residual_mm": (radial - gp["target_m"]) * 1000.0,
                       "absolute_residual_mm": abs(radial - gp["target_m"]) * 1000.0,
                       "radial_distance_mm": radial * 1000.0, "axial_delta_mm": axial * 1000.0,
+                      "face_overlap_mm": overlap * 1000.0,
+                      "minimum_face_overlap_mm": _MIN_FACE_OVERLAP_M * 1000.0,
+                      "axis_angle_error_deg": axis_angle,
+                      "axis_direction_dot": axis_dot,
                       "parent_world_center_m": pa.tolist(), "child_world_center_m": pb.tolist(),
+                      "parent_world_face_center_m": (pa +
+                          _unit(placements[gp["parent_sub"]][:3, :3] @ np.asarray(ps.local_axis)) *
+                          gp.get("parent_gear_axis_sign", 1.0) *
+                          gp.get("parent_face_center_offset_mm", 0.0) / 1000.0).tolist(),
+                      "child_world_face_center_m": (pb +
+                          _unit(placements[gp["child_sub"]][:3, :3] @ np.asarray(cs.local_axis)) *
+                          gp.get("child_gear_axis_sign", 1.0) *
+                          gp.get("child_face_center_offset_mm", 0.0) / 1000.0).tolist(),
                       "parent_local_offset_m": list(ps.gear_centers_local_m[pn]),
                       "child_local_offset_m": list(cs.gear_centers_local_m[cn])})
     return pairs
@@ -330,6 +486,7 @@ def failure_report_dict(problem, result, placements, error):
                      "shaft_frame": st.shaft_frame,
                      "gear_centers_local_m": {k:list(v) for k,v in st.gear_centers_local_m.items()}}
                for sid,st in problem.stages.items()} if problem else {})
+    diagnostics = dict(problem.diagnostics or {}) if problem else {}
     core = {"backend": "slvs", "authority": "libslvs", "status": "failed",
             "error": str(error), "solver": {"status": result.status if result else "not_run",
             "raw_status": result.raw_status if result else -1, "dof": result.dof if result else -1,
@@ -337,7 +494,7 @@ def failure_report_dict(problem, result, placements, error):
             "failed_constraint_ids": result.failed_constraint_ids if result else [],
             "constraint_handles": ((result.diagnostics or {}).get("constraint_handles", {}) if result else {})},
             "base_id": problem.base_id if problem else "", "stages": stages,
-            "gear_pairs": pairs}
+            "gear_pairs": pairs, "diagnostics": diagnostics}
     raw = json.dumps(core, sort_keys=True, separators=(",", ":")).encode()
     core["failure_id"] = "slvs_" + hashlib.sha256(raw).hexdigest()[:16]
     return core
@@ -357,19 +514,22 @@ def validate_authoritative_solution(problem, placements, result):
     for gp in problem.gear_pairs:
         # Validate the RECONSTRUCTED rigid stages, not the point variables alone. This
         # catches any loss introduced when mapping solved anchor/axis back to root SE(3).
-        ps = problem.stages[gp["parent_sub"]]
-        cs = problem.stages[gp["child_sub"]]
-        pn = gp["parent_entity"].split(":gear:", 1)[1]
-        cn = gp["child_entity"].split(":gear:", 1)[1]
-        pa = (placements[gp["parent_sub"]] @ np.append(ps.gear_centers_local_m[pn], 1.0))[:3]
-        pb = (placements[gp["child_sub"]] @ np.append(cs.gear_centers_local_m[cn], 1.0))[:3]
-        d = pb - pa
-        axis = _unit(placements[gp["parent_sub"]][:3, :3] @ np.asarray(ps.local_axis))
-        radial = float(np.linalg.norm(d - np.dot(d, axis) * axis))
+        _ps, _cs, _pn, _cn, _pa, _pb, radial, _axial, overlap, axis_angle, _axis_dot = \
+            _gear_pair_geometry(problem, placements, gp)
         err = abs(radial - gp["target_m"])
         residuals[gp["seam_id"]] = err
-        if err > _POS_TOL_M: errors.append(f"gear_distance:{gp['seam_id']}:{err*1000:.3f}mm")
-    if errors: raise SlvsSolveError("; ".join(errors))
+        if err > _POS_TOL_M:
+            errors.append(f"gear_distance:{gp['seam_id']}:{err*1000:.3f}mm")
+        if axis_angle > _AXIS_TOL_DEG:
+            errors.append(f"gear_axis_alignment:{gp['seam_id']}:{axis_angle:.3f}deg")
+        if overlap <= _MIN_FACE_OVERLAP_M:
+            errors.append(f"gear_face_overlap:{gp['seam_id']}:{overlap*1000:.3f}mm")
+    if errors:
+        problem.diagnostics.update({"phase": "post_solve", "failure_kind":
+            ("gear_face_overlap" if any(x.startswith("gear_face_overlap:") for x in errors)
+             else "gear_axis_alignment" if any(x.startswith("gear_axis_alignment:") for x in errors)
+             else "gear_distance")})
+        raise SlvsSolveError("; ".join(errors))
     return residuals
 
 
@@ -383,7 +543,10 @@ def solve_cross_sub_placements(plan, subs, seed, gear_ids, base_id, *, helpers, 
         placements = reconstruct_placements(problem, result)
         residuals = validate_authoritative_solution(problem, placements, result)
     except SlvsSolveError as e:
-        report = failure_report_dict(problem, result, placements, e)
+        problem = e.problem or problem
+        result = e.result or result
+        placements = e.placements or placements
+        report = e.failure_report or failure_report_dict(problem, result, placements, e)
         raise SlvsSolveError(str(e), problem=problem, result=result, placements=placements,
                              failure_report=report) from e
     log_fn(f"[slvs] authoritative solve OK: stages={len(placements)} constraints={len(problem.constraints)} dof={result.dof}")
@@ -397,6 +560,7 @@ def report_dict(placement, problem):
             "failed_constraints": placement.solve.failed_constraint_ids,
             "entity_count": len(problem.entities), "constraint_count": len(problem.constraints),
             "base_id": problem.base_id, "gear_pairs": pairs,
+            "diagnostics": problem.diagnostics,
             "gear_residuals_m": placement.residuals,
             "placements": {k: np.asarray(v).tolist() for k, v in placement.placements.items()}}
     core["failure_id"] = "slvs_" + hashlib.sha256(json.dumps(core, sort_keys=True,

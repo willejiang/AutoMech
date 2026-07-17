@@ -267,6 +267,8 @@ def mjcf_skeleton_parser(mjcf_xml: str, parts_json: str) -> KinematicModel:
             root_link = name
 
         _dof_from_body(body, link)
+        from .manager import _canonicalize_link_axis
+        _canonicalize_link_axis(link)
         xyz = _xyz_from_pos(body.get("pos"), what=f"body '{name}'")
         rpy = _rpy_from_quat(body.get("quat"))
         # A ROOT (parent "") at the origin with identity orientation needs NO pose — that

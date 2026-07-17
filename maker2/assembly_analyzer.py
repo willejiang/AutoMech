@@ -8,6 +8,11 @@ from .prompts.assembly_analyzer_prompt import ANALYZER_SYSTEM
 from .tools import KB_SEARCH_TOOL, _kb_bound, run_tool_loop
 
 MAX_FILE=512*1024; MAX_LINES=400; MAX_RESULT=32*1024; MAX_MATCHES=60; MAX_GLOB=200
+
+
+def analyzer_trace_path(session_root,source,failure_id,attempt):
+ safe_id=re.sub(r'[^A-Za-z0-9_.-]+','_',str(failure_id or 'unknown'))
+ return os.path.join(session_root,'analyzer_traces',f'{source}_{safe_id}_attempt_{attempt}.json')
 _DENY=re.compile(r'(^|[\\/])(\.git|__pycache__)([\\/]|$)|(^|[_.-])(env|token|secret|credential)|\.(pem|key|pyc)$',re.I)
 
 def _tool(name,desc,props,required=()):
@@ -24,7 +29,8 @@ def _resolver(root,source=False):
   return p
  return r
 
-def analyze_failure(session_root,report,candidates,settings,log_fn=print,report_path=""):
+def analyze_failure(session_root,report,candidates,settings,log_fn=print,report_path="",
+                    source="slvs",attempt=1):
  ar=_resolver(session_root); sr=_resolver(os.path.dirname(__file__),True); calls=[]; seen=[]; cmap={c.candidate_id:c for c in candidates}
  def rec(name,fn):
   def w(**kw):
@@ -68,7 +74,36 @@ def analyze_failure(session_root,report,candidates,settings,log_fn=print,report_
   return '\n'.join(out)
  def list_candidates():return json.dumps([c.to_dict() for c in candidates],indent=2)
  def simulate_candidate(candidate_id):
-  c=cmap.get(candidate_id);return json.dumps(c.to_dict() if c else {'error':'unknown candidate'},indent=2)
+  c=cmap.get(candidate_id)
+  if c is None:return json.dumps({'error':'unknown candidate'},indent=2)
+  out=c.to_dict();out['simulated']=False;out['target_failure_cleared']=False
+  if c.allowed and c.candidate_type=='gear_pose_axial_alignment':
+   seam=next(iter(c.predicted_residuals_mm),None)
+   pair=next((p for p in report.get('gear_pairs',[]) if p.get('seam_id')==seam),None)
+   if pair:
+    before=float(pair.get('face_overlap_mm',0.0))
+    after=min(float(pair.get('parent_face_width_mm',0.0)),
+              float(pair.get('child_face_width_mm',0.0)))
+    minimum=float(pair.get('minimum_face_overlap_mm',0.1))
+    out.update({'simulated':True,'simulation_kind':'analytic_rigid_pose',
+      'target_seam':seam,'before_face_overlap_mm':before,
+      'after_face_overlap_mm':after,'minimum_face_overlap_mm':minimum,
+      'target_failure_cleared':after>minimum,
+      'radial_distance_mm_before':pair.get('radial_distance_mm'),
+      'radial_distance_mm_after':pair.get('radial_distance_mm'),
+      'untargeted_seams':'unchanged; authoritative solver reruns after application'})
+  elif c.allowed and c.candidate_type=='housing_multibore_pattern':
+   targets=set(c.target.get('target_violation_ids',[]))
+   known={v.get('violation_id') for v in report.get('violations',[])}
+   out.update({'simulated':True,'simulation_kind':'analytic_physical_bore_rebuild',
+     'target_failure_cleared':bool(targets) and targets<=known,
+     'target_violation_ids':sorted(targets),'frame_bore_mapping':c.target.get('frame_bore_mapping',[]),
+     'old_physical_centers':c.old_value,'new_physical_centers':c.new_value,
+     'preserved_cutter_properties':c.target.get('cutter_properties',{}),
+     'margin_checks':c.target.get('margin_checks',[]),'web_checks':c.target.get('web_checks',[]),
+     'piecewise_rebuild_scope':c.rebuild_scope,
+     'postcondition':'authoritative assembly and real-solid precheck must rerun'})
+  return json.dumps(out,indent=2)
  tools=[_tool('list_artifacts','List current run artifacts',{'pattern':{'type':'string'},'limit':{'type':'integer'}}),
  _tool('read_json','Read JSON artifact or pointer',{'path':{'type':'string'},'pointer':{'type':'string'}},['path']),
  _tool('read_text','Read artifact text lines',{'path':{'type':'string'},'offset':{'type':'integer'},'limit':{'type':'integer'}},['path']),
@@ -77,8 +112,17 @@ def analyze_failure(session_root,report,candidates,settings,log_fn=print,report_
  _tool('read_source','Read maker2 source lines',{'path':{'type':'string'},'offset':{'type':'integer'},'limit':{'type':'integer'}},['path']),
  _tool('list_repair_candidates','List Python-generated candidates',{}),_tool('simulate_candidate','Inspect a candidate',{'candidate_id':{'type':'string','enum':list(cmap)}},['candidate_id']),KB_SEARCH_TOOL]
  ex={'list_artifacts':rec('list_artifacts',list_artifacts),'read_json':rec('read_json',read_json),'read_text':rec('read_text',read_text),'search_log':rec('search_log',search_log),'search_files':rec('search_files',search_files),'read_source':rec('read_source',lambda path,offset=0,limit=200:read_text(path,offset,limit,True)),'list_repair_candidates':rec('list_repair_candidates',lambda:list_candidates()),'simulate_candidate':rec('simulate_candidate',simulate_candidate),'kb_search':rec('kb_search',_kb_bound('analyzer'))}
- rel_report=(os.path.relpath(report_path,session_root) if report_path else 'assembly_constraint_report.json')
- conv=Conversation();conv.add_user_message(f"Failure {report.get('failure_id')}. Report path: {rel_report}. Investigate current session with tools before deciding.")
+ rel_report=(os.path.relpath(report_path,session_root) if report_path else
+             ('precheck_report.json' if source=='precheck' else 'assembly_constraint_report.json'))
+ sequential=(("The router can apply one candidate, rerun the authoritative solver and real-solid "
+              "precheck, then accept only strict improvement with no new violations. Select only "
+              "a simulated physical-bore candidate that targets the reported collisions.") if source=='precheck' else
+             ("The router can apply one candidate, rerun the authoritative solver, then ask you "
+              "again for the next independent seam. Select one improving allowed candidate now; "
+              "do not require it to clear every current seam in one step."))
+ conv=Conversation();conv.add_user_message(
+  f"Failure source {source}; ID {report.get('failure_id')}. Report path: {rel_report}. "
+  f"Investigate current session with tools before deciding. {sequential}")
  client=settings.make_client(getattr(settings,'analyzer_max_tokens',16000),thinking='extended');text=run_tool_loop(client,conv,ANALYZER_SYSTEM,tools,ex,max_rounds=getattr(settings,'solver_analyzer_max_rounds',12),log_fn=log_fn,text_only_nudge='Call a read/search tool now; do not answer before investigating.')
  # Tool budget may end on a preamble/tool call. Force one final no-tools synthesis turn.
  try:
@@ -90,5 +134,8 @@ def analyze_failure(session_root,report,candidates,settings,log_fn=print,report_
  except Exception:decision={'failure_id':report.get('failure_id'),'decision':'escalate','classification':'topology','root_cause':'Analyzer returned invalid JSON','layer':'boss_topology','culprits':[],'evidence':[],'selected_candidate_id':None,'confidence':'low','explanation':text,'escalation_reason':'invalid_output'}
  cid=decision.get('selected_candidate_id');
  if decision.get('decision')=='repair' and (cid not in cmap or not cmap[cid].allowed):decision['decision']='escalate';decision['selected_candidate_id']=None;decision['escalation_reason']='invalid_or_blocked_candidate'
- trace={'failure_id':report.get('failure_id'),'calls':calls,'seen':seen,'decision':decision};json.dump(trace,open(os.path.join(session_root,'analyzer_trace.json'),'w',encoding='utf-8'),indent=2)
+ trace={'source':source,'attempt':attempt,'failure_id':report.get('failure_id'),'calls':calls,'seen':seen,'decision':decision}
+ trace_path=analyzer_trace_path(session_root,source,report.get('failure_id'),attempt)
+ os.makedirs(os.path.dirname(trace_path),exist_ok=True)
+ json.dump(trace,open(trace_path,'w',encoding='utf-8'),indent=2)
  return decision

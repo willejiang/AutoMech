@@ -84,6 +84,14 @@ def _parse_color(value) -> tuple:
     return tuple(min(1.0, max(0.0, n)) for n in nums)
 
 
+def _canonicalize_link_axis(link: LinkSpec) -> LinkSpec:
+    """Round/axial geometry, inferred ports and motion share one local +Z truth."""
+    from .mate_solver import is_axial_part
+    if is_axial_part(link):
+        link.spin_axis = (0.0, 0.0, 1.0)
+    return link
+
+
 def _link_from_dict(d: dict, idx: int) -> LinkSpec:
     if not isinstance(d, dict):
         raise ValueError(f"links[{idx}] is not an object")
@@ -98,7 +106,7 @@ def _link_from_dict(d: dict, idx: int) -> LinkSpec:
     if dof not in _VALID_DOF:
         raise ValueError(f"links[{idx}] '{name}': dof '{dof}' invalid "
                          f"(expected one of {sorted(_VALID_DOF)})")
-    return LinkSpec(
+    return _canonicalize_link_axis(LinkSpec(
         name=name.strip(),
         description=str(desc),
         shape_hint=str(d.get("shape_hint") or ""),
@@ -109,7 +117,7 @@ def _link_from_dict(d: dict, idx: int) -> LinkSpec:
         spin_axis=_as_tuple3(d.get("spin_axis"), (0.0, 0.0, 1.0)),
         driver=bool(d.get("driver", False)),
         material=str(d.get("material") or "steel").strip().lower() or "steel",
-    )
+    ))
 
 
 def _pose_from_dict(d: dict, idx: int) -> PoseSpec:

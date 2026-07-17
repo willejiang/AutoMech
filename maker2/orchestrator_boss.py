@@ -1240,39 +1240,62 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                     and getattr(settings, "enable_solver_failure_analyzer", True)
                     and getattr(e, "failure_report", None)):
                 try:
-                    from .assembly_repair import generate_repair_candidates, apply_candidate
+                    from .assembly_repair import (LocalRepairTransaction, apply_candidate,
+                                                  generate_repair_candidates)
                     from .assembly_analyzer import analyze_failure
-                    candidates = generate_repair_candidates(e.failure_report, plan, subs, settings)
-                    decision = analyze_failure(session_root, e.failure_report, candidates,
-                                               settings, log, report_path=e.report_path)
-                    log("ARTIFACT_JSON:" + json.dumps({
-                        "kind": "assembly_analysis", "iter": it,
-                        "failure_id": e.failure_report.get("failure_id"),
-                        "decision": decision}))
-                    cid = (decision.get("selected_candidate_id")
-                           if decision.get("decision") == "repair" else None)
-                    cand = next((c for c in candidates
-                                 if c.candidate_id == cid and c.allowed), None)
-                    if cand is not None:
-                        from .assembly_repair import LocalRepairTransaction
-                        log(f"[analyzer] selected {cand.candidate_id}: {cand.rationale}")
-                        affected=cand.rebuild_scope.get("subassemblies",[])
-                        with LocalRepairTransaction(subs,affected) as tx:
+                    max_local=max(1,int(getattr(settings,"solver_local_repair_max_attempts",2)))
+                    current_report=e.failure_report
+                    current_report_path=e.report_path
+                    initial=generate_repair_candidates(current_report,plan,subs,settings)
+                    affected=sorted({sid for c in initial if c.allowed
+                                     for sid in c.rebuild_scope.get("subassemblies",[])})
+                    with LocalRepairTransaction(subs,affected) as tx:
+                        for local_attempt in range(1,max_local+1):
+                            candidates=(initial if local_attempt==1 else
+                                generate_repair_candidates(current_report,plan,subs,settings))
+                            decision=analyze_failure(session_root,current_report,candidates,
+                                settings,log,report_path=current_report_path,
+                                source="slvs",attempt=local_attempt)
+                            log("ARTIFACT_JSON:"+json.dumps({
+                                "kind":"assembly_analysis","iter":it,
+                                "local_attempt":local_attempt,
+                                "failure_id":current_report.get("failure_id"),
+                                "decision":decision}))
+                            cid=(decision.get("selected_candidate_id")
+                                 if decision.get("decision")=="repair" else None)
+                            cand=next((c for c in candidates
+                                       if c.candidate_id==cid and c.allowed),None)
+                            if cand is None:
+                                log(f"[analyzer] escalation: {decision.get('escalation_reason') or decision.get('root_cause')}")
+                                break
+                            if any(sid not in affected for sid in
+                                   cand.rebuild_scope.get("subassemblies",[])):
+                                raise RuntimeError("candidate escaped the local repair transaction scope")
+                            log(f"[analyzer] attempt {local_attempt}/{max_local} selected "
+                                f"{cand.candidate_id}: {cand.rationale}")
+                            apply_candidate(cand,subs,settings,log)
+                            repair_ctx=make_run_context(plan.name,session_root,
+                                run_dir=os.path.join(assembly_ctx.run_dir,
+                                                     f"local_repair_{local_attempt}"))
                             try:
-                                apply_candidate(cand, subs, settings, log)
-                                repair_ctx = make_run_context(
-                                    plan.name, session_root,
-                                    run_dir=os.path.join(assembly_ctx.run_dir, "local_repair_1"))
-                                final = assembler.assemble(plan, subs, repair_ctx,
-                                                           settings=settings, log_fn=log)
-                                assembly_ctx = repair_ctx
-                                repaired = True
-                                log(f"[analyzer] localized repair solved in iteration {it}")
-                            except Exception:
-                                tx.rollback()
-                                raise
-                    else:
-                        log(f"[analyzer] escalation: {decision.get('escalation_reason') or decision.get('root_cause')}")
+                                final=assembler.assemble(plan,subs,repair_ctx,
+                                                         settings=settings,log_fn=log)
+                            except assembler.AssemblerError as next_error:
+                                if (getattr(next_error,"kind","")!="authoritative_solver"
+                                        or not getattr(next_error,"failure_report",None)):
+                                    raise
+                                current_report=next_error.failure_report
+                                current_report_path=next_error.report_path
+                                log(f"[analyzer] attempt {local_attempt} improved but "
+                                    f"authoritative validation still fails: {next_error}")
+                                continue
+                            assembly_ctx=repair_ctx
+                            repaired=True
+                            log(f"[analyzer] localized repair solved in iteration {it} "
+                                f"after {local_attempt} attempt(s)")
+                            break
+                        if not repaired:
+                            tx.rollback()
                 except Exception as ae:
                     log(f"[analyzer] local repair failed safely ({type(ae).__name__}: {ae})")
             if not repaired:
@@ -1407,10 +1430,88 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
         log("[assembled] support gate PASSED (weld chain; grounding warned only)")
 
         rep = precheck_mod.precheck(plan, subs, assembly_ctx.urdf_path, log_fn=log)
+        precheck_path = os.path.join(assembly_ctx.run_dir, "precheck_report.json")
+        os.makedirs(assembly_ctx.run_dir, exist_ok=True)
+        with open(precheck_path, "w", encoding="utf-8") as f:
+            json.dump(rep.to_dict(), f, indent=2)
         log("ARTIFACT_JSON:" + json.dumps({
-            "kind": "precheck", "iter": it, "ok": rep.ok,
-            "violations": [{"kind": v.kind, "severity": v.severity,
-                            "sub_id": v.sub_id, "detail": v.detail} for v in rep.violations]}))
+            "kind": "precheck", "iter": it, **rep.to_dict()}))
+        if not rep.ok and getattr(settings, "enable_precheck_failure_analyzer", True):
+            repaired_precheck = False
+            try:
+                from .assembly_repair import (LocalRepairTransaction, apply_candidate,
+                    generate_precheck_repair_candidates, precheck_repair_acceptance)
+                from .assembly_analyzer import analyze_failure
+                baseline = rep.to_dict()
+                candidates = generate_precheck_repair_candidates(
+                    baseline, plan, subs, assembly_ctx, settings)
+                if not candidates:
+                    raise RuntimeError("no proven precheck repair candidate")
+                affected = sorted({sid for c in candidates if c.allowed
+                                   for sid in c.rebuild_scope.get("subassemblies", [])})
+                max_local = max(1, int(getattr(settings, "precheck_local_repair_max_attempts", 2)))
+                with LocalRepairTransaction(subs, affected) as tx:
+                    for local_attempt in range(1, max_local + 1):
+                        attempt_ctx = make_run_context(plan.name, session_root,
+                            run_dir=os.path.join(assembly_ctx.run_dir,
+                                                 f"precheck_local_repair_{local_attempt}"))
+                        os.makedirs(attempt_ctx.run_dir, exist_ok=True)
+                        with open(os.path.join(attempt_ctx.run_dir, "candidate_set.json"),
+                                  "w", encoding="utf-8") as f:
+                            json.dump([c.to_dict() for c in candidates], f, indent=2)
+                        decision = analyze_failure(session_root, baseline, candidates, settings,
+                            log, report_path=precheck_path, source="precheck",
+                            attempt=local_attempt)
+                        with open(os.path.join(attempt_ctx.run_dir, "analyzer_decision.json"),
+                                  "w", encoding="utf-8") as f:
+                            json.dump(decision, f, indent=2)
+                        cid = (decision.get("selected_candidate_id")
+                               if decision.get("decision") == "repair" else None)
+                        cand = next((c for c in candidates
+                                     if c.candidate_id == cid and c.allowed), None)
+                        if cand is None:
+                            log(f"[precheck-analyzer] escalation: "
+                                f"{decision.get('escalation_reason') or decision.get('root_cause')}")
+                            break
+                        if any(sid not in affected for sid in
+                               cand.rebuild_scope.get("subassemblies", [])):
+                            raise RuntimeError("candidate escaped the precheck transaction scope")
+                        apply_candidate(cand, subs, settings, log)
+                        changed_links=set(cand.rebuild_scope.get("links", []))
+                        declared_links=set(cand.target.get("physical_links", []))
+                        if changed_links != declared_links:
+                            raise RuntimeError("candidate rebuild scope does not cover every changed link")
+                        repaired_final = assembler.assemble(plan, subs, attempt_ctx,
+                                                             settings=settings, log_fn=log)
+                        next_rep = precheck_mod.precheck(
+                            plan, subs, attempt_ctx.urdf_path, log_fn=log)
+                        next_report = next_rep.to_dict()
+                        with open(os.path.join(attempt_ctx.run_dir, "precheck_report.json"),
+                                  "w", encoding="utf-8") as f:
+                            json.dump(next_report, f, indent=2)
+                        acceptance = precheck_repair_acceptance(baseline, next_report, cand)
+                        with open(os.path.join(attempt_ctx.run_dir, "acceptance.json"),
+                                  "w", encoding="utf-8") as f:
+                            json.dump(acceptance, f, indent=2)
+                        if not acceptance["accepted"]:
+                            log(f"[precheck-analyzer] attempt {local_attempt} rejected: "
+                                f"{acceptance}")
+                            tx.rollback()
+                            break
+                        final = repaired_final
+                        assembly_ctx = attempt_ctx
+                        rep = next_rep
+                        precheck_path = os.path.join(attempt_ctx.run_dir,
+                                                     "precheck_report.json")
+                        repaired_precheck = True
+                        log(f"[precheck-analyzer] localized physical repair accepted in "
+                            f"iteration {it}, attempt {local_attempt}")
+                        break
+                    if not repaired_precheck:
+                        tx.rollback()
+            except Exception as ae:
+                log(f"[precheck-analyzer] local repair failed safely "
+                    f"({type(ae).__name__}: {ae})")
         if not rep.ok:
             iface = [v for v in rep.violations if v.severity == "interface"]
             if iface:

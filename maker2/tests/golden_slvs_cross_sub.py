@@ -6,11 +6,12 @@ from __future__ import annotations
 import numpy as np
 from types import SimpleNamespace
 
-from maker2.constraint_ir import (AssemblyConstraintProblem, ConstraintKind, ConstraintSpec,
-                                  EntityKind, EntitySpec)
+from maker2.constraint_ir import (AssemblyConstraintProblem, ConstraintKind,
+                                  ConstraintSolveResult, ConstraintSpec, EntityKind, EntitySpec,
+                                  RigidStageSpec)
 from maker2.slvs_adapter import (solve_problem, SlvsSolveError, _rot_a_to_b, _se3,
-                                 build_cross_sub_problem, reconstruct_placements,
-                                 validate_authoritative_solution)
+                                 build_cross_sub_problem, failure_report_dict,
+                                 reconstruct_placements, validate_authoritative_solution)
 
 
 def native_solve():
@@ -56,6 +57,92 @@ def rotation_checks():
     assert _se3(T) and np.allclose(R@[0,0,1],[1,0,0],atol=1e-7)
 
 
+def face_overlap_checks():
+    stages={
+      'a':RigidStageSpec('a',np.eye(4).tolist(),(0,0,0),(1,0,0),(0,0,0),(1,0,0),
+                         {'ga':(0,0,0)}),
+      'b':RigidStageSpec('b',np.eye(4).tolist(),(0,0,0),(1,0,0),(0,.08,0),(1,0,0),
+                         {'gb':(0,0,0)})}
+    gp={'seam_id':'mesh','parent_sub':'a','child_sub':'b','parent_part':'ga','child_part':'gb',
+        'parent_entity':'a:gear:ga','child_entity':'b:gear:gb','target_m':.08,
+        'parent_face_width_mm':12.,'child_face_width_mm':15.,
+        'parent_face_center_offset_mm':0.,'child_face_center_offset_mm':0.}
+    problem=AssemblyConstraintProblem(stages=stages,gear_pairs=[gp],expected_dof=0)
+    result=ConstraintSolveResult('okay',0,0)
+    placements={'a':np.eye(4),'b':np.eye(4)}
+    placements['b'][:3,3]=[0,.08,0]
+    validate_authoritative_solution(problem,placements,result)
+    placements['b'][:3,3]=[.02,.08,0]
+    try:
+        validate_authoritative_solution(problem,placements,result)
+        raise AssertionError('non-overlapping gear faces accepted')
+    except SlvsSolveError as e:
+        assert 'gear_face_overlap:mesh' in str(e)
+        report=failure_report_dict(problem,result,placements,e)
+        pair=report['gear_pairs'][0]
+        assert pair['face_overlap_mm']==0 and pair['axial_delta_mm']==20
+        assert report['diagnostics']['failure_kind']=='gear_face_overlap'
+
+
+def _mount_fixture(contract_positions,realized_positions,face_width=10.):
+    frames=[]; seams=[]; subspecs=[]; results={}; seed={}
+    housing_frames=[]
+    for i,(contract,realized) in enumerate(zip(contract_positions,realized_positions)):
+        sid=f's{i}'; hf=f'seat{i}'; sf=f'shaft{i}'
+        housing_frames.append(SimpleNamespace(name=hf,role='mount',axis=(1,0,0),
+                                              xyz_m=contract,shaft_dia_mm=8))
+        shaft_frame=SimpleNamespace(name=sf,role='mount',axis=(1,0,0),xyz_m=(0,0,0),shaft_dia_mm=8)
+        subspecs.append(SimpleNamespace(id=sid,frames=[shaft_frame]))
+        seams.append(SimpleNamespace(id=f'mount{i}',kind='weld',mate_type='insert',parent_sub='housing',
+                     child_sub=sid,parent_frame=hf,child_frame=sf,mesh_pair=()))
+        links=[SimpleNamespace(name=f'shaft{i}',dof='spin',spin_axis=(1,0,0),size_mm={}),
+               SimpleNamespace(name=f'g{i}',dof='fixed',spin_axis=(1,0,0),
+                               size_mm={'module':2,'teeth':20,'thickness':face_width})]
+        results[sid]=SimpleNamespace(id=sid,model=SimpleNamespace(links=links))
+        seed[sid]=np.eye(4)
+    subspecs.insert(0,SimpleNamespace(id='housing',frames=housing_frames))
+    results['housing']=SimpleNamespace(id='housing',model=SimpleNamespace(links=[]))
+    if len(contract_positions)>1:
+        seams.append(SimpleNamespace(id='mesh',kind='power',mate_type='',parent_sub='s0',child_sub='s1',
+                     parent_frame='m0',child_frame='m1',mesh_pair=('g0','g1')))
+    plan=SimpleNamespace(root_sub='housing',subassemblies=subspecs,seams=seams)
+
+    def frame_in_root(sub,name):
+        T=np.eye(4)
+        if sub.id=='housing':T[:3,3]=realized_positions[int(name.replace('seat',''))]
+        return name,T
+    def link_in_root(sub,name):
+        if name.startswith('g'):return np.array([1.,0,0]),np.array([0.,0,0])
+        return np.array([1.,0,0]),np.array([0.,0,0])
+    def gear_link(sub,seam,which):return next(l for l in sub.model.links if l.name==seam.mesh_pair[which])
+    helpers={'frame_in_root':frame_in_root,'link_in_root':link_in_root,'gear_link':gear_link,
+             'gear_radius':lambda l:l.size_mm['module']*l.size_mm['teeth']/2,
+             'gear_face_width':lambda l:l.size_mm.get('thickness'),
+             'gear_face_center_offset':lambda l:0.0}
+    return plan,results,seed,helpers
+
+
+def mount_layout_checks():
+    plan,subs,seed,helpers=_mount_fixture([(0,0,0),(0,.08,0)],[(0,0,0),(0,0,0)])
+    try:
+        build_cross_sub_problem(plan,subs,seed,{'s0','s1'},'housing',**helpers)
+        raise AssertionError('collapsed housing mounts accepted')
+    except SlvsSolveError as e:
+        assert e.problem and e.problem.diagnostics['failure_kind']=='housing_mount_layout'
+        pair=e.problem.diagnostics['mount_layout']['pairs'][-1]
+        assert pair['collapsed'] and pair['contract_separation_mm']==80
+    # Contract-coincident mounts remain legal even when their realizations coincide.
+    plan,subs,seed,helpers=_mount_fixture([(0,0,0),(0,0,0)],[(0,0,0),(0,0,0)])
+    problem=build_cross_sub_problem(plan,subs,seed,{'s0','s1'},'housing',**helpers)
+    assert not problem.diagnostics['mount_layout']['pairs'][0]['collapsed']
+    plan,subs,seed,helpers=_mount_fixture([(0,0,0),(0,.08,0)],[(0,0,0),(0,.08,0)],face_width=None)
+    try:
+        build_cross_sub_problem(plan,subs,seed,{'s0','s1'},'housing',**helpers)
+        raise AssertionError('missing gear face width accepted')
+    except SlvsSolveError as e:
+        assert e.problem.diagnostics['failure_kind']=='gear_face_geometry'
+
+
 if __name__=='__main__':
-    native_solve(); inconsistent_solve(); rotation_checks()
+    native_solve(); inconsistent_solve(); rotation_checks(); face_overlap_checks(); mount_layout_checks()
     print('golden authoritative libslvs cross-sub: PASS')

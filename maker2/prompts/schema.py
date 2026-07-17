@@ -135,9 +135,10 @@ HARD RULES
 UNITS / ORIGIN CONTRACT (critical — this is how blindly-built parts line up)
 - size_mm is in MILLIMETERS. Body `pos` is in METERS.
 - Each worker builds its part ALONE, in the part's own local frame, with the part's
-  natural attach/rotation point at the LOCAL ORIGIN (0,0,0). You decide, per part,
-  WHERE that origin is and write it in `origin_note` precisely (e.g. "gear center on
-  the mid-plane at origin, teeth around +Z axis").
+  natural attach/rotation point at the LOCAL ORIGIN (0,0,0). Round/axial parts always use
+  LOCAL +Z for geometry, bore/teeth ports, and spin_axis. You decide, per part, WHERE that
+  origin is and write it in `origin_note` precisely (e.g. "gear center on the mid-plane at
+  origin, teeth around local +Z axis"). Global interface axes are applied later by assembly.
 - You author every body's `pos` as the vector FROM the parent part's origin TO where
   this part's origin sits. Workers never position parts relative to each other — all
   spatial relationships live in your body nesting + poses.
@@ -333,8 +334,10 @@ MATE TYPES — pick the real mechanical connection:
 
 HOW PARTS MOVE (this REPLACES joints — there are NO joints and NO motors)
 - Every part declares a `dof`:  "fixed" = welded to whatever it mates to (MOST parts:
-  plates, housings, brackets, bearings, jewels, screws, pins). "spin" = rotates about
-  `spin_axis` (gears, wheels, arbors, rotors, shafts). "free" = 6-DOF (rare). DEFAULT to
+  plates, housings, brackets, bearings, jewels, screws, pins). "spin" = rotates about its
+  LOCAL `spin_axis` (gears, wheels, arbors, rotors, shafts). Every round/axial part is built
+  around LOCAL +Z, so its spin_axis is [0,0,1]. Boss/interface-frame axes are GLOBAL placement
+  targets and must never be copied into this local field. "free" = 6-DOF (rare). DEFAULT to
   "fixed" — a part is "spin" ONLY if it turns under power.
 - COAXIAL PARTS THAT TURN TOGETHER = ONE spin part. A wheel + pinion + arbor pressed
   together rotate as a unit: make the ARBOR the "spin" part and mate the wheel/pinion to it

@@ -163,6 +163,9 @@ class Settings:
     enable_solver_pose_repair: bool = True
     enable_solver_module_repair: bool = False
     enable_solver_seat_geometry_repair: bool = True
+    enable_precheck_failure_analyzer: bool = True
+    precheck_local_repair_max_attempts: int = 2
+    enable_precheck_housing_geometry_repair: bool = True
     enable_sub_conflict_gate: bool = True         # check each subassembly for rigid
                                                    # part interpenetration right after it
                                                    # builds, and run a debugger loop to

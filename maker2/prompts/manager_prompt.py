@@ -34,7 +34,10 @@ is moved by a motor and nothing is held in place by an invisible joint.
 - Instead of joints, each PART declares how it moves via `dof`:
     "fixed" = welded in place (frames, housings, brackets, the base).
     "spin"  = rotates on an implied axle along `spin_axis` (gears, wheels, rotors,
-              shafts). The axle is implicit — you do NOT model a joint for it.
+              shafts). The axle is implicit — you do NOT model a joint for it. Every round/
+              axial part is built around LOCAL +Z, so its local `spin_axis` is always [0,0,1].
+              Boss interface-frame axes are GLOBAL placement targets; never copy a global +X/+Y
+              frame axis into a round part's local spin_axis.
     "free"  = a fully free 6-DOF body (rare; a loose part).
 - The physics test spins the ONE part you mark `driver": true` and checks that
   motion propagates by contact. So parts that must interact MUST actually touch:
@@ -409,7 +412,11 @@ coordinates about that origin):
 
 RULES
 - Build this subassembly in ITS OWN local frame (mm geometry, each part's attach point
-  at its local origin). You choose where this subassembly's own root/origin sits.
+  at its local origin). You choose where this subassembly's own root/origin sits. Round/axial
+  geometry (shafts, bearings, gears, pinions, cylinders) uses LOCAL +Z as its physical axis;
+  its inferred bore/teeth ports and local `spin_axis` are therefore [0,0,1]. The GLOBAL axis
+  shown on an interface frame is for the assembler to orient the whole subassembly, not a
+  value to paste into a part's local spin_axis.
 - Include EVERY real physical part of this subassembly — every gear, wheel, pinion,
   SHAFT, arbor, bearing/jewel, pin, screw, spring. Do NOT hide a shaft or bearing by
   folding it into a neighbor or dropping it; a rotating part is dof "spin" turning on

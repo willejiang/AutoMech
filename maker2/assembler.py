@@ -26,6 +26,7 @@ See .claude/plans/precious-humming-wand.md.
 from __future__ import annotations
 
 import json
+import math
 import os
 import shutil
 
@@ -311,6 +312,53 @@ def _gear_pitch_r_mm(link) -> float | None:
     for k in ("pitch_dia", "pitch_diameter"):
         if num(sz.get(k)):
             return num(sz.get(k)) / 2.0
+    return None
+
+
+def _gear_face_width_mm(link) -> float | None:
+    """Axial face width (mm) declared by a built gear; never infer it from radial dimensions."""
+    sz = getattr(link, "size_mm", {}) or {}
+    for key in ("height", "length", "thickness", "face_width", "depth", "width"):
+        try:
+            value = float(sz.get(key))
+        except (TypeError, ValueError):
+            continue
+        if math.isfinite(value) and value > 0:
+            return value
+    return None
+
+
+def _gear_face_center_offset_mm(link) -> float | None:
+    """Signed axial offset from a gear's local origin to its physical face mid-plane.
+
+    Manager/worker origin contracts use either a centered origin or the -Z/end_a face.
+    Ambiguous origin notes fail closed instead of silently treating a face as the center.
+    """
+    width = _gear_face_width_mm(link)
+    if not width:
+        return None
+    note = str(getattr(link, "origin_note", "") or "").lower()
+    centered = any(x in note for x in ("mid-plane", "mid plane", "midplane", "mid-thickness",
+                                        "mid thickness", "gear center", "pinion center",
+                                        "disc centered", "centered on z=0",
+                                        "centered at local origin", "bore centered"))
+    at_negative_face = any(x in note for x in ("origin at end_a", "origin at end a",
+                                                "origin at the -z face", "origin at -z face",
+                                                "origin at the -z (", "origin at the rear (-z)",
+                                                "-z face center at local origin",
+                                                "bottom-face center at local origin",
+                                                "bottom face center at local origin"))
+    at_positive_face = any(x in note for x in ("origin at end_b", "origin at end b",
+                                                "origin at the +z face", "origin at +z face",
+                                                "origin at the +z (", "origin at the front (+z)",
+                                                "top-face center at local origin",
+                                                "top face center at local origin"))
+    if centered and not (at_negative_face or at_positive_face):
+        return 0.0
+    if at_negative_face and not (centered or at_positive_face):
+        return width / 2.0
+    if at_positive_face and not (centered or at_negative_face):
+        return -width / 2.0
     return None
 
 
@@ -749,7 +797,9 @@ def assemble(plan, subs: dict, ctx, *, settings=None, log_fn=print) -> Kinematic
     if gear_ids and backend == "slvs":
         from .slvs_adapter import report_dict, solve_cross_sub_placements, SlvsSolveError
         helpers = {"frame_in_root": _frame_in_root, "link_in_root": _link_in_root,
-                   "gear_link": _gear_link, "gear_radius": _gear_pitch_r_mm}
+                   "gear_link": _gear_link, "gear_radius": _gear_pitch_r_mm,
+                   "gear_face_width": _gear_face_width_mm,
+                   "gear_face_center_offset": _gear_face_center_offset_mm}
         try:
             solved, problem = solve_cross_sub_placements(
                 plan, subs, seed_placed, gear_ids, base_id,

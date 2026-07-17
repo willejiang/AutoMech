@@ -60,6 +60,7 @@ class AssemblyConstraintProblem:
     expected_dof: int = 0
     units: str = "m"
     base_id: str = ""
+    diagnostics: dict = field(default_factory=dict)
 
 
 @dataclass

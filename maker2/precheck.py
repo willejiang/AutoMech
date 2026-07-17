@@ -20,8 +20,11 @@ re-run only the blamed manager. See .claude/plans/precious-humming-wand.md.
 
 from __future__ import annotations
 
+import hashlib
+import json
+import os
 import re
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 
 import numpy as np
 
@@ -36,6 +39,11 @@ _MESH_TOL_FRAC = 0.15
 _GEAR_RE = re.compile(r"gear|pinion|cog|wheel", re.I)
 
 
+def _stable_id(prefix: str, value: dict) -> str:
+    raw = json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
+    return prefix + hashlib.sha256(raw).hexdigest()[:16]
+
+
 @dataclass
 class Violation:
     kind: str                       # frame_misalign|gear_center_distance|aabb_overlap|load_error
@@ -43,12 +51,39 @@ class Violation:
     detail: str = ""
     sub_id: str = ""
     value: float = 0.0
+    violation_id: str = ""
+    seam_id: str = ""
+    involved_sub_ids: list = field(default_factory=list)
+    parent_link: str = ""
+    child_link: str = ""
+    parent_local_link: str = ""
+    child_local_link: str = ""
+    shaft_role: str = ""
+    overlap_fraction: float = 0.0
+    threshold: float = 0.0
+    observations: dict = field(default_factory=dict)
+
+    def __post_init__(self):
+        if not self.violation_id:
+            core = {"kind": self.kind, "severity": self.severity, "seam_id": self.seam_id,
+                    "sub_id": self.sub_id, "involved_sub_ids": sorted(self.involved_sub_ids),
+                    "links": sorted(x for x in (self.parent_link, self.child_link) if x)}
+            self.violation_id = _stable_id("violation_", core)
+
+    def to_dict(self) -> dict:
+        return asdict(self)
 
 
 @dataclass
 class PrecheckReport:
     ok: bool
     violations: list = field(default_factory=list)
+    failure_id: str = ""
+
+    def __post_init__(self):
+        if not self.failure_id:
+            core = {"ok": self.ok, "violations": [v.to_dict() for v in self.violations]}
+            self.failure_id = _stable_id("precheck_", core)
 
     def summary(self) -> str:
         if self.ok:
@@ -56,9 +91,30 @@ class PrecheckReport:
         return "; ".join(f"{v.kind}({v.severity})"
                          + (f" {v.sub_id}" if v.sub_id else "") for v in self.violations)
 
+    def to_dict(self) -> dict:
+        return {"ok": self.ok, "failure_id": self.failure_id,
+                "aggregate_overlap": sum(float(v.overlap_fraction) for v in self.violations),
+                "violations": [v.to_dict() for v in self.violations]}
+
 
 def _ns(sub_id: str, name: str) -> str:
     return f"{sub_id}_{name}"
+
+
+def _local_name(sub_id: str, namespaced: str) -> str:
+    prefix = f"{sub_id}_"
+    return namespaced[len(prefix):] if namespaced.startswith(prefix) else namespaced
+
+
+def _shaft_role(*names: str) -> str:
+    text = " ".join(names).upper()
+    if "INPUT" in text:
+        return "input"
+    if "INTER" in text or "MIDDLE" in text:
+        return "inter"
+    if "OUTPUT" in text:
+        return "output"
+    return ""
 
 
 def _world(robot, link: str) -> np.ndarray:
@@ -405,6 +461,10 @@ def _part_overlaps(robot, plan, subs: dict, log) -> list:
             frac, a, b = worst
             out.append(Violation(
                 kind="part_overlap", severity="sub", sub_id=sub.id, value=frac,
+                involved_sub_ids=[sub.id], parent_link=a, child_link=b,
+                parent_local_link=_local_name(sub.id, a), child_local_link=_local_name(sub.id, b),
+                overlap_fraction=frac, threshold=_OVERLAP_FRAC,
+                observations={"measure": "real_solid_intersection_fraction"},
                 detail=f"parts '{a}' and '{b}' interpenetrate ({frac:.0%} of the smaller "
                        f"part's solid is inside the other) — fix their placement"))
 
@@ -427,8 +487,18 @@ def _part_overlaps(robot, plan, subs: dict, log) -> list:
                     worst = (frac, an, bn)
         if worst:
             frac, an, bn = worst
+            role = _shaft_role(seam.id, seam.parent_frame, seam.child_frame, an, bn)
             out.append(Violation(
-                kind="part_overlap", severity="interface", value=frac,
+                kind="part_overlap", severity="interface", sub_id=seam.parent_sub, value=frac,
+                seam_id=seam.id, involved_sub_ids=[seam.parent_sub, seam.child_sub],
+                parent_link=an, child_link=bn,
+                parent_local_link=_local_name(seam.parent_sub, an),
+                child_local_link=_local_name(seam.child_sub, bn), shaft_role=role,
+                overlap_fraction=frac, threshold=_OVERLAP_FRAC,
+                observations={"measure": "real_solid_intersection_fraction",
+                              "parent_frame": seam.parent_frame,
+                              "child_frame": seam.child_frame,
+                              "mate_type": getattr(seam, "mate_type", "")},
                 detail=f"welded subs '{seam.parent_sub}' and '{seam.child_sub}' "
                        f"interpenetrate: parts '{an}' and '{bn}' overlap {frac:.0%} of the "
                        f"smaller part's solid — the seam drives them into each other; "
@@ -456,6 +526,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="maker2 geometric pre-check")
     ap.add_argument("--plan", required=True)
     ap.add_argument("--urdf", default=None, help="assembled URDF (default <session>/assembly/model.urdf)")
+    ap.add_argument("--out", default=None, help="write the structured report JSON here")
     a = ap.parse_args()
 
     session_root = os.path.dirname(os.path.abspath(a.plan))
@@ -464,6 +535,9 @@ def main() -> int:
             for s in plan.subassemblies}
     urdf = a.urdf or os.path.join(session_root, "assembly", "model.urdf")
     rep = precheck(plan, subs, urdf, log_fn=print)
+    if a.out:
+        with open(a.out, "w", encoding="utf-8") as f:
+            json.dump(rep.to_dict(), f, indent=2)
     print("-" * 56)
     print(f"RESULT: {'OK' if rep.ok else 'FAIL'} — {rep.summary()}")
     return 0 if rep.ok else 1
