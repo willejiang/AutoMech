@@ -173,6 +173,20 @@ class Settings:
     sub_conflict_max_tries: int = 3               # debugger passes before failing the
                                                    # sub up to the boss for a re-plan
     subassembly_max_managers: int = 9             # parallel per-sub manager builds
+    team_max_rounds: int = 2                       # boss↔manager fan-out runs as an
+                                                   # AgentTeamRunner team round: managers
+                                                   # build against shared state seeded from
+                                                   # the compiled hardpoint contract, then
+                                                   # re-propose seeing siblings' realized
+                                                   # interface frames. 1 ≈ the old one-shot
+                                                   # fan-out (no sibling reaction); 2+ lets
+                                                   # managers negotiate shared interfaces.
+    enable_solver_tool: bool = False               # offer the authoritative libslvs solver
+                                                   # as a `solve_constraints` tool in the
+                                                   # boss/manager research pre-step, so agents
+                                                   # get exact center distances / coaxial
+                                                   # points instead of guessing. Degrades to
+                                                   # a no-op when py-slvs is unavailable.
     enable_reference_tools: bool = False          # web/RAG reference lookup (Stage G)
     enable_kb: bool = False                        # local offline retrieval (maker2/kb):
                                                    # a curated per-agent knowledge base +

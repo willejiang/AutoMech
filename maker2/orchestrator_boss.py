@@ -1163,7 +1163,11 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                 log(f"[boss] appearance proxy skipped ({e})")
 
         # 2. Build subassemblies in parallel (reusing unchanged ones from disk).
-        subs = build_all_subassemblies(plan, settings, session_root,
+        # Managers run as an AgentTeamRunner team (team_managers), collaborating over a
+        # shared revisioned state seeded from the compiled hardpoint contract, instead of
+        # the old one-way fan-out. Same {sub_id: SubResult} contract as before.
+        from .team_managers import run_subassembly_team
+        subs = run_subassembly_team(plan, settings, session_root,
                                        feedback_by_sub=feedback_by_sub, reuse=reuse,
                                        user_prompt=prompt, log_fn=log)
         result["subassemblies"] = [{"id": s.id, "ok": subs[s.id].ok,
@@ -1932,7 +1936,8 @@ def main() -> int:
                             log_fn=print)
 
     print(f"[boss] session root: {session_root}")
-    subs = build_all_subassemblies(plan, settings, session_root,
+    from .team_managers import run_subassembly_team
+    subs = run_subassembly_team(plan, settings, session_root,
                                    user_prompt=a.prompt, log_fn=print)
     print("-" * 56)
     ok = sum(1 for r in subs.values() if r.ok)

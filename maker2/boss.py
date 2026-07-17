@@ -471,9 +471,25 @@ def frame_contract_for(plan: SubassemblyPlan, sub_id: str,
         elif seam.child_sub==sub_id:
             through.append({'seam_id':seam.id,'front_frame':seam.child_frame,
                             'rear_frame':rc,'neighbor_sub':seam.parent_sub,'side':'child'})
+    # Interface frames: prefer the AUTHORITATIVE compiled hardpoint contract when the
+    # geometry compiler recognized this machine's topology (stashed on the plan by
+    # run_boss). Its frames are solver-derived global coords, so managers realize against
+    # the compiled geometry instead of the boss's raw plan coords. Unrecognized topology
+    # (no contract, or no view for this sub) falls back to the boss-authored sub.frames.
+    frames = list(sub.frames)
+    contract = getattr(plan, "hardpoint_contract", None)
+    if contract is not None:
+        try:
+            from .design.contracts import to_frame_contract
+            view = contract.view(sub_id)
+            compiled = to_frame_contract(view).frames
+            if compiled:
+                frames = compiled
+        except Exception:
+            pass  # no view for this sub / adapter failure -> keep boss-authored frames
     return FrameContract(
         sub_id=sub.id,
-        frames=list(sub.frames),
+        frames=frames,
         global_origin_note=plan.global_origin_note,
         input_tags=list(sub.input_tags),
         output_tags=list(sub.output_tags),
