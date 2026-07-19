@@ -1153,6 +1153,20 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                     out_dir=os.path.join(session_root, "design"), log_fn=log)
                 if _contract is not None:
                     plan.hardpoint_contract = _contract
+                    # Unify the frame-name vocabulary: rewrite the boss plan's frame names +
+                    # seam references to the AUTHORITATIVE compiler-contract names, so every
+                    # name-keyed consumer (manager gate frame_drift, assembler mount lookup,
+                    # slvs solve) compares like against like. Without this the boss uses
+                    # 'seat_input_front' while the manager realizes 'housing_input_stage_front_
+                    # bore', and every by-name gate silently no-ops -> collapsed seats slip
+                    # through to the final solve. Best-effort; skips cleanly on any mismatch.
+                    try:
+                        from .boss import unify_plan_frame_names
+                        n = unify_plan_frame_names(plan, _contract, log_fn=log)
+                        if n:
+                            log(f"[boss] unified {n} frame name(s) to the compiled contract")
+                    except Exception as e:
+                        log(f"[boss] frame-name unification skipped ({e})")
             except Exception as e:
                 if compiler_mode == "required":
                     result["error"] = f"geometry compile failed: {e}"

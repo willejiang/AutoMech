@@ -83,7 +83,8 @@ def _insert_seam(plan, base_id, child_id):
 
 def build_cross_sub_problem(plan, subs, seed, gear_ids, base_id, *,
                             frame_in_root, link_in_root, gear_link, gear_radius,
-                            gear_face_width, gear_face_center_offset=lambda _link: 0.0):
+                            gear_face_width, gear_face_center_offset=lambda _link: 0.0,
+                            log_fn=None):
     """Build the authoritative reducer problem. Housing targets are hard constraints."""
     if not gear_ids or base_id is None or base_id != plan.root_sub:
         raise SlvsSolveError("slvs MVP requires one root housing and a gear cluster")
@@ -102,6 +103,56 @@ def build_cross_sub_problem(plan, subs, seed, gear_ids, base_id, *,
                                             base_id=base_id, diagnostics=diagnostics)
         raise SlvsSolveError(message, problem=problem)
 
+    def _stage_hint(sub_id: str) -> str:
+        """A stage token from a sub id, to disambiguate the housing's per-stage bores in the
+        tolerant fallback. 'sub_input'->'input', 'sub_inter'->'inter' (substring of
+        'intermediate'), 'sub_output'->'output'."""
+        s = str(sub_id).lower()
+        for tok in ("input", "inter", "output"):
+            if tok in s:
+                return tok
+        return s.replace("sub_", "")
+
+    def _resolve_frame(sub, wanted_name, *, side, stage_hint=""):
+        """frame_in_root(sub, wanted_name), but tolerant of a boss-renamed seam frame.
+
+        The boss seam references a mount frame by whatever name the boss LLM authored
+        (e.g. a re-plan shortened it to 'in_front'), while the manager realizes the
+        AUTHORITATIVE compiler-contract names ('..._front_bearing'). Exact-name lookup then
+        misses even though the sub realized the frame correctly. When the exact name isn't
+        realized, fall back to the sub's realized frame for the same SIDE — a bearing/mount/
+        bore frame whose name contains the side token. `side` is 'front' or 'rear'. On the
+        HOUSING (which realizes a front/rear bore for EVERY stage), `stage_hint` (e.g.
+        'input'/'intermediate'/'output', parsed from the wanted name) picks the bore for the
+        right stage so 'seat_input_rear' can't match the output stage's bore. The geometry is
+        identical; only the label differed."""
+        try:
+            return frame_in_root(sub, wanted_name)
+        except Exception:
+            pass
+        realized = [e.get("frame") for e in (getattr(sub, "sub_frames", None) or [])]
+        cands = [n for n in realized if n and side in n.lower()
+                 and any(t in n.lower() for t in ("bearing", "mount", "seat", "bore"))]
+        hint = stage_hint.lower()
+        cands.sort(key=lambda n: (
+            not (hint and hint in n.lower()),                 # same stage first
+            not (n.lower().endswith(f"{side}_bearing")
+                 or n.lower().endswith(f"{side}_bore")),      # then specific side ending
+            len(n)))
+        for n in cands:
+            try:
+                res = frame_in_root(sub, n)
+                if log_fn:
+                    log_fn(f"[slvs] mount frame '{wanted_name}' not realized on "
+                           f"'{getattr(sub, 'id', '?')}'; matched realized '{n}' by "
+                           f"{side}-side role instead")
+                return res
+            except Exception:
+                continue
+        # nothing matched -> re-raise the original exact-name error for the caller's message
+        return frame_in_root(sub, wanted_name)
+
+
     seen_mount_frames = set()
     for sid in sorted(gear_ids):
         seam = _insert_seam(plan, base_id, sid)
@@ -116,8 +167,9 @@ def build_cross_sub_problem(plan, subs, seed, gear_ids, base_id, *,
         if target_fr is None or shaft_fr is None:
             preflight_error(f"stage '{sid}' mount frame contract is incomplete", "housing_mount_layout")
         try:
-            _shaft_link, T_local_anchor = frame_in_root(subs[sid], seam.child_frame)
-            _base_link, T_target = frame_in_root(subs[base_id], seam.parent_frame)
+            _shaft_link, T_local_anchor = _resolve_frame(subs[sid], seam.child_frame, side="front")
+            _base_link, T_target = _resolve_frame(subs[base_id], seam.parent_frame,
+                                                  side="front", stage_hint=_stage_hint(sid))
         except Exception as e:
             preflight_error(f"stage '{sid}' mount frame unresolved: {e}", "housing_mount_layout")
         if not _se3(T_local_anchor) or not _se3(T_target):
@@ -156,8 +208,9 @@ def build_cross_sub_problem(plan, subs, seed, gear_ids, base_id, *,
         rear=None
         if getattr(seam,'rear_parent_frame','') and getattr(seam,'rear_child_frame',''):
             try:
-                _rl,T_local_rear=frame_in_root(subs[sid],seam.rear_child_frame)
-                _hl,T_target_rear=frame_in_root(subs[base_id],seam.rear_parent_frame)
+                _rl,T_local_rear=_resolve_frame(subs[sid],seam.rear_child_frame,side="rear")
+                _hl,T_target_rear=_resolve_frame(subs[base_id],seam.rear_parent_frame,
+                                                 side="rear", stage_hint=_stage_hint(sid))
                 rear_fr=_frame_spec(plan,base_id,seam.rear_parent_frame)
                 rear_axis=_unit(rear_fr.axis)
             except Exception as e:
@@ -525,7 +578,8 @@ def solve_cross_sub_placements(plan, subs, seed, gear_ids, base_id, *, helpers, 
     if not ok: raise SlvsSolveError(f"py-slvs unavailable: {reason}")
     problem = result = placements = None
     try:
-        problem = build_cross_sub_problem(plan, subs, seed, gear_ids, base_id, **helpers)
+        problem = build_cross_sub_problem(plan, subs, seed, gear_ids, base_id,
+                                          log_fn=log_fn, **helpers)
         result = solve_problem(problem)
         placements = reconstruct_placements(problem, result)
         residuals = validate_authoritative_solution(problem, placements, result)

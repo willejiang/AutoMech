@@ -451,6 +451,72 @@ def load_plan(path: str) -> SubassemblyPlan:
         return parse_plan(f.read())
 
 
+def unify_plan_frame_names(plan: SubassemblyPlan, contract, *, log_fn=None) -> int:
+    """Rewrite the boss plan's frame names + all seam references to the AUTHORITATIVE
+    compiler-contract frame names, so every name-keyed consumer downstream (manager gate
+    frame-drift, assembler mount lookup, slvs solve) sees ONE vocabulary.
+
+    Matching is deterministic geometry, not string similarity: within each subassembly, each
+    boss frame is paired to the contract frame of the SAME role whose position is nearest,
+    one-to-one (greedy by ascending distance). Boss coords are rough (the boss guesses), so
+    we match by role + relative ordering along the interface, not by absolute equality. Frames
+    with no contract counterpart (e.g. a power_in tag the compiler doesn't model) keep their
+    boss name. Returns the number of frames renamed. Never raises structurally — a sub with no
+    contract view is skipped.
+    """
+    from .design.contracts import to_frame_contract
+
+    rename: dict[tuple[str, str], str] = {}   # (sub_id, old_name) -> new_name
+    for sub in plan.subassemblies:
+        try:
+            view = contract.view(sub.id)
+            comp = to_frame_contract(view).frames
+        except Exception:
+            continue
+        if not comp:
+            continue
+        comp_by_role: dict[str, list] = {}
+        for cf in comp:
+            comp_by_role.setdefault(getattr(cf, "role", "mount"), []).append(cf)
+        for role, cfs in comp_by_role.items():
+            boss_frames = [f for f in sub.frames if getattr(f, "role", "mount") == role]
+            if len(boss_frames) != len(cfs):
+                # counts differ -> can't establish a safe 1:1 ordering; skip this role
+                continue
+            # Match by ORDER, not absolute distance: the boss's coords are rough and not to
+            # scale (it may space seats 80mm while the solver says 24mm), so nearest-distance
+            # can cross stages. Sort BOTH sides by the same positional key (x, then y, then z)
+            # and pair the k-th boss frame to the k-th contract frame — order is preserved even
+            # when the absolute spacing differs.
+            def _key(fr):
+                return tuple(round(float(v), 6) for v in fr.xyz_m)
+            bs = sorted(boss_frames, key=_key)
+            cs = sorted(cfs, key=_key)
+            for bf, cf in zip(bs, cs):
+                if bf.name != cf.name:
+                    rename[(sub.id, bf.name)] = cf.name
+    if not rename:
+        return 0
+    # Apply to sub.frames
+    for sub in plan.subassemblies:
+        for f in sub.frames:
+            nn = rename.get((sub.id, f.name))
+            if nn:
+                f.name = nn
+    # Apply to every seam frame reference (front + rear, parent + child)
+    for seam in plan.seams:
+        for attr, sub_attr in (("parent_frame", "parent_sub"), ("child_frame", "child_sub"),
+                               ("rear_parent_frame", "parent_sub"),
+                               ("rear_child_frame", "child_sub")):
+            name = getattr(seam, attr, "")
+            if not name:
+                continue
+            nn = rename.get((getattr(seam, sub_attr, ""), name))
+            if nn:
+                setattr(seam, attr, nn)
+    return len(rename)
+
+
 def frame_contract_for(plan: SubassemblyPlan, sub_id: str,
                        *, appearance_summary: str = "") -> FrameContract:
     """Build the FrameContract Stage B hands to one subassembly's manager.
