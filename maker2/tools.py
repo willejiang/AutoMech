@@ -441,10 +441,15 @@ _RESEARCH_SYSTEM = (
     "up anything genuinely useful. Prefer kb_search (the local knowledge base) for the "
     "OUTPUT FORMAT, conventions, dimension names, gear math, and worked examples; use "
     "web_search for real-world reference designs, standard part dimensions (gear "
-    "modules, bearing/jewel sizes, thread specs), or materials. When exact geometry "
-    "matters — gear center distances, coaxial shaft points, projected offsets — call "
-    "solve_constraints (if offered) to get the solver's authoritative coordinates "
-    "instead of guessing. Do a FEW focused "
+    "modules, bearing/jewel sizes, thread specs), or materials. If solve_constraints is "
+    "offered, it is the ONLY acceptable source of geometric numbers: every center "
+    "distance, coaxial shaft point, projected offset, mate coordinate, or derived "
+    "position you will later author MUST come from a solve_constraints call — set up the "
+    "points and constraints and read the solved coordinates back. Set the points you are "
+    "solving FOR as unknowns (not fixed) seeded at a rough guess; do NOT pin them at an "
+    "answer you already decided and call the solver merely to confirm it — that proves "
+    "nothing. Do NOT hand-estimate, "
+    "round, or reuse remembered numbers when the solver can produce them. Do a FEW focused "
     "lookups at most, then STOP (reply with a one-line 'done'). Do not design anything "
     "yet; just gather facts.")
 
@@ -482,7 +487,7 @@ def maybe_research(client, conv, settings, what: str, *, collection: str = "mana
         conv.add_user_message(
             f"Before you begin, research anything useful for this task: {what}")
         run_tool_loop(client, conv, _RESEARCH_SYSTEM, tools, executors,
-                      max_rounds=4, log_fn=log_fn)
+                      max_rounds=12, log_fn=log_fn)
     except Exception as e:
         if log_fn:
             log_fn(f"[tool] research skipped: {e}")

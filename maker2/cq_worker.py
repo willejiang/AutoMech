@@ -224,20 +224,31 @@ def _write_part_scripts(batch_script: str, batch, cq_dir: Path) -> None:
     """Persist EACH link's own function to <run>/cq/<link>.py (prereq for 2b line-edits).
 
     Splits the batch script into per-function sources via ast so a later fault can edit
-    ONE part in isolation. The shared import header is prepended to each so the file is
-    runnable standalone. Best-effort: a parse failure just skips (the batch file remains
-    the source of truth for the current export)."""
+    ONE part in isolation. The shared import header AND any shared top-level helpers
+    (non-`build_` functions + module-level constants the part functions call, e.g. a
+    `_make_gear` involute helper) are prepended to each so the file is runnable standalone.
+    Without the helpers, an isolated part that calls a shared function fails to re-render
+    with NameError. Best-effort: a parse failure just skips (the batch file remains the
+    source of truth for the current export)."""
     cq_dir.mkdir(parents=True, exist_ok=True)
     try:
         tree = ast.parse(batch_script)
     except SyntaxError:
         return
-    header_nodes = [n for n in tree.body
-                    if isinstance(n, (ast.Import, ast.ImportFrom))]
-    header = "\n".join(ast.get_source_segment(batch_script, n) or "" for n in header_nodes)
+    want = {l.name for l in batch}
+    # Header = imports + every shared top-level definition that is NOT one of the per-part
+    # `build_<name>` functions: helper functions and module-level constants/assignments the
+    # part bodies may reference. Preserves source order so dependencies resolve.
+    header_parts = []
+    for n in tree.body:
+        if isinstance(n, (ast.Import, ast.ImportFrom, ast.Assign, ast.AnnAssign)):
+            header_parts.append(ast.get_source_segment(batch_script, n) or "")
+        elif isinstance(n, ast.FunctionDef) and not (
+                n.name.startswith("build_") and n.name[len("build_"):] in want):
+            header_parts.append(ast.get_source_segment(batch_script, n) or "")
+    header = "\n".join(p for p in header_parts if p)
     if "import cadquery" not in header:
         header = ("import cadquery as cq\nimport math\n" + header).strip()
-    want = {l.name for l in batch}
     for node in tree.body:
         if (isinstance(node, ast.FunctionDef) and node.name.startswith("build_")
                 and node.name[len("build_"):] in want):

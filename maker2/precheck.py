@@ -211,6 +211,49 @@ def precheck(plan, subs: dict, assembled_urdf: str, *, log_fn=print) -> Precheck
               'signed_residual_mm':signed*1000.0},detail=f"seam '{seam.id}' rear shaft datum misses "
               f"rear housing plane by {err*1000:.1f} mm"))
 
+    # 1c. GENERAL WELD-COINCIDENCE (machine-agnostic): a weld whose mate is meant to make
+    #     its two frames MEET — an `insert` (shaft end into a bore), a `seat` (face on face),
+    #     or any weld naming paired ports — must, on the assembled geometry, have its parent
+    #     and child frames actually coincide. The assembler places each sub by its declared
+    #     global pose; when two seams pull one sub in incompatible directions (an
+    #     over-constrained contract), a weld silently ends up open. This is the general form
+    #     of the reducer's authoritative-solve failure, but it needs no gear cluster and no
+    #     recognized topology — it runs for ANY machine from the realized frames alone.
+    for seam in plan.seams:
+        if seam.kind != "weld":
+            continue
+        mate = getattr(seam, "mate_type", "") or ""
+        has_ports = bool(getattr(seam, "parent_port", "") and getattr(seam, "child_port", ""))
+        if mate not in ("insert", "seat") and not has_ports:
+            continue  # a bare reference weld need not coincide (subs held a fixed gap apart)
+        ps, cs = subs.get(seam.parent_sub), subs.get(seam.child_sub)
+        if not ps or not cs:
+            continue
+        Pl = _realized_frame_in_root(ps, seam.parent_frame)
+        Cl = _realized_frame_in_root(cs, seam.child_frame)
+        if Pl is None or Cl is None:
+            continue  # realization already faulted in step 1
+        try:
+            Pw = _world(robot, _ns(seam.parent_sub, ps.model.root_link)) @ Pl
+            Cw = _world(robot, _ns(seam.child_sub, cs.model.root_link)) @ Cl
+            gap = float(np.linalg.norm(Cw[:3, 3] - Pw[:3, 3]))
+        except Exception:
+            continue
+        if gap > _POS_TOL_M:
+            violations.append(Violation(
+                kind="weld_frame_coincidence", severity="interface",
+                sub_id=seam.parent_sub, seam_id=seam.id,
+                involved_sub_ids=[seam.parent_sub, seam.child_sub], value=gap,
+                threshold=_POS_TOL_M,
+                observations={"parent_frame": seam.parent_frame,
+                              "child_frame": seam.child_frame, "mate_type": mate,
+                              "gap_mm": gap * 1000.0},
+                detail=f"weld '{seam.id}' ({mate or 'ported'}): frames "
+                       f"'{seam.parent_frame}' and '{seam.child_frame}' are {gap*1000:.1f} mm "
+                       "apart in the assembly but this mate requires them to coincide — the "
+                       "plan's placement is over-constrained/contradictory; fix the seam "
+                       "frames or the conflicting mate."))
+
     # 2. Gear-MESH power seams: the two gear centers must be ~one mesh center-distance
     #    (sum of pitch radii) apart, else the teeth can't engage.
     for seam in plan.seams:

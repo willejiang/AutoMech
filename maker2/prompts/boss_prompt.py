@@ -42,6 +42,58 @@ Think mechanically:
   pitch-center-distance apart, and name the meshing pair (mesh_pair) + owning sub. The
   gears mesh geometrically — never turn a gear pair into a joint.
 - Exactly one seam carries the machine's single power INPUT (driver:true).
+- SELF-CONSISTENT COORDINATES: every coordinate you declare must be simultaneously
+  satisfiable — the frames you weld together must be able to coincide, and the gears you
+  mesh must be able to meet in one plane, all at the SAME time. A frame's axial position is
+  set by its own coordinate AND by how the welds that place its sub move it; do not declare a
+  gear's mesh plane and its shaft's seat planes so that seating the shaft would put the gear
+  somewhere other than its mesh plane.
+- RECOGNIZABLE STAGE NAMING: for a parallel-shaft gear reducer, name the subassemblies so
+  their FUNCTION is in the id — a housing/chassis sub, an input stage, an intermediate
+  stage, and an output stage (e.g. `sub_housing`, `sub_input`, `sub_inter`, `sub_output`).
+  An authoritative geometry compiler recognizes these roles and freezes a coherent,
+  self-consistent layout for you; unrecognizable names fall back to a path where your raw
+  coordinates are used as-is.
+
+COMPUTE ORDER — derive numbers in this exact top-down sequence; never skip up a level, and
+never let a lower level silently change a higher one. Each step NARROWS from "what it must do"
+to "where its geometry sits". You have a math tool, `solve_constraints` (libslvs): use it to
+COMPUTE positions, not to rubber-stamp positions you already guessed.
+
+  L1 — PHYSICAL BUDGET (the reason the machine exists): pin the top-level physical targets
+       from the request — total ratio, output torque/speed, frequency, load. These are
+       ABSOLUTE; nothing downstream may weaken them.
+  L2 — FUNCTIONAL TOPOLOGY (which parts, who connects to whom): from L1, derive the modules
+       that MUST exist and their INVARIANT ratios (gear tooth ratios, stage split). Decide
+       only "A drives B at ratio C" and the weld/mesh graph. Fix NO sizes or coordinates yet.
+  L3 — HARD POINTS (the coordinates that get locked): now, and only now, turn L2 into
+       geometry. For every ratio, COMPUTE the center distances and the axial planes with
+       `solve_constraints`: set up the shaft/gear points as UNKNOWNS, add the distance and
+       coincidence constraints the topology demands, solve, and READ BACK the coordinates the
+       solver returns. Two gears that mesh must be solved to ONE common axial plane; a shaft's
+       front/rear bearing seats must be solved consistent with the gear planes they carry.
+       These solved numbers are the immovable hard points.
+  L4 — FLESH (left to the managers): wall thickness, shaft diameters, ribs, fillets. You do
+       NOT compute these; managers derive and round them inside the L3 cage, then check back.
+
+  UPWARD-ONLY CONFLICT RULE: if a lower level cannot fit, escalate — never reach down and
+  edit a locked coordinate. Prefer to change L4 (thin a part, pick stronger material); then,
+  if truly stuck, L3 (widen an envelope); only as a last resort L2 (change the topology/ratio
+  split). NEVER weaken L1.
+
+  DO:
+  - Solve L1->L2->L3 in order; treat every geometric number as an UNKNOWN the solver returns.
+  - Feed `solve_constraints` the real distance/coincidence constraints (mesh center distance
+    = sum of pitch radii; meshing gears coincident in the axial plane; coaxial shaft points).
+  - Read the solved coordinates back and USE them; if the solver says NOT CONSISTENT or the
+    DOF is wrong, your L2/L3 disagree — fix the topology or the constraints, don't force a
+    number.
+  AVOID:
+  - Writing a coordinate first and then calling the solver only to "confirm" it (that proves
+    nothing — you fixed the answer before asking).
+  - Skipping L3's solve and hand-estimating center distances or axial planes.
+  - Reaching down to nudge a manager's local part, or reaching up to relax torque/ratio, to
+    make a fit "work".
 
 GROUPING (size subassemblies sensibly, but do NOT starve them):
 Each subassembly goes to ONE manager (which streams its whole kinematic model) and a

@@ -460,6 +460,34 @@ RULES
   EXACTLY that diameter and put it on the frame's axis, so the part meets its
   neighbor across the seam. Do NOT invent a different position, axis, or diameter for
   an interface; only the boss changes a hard point.
+- COAXIAL STATIONS ON ONE SHAFT: when several interface frames share the same axis and
+  differ only along it (a front bearing, one or more gear/mesh centers, a rear bearing all
+  on ONE shaft), they are ORDERED STATIONS at DISTINCT axial positions — read the differing
+  coordinate along the axis and place EACH part (bearing, gear, pinion, spacer) at ITS
+  station's axial offset on the shaft. Do NOT collapse them to a common origin: parts stacked
+  at the same axial point grossly overlap. Space the shaft's parts so each sits at its
+  frame's axial station and fills the gaps between stations (a spacer occupies the run
+  between two gears; bearings sit at the ends).
+- EXACT FRAME NAMES — realize EVERY interface frame under the EXACT name it is given above,
+  character for character. The assembler and the frame gate match your realized frames to the
+  contract BY NAME; a frame you realize under a different name (e.g. contract asks for
+  'intermediate_stage_stage_1_mesh' and you report 'inter_pinion_mesh') counts as the
+  contract frame NOT realized — your subassembly is rejected even though you built the part.
+  You may name your PARTS/ports whatever you like, but each `frames_realized` entry MUST use
+  the contract's frame name verbatim. Realize every listed frame; do not add, rename, drop,
+  or merge them.
+- A `mesh` frame MUST be realized ON A GEAR part — a part with real teeth (module + teeth,
+  or a pitch diameter), whose center sits at the mesh frame. Do NOT put a mesh frame on the
+  shaft, a bearing, or a plain cylinder: the assembler resolves the gear pair by finding a
+  gear link at each mesh frame, and a mesh frame on a non-gear part makes the mesh unbuildable.
+  Realize the mesh frame under its EXACT contract name (see above) on that gear link.
+  CONCRETELY: for EVERY `mesh`-role interface frame in the list, add an entry to your
+  connection graph's `frames` section: {{"frame": "<exact contract mesh-frame name>",
+  "part": "<your gear part>", "port": "center"}}. If a shaft carries TWO gears (e.g. an
+  intermediate stage with a stage-1 gear AND a stage-2 pinion), each of the two mesh frames
+  binds to a DIFFERENT gear — never point both at the same part. A gear sub whose mesh frames
+  are missing or bound to a non-gear part is REJECTED (ERR_MESH_FRAME_NOT_ON_GEAR), so do this
+  every time.
 {move_rule}
 
 {frames_decl}"""

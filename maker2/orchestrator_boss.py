@@ -222,8 +222,17 @@ def _load_sub_from_disk(sub_id: str, session_root: str, log_fn=print,
     # Frame-completeness: a reused sub MUST expose every interface frame its plan spec
     # requires, or it can't be assembled. If any is unrealized, don't reuse — rebuild.
     if ok and plan is not None:
-        spec = plan.sub_by_id(sub_id)
-        want = {fr.name for fr in (spec.frames if spec else [])}
+        # Require the SAME frame set the manager was asked to realize — i.e. the frame
+        # CONTRACT (compiler-named frames when a hardpoint contract exists, boss-plan names
+        # otherwise), not the raw boss-plan sub.frames. frame_contract_for is the single
+        # function the build/write path uses, so routing `want` through it keeps the reuse
+        # baseline in the same naming as what was persisted to sub_frames.json; otherwise a
+        # compiled sub always looks "missing" its frames and is needlessly rebuilt.
+        try:
+            want = {fr.name for fr in (frame_contract_for(plan, sub_id).frames or [])}
+        except Exception:
+            spec = plan.sub_by_id(sub_id)
+            want = {fr.name for fr in (spec.frames if spec else [])}
         got = {e.get("frame") for e in (frames or [])}
         missing = sorted(want - got)
         if missing:

@@ -28,10 +28,33 @@ import trimesh
 
 
 # Bump when the decomposition logic changes so stale cached pieces are ignored.
-_CACHE_VERSION = "v1"
+_CACHE_VERSION = "v2"
 
 # CoACD defaults tuned for mechanical parts: a lower threshold keeps tooth concavity.
 _COACD_THRESHOLD = 0.05
+
+# Convex pieces below this volume (STL units = mm^3) are dropped: a near-zero sliver from
+# VHACD/CoACD (e.g. a tooth-tip splinter on a small pinion) has no usable inertia and makes
+# MuJoCo reject the whole model ("mesh volume is too small"). Losing such a splinter is
+# harmless — the surviving pieces still cover the part's real volume.
+_MIN_PIECE_VOLUME_MM3 = 1e-3
+
+
+def _drop_slivers(pieces: list) -> list:
+    """Drop convex pieces whose volume is below the MuJoCo floor, keeping order. Never
+    empties the list: if every piece is sub-threshold (a genuinely tiny part), keep the
+    single largest so the part still has geometry."""
+    if not pieces:
+        return pieces
+    def _vol(p):
+        try:
+            return abs(float(p.volume))
+        except Exception:
+            return 0.0
+    kept = [p for p in pieces if _vol(p) >= _MIN_PIECE_VOLUME_MM3]
+    if kept:
+        return kept
+    return [max(pieces, key=_vol)]
 
 
 def _part_hash(stl_path: str, backend: str) -> str:
@@ -158,6 +181,9 @@ def decompose_part(stl_path: str, meshes_dir: str, part_name: str,
         method = "hull"
         if metrics is not None:
             metrics["contact_degraded"] = True
+    else:
+        # Drop sub-floor slivers a real decomposition can emit; MuJoCo rejects them.
+        pieces = _drop_slivers(pieces)
 
     paths = _cache_paths(meshes_dir, part_name, len(pieces))
     os.makedirs(meshes_dir, exist_ok=True)

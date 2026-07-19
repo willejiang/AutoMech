@@ -196,15 +196,26 @@ class ParallelShaftTwoStageReducerTemplate(DesignTemplate):
                                             (f"solved:shaft:{role}",)))
             mesh_planes = (("stage_1", values["stage_1_gear_plane_mm"].value / 1000.0),
                            ("stage_2", values["stage_2_gear_plane_mm"].value / 1000.0))
+            # Which gear body sits on THIS shaft at THIS mesh stage, so the manager can
+            # build the gear to its exact pitch diameter (input drives with pinion_1,
+            # intermediate carries gear_1 + pinion_2, output carries gear_2).
+            _pitch_key = {
+                ("input_stage", "stage_1"): "pinion_1_pitch_diameter_mm",
+                ("intermediate_stage", "stage_1"): "gear_1_pitch_diameter_mm",
+                ("intermediate_stage", "stage_2"): "pinion_2_pitch_diameter_mm",
+                ("output_stage", "stage_2"): "gear_2_pitch_diameter_mm",
+            }
             for mesh_name, axial in mesh_planes:
                 if ((role == "input_stage" and mesh_name != "stage_1") or
                     (role == "output_stage" and mesh_name != "stage_2")):
                     continue
                 mesh_world = _transform(axial, y, z)
                 mesh_local = _transform(axial, 0.0, 0.0)
+                pitch_dia = values[_pitch_key[(role, mesh_name)]].value
                 hardpoints.append(Hardpoint(f"{role}_{mesh_name}_mesh", sub_id, "mesh",
                                             mesh_world, mesh_local, (1.0, 0.0, 0.0), "YZ",
-                                            (("face_width_mm", values["face_width_mm"].value),),
+                                            (("face_width_mm", values["face_width_mm"].value),
+                                             ("diameter_mm", pitch_dia)),
                                             (f"solved:shaft:{role}", f"parameter:{mesh_name}_gear_plane_mm")))
         hx, hy, hz = (values[key].value / 1000.0 for key in ("housing_x_mm", "housing_y_mm", "housing_z_mm"))
         envelopes = (FunctionalEnvelope(roles["housing"], (-hx / 2, -hz / 2, -hz / 2),

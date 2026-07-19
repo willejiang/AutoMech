@@ -501,6 +501,11 @@ def main() -> int:
                          "worked examples + prior passing designs via a kb_search tool. "
                          "Offline; run `python -m maker2.kb.ingest` once to build it. "
                          "Hierarchy mode.")
+    ap.add_argument("--solver", dest="enable_solver_tool", action="store_true", default=None,
+                    help="offer the authoritative libslvs constraint solver as a "
+                         "`solve_constraints` tool in the boss/manager research pre-step, so "
+                         "agents get exact center distances / coaxial points instead of "
+                         "guessing. No-op when py-slvs is unavailable.")
     ap.add_argument("--per-sub-physics", action="store_true",
                     help="(hierarchy) drive each subassembly on its own URDF before "
                          "assembly, so a drivetrain fault localizes to that sub.")
@@ -519,13 +524,16 @@ def main() -> int:
     if a.hierarchy:
         from maker2.orchestrator_boss import run_boss
         settings = None
-        if a.web or a.engine or a.deep_think is not None or a.kb or a.manager_ir is not None:
+        if (a.web or a.engine or a.deep_think is not None or a.kb
+                or a.manager_ir is not None or a.enable_solver_tool):
             from maker2.config import Settings
             settings = Settings.load()
             if a.web:
                 settings.enable_reference_tools = True
             if a.kb:
                 settings.enable_kb = True
+            if a.enable_solver_tool:
+                settings.enable_solver_tool = True
             if a.engine:
                 settings.engine = a.engine
             if a.deep_think is not None:

@@ -510,6 +510,7 @@ def _manager_gate_errors(model, frame_contract):
         from .benchmarks.schema_gate import manager_schema_gate
         from .benchmarks.manager_gate import manager_gate, frame_drift_errors
         from .benchmarks import GateError as _GateError
+        from .assembler import _gear_pitch_r_mm
     except Exception:
         return []
     errs = manager_schema_gate(model)
@@ -522,6 +523,26 @@ def _manager_gate_errors(model, frame_contract):
             if fr.name not in realized:
                 errs.append(_GateError("manager", "ERR_FRAME_UNREALIZED",
                                        f"interface frame '{fr.name}' is not realized", fr.name))
+        # A MESH frame must be realized ON A GEAR link (a part with a pitch radius). A mesh
+        # frame that is missing, or realized on the shaft/bearing/a plain cylinder, leaves the
+        # assembler unable to find the gear for that seam — the two-gears-on-one-shaft case
+        # then cannot be resolved. Enforce it here so the manager fixes it, not the assembler.
+        realized_link = {e.get("frame"): e.get("link")
+                         for e in (getattr(model, "frames_realized", []) or [])}
+        links_by_name = {l.name: l for l in (getattr(model, "links", []) or [])}
+        for fr in getattr(frame_contract, "frames", []) or []:
+            if getattr(fr, "role", "") != "mesh":
+                continue
+            lk = links_by_name.get(realized_link.get(fr.name))
+            if lk is None or not _gear_pitch_r_mm(lk):
+                errs.append(_GateError(
+                    "manager", "ERR_MESH_FRAME_NOT_ON_GEAR",
+                    f"mesh frame '{fr.name}' must be realized on a GEAR part (with teeth / a "
+                    f"pitch diameter); it is "
+                    + ("not realized at all" if lk is None
+                       else f"on non-gear link '{lk.name}'")
+                    + " — realize it on the meshing gear so the assembler can pair the teeth.",
+                    fr.name))
         errs += frame_drift_errors(model, frame_contract)
     else:
         errs += manager_gate(model, [], None)

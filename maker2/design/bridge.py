@@ -17,9 +17,17 @@ from .templates.gear_reducer import TEMPLATE_ID
 
 _REDUCER_ROLES = ("housing", "input_stage", "intermediate_stage", "output_stage")
 
-
-class TopologyNotCompilable(RuntimeError):
-    """The accepted plan does not match any supported compiler template."""
+# Keyword matchers that bind the compiler's fixed role vocabulary to whatever the boss
+# actually named its subassemblies. The boss authors ids like 'sub_input'/'sub_inter'; the
+# compiler speaks 'input_stage'/'intermediate_stage'. Each role matches if ANY of its
+# keywords appears in the (lowercased) sub id. Order matters: 'intermediate' is tried before
+# 'input'/'output' so 'sub_inter' can't be mis-bound. First unclaimed sub id per role wins.
+_ROLE_KEYWORDS = (
+    ("housing", ("housing", "chassis", "case", "gearbox", "frame")),
+    ("intermediate_stage", ("intermediate", "inter", "mid", "middle", "stage2", "second")),
+    ("input_stage", ("input", "drive", "stage1", "first", "pinion_in")),
+    ("output_stage", ("output", "driven", "stage3", "final", "out")),
+)
 
 
 def _plan_sub_ids(plan) -> tuple[str, ...]:
@@ -27,10 +35,37 @@ def _plan_sub_ids(plan) -> tuple[str, ...]:
     return tuple(getattr(s, "id", "") for s in subs)
 
 
+def _bind_roles(plan) -> dict[str, str] | None:
+    """Map each compiler role -> the boss's actual sub id by keyword, or None if any role
+    is unmatched. A sub id is claimed by at most one role (first match wins in _ROLE_KEYWORDS
+    order), so four distinct reducer subs bind to the four roles regardless of the boss's
+    naming style ('input_stage' or 'sub_input')."""
+    ids = list(_plan_sub_ids(plan))
+    bound: dict[str, str] = {}
+    claimed: set[str] = set()
+    for role, keywords in _ROLE_KEYWORDS:
+        for sid in ids:
+            if sid in claimed:
+                continue
+            low = sid.lower()
+            if any(kw in low for kw in keywords):
+                bound[role] = sid
+                claimed.add(sid)
+                break
+    if set(_REDUCER_ROLES) <= set(bound):
+        return bound
+    return None
+
+
+class TopologyNotCompilable(RuntimeError):
+    """The accepted plan does not match any supported compiler template."""
+
+
 def recognize_template(plan) -> str | None:
-    """Return the template id for a recognized topology, else None."""
-    ids = set(_plan_sub_ids(plan))
-    if set(_REDUCER_ROLES) <= ids:
+    """Return the template id for a recognized topology, else None. Matches the reducer when
+    the plan has a sub bindable to each of the four roles (housing + three stages), by
+    keyword, so the boss's own naming ('sub_input', ...) is accepted."""
+    if _bind_roles(plan) is not None:
         return TEMPLATE_ID
     return None
 
@@ -38,10 +73,14 @@ def recognize_template(plan) -> str | None:
 def derive_intent(plan, facts, template_id: str) -> DesignIntentIR:
     """Deterministically build a DesignIntentIR from the accepted plan topology.
 
-    Roles bind to same-named subassemblies. No coordinates or derived numbers
-    enter the intent; only references and discrete choices.
+    Roles bind to the boss's actual subassembly ids by keyword (`_bind_roles`), so a plan
+    naming its subs 'sub_input'/'sub_inter'/... still routes into the compiler. No
+    coordinates or derived numbers enter the intent; only references and discrete choices.
     """
-    roles = tuple((role, role) for role in _REDUCER_ROLES)
+    bound = _bind_roles(plan)
+    if bound is None:
+        raise TopologyNotCompilable("plan topology no longer binds to reducer roles")
+    roles = tuple((role, bound[role]) for role in _REDUCER_ROLES)
     ratio_fact_ids = tuple(f.id for f in facts if f.kind == "ratio")
     return DesignIntentIR(
         template_id=template_id,

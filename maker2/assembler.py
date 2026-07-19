@@ -412,6 +412,31 @@ def _gear_link(sub, seam, which: int):
     return None
 
 
+def _all_gear_links(sub):
+    """Every built link on `sub` that is a real gear (has a pitch radius)."""
+    if sub is None or getattr(sub, "model", None) is None:
+        return []
+    return [l for l in sub.model.links if _gear_pitch_r_mm(l)]
+
+
+def _gear_link_disambiguated(sub, seam, which, claimed: set):
+    """Resolve a mesh endpoint to a gear link, with a geometry-aware fallback when the
+    frame-based and name-based lookups (``_gear_link``) both fail. The frame-based path is
+    the reliable one — it points at the exact gear the manager realized the mesh frame on —
+    but when a manager forgot to realize the mesh frame AND named the gear something the
+    boss's mesh_pair doesn't match, we fall back to: pick the sub's gear that is NOT already
+    claimed by another mesh seam. On a two-gear shaft (an intermediate stage carrying a
+    stage-1 gear and a stage-2 pinion) this uniquely assigns the remaining gear once its
+    sibling stage is resolved, instead of failing on an unresolvable name."""
+    lk = _gear_link(sub, seam, which)
+    if lk is not None:
+        return lk
+    gears = [g for g in _all_gear_links(sub) if g.name not in claimed]
+    if len(gears) == 1:
+        return gears[0]
+    return None
+
+
 def _classify_subs(plan, subs: dict):
     """Return (gear_sub_ids: set, base_sub_id or None). A gear stage is an endpoint of a
     power seam with a 2-tuple mesh_pair; a passive base has no mesh endpoint and parents at
@@ -556,6 +581,8 @@ def _place_mesh_cluster(plan, subs: dict, gear_ids: set, base_id, log) -> dict:
         log(f"[mesh] DIAG driver axis check failed ({type(_e).__name__})")
     queue = [root_gear]
     seen = {root_gear}
+    claimed_gears: set = set()  # gear link names already bound to a mesh seam (per-sub-agnostic
+                                # names are namespaced by build, so collisions across subs are nil)
     while queue:
         cur = queue.pop(0)
         for seam in by_parent.get(cur, []):
@@ -563,14 +590,16 @@ def _place_mesh_cluster(plan, subs: dict, gear_ids: set, base_id, log) -> dict:
                 continue
             parent = subs[seam.parent_sub]
             child = subs[seam.child_sub]
-            gp = _gear_link(parent, seam, 0)
-            gc = _gear_link(child, seam, 1)
+            gp = _gear_link_disambiguated(parent, seam, 0, claimed_gears)
+            gc = _gear_link_disambiguated(child, seam, 1, claimed_gears)
             if gp is None or gc is None:
                 raise AssemblerError(
                     f"power seam '{seam.id}': could not resolve the meshing gears — the mesh "
                     f"frames '{seam.parent_frame}'/'{seam.child_frame}' were not realized on a "
                     f"gear link and mesh_pair {seam.mesh_pair} names no built gear. Realize each "
                     f"mesh frame on its gear.")
+            claimed_gears.add(gp.name)
+            claimed_gears.add(gc.name)
             r_p = _gear_pitch_r_mm(gp)
             r_c = _gear_pitch_r_mm(gc)
             if not r_p or not r_c:

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import math
+import re
 from dataclasses import dataclass
 
 from .contracts import HardpointContract
@@ -78,4 +79,59 @@ def compiled_gate(problem, solve_result, contract: HardpointContract, *,
     missing = sorted(sub_ids - covered)
     if missing:
         errors.append(DesignGateError("ERR_INTERFACE_COVERAGE", f"subassemblies without hardpoints: {missing}"))
+    errors.extend(_axial_consistency_errors(contract, tolerance_m=1e-4))
+    return tuple(errors)
+
+
+def _axial_along(hardpoint) -> float:
+    """The hardpoint's position projected on its own axis, in meters. For these templates
+    the shaft/gear axis is x=(1,0,0), so this is the axial (along-shaft) coordinate that a
+    mesh plane or bearing-seat plane lives at."""
+    world = hardpoint.world_transform
+    axis = hardpoint.axis
+    origin = tuple(world[i][3] for i in range(3))
+    return sum(origin[i] * axis[i] for i in range(3))
+
+
+def _axial_consistency_errors(contract: HardpointContract, *, tolerance_m: float
+                              ) -> tuple[DesignGateError, ...]:
+    """Cross-subassembly AXIAL self-consistency, computed from the frozen contract alone.
+
+    The compiler's own skeleton solve is radial-only (it spaces shaft centers but pins every
+    stage at axial 0), so it never checks that two gears meant to MESH actually sit in the
+    same plane ALONG the shaft. When the boss's plan implies a gear that seats where its mesh
+    partner cannot reach, the mesh-role hardpoints for that stage end up at different axial
+    positions here — the same contradiction that otherwise only surfaces post-assembly as
+    'gear_face_overlap'. This catches it before any manager builds. Geometry-free: reads only
+    the mesh-role hardpoint world transforms already in the contract.
+
+    Mesh-role hardpoint ids are '{role}_{stage}_mesh' (e.g. 'input_stage_stage_1_mesh'); the
+    two gears of one stage share the '{stage}' token. A stage whose two participants disagree
+    axially by > tolerance can't engage."""
+    stages: dict[str, list] = {}
+    for hp in contract.hardpoints:
+        if hp.role != "mesh":
+            continue
+        # id form '<role>_<stage>_mesh' where role itself may contain '_' (e.g.
+        # 'output_stage_stage_2_mesh'). The stage token is the 'stage_<n>' run; match it
+        # directly rather than positional splitting so an underscored role can't leak in.
+        m = re.search(r"(stage_\d+)", hp.id)
+        stage = m.group(1) if m else hp.id
+        stages.setdefault(stage, []).append(hp)
+    errors = []
+    for stage, members in sorted(stages.items()):
+        if len(members) < 2:
+            continue  # a lone mesh hardpoint has no partner to disagree with
+        axials = [(_axial_along(hp), hp) for hp in members]
+        lo = min(axials, key=lambda t: t[0])
+        hi = max(axials, key=lambda t: t[0])
+        gap = hi[0] - lo[0]
+        if gap > tolerance_m:
+            errors.append(DesignGateError(
+                "ERR_MESH_AXIAL_PLANE",
+                f"gears meshing at stage '{stage}' are {gap * 1000:.1f} mm apart along the "
+                f"shaft axis ('{lo[1].id}' vs '{hi[1].id}'), so their teeth cannot engage. "
+                "Each meshing gear must sit in the same axial plane; a gear's mesh-plane "
+                "position and its shaft's bearing-seat placement must be consistent.",
+                stage))
     return tuple(errors)
