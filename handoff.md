@@ -98,6 +98,41 @@ it has NOT yet been validated by a fresh end-to-end run.
    `did not realize interface frame ['..._stage_1_mesh']` without the gate blocking. If runs
    stall there, ensure the patch path re-runs the same frame gate.
 
+## Planned next: "Plan-乙" — the LLM geometry-authority audit (NOT yet started)
+
+This is the strategic follow-up agreed at the end of the session, and the recommended thing
+to do AFTER a run reaches precheck. The thesis, proven repeatedly this session: **almost every
+blocker was one bug class — an LLM (boss or manager) holding authority over geometry/naming
+that the deterministic compiler should own, and a by-name check silently failing to catch the
+divergence.** Each fix so far patched one instance. Plan-乙 is to stop playing whack-a-mole and
+systematically CLOSE the class.
+
+Concrete task for tomorrow:
+
+- **Produce an audit**: enumerate every place in the pipeline where an LLM output can still
+  OVERRIDE or DIVERGE FROM the compiler's authoritative geometry/naming. Known members of the
+  class already found (use as seeds): boss authoring seat/mesh coordinates and frame names
+  (now unified — but verify no other path reintroduces boss names); manager choosing where to
+  realize a frame (mesh-on-gear, seat spread); manager PATCH path bypassing the frame gate
+  (#3 above); any seam field the boss can rename on re-plan; the `_lock_interface_frame_names`
+  path in boss.py (position/count-gated, defeated before — audit whether unification makes it
+  redundant or still needed).
+- **For each audited point, classify**: (i) already deterministic (compiler owns it), (ii)
+  LLM proposes + a by-name gate must catch divergence — verify the names line up post-unify
+  so the gate actually fires, or (iii) LLM still holds raw authority with no deterministic
+  backstop — these are the remaining holes to close.
+- **The closing principle** (make it a design rule): *anything geometric/positional/naming is
+  owned by the `HardpointContract` (the compiler); the LLM may only REFERENCE it, never
+  rewrite it.* `unify_plan_frame_names` is the first systematic application of this rule;
+  Plan-乙 finds and fixes the rest.
+- **Deliverable**: a short audit doc (holes ranked by how load-bearing they are) + fixes for
+  the top holes. The deterministic seat-placement fix (Next-step #2) is likely one of them.
+
+Rationale for doing 乙 (not 丙, "let LLMs write geometry code"): the 丙 probe
+(`maker2/experiments/llm_writes_geometry.py`) showed LLM-written geometry is self-consistent
+but NOT reproducible or inter-agent-aligned — expanding LLM geometry authority makes the class
+WORSE. 乙 shrinks it. See the Design note below.
+
 ## Local-only changes NOT pushed (keep local)
 
 - `worker/**` route wiring (`PYTHON_BIN` fallback + auto-adding `--solver`) — for running the
