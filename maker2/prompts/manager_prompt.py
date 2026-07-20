@@ -165,6 +165,11 @@ a `cadquery.Assembly`. Rules:
   * Space coaxial parts along the axis with real gaps: front bearing | gear | spacer | pinion |
     rear bearing, each at a DISTINCT axial station, none sharing the same z-run.
   Aim for zero interpenetration — the pipeline rejects a subassembly whose parts overlap.
+- KEEP IT SIMPLE — OMIT fiddly small parts that only cause overlaps. A KEY, keyway, set-screw,
+  dowel, or snap-ring is NOT needed: gears transmit by TOOTH CONTACT, not by a modeled key, and
+  the pipeline never checks for one. Do NOT model a key/collar/retaining-ring unless it is the
+  functional point of the machine. Prefer the minimal part set: shaft + gears + bearings. Fewer
+  parts = fewer overlaps = a subassembly that passes.
 
 Respond in TWO parts: first NOTES (a short plaintext plan of the parts + their placements),
 then the single ```python block. If asked to CONTINUE, output only the ```python block."""
@@ -576,13 +581,27 @@ def _build_manager_subassembly_py(frame_contract) -> str:
     frames_txt = "\n".join(lines) if lines else "  (none)"
     sub_id = getattr(fc, "sub_id", "?")
     origin = getattr(fc, "global_origin_note", "") or "(the machine's shared origin)"
+    params = getattr(fc, "params_text", "") or ""
+    params_block = (f"\nSHARED PARAMETER MODULE (available as `import params`) — derive your "
+                    f"dimensions and the global coordinates below FROM these, so every "
+                    f"subassembly uses identical numbers:\n```python\n{params}\n```\n"
+                    if params.strip() else "")
     return f"""\
 BUILD THIS SUBASSEMBLY: {sub_id}
 GLOBAL ORIGIN: {origin}
-
+{params_block}
 INTERFACE FRAMES this subassembly must expose, in GLOBAL machine millimeters (place a real
 part so its relevant feature sits AT each frame):
 {frames_txt}
+
+CRITICAL — THESE GLOBAL COORDINATES ARE WELD POINTS, NOT SUGGESTIONS. Every OTHER
+subassembly is built by a DIFFERENT manager against the SAME global frame list, and the
+assembler welds your parts to theirs BY THESE COORDINATES with NO further solving. So the
+feature you place at a frame MUST land at that EXACT global mm coordinate. If the boss says
+`input_shaft_front` is at (0, 0, 0), the front end of your shaft must be at global (0,0,0) —
+compute the shaft's `loc` so its front face is there, don't just drop it at the origin and
+hope. A 1 mm error becomes an interpenetration or a floating weld at assembly. If a `params`
+module is offered, derive these coordinates from it so every manager uses identical numbers.
 
 Write `build_subassembly()` returning a cq.Assembly. For each part, `asm.add(..., name=...,
 loc=cq.Location((x_mm, y_mm, z_mm)), metadata={{...}})` with the GLOBAL coordinate from the
