@@ -400,7 +400,8 @@ def decompose(product_prompt: str, settings, *, image_path: str | None = None,
     # Hierarchy: build ONE subassembly under the boss's interface/frame contract.
     if frame_contract is not None:
         conv.add_user_message(build_manager_subassembly(
-            frame_contract, manager_ir=getattr(settings, "manager_ir", True)))
+            frame_contract, manager_ir=getattr(settings, "manager_ir", True),
+            manager_py=getattr(settings, "manager_py", False)))
         if log_fn:
             log_fn(f"[manager] subassembly '{getattr(frame_contract, 'sub_id', '?')}' "
                    f"with {len(getattr(frame_contract, 'frames', []))} interface frame(s)")
@@ -433,8 +434,16 @@ def _manager_research(client, conv, settings, product_prompt, *, log_fn=None) ->
                    collection="manager", log_fn=log_fn)
 
 
+def _extract_python_block(text: str) -> str:
+    """The single ```python code block from an LLM reply (方案B manager). Falls back to the
+    whole text if the model omitted fences."""
+    import re
+    m = re.search(r"```(?:python)?\s*(.*?)```", text, re.S)
+    return (m.group(1) if m else text).strip()
+
+
 def _parse_manager_output(text: str, *, settings=None, frame_contract=None,
-                          log_fn=None) -> KinematicModel:
+                          model_json_path=None, log_fn=None) -> KinematicModel:
     """Turn the manager's raw LLM text into a validated KinematicModel.
 
     Two authoring formats, selected by ``settings.manager_ir`` (default ON):
@@ -454,6 +463,30 @@ def _parse_manager_output(text: str, *, settings=None, frame_contract=None,
     (skeleton) are all ValueError subclasses, so the loop's existing
     ``except (ValueError, ManagerError, json.JSONDecodeError)`` feeds the message back as a
     repair request with no change to the retry loop."""
+    if getattr(settings, "manager_py", False):
+        # 方案B: the manager authored a parametric CadQuery module. Extract the python code
+        # block, evaluate it into a KinematicModel with GLOBAL poses, exporting each part's
+        # STL along the way (this ABSORBS the worker step). Runs in the sub's run dir so
+        # `import params` + meshes/ resolve. Frame realization is validated separately (the
+        # authored assembly places parts in global coords; no declarative frames_realized).
+        from pathlib import Path as _P
+
+        from .py_manager import evaluate_manager_python, PyManagerError
+        code = _extract_python_block(text)
+        if not code:
+            raise ManagerError("no ```python code block found; the manager must emit ONE "
+                               "python block defining build_subassembly() -> cq.Assembly")
+        run_dir = str(_P(model_json_path).parent) if model_json_path else "."
+        sub_name = getattr(frame_contract, "sub_id", "") or "subassembly"
+        params_text = getattr(frame_contract, "params_text", "") or ""
+        try:
+            model = evaluate_manager_python(code, run_dir, sub_name,
+                                            params_text=params_text, log_fn=log_fn)
+        except PyManagerError as e:
+            raise ManagerError(str(e)) from e
+        _validate_model(model)
+        return model
+
     if getattr(settings, "manager_ir", True):
         from .mate_solver import solve_connection_graph_text
         model = solve_connection_graph_text(text)
@@ -499,13 +532,19 @@ def _slice_mjcf(block: str) -> str:
     return block.strip()
 
 
-def _manager_gate_errors(model, frame_contract):
+def _manager_gate_errors(model, frame_contract, *, manager_py=False):
     """The PURE-PYTHON deterministic gate errors for a parsed model, used to (a) decide
     whether an attempt is clean and (b) feed badness. No render, no LLM. Mirrors the
     orchestrator's manager-gate block (schema + connectivity/overlap + frames-realized +
     frame-drift) so the loop's notion of 'good' matches the gate that will judge the sub.
     Imported lazily: benchmarks pulls in assembler/precheck (numpy), which we don't want at
     manager import time, and it keeps manager usable without the benchmark deps."""
+    if manager_py:
+        # 方案B: the structural gates (schema/connectivity/frame-realization) validate the
+        # connection-graph JSON contract that a CadQuery-authoring manager no longer produces.
+        # These are the stage-2 dismantle targets; geometric correctness is enforced by the
+        # evaluator (non-empty solids, built geometry) + the downstream precheck instead.
+        return []
     try:
         from .benchmarks.schema_gate import manager_schema_gate
         from .benchmarks.manager_gate import manager_gate, frame_drift_errors
@@ -573,6 +612,7 @@ def _decompose_loop(client, conv, settings, *, memory_path, tag, model_json_path
 
     attempts = settings.manager_retries + 1
     _mgr_ir = getattr(settings, "manager_ir", True)
+    _mgr_py = getattr(settings, "manager_py", False)
     plateau_k = int(getattr(settings, "loop_plateau_k", 2))
     eps = 1e-3
     best_badness = float("inf")
@@ -586,10 +626,10 @@ def _decompose_loop(client, conv, settings, *, memory_path, tag, model_json_path
         if log_fn:
             log_fn(f"[manager] attempt {attempt}/{attempts}: decomposing (streaming)…")
         try:
-            text = stream_two_part(client, conv, manager_system(_mgr_ir),
+            text = stream_two_part(client, conv, manager_system(_mgr_ir, _mgr_py),
                                    memory_path=memory_path,
                                    regen_msg_fn=lambda notes: build_manager_json_from_notes(
-                                       notes, manager_ir=_mgr_ir),
+                                       notes, manager_ir=_mgr_ir, manager_py=_mgr_py),
                                    log_fn=log_fn, tag=tag)
         except LLMError as e:
             raise ManagerError(f"Manager LLM request failed: {e}") from e
@@ -599,7 +639,8 @@ def _decompose_loop(client, conv, settings, *, memory_path, tag, model_json_path
         #    back (with the last badness delta if we have one) and retry.
         try:
             model = _parse_manager_output(text, settings=settings,
-                                          frame_contract=frame_contract, log_fn=log_fn)
+                                          frame_contract=frame_contract,
+                                          model_json_path=model_json_path, log_fn=log_fn)
         except (ValueError, ManagerError, json.JSONDecodeError) as e:
             last_err = str(e)
             if log_fn:
@@ -610,7 +651,7 @@ def _decompose_loop(client, conv, settings, *, memory_path, tag, model_json_path
             continue
 
         # 2. Score the parsed model with the pure gates + badness (no physics).
-        gate_errs = _manager_gate_errors(model, frame_contract)
+        gate_errs = _manager_gate_errors(model, frame_contract, manager_py=_mgr_py)
         blocking = [e for e in gate_errs if e.code not in _NONBLOCKING_CODES]
         cur_bd = badness_breakdown(model, gate_errs, context={"fc": frame_contract})
         cur_badness = cur_bd["total"]

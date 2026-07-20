@@ -29,6 +29,71 @@ def _resolver(root,source=False):
   return p
  return r
 
+
+def build_read_tools(session_root, *, with_source=True):
+ """方案B: the analyzer's read-ONLY artifact/log/source tools, packaged for reuse by the
+ sub debugger so it can INVESTIGATE (read this sub's run.log / model / reports / source)
+ like the analyzer does, instead of getting a static pre-stuffed context blob. Returns
+ (tool_schemas, executors) suitable for tools.run_tool_loop. Sandboxed via _resolver."""
+ ar=_resolver(session_root); sr=_resolver(os.path.dirname(__file__),True)
+ def list_artifacts(pattern='**/*',limit=100):
+  files=[]
+  for p in glob.glob(os.path.join(session_root,pattern),recursive=True):
+   if os.path.isfile(p):
+    rel=os.path.relpath(p,session_root)
+    try:ar(rel)
+    except Exception:continue
+    files.append(rel)
+   if len(files)>=min(limit,MAX_GLOB):break
+  return json.dumps(files)
+ def read_text(path,offset=0,limit=200,source=False):
+  p=(sr if source else ar)(path)
+  if os.path.getsize(p)>MAX_FILE:raise ValueError('file too large')
+  ls=open(p,encoding='utf-8',errors='replace').read().splitlines()
+  chunk=ls[max(0,offset):max(0,offset)+min(limit,MAX_LINES)]
+  return '\n'.join(f'{offset+i+1}\t{x}' for i,x in enumerate(chunk))
+ def read_json(path,pointer=''):
+  obj=json.load(open(ar(path),encoding='utf-8'))
+  if pointer:
+   for part in pointer.strip('/').split('/'):obj=obj[int(part)] if isinstance(obj,list) else obj[part]
+  return json.dumps(obj,indent=2)
+ def search_log(regex,context=2,max_matches=30):
+  if len(regex)>200:raise ValueError('regex too long')
+  rx=re.compile(regex);ls=open(ar('run.log'),encoding='utf-8',errors='replace').read().splitlines();out=[]
+  for i,x in enumerate(ls):
+   if rx.search(x):
+    a=max(0,i-min(context,10));b=min(len(ls),i+min(context,10)+1);out.extend(f'{j+1}\t{ls[j]}' for j in range(a,b))
+    if len(out)>=min(max_matches,MAX_MATCHES):break
+  return '\n'.join(out)
+ def search_files(scope,regex,glob_pattern='**/*.py',max_matches=30):
+  root=os.path.dirname(__file__) if scope=='source' else session_root;resolve=sr if scope=='source' else ar
+  rx=re.compile(regex);out=[]
+  for p in glob.glob(os.path.join(root,glob_pattern),recursive=True):
+   if not os.path.isfile(p) or os.path.getsize(p)>MAX_FILE:continue
+   rel=os.path.relpath(p,root)
+   try:resolve(rel)
+   except Exception:continue
+   for i,x in enumerate(open(p,encoding='utf-8',errors='replace')):
+    if rx.search(x):out.append(f'{rel}:{i+1}: {x.rstrip()}')
+    if len(out)>=min(max_matches,MAX_MATCHES):return '\n'.join(out)
+  return '\n'.join(out)
+ tools=[
+  _tool('list_artifacts','List files under this run dir.',
+        {'pattern':{'type':'string'},'limit':{'type':'integer'}}),
+  _tool('read_text','Read lines of an artifact (or maker2 source with source=true).',
+        {'path':{'type':'string'},'offset':{'type':'integer'},'limit':{'type':'integer'},'source':{'type':'boolean'}},('path',)),
+  _tool('read_json','Read a JSON artifact, optionally a JSON-pointer sub-path.',
+        {'path':{'type':'string'},'pointer':{'type':'string'}},('path',)),
+  _tool('search_log','Regex-search this run.log with context.',
+        {'regex':{'type':'string'},'context':{'type':'integer'},'max_matches':{'type':'integer'}},('regex',)),
+  _tool('search_files',"Regex-search artifacts (scope='artifacts') or maker2 source (scope='source').",
+        {'scope':{'type':'string'},'regex':{'type':'string'},'glob_pattern':{'type':'string'},'max_matches':{'type':'integer'}},('scope','regex')),
+ ]
+ execs={'list_artifacts':list_artifacts,'read_text':read_text,'read_json':read_json,
+        'search_log':search_log,'search_files':search_files}
+ return tools,execs
+
+
 def analyze_failure(session_root,report,candidates,settings,log_fn=print,report_path="",
                     source="slvs",attempt=1):
  ar=_resolver(session_root); sr=_resolver(os.path.dirname(__file__),True); calls=[]; seen=[]; cmap={c.candidate_id:c for c in candidates}

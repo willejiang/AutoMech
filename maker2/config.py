@@ -208,6 +208,22 @@ class Settings:
                                                    # --no-manager-ir falls back to the MJCF
                                                    # skeleton path (mjcf_skeleton.py). See
                                                    # Part A of the plan.
+    manager_py: bool = False                       # 方案B experiment: manager authors a
+                                                   # parametric CadQuery module
+                                                   # (build_subassembly()->cq.Assembly with
+                                                   # GLOBAL locations) instead of a connection
+                                                   # graph. py_manager.evaluate_manager_python
+                                                   # runs it, exports each part's STL, and
+                                                   # returns a KinematicModel with GLOBAL poses
+                                                   # — so the worker step is absorbed and the
+                                                   # assembler's cross-sub solve becomes a no-op.
+                                                   # Takes precedence over manager_ir when set.
+    debugger_read_tools: bool = False              # 方案B: give the sub debugger the analyzer's
+                                                   # read-only tool loop (read_json/read_text/
+                                                   # search_log/search_files) so it investigates
+                                                   # this sub's run.log/reports/source itself
+                                                   # before authoring its patch, instead of a
+                                                   # single-shot pre-stuffed context blob.
     geometry_compiler_mode: str = "auto"           # auto | legacy | required. In `auto`, a
                                                    # recognized two-stage reducer topology is
                                                    # compiled to a frozen zero-DOF hardpoint

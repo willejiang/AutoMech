@@ -205,7 +205,23 @@ def parse_plan(text: str) -> SubassemblyPlan:
         global_origin_note=str(obj.get("global_origin_note") or ""),
         subassemblies=[_sub_from_dict(d, i) for i, d in enumerate(subs)],
         seams=[_seam_from_dict(d, i) for i, d in enumerate(seams)],
+        params_text=str(obj.get("params_text") or "") or _extract_params_block(text),
     )
+
+
+def _extract_params_block(text: str) -> str:
+    """方案B: an OPTIONAL ```python params block the boss may emit before its JSON, defining
+    the shared parameter module (constants + relation functions). Best-effort: returns "" if
+    absent. Only accepted when it looks like a params module (defines/mentions params), so a
+    stray code fence isn't mistaken for it."""
+    import re
+    for m in re.finditer(r"```(?:python)?\s*(.*?)```", text, re.S):
+        block = m.group(1).strip()
+        low = block.lower()
+        if ("def " in block or "=" in block) and ("param" in low or "module" in low
+                                                   or "teeth" in low or "= " in block):
+            return block
+    return ""
 
 
 # --------------------------------------------------------------------------- #
@@ -392,6 +408,7 @@ def plan_to_dict(plan: SubassemblyPlan) -> dict:
         "name": plan.name,
         "root_sub": plan.root_sub,
         "global_origin_note": plan.global_origin_note,
+        "params_text": getattr(plan, "params_text", "") or "",
         "subassemblies": [
             {
                 "id": s.id,
@@ -563,6 +580,7 @@ def frame_contract_for(plan: SubassemblyPlan, sub_id: str,
                    for o in plan.subassemblies if o.id != sub_id],
         appearance_summary=summary,
         through_mounts=through,
+        params_text=getattr(plan, "params_text", "") or "",
     )
 
 
@@ -596,6 +614,16 @@ def plan_machine(product_prompt: str, settings, *, image_path: str | None = None
         build_boss_user(product_prompt, has_image=bool(image_path),
                         include_example=not (feedback and prior_plan_json)),
         images=images)
+    if getattr(settings, "manager_py", False):
+        conv.add_user_message(
+            "ADDITIONALLY (parametric-Python mode): BEFORE the JSON, emit ONE ```python code "
+            "block defining the shared PARAMETER MODULE for this machine — the load-bearing "
+            "constants (module, tooth counts, ratios, diameters) AND the relation functions "
+            "that derive everything else (e.g. `def center_distance(m, z1, z2): return "
+            "m*(z1+z2)/2`, `def pitch_radius(m, z): return m*z/2`). The per-subassembly "
+            "managers will `import params` and derive every dimension from it, so put every "
+            "number a manager would need here as a named constant or function. Then the "
+            "JSON plan (subassemblies + seams) as usual.")
     if image_path and log_fn:
         log_fn(f"[boss] using input image: {image_path}")
     # Show the prior plan FIRST (both refine and fault re-plan build on it), so the

@@ -190,6 +190,32 @@ def debug_sub(model, ctx, run_dir, spec, plan, user_prompt, conflicts, settings,
     else:
         client = settings.manager_client()
     conv = Conversation()
+    # 方案B: give the debugger the ANALYZER's read-only investigation power. When enabled,
+    # run a short tool loop first so the LLM can read THIS sub's run.log / model / reports /
+    # source itself (instead of only the pre-stuffed blob below), then carry its findings into
+    # the patch turn. The patch OUTPUT contract is unchanged — only the input got richer.
+    if getattr(settings, "debugger_read_tools", False):
+        try:
+            from .assembly_analyzer import build_read_tools
+            from .tools import run_tool_loop
+            tools, execs = build_read_tools(run_dir)
+            inv = Conversation()
+            inv.add_user_message(
+                f"You are debugging subassembly '{spec.id}'. Investigate the failure by reading "
+                f"this run's artifacts, run.log, and — if useful — maker2 source. Conflicts:\n"
+                + "\n".join(f"  - {d}" for d in conflicts_desc)
+                + "\nWhen done, reply with a SHORT plaintext diagnosis (what's wrong + which "
+                "part/pose to change). Do a FEW focused reads, then stop.")
+            findings = run_tool_loop(
+                client, inv, "You are a read-only CAD failure investigator. Use the tools to "
+                "understand the fault, then give a concise diagnosis.", tools, execs,
+                max_rounds=8, log_fn=log_fn)
+            if findings and findings.strip():
+                conv.add_user_message(
+                    "Your own investigation of this subassembly found:\n" + findings.strip())
+                log_fn("[debugger] investigation pass complete (read-tools)")
+        except Exception as e:
+            log_fn(f"[debugger] investigation pass skipped ({type(e).__name__}: {e})")
     conv.add_user_message(build_subdebugger_user(
         user_prompt, getattr(spec, "brief", "") or "", frames,
         model_json, urdf_text, part_scripts, conflicts_desc,

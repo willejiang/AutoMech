@@ -755,6 +755,85 @@ def _override_base_bores(plan, subs: dict, base_id: str, placed_root: dict, log)
             log(f"[mesh]   skip: {s}")
 
 
+def _assemble_manager_py(plan, subs: dict, ctx, *, settings=None, log_fn=print):
+    """方案B assembler: the managers authored parts in FULL-MACHINE GLOBAL coordinates via
+    cq.Assembly, so there is nothing to solve — just namespace + consolidate. This replaces
+    the ~250-line libslvs cross-sub solve / mesh-cluster / weld-bridge machinery, which only
+    existed to reconcile sub-local frames into world coordinates. Here every sub's poses are
+    already global (parent="" roots at their global location), so we concatenate them
+    verbatim, copy the STLs, gather cross-sub mesh_pairs from the plan's power seams, and
+    emit the merged model + URDF/MJCF."""
+    def log(m):
+        log_fn(f"[assembler] {m}")
+
+    for s in plan.subassemblies:
+        if s.id not in subs or subs[s.id].model is None:
+            raise AssemblerError(f"missing built subassembly '{s.id}'")
+    os.makedirs(ctx.meshes_dir, exist_ok=True)
+
+    links: list = []
+    poses: list = []
+    for s in plan.subassemblies:
+        sub = subs[s.id]
+        links.extend(_namespaced_links(sub, ctx.meshes_dir, ns_id=s.id))
+        # Keep ALL poses INCLUDING each sub's root pose (parent="" child=root): in
+        # manager_py mode that root pose carries the sub's authored global placement, so we
+        # must NOT drop it the way the weld-based path does.
+        root = sub.model.root_link
+        for p in sub.model.poses:
+            poses.append(PoseSpec(
+                name=_ns(s.id, p.name),
+                parent=_ns(s.id, p.parent) if p.parent else "",
+                child=_ns(s.id, p.child),
+                xyz_m=tuple(p.xyz_m), rpy_rad=tuple(p.rpy_rad)))
+        # Every part that has no explicit pose still needs one; py_manager emits a
+        # place_<name> pose per part, so this is covered.
+
+    # Cross-sub mesh pairs from the plan's power seams (each side namespaced by its sub).
+    mesh_pairs: list = []
+    for seam in plan.seams:
+        if seam.kind == "power" and getattr(seam, "mesh_pair", ()):
+            mp = seam.mesh_pair
+            if len(mp) == 2:
+                mesh_pairs.append((_ns(seam.parent_sub, mp[0]),
+                                   _ns(seam.child_sub, mp[1])))
+
+    # Driver: propagate the boss's driver seam onto the driving link.
+    by_name = {l.name: l for l in links}
+    driver_seam = next((s for s in plan.seams if getattr(s, "driver", False)), None)
+    if driver_seam is not None and getattr(driver_seam, "mesh_pair", ()):
+        owner = getattr(driver_seam, "owner_sub", "") or driver_seam.parent_sub
+        dl = by_name.get(_ns(owner, driver_seam.mesh_pair[0]))
+        if dl is not None:
+            if dl.dof == "fixed":
+                dl.dof = "spin"
+            dl.driver = True
+            log(f"marked '{dl.name}' as the machine driver (from seam '{driver_seam.id}')")
+
+    root_link = _ns(plan.root_sub, subs[plan.root_sub].model.root_link)
+    final = KinematicModel(name=plan.name, root_link=root_link,
+                           links=links, poses=poses, mesh_pairs=mesh_pairs)
+    log(f"manager_py merge: {len(links)} links + {len(poses)} poses from "
+        f"{len(plan.subassemblies)} subassemblies (authored global coords, no solve)")
+    try:
+        _validate_model(final)
+    except ManagerError as e:
+        raise AssemblerError(f"assembled model failed validation: {e}") from e
+    build_urdf(final, ctx)
+    try:
+        save_model(final, ctx.model_json_path)
+    except Exception as e:
+        log(f"WARNING: could not save assembled kinematic_model.json: {e}")
+    ok, err = validate_urdf(ctx.urdf_path, require_meshes=False)
+    if not ok:
+        raise AssemblerError(f"assembled URDF topology invalid: {err}")
+    ok2, _ = validate_urdf(ctx.urdf_path, require_meshes=True)
+    log(f"wrote {ctx.urdf_path} (links={len(final.links)}, poses={len(final.poses)}, "
+        f"root='{final.root_link}', meshes ok={ok2})")
+    _write_assembled_mjcf(final, ctx, settings, log)
+    return final
+
+
 def assemble(plan, subs: dict, ctx, *, settings=None, log_fn=print) -> KinematicModel:
     """Stitch the built subassemblies into one final KinematicModel + model.urdf.
 
@@ -763,6 +842,8 @@ def assemble(plan, subs: dict, ctx, *, settings=None, log_fn=print) -> Kinematic
     Raises AssemblerError on a structural problem (missing sub/frame, or a resulting
     non-tree, surfaced by manager._validate_model).
     """
+    if settings is not None and getattr(settings, "manager_py", False):
+        return _assemble_manager_py(plan, subs, ctx, settings=settings, log_fn=log_fn)
     def log(m):
         log_fn(f"[assembler] {m}")
 

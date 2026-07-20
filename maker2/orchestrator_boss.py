@@ -382,7 +382,8 @@ def _split_decompose(spec, fc, settings, ctx, *, feedback=None, log_fn=print):
         log_fn(f"[split] merged model failed validation ({e}); abandoning split")
         return None
 
-    merged_b = badness(merged, _manager_gate_errors(merged, fc), context={"fc": fc})
+    merged_b = badness(merged, _manager_gate_errors(
+        merged, fc, manager_py=getattr(settings, "manager_py", False)), context={"fc": fc})
     log_fn(f"[split] merged {len(merged.links)} links, badness={merged_b:.2f}")
     return merged
 
@@ -414,7 +415,7 @@ def _decompose_best_of_n(spec, fc, settings, ctx, *, feedback=None, log_fn=print
                 continue
             log_fn(f"[best-of-{n}] candidate {i+1} failed ({e}); keeping earlier best")
             continue
-        errs = _manager_gate_errors(model, fc)
+        errs = _manager_gate_errors(model, fc, manager_py=getattr(settings, "manager_py", False))
         blocking = [e for e in errs if e.code not in _NONBLOCKING_CODES]
         b = badness(model, errs, context={"fc": fc})
         log_fn(f"[best-of-{n}] candidate {i+1}/{n}: badness={b:.2f} "
@@ -504,7 +505,7 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
     # or worker render. A failure fails the sub UP with the specific codes so the boss
     # re-decomposes only this sub — routine geometry/schema faults skip the slow debugger.
     # (Skipped on the patch path: only_links means a targeted re-render, not a fresh model.)
-    if only_links is None:
+    if only_links is None and not getattr(settings, "manager_py", False):
         from .benchmarks import format_errors
         from .benchmarks.schema_gate import manager_schema_gate
         from .benchmarks.manager_gate import manager_gate, frame_drift_errors
@@ -638,7 +639,13 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
              f"(re)building {len(keep)} link(s), keeping "
              f"{len(model.links) - len(keep) - len(edited_names)} prior STL(s)")
 
-    if to_build_model.links:
+    if getattr(settings, "manager_py", False):
+        # 方案B: the manager authored CadQuery that ALREADY built + exported every part's STL
+        # during parse (py_manager.evaluate_manager_python). The worker step is absorbed —
+        # skip geometry generation entirely; the meshes/ dir is already populated.
+        slog("worker absorbed into manager (manager_py): parts already built + exported")
+        part_results = []
+    elif to_build_model.links:
         slog(f"worker ({getattr(settings, 'worker_backend', 'cadquery')}): generating "
              "geometry + exporting per-link STLs ...")
         part_results = _worker_build_all(to_build_model, ctx, settings, log_fn=slog)

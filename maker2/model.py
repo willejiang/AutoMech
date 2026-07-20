@@ -341,6 +341,11 @@ class SubassemblyPlan:
     global_origin_note: str = ""
     subassemblies: list = field(default_factory=list)   # list[SubassemblySpec]
     seams: list = field(default_factory=list)           # list[SeamSpec]
+    params_text: str = ""                               # 方案B: shared params.py source the
+                                                        # boss authors (parameters + relation
+                                                        # functions); flows to each manager via
+                                                        # frame_contract_for so a manager_py
+                                                        # manager derives dims from it.
 
     def sub_by_id(self, sub_id: str) -> "SubassemblySpec | None":
         return next((s for s in self.subassemblies if s.id == sub_id), None)
@@ -364,6 +369,12 @@ class FrameContract:
                                                      # context; "" when disabled
     through_mounts: list = field(default_factory=list) # [{seam_id, front_frame, rear_frame,
                                                      #   neighbor_sub, side}] validation pairs
+    params_text: str = ""                            # 方案B: the boss's shared parameter
+                                                     # module source (params.py). Handed to a
+                                                     # manager_py manager so it can `import
+                                                     # params` and derive every dimension from
+                                                     # the boss's authoritative formulas
+                                                     # instead of hard-coding numbers.
 
 
 @dataclass

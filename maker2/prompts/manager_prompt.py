@@ -116,15 +116,64 @@ MANAGER_SYSTEM = f"{_MANAGER_PREAMBLE}\n{IR_SCHEMA_TEXT}\n\n{_IR_OUTPUT_TAIL}"
 MANAGER_SYSTEM_MJCF = f"{_MANAGER_PREAMBLE}\n{SCHEMA_TEXT}\n\n{_MJCF_OUTPUT_TAIL}"
 
 
-def manager_system(manager_ir: bool = True) -> str:
+def manager_system(manager_ir: bool = True, manager_py: bool = False) -> str:
     """The manager system prompt for the chosen authoring format."""
+    if manager_py:
+        return MANAGER_SYSTEM_PY
     return MANAGER_SYSTEM if manager_ir else MANAGER_SYSTEM_MJCF
 
 
-def build_manager_json_from_notes(notes: str, manager_ir: bool = True) -> str:
+MANAGER_SYSTEM_PY = """\
+You are the MANAGER of ONE subassembly in an automated CAD pipeline, authoring it as
+PARAMETRIC CADQUERY PYTHON. Instead of describing parts in JSON, you WRITE the code that
+BUILDS and PLACES every part.
+
+Emit EXACTLY ONE ```python code block defining a function `build_subassembly()` that returns
+a `cadquery.Assembly`. Rules:
+
+- `import cadquery as cq` and `import math`. If a `params` module is offered (shown to you),
+  `import params` and DERIVE every dimension from it — never hard-code a number you could
+  compute from params (module, teeth, center distance = m*(z1+z2)/2, etc.).
+- Build EACH part as a `cq.Workplane` solid in millimeters, in its OWN local frame with its
+  attach axis along +Z. Write a small helper per part (e.g. `def _shaft(): ...`).
+- Add every part to the assembly with a NAME (URDF-safe: lowercase, digits, underscore), a
+  GLOBAL location, and a metadata dict:
+    asm.add(_shaft(), name="inter_shaft",
+            loc=cq.Location((x_mm, y_mm, z_mm)),          # GLOBAL placement of this sub, mm
+            metadata={"dof": "spin", "spin_axis": [0,0,1], "material": "steel",
+                      "mesh_id": "<id>"})   # mesh_id only on GEARS that mesh across a seam
+  `dof` is "fixed" | "spin" | "free". `spin_axis` for a rotating shaft/gear. Put `"driver": True`
+  on the ONE input part the physics test drives. `mesh_id` tags a gear so the pipeline can pair
+  meshing gears — give the SAME id to the two gears meant to mesh.
+- YOU own the placement: put each part at its correct GLOBAL coordinate (from the interface
+  frames / params you are given). Two gears that mesh must sit one center-distance apart and in
+  the SAME axial plane. Parts on one shaft must be spaced along the axis so they don't overlap.
+- The connection/topology is expressed BY the locations + mesh_id tags you write — there is no
+  separate mate list. You may also use `.constrain(...)` + `asm.solve()` if you prefer
+  constraint-based placement; either yields the same global coordinates.
+- No file I/O, no network; cadquery + math + the params module only. Every part must be a real
+  non-empty solid.
+
+Respond in TWO parts: first NOTES (a short plaintext plan of the parts + their placements),
+then the single ```python block. If asked to CONTINUE, output only the ```python block."""
+
+
+def build_manager_json_from_notes(notes: str, manager_ir: bool = True,
+                                  manager_py: bool = False) -> str:
     """Regeneration message: the manager already wrote its decomposition as NOTES
     (saved when its payload overran the output cap); hand the notes back and ask for
     ONLY the payload now, so the whole output budget goes to it — no dropped parts."""
+    if manager_py:
+        return f"""\
+Here is the subassembly plan you already worked out (your NOTES):
+
+{notes}
+
+Now output ONLY the single ```python code block for this subassembly, in full: `import
+cadquery as cq`, per-part builder helpers, and `build_subassembly()` returning a cq.Assembly
+that adds EVERY part from the notes with its name, GLOBAL location, and metadata
+(dof/spin_axis/material, mesh_id on meshing gears, driver on the input). Do NOT repeat the
+notes — output only the ```python block."""
     if manager_ir:
         return f"""\
 Here is the decomposition you already worked out (your NOTES):
@@ -314,7 +363,8 @@ Output ONLY the COMPLETE updated PARTS JSON object, a line with exactly `{MJCF_S
 then the updated MJCF XML skeleton — no prose, no markdown fences."""
 
 
-def build_manager_subassembly(frame_contract, manager_ir: bool = True) -> str:
+def build_manager_subassembly(frame_contract, manager_ir: bool = True,
+                              manager_py: bool = False) -> str:
     """Constrain this manager to build ONE SUBASSEMBLY under the boss's interface/
     frame contract (Stage B of the hierarchy).
 
@@ -324,6 +374,8 @@ def build_manager_subassembly(frame_contract, manager_ir: bool = True) -> str:
     local frame, (2) place a real part at each interface frame, and (3) report which
     part realizes each frame — so the assembler can weld this sub to its neighbors.
     """
+    if manager_py:
+        return _build_manager_subassembly_py(frame_contract)
     fc = frame_contract
     lines = []
     for fr in getattr(fc, "frames", []):
@@ -493,6 +545,40 @@ RULES
 {frames_decl}"""
 
 
+def _build_manager_subassembly_py(frame_contract) -> str:
+    """方案B: the subassembly instruction for the PARAMETRIC CADQUERY manager. Renders the
+    boss's interface frames as GLOBAL placement targets the CadQuery author must position
+    parts at, and asks for a cq.Assembly authored in global coordinates."""
+    fc = frame_contract
+    lines = []
+    for fr in getattr(fc, "frames", []):
+        x, y, z = fr.xyz_m
+        ax, ay, az = fr.axis
+        dia = getattr(fr, "shaft_dia_mm", 0.0) or 0.0
+        dia_txt = (f", diameter {dia:.2f} mm (build the mating shaft/bore/gear to EXACTLY "
+                   f"this diameter)") if dia > 0 else ""
+        role = getattr(fr, "role", "mount")
+        lines.append(
+            f'  - "{fr.name}" (role: {role}): GLOBAL [{x*1000:.2f}, {y*1000:.2f}, {z*1000:.2f}] mm, '
+            f'axis [{ax:.2f}, {ay:.2f}, {az:.2f}]{dia_txt}')
+    frames_txt = "\n".join(lines) if lines else "  (none)"
+    sub_id = getattr(fc, "sub_id", "?")
+    origin = getattr(fc, "global_origin_note", "") or "(the machine's shared origin)"
+    return f"""\
+BUILD THIS SUBASSEMBLY: {sub_id}
+GLOBAL ORIGIN: {origin}
+
+INTERFACE FRAMES this subassembly must expose, in GLOBAL machine millimeters (place a real
+part so its relevant feature sits AT each frame):
+{frames_txt}
+
+Write `build_subassembly()` returning a cq.Assembly. For each part, `asm.add(..., name=...,
+loc=cq.Location((x_mm, y_mm, z_mm)), metadata={{...}})` with the GLOBAL coordinate from the
+frames above. A gear whose center is a `mesh` frame MUST be a real toothed gear at that exact
+global point, tagged `metadata={{"mesh_id": "<the mesh frame name>", ...}}` so it pairs with
+the meshing gear in the neighbor subassembly. Rotating parts get `"dof":"spin"` +
+`"spin_axis"` matching the frame axis. Space coaxial parts along the shaft axis so they do not
+overlap. Output NOTES then ONE ```python block."""
 
 
 def build_manager_should_rebuild(prior_model_json: str, fault_reason: str,
