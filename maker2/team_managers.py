@@ -85,7 +85,7 @@ class ManagerAgent:
 
         if self._reuse:
             r = _load_sub_from_disk(self.spec.id, self.session_root,
-                                    log_fn=self._log, plan=self.plan)
+                                    log_fn=self._log, plan=self.plan, settings=self.settings)
             if r.ok:
                 return r
             # A reused sub whose prior build is unusable is rebuilt this round.

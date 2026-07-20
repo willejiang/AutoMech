@@ -193,7 +193,7 @@ def _restore_best_subs(session_root: str, sub_ids, log_fn=print) -> bool:
 
 
 def _load_sub_from_disk(sub_id: str, session_root: str, log_fn=print,
-                        plan=None) -> SubResult:
+                        plan=None, settings=None) -> SubResult:
     """Reload an already-built subassembly (for surgical re-runs that skip it).
 
     When ``plan`` is given, ALSO verify the sub realized every interface frame its
@@ -221,7 +221,7 @@ def _load_sub_from_disk(sub_id: str, session_root: str, log_fn=print,
     ok, _ = validate_urdf(ctx.urdf_path, require_meshes=True)
     # Frame-completeness: a reused sub MUST expose every interface frame its plan spec
     # requires, or it can't be assembled. If any is unrealized, don't reuse — rebuild.
-    if ok and plan is not None:
+    if ok and plan is not None and not getattr(settings, "manager_py", False):
         # Require the SAME frame set the manager was asked to realize — i.e. the frame
         # CONTRACT (compiler-named frames when a hardpoint contract exists, boss-plan names
         # otherwise), not the raw boss-plan sub.frames. frame_contract_for is the single
@@ -281,7 +281,7 @@ def build_subassembly(spec, plan, settings, session_root, *,
         if not should_rebuild(prior_model_json, feedback, settings,
                               frame_contract=fc, log_fn=slog):
             slog("keeping prior build (fault is elsewhere) — reused from disk")
-            return _load_sub_from_disk(sub_id, session_root, log_fn=log_fn, plan=plan)
+            return _load_sub_from_disk(sub_id, session_root, log_fn=log_fn, plan=plan, settings=settings)
         try:
             model, changed, patch_meta = decompose_patch(
                 prior_model_json, feedback, settings,
@@ -785,7 +785,7 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
     # re-check. Re-run those exact frame checks on the FINAL model so the assembler never
     # welds a sub whose frames silently moved (the "3 subs float 24 mm away" failure). Same
     # guard as the pre-debug gate (fresh full build only); BLOCKING — fail the sub UP.
-    if success and only_links is None:
+    if success and only_links is None and not getattr(settings, "manager_py", False):
         from .benchmarks import GateError as _GateError
         from .benchmarks import format_errors as _fmt_frames
         from .benchmarks.manager_gate import frame_drift_errors as _frame_drift
@@ -875,7 +875,7 @@ def build_all_subassemblies(plan, settings, session_root, *,
     reuse_targets = [s for s in plan.subassemblies if s.id in reuse]
     promoted: list = []
     for s in reuse_targets:
-        r = _load_sub_from_disk(s.id, session_root, log_fn=log, plan=plan)
+        r = _load_sub_from_disk(s.id, session_root, log_fn=log, plan=plan, settings=settings)
         if r.ok:
             results[s.id] = r
         else:

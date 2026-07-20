@@ -153,6 +153,18 @@ a `cadquery.Assembly`. Rules:
   constraint-based placement; either yields the same global coordinates.
 - No file I/O, no network; cadquery + math + the params module only. Every part must be a real
   non-empty solid.
+- PYTHON, not JSON: use `True`/`False`/`None` (capitalized) in metadata — NOT `true`/`false`/
+  `null`. A lowercase `true` is a NameError and rejects your whole subassembly.
+- NO INTERPENETRATION: parts must not overlap in solid. Give each part its own volume:
+  * A gear/collar/spacer on a shaft is an ANNULUS — cut a bore (`.faces(...).hole(shaft_dia)`)
+    so the shaft passes THROUGH it; the shaft and the ring then share space legally only where
+    the ring's bore hugs the shaft, not by the shaft's solid sitting inside the gear's solid.
+  * A KEY sits in a keyway and must be SMALL — its cross-section fits INSIDE the shaft radius
+    (e.g. a 2x2 mm key on a 6 mm-radius shaft), not a block straddling the gear. Do not let a
+    key overlap the gear body; place it in the shaft's keyseat under the gear.
+  * Space coaxial parts along the axis with real gaps: front bearing | gear | spacer | pinion |
+    rear bearing, each at a DISTINCT axial station, none sharing the same z-run.
+  Aim for zero interpenetration — the pipeline rejects a subassembly whose parts overlap.
 
 Respond in TWO parts: first NOTES (a short plaintext plan of the parts + their placements),
 then the single ```python block. If asked to CONTINUE, output only the ```python block."""
