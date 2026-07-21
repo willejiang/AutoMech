@@ -148,11 +148,13 @@ a `cadquery.Assembly`. Rules:
   on the ONE input part the physics test drives. `mesh_id` tags a gear so the pipeline can pair
   meshing gears — give the SAME id to the two gears meant to mesh.
 - PLACEMENT COMES FROM PARAMS, NOT FROM YOU: every part's `loc` coordinate MUST be a
-  `params.<frame>()` call, an arithmetic expression over `params.*` (using params' `add`/`mul`
-  helpers + `params.SHAFT_AXIS`/`params.STAGE*_ORIGIN`), or exactly 0 — NEVER a bare number you
-  typed. Because you and every sibling manager call the SAME params functions, meshing gears
-  land one center-distance apart and weld points coincide BY CONSTRUCTION; there is no separate
-  solving step.
+  `params.<frame>()` call, or an arithmetic expression over names the params module ACTUALLY
+  defines (compose them with the module's own add/mul-style helpers if present), or exactly 0 —
+  NEVER a bare number you typed, and NEVER a params name you did not see in the module handed to
+  you (there is no fixed naming convention; a guessed name is a NameError/AttributeError that
+  rejects the whole subassembly). Because you and every sibling manager call the SAME params
+  functions, meshing gears land one center-distance apart and weld points coincide BY
+  CONSTRUCTION; there is no separate solving step.
 - The connection/topology is expressed BY the params-derived locations + mesh_id tags you write
   — there is no separate mate list.
 - No file I/O, no network; cadquery + math + the params module only. Every part must be a real
@@ -622,28 +624,32 @@ above) deriving every coordinate from the hard inputs with `y = f(x)`. Your job 
 params` and CALL those functions — you do NOT compute or re-type any global coordinate yourself.
 
 HARD RULES ON PLACEMENT (these make every subassembly line up automatically):
-- `import params` at the top. Take the shaft direction from `params.SHAFT_AXIS` (or the stage
-  axis constant params defines) and each stage origin from `params.STAGE*_ORIGIN` — NEVER pick
-  an axis or origin yourself. This is why the axis can't come out wrong.
-- Place each INTERFACE part with its coordinate coming from the frame's params function:
-  `asm.add(_pinion(), name="pinion1", loc=cq.Location(cq.Vector(*params.pinion1_center())),
-  metadata={{...}})`. The coordinate MUST be a params call, an arithmetic expression over
-  `params.*` (e.g. `params.add(params.pinion1_center(), params.mul(params.SHAFT_AXIS, 5.0))`),
-  or exactly 0 — NEVER a bare number you typed in. A literal coordinate is a bug: it means you
-  guessed instead of asking params.
+- `import params` at the top. READ the `params.py` shown above and use ONLY the names it
+  ACTUALLY defines — the boss chose those names for THIS machine; do NOT assume any name that
+  is not visible in the module above (there is no fixed naming convention across runs, so a
+  guessed name like `params.SHAFT_AXIS` will not exist and rejects your whole subassembly).
+- Place each INTERFACE part with its coordinate coming from the frame's OWN params function.
+  Each interface frame listed above names the exact `params` function that returns its global
+  coordinate — call THAT function:
+  `asm.add(_pinion(), name="pinion1", loc=cq.Location(cq.Vector(*params.<that_frame_fn>())),
+  metadata={{...}})`. The coordinate MUST be a params call, an arithmetic expression over the
+  params names defined above (compose them with the module's own add/mul-style helpers if it
+  provides them), or exactly 0 — NEVER a bare number you typed in. A literal coordinate is a
+  bug: it means you guessed instead of asking params.
 - Place each NON-INTERFACE part (a spacer, a shim) at a params-derived axial station too:
-  compose it from a stage origin plus `params.mul(params.SHAFT_AXIS, <axial mm from a params
-  helper or a gap you name in params>)`. Keep coaxial parts at DISTINCT axial stations so they
-  never overlap.
-- A `mesh`-role frame MUST be realized on a real toothed gear whose center is `params.<that
-  frame>()`, tagged `metadata={{"mesh_id": "<the mesh frame name>", ...}}` so it pairs with the
-  meshing gear the neighbor subassembly builds at the SAME params point.
+  compose it from a nearby interface frame's coordinate plus a small offset along the shaft
+  axis, using ONLY params names that appear above. Keep coaxial parts at DISTINCT axial
+  stations so they never overlap.
+- A `mesh`-role frame MUST be realized on a real toothed gear whose center is that frame's
+  params function, tagged `metadata={{"mesh_id": "<the mesh frame name>", ...}}` so it pairs
+  with the meshing gear the neighbor subassembly builds at the SAME params point.
 - Rotating parts get `"dof": "spin"` + `"spin_axis"` = the frame axis. Fixed parts (housing,
   bearings) get `"dof": "fixed"`. Put `"driver": True` on the ONE input part.
 
 Because you and every other manager derive coordinates from the SAME `params` functions, your
 weld points coincide with your neighbors' by construction — there is no separate solving step,
-so getting the params calls right IS getting the assembly right.
+so getting the params calls right IS getting the assembly right. If unsure whether a params
+name exists, scroll up to the `params.py` above and use one that is literally there.
 
 Write `build_subassembly()` returning a cq.Assembly. Output NOTES then ONE ```python block."""
 

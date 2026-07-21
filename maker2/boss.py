@@ -642,12 +642,14 @@ def plan_machine(product_prompt: str, settings, *, image_path: str | None = None
             "`def mul(a, s): return tuple(x*s for x in a)` so coordinates are composed, "
             "not written as literals.\n"
             "4. ONE ZERO-ARG FUNCTION PER INTERFACE FRAME returning that frame's GLOBAL "
-            "coordinate (millimeters), NAMED EXACTLY like the frame you put in the JSON "
-            "plan below. Compose it from the datums + relation functions, e.g. for a frame "
-            "`pinion1_center`: `def pinion1_center(): return add(STAGE1_ORIGIN, "
-            "mul(SHAFT_AXIS, 40.0))`. The managers place each interface part by CALLING these "
-            "functions (`loc=cq.Location(params.pinion1_center())`) — they never re-type a "
-            "coordinate. So EVERY frame in your plan needs a same-named function here.\n"
+            "coordinate (millimeters). CRITICAL NAMING CONTRACT: each such function's name MUST "
+            "be BYTE-FOR-BYTE IDENTICAL to the frame's `name` in the JSON plan below — no prefix "
+            "(NOT `f_<frame>`), no suffix, no rename. If a plan frame is named `input_front`, the "
+            "function MUST be `def input_front():`. The managers place each interface part by "
+            "calling `params.<frame name>()` verbatim, so ANY deviation (a stray `f_`, a "
+            "different casing) is an AttributeError that fails their build. Compose each body "
+            "from the datums + relation functions. So EVERY frame name in your plan appears here "
+            "as an identically-named function.\n"
             "Keep units consistent (millimeters for coordinates). Then output the JSON plan "
             "(subassemblies + seams) as usual, and make each frame's `xyz_m` in the JSON the "
             "SAME point its params function returns (converted to meters), so the plan and the "
@@ -761,18 +763,41 @@ def _boss_research(client, conv, settings, product_prompt, *, log_fn=None) -> No
                    collection="boss", log_fn=log_fn)
 
 
+def _params_naming_contract_errors(plan) -> list:
+    """方案B: every interface-frame name MUST have a byte-identical zero-arg function in the
+    boss's params module, so a manager calling `params.<frame>()` never hits an AttributeError.
+    Returns a list of GateError-like objects (only when a params module is present)."""
+    params = getattr(plan, "params_text", "") or ""
+    if not params.strip():
+        return []                                   # not manager_py mode — no contract
+    import re as _re
+    from .benchmarks import GateError
+    defined = {m.group(1) for m in _re.finditer(r"^def\s+([A-Za-z]\w*)\s*\(", params, _re.M)}
+    errs = []
+    for sub in plan.subassemblies:
+        for fr in (getattr(sub, "frames", []) or []):
+            nm = getattr(fr, "name", "") or ""
+            if nm and nm not in defined:
+                errs.append(GateError(
+                    "boss", "ERR_PARAMS_FRAME_FN",
+                    f"interface frame '{nm}' ({sub.id}) has no matching params function "
+                    f"`def {nm}():` — the params module must define one identically-named "
+                    f"zero-arg function per frame (no `f_` prefix / rename)", nm))
+    return errs
+
+
 def _plan_gate_badness(plan) -> tuple[float, list, dict]:
     """A pre-build 'badness' for a parsed plan from the deterministic boss gates (schema +
-    support-chain + mesh-distance). Returns (badness, errors, breakdown). Lower = closer to
-    a valid, buildable plan. Pure-Python; imported lazily to keep boss import light."""
+    support-chain + mesh-distance + 方案B params naming contract). Returns (badness, errors,
+    breakdown). Lower = closer to a valid, buildable plan. Pure-Python; imported lazily."""
     try:
         from .benchmarks.schema_gate import boss_schema_gate
         from .benchmarks.boss_gate import boss_gate
     except Exception:
         return 0.0, [], {"terms": {}, "count": 0}
-    errs = boss_schema_gate(plan) + boss_gate(plan)
+    errs = boss_schema_gate(plan) + boss_gate(plan) + _params_naming_contract_errors(plan)
     # Weight support/interface faults (structural) above pure schema enum faults.
-    w = {"ERR_SUP_NOWELD": 5.0, "ERR_IFC_MESH_DIST": 4.0}
+    w = {"ERR_SUP_NOWELD": 5.0, "ERR_IFC_MESH_DIST": 4.0, "ERR_PARAMS_FRAME_FN": 4.0}
     total = float(sum(w.get(e.code, 2.0) for e in errs))
     by_code: dict = {}
     for e in errs:
