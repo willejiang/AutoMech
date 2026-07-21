@@ -121,7 +121,8 @@ Respond in TWO parts, in this exact order:
    sentinel — only the JSON object."""
 
 
-def build_boss_json_from_notes(notes: str, product_prompt: str = "") -> str:
+def build_boss_json_from_notes(notes: str, product_prompt: str = "",
+                               manager_py: bool = False) -> str:
     """Regeneration message: the boss already wrote its plan as NOTES (which we saved
     when its JSON overran the output cap); hand the notes back and ask for ONLY the
     JSON now, so the whole output budget goes to the JSON.
@@ -129,9 +130,30 @@ def build_boss_json_from_notes(notes: str, product_prompt: str = "") -> str:
     Re-states the PRODUCT so the fresh regen conversation implements the machine the
     notes describe — not the schema's worked EXAMPLE. Without this, the boss has been
     seen to abandon its own (correct) notes and copy the gear-reducer few-shot instead,
-    because on regen the few-shot is the only concrete JSON in context."""
+    because on regen the few-shot is the only concrete JSON in context.
+
+    In ``manager_py`` mode the regen runs in a FRESH conversation that has LOST the params
+    instruction, so it is RE-STATED here: the boss must emit the ```python params module
+    before the JSON, or the per-sub managers get no params.py and every `import params` fails.
+    """
     prod = (f'You are decomposing THIS machine: "{product_prompt.strip()}".\n\n'
             if product_prompt.strip() else "")
+    if manager_py:
+        return f"""\
+{prod}Here is the plan you already worked out (your NOTES):
+
+{notes}
+
+Now output, in this order:
+1. ONE ```python code block defining the shared PARAMETER MODULE `params` for this machine —
+   load-bearing constants (module, tooth counts, ratios, diameters), relation functions that
+   derive everything else, and one zero-arg function per interface frame returning its GLOBAL
+   mm coordinate. This is the SINGLE SOURCE OF TRUTH the managers `import params` and derive
+   every coordinate from. It MUST match the notes above (same subassemblies, seams, gear math).
+2. Then the single JSON plan object implementing THESE NOTES, following the schema exactly.
+
+Do NOT repeat the notes and do NOT copy the schema example's machine — implement the notes.
+Emit exactly: the ```python params block, then the JSON object."""
     return f"""\
 {prod}Here is the plan you already worked out (your NOTES):
 
