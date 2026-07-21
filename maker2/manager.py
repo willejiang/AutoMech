@@ -381,7 +381,8 @@ def decompose(product_prompt: str, settings, *, image_path: str | None = None,
         raise ManagerError(str(e)) from e
     conv.add_user_message(
         build_manager_user(product_prompt, has_image=bool(image_path),
-                           manager_ir=getattr(settings, "manager_ir", True)),
+                           manager_ir=getattr(settings, "manager_ir", True),
+                           manager_py=getattr(settings, "manager_py", False)),
         images=images)
     if image_path and log_fn:
         log_fn(f"[manager] using input image: {image_path}")
@@ -632,7 +633,8 @@ def _decompose_loop(client, conv, settings, *, memory_path, tag, model_json_path
                                    memory_path=memory_path,
                                    regen_msg_fn=lambda notes: build_manager_json_from_notes(
                                        notes, manager_ir=_mgr_ir, manager_py=_mgr_py),
-                                   log_fn=log_fn, tag=tag)
+                                   log_fn=log_fn, tag=tag,
+                                   payload_kind="python" if _mgr_py else "json")
         except LLMError as e:
             raise ManagerError(f"Manager LLM request failed: {e}") from e
         conv.add_assistant_message(text)

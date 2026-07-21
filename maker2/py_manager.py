@@ -107,6 +107,19 @@ except Exception as e:
 '''
 
 
+def _params_public_names(params_text: str) -> list:
+    """Top-level public names (functions + constants) the params module defines, so an
+    AttributeError can tell the manager exactly what it may call. Skips private `_` names."""
+    import re as _re
+    names = []
+    for m in _re.finditer(r"^(?:def\s+([A-Za-z]\w*)\s*\(|([A-Za-z]\w*)\s*=)", params_text,
+                          _re.MULTILINE):
+        nm = m.group(1) or m.group(2)
+        if nm and not nm.startswith("_") and nm not in names:
+            names.append(nm)
+    return names
+
+
 def _rot_to_rpy(R):
     """3x3 rotation -> (roll, pitch, yaw) XYZ, radians. Best-effort, gimbal-safe enough."""
     import math
@@ -170,7 +183,16 @@ def evaluate_manager_python(script_text: str, run_dir: str, sub_name: str,
     if payload is None or not payload.get("ok"):
         err = (payload or {}).get("error") if payload else None
         tail = (r.stderr or r.stdout or "").strip()[-400:]
-        raise PyManagerError(f"manager CadQuery eval failed: {err or tail}")
+        msg = f"manager CadQuery eval failed: {err or tail}"
+        # If the manager called a params name that doesn't exist, tell it EXACTLY what params
+        # DOES define so it fixes the call in one shot instead of guessing across retries.
+        if err and "has no attribute" in err and params_text:
+            names = _params_public_names(params_text)
+            if names:
+                msg += ("\nThe `params` module defines ONLY these names — call one of these (or "
+                        "compose them with params.add/params.mul), never invent a params name: "
+                        + ", ".join(names))
+        raise PyManagerError(msg)
     if not out_json.exists():
         raise PyManagerError("manager eval produced no sub_eval.json")
 

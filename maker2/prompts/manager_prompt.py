@@ -226,14 +226,17 @@ fences — output only the PARTS object, the `{MJCF_SENTINEL}` line, and the XML
 
 
 def build_manager_user(product_prompt: str, has_image: bool = False,
-                       manager_ir: bool = True) -> str:
-    """The manager's user message: the product + a worked example (in the active format).
+                       manager_ir: bool = True, manager_py: bool = False) -> str:
+    """The manager's user message: the product + (except in 方案B py mode) a worked example.
 
     When ``has_image`` is set, an image is attached to this message by the caller
     (Conversation.add_user_message(images=...)); the wording then makes the IMAGE
     the authoritative source and treats the text as a hint.
+
+    In ``manager_py`` mode NO JSON few-shot is shown: MANAGER_SYSTEM_PY already carries the
+    parametric-CadQuery example, and injecting IR_FEWSHOT_JSON here would prime the manager to
+    emit connection-graph JSON (a `true`/`false` NameError when exec'd as Python).
     """
-    example = IR_FEWSHOT_JSON if manager_ir else FEWSHOT_JSON
     if has_image:
         task = (
             "NOW DO THIS ONE\n"
@@ -244,6 +247,15 @@ def build_manager_user(product_prompt: str, has_image: bool = False,
         )
     else:
         task = f'NOW DO THIS ONE\nProduct: "{product_prompt}"'
+    if manager_py:
+        return f"""\
+Author this subassembly as a parametric CadQuery ```python module, following the system
+rules exactly (import params; derive every coordinate from params; output ONE ```python
+block defining build_subassembly()).
+
+{task}
+Output:"""
+    example = IR_FEWSHOT_JSON if manager_ir else FEWSHOT_JSON
     return f"""\
 Decompose this product into a kinematic model following the schema exactly.
 
