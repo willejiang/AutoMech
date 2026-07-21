@@ -171,7 +171,36 @@ def precheck(plan, subs: dict, assembled_urdf: str, *, log_fn=print) -> Precheck
 
     link_names = {l.name for l in robot.robot.links}
 
-    # 1. WELD seams: each seam's frames must be REALIZED (the manager put a real link
+    # 方案B-v3: when the managers authored coordinates parametrically, `plan.params_text` IS
+    # the machine's single source of truth — every interface frame has a same-named zero-arg
+    # function returning its GLOBAL mm coordinate, and every manager placed its parts by
+    # calling those functions. So precheck asks params DIRECTLY for a frame's world point
+    # instead of reconstructing it from the collapsed sub_frames (which, in manager_py mode,
+    # degrade every frame to a part's local origin -> phantom weld gaps). This is deterministic
+    # code reading a config file, not an agent — no reason to launder the truth through model.
+    _params_ns: dict = {}
+    if (getattr(plan, "params_text", "") or "").strip() and "def " in plan.params_text:
+        try:
+            exec(compile(plan.params_text, "<params>", "exec"), _params_ns)
+        except Exception as e:
+            log(f"params module did not exec ({type(e).__name__}: {e}); "
+                "falling back to realized-frame reconstruction")
+            _params_ns = {}
+
+    def _frame_world_m(frame_name: str):
+        """GLOBAL position (meters) of an interface frame straight from the params module, or
+        None when params can't supply it (no module / no such function / bad return)."""
+        fn = _params_ns.get(frame_name)
+        if not callable(fn):
+            return None
+        try:
+            xyz_mm = fn()
+            v = np.array([float(xyz_mm[0]), float(xyz_mm[1]), float(xyz_mm[2])]) / 1000.0
+            return v
+        except Exception:
+            return None
+
+
     #    at each). Weld frames are REFERENCE points on each sub, not a mating pair —
     #    the assembler positions the child by its GLOBAL frame pose, so the two frames
     #    need NOT coincide (e.g. two housings held a fixed distance apart). We only
@@ -195,14 +224,18 @@ def precheck(plan, subs: dict, assembled_urdf: str, *, log_fn=print) -> Precheck
         if seam.kind!='weld' or not (rp and rc):continue
         ps,cs=subs.get(seam.parent_sub),subs.get(seam.child_sub)
         if not ps or not cs:continue
-        Pl=_realized_frame_in_root(ps,rp);Cl=_realized_frame_in_root(cs,rc)
-        if Pl is None or Cl is None:continue
+        Pw_m=_frame_world_m(rp);Cw_m=_frame_world_m(rc)
         try:
-            Pw=_world(robot,_ns(seam.parent_sub,ps.model.root_link))@Pl
-            Cw=_world(robot,_ns(seam.child_sub,cs.model.root_link))@Cl
+            if Pw_m is not None and Cw_m is not None:
+                Pw3,Cw3=Pw_m,Cw_m
+            else:
+                Pl=_realized_frame_in_root(ps,rp);Cl=_realized_frame_in_root(cs,rc)
+                if Pl is None or Cl is None:continue
+                Pw3=(_world(robot,_ns(seam.parent_sub,ps.model.root_link))@Pl)[:3,3]
+                Cw3=(_world(robot,_ns(seam.child_sub,cs.model.root_link))@Cl)[:3,3]
             pfr=next(f for f in plan.sub_by_id(seam.parent_sub).frames if f.name==rp)
             axis=np.asarray(pfr.axis,float);axis=axis/np.linalg.norm(axis)
-            signed=float(np.dot(Cw[:3,3]-Pw[:3,3],axis));err=abs(signed)
+            signed=float(np.dot(Cw3-Pw3,axis));err=abs(signed)
         except Exception:continue
         if err>_POS_TOL_M:
             violations.append(Violation(kind='rear_mount_plane',severity='interface',sub_id=seam.parent_sub,
@@ -229,16 +262,24 @@ def precheck(plan, subs: dict, assembled_urdf: str, *, log_fn=print) -> Precheck
         ps, cs = subs.get(seam.parent_sub), subs.get(seam.child_sub)
         if not ps or not cs:
             continue
-        Pl = _realized_frame_in_root(ps, seam.parent_frame)
-        Cl = _realized_frame_in_root(cs, seam.child_frame)
-        if Pl is None or Cl is None:
-            continue  # realization already faulted in step 1
-        try:
-            Pw = _world(robot, _ns(seam.parent_sub, ps.model.root_link)) @ Pl
-            Cw = _world(robot, _ns(seam.child_sub, cs.model.root_link)) @ Cl
-            gap = float(np.linalg.norm(Cw[:3, 3] - Pw[:3, 3]))
-        except Exception:
-            continue
+        # 方案B-v3: prefer the params truth. Both weld frames are named exactly like their
+        # params functions, so their world points come straight from the source of truth —
+        # no root@local reconstruction, no collapsed sub_frames.
+        Pw_m = _frame_world_m(seam.parent_frame)
+        Cw_m = _frame_world_m(seam.child_frame)
+        if Pw_m is not None and Cw_m is not None:
+            gap = float(np.linalg.norm(Cw_m - Pw_m))
+        else:
+            Pl = _realized_frame_in_root(ps, seam.parent_frame)
+            Cl = _realized_frame_in_root(cs, seam.child_frame)
+            if Pl is None or Cl is None:
+                continue  # realization already faulted in step 1
+            try:
+                Pw = _world(robot, _ns(seam.parent_sub, ps.model.root_link)) @ Pl
+                Cw = _world(robot, _ns(seam.child_sub, cs.model.root_link)) @ Cl
+                gap = float(np.linalg.norm(Cw[:3, 3] - Pw[:3, 3]))
+            except Exception:
+                continue
         if gap > _POS_TOL_M:
             violations.append(Violation(
                 kind="weld_frame_coincidence", severity="interface",
@@ -262,11 +303,20 @@ def precheck(plan, subs: dict, assembled_urdf: str, *, log_fn=print) -> Precheck
         drive_link, driven_link = seam.mesh_pair
         dn = _ns(seam.parent_sub, drive_link)
         vn = _ns(seam.child_sub, driven_link)
-        if dn not in link_names or vn not in link_names:
-            # mesh_pair may name links by realized frame instead; skip if unresolved.
-            continue
-        Td, Tv = _world(robot, dn), _world(robot, vn)
-        center_d = float(np.linalg.norm(Td[:3, 3] - Tv[:3, 3]))
+        # 方案B-v3: a mesh seam names its two gear CENTERS as frames (pinion1_center /
+        # gear2_center) == params function names, so read the true world centers from params.
+        # This avoids the URDF-chain _world() degenerating to 0 for flat global poses that
+        # aren't in one kinematic tree.
+        Pc = _frame_world_m(seam.parent_frame)
+        Cc = _frame_world_m(seam.child_frame)
+        if Pc is not None and Cc is not None:
+            center_d = float(np.linalg.norm(Pc - Cc))
+        else:
+            if dn not in link_names or vn not in link_names:
+                # mesh_pair may name links by realized frame instead; skip if unresolved.
+                continue
+            Td, Tv = _world(robot, dn), _world(robot, vn)
+            center_d = float(np.linalg.norm(Td[:3, 3] - Tv[:3, 3]))
         p_sub, c_sub = subs.get(seam.parent_sub), subs.get(seam.child_sub)
         rd = _mesh_pitch_radius(p_sub.model.link_by_name(drive_link)) if p_sub and p_sub.model else None
         rv = _mesh_pitch_radius(c_sub.model.link_by_name(driven_link)) if c_sub and c_sub.model else None

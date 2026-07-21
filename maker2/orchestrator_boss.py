@@ -978,7 +978,7 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
            f"{settings.worker_backend}, debugger={settings.debugger_mode()}")
 
     slug = _slug_for(prompt)
-    from datetime import datetime
+    from datetime import datetime, timezone
     # Each run gets its OWN directory (slug + start timestamp). Without the stamp every run of
     # the same prompt reused ONE dir, so successive runs layered their sub_*/plan/run.log on top
     # of each other and the data read back was a mix of several runs. The stamp is computed once
@@ -1152,6 +1152,15 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
         #     plan so downstream stages can consume the frozen contract.
         plan.hardpoint_contract = None
         compiler_mode = getattr(settings, "geometry_compiler_mode", "auto")
+        # 方案B-v3: in manager_py mode the boss's `params` module is the AUTHORITATIVE
+        # coordinate source — managers derive every global coordinate by calling its
+        # per-frame functions. The geometry compiler would freeze a SECOND, independent
+        # coordinate set and rename frames to contract names, splitting the params world
+        # from the contract world (managers place at params coords while seams weld by
+        # contract coords -> phantom gaps). So skip the compiler entirely here; params +
+        # precheck are the contract now.
+        if getattr(settings, "manager_py", False):
+            compiler_mode = "legacy"
         if compiler_mode != "legacy":
             try:
                 from .design.bridge import compile_from_plan
@@ -1251,8 +1260,15 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
         #     where the boss declared it). Catches a manager collapsing a seat onto its root
         #     origin (the shaft then buries itself in the housing). Deterministic, no LLM ->
         #     boss re-plan (rebuild the blamed sub).
-        from .benchmarks.manager_gate import seam_frame_agreement_errors as _seam_agree
-        _agree_errs = _seam_agree(plan, subs)
+        #     方案B-v3: SKIP in manager_py mode. This gate reads the collapsed sub_frames
+        #     (every frame degraded to a part's local origin) and so mis-reads every seat as
+        #     "collapsed" — but manager_py has no declarative realized frames at all; parts sit
+        #     at their params-derived GLOBAL coords, which are apart by construction. precheck's
+        #     weld/gear checks (also params-direct now) are the real coincidence gate.
+        _agree_errs = []
+        if not getattr(settings, "manager_py", False):
+            from .benchmarks.manager_gate import seam_frame_agreement_errors as _seam_agree
+            _agree_errs = _seam_agree(plan, subs)
         if _agree_errs:
             for e in _agree_errs:
                 log_fn("ARTIFACT_JSON:" + json.dumps({

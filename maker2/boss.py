@@ -205,7 +205,15 @@ def parse_plan(text: str) -> SubassemblyPlan:
         global_origin_note=str(obj.get("global_origin_note") or ""),
         subassemblies=[_sub_from_dict(d, i) for i, d in enumerate(subs)],
         seams=[_seam_from_dict(d, i) for i, d in enumerate(seams)],
-        params_text=str(obj.get("params_text") or "") or _extract_params_block(text),
+        # 方案B-v3: the AUTHORITATIVE params source is the ```python code block the boss emits,
+        # not the JSON `params_text` field — the boss routinely fills that field with a
+        # placeholder ("see python params module ...") while writing the real module in the
+        # fenced block. Preferring the JSON field short-circuited the real code and left some
+        # subs with a stub params.py. So take the extracted code block whenever it is real
+        # (contains a `def`), and only fall back to the JSON field otherwise.
+        params_text=(_extract_params_block(text)
+                     if "def " in _extract_params_block(text)
+                     else str(obj.get("params_text") or "")),
     )
 
 
@@ -617,13 +625,33 @@ def plan_machine(product_prompt: str, settings, *, image_path: str | None = None
     if getattr(settings, "manager_py", False):
         conv.add_user_message(
             "ADDITIONALLY (parametric-Python mode): BEFORE the JSON, emit ONE ```python code "
-            "block defining the shared PARAMETER MODULE for this machine — the load-bearing "
-            "constants (module, tooth counts, ratios, diameters) AND the relation functions "
-            "that derive everything else (e.g. `def center_distance(m, z1, z2): return "
-            "m*(z1+z2)/2`, `def pitch_radius(m, z): return m*z/2`). The per-subassembly "
-            "managers will `import params` and derive every dimension from it, so put every "
-            "number a manager would need here as a named constant or function. Then the "
-            "JSON plan (subassemblies + seams) as usual.")
+            "block defining the shared PARAMETER MODULE `params` for this machine. Treat this "
+            "as a normal program's config/init: the per-subassembly managers will `import "
+            "params` and derive EVERY dimension AND EVERY global coordinate from it, so this "
+            "module is the SINGLE SOURCE OF TRUTH. It MUST contain:\n"
+            "1. LOAD-BEARING CONSTANTS from the hardest inputs (the prompt's sizes, the "
+            "reduction ratio): module `M`, tooth counts `Z1`,`Z2`,..., ratios, diameters.\n"
+            "2. RELATION FUNCTIONS that derive everything else — never a bare number you could "
+            "compute: `def center_distance(m, z1, z2): return m*(z1+z2)/2`, "
+            "`def pitch_radius(m, z): return m*z/2`, etc.\n"
+            "3. GEOMETRY DATUMS the managers must NOT choose for themselves — hard-code them "
+            "here so every sub agrees: each shaft's direction as a unit 3-tuple "
+            "(e.g. `SHAFT_AXIS = (0.0, 0.0, 1.0)`) and each stage's origin "
+            "(e.g. `STAGE1_ORIGIN = (0.0, 0.0, 0.0)`). Add small vector helpers "
+            "`def add(a, b): return tuple(x+y for x,y in zip(a,b))` and "
+            "`def mul(a, s): return tuple(x*s for x in a)` so coordinates are composed, "
+            "not written as literals.\n"
+            "4. ONE ZERO-ARG FUNCTION PER INTERFACE FRAME returning that frame's GLOBAL "
+            "coordinate (millimeters), NAMED EXACTLY like the frame you put in the JSON "
+            "plan below. Compose it from the datums + relation functions, e.g. for a frame "
+            "`pinion1_center`: `def pinion1_center(): return add(STAGE1_ORIGIN, "
+            "mul(SHAFT_AXIS, 40.0))`. The managers place each interface part by CALLING these "
+            "functions (`loc=cq.Location(params.pinion1_center())`) — they never re-type a "
+            "coordinate. So EVERY frame in your plan needs a same-named function here.\n"
+            "Keep units consistent (millimeters for coordinates). Then output the JSON plan "
+            "(subassemblies + seams) as usual, and make each frame's `xyz_m` in the JSON the "
+            "SAME point its params function returns (converted to meters), so the plan and the "
+            "params module never disagree.")
     if image_path and log_fn:
         log_fn(f"[boss] using input image: {image_path}")
     # Show the prior plan FIRST (both refine and fault re-plan build on it), so the

@@ -123,10 +123,17 @@ def _rot_to_rpy(R):
 
 
 def evaluate_manager_python(script_text: str, run_dir: str, sub_name: str,
-                            *, params_text: str = "", log_fn=print) -> KinematicModel:
+                            *, params_text: str = "", frames=None, log_fn=print) -> KinematicModel:
     """Run the manager-authored CadQuery module in a sandbox, export each part's STL, and
     build a KinematicModel whose poses are GLOBAL (root-relative, meters). Raises
-    PyManagerError on any failure so the caller's retry/debug loop can react."""
+    PyManagerError on any failure so the caller's retry/debug loop can react.
+
+    ``frames`` (v3, optional): the boss's interface frames (list of MountFrame with
+    ``name``/``xyz_m`` in global meters). When a built part's metadata tags a ``frame`` that
+    matches one, we VERIFY the manager's params-derived location coincides with the boss's
+    frame coordinate (a pure consistency guard — it does NOT overwrite the coordinate, per the
+    'precheck backstops, does not override' choice). A drift beyond tolerance raises
+    PyManagerError so the debugger rewrites the offending params call."""
     run = Path(run_dir)
     run.mkdir(parents=True, exist_ok=True)
     (run / "meshes").mkdir(exist_ok=True)
@@ -172,9 +179,19 @@ def evaluate_manager_python(script_text: str, run_dir: str, sub_name: str,
     if not parts:
         raise PyManagerError("manager assembly has no parts with solids")
 
+    # v3 consistency guard: index the boss's interface frames by name so a part that tags a
+    # `frame` in its metadata can be checked against the boss's authoritative coordinate.
+    frames_by_name: dict = {}
+    for fr in (frames or []):
+        nm = getattr(fr, "name", None)
+        if nm:
+            frames_by_name[str(nm)] = fr
+    _GUARD_TOL_M = 0.002  # 2 mm: params-derived loc must coincide with the boss frame
+
     links: list[LinkSpec] = []
     poses: list[PoseSpec] = []
     mesh_by_id: dict = {}
+    coord_log: list = []
     root = spec.get("root") or parts[0]["name"]
     for p in parts:
         name = p["name"]
@@ -192,8 +209,24 @@ def evaluate_manager_python(script_text: str, run_dir: str, sub_name: str,
         # GLOBAL pose: root-relative. T is mm -> meters.
         T = [float(v) / 1000.0 for v in p["T"]]
         rpy = _rot_to_rpy(p["R"])
+        # v3 guard: if the part declares which interface frame it realizes, verify the manager's
+        # params-derived coordinate matches the boss's frame — a params call gone wrong (wrong
+        # function, wrong axis) surfaces HERE as a clear per-sub error, not later as a precheck
+        # weld gap. Pure check: the coordinate is NOT overwritten.
+        fr_tag = meta.get("frame")
+        if fr_tag and str(fr_tag) in frames_by_name:
+            bf = frames_by_name[str(fr_tag)]
+            bx = tuple(float(v) for v in getattr(bf, "xyz_m", (0.0, 0.0, 0.0)))
+            drift = sum((a - b) ** 2 for a, b in zip(T, bx)) ** 0.5
+            if drift > _GUARD_TOL_M:
+                raise PyManagerError(
+                    f"part '{name}' claims frame '{fr_tag}' but its params-derived location "
+                    f"{tuple(round(v, 4) for v in T)} m is {drift*1000:.1f} mm from the boss "
+                    f"frame {tuple(round(v, 4) for v in bx)} m — recompute its `loc` from "
+                    f"`params.{fr_tag}()` (do not type a coordinate).")
         poses.append(PoseSpec(name=f"place_{name}", parent="", child=name,
                               xyz_m=tuple(T), rpy_rad=tuple(rpy)))
+        coord_log.append(f"{name}@{tuple(round(v*1000, 1) for v in T)}mm")
         mid = meta.get("mesh_id")
         if mid:
             mesh_by_id.setdefault(str(mid), []).append(name)
@@ -204,5 +237,5 @@ def evaluate_manager_python(script_text: str, run_dir: str, sub_name: str,
                            mesh_pairs=mesh_pairs)
     if log_fn:
         log_fn(f"[py-manager] {sub_name}: {len(links)} part(s), {len(mesh_pairs)} mesh pair(s), "
-               f"global poses authored")
+               f"global poses from params: {', '.join(coord_log)}")
     return model

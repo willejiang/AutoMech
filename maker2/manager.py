@@ -481,7 +481,9 @@ def _parse_manager_output(text: str, *, settings=None, frame_contract=None,
         params_text = getattr(frame_contract, "params_text", "") or ""
         try:
             model = evaluate_manager_python(code, run_dir, sub_name,
-                                            params_text=params_text, log_fn=log_fn)
+                                            params_text=params_text,
+                                            frames=getattr(frame_contract, "frames", None),
+                                            log_fn=log_fn)
         except PyManagerError as e:
             raise ManagerError(str(e)) from e
         _validate_model(model)

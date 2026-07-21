@@ -131,26 +131,30 @@ BUILDS and PLACES every part.
 Emit EXACTLY ONE ```python code block defining a function `build_subassembly()` that returns
 a `cadquery.Assembly`. Rules:
 
-- `import cadquery as cq` and `import math`. If a `params` module is offered (shown to you),
-  `import params` and DERIVE every dimension from it — never hard-code a number you could
-  compute from params (module, teeth, center distance = m*(z1+z2)/2, etc.).
+- `import cadquery as cq`, `import math`, and `import params`. The `params` module is the
+  machine's SINGLE SOURCE OF TRUTH (constants + relation functions + one zero-arg function per
+  interface frame returning its GLOBAL coordinate). DERIVE every dimension AND every global
+  coordinate from it — never hard-code a number you could compute or a coordinate params can
+  return. Think of this as a normal program that imports its config, not a drawing.
 - Build EACH part as a `cq.Workplane` solid in millimeters, in its OWN local frame with its
   attach axis along +Z. Write a small helper per part (e.g. `def _shaft(): ...`).
 - Add every part to the assembly with a NAME (URDF-safe: lowercase, digits, underscore), a
-  GLOBAL location, and a metadata dict:
+  GLOBAL location DERIVED FROM PARAMS, and a metadata dict:
     asm.add(_shaft(), name="inter_shaft",
-            loc=cq.Location((x_mm, y_mm, z_mm)),          # GLOBAL placement of this sub, mm
+            loc=cq.Location(cq.Vector(*params.inter_front())),  # coordinate FROM params, mm
             metadata={"dof": "spin", "spin_axis": [0,0,1], "material": "steel",
                       "mesh_id": "<id>"})   # mesh_id only on GEARS that mesh across a seam
   `dof` is "fixed" | "spin" | "free". `spin_axis` for a rotating shaft/gear. Put `"driver": True`
   on the ONE input part the physics test drives. `mesh_id` tags a gear so the pipeline can pair
   meshing gears — give the SAME id to the two gears meant to mesh.
-- YOU own the placement: put each part at its correct GLOBAL coordinate (from the interface
-  frames / params you are given). Two gears that mesh must sit one center-distance apart and in
-  the SAME axial plane. Parts on one shaft must be spaced along the axis so they don't overlap.
-- The connection/topology is expressed BY the locations + mesh_id tags you write — there is no
-  separate mate list. You may also use `.constrain(...)` + `asm.solve()` if you prefer
-  constraint-based placement; either yields the same global coordinates.
+- PLACEMENT COMES FROM PARAMS, NOT FROM YOU: every part's `loc` coordinate MUST be a
+  `params.<frame>()` call, an arithmetic expression over `params.*` (using params' `add`/`mul`
+  helpers + `params.SHAFT_AXIS`/`params.STAGE*_ORIGIN`), or exactly 0 — NEVER a bare number you
+  typed. Because you and every sibling manager call the SAME params functions, meshing gears
+  land one center-distance apart and weld points coincide BY CONSTRUCTION; there is no separate
+  solving step.
+- The connection/topology is expressed BY the params-derived locations + mesh_id tags you write
+  — there is no separate mate list.
 - No file I/O, no network; cadquery + math + the params module only. Every part must be a real
   non-empty solid.
 - PYTHON, not JSON: use `True`/`False`/`None` (capitalized) in metadata — NOT `true`/`false`/
@@ -563,9 +567,12 @@ RULES
 
 
 def _build_manager_subassembly_py(frame_contract) -> str:
-    """方案B: the subassembly instruction for the PARAMETRIC CADQUERY manager. Renders the
-    boss's interface frames as GLOBAL placement targets the CadQuery author must position
-    parts at, and asks for a cq.Assembly authored in global coordinates."""
+    """方案B-v3: the subassembly instruction for the PARAMETRIC CADQUERY manager, authored as
+    a TRADITIONAL PROGRAM. The boss wrote a shared `params` module (constants + relation
+    functions + one zero-arg function per interface frame returning its GLOBAL coordinate).
+    This manager `import params` and places every interface part by CALLING those functions —
+    it never re-types a coordinate. Coordinates are therefore derived, not copied, and every
+    subassembly that shares `params` agrees by construction."""
     fc = frame_contract
     lines = []
     for fr in getattr(fc, "frames", []):
@@ -575,41 +582,58 @@ def _build_manager_subassembly_py(frame_contract) -> str:
         dia_txt = (f", diameter {dia:.2f} mm (build the mating shaft/bore/gear to EXACTLY "
                    f"this diameter)") if dia > 0 else ""
         role = getattr(fr, "role", "mount")
+        # v3: name the params FUNCTION the manager must call for this frame's coordinate.
         lines.append(
-            f'  - "{fr.name}" (role: {role}): GLOBAL [{x*1000:.2f}, {y*1000:.2f}, {z*1000:.2f}] mm, '
-            f'axis [{ax:.2f}, {ay:.2f}, {az:.2f}]{dia_txt}')
+            f'  - "{fr.name}" (role: {role}): call `params.{fr.name}()` for its GLOBAL mm '
+            f'coordinate [~{x*1000:.1f}, {y*1000:.1f}, {z*1000:.1f}], axis '
+            f'[{ax:.2f}, {ay:.2f}, {az:.2f}]{dia_txt}')
     frames_txt = "\n".join(lines) if lines else "  (none)"
     sub_id = getattr(fc, "sub_id", "?")
     origin = getattr(fc, "global_origin_note", "") or "(the machine's shared origin)"
     params = getattr(fc, "params_text", "") or ""
-    params_block = (f"\nSHARED PARAMETER MODULE (available as `import params`) — derive your "
-                    f"dimensions and the global coordinates below FROM these, so every "
-                    f"subassembly uses identical numbers:\n```python\n{params}\n```\n"
+    params_block = (f"\nSHARED PARAMETER MODULE (already saved next to your code as `params.py`; "
+                    f"`import params` and CALL its functions — this is the machine's single "
+                    f"source of truth, identical for every subassembly):\n"
+                    f"```python\n{params}\n```\n"
                     if params.strip() else "")
     return f"""\
 BUILD THIS SUBASSEMBLY: {sub_id}
 GLOBAL ORIGIN: {origin}
 {params_block}
-INTERFACE FRAMES this subassembly must expose, in GLOBAL machine millimeters (place a real
-part so its relevant feature sits AT each frame):
+INTERFACE FRAMES this subassembly must expose. Each has a same-named function in `params` that
+RETURNS its GLOBAL coordinate — place a real part so its relevant feature sits at that returned
+point:
 {frames_txt}
 
-CRITICAL — THESE GLOBAL COORDINATES ARE WELD POINTS, NOT SUGGESTIONS. Every OTHER
-subassembly is built by a DIFFERENT manager against the SAME global frame list, and the
-assembler welds your parts to theirs BY THESE COORDINATES with NO further solving. So the
-feature you place at a frame MUST land at that EXACT global mm coordinate. If the boss says
-`input_shaft_front` is at (0, 0, 0), the front end of your shaft must be at global (0,0,0) —
-compute the shaft's `loc` so its front face is there, don't just drop it at the origin and
-hope. A 1 mm error becomes an interpenetration or a floating weld at assembly. If a `params`
-module is offered, derive these coordinates from it so every manager uses identical numbers.
+THINK OF THIS AS A NORMAL PROGRAM, NOT A DRAWING. The boss already wrote `params.py` (shown
+above) deriving every coordinate from the hard inputs with `y = f(x)`. Your job is to `import
+params` and CALL those functions — you do NOT compute or re-type any global coordinate yourself.
 
-Write `build_subassembly()` returning a cq.Assembly. For each part, `asm.add(..., name=...,
-loc=cq.Location((x_mm, y_mm, z_mm)), metadata={{...}})` with the GLOBAL coordinate from the
-frames above. A gear whose center is a `mesh` frame MUST be a real toothed gear at that exact
-global point, tagged `metadata={{"mesh_id": "<the mesh frame name>", ...}}` so it pairs with
-the meshing gear in the neighbor subassembly. Rotating parts get `"dof":"spin"` +
-`"spin_axis"` matching the frame axis. Space coaxial parts along the shaft axis so they do not
-overlap. Output NOTES then ONE ```python block."""
+HARD RULES ON PLACEMENT (these make every subassembly line up automatically):
+- `import params` at the top. Take the shaft direction from `params.SHAFT_AXIS` (or the stage
+  axis constant params defines) and each stage origin from `params.STAGE*_ORIGIN` — NEVER pick
+  an axis or origin yourself. This is why the axis can't come out wrong.
+- Place each INTERFACE part with its coordinate coming from the frame's params function:
+  `asm.add(_pinion(), name="pinion1", loc=cq.Location(cq.Vector(*params.pinion1_center())),
+  metadata={{...}})`. The coordinate MUST be a params call, an arithmetic expression over
+  `params.*` (e.g. `params.add(params.pinion1_center(), params.mul(params.SHAFT_AXIS, 5.0))`),
+  or exactly 0 — NEVER a bare number you typed in. A literal coordinate is a bug: it means you
+  guessed instead of asking params.
+- Place each NON-INTERFACE part (a spacer, a shim) at a params-derived axial station too:
+  compose it from a stage origin plus `params.mul(params.SHAFT_AXIS, <axial mm from a params
+  helper or a gap you name in params>)`. Keep coaxial parts at DISTINCT axial stations so they
+  never overlap.
+- A `mesh`-role frame MUST be realized on a real toothed gear whose center is `params.<that
+  frame>()`, tagged `metadata={{"mesh_id": "<the mesh frame name>", ...}}` so it pairs with the
+  meshing gear the neighbor subassembly builds at the SAME params point.
+- Rotating parts get `"dof": "spin"` + `"spin_axis"` = the frame axis. Fixed parts (housing,
+  bearings) get `"dof": "fixed"`. Put `"driver": True` on the ONE input part.
+
+Because you and every other manager derive coordinates from the SAME `params` functions, your
+weld points coincide with your neighbors' by construction — there is no separate solving step,
+so getting the params calls right IS getting the assembly right.
+
+Write `build_subassembly()` returning a cq.Assembly. Output NOTES then ONE ```python block."""
 
 
 def build_manager_should_rebuild(prior_model_json: str, fault_reason: str,
