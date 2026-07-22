@@ -141,6 +141,16 @@ a `cadquery.Assembly`. Rules:
   `cq.Workplane("XY").circle(r).extrude(length)` does exactly this: the solid spans local z in
   [0, length]. Do NOT `.translate((0,0,-length/2))` to center it, and do NOT bake global
   position/orientation into the geometry — build it at the origin, growing up +Z from z=0.
+- GEARS AND PINIONS MUST HAVE REAL TEETH — build every gear/pinion with the injected
+  `make_gear(module, teeth, face_width, bore)` helper, NEVER a plain `circle().extrude()` disk
+  (a smooth cylinder cannot mesh and reads as a broken, gearless reducer). `module` and `teeth`
+  come from params (the same values that set the pitch diameter and center distance — e.g.
+  `params.M`/`params.MODULE_S1_MM` and the tooth-count function); `face_width` and `bore` are your
+  local choices (bore = the shaft diameter it rides on). make_gear returns a toothed spur gear
+  built along +Z with its origin at the -Z end face, so place it with
+  `place_axial(..., length=face_width, anchor="center")` at the gear-center frame. Two gears that
+  mesh MUST share `module` and be one center-distance apart (params already guarantees the frames);
+  do not fake teeth with knurling or skip them.
 - PLACE every part with the injected `place_axial(...)` primitive. You declare WHICH point of the
   part sits on the params frame; the axial back-off is computed for you from `length`, so you NEVER
   write `- axis*width`, `- axis*length/2`, or any hand-computed basis offset. Signature:

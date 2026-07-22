@@ -133,6 +133,47 @@ try:
         return _place_part(asm, part, name=name, axis=axis, xyz=xyz, metadata=md)
     ns["place_axial"] = _place_axial
 
+    # Canonical gear generator. Managers kept emitting a plain `circle().extrude()` disk with NO
+    # teeth (a smooth cylinder can't mesh and reads as a "gearless" reducer). make_gear builds a
+    # real toothed spur gear DETERMINISTICALLY so the LLM never has to hand-roll involute math:
+    # a root disk at the dedendum radius, then `teeth` trapezoidal teeth arrayed on the pitch
+    # circle (a standard involute approximation that meshes correctly in a contact sim), a center
+    # bore, extruded `face_width` along +Z with its origin at the -Z end face (so it drops straight
+    # into place_axial with anchor="center"). module/teeth come from params; face_width/bore are
+    # the manager's local call.
+    def _make_gear(module, teeth, face_width, bore, *, pressure_angle_deg=20.0):
+        import math as _m
+        module = float(module); teeth = int(teeth)
+        face_width = float(face_width); bore = float(bore)
+        if teeth < 4 or module <= 0 or face_width <= 0:
+            raise ValueError("make_gear needs module>0, teeth>=4, face_width>0 (got "
+                             f"module={module}, teeth={teeth}, face_width={face_width})")
+        pitch_r = module * teeth / 2.0
+        addendum = module               # tip above pitch
+        dedendum = 1.25 * module        # root below pitch
+        tip_r = pitch_r + addendum
+        root_r = max(pitch_r - dedendum, bore / 2.0 + 0.5)
+        # tooth angular width at the pitch circle: half the circular pitch is tooth, half is gap
+        tooth_ang = (_m.pi / teeth)     # radians of tooth arc at pitch circle (~half the pitch)
+        half = tooth_ang / 2.0
+        # trapezoid narrows toward the tip (approximates the involute flank)
+        tip_half = half * 0.65
+        # build the root cylinder, then union one tooth per position
+        gear = cq.Workplane("XY").circle(root_r).extrude(face_width)
+        for i in range(teeth):
+            a = 2.0 * _m.pi * i / teeth
+            poly = []
+            for r, h in ((root_r - 0.01, half), (pitch_r, half),
+                         (tip_r, tip_half), (tip_r, -tip_half),
+                         (pitch_r, -half), (root_r - 0.01, -half)):
+                poly.append((r * _m.cos(a + h), r * _m.sin(a + h)))
+            tooth = cq.Workplane("XY").polyline(poly).close().extrude(face_width)
+            gear = gear.union(tooth)
+        if bore > 0:
+            gear = gear.faces(">Z").workplane().hole(bore)
+        return gear
+    ns["make_gear"] = _make_gear
+
     with open(src_path, "r", encoding="utf-8") as f:
         code = f.read()
     exec(compile(code, src_path, "exec"), ns)
