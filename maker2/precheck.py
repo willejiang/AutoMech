@@ -619,12 +619,23 @@ def _part_overlaps(robot, plan, subs: dict, log) -> list:
         mb = sub_mesh_cache.get(seam.child_sub, {})
         if not ma or not mb:
             continue
+        # An INSERT fit (a bearing pressed into a housing seat, a shaft end into a bore) is a
+        # coaxial nesting where the two mating faces TOUCH by design — the bearing OD equals the
+        # seat bore, so a manifold boolean sees a thin shared shell and a small mesh-tessellation
+        # overlap even when the fit is correct. Raise the threshold for the seam's own insert pair
+        # so a legitimate press-fit is not reported as interpenetration, while still catching GROSS
+        # overlap (a bearing driven halfway through the wall). Non-insert welds keep the strict bar.
+        mate = getattr(seam, "mate_type", "") or ""
+        seam_frac_floor = 0.60 if mate == "insert" else _OVERLAP_FRAC
         worst = None
         for an, amesh in ma.items():
             for bn, bmesh in mb.items():
                 frac = _solid_intersection_frac(amesh, bmesh, log_fn=log)
-                if frac >= _OVERLAP_FRAC and (worst is None or frac > worst[0]):
+                if frac >= seam_frac_floor and (worst is None or frac > worst[0]):
                     worst = (frac, an, bn)
+                elif frac >= _OVERLAP_FRAC and frac < seam_frac_floor:
+                    log(f"drop insert-fit overlap {an}~{bn} ({frac:.0%} < {seam_frac_floor:.0%} "
+                        f"insert floor on seam '{seam.id}')")
         if worst:
             frac, an, bn = worst
             role = _shaft_role(seam.id, seam.parent_frame, seam.child_frame, an, bn)

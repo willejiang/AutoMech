@@ -180,9 +180,18 @@ a `cadquery.Assembly`. Rules:
   * SUBORDINATE / structural parts you DERIVE LOCALLY: the shaft BODY length, spacers, collars,
     keys, fillets. params does NOT define these and is not supposed to. Compute them yourself in
     THIS module from the functional anchors params already gave you — e.g.
-    `bearing_od = shaft_dia + 12`, `spacer_w = (gap between two gear stations)`. Place them with
-    `place_part` too, reusing a nearby interface frame's `axis` and an `xyz` you compose from that
+    `spacer_w = (gap between two gear stations)`. Place them with `place_axial`/`place_part`,
+    reusing a nearby interface frame's `axis` and an `xyz`/`frame_xyz` you compose from that
     frame's coordinate plus your own local offset. Do not look for a `params.spacer_width`.
+  * INSERT-FIT DIAMETERS ARE NOT LOCAL — take them from params. A bearing OD, its seat bore, and
+    its inner bore are a mating triplet that MUST agree across subassemblies, so params owns them.
+    Size a bearing's OUTER diameter to `params.<role>_bearing_od_mm()`, its bore to
+    `params.<role>_bearing_bore_mm()`; bore a housing seat to `params.<role>_seat_bore_mm()` (which
+    equals the bearing OD). NEVER write `bearing_od = shaft_dia + 12` locally — if the housing and
+    the shaft each invent their own bearing/seat diameter they interpenetrate and the assembly is
+    rejected. If params is missing a `<role>_bearing_od_mm` / `<role>_seat_bore_mm` you need, that
+    is a params gap to surface (call the params name and let the AttributeError name it), NOT a
+    number to invent locally.
 - The `xyz` you pass to place_part MUST be a `params.<frame>()` call, an arithmetic expression
   over params names you can SEE in the module handed to you, or a subordinate offset you derived
   locally — never a bare functional coordinate you typed. Calling a params name the module does
