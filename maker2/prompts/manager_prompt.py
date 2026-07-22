@@ -137,23 +137,37 @@ a `cadquery.Assembly`. Rules:
   coordinate from it — never hard-code a number you could compute or a coordinate params can
   return. Think of this as a normal program that imports its config, not a drawing.
 - Build EACH part as a `cq.Workplane` solid in millimeters, in its OWN local frame with its
-  AXIS OF REVOLUTION along LOCAL +Z (a shaft extrudes up +Z; a gear/bearing disk's normal is
-  +Z). Write a small helper per part (e.g. `def _shaft(): ...`). Do NOT bake global position or
-  world orientation into the part — build it at the origin, pointing +Z.
-- PLACE every part with the injected `place_part(...)` primitive — do NOT call `asm.add(...,
-  loc=...)` yourself for a positioned part, and NEVER hand-write a rotating `cq.Location(vec,
-  axis, angle)` (that rotates the translation too and corrupts the params coordinate). Signature:
-    place_part(asm, _gear(), name="inter_gear1",
-               axis=params.inter_gear1_axis(),   # unit vector — the part's world spin axis
-               xyz=params.inter_gear1(),          # global mm coordinate FROM params
-               metadata={"dof": "spin", "spin_axis": params.inter_gear1_axis(),
-                         "material": "steel", "mesh_id": "<id>"})
-  place_part rotates your +Z-built part so +Z aligns to `axis` (at the origin), then translates
-  it to `xyz`. Orientation and position are decoupled, so the params coordinate lands verbatim
-  and coaxial parts across subassemblies point the SAME way. `dof` is "fixed"|"spin"|"free".
+  AXIS OF REVOLUTION along LOCAL +Z AND ITS ORIGIN AT THE -Z END FACE. A bare
+  `cq.Workplane("XY").circle(r).extrude(length)` does exactly this: the solid spans local z in
+  [0, length]. Do NOT `.translate((0,0,-length/2))` to center it, and do NOT bake global
+  position/orientation into the geometry — build it at the origin, growing up +Z from z=0.
+- PLACE every part with the injected `place_axial(...)` primitive. You declare WHICH point of the
+  part sits on the params frame; the axial back-off is computed for you from `length`, so you NEVER
+  write `- axis*width`, `- axis*length/2`, or any hand-computed basis offset. Signature:
+    place_axial(asm, _shaft(L, dia), name="inter_shaft",
+                axis=params.inter_shaft_front_axis(),  # unit vector — the part's world spin axis
+                frame_xyz=params.inter_shaft_front(),  # the params frame this anchor lands on
+                length=L,                              # the part's TRUE +Z extent (must match geometry)
+                anchor="base",                         # "base" | "center" | "top"
+                metadata={"dof": "spin", "spin_axis": params.inter_shaft_front_axis(),
+                          "material": "steel", "mesh_id": "<id>"})
+  anchor semantics (the -Z end face is the origin, +Z end face is at z=length):
+    * "base"   — the part's -Z end face lands on frame_xyz (a shaft whose FRONT face sits at the
+                 front bearing seat: frame_xyz=...shaft_front, length=|rear-front|).
+    * "center" — the part's mid-plane lands on frame_xyz (a gear/pinion whose FACE CENTER sits on
+                 the mesh plane: frame_xyz=...gear_center, length=face_width).
+    * "top"    — the part's +Z end face lands on frame_xyz (a rear bearing whose BACK face butts
+                 the rear seat: frame_xyz=...shaft_rear, length=bearing_width).
+  place_axial rotates your +Z-built part so +Z aligns to `axis`, applies the deterministic anchor
+  back-off, and translates — so the params coordinate lands verbatim and coaxial parts across
+  subassemblies point the SAME way. `length` MUST equal the part's real +Z extent; a wrong length
+  is rejected (the local z-extent is checked against [0, length]). `dof` is "fixed"|"spin"|"free";
   `spin_axis` = the same axis for a rotating part. Put `"driver": True` on the ONE input part the
-  physics test drives. `mesh_id` tags a gear so meshing gears pair — SAME id on the two gears
-  meant to mesh.
+  physics test drives. `mesh_id` tags a gear so meshing gears pair — SAME id on the two gears meant
+  to mesh. (A non-axial/asymmetric part with no meaningful revolution axis may still use the lower-
+  level `place_part(asm, part, name=, axis=, xyz=, metadata=)`, which places the local origin at
+  `xyz` with no anchor back-off — but every shaft, gear, pinion, bearing, spacer, collar, stub is
+  axial and MUST use place_axial.)
 - DIVISION OF LABOR (this is the core of the method — get it right):
   * FUNCTIONAL-CONNECTION parts come FROM params: any part that realizes the machine's function
     (meshing gears) or must line up with a neighbor subassembly (the gear it meshes with, the
@@ -627,8 +641,10 @@ def _build_manager_subassembly_py(frame_contract) -> str:
             f'coordinate [~{x*1000:.1f}, {y*1000:.1f}, {z*1000:.1f}] and '
             f'`params.{fr.name}_axis()` for its spin-axis unit vector '
             f'[{ax:.2f}, {ay:.2f}, {az:.2f}]; place the part with '
-            f'`place_part(asm, <part>, name=..., axis=params.{fr.name}_axis(), '
-            f'xyz=params.{fr.name}(), metadata=...)`{dia_txt}')
+            f'`place_axial(asm, <part>, name=..., axis=params.{fr.name}_axis(), '
+            f'frame_xyz=params.{fr.name}(), length=<part +Z extent>, anchor="base"|"center"|"top", '
+            f'metadata=...)` — pick anchor by what the frame denotes (an end-face seat -> "base"/'
+            f'"top", a mesh/face center -> "center")){dia_txt}')
     frames_txt = "\n".join(lines) if lines else "  (none)"
     sub_id = getattr(fc, "sub_id", "?")
     origin = getattr(fc, "global_origin_note", "") or "(the machine's shared origin)"

@@ -110,6 +110,29 @@ try:
         return asm
     ns["place_part"] = _place_part
 
+    # 方案B basis contract: EVERY revolution part is built along local +Z with its origin at the
+    # -Z END FACE (cq's `extrude(length)` does exactly this). `place_axial` then places it by a
+    # SEMANTIC anchor instead of a hand-computed `- axis*offset`: the manager declares WHICH point
+    # of the part (base / center / top) coincides with the params frame, and the axial back-off is
+    # derived deterministically from `length`. This kills the whole class of "manager mis-computed
+    # the basis" bugs (e.g. a shaft placed by its center but sized as if placed by its base ->
+    # sticks out past the wall). `length` MUST be the part's true extent along +Z, so a wrong
+    # length surfaces immediately as an out-of-envelope part rather than a silent shift.
+    def _place_axial(asm, part, *, name, axis, frame_xyz, length, anchor="base", metadata=None):
+        import math as _m
+        ax = [float(a) for a in axis]
+        n = _m.sqrt(sum(a * a for a in ax)) or 1.0
+        ax = [a / n for a in ax]
+        try:
+            back = {"base": 0.0, "center": float(length) / 2.0, "top": float(length)}[anchor]
+        except KeyError:
+            raise ValueError("place_axial anchor must be 'base', 'center', or 'top', got %r" % (anchor,))
+        xyz = [float(frame_xyz[i]) - ax[i] * back for i in range(3)]
+        md = dict(metadata or {})
+        md["_axial"] = {"anchor": anchor, "length": float(length)}
+        return _place_part(asm, part, name=name, axis=axis, xyz=xyz, metadata=md)
+    ns["place_axial"] = _place_axial
+
     with open(src_path, "r", encoding="utf-8") as f:
         code = f.read()
     exec(compile(code, src_path, "exec"), ns)
@@ -293,6 +316,24 @@ def evaluate_manager_python(script_text: str, run_dir: str, sub_name: str,
         meta = p.get("metadata") or {}
         if float(p.get("volume_mm3", 0.0)) <= 0.0:
             raise PyManagerError(f"part '{name}' built an empty/zero-volume solid")
+        # basis contract: a part placed with place_axial MUST be modelled along local +Z with its
+        # origin at the -Z END FACE, so its LOCAL bbox is z in [0, length]. If the manager instead
+        # centered it (`.translate((0,0,-len/2))`) or built it off-origin, the anchor back-off is
+        # computed against the wrong reference and the part shifts. Catch that here rather than as a
+        # downstream overlap. (Only enforced for place_axial parts; place_part/non-axial are exempt.)
+        _ax = meta.get("_axial")
+        if _ax:
+            bb = p.get("bbox") or [0, 0, 0, 0, 0, 0]
+            zmin, zmax = float(bb[2]), float(bb[5])
+            L = float(_ax.get("length", 0.0)) or (zmax - zmin)
+            tol = max(0.5, 0.02 * L)         # 0.5 mm or 2% of length
+            if abs(zmin) > tol or abs(zmax - L) > tol:
+                raise PyManagerError(
+                    f"part '{name}' uses place_axial(length={L:.1f}) but its LOCAL z-extent is "
+                    f"[{zmin:.1f}, {zmax:.1f}] instead of [0, {L:.1f}] — build it along local +Z "
+                    f"with its origin at the -Z end face (a bare `extrude(length)`; do NOT "
+                    f"`.translate((0,0,-length/2))` to center it). place_axial derives the anchor "
+                    f"back-off from `length`, so the geometry MUST start at z=0.")
         links.append(LinkSpec(
             name=name, description=meta.get("description", ""),
             shape_hint=meta.get("shape_hint", ""),
