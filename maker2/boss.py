@@ -188,9 +188,18 @@ def _seam_from_dict(d: dict, idx: int) -> SeamSpec:
     )
 
 
+def _strip_code_fences(text: str) -> str:
+    """Remove ```...``` fenced code blocks (e.g. the manager_py params module) so the JSON
+    extractor does not mistake a brace INSIDE that code (dicts, f-strings, set/dict-comps) for
+    the start of the plan object. The params block is recovered separately by
+    _extract_params_block from the ORIGINAL text, so nothing is lost."""
+    import re
+    return re.sub(r"```.*?```", "", text, flags=re.S)
+
+
 def parse_plan(text: str) -> SubassemblyPlan:
     """Parse an LLM response into a (not-yet-validated) SubassemblyPlan."""
-    obj = json.loads(extract_json_object(text))
+    obj = json.loads(extract_json_object(_strip_code_fences(text)))
     if not isinstance(obj, dict):
         raise ValueError("top-level JSON value is not an object")
     subs = obj.get("subassemblies")
@@ -625,31 +634,54 @@ def plan_machine(product_prompt: str, settings, *, image_path: str | None = None
     if getattr(settings, "manager_py", False):
         conv.add_user_message(
             "ADDITIONALLY (parametric-Python mode): BEFORE the JSON, emit ONE ```python code "
-            "block defining the shared PARAMETER MODULE `params` for this machine. Treat this "
-            "as a normal program's config/init: the per-subassembly managers will `import "
-            "params` and derive EVERY dimension AND EVERY global coordinate from it, so this "
-            "module is the SINGLE SOURCE OF TRUTH. It MUST contain:\n"
-            "1. LOAD-BEARING CONSTANTS from the hardest inputs (the prompt's sizes, the "
-            "reduction ratio): module `M`, tooth counts `Z1`,`Z2`,..., ratios, diameters.\n"
-            "2. RELATION FUNCTIONS that derive everything else — never a bare number you could "
-            "compute: `def center_distance(m, z1, z2): return m*(z1+z2)/2`, "
-            "`def pitch_radius(m, z): return m*z/2`, etc.\n"
-            "3. GEOMETRY DATUMS the managers must NOT choose for themselves — hard-code them "
-            "here so every sub agrees: each shaft's direction as a unit 3-tuple "
-            "(e.g. `SHAFT_AXIS = (0.0, 0.0, 1.0)`) and each stage's origin "
-            "(e.g. `STAGE1_ORIGIN = (0.0, 0.0, 0.0)`). Add small vector helpers "
-            "`def add(a, b): return tuple(x+y for x,y in zip(a,b))` and "
-            "`def mul(a, s): return tuple(x*s for x in a)` so coordinates are composed, "
-            "not written as literals.\n"
+            "block defining the shared PARAMETER MODULE `params` for this machine. Treat this as "
+            "a normal program's config/init that models the design as a DOMINO CHAIN: a few hard "
+            "root values, then functions that derive the FUNCTIONAL-CONNECTION parts from them. "
+            "The per-subassembly managers `import params` and read it. SCOPE — this is the whole "
+            "point, get it right:\n"
+            "  * params OWNS the FUNCTIONAL-CONNECTION layer — every quantity that either (a) "
+            "realizes the machine's function (for a reducer: the gear MESH pairs — module, tooth "
+            "counts, pitch diameters, center distances) or (b) must AGREE across subassemblies so "
+            "they assemble (mating gear-center frames, bearing-seat interface frames + the shaft "
+            "diameter that seats there). These, and ONLY these, belong in params.\n"
+            "  * params does NOT own SUBORDINATE / purely-structural parts — the shaft BODY "
+            "length, spacers, collars, keys, fillets. The managers DERIVE those LOCALLY in their "
+            "own module from the functional anchors params already gave them (e.g. a manager "
+            "writes `bearing_od = shaft_dia + 12`, `spacer_w = ...` itself). Do NOT try to put "
+            "every dimension in params — only the functional-connection layer.\n"
+            "It MUST contain:\n"
+            "1. ROOT VALUES — the few hardest inputs (the reduction ratio `I`, module `M`, the "
+            "prompt's given sizes). Everything else is derived FROM these.\n"
+            "2. RELATION FUNCTIONS deriving the functional-connection quantities from the roots — "
+            "NEVER a bare number you could compute: `def center_distance(m, z1, z2): return "
+            "m*(z1+z2)/2`, `def pitch_dia(m, z): return m*z`, tooth counts chosen to hit `I`, etc. "
+            "EVERY functional dimension (including shaft/seat diameters) MUST be a derived "
+            "variable `= f(roots)`, NOT a typed literal like `25.0`.\n"
+            "3. GEOMETRY DATUMS the managers must NOT choose for themselves, so every sub agrees: "
+            "each shaft's axis unit 3-tuple and each stage's origin — but express these too as "
+            "expressions over the roots/relations, not magic literals. Add small vector helpers "
+            "`def add(a,b): ...`, `def mul(a,s): ...` so coordinates are COMPOSED, not written "
+            "as literals.\n"
             "4. ONE ZERO-ARG FUNCTION PER INTERFACE FRAME returning that frame's GLOBAL "
-            "coordinate (millimeters). CRITICAL NAMING CONTRACT: each such function's name MUST "
-            "be BYTE-FOR-BYTE IDENTICAL to the frame's `name` in the JSON plan below — no prefix "
-            "(NOT `f_<frame>`), no suffix, no rename. If a plan frame is named `input_front`, the "
-            "function MUST be `def input_front():`. The managers place each interface part by "
-            "calling `params.<frame name>()` verbatim, so ANY deviation (a stray `f_`, a "
-            "different casing) is an AttributeError that fails their build. Compose each body "
-            "from the datums + relation functions. So EVERY frame name in your plan appears here "
-            "as an identically-named function.\n"
+            "coordinate (millimeters), its body composed from the datums + relation functions. "
+            "CRITICAL NAMING CONTRACT: each function's name MUST be BYTE-FOR-BYTE IDENTICAL to the "
+            "frame's `name` in the JSON plan below — no prefix (NOT `f_<frame>`), no suffix, no "
+            "rename. If a plan frame is named `input_front`, the function MUST be `def "
+            "input_front():`. Managers place each interface part by calling `params.<frame "
+            "name>()` verbatim, so any deviation is an AttributeError that fails their build. So "
+            "EVERY frame name in your plan appears here as an identically-named function; name "
+            "functional dimensions by PART SEMANTICS (e.g. `inter_gear_pitch_dia`).\n"
+            "5. ONE AXIS FUNCTION PER INTERFACE FRAME: alongside `def <frame>():` (position), "
+            "define `def <frame>_axis():` returning that frame's AXIS OF REVOLUTION as a unit "
+            "3-tuple (the direction the shaft/gear at that frame spins about). This makes "
+            "orientation part of the shared truth, not something each manager guesses: a manager "
+            "orients every rotating part to `params.<frame>_axis()`, so coaxial parts across "
+            "subassemblies point the SAME way and meshing gears stay parallel BY CONSTRUCTION. "
+            "For a parallel-shaft layout every axis is the same unit vector (e.g. all shafts "
+            "along +X -> `return [1.0, 0.0, 0.0]`); for crossed/bevel/planetary axes, DERIVE each "
+            "from the datums so a perpendicular or angled shaft gets its true direction. Keep axes "
+            "consistent with your `xyz_m` layout (the axis a shaft spins about is NOT the "
+            "direction its centers are spaced along).\n"
             "Keep units consistent (millimeters for coordinates). Then output the JSON plan "
             "(subassemblies + seams) as usual, and make each frame's `xyz_m` in the JSON the "
             "SAME point its params function returns (converted to meters), so the plan and the "
@@ -763,15 +795,26 @@ def _boss_research(client, conv, settings, product_prompt, *, log_fn=None) -> No
                    collection="boss", log_fn=log_fn)
 
 
-def _params_naming_contract_errors(plan) -> list:
+def _params_naming_contract_errors(plan, *, manager_py: bool = False) -> list:
     """方案B: every interface-frame name MUST have a byte-identical zero-arg function in the
     boss's params module, so a manager calling `params.<frame>()` never hits an AttributeError.
-    Returns a list of GateError-like objects (only when a params module is present)."""
+    In manager_py mode a MISSING params module is itself a blocking error (the boss forgot to
+    emit the ```python params block, which would make every manager's `import params` fail).
+    Returns a list of GateError-like objects."""
+    from .benchmarks import GateError
     params = getattr(plan, "params_text", "") or ""
     if not params.strip():
+        if manager_py:
+            # The boss omitted the params module entirely — without it every sub's
+            # `import params` is a ModuleNotFoundError. Force a re-plan instead of shipping
+            # a plan that dooms all managers.
+            return [GateError(
+                "boss", "ERR_PARAMS_MISSING",
+                "manager_py mode requires a shared params module, but the plan carries none "
+                "— emit ONE ```python code block defining `params` (roots + relation functions "
+                "+ one zero-arg function per interface frame) BEFORE the JSON plan", "")]
         return []                                   # not manager_py mode — no contract
     import re as _re
-    from .benchmarks import GateError
     defined = {m.group(1) for m in _re.finditer(r"^def\s+([A-Za-z]\w*)\s*\(", params, _re.M)}
     errs = []
     for sub in plan.subassemblies:
@@ -786,7 +829,7 @@ def _params_naming_contract_errors(plan) -> list:
     return errs
 
 
-def _plan_gate_badness(plan) -> tuple[float, list, dict]:
+def _plan_gate_badness(plan, *, manager_py: bool = False) -> tuple[float, list, dict]:
     """A pre-build 'badness' for a parsed plan from the deterministic boss gates (schema +
     support-chain + mesh-distance + 方案B params naming contract). Returns (badness, errors,
     breakdown). Lower = closer to a valid, buildable plan. Pure-Python; imported lazily."""
@@ -795,9 +838,11 @@ def _plan_gate_badness(plan) -> tuple[float, list, dict]:
         from .benchmarks.boss_gate import boss_gate
     except Exception:
         return 0.0, [], {"terms": {}, "count": 0}
-    errs = boss_schema_gate(plan) + boss_gate(plan) + _params_naming_contract_errors(plan)
+    errs = (boss_schema_gate(plan) + boss_gate(plan)
+            + _params_naming_contract_errors(plan, manager_py=manager_py))
     # Weight support/interface faults (structural) above pure schema enum faults.
-    w = {"ERR_SUP_NOWELD": 5.0, "ERR_IFC_MESH_DIST": 4.0, "ERR_PARAMS_FRAME_FN": 4.0}
+    w = {"ERR_SUP_NOWELD": 5.0, "ERR_IFC_MESH_DIST": 4.0, "ERR_PARAMS_FRAME_FN": 4.0,
+         "ERR_PARAMS_MISSING": 6.0}
     total = float(sum(w.get(e.code, 2.0) for e in errs))
     by_code: dict = {}
     for e in errs:
@@ -857,7 +902,8 @@ def _plan_loop(client, conv, settings, *, memory_path, plan_json_path=None,
             continue
 
         # 2. Score the plan with the deterministic gates.
-        cur_badness, errs, cur_bd = _plan_gate_badness(plan)
+        cur_badness, errs, cur_bd = _plan_gate_badness(
+            plan, manager_py=bool(getattr(settings, "manager_py", False)))
         if log_fn:
             log_fn(f"[boss] attempt {attempt}: plan badness={cur_badness:.2f} "
                    f"({len(errs)} gate issue(s))")

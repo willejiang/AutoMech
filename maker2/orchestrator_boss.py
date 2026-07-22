@@ -282,16 +282,24 @@ def build_subassembly(spec, plan, settings, session_root, *,
                               frame_contract=fc, log_fn=slog):
             slog("keeping prior build (fault is elsewhere) — reused from disk")
             return _load_sub_from_disk(sub_id, session_root, log_fn=log_fn, plan=plan, settings=settings)
-        try:
-            model, changed, patch_meta = decompose_patch(
-                prior_model_json, feedback, settings,
-                frame_contract=fc, model_json_path=ctx.model_json_path,
-                log_fn=slog)
-            return _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings,
-                                       slog, only_links=changed, patch_meta=patch_meta,
-                                       user_prompt=user_prompt, log_fn=log_fn)
-        except Exception as e:
-            slog(f"patch path failed ({e}); falling back to full rebuild")
+        # 方案B: the structured JSON PATCH path (decompose_patch) does NOT run the manager's
+        # CadQuery / place_part — it edits pose coordinates as raw JSON. In manager_py mode the
+        # ONLY authoritative source of a part's GLOBAL pose is re-executing the params-driven
+        # python, so a patch would drop the params-authored world coordinate (observed: reused
+        # shafts collapse to Y=0 after a re-plan). Force a full python rebuild instead.
+        if bool(getattr(settings, "manager_py", False)):
+            slog("manager_py: re-plan requires a full python rebuild (no JSON patch path)")
+        else:
+            try:
+                model, changed, patch_meta = decompose_patch(
+                    prior_model_json, feedback, settings,
+                    frame_contract=fc, model_json_path=ctx.model_json_path,
+                    log_fn=slog)
+                return _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings,
+                                           slog, only_links=changed, patch_meta=patch_meta,
+                                           user_prompt=user_prompt, log_fn=log_fn)
+            except Exception as e:
+                slog(f"patch path failed ({e}); falling back to full rebuild")
 
     try:
         slog("manager: decomposing this subassembly under the frame contract ...")
@@ -720,7 +728,14 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
     # offenders, then we recheck. Deep-think (Phase 6) picks the depth: FULL (whole sub,
     # extended thinking, sub_conflict_max_tries passes) vs SLIM (the 2 conflicting parts,
     # thinking off, 1 pass). If still stuck after the cap, FAIL UP so the boss re-plans.
-    if success and getattr(settings, "enable_sub_conflict_gate", True):
+    #
+    # 方案B (manager_py): DISABLED. Every part's pose is an authoritative params coordinate
+    # (place_part), so the debugger MUST NOT move poses — doing so breaks the 骨牌 truth and
+    # collapses coaxial shafts. Coaxial shaft+gear+bearing legitimately share an axis line and
+    # read as "overlap" here; that is not a real fault to nudge away. A true placement problem
+    # is a params/boss design issue, routed up by precheck — not something to fix by moving parts.
+    _manager_py = bool(getattr(settings, "manager_py", False))
+    if success and not _manager_py and getattr(settings, "enable_sub_conflict_gate", True):
         from . import subcheck, subdebugger
         dbg_mode = settings.debugger_mode() if hasattr(settings, "debugger_mode") else "full"
         dbg_backend = (settings.effective_worker_backend()

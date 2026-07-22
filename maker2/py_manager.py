@@ -45,6 +45,71 @@ os.makedirs(meshes_dir, exist_ok=True)
 ns = {}
 try:
     import cadquery as cq
+    # 方案B params access: `import params` binds to a proxy that, on a name the boss's params
+    # module does NOT define, raises AttributeError carrying the list of names it DOES define —
+    # so a manager that calls a functional-connection name wrong (e.g. params.inter_gear_pitch
+    # vs inter_gear_pitch_dia) gets a corrective hint. It stays a plain AttributeError (NOT a
+    # hard error) on purpose: per the 骨牌 design, params owns only functional-connection parts
+    # (gear mesh pairs, bearing seats); subordinate parts (shaft body, spacer, collar) are
+    # derived LOCALLY in the manager module and must NOT be forced through params. A loud
+    # non-AttributeError here would wrongly punish that legitimate local derivation.
+    import importlib.util as _ilu, os as _os
+    _params_path = _os.path.join(_os.path.dirname(_os.path.abspath(src_path)), "params.py")
+    if _os.path.exists(_params_path):
+        _spec = _ilu.spec_from_file_location("_params_real", _params_path)
+        _real = _ilu.module_from_spec(_spec)
+        _spec.loader.exec_module(_real)
+
+        class _ParamsProxy:
+            """Read-through proxy over the real params module. Defined names resolve normally;
+            an undefined name raises AttributeError with the available-names list so the
+            manager can correct a mistyped functional-connection name. It does NOT force
+            subordinate-part dimensions through params — those are derived locally."""
+            def __getattr__(self, name):
+                if name.startswith("__") and name.endswith("__"):
+                    raise AttributeError(name)
+                if hasattr(_real, name):
+                    return getattr(_real, name)
+                _pub = sorted(n for n in dir(_real) if not n.startswith("_"))
+                raise AttributeError(
+                    "module 'params' has no attribute '" + name + "'. params owns only "
+                    "functional-connection quantities; it defines: " + ", ".join(_pub)
+                    + ". Derive subordinate parts (shaft body, spacer, collar) LOCALLY.")
+        sys.modules["params"] = _ParamsProxy()
+
+    # 方案B 路B: inject a CANONICAL placement primitive so the manager NEVER hand-writes a
+    # rotating cq.Location (which corrupts the params translation) NOR translates the geometry
+    # itself (which leaves asm loc at origin, so pose extraction reads [0,0,0]). Build every
+    # rotating part with its axis of revolution along LOCAL +Z, then call:
+    #     place_part(asm, part, name="inter_gear1", axis=params.inter_gear1_axis(),
+    #                xyz=params.inter_gear1(), metadata={...})
+    # place_part rotates the part AT THE ORIGIN so local +Z aligns to `axis`, then adds it with a
+    # PURE-TRANSLATION cq.Location(xyz). Orientation lives in the geometry, translation lives in
+    # the assembly loc — exactly what pose extraction reads — so params coordinates land verbatim.
+    def _axis_angle_z_to(axis):
+        # rotation (unit axis, degrees) taking local +Z onto `axis`
+        import math as _m
+        ax = [float(axis[0]), float(axis[1]), float(axis[2])]
+        n = _m.sqrt(sum(a*a for a in ax)) or 1.0
+        ax = [a/n for a in ax]
+        dot = max(-1.0, min(1.0, ax[2]))
+        rx, ry, rz = (ax[1], -ax[0], 0.0)          # z(0,0,1) × axis
+        rn = _m.sqrt(rx*rx + ry*ry + rz*rz)
+        if rn < 1e-9:                               # parallel / antiparallel
+            return (1.0, 0.0, 0.0), (0.0 if dot >= 0.0 else 180.0)
+        return (rx/rn, ry/rn, rz/rn), _m.degrees(_m.acos(dot))
+
+    def _place_part(asm, part, *, name, axis, xyz, metadata=None):
+        # cq.Location(t, ax, angle) rotates about `ax` through the ORIGIN by `angle`, THEN
+        # translates by `t`. So orientation and the params translation are independent: local +Z
+        # is oriented onto `axis`, and the part lands exactly at the params coordinate `xyz`.
+        rax, ang = _axis_angle_z_to(axis)
+        loc = cq.Location(cq.Vector(float(xyz[0]), float(xyz[1]), float(xyz[2])),
+                          cq.Vector(*rax), ang)
+        asm.add(part, name=name, loc=loc, metadata=(metadata or {}))
+        return asm
+    ns["place_part"] = _place_part
+
     with open(src_path, "r", encoding="utf-8") as f:
         code = f.read()
     exec(compile(code, src_path, "exec"), ns)
@@ -56,11 +121,11 @@ try:
     if not hasattr(asm, "traverse"):
         print(json.dumps({"ok": False, "error": "build_subassembly() must return a cq.Assembly"}))
         sys.exit(0)
-    # Solve any constraints the author declared (no-op if positioned by loc=).
-    try:
-        asm.solve()
-    except Exception:
-        pass  # location-based placement needs no solve; constraint errors surface as bad geometry
+    # NB: do NOT call asm.solve(). Every part is positioned by place_part's loc= (absolute
+    # params coordinates) with NO declared constraints. On a constraint-free multi-part
+    # assembly cq's solver does not no-op — it RE-LAYS-OUT the parts (collapsing them toward a
+    # default arrangement), which wiped the params Y/X coordinates (e.g. inter_gear1 y=112 -> 0).
+    # The loc= placement is already the final global pose, so we read it directly.
 
     def _mat(loc):
         # world 4x4 (mm) of a cq.Location
@@ -151,8 +216,16 @@ def evaluate_manager_python(script_text: str, run_dir: str, sub_name: str,
     run.mkdir(parents=True, exist_ok=True)
     (run / "meshes").mkdir(exist_ok=True)
     # Persist params + the authored module side by side so `import params` resolves (cwd=run).
-    if params_text:
-        (run / "params.py").write_text(params_text, encoding="utf-8")
+    # In 方案B the manager module always `import params`; an empty params_text means the boss
+    # failed to emit the shared params block. Fail fast with a clear message instead of letting
+    # every manager attempt collapse into an opaque `ModuleNotFoundError: No module named
+    # 'params'` (which burns all retries). The boss-side gate (ERR_PARAMS_MISSING) should catch
+    # this first; this is the backstop.
+    if not (params_text or "").strip():
+        raise PyManagerError(
+            "no params module provided — the boss did not emit a ```python params block, so "
+            "`import params` in the manager module would fail. Re-plan the boss to author params.")
+    (run / "params.py").write_text(params_text, encoding="utf-8")
     src = run / "manager_sub.py"
     src.write_text(script_text, encoding="utf-8")
     runner = run / "_cq_eval_runner.py"
@@ -246,6 +319,33 @@ def evaluate_manager_python(script_text: str, run_dir: str, sub_name: str,
                     f"{tuple(round(v, 4) for v in T)} m is {drift*1000:.1f} mm from the boss "
                     f"frame {tuple(round(v, 4) for v in bx)} m — recompute its `loc` from "
                     f"`params.{fr_tag}()` (do not type a coordinate).")
+            # 路B axis guard: the part is built with its revolution axis along local +Z, so its
+            # REALIZED world axis is R·[0,0,1] = the 3rd column of R. It must match the frame's
+            # axis (place_part orients from params.<frame>_axis()). A mismatch means the manager
+            # oriented the part by hand / with a rotating Location instead of place_part.
+            bax = getattr(bf, "axis", None)
+            if bax is not None:
+                bv = [float(v) for v in bax]
+                bn = sum(v * v for v in bv) ** 0.5
+                if bn > 1e-9:
+                    bv = [v / bn for v in bv]
+                    R = p["R"]
+                    realized = [R[0][2], R[1][2], R[2][2]]
+                    rn = sum(v * v for v in realized) ** 0.5 or 1.0
+                    realized = [v / rn for v in realized]
+                    cosang = sum(a * b for a, b in zip(realized, bv))
+                    import math as _m
+                    # axis of revolution is UNSIGNED: +v and -v are the same physical axis, so
+                    # compare parallelism via |cos| (0° or 180° both mean aligned).
+                    align_deg = _m.degrees(_m.acos(max(-1.0, min(1.0, abs(cosang)))))
+                    if align_deg > 5.0:      # 5° tolerance
+                        raise PyManagerError(
+                            f"part '{name}' claims frame '{fr_tag}' but its realized spin axis "
+                            f"{tuple(round(v,3) for v in realized)} is {align_deg:.0f}° off the "
+                            f"frame axis {tuple(round(v,3) for v in bv)} — build the part with "
+                            f"its axis along local +Z and place it with `place_part(asm, part, "
+                            f"axis=params.{fr_tag}_axis(), xyz=params.{fr_tag}(), ...)`; do NOT "
+                            f"hand-rotate it or pass a rotating cq.Location.")
         poses.append(PoseSpec(name=f"place_{name}", parent="", child=name,
                               xyz_m=tuple(T), rpy_rad=tuple(rpy)))
         coord_log.append(f"{name}@{tuple(round(v*1000, 1) for v in T)}mm")

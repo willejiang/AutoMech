@@ -145,11 +145,21 @@ def build_boss_json_from_notes(notes: str, product_prompt: str = "",
 {notes}
 
 Now output, in this order:
-1. ONE ```python code block defining the shared PARAMETER MODULE `params` for this machine —
-   load-bearing constants (module, tooth counts, ratios, diameters), relation functions that
-   derive everything else, and one zero-arg function per interface frame returning its GLOBAL
-   mm coordinate. This is the SINGLE SOURCE OF TRUTH the managers `import params` and derive
-   every coordinate from. It MUST match the notes above (same subassemblies, seams, gear math).
+1. ONE ```python code block defining the shared PARAMETER MODULE `params` for this machine,
+   modeled as a DOMINO CHAIN: a few ROOT values (reduction ratio, module, given sizes), then
+   RELATION FUNCTIONS deriving the FUNCTIONAL-CONNECTION layer from them — the gear MESH data
+   (module, tooth counts, pitch diameters, center distances) and the quantities that must AGREE
+   across subassemblies (mating gear-center frames, bearing-seat frames + shaft diameter), plus
+   one zero-arg function per interface frame returning its GLOBAL mm coordinate. SCOPE: params
+   owns ONLY this functional-connection layer; SUBORDINATE parts (shaft body length, spacers,
+   collars, keys) are derived LOCALLY by the managers and do NOT belong here. EVERY functional
+   dimension (incl. shaft/seat diameters) MUST be a derived variable `= f(roots)`, never a typed
+   literal. Frame-function names MUST be byte-identical to the plan frame names; name functional
+   dimensions by part semantics. ALSO define `def <frame>_axis():` per interface frame returning
+   its axis of revolution as a unit 3-tuple (parallel-shaft: same vector for all, e.g.
+   `[1.0,0.0,0.0]`; crossed/planetary: derive each true direction), so managers orient every
+   rotating part to a SHARED axis and meshing gears stay parallel by construction. It MUST match
+   the notes above (same subassemblies, seams, gear math).
 2. Then the single JSON plan object implementing THESE NOTES, following the schema exactly.
 
 Do NOT repeat the notes and do NOT copy the schema example's machine — implement the notes.
