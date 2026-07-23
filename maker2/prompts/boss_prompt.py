@@ -106,6 +106,13 @@ a real functional unit, not just a few parts.
   subassemblies — but do NOT over-split a simple mechanism into trivial 1-2 part subs.
 - Include every real part within a subassembly; the split is about FUNCTION, not about
   dropping shafts/bearings to hit a count.
+- REPEATED PARTS ARE MULTIPLE INSTANCES, NOT ONE. A table has FOUR legs, a flange has SIX
+  bolts, a wheel has N spokes — the machine needs ALL of them at their DISTINCT positions,
+  not one representative. Do NOT write a subassembly brief as "a SINGLE leg"; write it as
+  "ALL FOUR legs, one at each corner" and give params a function that returns the LIST of
+  their positions (e.g. `leg_poses()` -> the 4 corner coordinates). The manager then builds
+  the part once and places one copy at EACH position. A brief that says "a single X" makes the
+  manager build one X at the origin and the other N-1 go missing, so the assembly can't mate.
 
 {BOSS_SCHEMA_TEXT}
 

@@ -177,6 +177,11 @@ Emit EXACTLY ONE ```python code block defining a function `build_subassembly()` 
   global params frame. If you skip the final `.moved(Plane(origin=params.<frame>(), z_dir=params.
   <frame>_axis()).location)`, your sub stays at the origin pointing +Z, overlaps the other subs,
   and the assembly is rejected. Build local along +Z, anchor global with the params Plane.
+- REPEATED PARTS: build ALL instances, not one. If your brief says N identical parts (4 legs,
+  6 bolts, N spokes) and params gives a list of positions (e.g. `params.leg_poses()` -> N coords),
+  build the part ONCE then `a.add` a `.moved(Location(pos))` copy at EACH position with a UNIQUE
+  name (`leg_0`, `leg_1`, ...). Building only one and leaving it at the origin means the other N-1
+  are missing and their mates (tenon/mortise, bolt/hole) can't meet — the assembly is rejected.
 - CROSS-SUBASSEMBLY interface frames: the boss hands you SEVERAL interface frames (e.g. a front
   bearing seat AND a rear bearing seat on the same shaft). You anchor the sub with ONE `.moved(
   Location(params.<front_frame>()))`, so the OTHER frames land correctly ONLY IF your LOCAL axial
