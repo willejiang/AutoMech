@@ -620,24 +620,37 @@ def _part_overlaps(robot, plan, subs: dict, log) -> list:
         if not ma or not mb:
             continue
         # An INSERT fit (a bearing pressed into a housing seat, a shaft end into a bore) is a
-        # coaxial nesting where the two mating faces TOUCH by design — the bearing OD equals the
-        # seat bore, so a manifold boolean sees a thin shared shell and a small mesh-tessellation
-        # overlap even when the fit is correct. Raise the threshold for the seam's own insert pair
-        # so a legitimate press-fit is not reported as interpenetration, while still catching GROSS
-        # overlap (a bearing driven halfway through the wall). Non-insert welds keep the strict bar.
+        # coaxial nesting where ONLY the two MATING parts (the seat and the bearing the seam
+        # declares) touch by design — the bearing OD equals the seat bore, so a manifold boolean
+        # sees a thin shared shell. That tolerance must apply to the seam's OWN mating pair ONLY,
+        # NOT to every other part pair across the two subs: a big gear that eats into the top cover
+        # is a real collision even though its sub happens to be insert-welded to the housing. So we
+        # resolve the seam's declared mating links and give THEM the loose insert floor, while every
+        # other cross-sub pair keeps the strict collision bar (and a lower report floor so an 8%
+        # gear-into-cover bite is not silently dropped).
         mate = getattr(seam, "mate_type", "") or ""
-        seam_frac_floor = 0.60 if mate == "insert" else _OVERLAP_FRAC
+        p_sub_obj, c_sub_obj = subs.get(seam.parent_sub), subs.get(seam.child_sub)
+        mate_pn = _realized_link(p_sub_obj, seam.parent_frame) if p_sub_obj else None
+        mate_cn = _realized_link(c_sub_obj, seam.child_frame) if c_sub_obj else None
+        mate_pair = frozenset((_ns(seam.parent_sub, mate_pn) if mate_pn else "",
+                               _ns(seam.child_sub, mate_cn) if mate_cn else ""))
+        # a non-mating cross-sub collision (gear vs cover) should report well below 0.30
+        _NONMATE_FLOOR = 0.05
         worst = None
         for an, amesh in ma.items():
             for bn, bmesh in mb.items():
+                is_mate = frozenset((an, bn)) == mate_pair
+                # the seam's own insert pair tolerates a press-fit shell; everything else must not
+                # interpenetrate at all
+                report_floor = (0.60 if (mate == "insert" and is_mate) else _NONMATE_FLOOR)
                 frac = _solid_intersection_frac(amesh, bmesh, log_fn=log)
-                if frac >= seam_frac_floor and (worst is None or frac > worst[0]):
-                    worst = (frac, an, bn)
-                elif frac >= _OVERLAP_FRAC and frac < seam_frac_floor:
-                    log(f"drop insert-fit overlap {an}~{bn} ({frac:.0%} < {seam_frac_floor:.0%} "
-                        f"insert floor on seam '{seam.id}')")
+                if frac >= report_floor and (worst is None or frac > worst[0]):
+                    worst = (frac, an, bn, is_mate)
+                elif 0.0 < frac < report_floor:
+                    tag = "insert-fit mating" if is_mate else "cross-sub"
+                    log(f"drop {tag} overlap {an}~{bn} ({frac:.0%} < {report_floor:.0%})")
         if worst:
-            frac, an, bn = worst
+            frac, an, bn, is_mate = worst
             role = _shaft_role(seam.id, seam.parent_frame, seam.child_frame, an, bn)
             out.append(Violation(
                 kind="part_overlap", severity="interface", sub_id=seam.parent_sub, value=frac,
@@ -649,11 +662,20 @@ def _part_overlaps(robot, plan, subs: dict, log) -> list:
                 observations={"measure": "real_solid_intersection_fraction",
                               "parent_frame": seam.parent_frame,
                               "child_frame": seam.child_frame,
-                              "mate_type": getattr(seam, "mate_type", "")},
-                detail=f"welded subs '{seam.parent_sub}' and '{seam.child_sub}' "
-                       f"interpenetrate: parts '{an}' and '{bn}' overlap {frac:.0%} of the "
-                       f"smaller part's solid — the seam drives them into each other; "
-                       f"re-plan the frame offsets"))
+                              "mate_type": getattr(seam, "mate_type", ""),
+                              "is_mating_pair": bool(is_mate)},
+                detail=(
+                    f"welded subs '{seam.parent_sub}' and '{seam.child_sub}' "
+                    f"interpenetrate: parts '{an}' and '{bn}' overlap {frac:.0%} of the "
+                    f"smaller part's solid — the seam drives them into each other; "
+                    f"re-plan the frame offsets"
+                    if is_mate else
+                    f"parts '{an}' and '{bn}' (subs '{seam.parent_sub}'/'{seam.child_sub}') "
+                    f"collide {frac:.0%} of the smaller part's solid — these are NOT the seam's "
+                    f"mating faces, so this is a real clash. If one part is a functional part "
+                    f"whose size is fixed by the spec (a gear sized by the gear ratio), do NOT "
+                    f"shrink it; enlarge the CONTAINING part (housing wall/cover/cavity) to clear "
+                    f"it while keeping the interface frames fixed.")))
     return out
 
 
