@@ -93,7 +93,7 @@ try:
         n = _m.sqrt(sum(a*a for a in ax)) or 1.0
         ax = [a/n for a in ax]
         dot = max(-1.0, min(1.0, ax[2]))
-        rx, ry, rz = (-ax[1], ax[0], 0.0)          # z(0,0,1) × axis = (-ax_y, ax_x, 0)
+        rx, ry, rz = (ax[1], -ax[0], 0.0)          # z(0,0,1) × axis
         rn = _m.sqrt(rx*rx + ry*ry + rz*rz)
         if rn < 1e-9:                               # parallel / antiparallel
             return (1.0, 0.0, 0.0), (0.0 if dot >= 0.0 else 180.0)
