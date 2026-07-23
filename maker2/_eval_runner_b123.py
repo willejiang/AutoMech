@@ -105,7 +105,11 @@ try:
     root_name = None
     for leaf in _leaves(comp):
         name = (getattr(leaf, "label", "") or "").strip() or ("part_%d" % len(parts))
-        R, Tv = _RT(leaf.location)
+        # WORLD pose: a manager may wrap the whole sub in a Compound and `.moved(...)` it to its
+        # global params frame; a leaf's own `.location` is then only relative to that parent, so we
+        # MUST read the ACCUMULATED world transform. build123d exposes it as `global_location`.
+        wloc = getattr(leaf, "global_location", None) or leaf.location
+        R, Tv = _RT(wloc)
         meta = dict(getattr(leaf, "cadpy_metadata", {}) or {})
         stl = os.path.join(meshes_dir, name + ".stl")
         try:

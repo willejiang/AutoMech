@@ -146,28 +146,45 @@ Emit EXACTLY ONE ```python code block defining a function `build_subassembly()` 
   `face_width`/`bore` are your local choices (bore = the shaft diameter it rides on). make_gear
   returns a toothed spur gear along +Z, origin at the -Z face.
 - ASSEMBLE with the cadpy AssemblyHelper — this is how you MATE parts WITHOUT hand-computing any
-  coordinate. Pattern:
+  coordinate. Build every part in a LOCAL frame (each shaft along +Z from z=0), connect them
+  relative to each other, then ANCHOR THE WHOLE SUB to its global params location. Pattern:
+    from build123d import Location
     a = AssemblyHelper("<sub_id>")
     shaft = a.add(<built part>, "input_shaft")      # add each part with a NAME (its link name)
     pinion = a.add(make_gear(params.MODULE_MM, params.z_pinion(), fw, bore), "pinion")
-    # declare NAMED mating frames (part-local), then CONNECT them:
+    # declare NAMED mating frames (part-local), then CONNECT them (all in the LOCAL frame):
     a.rigid_frame(shaft, "pinion_seat", Location((0, 0, <axial station on the shaft>)))
     a.rigid_frame(pinion, "base", Location((0, 0, 0)))           # gear -Z face
     a.connect((shaft, "pinion_seat"), (pinion, "base"))         # pinion base lands on the seat
-    return a
+    # ...add/connect the rest of the sub's parts locally...
+    # FINALLY anchor the entire built sub to its GLOBAL params interface frame — BOTH its
+    # position AND its axis direction. This is the single most important step; without it every
+    # sub sits at the local origin pointing +Z, so the shafts collapse onto one line and point the
+    # wrong way. Build a Plane at the params coordinate whose normal is the params axis, and move
+    # the whole compound by that Plane's location (this rotates local +Z onto the params axis AND
+    # translates — the exact analogue of the old place_axial(axis=, frame_xyz=)):
+    from build123d import Plane
+    anchor = Plane(origin=params.<this_sub's_frame>(), z_dir=params.<this_sub's_frame>_axis())
+    return a.build().moved(anchor.location)     # orient + place the WHOLE sub in world coords
   Frame helpers: `a.rigid_frame(part, name, Location((x,y,z)))` declares a fixed part-local datum
   (USE THIS for all mating — position is enough; the shaft/gear spin is recorded separately as
   metadata, you do NOT need a revolute joint here).
   Relations: `a.connect(fixed, moving)` welds moving's frame onto fixed's; `a.coaxial(...)` /
-  `a.face_to_face(..., offset=...)` for those semantics. Because you MATE by named frames instead
-  of typing world coordinates, coaxial parts line up BY CONSTRUCTION — no basis math, no rotation
-  by hand, no `- axis*width` offsets.
-- CROSS-SUBASSEMBLY interface frames: for every interface frame the boss handed you (a bearing
-  seat, a mesh point), place the part that realizes it so the part's mating datum coincides with
-  `params.<frame>()`. The simplest reliable way: add a rigid_frame on the part at the part-local
-  point that must land on the interface, and set the whole sub's root part at `params.<frame>()`
-  via a rigid_frame + connect to an anchor. Meshing gears across subs are guaranteed one
-  center-distance apart because both managers read the SAME params center-distance.
+  `a.face_to_face(..., offset=...)` for those semantics. You MATE parts by named frames (no basis
+  math), and you PLACE + ORIENT the whole sub by moving the built compound to the params Plane.
+- GLOBAL ANCHORING IS MANDATORY. The assembler concatenates every sub's parts VERBATIM in world
+  coordinates with NO cross-sub solve — it trusts that you already oriented+moved this sub to its
+  global params frame. If you skip the final `.moved(Plane(origin=params.<frame>(), z_dir=params.
+  <frame>_axis()).location)`, your sub stays at the origin pointing +Z, overlaps the other subs,
+  and the assembly is rejected. Build local along +Z, anchor global with the params Plane.
+- CROSS-SUBASSEMBLY interface frames: the boss hands you SEVERAL interface frames (e.g. a front
+  bearing seat AND a rear bearing seat on the same shaft). You anchor the sub with ONE `.moved(
+  Location(params.<front_frame>()))`, so the OTHER frames land correctly ONLY IF your LOCAL axial
+  layout already matches the params spacing. Concretely: build the shaft with its FRONT feature at
+  local z=0 and its REAR feature at local z = |params.<rear_frame>() - params.<front_frame>()| (the
+  true front-to-rear distance from params). Then moving the sub to the front frame places the rear
+  feature on the rear frame automatically. Meshing gears across subs are one center-distance apart
+  because both managers read the SAME params center-distance and both anchor to their own frames.
 - `dof`/`spin_axis`/`driver`/`mesh_id`: a spinning shaft/gear is marked by giving its `a.add(...)`
   a metadata dict (attach via the part's label details) — you do NOT need a revolute joint; tag the
   ONE input part the physics drives as the driver; give the two meshing gears the SAME mesh id.
