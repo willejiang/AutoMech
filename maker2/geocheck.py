@@ -102,16 +102,25 @@ def geometry_report(model: KinematicModel, meshes_dir: str, *,
     shafts = [n for n in meshes if "shaft" in n.lower()]
     riders = [n for n in meshes if any(k in n.lower() for k in ("gear", "pinion", "bearing", "spacer", "collar"))]
 
+    def _sub_ns(name: str) -> str:
+        # namespaced link is "<sub_id>_<local>"; a shaft only carries the parts of ITS OWN sub.
+        # Two leading tokens capture "sub_input", "sub_inter", etc. (the assembler prefix).
+        parts = name.split("_")
+        return "_".join(parts[:2]) if len(parts) >= 2 else name
+
     # 1. shaft-through-part containment along the shaft's own long axis
     for s in shafts:
         sm = meshes[s]
+        s_ns = _sub_ns(s)
         ext = sm.bounds[1] - sm.bounds[0]
         axis_idx = int(np.argmax(ext))
         unit = np.eye(3)[axis_idx]
         s_lo, s_hi = _axial_range(sm, unit)
         lines.append(f"[shaft] {s}: axis={'XYZ'[axis_idx]} span=[{s_lo:.0f},{s_hi:.0f}]mm")
         for r in riders:
-            # only riders roughly coaxial with this shaft (share the two transverse coords)
+            if r == s or _sub_ns(r) != s_ns:
+                continue  # a shaft only carries its OWN sub's riders; never cross-sub
+            # and only riders roughly coaxial with this shaft (share the two transverse coords)
             rc = meshes[r].bounds.mean(axis=0)
             sc = sm.bounds.mean(axis=0)
             transverse = [i for i in range(3) if i != axis_idx]
