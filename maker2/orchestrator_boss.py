@@ -15,6 +15,7 @@ See .claude/plans/precious-humming-wand.md.
 
 from __future__ import annotations
 
+import glob
 import json
 import os
 import threading
@@ -190,6 +191,60 @@ def _restore_best_subs(session_root: str, sub_ids, log_fn=print) -> bool:
             except Exception as e:
                 log_fn(f"[boss] restore of sub_{sid} failed ({e})")
     return restored
+
+
+def _build_critique_pack(session_root: str, blamed_sub: str, dx: dict, *, log_fn=print) -> str:
+    """A2/A: assemble the DIAGNOSTICIAN's critique into a rich feedback message for the blamed
+    manager — its OWN previous code (what to change) + the NEIGHBOURING subs' realized geometry
+    (so a cross-sub clash is understandable: it can see the housing cavity its gear hit) + the
+    whole-machine geocheck. Best-effort: any missing file is simply omitted. The result is stored
+    as feedback_by_sub[blamed_sub] and handed to build_manager_critique at re-run time."""
+    from .prompts.manager_prompt import build_manager_critique
+
+    def _read(path, limit=6000):
+        try:
+            t = open(path, encoding="utf-8", errors="replace").read()
+            return t if len(t) <= limit else t[:limit] + "\n...(truncated)"
+        except Exception:
+            return ""
+
+    # this sub's previous manager source
+    prior_source = _read(os.path.join(session_root, f"sub_{blamed_sub}", "manager_sub.py"))
+
+    # neighbouring subs named as culprits (the parts this fault involves), their world geometry
+    culprits = [c for c in (dx.get("culprits") or []) if isinstance(c, str)]
+    sib_lines = []
+    for sid in {c.split("_")[1] if c.startswith("sub_") else c for c in culprits}:
+        if not sid or sid == blamed_sub:
+            continue
+        for cand in (f"sub_{sid}", sid):
+            km = os.path.join(session_root, f"sub_{cand}", "kinematic_model.json")
+            if os.path.isfile(km):
+                try:
+                    d = json.load(open(km, encoding="utf-8"))
+                    poses = "; ".join(
+                        "%s@[%s]" % (p.get("child", "?"),
+                                     ",".join("%.0f" % (v * 1000) for v in p.get("xyz_m", (0, 0, 0))))
+                        for p in d.get("poses", [])[:12])
+                    sib_lines.append(f"  {cand}: {poses}")
+                except Exception:
+                    pass
+                break
+    sibling_context = "\n".join(sib_lines)
+
+    # whole-machine numeric self-check (latest assembly_iter_*)
+    machine_context = ""
+    try:
+        iters = sorted(glob.glob(os.path.join(session_root, "assembly_iter_*", "geocheck.txt")))
+        if iters:
+            machine_context = _read(iters[-1], limit=3000)
+    except Exception:
+        pass
+
+    return build_manager_critique(
+        dx.get("root_cause", ""), dx.get("fix_instruction", ""),
+        prior_source=prior_source, sibling_context=sibling_context,
+        machine_context=machine_context)
 
 
 def _load_sub_from_disk(sub_id: str, session_root: str, log_fn=print,
@@ -1030,6 +1085,8 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
     last_plan_json = None                 # last successfully-built plan (reuse baseline
                                           # for the NEXT fault re-plan)
     replan_blamed: set = set()            # sub ids a fault blamed (must rebuild on re-plan)
+    convergence_ledger: list = []         # A3: per-iteration diagnosis {iter, blamed, root_cause,
+                                          # fix, route} — the "did the agent learn?" record
 
     # Keep-best / score-gated iteration (maker2-mujoco-contact Phase 5): keep an
     # iteration's change ONLY if the numeric design score improves; else revert to the
@@ -1628,22 +1685,60 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                 log(f"[precheck-analyzer] local repair failed safely "
                     f"({type(ae).__name__}: {ae})")
         if not rep.ok:
-            iface = [v for v in rep.violations if v.severity == "interface"]
-            if iface:
-                feedback = "geometry pre-check failed (interface): " + \
-                    "; ".join(v.detail for v in iface)
-                # Only the subs named in interface violations rebuild on the re-plan;
-                # the rest keep their ids and reuse from disk (prior plan is carried).
-                replan_blamed = {v.sub_id for v in iface if v.sub_id}
-                log(f"[precheck] interface fault -> boss re-plan (rebuild only "
-                    f"{sorted(replan_blamed) or 'affected subs'}; others reused)")
-            else:
-                for v in rep.violations:
-                    if v.sub_id:
-                        feedback_by_sub[v.sub_id] = f"geometry: {v.detail} — fix this subassembly."
-                blamed = {v.sub_id for v in rep.violations if v.sub_id}
-                reuse = {s.id for s in plan.subassemblies} - blamed
-                log(f"[precheck] sub fault -> re-running {sorted(blamed)}")
+            # 方案B DIAGNOSTICIAN routing: the pre-check reports the SYMPTOM (what overlaps).
+            # Ask the read-only analyzer WHO is responsible, WHY, and the concrete fix, then route
+            # to that ONE manager instead of broadcasting a re-plan to the boss. Only a true
+            # topology/contract fault routes to the boss. Falls back to the old severity split if
+            # the diagnostician is disabled or errors.
+            diagnosed = False
+            if getattr(settings, "enable_precheck_diagnostician", True):
+                try:
+                    from .assembly_analyzer import diagnose_failure
+                    dx = diagnose_failure(session_root, rep.to_dict(), plan, settings,
+                                          log_fn=log,
+                                          report_path=precheck_path)
+                    log("ARTIFACT_JSON:" + json.dumps({"kind": "diagnosis", "iter": it,
+                                                       "decision": dx}))
+                    # convergence ledger (A3): record what was blamed + told each iteration
+                    _b = dx.get("blamed_sub") or "(boss)"
+                    convergence_ledger.append({"iter": it, "blamed": _b,
+                                               "root_cause": dx.get("root_cause", ""),
+                                               "fix": dx.get("fix_instruction", ""),
+                                               "route": dx.get("route", "")})
+                    if dx.get("route") == "manager" and dx.get("blamed_sub"):
+                        bs = dx["blamed_sub"]
+                        feedback_by_sub[bs] = _build_critique_pack(
+                            session_root, bs, dx, log_fn=log)
+                        replan_blamed = {bs}
+                        log(f"[diagnostician] fault -> re-run ONLY '{bs}': "
+                            f"{dx.get('fix_instruction','')[:120]}")
+                        diagnosed = True
+                    else:  # route == boss (true topology fault)
+                        feedback = (f"topology fault: {dx.get('root_cause','')} "
+                                    f"{dx.get('fix_instruction','')}")
+                        log(f"[diagnostician] topology fault -> boss re-plan: "
+                            f"{dx.get('root_cause','')[:120]}")
+                        diagnosed = True
+                except Exception as de:
+                    log(f"[diagnostician] failed safely ({type(de).__name__}: {de}); "
+                        f"falling back to severity routing")
+            if not diagnosed:
+                iface = [v for v in rep.violations if v.severity == "interface"]
+                if iface:
+                    feedback = "geometry pre-check failed (interface): " + \
+                        "; ".join(v.detail for v in iface)
+                    # Only the subs named in interface violations rebuild on the re-plan;
+                    # the rest keep their ids and reuse from disk (prior plan is carried).
+                    replan_blamed = {v.sub_id for v in iface if v.sub_id}
+                    log(f"[precheck] interface fault -> boss re-plan (rebuild only "
+                        f"{sorted(replan_blamed) or 'affected subs'}; others reused)")
+                else:
+                    for v in rep.violations:
+                        if v.sub_id:
+                            feedback_by_sub[v.sub_id] = f"geometry: {v.detail} — fix this subassembly."
+                    blamed = {v.sub_id for v in rep.violations if v.sub_id}
+                    reuse = {s.id for s in plan.subassemblies} - blamed
+                    log(f"[precheck] sub fault -> re-running {sorted(blamed)}")
             if not infinite and it >= max_boss_iters - 1:
                 result["error"] = f"precheck failed: {rep.summary()}"; break
             it += 1; continue

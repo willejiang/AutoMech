@@ -430,6 +430,47 @@ Output ONLY the PARTS JSON object, a line with exactly `{MJCF_SENTINEL}`, then t
 XML skeleton — no prose, no markdown fences."""
 
 
+def build_manager_critique(root_cause: str, fix_instruction: str, *,
+                           prior_source: str = "", sibling_context: str = "",
+                           machine_context: str = "") -> str:
+    """方案B: deliver a DIAGNOSTICIAN's critique to a manager that is re-running to fix ONE
+    localized fault. Unlike a blind re-decompose, this shows the manager (1) exactly what the
+    diagnostician judged wrong, (2) its OWN previous code so it can see what to change, and
+    (3) the neighbouring subassemblies' realized geometry (so a cross-sub clash — a gear that
+    hit the housing — is understandable: the manager can SEE the other part's size/position).
+    The manager must first RESTATE its understanding of the fault (the learning signal), then
+    emit the corrected build_subassembly()."""
+    parts = [
+        "A DIAGNOSTICIAN inspected the assembled machine after a geometry pre-check FAILED and "
+        "attributed ONE fault to THIS subassembly. This is not a full redesign — change the "
+        "minimum needed to clear this specific fault, keep everything else.",
+        f"\nROOT CAUSE (what your previous version did wrong):\n{root_cause}",
+        f"\nREQUIRED FIX (do exactly this):\n{fix_instruction}",
+    ]
+    if prior_source:
+        parts.append("\nYOUR PREVIOUS build_subassembly() (this is the code that produced the "
+                     "fault — find the line the fix refers to and change it):\n```python\n"
+                     + prior_source + "\n```")
+    if sibling_context:
+        parts.append("\nNEIGHBOURING SUBASSEMBLIES' realized geometry (so you can SEE what your "
+                     "part collides with / must fit — e.g. the housing cavity your gear must clear, "
+                     "the mating part your tenon must reach). Positions are GLOBAL mm:\n"
+                     + sibling_context)
+    if machine_context:
+        parts.append("\nWHOLE-MACHINE geometry self-check (the numeric fault report):\n"
+                     + machine_context)
+    parts.append(
+        "\nRespond in TWO parts:\n"
+        "1. UNDERSTANDING — one or two sentences restating, in your own words, exactly what was "
+        "wrong with your previous version and what you will change (this proves you understood the "
+        "critique, not just regenerated).\n"
+        "2. The corrected ```python build_subassembly()``` block, applying the fix and keeping the "
+        "params-anchored global placement contract.")
+    return "\n".join(parts)
+
+
+
+
 def build_manager_prior_model(prior_model_json: str) -> str:
     """Hand the manager the PREVIOUS turn's model as the starting point.
 

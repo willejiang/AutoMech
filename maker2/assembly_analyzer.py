@@ -223,3 +223,62 @@ def analyze_failure(session_root,report,candidates,settings,log_fn=print,report_
  os.makedirs(os.path.dirname(trace_path),exist_ok=True)
  json.dump(trace,open(trace_path,'w',encoding='utf-8'),indent=2)
  return decision
+
+
+def diagnose_failure(session_root, report, plan, settings, log_fn=print,
+                     report_path="", attempt=1):
+ """方案B DIAGNOSTICIAN (read-only): after a pre-check fails, attribute the geometry
+ violation to the SINGLE responsible manager (or the boss for a true topology fault) and
+ return a routing decision + a concrete fix_instruction. Edits NOTHING — it only diagnoses.
+ Returns {blamed_sub, route, root_cause, fix_instruction, culprits, evidence, confidence,
+ explanation}. Reuses the read-only artifact/source tools; no repair candidates."""
+ from .prompts.assembly_analyzer_prompt import DIAGNOSTICIAN_SYSTEM
+ tools, execs = build_read_tools(session_root, with_source=True)
+ # wrap kb_search in
+ tools = tools + [KB_SEARCH_TOOL]
+ execs = dict(execs); execs['kb_search'] = _kb_bound('diagnostician')
+ # record every tool call for the trace
+ calls = []
+ def rec(name, fn):
+  def w(**kw):
+   try: out = _cap(fn(**kw)); err = None
+   except Exception as e: out = f'(error: {type(e).__name__}: {e})'; err = str(e)
+   calls.append({'tool': name, 'args': kw, 'result': out, 'error': err}); return out
+  return w
+ execs = {k: rec(k, v) for k, v in execs.items()}
+ sub_ids = [s.id for s in plan.subassemblies]
+ rel_report = (os.path.relpath(report_path, session_root) if report_path
+               else 'precheck_report.json')
+ conv = Conversation()
+ conv.add_user_message(
+  f"A geometry pre-check failed. failure_id {report.get('failure_id')}. Report: {rel_report}. "
+  f"Subassemblies in this machine: {sub_ids}. Read the report, the assembled and per-sub "
+  f"kinematic models, the relevant manager_sub.py and params.py, then attribute the fault to "
+  f"ONE responsible manager (or the boss for a true topology error) and give the concrete "
+  f"fix_instruction. Investigate with tools before deciding.")
+ client = settings.make_client(getattr(settings, 'analyzer_max_tokens', 16000), thinking='extended')
+ text = run_tool_loop(client, conv, DIAGNOSTICIAN_SYSTEM, tools, execs,
+                      max_rounds=getattr(settings, 'solver_analyzer_max_rounds', 12),
+                      log_fn=log_fn,
+                      text_only_nudge='Call a read/search tool now; do not answer before investigating.')
+ try:
+  conv.add_user_message('Investigation is over. Return the required final JSON object now; no prose and no more tools.')
+  final, _ = client.send_collect(conv.get_messages_for_api(api_style=client.api_style), system=DIAGNOSTICIAN_SYSTEM)
+  text = final or text
+ except Exception:
+  pass
+ try:
+  d = json.loads(extract_json_object(text))
+ except Exception:
+  d = {'blamed_sub': '', 'route': 'boss', 'root_cause': 'diagnostician returned invalid JSON',
+       'fix_instruction': '', 'culprits': [], 'evidence': [], 'confidence': 'low',
+       'explanation': text}
+ # sanity: a manager route must name a real sub; else fall back to boss
+ if d.get('route') == 'manager' and d.get('blamed_sub') not in sub_ids:
+  d['route'] = 'boss'; d['blamed_sub'] = ''
+ trace = {'source': 'precheck_diagnostician', 'attempt': attempt,
+          'failure_id': report.get('failure_id'), 'calls': calls, 'decision': d}
+ trace_path = analyzer_trace_path(session_root, 'diagnostician', report.get('failure_id'), attempt)
+ os.makedirs(os.path.dirname(trace_path), exist_ok=True)
+ json.dump(trace, open(trace_path, 'w', encoding='utf-8'), indent=2)
+ return d

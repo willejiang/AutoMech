@@ -387,7 +387,15 @@ def decompose(product_prompt: str, settings, *, image_path: str | None = None,
     if image_path and log_fn:
         log_fn(f"[manager] using input image: {image_path}")
     if evaluator_feedback:
-        conv.add_user_message(build_manager_evaluator_feedback(evaluator_feedback))
+        # 方案B: in manager_py mode the orchestrator already assembled a rich critique pack
+        # (diagnostician root_cause + fix + this sub's prior source + neighbouring geometry) via
+        # build_manager_critique — inject it VERBATIM so the manager sees its own code and the
+        # sibling parts it collided with, and is asked to restate its understanding first. The
+        # legacy MJCF evaluator wrapper would bury that, so only use it off the manager_py path.
+        if getattr(settings, "manager_py", False):
+            conv.add_user_message(evaluator_feedback)
+        else:
+            conv.add_user_message(build_manager_evaluator_feedback(evaluator_feedback))
         if log_fn:
             log_fn("[manager] applying evaluator feedback from the previous "
                    "iteration")
