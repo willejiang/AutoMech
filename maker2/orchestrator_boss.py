@@ -1989,6 +1989,35 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
         it += 1
         continue
 
+    # ---- A3: convergence trace — the "did the agent learn?" record for the demo/PM ----
+    if convergence_ledger:
+        result["convergence"] = convergence_ledger
+        log("-" * 56)
+        log("[convergence] iteration learning trace:")
+        _seen_cause: dict = {}
+        for e in convergence_ledger:
+            it_n = e.get("iter"); blamed = e.get("blamed", "?")
+            cause = (e.get("root_cause") or "").strip()
+            fix = (e.get("fix") or "").strip()
+            log(f"  iter {it_n}: fault in '{blamed}' — {cause[:90]}")
+            if fix:
+                log(f"           told: {fix[:90]}")
+            # repeated identical root cause on the SAME sub across iterations = not learning
+            key = (blamed, cause[:60])
+            _seen_cause[key] = _seen_cause.get(key, 0) + 1
+            if _seen_cause[key] >= 2:
+                log(f"           ⚠ '{blamed}' hit the SAME fault {_seen_cause[key]}x — "
+                    f"not converging (the critique isn't landing).")
+        # a compact verdict line
+        subs_touched = sorted({e.get("blamed") for e in convergence_ledger if e.get("blamed")})
+        stuck = [k for k, n in _seen_cause.items() if n >= 2]
+        if not stuck:
+            log(f"[convergence] each fault was a NEW issue and got fixed — directed iteration "
+                f"converged over {len(convergence_ledger)} step(s) touching {subs_touched}.")
+        else:
+            log(f"[convergence] {len(stuck)} fault(s) recurred without improvement — needs "
+                f"a stronger critique or boss re-plan.")
+
     # ---- sidecar + result.json for the UI ----
     try:
         Path(session_root, "result.json").write_text(json.dumps(result, indent=2))
