@@ -1,22 +1,22 @@
 """Stage-1 of the Python-authoring pipeline (方案B): evaluate a MANAGER-authored
-parametric CadQuery module into a KinematicModel with GLOBAL poses.
+parametric build123d module into a KinematicModel with GLOBAL poses.
 
 The manager no longer emits a connection-graph JSON that mate_solver solves. Instead it
 writes ONE Python module that:
   * imports the boss parameter module (``params``) for all dimensions,
-  * defines ``build_subassembly() -> cq.Assembly`` where every part is added to a
-    ``cq.Assembly`` with a NAME, a global ``cq.Location`` (the part's placement in the
-    subassembly's own frame), and a metadata dict carrying the KinematicModel fields the
-    downstream needs: ``dof`` (fixed|spin|free), ``spin_axis``, ``driver``, and, for a
-    gear, ``mesh_role``/``mesh_id`` so mesh_pairs can be recovered.
+  * defines ``build_subassembly()`` returning a cadpy ``AssemblyHelper`` (or its built
+    Compound) where every part is added with a NAME and mated by named cadpy frames, the
+    whole sub anchored to its global params frame, and a metadata dict carrying the
+    KinematicModel fields the downstream needs: ``dof`` (fixed|spin|free), ``spin_axis``,
+    ``driver``, and, for a gear, ``mesh_role``/``mesh_id`` so mesh_pairs can be recovered.
 
-This module runs that authored Python in the SAME sandboxed subprocess pattern the cq
-worker uses (never importing cadquery in-process), extracts each assembly child's world
+This module runs that authored Python in the SAME sandboxed subprocess pattern the worker
+uses (never importing the CAD kernel in-process), extracts each leaf's accumulated world
 transform + metadata + exports its STL, and assembles a ``KinematicModel`` whose poses are
 GLOBAL (parent="" root-relative). Because the manager authored global coordinates, the
 downstream libslvs cross-sub solve becomes unnecessary (see plan 方案B, assembler shrink).
 
-The parent process only ever touches JSON + STL paths; cadquery/OCCT stays in the child.
+The parent process only ever touches JSON + STL/STEP paths; build123d/OCCT stays in the child.
 """
 from __future__ import annotations
 
@@ -35,8 +35,8 @@ class PyManagerError(ValueError):
     """The authored manager Python failed to evaluate into a valid subassembly."""
 
 
-# Subprocess body: exec the authored module, build the cq.Assembly, solve it, then for
-# every leaf child emit {name, world 4x4, metadata} + export its STL. Emits ONE json line.
+# Subprocess body: exec the authored module, build the cadpy AssemblyHelper/Compound, then for
+# every leaf emit {name, world 4x4, metadata} + export its STL. Emits ONE json line.
 # The build123d/cadpy subprocess body lives in a sibling file (avoids nested triple-quote
 # escaping) and is read at import time. It exec's the manager module, builds the cadpy
 # Compound, and emits per-part {name,R,T,metadata,stl,volume,bbox} as one JSON line.
@@ -73,7 +73,7 @@ def _rot_to_rpy(R):
 
 def evaluate_manager_python(script_text: str, run_dir: str, sub_name: str,
                             *, params_text: str = "", frames=None, log_fn=print) -> KinematicModel:
-    """Run the manager-authored CadQuery module in a sandbox, export each part's STL, and
+    """Run the manager-authored build123d module in a sandbox, export each part's STL, and
     build a KinematicModel whose poses are GLOBAL (root-relative, meters). Raises
     PyManagerError on any failure so the caller's retry/debug loop can react.
 
@@ -111,7 +111,7 @@ def evaluate_manager_python(script_text: str, run_dir: str, sub_name: str,
             [sys.executable, str(runner), str(src), str(out_json), str(run / "meshes")],
             capture_output=True, text=True, timeout=_EXEC_TIMEOUT, cwd=str(run), env=env)
     except subprocess.TimeoutExpired:
-        raise PyManagerError(f"manager CadQuery eval timed out after {_EXEC_TIMEOUT}s")
+        raise PyManagerError(f"manager build123d eval timed out after {_EXEC_TIMEOUT}s")
     except Exception as e:
         raise PyManagerError(f"eval subprocess failed: {type(e).__name__}: {e}")
 
@@ -127,7 +127,7 @@ def evaluate_manager_python(script_text: str, run_dir: str, sub_name: str,
     if payload is None or not payload.get("ok"):
         err = (payload or {}).get("error") if payload else None
         tail = (r.stderr or r.stdout or "").strip()[-400:]
-        msg = f"manager CadQuery eval failed: {err or tail}"
+        msg = f"manager build123d eval failed: {err or tail}"
         # If the manager called a params name that doesn't exist, tell it EXACTLY what params
         # DOES define so it fixes the call in one shot instead of guessing across retries.
         if err and "has no attribute" in err and params_text:
@@ -164,24 +164,6 @@ def evaluate_manager_python(script_text: str, run_dir: str, sub_name: str,
         meta = p.get("metadata") or {}
         if float(p.get("volume_mm3", 0.0)) <= 0.0:
             raise PyManagerError(f"part '{name}' built an empty/zero-volume solid")
-        # basis contract: a part placed with place_axial MUST be modelled along local +Z with its
-        # origin at the -Z END FACE, so its LOCAL bbox is z in [0, length]. If the manager instead
-        # centered it (`.translate((0,0,-len/2))`) or built it off-origin, the anchor back-off is
-        # computed against the wrong reference and the part shifts. Catch that here rather than as a
-        # downstream overlap. (Only enforced for place_axial parts; place_part/non-axial are exempt.)
-        _ax = meta.get("_axial")
-        if _ax:
-            bb = p.get("bbox") or [0, 0, 0, 0, 0, 0]
-            zmin, zmax = float(bb[2]), float(bb[5])
-            L = float(_ax.get("length", 0.0)) or (zmax - zmin)
-            tol = max(0.5, 0.02 * L)         # 0.5 mm or 2% of length
-            if abs(zmin) > tol or abs(zmax - L) > tol:
-                raise PyManagerError(
-                    f"part '{name}' uses place_axial(length={L:.1f}) but its LOCAL z-extent is "
-                    f"[{zmin:.1f}, {zmax:.1f}] instead of [0, {L:.1f}] — build it along local +Z "
-                    f"with its origin at the -Z end face (a bare `extrude(length)`; do NOT "
-                    f"`.translate((0,0,-length/2))` to center it). place_axial derives the anchor "
-                    f"back-off from `length`, so the geometry MUST start at z=0.")
         links.append(LinkSpec(
             name=name, description=meta.get("description", ""),
             shape_hint=meta.get("shape_hint", ""),
@@ -208,10 +190,10 @@ def evaluate_manager_python(script_text: str, run_dir: str, sub_name: str,
                     f"{tuple(round(v, 4) for v in T)} m is {drift*1000:.1f} mm from the boss "
                     f"frame {tuple(round(v, 4) for v in bx)} m — recompute its `loc` from "
                     f"`params.{fr_tag}()` (do not type a coordinate).")
-            # 路B axis guard: the part is built with its revolution axis along local +Z, so its
+            # axis guard: the part is built with its revolution axis along local +Z, so its
             # REALIZED world axis is R·[0,0,1] = the 3rd column of R. It must match the frame's
-            # axis (place_part orients from params.<frame>_axis()). A mismatch means the manager
-            # oriented the part by hand / with a rotating Location instead of place_part.
+            # params axis. A mismatch means the manager oriented the part by hand / with a rotating
+            # Location instead of anchoring via the params-axis Plane.
             bax = getattr(bf, "axis", None)
             if bax is not None:
                 bv = [float(v) for v in bax]
@@ -231,10 +213,10 @@ def evaluate_manager_python(script_text: str, run_dir: str, sub_name: str,
                         raise PyManagerError(
                             f"part '{name}' claims frame '{fr_tag}' but its realized spin axis "
                             f"{tuple(round(v,3) for v in realized)} is {align_deg:.0f}° off the "
-                            f"frame axis {tuple(round(v,3) for v in bv)} — build the part with "
-                            f"its axis along local +Z and place it with `place_part(asm, part, "
-                            f"axis=params.{fr_tag}_axis(), xyz=params.{fr_tag}(), ...)`; do NOT "
-                            f"hand-rotate it or pass a rotating cq.Location.")
+                            f"frame axis {tuple(round(v,3) for v in bv)} — build the part with its "
+                            f"axis along local +Z and anchor the sub with "
+                            f"`.moved(Plane(origin=params.{fr_tag}(), z_dir=params.{fr_tag}_axis())"
+                            f".location)`; do NOT hand-rotate it or pass a rotating Location.")
         poses.append(PoseSpec(name=f"place_{name}", parent="", child=name,
                               xyz_m=tuple(T), rpy_rad=tuple(rpy)))
         coord_log.append(f"{name}@{tuple(round(v*1000, 1) for v in T)}mm")
@@ -249,4 +231,22 @@ def evaluate_manager_python(script_text: str, run_dir: str, sub_name: str,
     if log_fn:
         log_fn(f"[py-manager] {sub_name}: {len(links)} part(s), {len(mesh_pairs)} mesh pair(s), "
                f"global poses from params: {', '.join(coord_log)}")
+
+    # 补精量: if the CAD skill's inspect tool is available and the runner exported a sub-level STEP,
+    # run a cheap single-file sanity probe (real non-empty solid, plausible bounding box). This is
+    # a DIAGNOSTIC complement to geocheck — it never gates or overrides the KinematicModel, matching
+    # the 'precheck backstops, does not override' choice. Skipped silently if the skill is absent.
+    try:
+        from . import skill_inspect
+        step_path = run / "sub.step"
+        if step_path.exists() and skill_inspect.available():
+            facts = skill_inspect.entry_facts(str(step_path))
+            if facts.get("ok") and log_fn:
+                ef = facts.get("entryFacts", {})
+                sm = facts.get("summary", {})
+                log_fn(f"[py-manager] {sub_name}: inspect sub.step -> "
+                       f"size={ef.get('size')} faces={sm.get('faceCount')} "
+                       f"solids={sm.get('shapeCount')}")
+    except Exception:
+        pass
     return model

@@ -87,6 +87,45 @@ CASE EXAMPLE:
         missing or merged, or gears placed not touching so nothing transmits."""
 
 
+# Distilled build123d MODELING METHOD (方案B py mode). This is not API syntax — it is the
+# METHOD for constructing a non-trivial part correctly, distilled from the text-to-cad CAD skill's
+# build123d-modeling + positioning references. It exists because a manager that only knows
+# `make_gear` cannot express the shapes make_gear does not cover (an internal ring gear, a cam, a
+# non-circular profile) — and those are exactly the parts that make a machine impressive. Teach the
+# method, not one more helper.
+_MODELING_METHOD = """\
+HOW TO CONSTRUCT A PART (build123d modeling method — read before writing geometry):
+- CHOOSE THE CONSTRUCTION FIRST so the spec's controlling dimensions become DIRECT named
+  parameters, not derived magic numbers. Profile-driven shapes (gears, rings, plates, brackets):
+  ONE closed BuildSketch profile + `extrude`/`revolve`. Block-and-feature parts (housings, bases):
+  a base solid then SUBTRACT features. Decide which makes the key dimension a parameter.
+- ORDER OPERATIONS so fragile steps come last and a failure localizes to ONE feature:
+  base solid -> major additions -> subtractive features (bores, pockets) -> through-holes ->
+  fillets/chamfers LAST. Make each feature a named step (own variable/helper) so one bad op points
+  at one line. Every boolean invalidates prior face selectors, so postpone fillets.
+- OVERSHOOT BOOLEAN TOOLS: extend a cutting tool ~1 mm past the faces it enters and exits;
+  coincident/coplanar tool-and-target faces are a classic kernel failure. Cut a patterned set of
+  features (a bolt circle, a row of pockets) in ONE combined operation.
+- NON-TRIVIAL SHAPES YOU BUILD YOURSELF (make_gear only does EXTERNAL spur gears):
+  * INTERNAL RING GEAR (annular internal gear — teeth point INWARD, the hard part of a planetary
+    set): pitch_r = module*teeth/2; internal TIP radius is SMALLER than pitch, ROOT is LARGER:
+    `tip_r = pitch_r - module`, `root_r = pitch_r + 1.25*module`, outer wall beyond root. Build:
+    a ring disk (`Circle(outer_r)` SUBTRACT `Circle(root_r)` -> the smooth cavity is at root_r),
+    then ADD N trapezoidal teeth pointing inward from root_r to tip_r (loop i in range(teeth),
+    angle a=2*pi*i/teeth, a 6-point Polygon from (root_r, +half) through (tip_r, +/-tip_half) to
+    (root_r, -half)). This is ~15 lines of the same primitives make_gear uses — write it, do not
+    ask for a helper.
+  * BORE / ANNULUS (any part a shaft passes through): SUBTRACT a `Circle(bore/2)` extrude so the
+    shaft has real clearance through the solid — never leave a gear/spacer/collar bore-less.
+  * HOLE PATTERN: `with Locations(*positions): Hole(radius=...)` cuts them all at once; put the
+    positions in a named list, not inline constants.
+- STABLE SELECTORS: pick faces/edges by axis, normal, or bounding position (top/bottom by Z),
+  never by a fragile topology-order index — a selector index shifts after any boolean.
+- SANITY-CHECK PROPORTIONS before returning: compare the part's expected bounding box to the real
+  object and its wall thickness to overall size. Order-of-magnitude and collision errors pass a
+  build but fail the assembly."""
+
+
 # Connection-graph output contract (DEFAULT).
 _IR_OUTPUT_TAIL = f"""\
 Respond in TWO parts, in this exact order:
@@ -140,11 +179,14 @@ Emit EXACTLY ONE ```python code block defining a function `build_subassembly()` 
 - BUILD each part as a build123d solid in millimeters, along LOCAL +Z with its ORIGIN AT THE -Z
   END FACE. Use `align=(Align.CENTER, Align.CENTER, Align.MIN)` on a Cylinder so it spans local
   z in [0, height]. Do NOT center it on the origin. Build at the origin — mating (below) places it.
-- GEARS AND PINIONS MUST HAVE REAL TEETH — build every gear/pinion with the injected
+- GEARS AND PINIONS MUST HAVE REAL TEETH — an EXTERNAL spur gear/pinion is built with the injected
   `make_gear(module, teeth, face_width, bore)`, NEVER a plain cylinder (a smooth disk cannot mesh).
   `module`/`teeth` come from params (same values that set pitch diameter and center distance);
   `face_width`/`bore` are your local choices (bore = the shaft diameter it rides on). make_gear
-  returns a toothed spur gear along +Z, origin at the -Z face.
+  returns a toothed spur gear along +Z, origin at the -Z face. make_gear ONLY does external spur
+  gears — for an INTERNAL ring gear, a cam, or any non-circular profile, WRITE the build123d
+  yourself following the MODELING METHOD below (it is the same primitives, ~15 lines). Do not
+  substitute a smooth cylinder for a toothed part because a helper does not exist.
 - ASSEMBLE with the cadpy AssemblyHelper — this is how you MATE parts WITHOUT hand-computing any
   coordinate. Build every part in a LOCAL frame (each shaft along +Z from z=0), connect them
   relative to each other, then ANCHOR THE WHOLE SUB to its global params location. Pattern:
@@ -247,7 +289,9 @@ Emit EXACTLY ONE ```python code block defining a function `build_subassembly()` 
   parts = fewer overlaps = a subassembly that passes.
 
 Respond in TWO parts: first NOTES (a short plaintext plan of the parts + their placements),
-then the single ```python block. If asked to CONTINUE, output only the ```python block."""
+then the single ```python block. If asked to CONTINUE, output only the ```python block.
+
+""" + _MODELING_METHOD
 
 
 def build_manager_json_from_notes(notes: str, manager_ir: bool = True,
@@ -766,7 +810,9 @@ write a `_frame(name, default)` / `_p(name, default)` wrapper or any hasattr/get
 fallback (it hides a wrong name): call params directly for functional parts, plain local variables
 for subordinate ones.
 
-Write `build_subassembly()` returning a cadpy AssemblyHelper. Output NOTES then ONE ```python block."""
+Write `build_subassembly()` returning a cadpy AssemblyHelper. Output NOTES then ONE ```python block.
+
+{_MODELING_METHOD}"""
 
 
 def build_manager_should_rebuild(prior_model_json: str, fault_reason: str,

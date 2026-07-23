@@ -131,7 +131,19 @@ try:
             root_name = name
     with open(out_json, "w", encoding="utf-8") as f:
         json.dump({"ok": True, "parts": parts, "root": root_name}, f)
-    print(json.dumps({"ok": True, "n_parts": len(parts)}))
+    # Export the WHOLE sub as one STEP next to sub_eval.json, so the skill's inspect tool can run
+    # single-file selector-level precision checks on it. Best-effort: a STEP failure must not fail
+    # the eval (geocheck still gates), so swallow and report step:null.
+    step_out = os.path.join(os.path.dirname(out_json), "sub.step")
+    step_ok = False
+    try:
+        from build123d import export_step as _export_step
+        _export_step(comp, step_out)
+        step_ok = os.path.exists(step_out)
+    except Exception:
+        step_ok = False
+    print(json.dumps({"ok": True, "n_parts": len(parts),
+                      "step": step_out if step_ok else None}))
 except Exception as e:
     import traceback
     print(json.dumps({"ok": False, "error": (type(e).__name__ + ": " + str(e))[:400],
