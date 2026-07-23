@@ -163,9 +163,12 @@ def validate_urdf(path: str, require_meshes: bool = False) -> tuple[bool, str]:
     secondary "does the whole thing assemble" sanity check.
     """
     try:
+        import os
+        base = os.path.dirname(os.path.abspath(path))
         URDF.load(path, load_meshes=require_meshes,
                   build_scene_graph=require_meshes,
-                  force_mesh=require_meshes)
+                  force_mesh=require_meshes,
+                  filename_handler=lambda fname: os.path.join(base, fname))
         return True, ""
     except Exception as e:
         return False, f"{type(e).__name__}: {e}"

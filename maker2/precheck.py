@@ -20,8 +20,11 @@ re-run only the blamed manager. See .claude/plans/precious-humming-wand.md.
 
 from __future__ import annotations
 
+import hashlib
+import json
+import os
 import re
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 
 import numpy as np
 
@@ -36,6 +39,11 @@ _MESH_TOL_FRAC = 0.15
 _GEAR_RE = re.compile(r"gear|pinion|cog|wheel", re.I)
 
 
+def _stable_id(prefix: str, value: dict) -> str:
+    raw = json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
+    return prefix + hashlib.sha256(raw).hexdigest()[:16]
+
+
 @dataclass
 class Violation:
     kind: str                       # frame_misalign|gear_center_distance|aabb_overlap|load_error
@@ -43,12 +51,39 @@ class Violation:
     detail: str = ""
     sub_id: str = ""
     value: float = 0.0
+    violation_id: str = ""
+    seam_id: str = ""
+    involved_sub_ids: list = field(default_factory=list)
+    parent_link: str = ""
+    child_link: str = ""
+    parent_local_link: str = ""
+    child_local_link: str = ""
+    shaft_role: str = ""
+    overlap_fraction: float = 0.0
+    threshold: float = 0.0
+    observations: dict = field(default_factory=dict)
+
+    def __post_init__(self):
+        if not self.violation_id:
+            core = {"kind": self.kind, "severity": self.severity, "seam_id": self.seam_id,
+                    "sub_id": self.sub_id, "involved_sub_ids": sorted(self.involved_sub_ids),
+                    "links": sorted(x for x in (self.parent_link, self.child_link) if x)}
+            self.violation_id = _stable_id("violation_", core)
+
+    def to_dict(self) -> dict:
+        return asdict(self)
 
 
 @dataclass
 class PrecheckReport:
     ok: bool
     violations: list = field(default_factory=list)
+    failure_id: str = ""
+
+    def __post_init__(self):
+        if not self.failure_id:
+            core = {"ok": self.ok, "violations": [v.to_dict() for v in self.violations]}
+            self.failure_id = _stable_id("precheck_", core)
 
     def summary(self) -> str:
         if self.ok:
@@ -56,14 +91,43 @@ class PrecheckReport:
         return "; ".join(f"{v.kind}({v.severity})"
                          + (f" {v.sub_id}" if v.sub_id else "") for v in self.violations)
 
+    def to_dict(self) -> dict:
+        return {"ok": self.ok, "failure_id": self.failure_id,
+                "aggregate_overlap": sum(float(v.overlap_fraction) for v in self.violations),
+                "violations": [v.to_dict() for v in self.violations]}
+
 
 def _ns(sub_id: str, name: str) -> str:
     return f"{sub_id}_{name}"
 
 
+def _local_name(sub_id: str, namespaced: str) -> str:
+    prefix = f"{sub_id}_"
+    return namespaced[len(prefix):] if namespaced.startswith(prefix) else namespaced
+
+
+def _shaft_role(*names: str) -> str:
+    text = " ".join(names).upper()
+    if "INPUT" in text:
+        return "input"
+    if "INTER" in text or "MIDDLE" in text:
+        return "inter"
+    if "OUTPUT" in text:
+        return "output"
+    return ""
+
+
 def _world(robot, link: str) -> np.ndarray:
     """4x4 world transform of a link (base_link -> link) in the assembled scene."""
     return robot.get_transform(frame_to=link, frame_from=robot.base_link)
+
+
+def _realized_frame_in_root(sub,frame_name):
+    entry=next((e for e in (sub.sub_frames or []) if e.get('frame')==frame_name),None)
+    if entry is None or sub.model is None:return None
+    from .assembler import _mat,_root_to_link
+    T=_root_to_link(sub.model).get(entry.get('link'))
+    return None if T is None else T@_mat(entry.get('local_xyz_m',(0,0,0)),entry.get('local_rpy_rad',(0,0,0)))
 
 
 def _realized_link(sub, frame_name: str) -> str | None:
@@ -107,7 +171,36 @@ def precheck(plan, subs: dict, assembled_urdf: str, *, log_fn=print) -> Precheck
 
     link_names = {l.name for l in robot.robot.links}
 
-    # 1. WELD seams: each seam's frames must be REALIZED (the manager put a real link
+    # 方案B-v3: when the managers authored coordinates parametrically, `plan.params_text` IS
+    # the machine's single source of truth — every interface frame has a same-named zero-arg
+    # function returning its GLOBAL mm coordinate, and every manager placed its parts by
+    # calling those functions. So precheck asks params DIRECTLY for a frame's world point
+    # instead of reconstructing it from the collapsed sub_frames (which, in manager_py mode,
+    # degrade every frame to a part's local origin -> phantom weld gaps). This is deterministic
+    # code reading a config file, not an agent — no reason to launder the truth through model.
+    _params_ns: dict = {}
+    if (getattr(plan, "params_text", "") or "").strip() and "def " in plan.params_text:
+        try:
+            exec(compile(plan.params_text, "<params>", "exec"), _params_ns)
+        except Exception as e:
+            log(f"params module did not exec ({type(e).__name__}: {e}); "
+                "falling back to realized-frame reconstruction")
+            _params_ns = {}
+
+    def _frame_world_m(frame_name: str):
+        """GLOBAL position (meters) of an interface frame straight from the params module, or
+        None when params can't supply it (no module / no such function / bad return)."""
+        fn = _params_ns.get(frame_name)
+        if not callable(fn):
+            return None
+        try:
+            xyz_mm = fn()
+            v = np.array([float(xyz_mm[0]), float(xyz_mm[1]), float(xyz_mm[2])]) / 1000.0
+            return v
+        except Exception:
+            return None
+
+
     #    at each). Weld frames are REFERENCE points on each sub, not a mating pair —
     #    the assembler positions the child by its GLOBAL frame pose, so the two frames
     #    need NOT coincide (e.g. two housings held a fixed distance apart). We only
@@ -124,6 +217,84 @@ def precheck(plan, subs: dict, assembled_urdf: str, *, log_fn=print) -> Precheck
                 kind="frame_misalign", severity="sub", sub_id=miss,
                 detail=f"seam '{seam.id}': frame not realized on '{miss}'"))
 
+    # 1b. Optional through-shaft rear datum: the solved rear shaft point must lie on the
+    # rear housing bore plane. The front pair remains the only placement weld.
+    for seam in plan.seams:
+        rp=getattr(seam,'rear_parent_frame','');rc=getattr(seam,'rear_child_frame','')
+        if seam.kind!='weld' or not (rp and rc):continue
+        ps,cs=subs.get(seam.parent_sub),subs.get(seam.child_sub)
+        if not ps or not cs:continue
+        Pw_m=_frame_world_m(rp);Cw_m=_frame_world_m(rc)
+        try:
+            if Pw_m is not None and Cw_m is not None:
+                Pw3,Cw3=Pw_m,Cw_m
+            else:
+                Pl=_realized_frame_in_root(ps,rp);Cl=_realized_frame_in_root(cs,rc)
+                if Pl is None or Cl is None:continue
+                Pw3=(_world(robot,_ns(seam.parent_sub,ps.model.root_link))@Pl)[:3,3]
+                Cw3=(_world(robot,_ns(seam.child_sub,cs.model.root_link))@Cl)[:3,3]
+            pfr=next(f for f in plan.sub_by_id(seam.parent_sub).frames if f.name==rp)
+            axis=np.asarray(pfr.axis,float);axis=axis/np.linalg.norm(axis)
+            signed=float(np.dot(Cw3-Pw3,axis));err=abs(signed)
+        except Exception:continue
+        if err>_POS_TOL_M:
+            violations.append(Violation(kind='rear_mount_plane',severity='interface',sub_id=seam.parent_sub,
+              seam_id=seam.id,involved_sub_ids=[seam.parent_sub,seam.child_sub],value=err,
+              threshold=_POS_TOL_M,observations={'rear_parent_frame':rp,'rear_child_frame':rc,
+              'signed_residual_mm':signed*1000.0},detail=f"seam '{seam.id}' rear shaft datum misses "
+              f"rear housing plane by {err*1000:.1f} mm"))
+
+    # 1c. GENERAL WELD-COINCIDENCE (machine-agnostic): a weld whose mate is meant to make
+    #     its two frames MEET — an `insert` (shaft end into a bore), a `seat` (face on face),
+    #     or any weld naming paired ports — must, on the assembled geometry, have its parent
+    #     and child frames actually coincide. The assembler places each sub by its declared
+    #     global pose; when two seams pull one sub in incompatible directions (an
+    #     over-constrained contract), a weld silently ends up open. This is the general form
+    #     of the reducer's authoritative-solve failure, but it needs no gear cluster and no
+    #     recognized topology — it runs for ANY machine from the realized frames alone.
+    for seam in plan.seams:
+        if seam.kind != "weld":
+            continue
+        mate = getattr(seam, "mate_type", "") or ""
+        has_ports = bool(getattr(seam, "parent_port", "") and getattr(seam, "child_port", ""))
+        if mate not in ("insert", "seat") and not has_ports:
+            continue  # a bare reference weld need not coincide (subs held a fixed gap apart)
+        ps, cs = subs.get(seam.parent_sub), subs.get(seam.child_sub)
+        if not ps or not cs:
+            continue
+        # 方案B-v3: prefer the params truth. Both weld frames are named exactly like their
+        # params functions, so their world points come straight from the source of truth —
+        # no root@local reconstruction, no collapsed sub_frames.
+        Pw_m = _frame_world_m(seam.parent_frame)
+        Cw_m = _frame_world_m(seam.child_frame)
+        if Pw_m is not None and Cw_m is not None:
+            gap = float(np.linalg.norm(Cw_m - Pw_m))
+        else:
+            Pl = _realized_frame_in_root(ps, seam.parent_frame)
+            Cl = _realized_frame_in_root(cs, seam.child_frame)
+            if Pl is None or Cl is None:
+                continue  # realization already faulted in step 1
+            try:
+                Pw = _world(robot, _ns(seam.parent_sub, ps.model.root_link)) @ Pl
+                Cw = _world(robot, _ns(seam.child_sub, cs.model.root_link)) @ Cl
+                gap = float(np.linalg.norm(Cw[:3, 3] - Pw[:3, 3]))
+            except Exception:
+                continue
+        if gap > _POS_TOL_M:
+            violations.append(Violation(
+                kind="weld_frame_coincidence", severity="interface",
+                sub_id=seam.parent_sub, seam_id=seam.id,
+                involved_sub_ids=[seam.parent_sub, seam.child_sub], value=gap,
+                threshold=_POS_TOL_M,
+                observations={"parent_frame": seam.parent_frame,
+                              "child_frame": seam.child_frame, "mate_type": mate,
+                              "gap_mm": gap * 1000.0},
+                detail=f"weld '{seam.id}' ({mate or 'ported'}): frames "
+                       f"'{seam.parent_frame}' and '{seam.child_frame}' are {gap*1000:.1f} mm "
+                       "apart in the assembly but this mate requires them to coincide — the "
+                       "plan's placement is over-constrained/contradictory; fix the seam "
+                       "frames or the conflicting mate."))
+
     # 2. Gear-MESH power seams: the two gear centers must be ~one mesh center-distance
     #    (sum of pitch radii) apart, else the teeth can't engage.
     for seam in plan.seams:
@@ -132,11 +303,20 @@ def precheck(plan, subs: dict, assembled_urdf: str, *, log_fn=print) -> Precheck
         drive_link, driven_link = seam.mesh_pair
         dn = _ns(seam.parent_sub, drive_link)
         vn = _ns(seam.child_sub, driven_link)
-        if dn not in link_names or vn not in link_names:
-            # mesh_pair may name links by realized frame instead; skip if unresolved.
-            continue
-        Td, Tv = _world(robot, dn), _world(robot, vn)
-        center_d = float(np.linalg.norm(Td[:3, 3] - Tv[:3, 3]))
+        # 方案B-v3: a mesh seam names its two gear CENTERS as frames (pinion1_center /
+        # gear2_center) == params function names, so read the true world centers from params.
+        # This avoids the URDF-chain _world() degenerating to 0 for flat global poses that
+        # aren't in one kinematic tree.
+        Pc = _frame_world_m(seam.parent_frame)
+        Cc = _frame_world_m(seam.child_frame)
+        if Pc is not None and Cc is not None:
+            center_d = float(np.linalg.norm(Pc - Cc))
+        else:
+            if dn not in link_names or vn not in link_names:
+                # mesh_pair may name links by realized frame instead; skip if unresolved.
+                continue
+            Td, Tv = _world(robot, dn), _world(robot, vn)
+            center_d = float(np.linalg.norm(Td[:3, 3] - Tv[:3, 3]))
         p_sub, c_sub = subs.get(seam.parent_sub), subs.get(seam.child_sub)
         rd = _mesh_pitch_radius(p_sub.model.link_by_name(drive_link)) if p_sub and p_sub.model else None
         rv = _mesh_pitch_radius(c_sub.model.link_by_name(driven_link)) if c_sub and c_sub.model else None
@@ -314,7 +494,7 @@ def _intersection_frac(ma, mb) -> float:
     return (vi / vs) if vs > 0 else 0.0
 
 
-def _solid_intersection_frac(ma, mb) -> float:
+def _solid_intersection_frac(ma, mb, log_fn=None) -> float:
     """REAL solid-overlap score of two WORLD meshes in [0,1]: the volume of their actual
     mesh boolean INTERSECTION as a fraction of the smaller part's solid volume.
 
@@ -325,34 +505,50 @@ def _solid_intersection_frac(ma, mb) -> float:
     their bounding boxes overlap heavily. Only two parts whose SOLID metal actually
     interpenetrates score high.
 
-    Requires a mesh boolean engine (manifold3d). Falls back to the AABB proxy when the
-    boolean is unavailable or a part isn't watertight (a non-watertight mesh has no
-    well-defined solid volume) — so this never crashes the gate, it only degrades to the
-    old behavior for that one pair."""
+    Manifold booleans require volume meshes. CadQuery can export a valid annulus as two
+    consistently-wound shells that trimesh does not label watertight; use its watertight
+    convex hull for the boolean operand in that case. This closes tessellation seams while
+    preserving holes in the other operand, unlike the old AABB fallback which made every
+    slender part inside a hollow housing look 100% embedded. AABB remains the last resort
+    when no usable solid can be formed."""
     # Cheap AABB pre-filter: disjoint boxes -> definitely no solid overlap. Skips the
     # (relatively) expensive boolean for the common far-apart case.
     loa, hia = np.asarray(ma.bounds[0]), np.asarray(ma.bounds[1])
     lob, hib = np.asarray(mb.bounds[0]), np.asarray(mb.bounds[1])
     if np.any(np.maximum(loa, lob) >= np.minimum(hia, hib)):
         return 0.0
-    # A solid volume is only meaningful for watertight meshes; degrade gracefully.
-    if not (getattr(ma, "is_watertight", False) and getattr(mb, "is_watertight", False)):
-        return _intersection_frac(ma, mb)
+    operands=[]
+    repaired=[]
+    for mesh in (ma,mb):
+        if getattr(mesh,"is_watertight",False) and float(getattr(mesh,"volume",0.0))>0:
+            operands.append(mesh)
+            continue
+        try:
+            solid=mesh.convex_hull
+            if not solid.is_watertight or float(solid.volume)<=0:
+                raise ValueError("convex hull is not a usable volume")
+            operands.append(solid);repaired.append(True)
+        except Exception:
+            if log_fn:log_fn("[conflict] AABB fallback: mesh has no usable solid volume")
+            return _intersection_frac(ma,mb)
     try:
         import trimesh
         # A near-empty boolean result can have zero volume; trimesh's center-of-mass
         # divide then warns harmlessly. Silence it — we guard the volume below anyway.
         with np.errstate(divide="ignore", invalid="ignore"):
-            inter = trimesh.boolean.intersection([ma, mb], engine="manifold")
-            if inter is None or len(getattr(inter, "vertices", ())) == 0:
+            inter=trimesh.boolean.intersection(operands,engine="manifold")
+            if inter is None or len(getattr(inter,"vertices",()))==0:
                 return 0.0
-            vi = float(inter.volume)
-    except Exception:
-        return _intersection_frac(ma, mb)
-    vs = min(float(ma.volume), float(mb.volume))
-    if vs <= 0:
-        return _intersection_frac(ma, mb)
-    return max(0.0, vi / vs)
+            vi=float(inter.volume)
+    except Exception as e:
+        if log_fn:log_fn(f"[conflict] AABB fallback: solid boolean failed ({type(e).__name__})")
+        return _intersection_frac(ma,mb)
+    vs=min(float(x.volume) for x in operands)
+    if vs<=0:
+        if log_fn:log_fn("[conflict] AABB fallback: repaired solid has zero volume")
+        return _intersection_frac(ma,mb)
+    if repaired and log_fn:log_fn("[conflict] repaired non-watertight mesh with convex hull")
+    return max(0.0,vi/vs)
 
 
 def _part_overlaps(robot, plan, subs: dict, log) -> list:
@@ -395,7 +591,7 @@ def _part_overlaps(robot, plan, subs: dict, log) -> list:
                 a, b = names[i], names[k]
                 if frozenset((a, b)) in adj:
                     continue
-                frac = _solid_intersection_frac(meshes[a], meshes[b])
+                frac = _solid_intersection_frac(meshes[a], meshes[b], log_fn=log)
                 if frac >= _OVERLAP_FRAC:
                     if worst is None or frac > worst[0]:
                         worst = (frac, a, b)
@@ -405,6 +601,10 @@ def _part_overlaps(robot, plan, subs: dict, log) -> list:
             frac, a, b = worst
             out.append(Violation(
                 kind="part_overlap", severity="sub", sub_id=sub.id, value=frac,
+                involved_sub_ids=[sub.id], parent_link=a, child_link=b,
+                parent_local_link=_local_name(sub.id, a), child_local_link=_local_name(sub.id, b),
+                overlap_fraction=frac, threshold=_OVERLAP_FRAC,
+                observations={"measure": "real_solid_intersection_fraction"},
                 detail=f"parts '{a}' and '{b}' interpenetrate ({frac:.0%} of the smaller "
                        f"part's solid is inside the other) — fix their placement"))
 
@@ -419,16 +619,37 @@ def _part_overlaps(robot, plan, subs: dict, log) -> list:
         mb = sub_mesh_cache.get(seam.child_sub, {})
         if not ma or not mb:
             continue
+        # An INSERT fit (a bearing pressed into a housing seat, a shaft end into a bore) is a
+        # coaxial nesting where the two mating faces TOUCH by design — the bearing OD equals the
+        # seat bore, so a manifold boolean sees a thin shared shell and a small mesh-tessellation
+        # overlap even when the fit is correct. Raise the threshold for the seam's own insert pair
+        # so a legitimate press-fit is not reported as interpenetration, while still catching GROSS
+        # overlap (a bearing driven halfway through the wall). Non-insert welds keep the strict bar.
+        mate = getattr(seam, "mate_type", "") or ""
+        seam_frac_floor = 0.60 if mate == "insert" else _OVERLAP_FRAC
         worst = None
         for an, amesh in ma.items():
             for bn, bmesh in mb.items():
-                frac = _solid_intersection_frac(amesh, bmesh)
-                if frac >= _OVERLAP_FRAC and (worst is None or frac > worst[0]):
+                frac = _solid_intersection_frac(amesh, bmesh, log_fn=log)
+                if frac >= seam_frac_floor and (worst is None or frac > worst[0]):
                     worst = (frac, an, bn)
+                elif frac >= _OVERLAP_FRAC and frac < seam_frac_floor:
+                    log(f"drop insert-fit overlap {an}~{bn} ({frac:.0%} < {seam_frac_floor:.0%} "
+                        f"insert floor on seam '{seam.id}')")
         if worst:
             frac, an, bn = worst
+            role = _shaft_role(seam.id, seam.parent_frame, seam.child_frame, an, bn)
             out.append(Violation(
-                kind="part_overlap", severity="interface", value=frac,
+                kind="part_overlap", severity="interface", sub_id=seam.parent_sub, value=frac,
+                seam_id=seam.id, involved_sub_ids=[seam.parent_sub, seam.child_sub],
+                parent_link=an, child_link=bn,
+                parent_local_link=_local_name(seam.parent_sub, an),
+                child_local_link=_local_name(seam.child_sub, bn), shaft_role=role,
+                overlap_fraction=frac, threshold=_OVERLAP_FRAC,
+                observations={"measure": "real_solid_intersection_fraction",
+                              "parent_frame": seam.parent_frame,
+                              "child_frame": seam.child_frame,
+                              "mate_type": getattr(seam, "mate_type", "")},
                 detail=f"welded subs '{seam.parent_sub}' and '{seam.child_sub}' "
                        f"interpenetrate: parts '{an}' and '{bn}' overlap {frac:.0%} of the "
                        f"smaller part's solid — the seam drives them into each other; "
@@ -456,6 +677,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="maker2 geometric pre-check")
     ap.add_argument("--plan", required=True)
     ap.add_argument("--urdf", default=None, help="assembled URDF (default <session>/assembly/model.urdf)")
+    ap.add_argument("--out", default=None, help="write the structured report JSON here")
     a = ap.parse_args()
 
     session_root = os.path.dirname(os.path.abspath(a.plan))
@@ -464,6 +686,9 @@ def main() -> int:
             for s in plan.subassemblies}
     urdf = a.urdf or os.path.join(session_root, "assembly", "model.urdf")
     rep = precheck(plan, subs, urdf, log_fn=print)
+    if a.out:
+        with open(a.out, "w", encoding="utf-8") as f:
+            json.dump(rep.to_dict(), f, indent=2)
     print("-" * 56)
     print(f"RESULT: {'OK' if rep.ok else 'FAIL'} — {rep.summary()}")
     return 0 if rep.ok else 1

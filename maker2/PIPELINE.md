@@ -87,6 +87,7 @@ Every gate is deterministic (no LLM). "Route" = who re-runs on failure.
 | **subcheck conflict** | per-sub | real-mesh interpenetration ≥ 30% | — | **subdebugger** (then fail up to boss if unresolved) |
 | **post-debugger frame gate** | per-sub | `ERR_FRAME_UNREALIZED`, `ERR_FRAME_DRIFT` on the *final* (post-debug) model | — | **manager re-run** |
 | **compile_gate (C5)** | per-sub | `ERR_COMPILE` (MJCF won't load in MuJoCo) | — | **manager re-run** |
+| **libslvs authoritative solve** | C | inconsistent/nonconvergent/redundant system, nonzero placement DOF, failed hard constraint, invalid SE(3) | — | **boss re-plan** |
 | **mesh distance (post-assemble)** | C | `ERR_IFC_MESH_DIST` (gear centers, on **solved** `assembly_frames_world`, ≠ sum of pitch radii) | — | **boss re-plan** |
 | **precheck** | D | `frame_misalign`, `gear_center_distance`, `aabb_overlap`, `load_error` | — | severity **"interface" → boss**, **"sub" → blamed manager** |
 | **assembled_gate** | D | `ERR_SUP_FLOAT` (weld chain doesn't reach root) | `ERR_SUP_GROUND` (orientation-dependent) | **boss re-plan** |

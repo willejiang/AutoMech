@@ -58,6 +58,8 @@ class Settings:
                                                    # geometry via OCCT) | "openscad"
                                                    # (legacy fallback). The hierarchy
                                                    # build dispatches on this.
+    cross_sub_solver: str = "slvs"               # authoritative cross-sub placement:
+                                                   # "slvs" (required) | "closed_form" (legacy debug)
     deep_think: bool = True                       # the single speed/power toggle
                                                    # (maker2-mujoco-contact Phase 6):
                                                    # True  -> CadQuery worker + FULL
@@ -154,6 +156,16 @@ class Settings:
                                                    # machine before physics (catches parts
                                                    # floating/disconnected — precheck and
                                                    # physics do not)
+    enable_solver_failure_analyzer: bool = True   # self-directed read-only investigation before Boss
+    analyzer_max_tokens: int = 16000
+    solver_analyzer_max_rounds: int = 12
+    solver_local_repair_max_attempts: int = 12
+    enable_solver_pose_repair: bool = True
+    enable_solver_module_repair: bool = False
+    enable_solver_seat_geometry_repair: bool = True
+    enable_precheck_failure_analyzer: bool = True
+    precheck_local_repair_max_attempts: int = 2
+    enable_precheck_housing_geometry_repair: bool = True
     enable_sub_conflict_gate: bool = True         # check each subassembly for rigid
                                                    # part interpenetration right after it
                                                    # builds, and run a debugger loop to
@@ -161,6 +173,20 @@ class Settings:
     sub_conflict_max_tries: int = 3               # debugger passes before failing the
                                                    # sub up to the boss for a re-plan
     subassembly_max_managers: int = 9             # parallel per-sub manager builds
+    team_max_rounds: int = 2                       # boss↔manager fan-out runs as an
+                                                   # AgentTeamRunner team round: managers
+                                                   # build against shared state seeded from
+                                                   # the compiled hardpoint contract, then
+                                                   # re-propose seeing siblings' realized
+                                                   # interface frames. 1 ≈ the old one-shot
+                                                   # fan-out (no sibling reaction); 2+ lets
+                                                   # managers negotiate shared interfaces.
+    enable_solver_tool: bool = False               # offer the authoritative libslvs solver
+                                                   # as a `solve_constraints` tool in the
+                                                   # boss/manager research pre-step, so agents
+                                                   # get exact center distances / coaxial
+                                                   # points instead of guessing. Degrades to
+                                                   # a no-op when py-slvs is unavailable.
     enable_reference_tools: bool = False          # web/RAG reference lookup (Stage G)
     enable_kb: bool = False                        # local offline retrieval (maker2/kb):
                                                    # a curated per-agent knowledge base +
@@ -182,6 +208,30 @@ class Settings:
                                                    # --no-manager-ir falls back to the MJCF
                                                    # skeleton path (mjcf_skeleton.py). See
                                                    # Part A of the plan.
+    manager_py: bool = False                       # 方案B experiment: manager authors a
+                                                   # parametric CadQuery module
+                                                   # (build_subassembly()->cq.Assembly with
+                                                   # GLOBAL locations) instead of a connection
+                                                   # graph. py_manager.evaluate_manager_python
+                                                   # runs it, exports each part's STL, and
+                                                   # returns a KinematicModel with GLOBAL poses
+                                                   # — so the worker step is absorbed and the
+                                                   # assembler's cross-sub solve becomes a no-op.
+                                                   # Takes precedence over manager_ir when set.
+    debugger_read_tools: bool = False              # 方案B: give the sub debugger the analyzer's
+                                                   # read-only tool loop (read_json/read_text/
+                                                   # search_log/search_files) so it investigates
+                                                   # this sub's run.log/reports/source itself
+                                                   # before authoring its patch, instead of a
+                                                   # single-shot pre-stuffed context blob.
+    geometry_compiler_mode: str = "auto"           # auto | legacy | required. In `auto`, a
+                                                   # recognized two-stage reducer topology is
+                                                   # compiled to a frozen zero-DOF hardpoint
+                                                   # contract BEFORE managers fan out;
+                                                   # unrecognized topology falls back to the
+                                                   # legacy hierarchy. `required` errors if the
+                                                   # topology is not compilable; `legacy` skips
+                                                   # the compiler entirely.
 
     # ── Construction helpers ─────────────────────────────────────
 

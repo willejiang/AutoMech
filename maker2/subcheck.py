@@ -76,7 +76,7 @@ def sub_conflicts(model, urdf_path: str, log_fn=print) -> list[Conflict]:
             a, b = present[i], present[k]
             if frozenset((a, b)) in adj:
                 continue
-            frac = _solid_intersection_frac(meshes[a], meshes[b])
+            frac = _solid_intersection_frac(meshes[a], meshes[b], log_fn=log_fn)
             if frac >= _OVERLAP_FRAC:
                 found.append(Conflict(part_a=a, part_b=b, frac=frac))
             elif frac > 0.05:

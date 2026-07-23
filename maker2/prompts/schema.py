@@ -135,9 +135,10 @@ HARD RULES
 UNITS / ORIGIN CONTRACT (critical — this is how blindly-built parts line up)
 - size_mm is in MILLIMETERS. Body `pos` is in METERS.
 - Each worker builds its part ALONE, in the part's own local frame, with the part's
-  natural attach/rotation point at the LOCAL ORIGIN (0,0,0). You decide, per part,
-  WHERE that origin is and write it in `origin_note` precisely (e.g. "gear center on
-  the mid-plane at origin, teeth around +Z axis").
+  natural attach/rotation point at the LOCAL ORIGIN (0,0,0). Round/axial parts always use
+  LOCAL +Z for geometry, bore/teeth ports, and spin_axis. You decide, per part, WHERE that
+  origin is and write it in `origin_note` precisely (e.g. "gear center on the mid-plane at
+  origin, teeth around local +Z axis"). Global interface axes are applied later by assembly.
 - You author every body's `pos` as the vector FROM the parent part's origin TO where
   this part's origin sits. Workers never position parts relative to each other — all
   spatial relationships live in your body nesting + poses.
@@ -333,8 +334,10 @@ MATE TYPES — pick the real mechanical connection:
 
 HOW PARTS MOVE (this REPLACES joints — there are NO joints and NO motors)
 - Every part declares a `dof`:  "fixed" = welded to whatever it mates to (MOST parts:
-  plates, housings, brackets, bearings, jewels, screws, pins). "spin" = rotates about
-  `spin_axis` (gears, wheels, arbors, rotors, shafts). "free" = 6-DOF (rare). DEFAULT to
+  plates, housings, brackets, bearings, jewels, screws, pins). "spin" = rotates about its
+  LOCAL `spin_axis` (gears, wheels, arbors, rotors, shafts). Every round/axial part is built
+  around LOCAL +Z, so its spin_axis is [0,0,1]. Boss/interface-frame axes are GLOBAL placement
+  targets and must never be copied into this local field. "free" = 6-DOF (rare). DEFAULT to
   "fixed" — a part is "spin" ONLY if it turns under power.
 - COAXIAL PARTS THAT TURN TOGETHER = ONE spin part. A wheel + pinion + arbor pressed
   together rotate as a unit: make the ARBOR the "spin" part and mate the wheel/pinion to it
@@ -398,7 +401,9 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
   "global_origin_note": "<where the shared global origin is and axis convention>",
   "subassemblies": [
     {
-      "id": "<safe slug: lowercase, starts with a letter, [a-z0-9_] only, unique>",
+      "id": "<safe slug: lowercase, starts with a letter, [a-z0-9_] only, unique. This is a
+              PERMANENT IDENTIFIER: on any re-plan, reuse the prior plan's ids verbatim —
+              never rename a subassembly you are keeping (renaming forces a full rebuild)>",
       "brief": "<one-paragraph product prompt for THIS subassembly's manager: what
                  parts it contains and what it does; it is built in isolation>",
       "function": "<what this subassembly does in the machine>",
@@ -419,7 +424,10 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
           "shaft_dia_mm": <number>,   // HARD shaft/gear-pitch diameter in MM for a
                                        // power_in/power_out/mesh frame (0 for a plain mount)
           "role": "<mount | power_in | power_out | mesh>",
-          "mounts_part": "<optional: the part inside THIS sub that seats at this frame>"
+          "mounts_part": "<OPTIONAL and rarely set by you — leave empty. It names a part inside
+                          the SAME sub that realizes this frame; only the sub that BUILDS the
+                          seat knows its part names, so YOU do not author it. Identify a seat by
+                          its frame NAME + position + shaft_dia_mm, not by a part name.>"
         }
       ]
     }
@@ -433,6 +441,8 @@ Return exactly one JSON object (no prose, no markdown fences) with this shape:
       "mate_type": "<REQUIRED on a weld: insert | seat (mesh on a power seam); how the two frames join>",
       "parent_port": "<the frame on parent_sub this seam mates (defaults to parent_frame)>",
       "child_port":  "<the frame on child_sub this seam mates (defaults to child_frame)>",
+      "rear_parent_frame": "<OPTIONAL rear housing bore-plane frame for a through-shaft>",
+      "rear_child_frame": "<OPTIONAL matching rear shaft/bearing datum; set both rear fields or neither>",
       "offset_mm": <number>,          // insert seat depth / seat face gap along the mate axis
       "joint_type": "<fixed for weld; continuous/revolute only for a shared-DOF power seam>",
       "axis": [<x>, <y>, <z>],       // for a non-fixed power seam
@@ -458,6 +468,14 @@ HARD RULES
   the appearance preview — the compiler solves the real placement from the mated frames. Set
   `parent_port`/`child_port` only if the mated frame differs from parent_frame/child_frame;
   otherwise they default to the seam's frames.
+- THROUGH-SHAFT REAR DATUM: when one shaft is supported by FRONT and REAR walls/bearings,
+  declare both front and rear mount frames on the housing and on the shaft stage. Keep ONE weld
+  seam using the front pair for placement, and set `rear_parent_frame`/`rear_child_frame` on that
+  seam to the rear pair. The rear pair is a point-on-plane validation datum, NOT a second weld.
+  Never omit it for a shaft crossing two housing walls; otherwise collars/gears can penetrate the
+  rear plate even when the gear center distance is correct. Rear axes must be parallel to the front
+  insert axis. Frame xyz values remain topology/layout hints; the deterministic solver validates the
+  realized rear datum.
 - MESH SPACING is SOLVED for you — do NOT compute or place it. On a `mesh` seam you only
   NAME the two meshing gear PARTS (`mesh_pair`). The compiler reads each gear's real pitch
   radius from the BUILT part (its module x teeth) and places the two subassemblies exactly one
@@ -486,20 +504,29 @@ HARD RULES
   — never 'bearing_lower' in both). Reusing a generic name across stages reads as one duplicated
   part and is rejected. Prefix generic hardware (bearings, collars, keys, screws, spacers) with
   its owning stage/sub.
-- LABEL THE SEATS on a structural base. When a subassembly is a base/plate/bracket/chassis
-  that carries SEVERAL parts at distinct spots (three bearing holes, four mounting posts, a
-  row of jewel seats), declare ONE frame PER seat at that seat's own distinct `xyz_m`, and
-  set `mounts_part` to the part that sits there. This pins each part to its hole so the
-  manager places them at the right SPREAD-OUT positions instead of guessing (guessing stacks
-  them all at the origin, they overlap, and nothing can separate parts pinned to a seat).
-  Example — a plate with 3 bearing holes 40 mm apart:
+- SEATS ON A STRUCTURAL BASE — name the INTERFACE, not the builder's parts. When a base/
+  plate/bracket/housing carries several parts at distinct spots (three bearing bores, four
+  posts, a row of seats), declare ONE `role:"mount"` frame PER seat at its own distinct
+  `xyz_m`, with the seat's bore `shaft_dia_mm`. You author WHERE each interface is (frame name
+  + global position + bore diameter + axis) — you do NOT name the base's internal parts. The
+  SUBASSEMBLY THAT BUILDS THE BASE owns the geometry: its manager cuts a bore PORT on its body
+  at each seat's position and realizes that seat frame there. You cannot know the builder's
+  part names, so do NOT invent a `mounts_part` for another sub's or the base's internal parts —
+  the frame NAME (e.g. seat_input/seat_inter/seat_output) is the shared identity both you and
+  the builder use. Keep frame names structural/role-like so the builder reads the same role.
+  Example — a plate with 3 bearing seats 40 mm apart (position + diameter only, no part names):
     frames: [
-      {"name":"seat_input",  "xyz_m":[0.00,0,0], "mounts_part":"bearing_input",  "role":"mount"},
-      {"name":"seat_middle", "xyz_m":[0.04,0,0], "mounts_part":"bearing_middle", "role":"mount"},
-      {"name":"seat_output", "xyz_m":[0.08,0,0], "mounts_part":"bearing_output", "role":"mount"}
+      {"name":"seat_input",  "xyz_m":[0.00,0,0], "axis":[1,0,0], "shaft_dia_mm":20, "role":"mount"},
+      {"name":"seat_middle", "xyz_m":[0.04,0,0], "axis":[1,0,0], "shaft_dia_mm":20, "role":"mount"},
+      {"name":"seat_output", "xyz_m":[0.08,0,0], "axis":[1,0,0], "shaft_dia_mm":20, "role":"mount"}
     ]
-  This matters MORE the less regular the base is — for an irregular chassis only YOU know
-  where each hole goes, so you MUST label every seat with its position + part.
+  This matters MORE the less regular the base is — for an irregular chassis only YOU know where
+  each seat goes, so you MUST declare every seat frame with its position + diameter.
+  SEAT POSITION IS ASSEMBLER-OWNED: `axis` (the through-shaft direction) is what must be right;
+  the assembler relocates each seat frame onto its SOLVED shaft, so a seat's absolute `xyz_m` is
+  advisory (used for spacing/preview, not for the final weld). You MAY add an optional
+  `"host_plane":"YZ"|"XZ"|"XY"` naming the wall the bore pierces (a bore is a hole in a PLANE, along
+  its `axis`) — authoring clarity only; the assembler does not need it to place the shaft.
 - IDENTICAL REPEATED SUBASSEMBLIES: when several subassemblies are the SAME (same
   parts, differing ONLY in position/orientation — a quadcopter's 4 rotors, a hexapod's
   6 legs, a car's 4 wheels), emit ONE subassembly and list each copy in "instances"

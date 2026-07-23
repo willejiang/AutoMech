@@ -80,6 +80,65 @@ KB_SEARCH_TOOL = {
 }
 
 
+SOLVE_CONSTRAINTS_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "solve_constraints",
+        "description": "Solve a small 3D point/distance constraint problem with the "
+                       "AUTHORITATIVE solver (libslvs) to get EXACT coordinates and a "
+                       "consistency verdict, instead of guessing. Units are METERS. Use "
+                       "it to check gear center distances, coaxial (coincident) shaft "
+                       "points, or projected offsets before you commit numbers. Returns "
+                       "the solved points, the degrees of freedom, the solver status, and "
+                       "any constraints it could not satisfy.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "points": {
+                    "type": "array",
+                    "description": "the 3D points in the problem",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {"type": "string"},
+                            "xyz_m": {"type": "array", "items": {"type": "number"},
+                                      "description": "initial [x, y, z] in meters"},
+                            "fixed": {"type": "boolean",
+                                      "description": "true to anchor this point (default false)"},
+                        },
+                        "required": ["id", "xyz_m"],
+                    },
+                },
+                "constraints": {
+                    "type": "array",
+                    "description": "the constraints relating the points",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {"type": "string"},
+                            "kind": {"type": "string",
+                                     "enum": ["coincident", "distance",
+                                              "projected_distance"]},
+                            "refs": {"type": "array", "items": {"type": "string"},
+                                     "description": "point ids: 2 for coincident/distance, "
+                                                    "3 for projected_distance"},
+                            "value_m": {"type": "number",
+                                        "description": "target distance in meters "
+                                                       "(distance/projected_distance)"},
+                        },
+                        "required": ["id", "kind", "refs"],
+                    },
+                },
+                "expected_dof": {"type": "integer",
+                                 "description": "the DOF you expect the solution to have "
+                                                "(default 0 = fully constrained)"},
+            },
+            "required": ["points", "constraints"],
+        },
+    },
+}
+
+
 # --------------------------------------------------------------------------- #
 # Keyless executor
 # --------------------------------------------------------------------------- #
@@ -226,11 +285,101 @@ def _kb_bound(collection: str):
 
 
 # --------------------------------------------------------------------------- #
+# Authoritative constraint solver executor (settings.enable_solver_tool) — lets an
+# agent pose a small 3D point/distance problem and get libslvs' exact solution +
+# consistency verdict mid-authoring. Failure-soft: any problem (py-slvs absent, bad
+# args, solver error) returns a short string and NEVER raises into the tool loop.
+# --------------------------------------------------------------------------- #
+
+_CONSTRAINT_ARITY = {"coincident": 2, "distance": 2, "projected_distance": 3}
+
+
+def solve_constraints_exec(points=None, constraints=None, expected_dof: int = 0) -> str:
+    """Solve a point/distance constraint problem (meters) with libslvs and return a
+    compact text verdict. Returns an 'unavailable'/'error' string on any failure."""
+    try:
+        from .constraint_solver import slvs_available, solve_problem
+        from .constraint_ir import (AssemblyConstraintProblem, ConstraintKind,
+                                     ConstraintSpec, EntityKind, EntitySpec)
+    except Exception as e:  # pragma: no cover - import guard
+        return f"(solver unavailable: import failed — {e})"
+
+    ok, reason = slvs_available()
+    if not ok:
+        return (f"(solver unavailable: py-slvs backend not importable — {reason}. "
+                "Install it via maker2/requirements.txt.)")
+
+    try:
+        pts = list(points or [])
+        cons = list(constraints or [])
+        if not pts:
+            return "(solver: no points given — nothing to solve)"
+
+        entities = []
+        seen_ids = set()
+        for p in pts:
+            pid = str(p.get("id", "")).strip()
+            xyz = tuple(float(v) for v in (p.get("xyz_m") or ())[:3])
+            if not pid or len(xyz) != 3:
+                return f"(solver: each point needs an id and a 3-number xyz_m; bad point {p!r})"
+            if pid in seen_ids:
+                return f"(solver: duplicate point id {pid!r})"
+            seen_ids.add(pid)
+            entities.append(EntitySpec(pid, EntityKind.POINT_3D, xyz,
+                                       fixed=bool(p.get("fixed", False))))
+
+        kind_map = {"coincident": ConstraintKind.COINCIDENT,
+                    "distance": ConstraintKind.DISTANCE,
+                    "projected_distance": ConstraintKind.PROJECTED_DISTANCE}
+        specs = []
+        for i, c in enumerate(cons):
+            kind_str = str(c.get("kind", "")).strip().lower()
+            if kind_str not in kind_map:
+                return (f"(solver: unsupported constraint kind {kind_str!r}; "
+                        f"use one of {sorted(kind_map)})")
+            refs = tuple(str(r) for r in (c.get("refs") or ()))
+            need = _CONSTRAINT_ARITY[kind_str]
+            if len(refs) != need:
+                return (f"(solver: {kind_str} needs {need} point refs, got {len(refs)})")
+            missing = [r for r in refs if r not in seen_ids]
+            if missing:
+                return f"(solver: constraint refs not defined as points: {missing})"
+            cid = str(c.get("id") or f"c{i}")
+            specs.append(ConstraintSpec(cid, kind_map[kind_str], refs,
+                                        float(c.get("value_m", 0.0) or 0.0)))
+
+        problem = AssemblyConstraintProblem(
+            entities=entities, constraints=specs, expected_dof=int(expected_dof or 0),
+            units="m", base_id="llm_solver_tool")
+        result = solve_problem(problem)
+    except Exception as e:
+        return f"(solver error: {type(e).__name__}: {e})"
+
+    consistent = (result.status in ("okay", "redundant")
+                  and not result.failed_constraint_ids)
+    lines = [
+        f"Solver result: status={result.status} dof={result.dof} "
+        f"(expected_dof={int(expected_dof or 0)})",
+        f"verdict: {'CONSISTENT' if consistent else 'NOT CONSISTENT'}",
+    ]
+    if result.failed_constraint_ids:
+        lines.append("unsatisfied constraints: "
+                     + ", ".join(map(str, result.failed_constraint_ids)))
+    if result.dof != int(expected_dof or 0):
+        lines.append(f"note: solved DOF {result.dof} != expected {int(expected_dof or 0)} "
+                     "(under- or over-constrained)")
+    lines.append("solved points (m):")
+    for pid, xyz in result.points_m.items():
+        lines.append(f"  {pid} = [{', '.join(f'{v:.6g}' for v in xyz)}]")
+    return "\n".join(lines)
+
+
+# --------------------------------------------------------------------------- #
 # Tool loop
 # --------------------------------------------------------------------------- #
 
 def run_tool_loop(client, conv, system: str, tools: list, executors: dict, *,
-                  max_rounds: int = 4, log_fn=None) -> str:
+                  max_rounds: int = 4, log_fn=None, text_only_nudge=None) -> str:
     """Drive tool-calling: send the conversation with `tools`; for each ToolCall the
     model makes, run executors[name](**arguments) and feed the result back via
     conv.add_tool_result. Repeat until the model stops calling tools (return its text)
@@ -259,7 +408,7 @@ def run_tool_loop(client, conv, system: str, tools: list, executors: dict, *,
             # have budget, nudge it to make the call now instead of bailing (once).
             if not did_any_call and not nudged:
                 nudged = True
-                conv.add_user_message(
+                conv.add_user_message(text_only_nudge or
                     "You said you would search but did not call the tool. Call "
                     "web_search NOW with a concrete query — do not just describe it.")
                 continue
@@ -292,7 +441,15 @@ _RESEARCH_SYSTEM = (
     "up anything genuinely useful. Prefer kb_search (the local knowledge base) for the "
     "OUTPUT FORMAT, conventions, dimension names, gear math, and worked examples; use "
     "web_search for real-world reference designs, standard part dimensions (gear "
-    "modules, bearing/jewel sizes, thread specs), or materials. Do a FEW focused "
+    "modules, bearing/jewel sizes, thread specs), or materials. If solve_constraints is "
+    "offered, it is the ONLY acceptable source of geometric numbers: every center "
+    "distance, coaxial shaft point, projected offset, mate coordinate, or derived "
+    "position you will later author MUST come from a solve_constraints call — set up the "
+    "points and constraints and read the solved coordinates back. Set the points you are "
+    "solving FOR as unknowns (not fixed) seeded at a rough guess; do NOT pin them at an "
+    "answer you already decided and call the solver merely to confirm it — that proves "
+    "nothing. Do NOT hand-estimate, "
+    "round, or reuse remembered numbers when the solver can produce them. Do a FEW focused "
     "lookups at most, then STOP (reply with a one-line 'done'). Do not design anything "
     "yet; just gather facts.")
 
@@ -309,6 +466,11 @@ def _research_toolset(settings, collection: str):
     if getattr(settings, "enable_kb", False):
         tools.append(KB_SEARCH_TOOL)
         executors["kb_search"] = _kb_bound(collection)
+    if getattr(settings, "enable_solver_tool", False):
+        from .constraint_solver import slvs_available
+        if slvs_available()[0]:
+            tools.append(SOLVE_CONSTRAINTS_TOOL)
+            executors["solve_constraints"] = solve_constraints_exec
     return tools, executors
 
 
@@ -325,7 +487,7 @@ def maybe_research(client, conv, settings, what: str, *, collection: str = "mana
         conv.add_user_message(
             f"Before you begin, research anything useful for this task: {what}")
         run_tool_loop(client, conv, _RESEARCH_SYSTEM, tools, executors,
-                      max_rounds=4, log_fn=log_fn)
+                      max_rounds=12, log_fn=log_fn)
     except Exception as e:
         if log_fn:
             log_fn(f"[tool] research skipped: {e}")

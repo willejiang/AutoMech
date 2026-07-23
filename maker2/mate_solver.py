@@ -173,6 +173,28 @@ def _has_box_dims(link) -> bool:
     return any(_mm(sz.get(k)) for k in ("x", "y", "z"))
 
 
+_CYL_HINTS = ("cylinder", "cyl", "disc", "disk", "shaft", "rod", "tube", "ring",
+              "bearing", "annulus", "arbor", "pinion", "pin", "post", "pillar",
+              "staff", "jewel", "washer", "spacer", "bushing", "collar", "wheel",
+              "barrel", "drum", "cap", "hub", "boss", "stem", "spring", "hairspring")
+_BOX_HINTS = ("box", "cube", "block", "plate", "slab", "bridge", "cock", "click",
+              "pallet", "lever", "arm", "bracket", "beam", "bar", "fork", "finger",
+              "tab", "lug", "clip", "spline", "key", "cover", "base")
+
+
+def is_axial_part(link) -> bool:
+    """Whether the worker builds this part around the canonical local +Z primary axis."""
+    hint = (getattr(link, "shape_hint", "") or "").strip().lower()
+    is_gear = "gear" in hint or _gear_pitch_radius_mm(link) is not None
+    hint_is_box = any(w in hint for w in _BOX_HINTS)
+    hint_is_cyl = any(w in hint for w in _CYL_HINTS)
+    is_cyl = (is_gear or hint_is_cyl or _radius_mm(link) is not None
+              or (not hint_is_box and not _has_box_dims(link)))
+    if hint_is_box and not is_gear and _radius_mm(link) is None:
+        is_cyl = False
+    return is_cyl
+
+
 def infer_ports(link) -> dict:
     """Convention ports for a part from shape_hint+size_mm. Cylinder/gear: `outer` + `bore`
     (both +Z axis at origin) + `end_a`/`end_b` (the two flat faces at -/+ half-height) + a
@@ -190,26 +212,9 @@ def infer_ports(link) -> dict:
     hint = (getattr(link, "shape_hint", "") or "").strip().lower()
     ports: dict = {}
     z = (0.0, 0.0, 1.0)
-
-    _CYL_HINTS = ("cylinder", "cyl", "disc", "disk", "shaft", "rod", "tube", "ring",
-                  "bearing", "annulus", "arbor", "pinion", "pin", "post", "pillar",
-                  "staff", "jewel", "washer", "spacer", "bushing", "collar", "wheel",
-                  "barrel", "drum", "cap", "hub", "boss", "stem", "spring", "hairspring")
-    _BOX_HINTS = ("box", "cube", "block", "plate", "slab", "bridge", "cock", "click",
-                  "pallet", "lever", "arm", "bracket", "beam", "bar", "fork", "finger",
-                  "tab", "lug", "clip", "spline", "key", "cover", "base")
-
     is_gear = "gear" in hint or _gear_pitch_radius_mm(link) is not None
-    _hint_is_box = any(w in hint for w in _BOX_HINTS)
-    _hint_is_cyl = any(w in hint for w in _CYL_HINTS)
-    # Box wins only when the hint clearly reads box AND the part isn't a gear/round; else a
-    # radius or a round synonym -> cylinder. Unknown hint: decide by which dims are present.
-    is_cyl = (is_gear or _hint_is_cyl or _radius_mm(link) is not None
-              or (not _hint_is_box and not _has_box_dims(link)))
-    if _hint_is_box and not is_gear and _radius_mm(link) is None:
-        is_cyl = False
 
-    if is_cyl:
+    if is_axial_part(link):
         r = _radius_mm(link) or 0.0
         h = _height_mm(link) or (2 * r if r else 0.0)
         half = h / 2.0 / 1000.0 if h else 0.0
@@ -236,7 +241,7 @@ def infer_ports(link) -> dict:
         del half  # (kept the mm form in xyz_mm above; half unused)
         return ports
 
-    if _hint_is_box or _has_box_dims(link):
+    if any(w in hint for w in _BOX_HINTS) or _has_box_dims(link):
         sz = getattr(link, "size_mm", {}) or {}
         x, y, zt = _mm(sz.get("x")) or 0.0, _mm(sz.get("y")) or 0.0, _mm(sz.get("z")) or 0.0
         faces = {

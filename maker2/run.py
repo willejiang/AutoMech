@@ -501,6 +501,11 @@ def main() -> int:
                          "worked examples + prior passing designs via a kb_search tool. "
                          "Offline; run `python -m maker2.kb.ingest` once to build it. "
                          "Hierarchy mode.")
+    ap.add_argument("--solver", dest="enable_solver_tool", action="store_true", default=None,
+                    help="offer the authoritative libslvs constraint solver as a "
+                         "`solve_constraints` tool in the boss/manager research pre-step, so "
+                         "agents get exact center distances / coaxial points instead of "
+                         "guessing. No-op when py-slvs is unavailable.")
     ap.add_argument("--per-sub-physics", action="store_true",
                     help="(hierarchy) drive each subassembly on its own URDF before "
                          "assembly, so a drivetrain fault localizes to that sub.")
@@ -515,23 +520,38 @@ def main() -> int:
     ap.add_argument("--no-manager-ir", dest="manager_ir", action="store_false", default=None,
                     help="manager authors an MJCF skeleton (pos/quat) instead of a connection "
                          "graph — the fallback. Default: connection graph (mate_solver).")
+    ap.add_argument("--manager-py", dest="manager_py", action="store_true", default=None,
+                    help="(方案B experiment) manager authors parametric CadQuery "
+                         "(build_subassembly()->cq.Assembly with GLOBAL locations); the worker "
+                         "is absorbed and the assembler's cross-sub solve is skipped.")
+    ap.add_argument("--debugger-read-tools", dest="debugger_read_tools", action="store_true",
+                    default=None, help="give the sub debugger the analyzer's read-only tool "
+                         "loop (reads run.log/reports/source) before authoring its patch.")
     a = ap.parse_args()
     if a.hierarchy:
         from maker2.orchestrator_boss import run_boss
         settings = None
-        if a.web or a.engine or a.deep_think is not None or a.kb or a.manager_ir is not None:
+        if (a.web or a.engine or a.deep_think is not None or a.kb
+                or a.manager_ir is not None or a.enable_solver_tool
+                or a.manager_py or a.debugger_read_tools):
             from maker2.config import Settings
             settings = Settings.load()
             if a.web:
                 settings.enable_reference_tools = True
             if a.kb:
                 settings.enable_kb = True
+            if a.enable_solver_tool:
+                settings.enable_solver_tool = True
             if a.engine:
                 settings.engine = a.engine
             if a.deep_think is not None:
                 settings.deep_think = a.deep_think
             if a.manager_ir is not None:
                 settings.manager_ir = a.manager_ir
+            if a.manager_py:
+                settings.manager_py = True
+            if a.debugger_read_tools:
+                settings.debugger_read_tools = True
         res = run_boss(a.prompt, a.out, settings=settings, do_physics=a.physics,
                        per_sub_physics=a.per_sub_physics, thread=a.thread,
                        refine_message=a.refine_message, log_fn=print)

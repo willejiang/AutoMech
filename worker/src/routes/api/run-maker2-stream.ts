@@ -56,6 +56,11 @@ export const Route = createFileRoute('/api/run-maker2-stream')({
         // session and reuses unchanged subassemblies). The old single-manager
         // --prior-model path is not used for hierarchy refines.
         args.push('--hierarchy');
+        // 方案B: the manager authors a parametric CadQuery module that derives every
+        // coordinate from a boss-authored `params` module (no LLM-typed coordinates), and
+        // the libslvs solver stitches subs. Both flags are required for this pipeline.
+        args.push('--manager-py');
+        args.push('--solver');
         // Local offline knowledge base (maker2/kb): the boss/manager/worker retrieve
         // this project's output-format conventions + worked examples + prior passing
         // designs via a kb_search tool. Always on — it is offline and cheap, and a

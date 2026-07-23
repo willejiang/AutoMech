@@ -78,6 +78,7 @@ def _frame_from_dict(d: dict, sub_id: str, idx: int) -> MountFrame:
         link=str(d.get("link") or ""),
         role=role,
         mounts_part=str(d.get("mounts_part") or "").strip(),
+        host_plane=str(d.get("host_plane") or "").strip().upper(),
     )
 
 
@@ -182,12 +183,23 @@ def _seam_from_dict(d: dict, idx: int) -> SeamSpec:
         offset_mm=float(d.get("offset_mm", 0.0)),
         clock_rad=float(d.get("clock_rad", 0.0)),
         extra_pins=tuple(pins),
+        rear_parent_frame=str(d.get("rear_parent_frame") or "").strip(),
+        rear_child_frame=str(d.get("rear_child_frame") or "").strip(),
     )
+
+
+def _strip_code_fences(text: str) -> str:
+    """Remove ```...``` fenced code blocks (e.g. the manager_py params module) so the JSON
+    extractor does not mistake a brace INSIDE that code (dicts, f-strings, set/dict-comps) for
+    the start of the plan object. The params block is recovered separately by
+    _extract_params_block from the ORIGINAL text, so nothing is lost."""
+    import re
+    return re.sub(r"```.*?```", "", text, flags=re.S)
 
 
 def parse_plan(text: str) -> SubassemblyPlan:
     """Parse an LLM response into a (not-yet-validated) SubassemblyPlan."""
-    obj = json.loads(extract_json_object(text))
+    obj = json.loads(extract_json_object(_strip_code_fences(text)))
     if not isinstance(obj, dict):
         raise ValueError("top-level JSON value is not an object")
     subs = obj.get("subassemblies")
@@ -202,7 +214,31 @@ def parse_plan(text: str) -> SubassemblyPlan:
         global_origin_note=str(obj.get("global_origin_note") or ""),
         subassemblies=[_sub_from_dict(d, i) for i, d in enumerate(subs)],
         seams=[_seam_from_dict(d, i) for i, d in enumerate(seams)],
+        # 方案B-v3: the AUTHORITATIVE params source is the ```python code block the boss emits,
+        # not the JSON `params_text` field — the boss routinely fills that field with a
+        # placeholder ("see python params module ...") while writing the real module in the
+        # fenced block. Preferring the JSON field short-circuited the real code and left some
+        # subs with a stub params.py. So take the extracted code block whenever it is real
+        # (contains a `def`), and only fall back to the JSON field otherwise.
+        params_text=(_extract_params_block(text)
+                     if "def " in _extract_params_block(text)
+                     else str(obj.get("params_text") or "")),
     )
+
+
+def _extract_params_block(text: str) -> str:
+    """方案B: an OPTIONAL ```python params block the boss may emit before its JSON, defining
+    the shared parameter module (constants + relation functions). Best-effort: returns "" if
+    absent. Only accepted when it looks like a params module (defines/mentions params), so a
+    stray code fence isn't mistaken for it."""
+    import re
+    for m in re.finditer(r"```(?:python)?\s*(.*?)```", text, re.S):
+        block = m.group(1).strip()
+        low = block.lower()
+        if ("def " in block or "=" in block) and ("param" in low or "module" in low
+                                                   or "teeth" in low or "= " in block):
+            return block
+    return ""
 
 
 # --------------------------------------------------------------------------- #
@@ -265,6 +301,11 @@ def _validate_plan(plan: SubassemblyPlan) -> None:
 
     # 3. Normalize seam ids; remap seam endpoints through the sub table.
     used_seams: set[str] = set()
+    # Look up a (sub_id, frame_name) -> MountFrame so an insert weld can inherit its bore's
+    # authoritative axis (the boss often leaves seam.axis at a default that contradicts the
+    # seat's declared axis; the seat axis — the direction a shaft runs through its bore — wins).
+    frame_lut = {(sub.id, fr.name): fr
+                 for sub in plan.subassemblies for fr in sub.frames}
     for seam in plan.seams:
         slug = _dedupe(_slugify(seam.id, "seam"), used_seams)
         used_seams.add(slug)
@@ -273,6 +314,16 @@ def _validate_plan(plan: SubassemblyPlan) -> None:
         seam.child_sub = sub_remap.get(seam.child_sub, _slugify(seam.child_sub, "sub"))
         if seam.owner_sub:
             seam.owner_sub = sub_remap.get(seam.owner_sub, _slugify(seam.owner_sub, "sub"))
+        if getattr(seam,"rear_parent_frame",""):
+            seam.rear_parent_frame = _slugify(seam.rear_parent_frame,"frame")
+        if getattr(seam,"rear_child_frame",""):
+            seam.rear_child_frame = _slugify(seam.rear_child_frame,"frame")
+        if seam.kind == "weld" and getattr(seam, "mate_type", "") == "insert":
+            pfr = frame_lut.get((seam.parent_sub, seam.parent_frame))
+            if pfr is not None:
+                ax = tuple(float(x) for x in pfr.axis)
+                if sum(a * a for a in ax) > 1e-12:
+                    seam.axis = ax
 
     # 4. root_sub remap + existence.
     plan.root_sub = sub_remap.get(plan.root_sub, _slugify(plan.root_sub, "sub"))
@@ -295,6 +346,28 @@ def _validate_plan(plan: SubassemblyPlan) -> None:
         elif seam.child_frame not in frames_by_sub.get(seam.child_sub, set()):
             problems.append(f"seam '{seam.id}' child_frame '{seam.child_frame}' "
                             f"is not a frame on '{seam.child_sub}'")
+        rear_parent=getattr(seam,"rear_parent_frame","")
+        rear_child=getattr(seam,"rear_child_frame","")
+        if bool(rear_parent)!=bool(rear_child):
+            problems.append(f"seam '{seam.id}' must set both rear_parent_frame and rear_child_frame")
+        elif rear_parent:
+            if seam.kind!='weld':
+                problems.append(f"seam '{seam.id}' rear datum pair is only valid on a weld seam")
+            if rear_parent==seam.parent_frame or rear_child==seam.child_frame:
+                problems.append(f"seam '{seam.id}' rear datum frames must differ from its front frames")
+            if rear_parent not in frames_by_sub.get(seam.parent_sub,set()):
+                problems.append(f"seam '{seam.id}' rear_parent_frame '{rear_parent}' is not a frame on '{seam.parent_sub}'")
+            if rear_child not in frames_by_sub.get(seam.child_sub,set()):
+                problems.append(f"seam '{seam.id}' rear_child_frame '{rear_child}' is not a frame on '{seam.child_sub}'")
+            p0,p1=frame_lut.get((seam.parent_sub,seam.parent_frame)),frame_lut.get((seam.parent_sub,rear_parent))
+            c0,c1=frame_lut.get((seam.child_sub,seam.child_frame)),frame_lut.get((seam.child_sub,rear_child))
+            if all(x is not None for x in (p0,p1,c0,c1)):
+                axes=[]
+                for fr in (p0,p1,c0,c1):
+                    a=tuple(float(x) for x in fr.axis);n=sum(x*x for x in a)**.5
+                    axes.append(tuple(x/n for x in a) if n>1e-12 else ())
+                if any(not a for a in axes) or any(abs(sum(x*y for x,y in zip(axes[0],a)))<.99 for a in axes[1:]):
+                    problems.append(f"seam '{seam.id}' front/rear datum axes must be nonzero and parallel")
         if seam.parent_sub == seam.child_sub:
             problems.append(f"seam '{seam.id}' connects sub '{seam.parent_sub}' to itself")
         if seam.joint_type not in _VALID_JOINT_TYPES:
@@ -342,7 +415,8 @@ def _validate_plan(plan: SubassemblyPlan) -> None:
 def _frame_to_dict(fr: MountFrame) -> dict:
     return {"name": fr.name, "xyz_m": list(fr.xyz_m), "rpy_rad": list(fr.rpy_rad),
             "axis": list(fr.axis), "shaft_dia_mm": fr.shaft_dia_mm,
-            "link": fr.link, "role": fr.role, "mounts_part": fr.mounts_part}
+            "link": fr.link, "role": fr.role, "mounts_part": fr.mounts_part,
+            "host_plane": fr.host_plane}
 
 
 def plan_to_dict(plan: SubassemblyPlan) -> dict:
@@ -351,6 +425,7 @@ def plan_to_dict(plan: SubassemblyPlan) -> dict:
         "name": plan.name,
         "root_sub": plan.root_sub,
         "global_origin_note": plan.global_origin_note,
+        "params_text": getattr(plan, "params_text", "") or "",
         "subassemblies": [
             {
                 "id": s.id,
@@ -378,6 +453,8 @@ def plan_to_dict(plan: SubassemblyPlan) -> dict:
                 "offset_mm": s.offset_mm,
                 "clock_rad": s.clock_rad,
                 "extra_pins": [list(pr) for pr in (s.extra_pins or ())],
+                "rear_parent_frame": getattr(s,"rear_parent_frame",""),
+                "rear_child_frame": getattr(s,"rear_child_frame",""),
                 "joint_type": s.joint_type,
                 "axis": list(s.axis),
                 "lower": s.lower,
@@ -408,6 +485,72 @@ def load_plan(path: str) -> SubassemblyPlan:
         return parse_plan(f.read())
 
 
+def unify_plan_frame_names(plan: SubassemblyPlan, contract, *, log_fn=None) -> int:
+    """Rewrite the boss plan's frame names + all seam references to the AUTHORITATIVE
+    compiler-contract frame names, so every name-keyed consumer downstream (manager gate
+    frame-drift, assembler mount lookup, slvs solve) sees ONE vocabulary.
+
+    Matching is deterministic geometry, not string similarity: within each subassembly, each
+    boss frame is paired to the contract frame of the SAME role whose position is nearest,
+    one-to-one (greedy by ascending distance). Boss coords are rough (the boss guesses), so
+    we match by role + relative ordering along the interface, not by absolute equality. Frames
+    with no contract counterpart (e.g. a power_in tag the compiler doesn't model) keep their
+    boss name. Returns the number of frames renamed. Never raises structurally — a sub with no
+    contract view is skipped.
+    """
+    from .design.contracts import to_frame_contract
+
+    rename: dict[tuple[str, str], str] = {}   # (sub_id, old_name) -> new_name
+    for sub in plan.subassemblies:
+        try:
+            view = contract.view(sub.id)
+            comp = to_frame_contract(view).frames
+        except Exception:
+            continue
+        if not comp:
+            continue
+        comp_by_role: dict[str, list] = {}
+        for cf in comp:
+            comp_by_role.setdefault(getattr(cf, "role", "mount"), []).append(cf)
+        for role, cfs in comp_by_role.items():
+            boss_frames = [f for f in sub.frames if getattr(f, "role", "mount") == role]
+            if len(boss_frames) != len(cfs):
+                # counts differ -> can't establish a safe 1:1 ordering; skip this role
+                continue
+            # Match by ORDER, not absolute distance: the boss's coords are rough and not to
+            # scale (it may space seats 80mm while the solver says 24mm), so nearest-distance
+            # can cross stages. Sort BOTH sides by the same positional key (x, then y, then z)
+            # and pair the k-th boss frame to the k-th contract frame — order is preserved even
+            # when the absolute spacing differs.
+            def _key(fr):
+                return tuple(round(float(v), 6) for v in fr.xyz_m)
+            bs = sorted(boss_frames, key=_key)
+            cs = sorted(cfs, key=_key)
+            for bf, cf in zip(bs, cs):
+                if bf.name != cf.name:
+                    rename[(sub.id, bf.name)] = cf.name
+    if not rename:
+        return 0
+    # Apply to sub.frames
+    for sub in plan.subassemblies:
+        for f in sub.frames:
+            nn = rename.get((sub.id, f.name))
+            if nn:
+                f.name = nn
+    # Apply to every seam frame reference (front + rear, parent + child)
+    for seam in plan.seams:
+        for attr, sub_attr in (("parent_frame", "parent_sub"), ("child_frame", "child_sub"),
+                               ("rear_parent_frame", "parent_sub"),
+                               ("rear_child_frame", "child_sub")):
+            name = getattr(seam, attr, "")
+            if not name:
+                continue
+            nn = rename.get((getattr(seam, sub_attr, ""), name))
+            if nn:
+                setattr(seam, attr, nn)
+    return len(rename)
+
+
 def frame_contract_for(plan: SubassemblyPlan, sub_id: str,
                        *, appearance_summary: str = "") -> FrameContract:
     """Build the FrameContract Stage B hands to one subassembly's manager.
@@ -418,15 +561,43 @@ def frame_contract_for(plan: SubassemblyPlan, sub_id: str,
     # Fall back to a summary stashed on the plan by run_boss (1c) when the caller
     # doesn't pass one explicitly — keeps build_subassembly's call site unchanged.
     summary = appearance_summary or getattr(plan, "appearance_summary", "") or ""
+    through=[]
+    for seam in plan.seams:
+        rp=getattr(seam,"rear_parent_frame","");rc=getattr(seam,"rear_child_frame","")
+        if not (rp and rc):continue
+        if seam.parent_sub==sub_id:
+            through.append({'seam_id':seam.id,'front_frame':seam.parent_frame,
+                            'rear_frame':rp,'neighbor_sub':seam.child_sub,'side':'parent'})
+        elif seam.child_sub==sub_id:
+            through.append({'seam_id':seam.id,'front_frame':seam.child_frame,
+                            'rear_frame':rc,'neighbor_sub':seam.parent_sub,'side':'child'})
+    # Interface frames: prefer the AUTHORITATIVE compiled hardpoint contract when the
+    # geometry compiler recognized this machine's topology (stashed on the plan by
+    # run_boss). Its frames are solver-derived global coords, so managers realize against
+    # the compiled geometry instead of the boss's raw plan coords. Unrecognized topology
+    # (no contract, or no view for this sub) falls back to the boss-authored sub.frames.
+    frames = list(sub.frames)
+    contract = getattr(plan, "hardpoint_contract", None)
+    if contract is not None:
+        try:
+            from .design.contracts import to_frame_contract
+            view = contract.view(sub_id)
+            compiled = to_frame_contract(view).frames
+            if compiled:
+                frames = compiled
+        except Exception:
+            pass  # no view for this sub / adapter failure -> keep boss-authored frames
     return FrameContract(
         sub_id=sub.id,
-        frames=list(sub.frames),
+        frames=frames,
         global_origin_note=plan.global_origin_note,
         input_tags=list(sub.input_tags),
         output_tags=list(sub.output_tags),
         neighbors=[{"id": o.id, "function": o.function, "brief": o.brief}
                    for o in plan.subassemblies if o.id != sub_id],
         appearance_summary=summary,
+        through_mounts=through,
+        params_text=getattr(plan, "params_text", "") or "",
     )
 
 
@@ -457,8 +628,77 @@ def plan_machine(product_prompt: str, settings, *, image_path: str | None = None
     except ImageLoadError as e:
         raise BossError(str(e)) from e
     conv.add_user_message(
-        build_boss_user(product_prompt, has_image=bool(image_path)),
+        build_boss_user(product_prompt, has_image=bool(image_path),
+                        include_example=not (feedback and prior_plan_json)),
         images=images)
+    if getattr(settings, "manager_py", False):
+        conv.add_user_message(
+            "ADDITIONALLY (parametric-Python mode): BEFORE the JSON, emit ONE ```python code "
+            "block defining the shared PARAMETER MODULE `params` for this machine. Treat this as "
+            "a normal program's config/init that models the design as a DOMINO CHAIN: a few hard "
+            "root values, then functions that derive the FUNCTIONAL-CONNECTION parts from them. "
+            "The per-subassembly managers `import params` and read it. SCOPE — this is the whole "
+            "point, get it right:\n"
+            "  * params OWNS the FUNCTIONAL-CONNECTION layer — every quantity that either (a) "
+            "realizes the machine's function (for a reducer: the gear MESH pairs — module, tooth "
+            "counts, pitch diameters, center distances) or (b) must AGREE across subassemblies so "
+            "they assemble (mating gear-center frames, bearing-seat interface frames + the shaft "
+            "diameter that seats there). These, and ONLY these, belong in params.\n"
+            "  * INSERT/PRESS FITS ARE A FUNCTIONAL CONNECTION — put the mating diameters in params. "
+            "When a part on one sub inserts into a bore on another (a bearing pressed into a housing "
+            "seat, a shaft end into a bore), the two mating diameters MUST come from ONE params value "
+            "or the parts interpenetrate. For every bearing seat define a diameter TRIPLET and derive "
+            "both sides from it: `def <role>_bearing_bore_mm(): return <shaft dia at that seat>` "
+            "(bearing inner bore = shaft dia), `def <role>_bearing_od_mm(): return <bearing_bore> + "
+            "<radial thickness>` (bearing OUTER dia), `def <role>_seat_bore_mm(): return "
+            "<role>_bearing_od_mm()` (the housing seat's HOLE equals the bearing OD, so the bearing "
+            "slides in with zero interference). The housing manager bores its seat to "
+            "`params.<role>_seat_bore_mm()`; the shaft manager sizes its bearing OD to "
+            "`params.<role>_bearing_od_mm()`. NEVER let each manager invent its own bearing OD — that "
+            "is exactly what makes a bearing 32 mm wide try to sit in a 20 mm hole.\n"
+            "  * params does NOT own SUBORDINATE / purely-structural parts — the shaft BODY "
+            "length, spacers, collars, keys, fillets. The managers DERIVE those LOCALLY in their "
+            "own module from the functional anchors params already gave them (e.g. a manager "
+            "writes `spacer_w = (gap between two gear stations)` itself). Do NOT try to put "
+            "every dimension in params — only the functional-connection layer (which now explicitly "
+            "includes the insert-fit mating diameters above).\n"
+            "It MUST contain:\n"
+            "1. ROOT VALUES — the few hardest inputs (the reduction ratio `I`, module `M`, the "
+            "prompt's given sizes). Everything else is derived FROM these.\n"
+            "2. RELATION FUNCTIONS deriving the functional-connection quantities from the roots — "
+            "NEVER a bare number you could compute: `def center_distance(m, z1, z2): return "
+            "m*(z1+z2)/2`, `def pitch_dia(m, z): return m*z`, tooth counts chosen to hit `I`, etc. "
+            "EVERY functional dimension (including shaft/seat diameters) MUST be a derived "
+            "variable `= f(roots)`, NOT a typed literal like `25.0`.\n"
+            "3. GEOMETRY DATUMS the managers must NOT choose for themselves, so every sub agrees: "
+            "each shaft's axis unit 3-tuple and each stage's origin — but express these too as "
+            "expressions over the roots/relations, not magic literals. Add small vector helpers "
+            "`def add(a,b): ...`, `def mul(a,s): ...` so coordinates are COMPOSED, not written "
+            "as literals.\n"
+            "4. ONE ZERO-ARG FUNCTION PER INTERFACE FRAME returning that frame's GLOBAL "
+            "coordinate (millimeters), its body composed from the datums + relation functions. "
+            "CRITICAL NAMING CONTRACT: each function's name MUST be BYTE-FOR-BYTE IDENTICAL to the "
+            "frame's `name` in the JSON plan below — no prefix (NOT `f_<frame>`), no suffix, no "
+            "rename. If a plan frame is named `input_front`, the function MUST be `def "
+            "input_front():`. Managers place each interface part by calling `params.<frame "
+            "name>()` verbatim, so any deviation is an AttributeError that fails their build. So "
+            "EVERY frame name in your plan appears here as an identically-named function; name "
+            "functional dimensions by PART SEMANTICS (e.g. `inter_gear_pitch_dia`).\n"
+            "5. ONE AXIS FUNCTION PER INTERFACE FRAME: alongside `def <frame>():` (position), "
+            "define `def <frame>_axis():` returning that frame's AXIS OF REVOLUTION as a unit "
+            "3-tuple (the direction the shaft/gear at that frame spins about). This makes "
+            "orientation part of the shared truth, not something each manager guesses: a manager "
+            "orients every rotating part to `params.<frame>_axis()`, so coaxial parts across "
+            "subassemblies point the SAME way and meshing gears stay parallel BY CONSTRUCTION. "
+            "For a parallel-shaft layout every axis is the same unit vector (e.g. all shafts "
+            "along +X -> `return [1.0, 0.0, 0.0]`); for crossed/bevel/planetary axes, DERIVE each "
+            "from the datums so a perpendicular or angled shaft gets its true direction. Keep axes "
+            "consistent with your `xyz_m` layout (the axis a shaft spins about is NOT the "
+            "direction its centers are spaced along).\n"
+            "Keep units consistent (millimeters for coordinates). Then output the JSON plan "
+            "(subassemblies + seams) as usual, and make each frame's `xyz_m` in the JSON the "
+            "SAME point its params function returns (converted to meters), so the plan and the "
+            "params module never disagree.")
     if image_path and log_fn:
         log_fn(f"[boss] using input image: {image_path}")
     # Show the prior plan FIRST (both refine and fault re-plan build on it), so the
@@ -489,9 +729,71 @@ def plan_machine(product_prompt: str, settings, *, image_path: str | None = None
                    if plan_json_path else None)
 
     # SEAM (Track 3): the attempt/retry control loop.
-    return _plan_loop(client, conv, settings, memory_path=memory_path,
+    plan = _plan_loop(client, conv, settings, memory_path=memory_path,
                       plan_json_path=plan_json_path, product_prompt=product_prompt,
                       log_fn=log_fn)
+    # On a FAULT re-plan, the boss is told to keep every unchanged sub's interface frames
+    # verbatim — but LLMs routinely rename them anyway (input_shaft_mount -> input_mount),
+    # which breaks disk reuse and drives the stuck re-plan loop. Deterministically restore
+    # the prior interface-frame NAMES for any sub whose frame COUNT is unchanged (the
+    # re-plan's legitimate edits are seam offsets / poses / gear params, not the interface
+    # contract), rewriting seam references to match. LLM disobedience can't defeat this.
+    if feedback and prior_plan_json:
+        try:
+            changed = _lock_interface_frame_names(plan, prior_plan_json, log_fn=log_fn)
+            if changed and plan_json_path:
+                save_plan(plan, plan_json_path)   # re-persist so disk matches the locked names
+        except Exception as e:
+            if log_fn:
+                log_fn(f"[boss] frame-name lock skipped ({type(e).__name__}: {e})")
+    return plan
+
+
+def _lock_interface_frame_names(plan, prior_plan_json: str, *, log_fn=None) -> bool:
+    """Restore each unchanged sub's interface-frame names to the prior plan's, so a fault
+    re-plan reuses on-disk builds instead of rebuilding them. Position-aligned per sub
+    (the boss keeps frame ORDER when it renames), gated on equal frame count. Also rewrites
+    every seam's parent_frame/child_frame that referenced a renamed frame. Returns True if
+    any name was restored."""
+    try:
+        prior = json.loads(prior_plan_json)
+    except Exception:
+        return False
+    prior_subs = prior.get("subassemblies") or prior.get("subs") or []
+    prior_names_by_id: dict[str, list[str]] = {}
+    for ps in prior_subs:
+        pid = ps.get("id")
+        names = [f.get("name") for f in (ps.get("frames") or []) if f.get("name")]
+        if pid and names:
+            prior_names_by_id[pid] = names
+
+    rename: dict[tuple[str, str], str] = {}   # (sub_id, new_name) -> prior_name
+    for sub in plan.subassemblies:
+        prior_names = prior_names_by_id.get(sub.id)
+        if not prior_names or len(prior_names) != len(sub.frames):
+            continue
+        for i, fr in enumerate(sub.frames):
+            old = prior_names[i]
+            if fr.name != old:
+                rename[(sub.id, fr.name)] = old
+                if log_fn:
+                    log_fn(f"[boss] frame-name lock: {sub.id}.{fr.name} -> {old} "
+                           f"(restored from prior plan; keeps disk reuse)")
+                fr.name = old
+    if not rename:
+        return False
+    for seam in plan.seams:
+        pnew = rename.get((seam.parent_sub, seam.parent_frame))
+        if pnew:
+            seam.parent_frame = pnew
+        cnew = rename.get((seam.child_sub, seam.child_frame))
+        if cnew:
+            seam.child_frame = cnew
+        rpnew=rename.get((seam.parent_sub,getattr(seam,'rear_parent_frame','')))
+        if rpnew:seam.rear_parent_frame=rpnew
+        rcnew=rename.get((seam.child_sub,getattr(seam,'rear_child_frame','')))
+        if rcnew:seam.rear_child_frame=rcnew
+    return True
 
 
 def _boss_research(client, conv, settings, product_prompt, *, log_fn=None) -> None:
@@ -506,18 +808,54 @@ def _boss_research(client, conv, settings, product_prompt, *, log_fn=None) -> No
                    collection="boss", log_fn=log_fn)
 
 
-def _plan_gate_badness(plan) -> tuple[float, list, dict]:
+def _params_naming_contract_errors(plan, *, manager_py: bool = False) -> list:
+    """方案B: every interface-frame name MUST have a byte-identical zero-arg function in the
+    boss's params module, so a manager calling `params.<frame>()` never hits an AttributeError.
+    In manager_py mode a MISSING params module is itself a blocking error (the boss forgot to
+    emit the ```python params block, which would make every manager's `import params` fail).
+    Returns a list of GateError-like objects."""
+    from .benchmarks import GateError
+    params = getattr(plan, "params_text", "") or ""
+    if not params.strip():
+        if manager_py:
+            # The boss omitted the params module entirely — without it every sub's
+            # `import params` is a ModuleNotFoundError. Force a re-plan instead of shipping
+            # a plan that dooms all managers.
+            return [GateError(
+                "boss", "ERR_PARAMS_MISSING",
+                "manager_py mode requires a shared params module, but the plan carries none "
+                "— emit ONE ```python code block defining `params` (roots + relation functions "
+                "+ one zero-arg function per interface frame) BEFORE the JSON plan", "")]
+        return []                                   # not manager_py mode — no contract
+    import re as _re
+    defined = {m.group(1) for m in _re.finditer(r"^def\s+([A-Za-z]\w*)\s*\(", params, _re.M)}
+    errs = []
+    for sub in plan.subassemblies:
+        for fr in (getattr(sub, "frames", []) or []):
+            nm = getattr(fr, "name", "") or ""
+            if nm and nm not in defined:
+                errs.append(GateError(
+                    "boss", "ERR_PARAMS_FRAME_FN",
+                    f"interface frame '{nm}' ({sub.id}) has no matching params function "
+                    f"`def {nm}():` — the params module must define one identically-named "
+                    f"zero-arg function per frame (no `f_` prefix / rename)", nm))
+    return errs
+
+
+def _plan_gate_badness(plan, *, manager_py: bool = False) -> tuple[float, list, dict]:
     """A pre-build 'badness' for a parsed plan from the deterministic boss gates (schema +
-    support-chain + mesh-distance). Returns (badness, errors, breakdown). Lower = closer to
-    a valid, buildable plan. Pure-Python; imported lazily to keep boss import light."""
+    support-chain + mesh-distance + 方案B params naming contract). Returns (badness, errors,
+    breakdown). Lower = closer to a valid, buildable plan. Pure-Python; imported lazily."""
     try:
         from .benchmarks.schema_gate import boss_schema_gate
         from .benchmarks.boss_gate import boss_gate
     except Exception:
         return 0.0, [], {"terms": {}, "count": 0}
-    errs = boss_schema_gate(plan) + boss_gate(plan)
+    errs = (boss_schema_gate(plan) + boss_gate(plan)
+            + _params_naming_contract_errors(plan, manager_py=manager_py))
     # Weight support/interface faults (structural) above pure schema enum faults.
-    w = {"ERR_SUP_NOWELD": 5.0, "ERR_IFC_MESH_DIST": 4.0}
+    w = {"ERR_SUP_NOWELD": 5.0, "ERR_IFC_MESH_DIST": 4.0, "ERR_PARAMS_FRAME_FN": 4.0,
+         "ERR_PARAMS_MISSING": 6.0}
     total = float(sum(w.get(e.code, 2.0) for e in errs))
     by_code: dict = {}
     for e in errs:
@@ -556,7 +894,8 @@ def _plan_loop(client, conv, settings, *, memory_path, plan_json_path=None,
             text = stream_two_part(client, conv, BOSS_SYSTEM,
                                    memory_path=memory_path,
                                    regen_msg_fn=lambda notes: build_boss_json_from_notes(
-                                       notes, product_prompt),
+                                       notes, product_prompt,
+                                       manager_py=getattr(settings, "manager_py", False)),
                                    log_fn=log_fn, tag="boss")
         except LLMError as e:
             raise BossError(f"Boss LLM request failed: {e}") from e
@@ -576,7 +915,8 @@ def _plan_loop(client, conv, settings, *, memory_path, plan_json_path=None,
             continue
 
         # 2. Score the plan with the deterministic gates.
-        cur_badness, errs, cur_bd = _plan_gate_badness(plan)
+        cur_badness, errs, cur_bd = _plan_gate_badness(
+            plan, manager_py=bool(getattr(settings, "manager_py", False)))
         if log_fn:
             log_fn(f"[boss] attempt {attempt}: plan badness={cur_badness:.2f} "
                    f"({len(errs)} gate issue(s))")

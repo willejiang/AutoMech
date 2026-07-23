@@ -16,9 +16,9 @@ from __future__ import annotations
 
 from . import store
 
-# The four curated agent collections (built by kb.ingest). A run's growing memory
-# lives in a parallel "memory_<collection>" index that starts empty.
-COLLECTIONS = ("manager", "boss", "worker", "evaluator")
+# Curated agent collections (built by kb.ingest). A run's growing memory lives
+# in a parallel "memory_<collection>" index that starts empty.
+COLLECTIONS = ("manager", "boss", "worker", "evaluator", "analyzer")
 
 
 def _memory_name(collection: str) -> str:

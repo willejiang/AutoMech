@@ -26,8 +26,8 @@ _ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__
 sys.path.insert(0, _ROOT)
 
 from maker2.assembler import _root_to_link                       # noqa: E402
-from maker2.manager import _validate_model                        # noqa: E402
-from maker2.mate_solver import MateSolveError, solve_connection_graph  # noqa: E402
+from maker2.manager import _link_from_dict, _validate_model       # noqa: E402
+from maker2.mate_solver import MateSolveError, infer_ports, solve_connection_graph  # noqa: E402
 
 _TOL_MM = 1.0  # world-position tolerance for the layout assertions
 
@@ -276,8 +276,24 @@ def test_negatives():
     print("    OK — orphan / missing-sep-axis / unknown-port / no-pitch all raise")
 
 
+def test_canonical_local_axis():
+    print("[6] round-part local axis is canonical +Z …")
+    gear = _link_from_dict({"name":"gear","shape_hint":"gear",
+      "size_mm":{"module":2,"teeth":20,"thickness":10},"dof":"spin",
+      "spin_axis":[1,0,0]},0)
+    if tuple(gear.spin_axis)!=(0.0,0.0,1.0):
+        _fail(f"round gear kept noncanonical local axis {gear.spin_axis}")
+    if tuple(infer_ports(gear)["teeth"].axis)!=(0.0,0.0,1.0):
+        _fail("gear teeth port does not share canonical +Z")
+    cam = _link_from_dict({"name":"cam","shape_hint":"box",
+      "size_mm":{"x":20,"y":10,"z":5},"dof":"spin","spin_axis":[1,0,0]},1)
+    if tuple(cam.spin_axis)!=(1.0,0.0,0.0):
+        _fail(f"non-round spinner axis was overwritten: {cam.spin_axis}")
+    print("    OK — axial gear forced to +Z; box spinner preserves explicit axis")
+
+
 def test_shipped_fewshot():
-    print("[6] shipped IR_FEWSHOT_JSON solves …")
+    print("[7] shipped IR_FEWSHOT_JSON solves …")
     import json as _json
 
     from maker2.prompts.schema import IR_FEWSHOT_JSON
@@ -296,6 +312,7 @@ def main() -> int:
     test_bevel()
     test_shaft_through_gear()
     test_negatives()
+    test_canonical_local_axis()
     test_shipped_fewshot()
     print("=" * 40 + "\nALL GOLDEN CASES PASSED")
     return 0

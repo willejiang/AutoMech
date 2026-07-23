@@ -33,6 +33,7 @@ unchanged (they skip the notes prefix).
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from .jsonutil import extract_json_object
@@ -63,10 +64,31 @@ def _save(memory_path, notes: str) -> None:
         pass
 
 
-def _notes_of(accum: str) -> str:
-    """The NOTES portion = everything before the first ``{`` (the JSON start)."""
-    i = accum.find("{")
+def _payload_start(accum: str, kind: str = "json") -> int:
+    """Index where the PAYLOAD begins in a notes-then-payload reply, or -1 if not present.
+    json -> the first ``{`` (JSON object start); python -> the first ``` fence (code block)."""
+    if kind == "python":
+        return accum.find("```")
+    return accum.find("{")
+
+
+def _notes_of(accum: str, kind: str = "json") -> str:
+    """The NOTES portion = everything before the payload starts (JSON ``{`` or ``` fence)."""
+    i = _payload_start(accum, kind)
     return accum if i == -1 else accum[:i]
+
+
+def _has_payload(accum: str, kind: str = "json") -> bool:
+    """Whether the reply has begun emitting its payload (not just notes)."""
+    return _payload_start(accum, kind) != -1
+
+
+def _payload_complete(text: str, kind: str = "json") -> bool:
+    """Whether the payload is fully present: a balanced ``{...}`` (json) or a closed
+    ```...``` code block (python)."""
+    if kind == "python":
+        return re.search(r"```(?:python)?\s*.*?```", text, re.S) is not None
+    return _json_complete(text)
 
 
 def _heartbeat(log_fn, tag: str, phase: str):
@@ -84,12 +106,15 @@ def _heartbeat(log_fn, tag: str, phase: str):
 
 
 def stream_two_part(client, conv: Conversation, system: str, *,
-                    memory_path=None, regen_msg_fn, log_fn=None, tag: str = "") -> str:
-    """Stream a NOTES-then-JSON response from ``conv``, recovering from cap cuts, and
-    return the full text (notes + JSON) ready for the caller's ``parse_*``.
+                    memory_path=None, regen_msg_fn, log_fn=None, tag: str = "",
+                    payload_kind: str = "json") -> str:
+    """Stream a NOTES-then-PAYLOAD response from ``conv``, recovering from cap cuts, and
+    return the full text (notes + payload) ready for the caller's ``parse_*``.
 
-    ``regen_msg_fn(notes) -> str`` builds the agent-specific "here are your notes,
-    now output ONLY the JSON" message used if the JSON is cut.
+    ``payload_kind`` selects the payload format: "json" (a single ``{...}`` object, the
+    default) or "python" (a single ```python code block — the 方案B parametric manager).
+    ``regen_msg_fn(notes) -> str`` builds the agent-specific "here are your notes, now output
+    ONLY the payload" message used if the payload is cut/absent.
     """
     accum = ""
     for _ in range(_MAX_NOTES_CONTINUE + 1):
@@ -98,21 +123,22 @@ def stream_two_part(client, conv: Conversation, system: str, *,
         text, finish = client.send_collect(
             messages, system=system, on_delta=_heartbeat(log_fn, tag, "writing plan"))
         accum = (accum + text) if accum else text
-        has_json = "{" in accum
+        has_payload = _has_payload(accum, payload_kind)
         made_progress = len(accum) - prev_len > 20   # real new content this round
 
-        if finish == "length" and not has_json:
+        if finish == "length" and not has_payload:
             if not made_progress:
                 # The round burned the cap but produced ~no visible content — the
                 # model spent the whole budget on hidden thinking. Continuing would
-                # just repeat that. Stop and regenerate the JSON from whatever notes
+                # just repeat that. Stop and regenerate the payload from whatever notes
                 # we have (thinking is bounded once effort is set on the client).
-                notes = _notes_of(accum)
+                notes = _notes_of(accum, payload_kind)
                 _save(memory_path, notes)
                 if log_fn:
                     log_fn(f"[{tag}] a notes round produced no content (cap spent on "
-                           f"hidden thinking); generating the JSON now")
-                return _regen_json(client, system, notes, regen_msg_fn, log_fn, tag)
+                           f"hidden thinking); generating the payload now")
+                return _regen_json(client, system, notes, regen_msg_fn, log_fn, tag,
+                                   payload_kind)
             # Cut mid-NOTES with real progress: save, feed the model its own partial,
             # and ask it to keep writing the notes. Loop (bounded).
             _save(memory_path, accum)
@@ -122,69 +148,78 @@ def stream_two_part(client, conv: Conversation, system: str, *,
             conv.add_user_message(CONTINUE_NOTES)
             continue
 
-        if finish == "length" and has_json:
-            # Cut mid-JSON: the notes are complete. Discard the partial JSON and
-            # regenerate the whole JSON from scratch, primed by the notes.
-            notes = _notes_of(accum)
+        if finish == "length" and has_payload:
+            # Cut mid-PAYLOAD: the notes are complete. Discard the partial payload and
+            # regenerate the whole payload from scratch, primed by the notes.
+            notes = _notes_of(accum, payload_kind)
             _save(memory_path, notes)
             if log_fn:
-                log_fn(f"[{tag}] JSON hit the output cap; regenerating the JSON "
+                log_fn(f"[{tag}] payload hit the output cap; regenerating it "
                        f"from the saved plan")
-            return _regen_json(client, system, notes, regen_msg_fn, log_fn, tag)
+            return _regen_json(client, system, notes, regen_msg_fn, log_fn, tag,
+                               payload_kind)
 
         # finish == "stop" (or anything non-length): the response completed.
-        if not has_json:
+        if not has_payload:
             # The model finished politely after writing ONLY notes (or an empty reply) and
-            # never emitted the `{` — returning this as-is makes the caller's parse throw
-            # "no JSON object found" and burns the whole attempt. The notes ARE the plan, so
-            # regenerate the JSON from them (same path as a mid-JSON cap cut) instead.
-            notes = _notes_of(accum)
+            # never emitted the payload — returning this as-is makes the caller's parse throw
+            # and burns the whole attempt. The notes ARE the plan, so regenerate the payload
+            # from them (same path as a mid-payload cap cut) instead.
+            notes = _notes_of(accum, payload_kind)
             _save(memory_path, notes)
             if log_fn:
-                log_fn(f"[{tag}] response ended with notes but no JSON; generating the "
-                       f"JSON from the plan")
-            return _regen_json(client, system, notes, regen_msg_fn, log_fn, tag)
-        _save(memory_path, _notes_of(accum))
+                log_fn(f"[{tag}] response ended with notes but no payload; generating the "
+                       f"payload from the plan")
+            return _regen_json(client, system, notes, regen_msg_fn, log_fn, tag,
+                               payload_kind)
+        _save(memory_path, _notes_of(accum, payload_kind))
         return accum
 
-    # Notes-continuation budget exhausted without ever reaching the JSON. Treat the
-    # notes as done and regenerate the JSON from them so we always make progress.
-    notes = _notes_of(accum)
+    # Notes-continuation budget exhausted without ever reaching the payload. Treat the
+    # notes as done and regenerate the payload from them so we always make progress.
+    notes = _notes_of(accum, payload_kind)
     _save(memory_path, notes)
     if log_fn:
         log_fn(f"[{tag}] notes still open after {_MAX_NOTES_CONTINUE} continuations; "
-               f"generating the JSON from the plan so far")
-    return _regen_json(client, system, notes, regen_msg_fn, log_fn, tag)
+               f"generating the payload from the plan so far")
+    return _regen_json(client, system, notes, regen_msg_fn, log_fn, tag, payload_kind)
 
 
-def _regen_json(client, system: str, notes: str, regen_msg_fn, log_fn, tag: str) -> str:
-    """Regenerate ONLY the JSON in a FRESH conversation seeded with the saved notes.
+def _regen_json(client, system: str, notes: str, regen_msg_fn, log_fn, tag: str,
+                payload_kind: str = "json") -> str:
+    """Regenerate ONLY the payload in a FRESH conversation seeded with the saved notes.
 
-    If the JSON is ALSO cut here, fall back to brace completion-continuation (keep the
-    partial, ask the model to continue) until ``extract_json_object`` balances or the
-    budget runs out — then return whatever we have (the caller's parse will reject an
-    incomplete object and the outer retry fires)."""
+    If the payload is ALSO cut here, continue it (keep the partial, ask the model to keep
+    going) until it completes (``_payload_complete``) or the budget runs out — then return
+    whatever we have (the caller's parse will reject an incomplete payload and the outer
+    retry fires). Works for both a JSON object and a ```python code block."""
     conv = Conversation()
     conv.add_user_message(regen_msg_fn(notes))
     accum = ""
     for _ in range(_MAX_JSON_CONTINUE + 1):
         messages = conv.get_messages_for_api(api_style=client.api_style)
         text, finish = client.send_collect(
-            messages, system=system, on_delta=_heartbeat(log_fn, tag, "writing JSON"))
+            messages, system=system, on_delta=_heartbeat(log_fn, tag, "writing payload"))
         accum = (accum + text) if accum else text
         conv.add_assistant_message(text)
-        if _json_complete(accum):
+        if _payload_complete(accum, payload_kind):
             return accum
         if finish != "length":
-            # Model stopped on its own but the JSON isn't balanced — one nudge, then
+            # Model stopped on its own but the payload isn't complete — one nudge, then
             # give up and let the caller's parse/validate fail and retry.
             return accum
         if log_fn:
-            log_fn(f"[{tag}] JSON output capped again; continuing where it stopped")
-        conv.add_user_message(
-            "The JSON object was cut off before it closed. Continue it from EXACTLY "
-            "where it stopped — output only the remaining JSON text, no repetition, "
-            "no prose, no fences, so the object closes correctly.")
+            log_fn(f"[{tag}] payload output capped again; continuing where it stopped")
+        if payload_kind == "python":
+            conv.add_user_message(
+                "The ```python code block was cut off before it closed. Continue it from "
+                "EXACTLY where it stopped — output only the remaining Python text, no "
+                "repetition, no prose, so the code block closes with a final ``` fence.")
+        else:
+            conv.add_user_message(
+                "The JSON object was cut off before it closed. Continue it from EXACTLY "
+                "where it stopped — output only the remaining JSON text, no repetition, "
+                "no prose, no fences, so the object closes correctly.")
     return accum
 
 

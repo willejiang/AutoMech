@@ -34,7 +34,10 @@ is moved by a motor and nothing is held in place by an invisible joint.
 - Instead of joints, each PART declares how it moves via `dof`:
     "fixed" = welded in place (frames, housings, brackets, the base).
     "spin"  = rotates on an implied axle along `spin_axis` (gears, wheels, rotors,
-              shafts). The axle is implicit — you do NOT model a joint for it.
+              shafts). The axle is implicit — you do NOT model a joint for it. Every round/
+              axial part is built around LOCAL +Z, so its local `spin_axis` is always [0,0,1].
+              Boss interface-frame axes are GLOBAL placement targets; never copy a global +X/+Y
+              frame axis into a round part's local spin_axis.
     "free"  = a fully free 6-DOF body (rare; a loose part).
 - The physics test spins the ONE part you mark `driver": true` and checks that
   motion propagates by contact. So parts that must interact MUST actually touch:
@@ -52,6 +55,15 @@ pin, spring), give each a clear build brief and a sensible local origin, set eac
 part's `dof`. DO NOT replace a real shaft or bearing with anything virtual — a
 spinning part turns on a real shaft in a real bearing, and BOTH are their own parts
 (the shaft is dof "spin", the bearing is dof "fixed").
+
+OMIT TORQUE-LOCK HARDWARE on a gear/wheel-on-shaft mount: do NOT add a KEY, keyway,
+setscrew, spline, or retaining collar to lock a gear/pinion/wheel to its shaft. This is
+a pure-CONTACT sim — torque transfers gear-to-gear by tooth contact, not through a key,
+so a key does nothing the physics uses. Worse, a key must sit at the shaft surface, which
+is INSIDE the solid gear hub, and the gear is a frozen interface part with no keyway slot
+— so the key ALWAYS interpenetrates the gear ~80% and no debugger can clear it (the gear
+can't be re-cut). Mount a gear on its shaft by placing it COAXIALLY at its axial position;
+the gear + shaft simply share the axle. Skip keys, keyways, and retaining collars entirely.
 
 HIGHLIGHT:
 1. This CAD is used for physics simulation AND actual production, so care about the
@@ -104,15 +116,145 @@ MANAGER_SYSTEM = f"{_MANAGER_PREAMBLE}\n{IR_SCHEMA_TEXT}\n\n{_IR_OUTPUT_TAIL}"
 MANAGER_SYSTEM_MJCF = f"{_MANAGER_PREAMBLE}\n{SCHEMA_TEXT}\n\n{_MJCF_OUTPUT_TAIL}"
 
 
-def manager_system(manager_ir: bool = True) -> str:
+def manager_system(manager_ir: bool = True, manager_py: bool = False) -> str:
     """The manager system prompt for the chosen authoring format."""
+    if manager_py:
+        return MANAGER_SYSTEM_PY
     return MANAGER_SYSTEM if manager_ir else MANAGER_SYSTEM_MJCF
 
 
-def build_manager_json_from_notes(notes: str, manager_ir: bool = True) -> str:
+MANAGER_SYSTEM_PY = """\
+You are the MANAGER of ONE subassembly in an automated CAD pipeline, authoring it as
+PARAMETRIC CADQUERY PYTHON. Instead of describing parts in JSON, you WRITE the code that
+BUILDS and PLACES every part.
+
+Emit EXACTLY ONE ```python code block defining a function `build_subassembly()` that returns
+a `cadquery.Assembly`. Rules:
+
+- `import cadquery as cq`, `import math`, and `import params`. The `params` module is the
+  machine's SINGLE SOURCE OF TRUTH (constants + relation functions + one zero-arg function per
+  interface frame returning its GLOBAL coordinate). DERIVE every dimension AND every global
+  coordinate from it — never hard-code a number you could compute or a coordinate params can
+  return. Think of this as a normal program that imports its config, not a drawing.
+- Build EACH part as a `cq.Workplane` solid in millimeters, in its OWN local frame with its
+  AXIS OF REVOLUTION along LOCAL +Z AND ITS ORIGIN AT THE -Z END FACE. A bare
+  `cq.Workplane("XY").circle(r).extrude(length)` does exactly this: the solid spans local z in
+  [0, length]. Do NOT `.translate((0,0,-length/2))` to center it, and do NOT bake global
+  position/orientation into the geometry — build it at the origin, growing up +Z from z=0.
+- GEARS AND PINIONS MUST HAVE REAL TEETH — build every gear/pinion with the injected
+  `make_gear(module, teeth, face_width, bore)` helper, NEVER a plain `circle().extrude()` disk
+  (a smooth cylinder cannot mesh and reads as a broken, gearless reducer). `module` and `teeth`
+  come from params (the same values that set the pitch diameter and center distance — e.g.
+  `params.M`/`params.MODULE_S1_MM` and the tooth-count function); `face_width` and `bore` are your
+  local choices (bore = the shaft diameter it rides on). make_gear returns a toothed spur gear
+  built along +Z with its origin at the -Z end face, so place it with
+  `place_axial(..., length=face_width, anchor="center")` at the gear-center frame. Two gears that
+  mesh MUST share `module` and be one center-distance apart (params already guarantees the frames);
+  do not fake teeth with knurling or skip them.
+- PLACE every part with the injected `place_axial(...)` primitive. You declare WHICH point of the
+  part sits on the params frame; the axial back-off is computed for you from `length`, so you NEVER
+  write `- axis*width`, `- axis*length/2`, or any hand-computed basis offset. Signature:
+    place_axial(asm, _shaft(L, dia), name="inter_shaft",
+                axis=params.inter_shaft_front_axis(),  # unit vector — the part's world spin axis
+                frame_xyz=params.inter_shaft_front(),  # the params frame this anchor lands on
+                length=L,                              # the part's TRUE +Z extent (must match geometry)
+                anchor="base",                         # "base" | "center" | "top"
+                metadata={"dof": "spin", "spin_axis": params.inter_shaft_front_axis(),
+                          "material": "steel", "mesh_id": "<id>"})
+  anchor semantics (the -Z end face is the origin, +Z end face is at z=length):
+    * "base"   — the part's -Z end face lands on frame_xyz (a shaft whose FRONT face sits at the
+                 front bearing seat: frame_xyz=...shaft_front, length=|rear-front|).
+    * "center" — the part's mid-plane lands on frame_xyz (a gear/pinion whose FACE CENTER sits on
+                 the mesh plane: frame_xyz=...gear_center, length=face_width).
+    * "top"    — the part's +Z end face lands on frame_xyz (a rear bearing whose BACK face butts
+                 the rear seat: frame_xyz=...shaft_rear, length=bearing_width).
+  place_axial rotates your +Z-built part so +Z aligns to `axis`, applies the deterministic anchor
+  back-off, and translates — so the params coordinate lands verbatim and coaxial parts across
+  subassemblies point the SAME way. `length` MUST equal the part's real +Z extent; a wrong length
+  is rejected (the local z-extent is checked against [0, length]). `dof` is "fixed"|"spin"|"free";
+  `spin_axis` = the same axis for a rotating part. Put `"driver": True` on the ONE input part the
+  physics test drives. `mesh_id` tags a gear so meshing gears pair — SAME id on the two gears meant
+  to mesh. (A non-axial/asymmetric part with no meaningful revolution axis may still use the lower-
+  level `place_part(asm, part, name=, axis=, xyz=, metadata=)`, which places the local origin at
+  `xyz` with no anchor back-off — but every shaft, gear, pinion, bearing, spacer, collar, stub is
+  axial and MUST use place_axial.)
+- DIVISION OF LABOR (this is the core of the method — get it right):
+  * FUNCTIONAL-CONNECTION parts come FROM params: any part that realizes the machine's function
+    (meshing gears) or must line up with a neighbor subassembly (the gear it meshes with, the
+    bearing seat it mounts into). Take its `axis` from `params.<frame>_axis()`, its `xyz` from
+    `params.<frame>()`, and its functional dimensions (gear pitch diameter, module, the shaft
+    diameter that seats in a bearing) by CALLING the matching `params.<name>()` / `params.<CONST>`
+    handed to you. Because you and every sibling manager read the SAME params, meshing gears land
+    one center-distance apart, point the same way, and weld points coincide BY CONSTRUCTION —
+    there is no separate solving step.
+  * SUBORDINATE / structural parts you DERIVE LOCALLY: the shaft BODY length, spacers, collars,
+    keys, fillets. params does NOT define these and is not supposed to. Compute them yourself in
+    THIS module from the functional anchors params already gave you — e.g.
+    `spacer_w = (gap between two gear stations)`. Place them with `place_axial`/`place_part`,
+    reusing a nearby interface frame's `axis` and an `xyz`/`frame_xyz` you compose from that
+    frame's coordinate plus your own local offset. Do not look for a `params.spacer_width`.
+  * INSERT-FIT DIAMETERS ARE NOT LOCAL — take them from params. A bearing OD, its seat bore, and
+    its inner bore are a mating triplet that MUST agree across subassemblies, so params owns them.
+    Size a bearing's OUTER diameter to `params.<role>_bearing_od_mm()`, its bore to
+    `params.<role>_bearing_bore_mm()`; bore a housing seat to `params.<role>_seat_bore_mm()` (which
+    equals the bearing OD). NEVER write `bearing_od = shaft_dia + 12` locally — if the housing and
+    the shaft each invent their own bearing/seat diameter they interpenetrate and the assembly is
+    rejected. If params is missing a `<role>_bearing_od_mm` / `<role>_seat_bore_mm` you need, that
+    is a params gap to surface (call the params name and let the AttributeError name it), NOT a
+    number to invent locally.
+- The `xyz` you pass to place_part MUST be a `params.<frame>()` call, an arithmetic expression
+  over params names you can SEE in the module handed to you, or a subordinate offset you derived
+  locally — never a bare functional coordinate you typed. Calling a params name the module does
+  not define raises AttributeError listing the names params DOES define, so you can fix it.
+- Do NOT write a defensive wrapper like
+  `def _frame(name, default): return getattr(params, name)() if hasattr(params, name) else default`
+  or `_p(name, default)`. Such a wrapper HIDES a wrong functional-connection name behind a
+  hard-coded default and silently collapses the part to the origin — it was the #1 cause of a
+  broken subassembly. Reference each params function by its literal name (e.g.
+  `params.inter_shaft_front()`); for subordinate parts, write a normal local variable, NOT a
+  params lookup. No `hasattr`/`getattr`/try-except around params.
+- The connection/topology is expressed BY the params-derived locations + mesh_id tags you write
+  — there is no separate mate list.
+- No file I/O, no network; cadquery + math + the params module only. Every part must be a real
+  non-empty solid.
+- PYTHON, not JSON: use `True`/`False`/`None` (capitalized) in metadata — NOT `true`/`false`/
+  `null`. A lowercase `true` is a NameError and rejects your whole subassembly.
+- NO INTERPENETRATION: parts must not overlap in solid. Give each part its own volume:
+  * A gear/collar/spacer on a shaft is an ANNULUS — cut a bore (`.faces(...).hole(shaft_dia)`)
+    so the shaft passes THROUGH it; the shaft and the ring then share space legally only where
+    the ring's bore hugs the shaft, not by the shaft's solid sitting inside the gear's solid.
+  * A KEY sits in a keyway and must be SMALL — its cross-section fits INSIDE the shaft radius
+    (e.g. a 2x2 mm key on a 6 mm-radius shaft), not a block straddling the gear. Do not let a
+    key overlap the gear body; place it in the shaft's keyseat under the gear.
+  * Space coaxial parts along the axis with real gaps: front bearing | gear | spacer | pinion |
+    rear bearing, each at a DISTINCT axial station, none sharing the same z-run.
+  Aim for zero interpenetration — the pipeline rejects a subassembly whose parts overlap.
+- KEEP IT SIMPLE — OMIT fiddly small parts that only cause overlaps. A KEY, keyway, set-screw,
+  dowel, or snap-ring is NOT needed: gears transmit by TOOTH CONTACT, not by a modeled key, and
+  the pipeline never checks for one. Do NOT model a key/collar/retaining-ring unless it is the
+  functional point of the machine. Prefer the minimal part set: shaft + gears + bearings. Fewer
+  parts = fewer overlaps = a subassembly that passes.
+
+Respond in TWO parts: first NOTES (a short plaintext plan of the parts + their placements),
+then the single ```python block. If asked to CONTINUE, output only the ```python block."""
+
+
+def build_manager_json_from_notes(notes: str, manager_ir: bool = True,
+                                  manager_py: bool = False) -> str:
     """Regeneration message: the manager already wrote its decomposition as NOTES
     (saved when its payload overran the output cap); hand the notes back and ask for
     ONLY the payload now, so the whole output budget goes to it — no dropped parts."""
+    if manager_py:
+        return f"""\
+Here is the subassembly plan you already worked out (your NOTES):
+
+{notes}
+
+Now output ONLY the single ```python code block for this subassembly, in full: `import
+cadquery as cq`, per-part builder helpers, and `build_subassembly()` returning a cq.Assembly
+that adds EVERY part from the notes with its name, GLOBAL location, and metadata
+(dof/spin_axis/material, mesh_id on meshing gears, driver on the input). Do NOT repeat the
+notes — output only the ```python block."""
     if manager_ir:
         return f"""\
 Here is the decomposition you already worked out (your NOTES):
@@ -144,14 +286,17 @@ fences — output only the PARTS object, the `{MJCF_SENTINEL}` line, and the XML
 
 
 def build_manager_user(product_prompt: str, has_image: bool = False,
-                       manager_ir: bool = True) -> str:
-    """The manager's user message: the product + a worked example (in the active format).
+                       manager_ir: bool = True, manager_py: bool = False) -> str:
+    """The manager's user message: the product + (except in 方案B py mode) a worked example.
 
     When ``has_image`` is set, an image is attached to this message by the caller
     (Conversation.add_user_message(images=...)); the wording then makes the IMAGE
     the authoritative source and treats the text as a hint.
+
+    In ``manager_py`` mode NO JSON few-shot is shown: MANAGER_SYSTEM_PY already carries the
+    parametric-CadQuery example, and injecting IR_FEWSHOT_JSON here would prime the manager to
+    emit connection-graph JSON (a `true`/`false` NameError when exec'd as Python).
     """
-    example = IR_FEWSHOT_JSON if manager_ir else FEWSHOT_JSON
     if has_image:
         task = (
             "NOW DO THIS ONE\n"
@@ -162,6 +307,15 @@ def build_manager_user(product_prompt: str, has_image: bool = False,
         )
     else:
         task = f'NOW DO THIS ONE\nProduct: "{product_prompt}"'
+    if manager_py:
+        return f"""\
+Author this subassembly as a parametric CadQuery ```python module, following the system
+rules exactly (import params; derive every coordinate from params; output ONE ```python
+block defining build_subassembly()).
+
+{task}
+Output:"""
+    example = IR_FEWSHOT_JSON if manager_ir else FEWSHOT_JSON
     return f"""\
 Decompose this product into a kinematic model following the schema exactly.
 
@@ -302,7 +456,8 @@ Output ONLY the COMPLETE updated PARTS JSON object, a line with exactly `{MJCF_S
 then the updated MJCF XML skeleton — no prose, no markdown fences."""
 
 
-def build_manager_subassembly(frame_contract, manager_ir: bool = True) -> str:
+def build_manager_subassembly(frame_contract, manager_ir: bool = True,
+                              manager_py: bool = False) -> str:
     """Constrain this manager to build ONE SUBASSEMBLY under the boss's interface/
     frame contract (Stage B of the hierarchy).
 
@@ -312,6 +467,8 @@ def build_manager_subassembly(frame_contract, manager_ir: bool = True) -> str:
     local frame, (2) place a real part at each interface frame, and (3) report which
     part realizes each frame — so the assembler can weld this sub to its neighbors.
     """
+    if manager_py:
+        return _build_manager_subassembly_py(frame_contract)
     fc = frame_contract
     lines = []
     for fr in getattr(fc, "frames", []):
@@ -320,14 +477,19 @@ def build_manager_subassembly(frame_contract, manager_ir: bool = True) -> str:
         dia = getattr(fr, "shaft_dia_mm", 0.0) or 0.0
         dia_txt = (f", shaft/gear dia {dia:.2f} mm (build the mating shaft/bore/gear "
                    f"to EXACTLY this diameter)") if dia > 0 else ""
-        mp = (getattr(fr, "mounts_part", "") or "").strip()
-        mp_txt = (f' — the part "{mp}" MUST sit here: realize this frame with "{mp}" and '
-                  f'mate it so it lands at this position (do NOT place it anywhere else)') if mp else ""
+        mp_txt = (' — realize this frame ON a bore port you cut in your body at this position '
+                  '(name the port yourself); it must sit here, not at the body origin') \
+                 if (getattr(fr, "role", "mount") == "mount") else ""
         lines.append(
             f'  - "{fr.name}" (role: {fr.role}): GLOBAL position '
             f'[{x:.4f}, {y:.4f}, {z:.4f}] m, axis [{ax:.3f}, {ay:.3f}, {az:.3f}]'
             f'{dia_txt}{mp_txt}')
     frames_txt = "\n".join(lines) if lines else "  (none)"
+    through=getattr(fc,"through_mounts",[]) or []
+    through_txt=("\nTHROUGH-SHAFT DATUM PAIRS (realize both on physical front/rear bores or bearings; "
+                 "the rear point is validation-only, not a second weld):\n"+
+                 "\n".join(f'  - seam {x["seam_id"]}: front "{x["front_frame"]}" -> rear "{x["rear_frame"]}"'
+                            for x in through)+"\n") if through else ""
     origin = getattr(fc, "global_origin_note", "") or "(the machine's shared origin)"
     nbrs = getattr(fc, "neighbors", []) or []
     if nbrs:
@@ -397,10 +559,14 @@ GLOBAL ORIGIN: {origin}
 INTERFACE FRAMES this subassembly must expose (positions are in GLOBAL machine
 coordinates about that origin):
 {frames_txt}
-
+{through_txt}
 RULES
 - Build this subassembly in ITS OWN local frame (mm geometry, each part's attach point
-  at its local origin). You choose where this subassembly's own root/origin sits.
+  at its local origin). You choose where this subassembly's own root/origin sits. Round/axial
+  geometry (shafts, bearings, gears, pinions, cylinders) uses LOCAL +Z as its physical axis;
+  its inferred bore/teeth ports and local `spin_axis` are therefore [0,0,1]. The GLOBAL axis
+  shown on an interface frame is for the assembler to orient the whole subassembly, not a
+  value to paste into a part's local spin_axis.
 - Include EVERY real physical part of this subassembly — every gear, wheel, pinion,
   SHAFT, arbor, bearing/jewel, pin, screw, spring. Do NOT hide a shaft or bearing by
   folding it into a neighbor or dropping it; a rotating part is dof "spin" turning on
@@ -410,24 +576,152 @@ RULES
   frame lands at the given GLOBAL location when the machine is assembled. Typically
   the frame coincides with a specific part (a housing mounting face, a gear center,
   a shaft end).
-- SEPARATE SEATS: if this sub exposes SEVERAL mount frames at DIFFERENT positions (a
-  base/plate/bracket with several bearing holes, posts, or seats), each frame is its OWN
-  independent seat. Realize each with a DIFFERENT part, placed at that frame's position —
-  so the parts spread across the base instead of stacking at one spot. Do NOT connect the
-  seated parts to EACH OTHER (no shaft threading through them, no boss-to-boss mate): they
-  are independent supports that each just mate to the base. If a frame gives no shaft
-  diameter and this sub "holds no rotating parts", do NOT invent a shaft to link the
-  bearings — a bearing here is a standalone fixed part seated on the base at its frame.
+- SEPARATE SEATS — YOU OWN THE BORE. If this sub is a base/plate/bracket/housing that exposes
+  SEVERAL mount frames at DIFFERENT positions (several bearing bores, posts, seats), each frame
+  is its OWN independent seat that YOU realize. For EACH such seat frame the boss gives (name +
+  GLOBAL position + bore diameter), do this:
+    1. On your structural BODY part (the plate/housing block), declare a positioned `bore` PORT
+       at that seat's LOCAL position (the frame's global xyz_m minus this sub's origin), with
+       `diameter_mm` = the frame's shaft diameter and the frame's axis. Give the port your own
+       name (e.g. "bore_seat_input") — YOU own it; the boss does not name your parts.
+    2. Realize THAT seat frame at the SAME local position on the body (frames_realized entry
+       with the bore's local_xyz_m) — so the frame sits ON the bore you cut, not at the body
+       origin. This is the ONLY correct realization; collapsing several seats onto the body
+       origin makes the shafts that weld to them bury inside the body.
+  Declare ONE bore port + ONE realization PER seat so the seats spread across the base. Do NOT
+  connect the seated parts to each other (no shaft threading them). A bearing seat is a bore in
+  your body at the frame's position — a feature of the body, not a separate free-standing part.
+  You need only place each seat APPROXIMATELY along the right wall/axis: the assembler relocates
+  every seat frame onto its SOLVED shaft before welding, so getting the exact xyz is not critical —
+  what matters is that the seats stay SPREAD (never collapsed onto the body origin) and share the
+  boss's through-shaft `axis`.
+- For every THROUGH-SHAFT pair above, realize the front and rear frames at distinct physical
+  datums on the SAME shaft line: housing frames on the front/rear bore planes, stage frames on
+  front/rear bearing or shaft points. Round parts remain LOCAL +Z; therefore make the realized
+  front->rear vector parallel to the realizing front frame's LOCAL +Z axis. The assembler later
+  rotates that local axis onto the boss's GLOBAL contract axis.
 - The interface frames are HARD POINTS fixed by the boss — treat them as immovable.
   Where a frame gives a shaft/gear diameter, size YOUR mating shaft, bore, or gear to
   EXACTLY that diameter and put it on the frame's axis, so the part meets its
   neighbor across the seam. Do NOT invent a different position, axis, or diameter for
   an interface; only the boss changes a hard point.
+- COAXIAL STATIONS ON ONE SHAFT: when several interface frames share the same axis and
+  differ only along it (a front bearing, one or more gear/mesh centers, a rear bearing all
+  on ONE shaft), they are ORDERED STATIONS at DISTINCT axial positions — read the differing
+  coordinate along the axis and place EACH part (bearing, gear, pinion, spacer) at ITS
+  station's axial offset on the shaft. Do NOT collapse them to a common origin: parts stacked
+  at the same axial point grossly overlap. Space the shaft's parts so each sits at its
+  frame's axial station and fills the gaps between stations (a spacer occupies the run
+  between two gears; bearings sit at the ends).
+- EXACT FRAME NAMES — realize EVERY interface frame under the EXACT name it is given above,
+  character for character. The assembler and the frame gate match your realized frames to the
+  contract BY NAME; a frame you realize under a different name (e.g. contract asks for
+  'intermediate_stage_stage_1_mesh' and you report 'inter_pinion_mesh') counts as the
+  contract frame NOT realized — your subassembly is rejected even though you built the part.
+  You may name your PARTS/ports whatever you like, but each `frames_realized` entry MUST use
+  the contract's frame name verbatim. Realize every listed frame; do not add, rename, drop,
+  or merge them.
+- A `mesh` frame MUST be realized ON A GEAR part — a part with real teeth (module + teeth,
+  or a pitch diameter), whose center sits at the mesh frame. Do NOT put a mesh frame on the
+  shaft, a bearing, or a plain cylinder: the assembler resolves the gear pair by finding a
+  gear link at each mesh frame, and a mesh frame on a non-gear part makes the mesh unbuildable.
+  Realize the mesh frame under its EXACT contract name (see above) on that gear link.
+  CONCRETELY: for EVERY `mesh`-role interface frame in the list, add an entry to your
+  connection graph's `frames` section: {{"frame": "<exact contract mesh-frame name>",
+  "part": "<your gear part>", "port": "center"}}. If a shaft carries TWO gears (e.g. an
+  intermediate stage with a stage-1 gear AND a stage-2 pinion), each of the two mesh frames
+  binds to a DIFFERENT gear — never point both at the same part. A gear sub whose mesh frames
+  are missing or bound to a non-gear part is REJECTED (ERR_MESH_FRAME_NOT_ON_GEAR), so do this
+  every time.
 {move_rule}
 
 {frames_decl}"""
 
 
+def _build_manager_subassembly_py(frame_contract) -> str:
+    """方案B-v3: the subassembly instruction for the PARAMETRIC CADQUERY manager, authored as
+    a TRADITIONAL PROGRAM. The boss wrote a shared `params` module (constants + relation
+    functions + one zero-arg function per interface frame returning its GLOBAL coordinate).
+    This manager `import params` and places every interface part by CALLING those functions —
+    it never re-types a coordinate. Coordinates are therefore derived, not copied, and every
+    subassembly that shares `params` agrees by construction."""
+    fc = frame_contract
+    lines = []
+    for fr in getattr(fc, "frames", []):
+        x, y, z = fr.xyz_m
+        ax, ay, az = fr.axis
+        dia = getattr(fr, "shaft_dia_mm", 0.0) or 0.0
+        dia_txt = (f", diameter {dia:.2f} mm (build the mating shaft/bore/gear to EXACTLY "
+                   f"this diameter)") if dia > 0 else ""
+        role = getattr(fr, "role", "mount")
+        # v3: name the params FUNCTION the manager must call for this frame's coordinate.
+        lines.append(
+            f'  - "{fr.name}" (role: {role}): call `params.{fr.name}()` for its GLOBAL mm '
+            f'coordinate [~{x*1000:.1f}, {y*1000:.1f}, {z*1000:.1f}] and '
+            f'`params.{fr.name}_axis()` for its spin-axis unit vector '
+            f'[{ax:.2f}, {ay:.2f}, {az:.2f}]; place the part with '
+            f'`place_axial(asm, <part>, name=..., axis=params.{fr.name}_axis(), '
+            f'frame_xyz=params.{fr.name}(), length=<part +Z extent>, anchor="base"|"center"|"top", '
+            f'metadata=...)` — pick anchor by what the frame denotes (an end-face seat -> "base"/'
+            f'"top", a mesh/face center -> "center")){dia_txt}')
+    frames_txt = "\n".join(lines) if lines else "  (none)"
+    sub_id = getattr(fc, "sub_id", "?")
+    origin = getattr(fc, "global_origin_note", "") or "(the machine's shared origin)"
+    params = getattr(fc, "params_text", "") or ""
+    params_block = (f"\nSHARED PARAMETER MODULE (already saved next to your code as `params.py`; "
+                    f"`import params` and CALL its functions — this is the machine's single "
+                    f"source of truth, identical for every subassembly):\n"
+                    f"```python\n{params}\n```\n"
+                    if params.strip() else "")
+    return f"""\
+BUILD THIS SUBASSEMBLY: {sub_id}
+GLOBAL ORIGIN: {origin}
+{params_block}
+INTERFACE FRAMES this subassembly must expose. Each has a same-named function in `params` that
+RETURNS its GLOBAL coordinate — place a real part so its relevant feature sits at that returned
+point:
+{frames_txt}
+
+THINK OF THIS AS A NORMAL PROGRAM, NOT A DRAWING. The boss already wrote `params.py` (shown
+above) deriving the FUNCTIONAL-CONNECTION layer from the hard inputs with `y = f(x)`. Your job:
+CALL those functions for the functional/interface parts, and DERIVE the subordinate parts
+locally yourself.
+
+HARD RULES ON PLACEMENT (these make every subassembly line up automatically):
+- `import params` at the top. READ the `params.py` shown above. For FUNCTIONAL-CONNECTION parts
+  use ONLY the names it ACTUALLY defines — the boss chose those names for THIS machine; a guessed
+  functional name will not exist (AttributeError lists what params does define). params covers
+  only the functional-connection layer, so for subordinate parts you will NOT find a params name
+  — that is expected, derive them locally.
+- BUILD every part at the ORIGIN with its axis of revolution along LOCAL +Z. Do NOT bake world
+  position or orientation into the part.
+- PLACE every part with the injected `place_part(...)` primitive (already in scope — do not
+  define or import it). For an INTERFACE part, pass BOTH the frame's position and axis functions:
+  `place_part(asm, _pinion(), name="pinion1", axis=params.pinion1_center_axis(),
+   xyz=params.pinion1_center(), metadata={{"dof": "spin", "spin_axis": params.pinion1_center_axis(),
+   ...}})`. place_part orients your +Z part to `axis` at the origin, then translates to `xyz`.
+  NEVER call `asm.add(..., loc=cq.Location(vec, axis, angle))` yourself — a rotating Location
+  rotates the translation too and corrupts the params coordinate (parts collapse / axes end up
+  perpendicular). The `xyz` MUST be a params call or an expression over params names above; a bare
+  functional coordinate you typed is a bug.
+- Place each SUBORDINATE part (spacer, shim, collar, key, the shaft body) with `place_part` too:
+  reuse a nearby interface frame's `_axis()` for orientation, and compose its `xyz` from that
+  frame's coordinate plus an offset YOU compute (e.g. `add(params.gear2_center(), (0,0,gap))`).
+  Keep coaxial parts at DISTINCT stations along the axis so they never overlap.
+- A `mesh`-role frame MUST be realized on a real toothed gear placed with that frame's position
+  and axis, tagged `metadata={{"mesh_id": "<the mesh frame name>", ...}}` so it pairs with the
+  meshing gear the neighbor subassembly builds at the SAME params point and axis.
+- Rotating parts get `"dof": "spin"` + `"spin_axis"` = `params.<frame>_axis()`. Fixed parts
+  (housing, bearings) get `"dof": "fixed"`. Put `"driver": True` on the ONE input part.
+
+Because you and every other manager take BOTH coordinate and axis from the SAME `params`
+functions, your weld points coincide and coaxial parts point the same way by construction — there
+is no separate solving step, so getting the params calls right IS getting the assembly right. Do
+NOT write a `_frame(name, default)` / `_p(name, default)` wrapper or any hasattr/getattr/default
+fallback (it hides a wrong name and collapses the part to the origin): call params directly for
+functional parts, use plain local variables for subordinate ones.
+
+Write `build_subassembly()` returning a cq.Assembly. Output NOTES then ONE ```python block."""
 
 
 def build_manager_should_rebuild(prior_model_json: str, fault_reason: str,

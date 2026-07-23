@@ -198,16 +198,17 @@ def frame_drift_errors(model, frame_contract, is_root: bool = True,
         realized = {e.get("frame"): e for e in (getattr(model, "frames_realized", []) or [])}
     T = _root_to_link(model)
 
+    def _frame_pose(fr):
+        entry=realized.get(fr.name)
+        if not entry:return None
+        Tlink=T.get(entry.get("link"))
+        if Tlink is None:return None
+        local=_mat(entry.get("local_xyz_m",(0,0,0)),entry.get("local_rpy_rad",(0,0,0)))
+        return Tlink@local
+
     def _world_of(fr):
-        entry = realized.get(fr.name)
-        if not entry:
-            return None
-        Tlink = T.get(entry.get("link"))
-        if Tlink is None:
-            return None
-        local = _mat(entry.get("local_xyz_m", (0, 0, 0)),
-                     entry.get("local_rpy_rad", (0, 0, 0)))
-        return (Tlink @ local)[:3, 3]
+        pose=_frame_pose(fr)
+        return None if pose is None else pose[:3,3]
 
     def _want_of(fr):
         return np.array([float(v) for v in (getattr(fr, "xyz_m", None) or (0, 0, 0))])
@@ -234,4 +235,95 @@ def frame_drift_errors(model, frame_contract, is_root: bool = True,
                     f"subs that mate to them stack on top of each other.",
                     fb.name))
                 break                         # one collapse report per frame is enough
+    for pair in getattr(frame_contract,"through_mounts",[]) or []:
+        ff=next((f for f in frames if f.name==pair.get('front_frame')),None)
+        rf=next((f for f in frames if f.name==pair.get('rear_frame')),None)
+        if ff is None or rf is None:continue
+        wf,wr=_world_of(ff),_world_of(rf)
+        if wf is None or wr is None:continue
+        d=wr-wf;sep=float(np.linalg.norm(d));front_pose=_frame_pose(ff)
+        axis=(front_pose[:3,:3]@np.array([0.,0.,1.])) if front_pose is not None else np.asarray(ff.axis,float)
+        n=float(np.linalg.norm(axis))
+        if sep<=_POS_TOL_M:
+            out.append(GateError("manager","ERR_FRAME_DRIFT",
+              f"through-shaft frames '{ff.name}'/'{rf.name}' collapse at one point",rf.name));continue
+        if n<1e-12 or float(np.linalg.norm(d-(np.dot(d,axis/n))*axis/n))>_POS_TOL_M:
+            out.append(GateError("manager","ERR_FRAME_DRIFT",
+              f"through-shaft frames '{ff.name}'/'{rf.name}' are not on one axis",rf.name))
+    return out
+
+
+def _realized_world_in_sub(sub_result, frame_name: str):
+    """World position (in the sub's own root frame) of a realized interface frame, from the
+    sub's persisted frames (sub_frames.json / model.frames_realized). None if unresolved."""
+    model = getattr(sub_result, "model", None)
+    entries = getattr(sub_result, "sub_frames", None) or []
+    if model is None:
+        return None
+    entry = next((e for e in entries if e.get("frame") == frame_name), None)
+    if not entry:
+        return None
+    T = _root_to_link(model)
+    Tlink = T.get(entry.get("link"))
+    if Tlink is None:
+        return None
+    local = _mat(entry.get("local_xyz_m", (0, 0, 0)), entry.get("local_rpy_rad", (0, 0, 0)))
+    return (Tlink @ local)[:3, 3]
+
+
+def seam_frame_agreement_errors(plan, sub_results: dict) -> list[GateError]:
+    """SEAT-COLLAPSE checksum: a base/housing that carries several seats must realize each seat
+    frame at its OWN bore position, not collapse them all onto the sub origin. The boss names
+    the seats by frame + position (it does NOT name the builder's parts); the builder cuts a
+    bore port per seat and realizes the frame there. This gate verifies the builder actually
+    spread them: for every PAIR of a sub's interface frames the boss placed APART (their xyz_m
+    differ > tol), the REALIZED positions must ALSO be apart. If two seats the boss placed apart
+    are realized coincident (the collapse-to-origin bug: three seats all on `lower_body` at
+    [0,0,0] while their bores should be at Y=0/80/160), the shafts welded to them bury in the
+    body -> ERR_SEAM_DISAGREE, targeted rebuild of that sub.
+
+    One-directional (contract-apart -> realized-coincident only), mirroring frame_drift_errors:
+    the reverse (contract-coincident, realized-apart) is a known false positive."""
+    out: list[GateError] = []
+    seam_frames: dict = {}                     # sub_id -> set of frame names used by a seam
+    for seam in plan.seams:
+        if seam.kind not in ("weld", "power"):
+            continue
+        seam_frames.setdefault(seam.parent_sub, set()).add(seam.parent_frame)
+        seam_frames.setdefault(seam.child_sub, set()).add(seam.child_frame)
+
+    for s in plan.subassemblies:
+        res = sub_results.get(s.id)
+        if res is None:
+            continue
+        used = seam_frames.get(s.id, set())
+        # Only frames that actually participate in a seam (an interface that gets welded).
+        frames = [fr for fr in (s.frames or []) if fr.name in used]
+        realized = [(fr, _realized_world_in_sub(res, fr.name)) for fr in frames]
+        realized = [(fr, w) for fr, w in realized if w is not None]
+        for i in range(len(realized)):
+            for j in range(i + 1, len(realized)):
+                fa, wa = realized[i]
+                fb, wb = realized[j]
+                want = float(np.linalg.norm(
+                    np.array([float(v) for v in (fa.xyz_m or (0, 0, 0))])
+                    - np.array([float(v) for v in (fb.xyz_m or (0, 0, 0))])))
+                if want <= _POS_TOL_M:
+                    continue                    # boss placed them coincident -> nothing to check
+                got = float(np.linalg.norm(wa - wb))
+                if got <= _POS_TOL_M:
+                    out.append(GateError(
+                        "manager", "ERR_SEAM_DISAGREE",
+                        f"subassembly '{s.id}' realized interface seats '{fa.name}' and "
+                        f"'{fb.name}' at the SAME point, but the boss placed them "
+                        f"{want*1000:.1f} mm apart — the seats collapsed (likely all realized on "
+                        f"the body root at its origin instead of on their own bore positions). "
+                        f"Cut a distinct bore port for each seat at its position and realize "
+                        f"each frame there, so the parts welded to them do not stack/bury in "
+                        f"this body.",
+                        s.id))                  # culprit = the sub that collapsed its seats
+                    break                       # one report per sub is enough
+            else:
+                continue
+            break
     return out

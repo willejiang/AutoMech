@@ -25,6 +25,8 @@ See .claude/plans/precious-humming-wand.md.
 
 from __future__ import annotations
 
+import json
+import math
 import os
 import shutil
 
@@ -53,6 +55,11 @@ def _write_assembled_mjcf(final, ctx, settings, log) -> None:
 
 class AssemblerError(RuntimeError):
     """The subassemblies could not be stitched into one valid machine."""
+    def __init__(self, message, *, kind="assembler", failure_report=None, report_path=""):
+        super().__init__(message)
+        self.kind = kind
+        self.failure_report = failure_report
+        self.report_path = report_path
 
 
 # --------------------------------------------------------------------------- #
@@ -308,6 +315,61 @@ def _gear_pitch_r_mm(link) -> float | None:
     return None
 
 
+def _gear_face_width_mm(link) -> float | None:
+    """Axial face width (mm) declared by a built gear; never infer it from radial dimensions."""
+    sz = getattr(link, "size_mm", {}) or {}
+    for key in ("height", "length", "thickness", "face_width", "depth", "width"):
+        try:
+            value = float(sz.get(key))
+        except (TypeError, ValueError):
+            continue
+        if math.isfinite(value) and value > 0:
+            return value
+    return None
+
+
+def _gear_face_center_offset_mm(link) -> float | None:
+    """Signed axial offset from a gear's local origin to its physical face mid-plane.
+
+    Manager/worker origin contracts use either a centered origin or the -Z/end_a face.
+    Ambiguous origin notes fail closed instead of silently treating a face as the center.
+    """
+    width = _gear_face_width_mm(link)
+    if not width:
+        return None
+    note = str(getattr(link, "origin_note", "") or "").lower()
+    centered = any(x in note for x in ("mid-plane", "mid plane", "midplane", "mid-thickness",
+                                        "mid thickness", "gear center", "pinion center",
+                                        "gear pitch-plane center", "gear pitch plane center",
+                                        "pitch-plane center", "pitch plane center",
+                                        "disc centered", "centered on z=0",
+                                        "centered at local origin", "bore centered"))
+    at_negative_face = any(x in note for x in ("origin at end_a", "origin at end a",
+                                                "origin at the -z face", "origin at -z face",
+                                                "origin at the -z (", "origin at the rear (-z)",
+                                                "-z face center at local origin",
+                                                "front face (-z) at local origin",
+                                                "front face (-z) at the local origin",
+                                                "origin at front face (-z)",
+                                                "bottom-face center at local origin",
+                                                "bottom face center at local origin"))
+    at_positive_face = any(x in note for x in ("origin at end_b", "origin at end b",
+                                                "origin at the +z face", "origin at +z face",
+                                                "origin at the +z (", "origin at the front (+z)",
+                                                "rear face (+z) at local origin",
+                                                "rear face (+z) at the local origin",
+                                                "origin at rear face (+z)",
+                                                "top-face center at local origin",
+                                                "top face center at local origin"))
+    if centered and not (at_negative_face or at_positive_face):
+        return 0.0
+    if at_negative_face and not (centered or at_positive_face):
+        return width / 2.0
+    if at_positive_face and not (centered or at_negative_face):
+        return -width / 2.0
+    return None
+
+
 def _link_in_root(sub, link_name: str):
     """(axis_world_in_root, center_in_root) of a link's spin axis + origin, expressed in
     the sub's OWN root frame. axis from the link's spin_axis, origin from root->link."""
@@ -322,18 +384,63 @@ def _link_in_root(sub, link_name: str):
     return axis_root, center_root
 
 
-def _gear_link(sub, mesh_pair, which: int):
-    """The gear LinkSpec named by a seam's mesh_pair[which] in `sub`, or None."""
-    if not mesh_pair or len(mesh_pair) != 2:
-        return None
-    name = mesh_pair[which]
-    return next((l for l in sub.model.links if l.name == name), None)
+def _gear_link(sub, seam, which: int):
+    """The gear LinkSpec that a power seam's mesh FRAME is realized on (role-based identity),
+    with the `mesh_pair` part NAME as a legacy fallback. `which` is 0 for the parent gear, 1 for
+    the child gear.
+
+    Role-based first: the boss names the mesh by FRAME (parent_frame/child_frame, e.g.
+    gear1_center), and the manager realizes that frame ON its actual gear link (whatever it named
+    it — large_gear, stage1_pinion, ...). Reading the gear FROM the realized frame means the boss
+    never has to guess the manager's gear part name (the same class of bug fixed for seat bores).
+    Falls back to `mesh_pair[which]` by name only when the frame isn't realized on a link."""
+    frame_name = seam.parent_frame if which == 0 else seam.child_frame
+    if frame_name:
+        try:
+            link_name, _ = _frame_realized(sub, frame_name)
+            lk = next((l for l in sub.model.links if l.name == link_name), None)
+            # A manager may realize a mesh frame on the shaft/bearing that carries the
+            # gear. Accept role-based identity only when the built link is actually a gear;
+            # otherwise continue to the explicit mesh_pair fallback.
+            if lk is not None and _gear_pitch_r_mm(lk):
+                return lk
+        except AssemblerError:
+            pass                              # frame not realized -> fall back to mesh_pair name
+    mp = getattr(seam, "mesh_pair", ()) or ()
+    if len(mp) == 2:
+        return next((l for l in sub.model.links if l.name == mp[which]), None)
+    return None
+
+
+def _all_gear_links(sub):
+    """Every built link on `sub` that is a real gear (has a pitch radius)."""
+    if sub is None or getattr(sub, "model", None) is None:
+        return []
+    return [l for l in sub.model.links if _gear_pitch_r_mm(l)]
+
+
+def _gear_link_disambiguated(sub, seam, which, claimed: set):
+    """Resolve a mesh endpoint to a gear link, with a geometry-aware fallback when the
+    frame-based and name-based lookups (``_gear_link``) both fail. The frame-based path is
+    the reliable one — it points at the exact gear the manager realized the mesh frame on —
+    but when a manager forgot to realize the mesh frame AND named the gear something the
+    boss's mesh_pair doesn't match, we fall back to: pick the sub's gear that is NOT already
+    claimed by another mesh seam. On a two-gear shaft (an intermediate stage carrying a
+    stage-1 gear and a stage-2 pinion) this uniquely assigns the remaining gear once its
+    sibling stage is resolved, instead of failing on an unresolvable name."""
+    lk = _gear_link(sub, seam, which)
+    if lk is not None:
+        return lk
+    gears = [g for g in _all_gear_links(sub) if g.name not in claimed]
+    if len(gears) == 1:
+        return gears[0]
+    return None
 
 
 def _classify_subs(plan, subs: dict):
     """Return (gear_sub_ids: set, base_sub_id or None). A gear stage is an endpoint of a
     power seam with a 2-tuple mesh_pair; a passive base has no mesh endpoint and parents at
-    least one weld 'insert' seam. Returns (set(), None) when there is no gear cluster."""
+    least one typed structural weld seam. Returns (set(), None) when there is no gear cluster."""
     gear_ids: set = set()
     for seam in plan.seams:
         if seam.kind == "power" and len(getattr(seam, "mesh_pair", ()) or ()) == 2:
@@ -341,18 +448,13 @@ def _classify_subs(plan, subs: dict):
             gear_ids.add(seam.child_sub)
     if not gear_ids:
         return set(), None
-    base_id = None
-    for s in plan.subassemblies:
-        if s.id in gear_ids:
-            continue
-        parents_insert = any(
-            seam.kind == "weld" and seam.parent_sub == s.id
-            and getattr(seam, "mate_type", "") == "insert"
-            for seam in plan.seams)
-        if parents_insert:
-            base_id = s.id
-            break
-    return gear_ids, base_id
+    root_id = getattr(plan, "root_sub", None)
+    root_is_structural_base = (root_id not in gear_ids and any(
+        seam.kind == "weld" and seam.parent_sub == root_id
+        and seam.child_sub in gear_ids
+        and getattr(seam, "mate_type", "") in ("insert", "seat")
+        for seam in plan.seams))
+    return gear_ids, (root_id if root_is_structural_base else None)
 
 
 def _base_bore_dir(plan, subs, base_id, parent_gear_sub, child_gear_sub):
@@ -382,7 +484,62 @@ def _base_bore_dir(plan, subs, base_id, parent_gear_sub, child_gear_sub):
     if a is None or b is None:
         return None
     d = b - a
-    return d if float(np.linalg.norm(d)) > 1e-9 else None
+    # Guard: if the two bore declarations are collapsed / near-coincident (a common boss/manager
+    # lapse), this direction is meaningless — return None so the seam separation_axis / boss-axis
+    # fallback governs the mesh separation instead of a degenerate hint.
+    return d if float(np.linalg.norm(d)) > 1e-3 else None
+
+
+def _rot_a_to_b(a: np.ndarray, b: np.ndarray) -> np.ndarray:
+    """4x4 rotation taking unit vector a onto unit vector b (identity if already aligned;
+    180° about any perpendicular if antiparallel)."""
+    a = _unit(np.asarray(a, float)); b = _unit(np.asarray(b, float))
+    c = float(np.dot(a, b))
+    if c > 1 - 1e-9:
+        return np.eye(4)
+    if c < -1 + 1e-9:
+        perp = np.cross(a, [1.0, 0, 0])
+        if float(np.linalg.norm(perp)) < 1e-6:
+            perp = np.cross(a, [0, 1.0, 0])
+        return tf.rotation_matrix(np.pi, _unit(perp))
+    v = np.cross(a, b)
+    return tf.rotation_matrix(float(np.arccos(max(-1.0, min(1.0, c)))), _unit(v))
+
+
+def _cluster_orient_to_seat_axis(plan, subs: dict, driver_gear: str, base_id, log) -> np.ndarray:
+    """World pose to pin the driver gear stage so its spin axis aligns with the BOSS-declared
+    seat axis of the bore it inserts into. Returns identity if that can't be resolved (falls
+    back to the gear's build-local orientation)."""
+    if base_id is None:
+        return np.eye(4)
+    seam = next((s for s in plan.seams
+                 if s.kind == "weld" and getattr(s, "mate_type", "") == "insert"
+                 and s.parent_sub == base_id and s.child_sub == driver_gear), None)
+    if seam is None:
+        return np.eye(4)
+    spec = next((s for s in plan.subassemblies if s.id == base_id), None)
+    fr = next((f for f in (spec.frames or []) if f.name == seam.parent_frame), None) if spec else None
+    if fr is None:
+        return np.eye(4)
+    seat_axis_w = _unit(np.asarray(fr.axis, float))
+    if float(np.linalg.norm(seat_axis_w)) < 1e-9:
+        return np.eye(4)
+    # Driver gear's own spin axis in its child-root frame (its gear link's axis).
+    dgear = subs.get(driver_gear)
+    gm = _gear_link(dgear, seam, 1) if dgear is not None else None
+    if gm is None:
+        # fall back to the mesh gear resolution via the power seam owner
+        pseam = next((s for s in plan.seams if s.kind == "power"
+                      and (s.parent_sub == driver_gear or s.child_sub == driver_gear)), None)
+        if pseam is not None and dgear is not None:
+            gm = _gear_link(dgear, pseam, 0 if pseam.parent_sub == driver_gear else 1)
+    if gm is None:
+        return np.eye(4)
+    axis_local, _c = _link_in_root(dgear, gm.name)
+    R = _rot_a_to_b(axis_local, seat_axis_w)
+    log(f"[mesh] cluster oriented: driver '{driver_gear}' spin axis -> boss seat axis "
+        f"{tuple(round(x,3) for x in seat_axis_w)} (from '{base_id}.{seam.parent_frame}')")
+    return R
 
 
 def _place_mesh_cluster(plan, subs: dict, gear_ids: set, base_id, log) -> dict:
@@ -402,9 +559,30 @@ def _place_mesh_cluster(plan, subs: dict, gear_ids: set, base_id, log) -> dict:
 
     driver_seam = next((s for s in power if getattr(s, "driver", False)), None)
     root_gear = (driver_seam.parent_sub if driver_seam else power[0].parent_sub)
-    placed: dict = {root_gear: np.eye(4)}
+    # Orient the WHOLE cluster so the driver gear's spin axis points along the BOSS-DECLARED
+    # seat axis (the one authoritative direction: the axis a shaft runs through its bore).
+    # Otherwise the driver is pinned at identity and the cluster inherits the gear's build-local
+    # +Z spin axis, which need not match how the housing bores were declared -> shafts weld at a
+    # right angle to the housing and float off. We read seat.axis from the driver's insert weld.
+    T_root = _cluster_orient_to_seat_axis(plan, subs, root_gear, base_id, log)
+    placed: dict = {root_gear: T_root}
+    # DIAGNOSTIC: driver's spin axis in world after orientation (should equal the seat axis).
+    try:
+        _dg = subs.get(root_gear)
+        _pseam0 = next((s for s in plan.seams if s.kind == "power"
+                        and (s.parent_sub == root_gear or s.child_sub == root_gear)), None)
+        _gm0 = _gear_link(_dg, _pseam0, 0 if _pseam0 and _pseam0.parent_sub == root_gear else 1) if (_dg and _pseam0) else None
+        if _gm0 is not None:
+            _axl, _ = _link_in_root(_dg, _gm0.name)
+            _axw = T_root[:3, :3] @ _axl
+            log(f"[mesh] DIAG driver '{root_gear}' gear '{_gm0.name}' local-axis {np.round(_axl,3)} "
+                f"-> world {np.round(_axw,3)} (want seat axis)")
+    except Exception as _e:
+        log(f"[mesh] DIAG driver axis check failed ({type(_e).__name__})")
     queue = [root_gear]
     seen = {root_gear}
+    claimed_gears: set = set()  # gear link names already bound to a mesh seam (per-sub-agnostic
+                                # names are namespaced by build, so collisions across subs are nil)
     while queue:
         cur = queue.pop(0)
         for seam in by_parent.get(cur, []):
@@ -412,12 +590,16 @@ def _place_mesh_cluster(plan, subs: dict, gear_ids: set, base_id, log) -> dict:
                 continue
             parent = subs[seam.parent_sub]
             child = subs[seam.child_sub]
-            gp = _gear_link(parent, seam.mesh_pair, 0)
-            gc = _gear_link(child, seam.mesh_pair, 1)
+            gp = _gear_link_disambiguated(parent, seam, 0, claimed_gears)
+            gc = _gear_link_disambiguated(child, seam, 1, claimed_gears)
             if gp is None or gc is None:
                 raise AssemblerError(
-                    f"power seam '{seam.id}': mesh_pair {seam.mesh_pair} names a gear not "
-                    f"found in its sub")
+                    f"power seam '{seam.id}': could not resolve the meshing gears — the mesh "
+                    f"frames '{seam.parent_frame}'/'{seam.child_frame}' were not realized on a "
+                    f"gear link and mesh_pair {seam.mesh_pair} names no built gear. Realize each "
+                    f"mesh frame on its gear.")
+            claimed_gears.add(gp.name)
+            claimed_gears.add(gc.name)
             r_p = _gear_pitch_r_mm(gp)
             r_c = _gear_pitch_r_mm(gc)
             if not r_p or not r_c:
@@ -448,15 +630,22 @@ def _place_mesh_cluster(plan, subs: dict, gear_ids: set, base_id, log) -> dict:
                             else np.cross(axis_w, [1.0, 0, 0]))
             center_c_w = center_p_w + C * sep
 
-            # Child root pose: keep the child's own orientation (its gear axis already
-            # points +Z like the parent's in these plans), translate so the child gear
-            # center lands at center_c_w.
+            # Child root pose: ROTATE the child so its gear spin axis aligns with the parent
+            # gear's WORLD axis (the whole cluster is rigid — same orientation as the driver,
+            # which we may have re-oriented to the boss seat axis). Then translate so the child
+            # gear center lands at center_c_w. Without the rotation, downstream stages keep their
+            # build-local +Z axis while the driver points along +X → the gears sit at 90° and
+            # never mesh.
             axis_c_root, center_c_root = _link_in_root(child, gc.name)
-            Tc = np.eye(4)
-            Tc[:3, 3] = center_c_w - center_c_root
+            R = _rot_a_to_b(axis_c_root, axis_w)
+            Tc = R.copy()
+            center_c_root_rot = (R[:3, :3] @ center_c_root)
+            Tc[:3, 3] = center_c_w - center_c_root_rot
             placed[seam.child_sub] = Tc
             log(f"[mesh] placed '{seam.child_sub}' at C={C*1000:.1f}mm from "
                 f"'{seam.parent_sub}' (r={r_p:.1f}+{r_c:.1f}) so '{gp.name}'~'{gc.name}' mesh")
+            log(f"[mesh] DIAG '{seam.child_sub}' world center={np.round(center_c_w,4)} "
+                f"sep={np.round(sep,3)} (parent center={np.round(center_p_w,4)})")
             seen.add(seam.child_sub)
             queue.append(seam.child_sub)
     return {k: v for k, v in placed.items() if k in gear_ids}
@@ -488,6 +677,163 @@ def _derive_base_pose(plan, subs: dict, base_id: str, placed_root: dict, log):
         f"(bore '{seam.parent_frame}' <- shaft '{seam.child_frame}')")
 
 
+def _override_base_bores(plan, subs: dict, base_id: str, placed_root: dict, log) -> None:
+    """DETERMINISTIC bore placement: the assembler OWNS where each housing bore sits, derived from
+    the shaft it mates — NOT from where the manager built/realized its bearing.
+
+    The weld path (`_bridge_pose_from_ports`) reads only the REALIZED seat pose from
+    ``base.sub_frames``, never the boss's declared axis. The housing manager routinely realizes all
+    seats collapsed on the body root at origin (built its bearings on the wrong axis), so shafts
+    weld at the origin and float outside the housing. Here, for each insert seam, we REWRITE the
+    base's realized seat frame so it lands at the mated shaft's already-solved WORLD pose. The
+    weld-BFS then places each shaft at its own bore. This mirrors `_place_mesh_cluster`: derive from
+    real solved geometry, ignore the manager's coordinates.
+
+    Must run AFTER the shaft cluster is in ``placed_root`` and the base root is pinned (either at
+    origin when the base IS root_sub, or by `_derive_base_pose`), and BEFORE the weld-BFS so the
+    corrected frames are consumed. Mutates ``base.sub_frames`` in place (read live by
+    `_frame_realized`); no re-persist needed."""
+    base = subs.get(base_id)
+    if base is None or base.model is None:
+        return
+    T_base_root = placed_root.get(base_id)
+    if T_base_root is None:
+        return
+    inv_base = tf.inverse_matrix(T_base_root)
+    r2l = _root_to_link(base.model)
+    entries = {e.get("frame"): e for e in (base.sub_frames or [])}
+    n = 0
+    skips: list[str] = []
+    insert_seams = 0
+    for seam in plan.seams:
+        if seam.kind != "weld" or getattr(seam, "mate_type", "") != "insert":
+            continue
+        if seam.parent_sub != base_id:
+            continue
+        insert_seams += 1
+        if seam.child_sub not in placed_root:
+            skips.append(f"{seam.child_sub}.{seam.child_frame}: child not in placed_root "
+                         f"(have {sorted(placed_root)})")
+            continue
+        child = subs.get(seam.child_sub)
+        if child is None or child.model is None:
+            skips.append(f"{seam.child_sub}: child sub/model missing")
+            continue
+        try:
+            _cL, T_cRoot_cf = _frame_in_root(child, seam.child_frame)   # shaft frame in child-root
+        except AssemblerError:
+            skips.append(f"{seam.child_sub}.{seam.child_frame}: child_frame not found in child")
+            continue
+        T_world_shaft = placed_root[seam.child_sub] @ T_cRoot_cf        # shaft frame in WORLD
+        _sax = T_world_shaft[:3, :3] @ np.array([0, 0, 1.0])
+        log(f"[mesh] DIAG bore '{seam.parent_frame}' <- '{seam.child_sub}': shaft world spin(local+Z) "
+            f"{np.round(_sax,3)}  placed_root rot-diag={np.round(np.diag(placed_root[seam.child_sub])[:3],3)}")
+        entry = entries.get(seam.parent_frame)
+        if entry is None:
+            skips.append(f"{base_id}.{seam.parent_frame}: base seat frame unrealized "
+                         f"(have {sorted(entries)})")
+            continue                                                   # unrealized -> gate owns it
+        bore_link = entry.get("link")
+        T_root_bore_link = r2l.get(bore_link)
+        if T_root_bore_link is None:
+            skips.append(f"{base_id}.{seam.parent_frame}: bore link '{bore_link}' not in r2l")
+            continue
+        # want: T_base_root @ (r2l[bore_link] @ local_new) == T_world_shaft
+        local_new = tf.inverse_matrix(T_root_bore_link) @ inv_base @ T_world_shaft
+        xyz, rpy = _decompose(local_new)
+        entry["local_xyz_m"] = list(xyz)
+        entry["local_rpy_rad"] = list(rpy)
+        n += 1
+        log(f"[mesh] bore '{seam.parent_frame}' on base '{base_id}' relocated onto solved shaft "
+            f"'{seam.child_sub}.{seam.child_frame}' (deterministic; ignores manager bore coords)")
+    if n:
+        log(f"deterministic bore placement: {n} housing seat(s) relocated onto their shafts")
+    else:
+        log(f"[mesh] deterministic bore placement: NO seats relocated on base '{base_id}' "
+            f"({insert_seams} insert seam(s) targeting it)")
+        for s in skips:
+            log(f"[mesh]   skip: {s}")
+
+
+def _assemble_manager_py(plan, subs: dict, ctx, *, settings=None, log_fn=print):
+    """方案B assembler: the managers authored parts in FULL-MACHINE GLOBAL coordinates via
+    cq.Assembly, so there is nothing to solve — just namespace + consolidate. This replaces
+    the ~250-line libslvs cross-sub solve / mesh-cluster / weld-bridge machinery, which only
+    existed to reconcile sub-local frames into world coordinates. Here every sub's poses are
+    already global (parent="" roots at their global location), so we concatenate them
+    verbatim, copy the STLs, gather cross-sub mesh_pairs from the plan's power seams, and
+    emit the merged model + URDF/MJCF."""
+    def log(m):
+        log_fn(f"[assembler] {m}")
+
+    for s in plan.subassemblies:
+        if s.id not in subs or subs[s.id].model is None:
+            raise AssemblerError(f"missing built subassembly '{s.id}'")
+    os.makedirs(ctx.meshes_dir, exist_ok=True)
+
+    links: list = []
+    poses: list = []
+    for s in plan.subassemblies:
+        sub = subs[s.id]
+        links.extend(_namespaced_links(sub, ctx.meshes_dir, ns_id=s.id))
+        # Keep ALL poses INCLUDING each sub's root pose (parent="" child=root): in
+        # manager_py mode that root pose carries the sub's authored global placement, so we
+        # must NOT drop it the way the weld-based path does.
+        root = sub.model.root_link
+        for p in sub.model.poses:
+            poses.append(PoseSpec(
+                name=_ns(s.id, p.name),
+                parent=_ns(s.id, p.parent) if p.parent else "",
+                child=_ns(s.id, p.child),
+                xyz_m=tuple(p.xyz_m), rpy_rad=tuple(p.rpy_rad)))
+        # Every part that has no explicit pose still needs one; py_manager emits a
+        # place_<name> pose per part, so this is covered.
+
+    # Cross-sub mesh pairs from the plan's power seams (each side namespaced by its sub).
+    mesh_pairs: list = []
+    for seam in plan.seams:
+        if seam.kind == "power" and getattr(seam, "mesh_pair", ()):
+            mp = seam.mesh_pair
+            if len(mp) == 2:
+                mesh_pairs.append((_ns(seam.parent_sub, mp[0]),
+                                   _ns(seam.child_sub, mp[1])))
+
+    # Driver: propagate the boss's driver seam onto the driving link.
+    by_name = {l.name: l for l in links}
+    driver_seam = next((s for s in plan.seams if getattr(s, "driver", False)), None)
+    if driver_seam is not None and getattr(driver_seam, "mesh_pair", ()):
+        owner = getattr(driver_seam, "owner_sub", "") or driver_seam.parent_sub
+        dl = by_name.get(_ns(owner, driver_seam.mesh_pair[0]))
+        if dl is not None:
+            if dl.dof == "fixed":
+                dl.dof = "spin"
+            dl.driver = True
+            log(f"marked '{dl.name}' as the machine driver (from seam '{driver_seam.id}')")
+
+    root_link = _ns(plan.root_sub, subs[plan.root_sub].model.root_link)
+    final = KinematicModel(name=plan.name, root_link=root_link,
+                           links=links, poses=poses, mesh_pairs=mesh_pairs)
+    log(f"manager_py merge: {len(links)} links + {len(poses)} poses from "
+        f"{len(plan.subassemblies)} subassemblies (authored global coords, no solve)")
+    try:
+        _validate_model(final)
+    except ManagerError as e:
+        raise AssemblerError(f"assembled model failed validation: {e}") from e
+    build_urdf(final, ctx)
+    try:
+        save_model(final, ctx.model_json_path)
+    except Exception as e:
+        log(f"WARNING: could not save assembled kinematic_model.json: {e}")
+    ok, err = validate_urdf(ctx.urdf_path, require_meshes=False)
+    if not ok:
+        raise AssemblerError(f"assembled URDF topology invalid: {err}")
+    ok2, _ = validate_urdf(ctx.urdf_path, require_meshes=True)
+    log(f"wrote {ctx.urdf_path} (links={len(final.links)}, poses={len(final.poses)}, "
+        f"root='{final.root_link}', meshes ok={ok2})")
+    _write_assembled_mjcf(final, ctx, settings, log)
+    return final
+
+
 def assemble(plan, subs: dict, ctx, *, settings=None, log_fn=print) -> KinematicModel:
     """Stitch the built subassemblies into one final KinematicModel + model.urdf.
 
@@ -496,6 +842,8 @@ def assemble(plan, subs: dict, ctx, *, settings=None, log_fn=print) -> Kinematic
     Raises AssemblerError on a structural problem (missing sub/frame, or a resulting
     non-tree, surfaced by manager._validate_model).
     """
+    if settings is not None and getattr(settings, "manager_py", False):
+        return _assemble_manager_py(plan, subs, ctx, settings=settings, log_fn=log_fn)
     def log(m):
         log_fn(f"[assembler] {m}")
 
@@ -554,15 +902,65 @@ def assemble(plan, subs: dict, ctx, *, settings=None, log_fn=print) -> Kinematic
         if seam.kind == "weld":
             weld_by_parent.setdefault(seam.parent_sub, []).append(seam)
 
-    # SOLVE-THEN-BUILD: if subs are coupled by gear meshes, place the meshing cluster at true
-    # center-distance FIRST (radii from the built gears), so gears provably mesh; the passive
-    # base is then a follower (below). Gear stages placed here are skipped by the weld-BFS.
+    # One cross-sub placement authority. The legacy closed-form solver may seed libslvs,
+    # but its poses are never accepted by the authoritative backend as fallback output.
     gear_ids, base_id = _classify_subs(plan, subs)
-    mesh_placed = _place_mesh_cluster(plan, subs, gear_ids, base_id, log_fn) if gear_ids else {}
+    seed_placed = _place_mesh_cluster(plan, subs, gear_ids, base_id, log_fn) if gear_ids else {}
+    backend = getattr(settings, "cross_sub_solver", "slvs") if settings is not None else "slvs"
+    if gear_ids and backend == "slvs":
+        from .slvs_adapter import report_dict, solve_cross_sub_placements, SlvsSolveError
+        helpers = {"frame_in_root": _frame_in_root, "link_in_root": _link_in_root,
+                   "gear_link": _gear_link, "gear_radius": _gear_pitch_r_mm,
+                   "gear_face_width": _gear_face_width_mm,
+                   "gear_face_center_offset": _gear_face_center_offset_mm}
+        try:
+            solved, problem = solve_cross_sub_placements(
+                plan, subs, seed_placed, gear_ids, base_id,
+                helpers=helpers, log_fn=log_fn)
+        except SlvsSolveError as e:
+            report = e.failure_report or {"backend": "slvs", "authority": "libslvs",
+                                          "status": "failed", "error": str(e)}
+            report_path = os.path.join(ctx.run_dir, "assembly_constraint_report.json")
+            try:
+                os.makedirs(ctx.run_dir, exist_ok=True)
+                with open(report_path, "w", encoding="utf-8") as f:
+                    json.dump(report, f, indent=2)
+            except Exception:
+                report_path = ""
+            raise AssemblerError(f"authoritative libslvs solve failed: {e}",
+                                 kind="authoritative_solver", failure_report=report,
+                                 report_path=report_path) from e
+        mesh_placed = solved.placements
+        try:
+            os.makedirs(ctx.run_dir, exist_ok=True)
+            with open(os.path.join(ctx.run_dir, "assembly_constraint_report.json"), "w",
+                      encoding="utf-8") as f:
+                json.dump(report_dict(solved, problem), f, indent=2)
+        except Exception as e:
+            raise AssemblerError(f"could not persist authoritative constraint report: {e}") from e
+    elif gear_ids and backend == "closed_form":
+        mesh_placed = seed_placed
+        log_fn("[slvs] WARNING: using explicit legacy closed_form backend")
+    elif gear_ids:
+        raise AssemblerError(f"unknown cross_sub_solver '{backend}'")
+    else:
+        mesh_placed = {}
 
     placed_root: dict = {plan.root_sub: np.eye(4)}
-    placed_root.update(mesh_placed)                 # gear stages solved by mesh
+    placed_root.update(mesh_placed)
     n_weld = 0
+
+    # In slvs mode the simultaneous constraint solution already owns all shaft/housing
+    # placement. Running a per-bore override would introduce a second source of truth.
+    if backend == "closed_form" and base_id is not None and mesh_placed:
+        if base_id != plan.root_sub and base_id not in placed_root:
+            _derive_base_pose(plan, subs, base_id, placed_root, log_fn)
+        placed_root.setdefault(base_id, np.eye(4))
+        _override_base_bores(plan, subs, base_id, placed_root, log_fn)
+    elif backend == "slvs" and base_id is not None:
+        placed_root.setdefault(base_id, np.eye(4))
+        log_fn("[slvs] housing mount constraints solved simultaneously; legacy bore override disabled")
+
     queue = [plan.root_sub]
     seen = {plan.root_sub} | set(mesh_placed)       # mesh-placed subs are already positioned
     queue.extend(k for k in mesh_placed if k != plan.root_sub)
@@ -623,12 +1021,9 @@ def assemble(plan, subs: dict, ctx, *, settings=None, log_fn=print) -> Kinematic
     log(f"added {n_weld} weld bridge pose(s); {n_power} power/mesh seam(s) couple "
         f"by contact (no pose)")
 
-    # SOLVE-THEN-BUILD: place the passive base as a follower of the solved gear cluster, so
-    # its bores land on the solved shaft positions (instead of the boss inventing bore coords
-    # the gears must match). Only when the base is a NON-root follower — if the base is the
-    # root sub it stays pinned at the origin and the gears are placed absolutely around it.
-    if base_id is not None and base_id != plan.root_sub and mesh_placed:
-        _derive_base_pose(plan, subs, base_id, placed_root, log_fn)
+    # (Base pose + deterministic bore placement already ran BEFORE the weld-BFS above, so the
+    # welded seat frames are the shaft-derived ones. The old post-BFS _derive_base_pose call here
+    # was too late to affect the weld and is removed.)
 
     # The machine's single power INPUT is the driving link of the seam marked driver.
     # Pure contact needs the driver flag on a LINK (the physics test spins that part's
@@ -865,6 +1260,34 @@ def auto_nudge_overlaps(final, plan, subs, ctx, *, settings=None, log_fn=print) 
     seamed = set()
     for seam in plan.seams:
         seamed.add(frozenset((seam.parent_sub, seam.child_sub)))
+
+    # Subs coupled by a gear MESH (power seam) form a rigid cluster whose relative poses are
+    # solved precisely by _place_mesh_cluster to hit true center-distance. Their world AABBs
+    # routinely overlap along the shaft line (large gear radii), but they must NEVER be nudged
+    # apart — that breaks the mesh and flings a stage across the scene. Treat every pair of subs
+    # in the same mesh cluster as seamed so the box-overlap separator leaves them alone. The
+    # cluster is the transitive closure over power seams.
+    mesh_adj: dict = {}
+    for seam in plan.seams:
+        if seam.kind == "power":
+            mesh_adj.setdefault(seam.parent_sub, set()).add(seam.child_sub)
+            mesh_adj.setdefault(seam.child_sub, set()).add(seam.parent_sub)
+    _mesh_seen: set = set()
+    for start in list(mesh_adj):
+        if start in _mesh_seen:
+            continue
+        comp = []
+        stack = [start]
+        while stack:
+            n = stack.pop()
+            if n in _mesh_seen:
+                continue
+            _mesh_seen.add(n)
+            comp.append(n)
+            stack.extend(mesh_adj.get(n, ()))
+        for i in range(len(comp)):
+            for j in range(i + 1, len(comp)):
+                seamed.add(frozenset((comp[i], comp[j])))
 
     nudges: dict = {}
     for _pass in range(_NUDGE_MAX_PASSES):

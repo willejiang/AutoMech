@@ -114,6 +114,18 @@ def manager_schema_gate(model) -> list[GateError]:
                     f"link '{l.name}' has no positive size dimension (size_mm={size})",
                     l.name))
 
+    # A renderable URDF tree permits each link exactly one parent pose. Multiple mates may
+    # describe contact, but the compiled KinematicModel placement forest cannot parent one
+    # child twice; yourdfpy otherwise fails only after every STL was generated.
+    parents={}
+    for p in model.poses:
+        if not p.parent:continue
+        if p.child in parents:
+            errors.append(GateError("manager","ERR_SCHEMA_MGR_MULTIPARENT",
+              f"link '{p.child}' is placed by multiple poses '{parents[p.child]}' and '{p.name}' — keep exactly one placement parent",
+              p.child))
+        else:parents[p.child]=p.name
+
     # mesh_pairs must name real links (else the transmission detector + MJCF break).
     for pair in getattr(model, "mesh_pairs", []) or []:
         if len(pair) != 2:
@@ -146,6 +158,7 @@ def boss_schema_gate(plan) -> list[GateError]:
     weld-graph spans root) stays in _validate_plan / boss_gate."""
     errors: list[GateError] = []
     sub_ids = {s.id for s in plan.subassemblies}
+    frame_names={s.id:{f.name for f in s.frames or []} for s in plan.subassemblies}
 
     for s in plan.subassemblies:
         if not (s.frames or []):
@@ -178,6 +191,14 @@ def boss_schema_gate(plan) -> list[GateError]:
             errors.append(GateError(
                 "boss", "ERR_SCHEMA_BOSS_OWNER",
                 f"seam '{seam.id}' owner_sub '{seam.owner_sub}' is not a subassembly",
+                seam.id))
+        rp=getattr(seam,"rear_parent_frame","");rc=getattr(seam,"rear_child_frame","")
+        if bool(rp)!=bool(rc) or (rp and (seam.kind!='weld' or
+                rp not in frame_names.get(seam.parent_sub,set()) or
+                rc not in frame_names.get(seam.child_sub,set()))):
+            errors.append(GateError(
+                "boss","ERR_SCHEMA_BOSS_THROUGH_PAIR",
+                f"seam '{seam.id}' needs a complete valid rear_parent_frame/rear_child_frame pair",
                 seam.id))
 
     drivers = [s.id for s in plan.seams if s.driver]

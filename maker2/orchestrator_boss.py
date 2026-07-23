@@ -40,22 +40,67 @@ def _worker_build_all(model, ctx, settings, log_fn):
     return _ba(model, ctx, settings, log_fn=log_fn)
 
 
+def _try_contract_repair(kind, detail, plan, subs, settings, log_fn) -> bool:
+    """Gate-fault debugger: fix a CONTRACT (naming/realization) fault IN PLACE instead of a full
+    boss re-plan. Deterministic repair first (fault_repair), then an LLM contract-debugger
+    fallback (gated by settings.enable_contract_debugger, default on). Returns True if anything
+    was repaired (caller should RETRY the failed gate/assemble); False -> fall back to re-plan."""
+    from . import fault_repair
+    rr = fault_repair.repair_contract_fault(kind, plan, subs, detail, log_fn=log_fn)
+    if not rr.repaired and getattr(settings, "enable_contract_debugger", True):
+        try:
+            from . import contract_debugger
+            rr = contract_debugger.debug_contract_fault(kind, detail, plan, subs, settings,
+                                                        log_fn=log_fn)
+        except Exception as e:
+            log_fn(f"[repair] contract-debugger errored ({type(e).__name__}: {e}); re-planning")
+            return False
+    if rr.repaired:
+        log_fn(f"[repair] contract fault fixed in place ({rr.note.strip() or 'see above'}) — "
+               f"retrying without a boss re-plan")
+        log_fn("ARTIFACT_JSON:" + json.dumps({
+            "kind": "gate", "layer": "repair", "code": "CONTRACT_REPAIRED",
+            "detail": rr.note.strip(), "ok": True}))
+    return rr.repaired
+
+
 def _sub_frames_to_dict(model, contract_frames=None) -> list:
     """The manager's realized interface frames, JSON-ready.
 
-    Primary source is ``model.frames_realized`` (the manager's own frame->link mapping).
-    FALLBACKS for a frame the manager DECLARED no realization for (a common LLM lapse
-    that otherwise crashes the assembler and loops the whole boss pipeline):
+    PRIORITY 0 — BUILDER-OWNED BINDING: a `mount` frame whose `mounts_part` names a link that
+    ACTUALLY EXISTS in this sub is realized on that link. The boss no longer authors
+    `mounts_part` (it cannot know the builder's part names — that guess was the seating bug);
+    this only fires when the MANAGER itself named one of its OWN parts for the frame, which is a
+    valid builder-owned binding (no cross-agent name guess). A `mounts_part` that names a
+    non-existent link is ignored (the manager's frames_realized / fallbacks handle the frame).
+
+    Then ``model.frames_realized`` (the manager's own frame->link+offset, which supports a
+    positioned local offset so a seat lands at a bore's position) supplies the rest, with
+    FALLBACKS for a frame the manager declared nothing for:
       1. name-match: a link named EXACTLY like the frame (the marker-link convention);
-      2. mount-role -> root link: a structural `mount` frame (a housing/bridge/plate
-         mounting face) is realized by the subassembly's ROOT link by convention, at the
-         root's local origin. This is safe (the root IS the structural body) and rescues
-         the frequent case where the manager built the housing but didn't declare it.
+      2. mount-role -> root link: ONLY a `mount` frame with NO mounts_part (a genuine
+         structural mounting face) is realized by the ROOT link at its origin.
     Frames still unrealized after these are reported by the manager gate (fail-fast)."""
     out = []
     seen: set = set()
+
+    # PRIORITY 0: a mount frame bound (by the MANAGER, to its own real part) -> that link.
+    link_names0 = {l.name for l in model.links}
+    for fr in (contract_frames or []):
+        fname = getattr(fr, "name", "") or ""
+        mp = (getattr(fr, "mounts_part", "") or "").strip()
+        if not fname or fname in seen or not mp:
+            continue
+        if mp in link_names0:
+            out.append({"frame": fname, "link": mp,
+                        "local_xyz_m": [0.0, 0.0, 0.0], "local_rpy_rad": [0.0, 0.0, 0.0]})
+            seen.add(fname)
+        # a mounts_part naming a NON-existent link -> ignore; frames_realized/fallbacks handle it.
+
     for e in getattr(model, "frames_realized", []) or []:
         name = e.get("frame", "")
+        if name in seen:
+            continue                          # a bound frame already realized above
         out.append({
             "frame": name,
             "link": e.get("link", ""),
@@ -77,8 +122,28 @@ def _sub_frames_to_dict(model, contract_frames=None) -> list:
                             "local_xyz_m": [0.0, 0.0, 0.0],
                             "local_rpy_rad": [0.0, 0.0, 0.0]})
                 seen.add(fname)
-            elif getattr(fr, "role", "mount") == "mount" and root in link_names:
-                out.append({"frame": fname, "link": root,   # 2. mount -> root link
+                continue
+            # 2. semantic hardware match. Through-shaft frames are commonly named
+            # input_rear_bearing_datum while the manager part is input_rear_bearing.
+            # Prefer that physical datum over collapsing every mount onto the root.
+            noise={"datum","frame","seat","mount","interface"}
+            ft=set(fname.lower().split("_"))-noise
+            ranked=[]
+            for lname in link_names:
+                lt=set(lname.lower().split("_"))-noise;score=len(ft & lt)
+                if score:ranked.append((score,lname))
+            ranked.sort(reverse=True)
+            if ranked and ranked[0][0]>=2 and (len(ranked)==1 or ranked[0][0]>ranked[1][0]):
+                out.append({"frame":fname,"link":ranked[0][1],
+                            "local_xyz_m":[0.0,0.0,0.0],"local_rpy_rad":[0.0,0.0,0.0]})
+                seen.add(fname)
+            elif (getattr(fr, "role", "mount") == "mount"
+                  and not (getattr(fr, "mounts_part", "") or "").strip()
+                  and root in link_names):
+                # 2. mount -> root link, ONLY for a seat with NO mounts_part (a genuine
+                # structural mounting FACE on the root body). A bound seat is handled by
+                # PRIORITY 0 above; if its part is missing it stays unrealized (gate catches).
+                out.append({"frame": fname, "link": root,
                             "local_xyz_m": [0.0, 0.0, 0.0],
                             "local_rpy_rad": [0.0, 0.0, 0.0]})
                 seen.add(fname)
@@ -128,7 +193,7 @@ def _restore_best_subs(session_root: str, sub_ids, log_fn=print) -> bool:
 
 
 def _load_sub_from_disk(sub_id: str, session_root: str, log_fn=print,
-                        plan=None) -> SubResult:
+                        plan=None, settings=None) -> SubResult:
     """Reload an already-built subassembly (for surgical re-runs that skip it).
 
     When ``plan`` is given, ALSO verify the sub realized every interface frame its
@@ -156,9 +221,18 @@ def _load_sub_from_disk(sub_id: str, session_root: str, log_fn=print,
     ok, _ = validate_urdf(ctx.urdf_path, require_meshes=True)
     # Frame-completeness: a reused sub MUST expose every interface frame its plan spec
     # requires, or it can't be assembled. If any is unrealized, don't reuse — rebuild.
-    if ok and plan is not None:
-        spec = plan.sub_by_id(sub_id)
-        want = {fr.name for fr in (spec.frames if spec else [])}
+    if ok and plan is not None and not getattr(settings, "manager_py", False):
+        # Require the SAME frame set the manager was asked to realize — i.e. the frame
+        # CONTRACT (compiler-named frames when a hardpoint contract exists, boss-plan names
+        # otherwise), not the raw boss-plan sub.frames. frame_contract_for is the single
+        # function the build/write path uses, so routing `want` through it keeps the reuse
+        # baseline in the same naming as what was persisted to sub_frames.json; otherwise a
+        # compiled sub always looks "missing" its frames and is needlessly rebuilt.
+        try:
+            want = {fr.name for fr in (frame_contract_for(plan, sub_id).frames or [])}
+        except Exception:
+            spec = plan.sub_by_id(sub_id)
+            want = {fr.name for fr in (spec.frames if spec else [])}
         got = {e.get("frame") for e in (frames or [])}
         missing = sorted(want - got)
         if missing:
@@ -207,17 +281,25 @@ def build_subassembly(spec, plan, settings, session_root, *,
         if not should_rebuild(prior_model_json, feedback, settings,
                               frame_contract=fc, log_fn=slog):
             slog("keeping prior build (fault is elsewhere) — reused from disk")
-            return _load_sub_from_disk(sub_id, session_root, log_fn=log_fn, plan=plan)
-        try:
-            model, changed, patch_meta = decompose_patch(
-                prior_model_json, feedback, settings,
-                frame_contract=fc, model_json_path=ctx.model_json_path,
-                log_fn=slog)
-            return _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings,
-                                       slog, only_links=changed, patch_meta=patch_meta,
-                                       user_prompt=user_prompt, log_fn=log_fn)
-        except Exception as e:
-            slog(f"patch path failed ({e}); falling back to full rebuild")
+            return _load_sub_from_disk(sub_id, session_root, log_fn=log_fn, plan=plan, settings=settings)
+        # 方案B: the structured JSON PATCH path (decompose_patch) does NOT run the manager's
+        # CadQuery / place_part — it edits pose coordinates as raw JSON. In manager_py mode the
+        # ONLY authoritative source of a part's GLOBAL pose is re-executing the params-driven
+        # python, so a patch would drop the params-authored world coordinate (observed: reused
+        # shafts collapse to Y=0 after a re-plan). Force a full python rebuild instead.
+        if bool(getattr(settings, "manager_py", False)):
+            slog("manager_py: re-plan requires a full python rebuild (no JSON patch path)")
+        else:
+            try:
+                model, changed, patch_meta = decompose_patch(
+                    prior_model_json, feedback, settings,
+                    frame_contract=fc, model_json_path=ctx.model_json_path,
+                    log_fn=slog)
+                return _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings,
+                                           slog, only_links=changed, patch_meta=patch_meta,
+                                           user_prompt=user_prompt, log_fn=log_fn)
+            except Exception as e:
+                slog(f"patch path failed ({e}); falling back to full rebuild")
 
     try:
         slog("manager: decomposing this subassembly under the frame contract ...")
@@ -308,7 +390,8 @@ def _split_decompose(spec, fc, settings, ctx, *, feedback=None, log_fn=print):
         log_fn(f"[split] merged model failed validation ({e}); abandoning split")
         return None
 
-    merged_b = badness(merged, _manager_gate_errors(merged, fc), context={"fc": fc})
+    merged_b = badness(merged, _manager_gate_errors(
+        merged, fc, manager_py=getattr(settings, "manager_py", False)), context={"fc": fc})
     log_fn(f"[split] merged {len(merged.links)} links, badness={merged_b:.2f}")
     return merged
 
@@ -340,7 +423,7 @@ def _decompose_best_of_n(spec, fc, settings, ctx, *, feedback=None, log_fn=print
                 continue
             log_fn(f"[best-of-{n}] candidate {i+1} failed ({e}); keeping earlier best")
             continue
-        errs = _manager_gate_errors(model, fc)
+        errs = _manager_gate_errors(model, fc, manager_py=getattr(settings, "manager_py", False))
         blocking = [e for e in errs if e.code not in _NONBLOCKING_CODES]
         b = badness(model, errs, context={"fc": fc})
         log_fn(f"[best-of-{n}] candidate {i+1}/{n}: badness={b:.2f} "
@@ -430,7 +513,7 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
     # or worker render. A failure fails the sub UP with the specific codes so the boss
     # re-decomposes only this sub — routine geometry/schema faults skip the slow debugger.
     # (Skipped on the patch path: only_links means a targeted re-render, not a fresh model.)
-    if only_links is None:
+    if only_links is None and not getattr(settings, "manager_py", False):
         from .benchmarks import format_errors
         from .benchmarks.schema_gate import manager_schema_gate
         from .benchmarks.manager_gate import manager_gate, frame_drift_errors
@@ -564,7 +647,13 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
              f"(re)building {len(keep)} link(s), keeping "
              f"{len(model.links) - len(keep) - len(edited_names)} prior STL(s)")
 
-    if to_build_model.links:
+    if getattr(settings, "manager_py", False):
+        # 方案B: the manager authored CadQuery that ALREADY built + exported every part's STL
+        # during parse (py_manager.evaluate_manager_python). The worker step is absorbed —
+        # skip geometry generation entirely; the meshes/ dir is already populated.
+        slog("worker absorbed into manager (manager_py): parts already built + exported")
+        part_results = []
+    elif to_build_model.links:
         slog(f"worker ({getattr(settings, 'worker_backend', 'cadquery')}): generating "
              "geometry + exporting per-link STLs ...")
         part_results = _worker_build_all(to_build_model, ctx, settings, log_fn=slog)
@@ -630,7 +719,8 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
     ok2, err2 = validate_urdf(ctx.urdf_path, require_meshes=True)
     success = ((built == len(results)) or (getattr(settings, "allow_partial", False)
                and built > 0)) and ok2
-    slog(f"built {built}/{len(results)} links; URDF(with meshes) ok={ok2}")
+    slog(f"built {built}/{len(results)} links; URDF(with meshes) ok={ok2}"
+         + (f" ({err2})" if not ok2 and err2 else ""))
 
     # Conflict gate: right after the worker built this sub's STLs, check for rigid parts
     # that interpenetrate (the manager places parts blind; the worker owns the geometry —
@@ -638,7 +728,14 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
     # offenders, then we recheck. Deep-think (Phase 6) picks the depth: FULL (whole sub,
     # extended thinking, sub_conflict_max_tries passes) vs SLIM (the 2 conflicting parts,
     # thinking off, 1 pass). If still stuck after the cap, FAIL UP so the boss re-plans.
-    if success and getattr(settings, "enable_sub_conflict_gate", True):
+    #
+    # 方案B (manager_py): DISABLED. Every part's pose is an authoritative params coordinate
+    # (place_part), so the debugger MUST NOT move poses — doing so breaks the 骨牌 truth and
+    # collapses coaxial shafts. Coaxial shaft+gear+bearing legitimately share an axis line and
+    # read as "overlap" here; that is not a real fault to nudge away. A true placement problem
+    # is a params/boss design issue, routed up by precheck — not something to fix by moving parts.
+    _manager_py = bool(getattr(settings, "manager_py", False))
+    if success and not _manager_py and getattr(settings, "enable_sub_conflict_gate", True):
         from . import subcheck, subdebugger
         dbg_mode = settings.debugger_mode() if hasattr(settings, "debugger_mode") else "full"
         dbg_backend = (settings.effective_worker_backend()
@@ -703,7 +800,7 @@ def _finish_subassembly(spec, plan, ctx, run_dir, fc, model, settings, slog,
     # re-check. Re-run those exact frame checks on the FINAL model so the assembler never
     # welds a sub whose frames silently moved (the "3 subs float 24 mm away" failure). Same
     # guard as the pre-debug gate (fresh full build only); BLOCKING — fail the sub UP.
-    if success and only_links is None:
+    if success and only_links is None and not getattr(settings, "manager_py", False):
         from .benchmarks import GateError as _GateError
         from .benchmarks import format_errors as _fmt_frames
         from .benchmarks.manager_gate import frame_drift_errors as _frame_drift
@@ -793,7 +890,7 @@ def build_all_subassemblies(plan, settings, session_root, *,
     reuse_targets = [s for s in plan.subassemblies if s.id in reuse]
     promoted: list = []
     for s in reuse_targets:
-        r = _load_sub_from_disk(s.id, session_root, log_fn=log, plan=plan)
+        r = _load_sub_from_disk(s.id, session_root, log_fn=log, plan=plan, settings=settings)
         if r.ok:
             results[s.id] = r
         else:
@@ -895,13 +992,31 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
     log_fn(f"[boss] deep_think={settings.deep_think} -> worker_backend="
            f"{settings.worker_backend}, debugger={settings.debugger_mode()}")
 
-    def log(m):
-        log_fn(m)
-
     slug = _slug_for(prompt)
     from datetime import datetime, timezone
-    session_root = os.path.abspath(os.path.join(out_dir, f"{slug}_boss"))
+    # Each run gets its OWN directory (slug + start timestamp). Without the stamp every run of
+    # the same prompt reused ONE dir, so successive runs layered their sub_*/plan/run.log on top
+    # of each other and the data read back was a mix of several runs. The stamp is computed once
+    # per run_boss call, so all iterations of THIS run still share the one directory.
+    _stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    session_root = os.path.abspath(os.path.join(out_dir, f"{slug}_boss_{_stamp}"))
     os.makedirs(session_root, exist_ok=True)
+
+    # Tee every log line to <session_root>/run.log so the backend has the SAME full
+    # transcript the UI's RAW LOG shows (fresh file per run — truncated on open).
+    _run_log_path = os.path.join(session_root, "run.log")
+    try:
+        _run_log_fh = open(_run_log_path, "w", encoding="utf-8", buffering=1)
+    except Exception:
+        _run_log_fh = None
+
+    def log(m):
+        log_fn(m)
+        if _run_log_fh is not None:
+            try:
+                _run_log_fh.write(str(m) + "\n")
+            except Exception:
+                pass
     plan_path = os.path.join(session_root, "subassembly_plan.json")
 
     result = {"ok": False, "run_dir": session_root, "render_dir": "",
@@ -1045,6 +1160,50 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
             it += 1; continue
         log("[boss] gate PASSED (schema + support + mesh distance)")
 
+        # 1a. Authoritative geometry compile (flag-gated): for recognized topology,
+        #     freeze a coherent zero-DOF hardpoint contract BEFORE any manager runs.
+        #     The compiler and its gates are authoritative over every derived number;
+        #     unrecognized topology falls back to the legacy hierarchy. Stashed on the
+        #     plan so downstream stages can consume the frozen contract.
+        plan.hardpoint_contract = None
+        compiler_mode = getattr(settings, "geometry_compiler_mode", "auto")
+        # 方案B-v3: in manager_py mode the boss's `params` module is the AUTHORITATIVE
+        # coordinate source — managers derive every global coordinate by calling its
+        # per-frame functions. The geometry compiler would freeze a SECOND, independent
+        # coordinate set and rename frames to contract names, splitting the params world
+        # from the contract world (managers place at params coords while seams weld by
+        # contract coords -> phantom gaps). So skip the compiler entirely here; params +
+        # precheck are the contract now.
+        if getattr(settings, "manager_py", False):
+            compiler_mode = "legacy"
+        if compiler_mode != "legacy":
+            try:
+                from .design.bridge import compile_from_plan
+                _compiled, _contract = compile_from_plan(
+                    plan, prompt, mode=compiler_mode,
+                    out_dir=os.path.join(session_root, "design"), log_fn=log)
+                if _contract is not None:
+                    plan.hardpoint_contract = _contract
+                    # Unify the frame-name vocabulary: rewrite the boss plan's frame names +
+                    # seam references to the AUTHORITATIVE compiler-contract names, so every
+                    # name-keyed consumer (manager gate frame_drift, assembler mount lookup,
+                    # slvs solve) compares like against like. Without this the boss uses
+                    # 'seat_input_front' while the manager realizes 'housing_input_stage_front_
+                    # bore', and every by-name gate silently no-ops -> collapsed seats slip
+                    # through to the final solve. Best-effort; skips cleanly on any mismatch.
+                    try:
+                        from .boss import unify_plan_frame_names
+                        n = unify_plan_frame_names(plan, _contract, log_fn=log)
+                        if n:
+                            log(f"[boss] unified {n} frame name(s) to the compiled contract")
+                    except Exception as e:
+                        log(f"[boss] frame-name unification skipped ({e})")
+            except Exception as e:
+                if compiler_mode == "required":
+                    result["error"] = f"geometry compile failed: {e}"
+                    break
+                log(f"[boss] geometry compile skipped ({e}); using legacy_hierarchy")
+
         # 1b/1c. Coarse appearance proxy (flag-gated): a low-poly whole-machine base
         #        look + a per-sub proportion summary threaded to every manager via the
         #        frame contract. Stashed on the plan so frame_contract_for picks it up
@@ -1058,7 +1217,11 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                 log(f"[boss] appearance proxy skipped ({e})")
 
         # 2. Build subassemblies in parallel (reusing unchanged ones from disk).
-        subs = build_all_subassemblies(plan, settings, session_root,
+        # Managers run as an AgentTeamRunner team (team_managers), collaborating over a
+        # shared revisioned state seeded from the compiled hardpoint contract, instead of
+        # the old one-way fan-out. Same {sub_id: SubResult} contract as before.
+        from .team_managers import run_subassembly_team
+        subs = run_subassembly_team(plan, settings, session_root,
                                        feedback_by_sub=feedback_by_sub, reuse=reuse,
                                        user_prompt=prompt, log_fn=log)
         result["subassemblies"] = [{"id": s.id, "ok": subs[s.id].ok,
@@ -1091,25 +1254,60 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                 part_subs.setdefault(l.name, set()).add(s.id)
         dup_parts = {name: sorted(ss) for name, ss in part_subs.items() if len(ss) > 1}
         if dup_parts:
+            # NOTE: this is WARN-only, not a re-plan trigger. The assembler namespaces every
+            # link as "<sub_id>_<name>", so two subs each owning a part called 'bearing_lower'
+            # become 'input_stage_bearing_lower' vs 'output_stage_bearing_lower' — DISTINCT in
+            # the final model, no collision. Rejecting this raw-name overlap was a FALSE
+            # POSITIVE that forced a boss re-plan; the boss then re-partitioned + RENAMED its
+            # subs, which defeated the id-based reuse and made the SAME fault recur under new
+            # names every iteration -> the run looped to the no-progress cap. The only real
+            # risk (the SAME shared physical part built twice, landing two copies at one
+            # interface frame) is a geometry overlap, which the overlap/precheck gates own.
             dup_list = "; ".join(f"'{n}' in {ss}" for n, ss in sorted(dup_parts.items()))
-            feedback = (
-                "duplicated part NAMES across subassemblies — a part name must be UNIQUE across "
-                "the whole machine: " + dup_list + ". This is almost always because two "
-                "subassemblies each legitimately have their OWN copy of a generic part (its own "
-                "bearings, retaining collar, key, spacer, screw) but you gave both copies the "
-                "SAME name. FIX: give each copy a STAGE-UNIQUE name — e.g. 'bearing_lower' in the "
-                "input and output stages becomes 'input_bearing_lower' and 'output_bearing_lower'. "
-                "Each stage still builds its own part; they just need distinct names. "
-                "ONLY if the two subassemblies truly mean the SAME single physical part (rare) "
-                "should you instead remove it from one and reference it through a shared interface "
-                "frame. Re-plan so every part name is unique.")
             log_fn("ARTIFACT_JSON:" + json.dumps({
                 "kind": "gate", "layer": "boss", "iter": it, "code": "ERR_DUP_PARTS",
-                "detail": dup_list, "culprit": ",".join(sorted(dup_parts)), "ok": False}))
-            log(f"[boss] DISJOINT-PARTS gate FAILED -> re-plan: {len(dup_parts)} part(s) "
-                f"built in multiple subs ({dup_list})")
+                "detail": dup_list, "culprit": ",".join(sorted(dup_parts)), "ok": True}))
+            log(f"[boss] disjoint-parts WARN (namespaced, not blocking): {len(dup_parts)} "
+                f"part name(s) reused across subs ({dup_list})")
+
+        # 2c. CROSS-SUB FRAME-AGREEMENT gate: the two subs a seam joins are built in isolation;
+        #     verify both realized their shared interface frame on the SAME feature (each landed
+        #     where the boss declared it). Catches a manager collapsing a seat onto its root
+        #     origin (the shaft then buries itself in the housing). Deterministic, no LLM ->
+        #     boss re-plan (rebuild the blamed sub).
+        #     方案B-v3: SKIP in manager_py mode. This gate reads the collapsed sub_frames
+        #     (every frame degraded to a part's local origin) and so mis-reads every seat as
+        #     "collapsed" — but manager_py has no declarative realized frames at all; parts sit
+        #     at their params-derived GLOBAL coords, which are apart by construction. precheck's
+        #     weld/gear checks (also params-direct now) are the real coincidence gate.
+        _agree_errs = []
+        if not getattr(settings, "manager_py", False):
+            from .benchmarks.manager_gate import seam_frame_agreement_errors as _seam_agree
+            _agree_errs = _seam_agree(plan, subs)
+        if _agree_errs:
+            for e in _agree_errs:
+                log_fn("ARTIFACT_JSON:" + json.dumps({
+                    "kind": "gate", "layer": "manager", "sub_id": e.culprit,
+                    "code": e.code, "detail": e.detail, "ok": False}))
+            # Gate-fault debugger first: a collapsed seat is a realization fault fixable IN PLACE
+            # (re-point the frame onto its real bore) — no rebuild, no re-plan.
+            if _try_contract_repair("frame_agree", _agree_errs[0].detail, plan, subs, settings, log):
+                _agree_errs2 = _seam_agree(plan, subs)
+                if not _agree_errs2:
+                    log("[boss] frame-agreement repaired in place (no rebuild)")
+                    _agree_errs = []
+                else:
+                    _agree_errs = _agree_errs2
+        if _agree_errs:
+            blamed_subs = {e.culprit for e in _agree_errs}   # culprit = the misrealizing sub
+            for sid in blamed_subs:
+                feedback_by_sub[sid] = (_agree_errs[0].detail + " — rebuild this subassembly, "
+                                        "realizing its interface frame on the real part.")
+            reuse = {s.id for s in plan.subassemblies} - blamed_subs
+            log(f"[boss] frame-agreement FAILED -> rebuild {sorted(blamed_subs)}: "
+                f"{_agree_errs[0].detail[:100]}")
             if not infinite and it >= max_boss_iters - 1:
-                result["error"] = f"duplicated parts across subassemblies: {dup_list}"; break
+                result["error"] = f"frame disagreement: {_agree_errs[0].detail}"; break
             it += 1; continue
 
         # 3. (optional) Per-sub physics: localize a drivetrain fault to its sub_id
@@ -1139,12 +1337,101 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
             final = assembler.assemble(plan, subs, assembly_ctx, settings=settings,
                                        log_fn=log)
         except assembler.AssemblerError as e:
-            # A stitch failure is an interface/plan fault -> re-plan.
-            feedback = f"assembly failed: {e}"
-            log(f"[assembler] FAILED -> boss re-plan: {e}")
-            if not infinite and it >= max_boss_iters - 1:
-                result["error"] = f"assembly failed: {e}"; break
-            it += 1; continue
+            repaired = False
+            if (getattr(e, "kind", "") == "authoritative_solver"
+                    and getattr(settings, "enable_solver_failure_analyzer", True)
+                    and getattr(e, "failure_report", None)):
+                try:
+                    from .assembly_repair import (LocalRepairTransaction,apply_candidate,
+                        generate_repair_candidates,solver_repair_acceptance)
+                    from .assembly_analyzer import analyze_failure
+                    configured=max(1,int(getattr(settings,"solver_local_repair_max_attempts",2)))
+                    # One candidate per currently failing key, plus the configured floor. The
+                    # report may expose several independent rear/gear failures sequentially.
+                    max_local=max(configured,len(str(e.failure_report.get('error','')).split(';'))+2)
+                    current_report=e.failure_report
+                    current_report_path=e.report_path
+                    initial=generate_repair_candidates(current_report,plan,subs,settings)
+                    affected=sorted({sid for c in initial
+                                     for sid in c.rebuild_scope.get("subassemblies",[])})
+                    with LocalRepairTransaction(subs,affected) as tx:
+                        for local_attempt in range(1,max_local+1):
+                            candidates=(initial if local_attempt==1 else
+                                generate_repair_candidates(current_report,plan,subs,settings))
+                            decision=analyze_failure(session_root,current_report,candidates,
+                                settings,log,report_path=current_report_path,
+                                source="slvs",attempt=local_attempt)
+                            log("ARTIFACT_JSON:"+json.dumps({
+                                "kind":"assembly_analysis","iter":it,
+                                "local_attempt":local_attempt,
+                                "failure_id":current_report.get("failure_id"),
+                                "decision":decision}))
+                            cid=(decision.get("selected_candidate_id")
+                                 if decision.get("decision")=="repair" else None)
+                            cand=next((c for c in candidates
+                                       if c.candidate_id==cid and c.allowed),None)
+                            if cand is None:
+                                log(f"[analyzer] escalation: {decision.get('escalation_reason') or decision.get('root_cause')}")
+                                break
+                            escaped=[sid for sid in cand.rebuild_scope.get("subassemblies",[])
+                                     if sid not in affected]
+                            if escaped:
+                                tx.ids.update(escaped);tx.commit();affected.extend(escaped)
+                            log(f"[analyzer] attempt {local_attempt}/{max_local} selected "
+                                f"{cand.candidate_id}: {cand.rationale}")
+                            apply_candidate(cand,subs,settings,log)
+                            repair_ctx=make_run_context(plan.name,session_root,
+                                run_dir=os.path.join(assembly_ctx.run_dir,
+                                                     f"local_repair_{local_attempt}"))
+                            try:
+                                final=assembler.assemble(plan,subs,repair_ctx,
+                                                         settings=settings,log_fn=log)
+                            except assembler.AssemblerError as next_error:
+                                if (getattr(next_error,"kind","")!="authoritative_solver"
+                                        or not getattr(next_error,"failure_report",None)):
+                                    raise
+                                acceptance=solver_repair_acceptance(current_report,
+                                    next_error.failure_report,cand)
+                                if not acceptance['accepted']:
+                                    tx.rollback()
+                                    log(f"[analyzer] attempt {local_attempt} rejected and rolled back: {acceptance}")
+                                    break
+                                tx.commit()
+                                current_report=next_error.failure_report
+                                current_report_path=next_error.report_path
+                                log(f"[analyzer] attempt {local_attempt} accepted as strict improvement; "
+                                    f"checkpointed with remaining failures: {current_report.get('error')}")
+                                continue
+                            assembly_ctx=repair_ctx
+                            repaired=True
+                            log(f"[analyzer] localized repair solved in iteration {it} "
+                                f"after {local_attempt} attempt(s)")
+                            break
+                        if not repaired:
+                            # Keep the last checkpointed strict improvements. Only the most
+                            # recent rejected step is rolled back at its rejection site.
+                            log("[analyzer] localized sequence stopped with accepted checkpoints preserved")
+                except Exception as ae:
+                    log(f"[analyzer] local repair failed safely ({type(ae).__name__}: {ae})")
+            if not repaired:
+                # Structural/name faults retain the existing deterministic-then-LLM repair.
+                if _try_contract_repair("assembler", str(e), plan, subs, settings, log):
+                    try:
+                        final = assembler.assemble(plan, subs, assembly_ctx,
+                                                   settings=settings, log_fn=log)
+                        log("[assembler] re-assembled after contract repair (no re-plan)")
+                    except assembler.AssemblerError as e2:
+                        feedback = f"assembly failed: {e2}"
+                        log(f"[assembler] FAILED after repair -> boss re-plan: {e2}")
+                        if not infinite and it >= max_boss_iters - 1:
+                            result["error"] = f"assembly failed: {e2}"; break
+                        it += 1; continue
+                else:
+                    feedback = f"assembly failed: {e}"
+                    log(f"[assembler] FAILED -> boss re-plan: {e}")
+                    if not infinite and it >= max_boss_iters - 1:
+                        result["error"] = f"assembly failed: {e}"; break
+                    it += 1; continue
         result["render_dir"] = assembly_ctx.run_dir
         result["ok"] = True
         log("ARTIFACT_JSON:" + json.dumps({
@@ -1159,25 +1446,28 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
 
         # 4a-0. MODULE-CONSISTENCY gate: two gears mesh ONLY if they share the same module
         #       (tooth size). A pair with mismatched modules cannot mesh at ANY spacing, so
-        #       catch it here (read module off the BUILT gear parts named by mesh_pair) and
-        #       route to a re-plan before the spacing check. Deterministic, no LLM.
+        #       catch it here (read module off the BUILT gear parts, resolved role-based via the
+        #       mesh FRAME, not the boss's guessed mesh_pair name) and route to a re-plan before
+        #       the spacing check. Deterministic, no LLM.
+        from .assembler import _gear_link as _mesh_gear_link
         _mod_errs = []
         for _seam in plan.seams:
-            _mp = getattr(_seam, "mesh_pair", ()) or ()
-            if _seam.kind != "power" or len(_mp) != 2:
+            if _seam.kind != "power":
                 continue
             _psub = subs.get(_seam.parent_sub); _csub = subs.get(_seam.child_sub)
             if not _psub or not _csub or _psub.model is None or _csub.model is None:
                 continue
-            def _mod_of(_sub, _ln):
-                _lk = next((l for l in _sub.model.links if l.name == _ln), None)
+            _gp = _mesh_gear_link(_psub, _seam, 0); _gc = _mesh_gear_link(_csub, _seam, 1)
+            if _gp is None or _gc is None:
+                continue                          # unresolved -> the assembler gate owns it
+            def _mod_of(_lk):
                 try:
-                    return float((_lk.size_mm or {}).get("module")) if _lk else None
+                    return float((_lk.size_mm or {}).get("module"))
                 except (TypeError, ValueError):
                     return None
-            _mp0 = _mod_of(_psub, _mp[0]); _mp1 = _mod_of(_csub, _mp[1])
+            _mp0 = _mod_of(_gp); _mp1 = _mod_of(_gc)
             if _mp0 and _mp1 and abs(_mp0 - _mp1) > 1e-6:
-                _mod_errs.append((_seam, _mp[0], _mp0, _mp[1], _mp1))
+                _mod_errs.append((_seam, _gp.name, _mp0, _gc.name, _mp1))
         if _mod_errs:
             _s, _a, _ma, _b, _mb = _mod_errs[0]
             _detail = (f"gears '{_a}' (module {_ma:g}) and '{_b}' (module {_mb:g}) are meshed "
@@ -1255,10 +1545,88 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
         log("[assembled] support gate PASSED (weld chain; grounding warned only)")
 
         rep = precheck_mod.precheck(plan, subs, assembly_ctx.urdf_path, log_fn=log)
+        precheck_path = os.path.join(assembly_ctx.run_dir, "precheck_report.json")
+        os.makedirs(assembly_ctx.run_dir, exist_ok=True)
+        with open(precheck_path, "w", encoding="utf-8") as f:
+            json.dump(rep.to_dict(), f, indent=2)
         log("ARTIFACT_JSON:" + json.dumps({
-            "kind": "precheck", "iter": it, "ok": rep.ok,
-            "violations": [{"kind": v.kind, "severity": v.severity,
-                            "sub_id": v.sub_id, "detail": v.detail} for v in rep.violations]}))
+            "kind": "precheck", "iter": it, **rep.to_dict()}))
+        if not rep.ok and getattr(settings, "enable_precheck_failure_analyzer", True):
+            repaired_precheck = False
+            try:
+                from .assembly_repair import (LocalRepairTransaction, apply_candidate,
+                    generate_precheck_repair_candidates, precheck_repair_acceptance)
+                from .assembly_analyzer import analyze_failure
+                baseline = rep.to_dict()
+                candidates = generate_precheck_repair_candidates(
+                    baseline, plan, subs, assembly_ctx, settings)
+                if not candidates:
+                    raise RuntimeError("no proven precheck repair candidate")
+                affected = sorted({sid for c in candidates if c.allowed
+                                   for sid in c.rebuild_scope.get("subassemblies", [])})
+                max_local = max(1, int(getattr(settings, "precheck_local_repair_max_attempts", 2)))
+                with LocalRepairTransaction(subs, affected) as tx:
+                    for local_attempt in range(1, max_local + 1):
+                        attempt_ctx = make_run_context(plan.name, session_root,
+                            run_dir=os.path.join(assembly_ctx.run_dir,
+                                                 f"precheck_local_repair_{local_attempt}"))
+                        os.makedirs(attempt_ctx.run_dir, exist_ok=True)
+                        with open(os.path.join(attempt_ctx.run_dir, "candidate_set.json"),
+                                  "w", encoding="utf-8") as f:
+                            json.dump([c.to_dict() for c in candidates], f, indent=2)
+                        decision = analyze_failure(session_root, baseline, candidates, settings,
+                            log, report_path=precheck_path, source="precheck",
+                            attempt=local_attempt)
+                        with open(os.path.join(attempt_ctx.run_dir, "analyzer_decision.json"),
+                                  "w", encoding="utf-8") as f:
+                            json.dump(decision, f, indent=2)
+                        cid = (decision.get("selected_candidate_id")
+                               if decision.get("decision") == "repair" else None)
+                        cand = next((c for c in candidates
+                                     if c.candidate_id == cid and c.allowed), None)
+                        if cand is None:
+                            log(f"[precheck-analyzer] escalation: "
+                                f"{decision.get('escalation_reason') or decision.get('root_cause')}")
+                            break
+                        if any(sid not in affected for sid in
+                               cand.rebuild_scope.get("subassemblies", [])):
+                            raise RuntimeError("candidate escaped the precheck transaction scope")
+                        apply_candidate(cand, subs, settings, log)
+                        changed_links=set(cand.rebuild_scope.get("links", []))
+                        declared_links=set(cand.target.get("physical_links", []))
+                        if changed_links != declared_links:
+                            raise RuntimeError("candidate rebuild scope does not cover every changed link")
+                        repaired_final = assembler.assemble(plan, subs, attempt_ctx,
+                                                             settings=settings, log_fn=log)
+                        next_rep = precheck_mod.precheck(
+                            plan, subs, attempt_ctx.urdf_path, log_fn=log)
+                        next_report = next_rep.to_dict()
+                        with open(os.path.join(attempt_ctx.run_dir, "precheck_report.json"),
+                                  "w", encoding="utf-8") as f:
+                            json.dump(next_report, f, indent=2)
+                        acceptance = precheck_repair_acceptance(baseline, next_report, cand)
+                        with open(os.path.join(attempt_ctx.run_dir, "acceptance.json"),
+                                  "w", encoding="utf-8") as f:
+                            json.dump(acceptance, f, indent=2)
+                        if not acceptance["accepted"]:
+                            log(f"[precheck-analyzer] attempt {local_attempt} rejected: "
+                                f"{acceptance}")
+                            tx.rollback()
+                            break
+                        final = repaired_final
+                        assembly_ctx = attempt_ctx
+                        rep = next_rep
+                        precheck_path = os.path.join(attempt_ctx.run_dir,
+                                                     "precheck_report.json")
+                        repaired_precheck = True
+                        log(f"[precheck-analyzer] localized physical repair accepted in "
+                            f"iteration {it}, attempt {local_attempt}")
+                        break
+                    if not repaired_precheck:
+                        tx.rollback()
+            except Exception as ae:
+                log(f"[precheck-analyzer] local repair failed safely "
+                    f"({type(ae).__name__}: {ae})")
         if not rep.ok:
             iface = [v for v in rep.violations if v.severity == "interface"]
             if iface:
@@ -1629,7 +1997,8 @@ def main() -> int:
                             log_fn=print)
 
     print(f"[boss] session root: {session_root}")
-    subs = build_all_subassemblies(plan, settings, session_root,
+    from .team_managers import run_subassembly_team
+    subs = run_subassembly_team(plan, settings, session_root,
                                    user_prompt=a.prompt, log_fn=print)
     print("-" * 56)
     ok = sum(1 for r in subs.values() if r.ok)

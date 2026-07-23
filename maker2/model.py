@@ -198,6 +198,12 @@ class MountFrame:
                                                      # fixed by the seat, not guessed). Empty =
                                                      # manager chooses. Use on a base sub with
                                                      # several seats to pin each part to its hole.
+    host_plane: str = ""                             # "YZ"|"XZ"|"XY" — for a bore/seat, the wall
+                                                     # plane the hole pierces (through-axis = its
+                                                     # normal). Authoring clarity + appearance
+                                                     # preview only; NOT required for correctness
+                                                     # (bore position is assembler-owned, derived
+                                                     # from the mated shaft). Empty = infer from axis.
 
 
 # --------------------------------------------------------------------------- #
@@ -321,6 +327,8 @@ class SeamSpec:
     offset_mm: float = 0.0                            # insert seat depth / seat face gap (LOCAL mm)
     clock_rad: float = 0.0                            # roll about the mate axis (0 = don't-care)
     extra_pins: tuple = ()                            # ((parent_port, child_port), ...) anti-spin dowels
+    rear_parent_frame: str = ""                       # optional rear housing bore-plane datum
+    rear_child_frame: str = ""                        # optional rear shaft/bearing datum; validation only
 
 
 @dataclass
@@ -333,6 +341,11 @@ class SubassemblyPlan:
     global_origin_note: str = ""
     subassemblies: list = field(default_factory=list)   # list[SubassemblySpec]
     seams: list = field(default_factory=list)           # list[SeamSpec]
+    params_text: str = ""                               # 方案B: shared params.py source the
+                                                        # boss authors (parameters + relation
+                                                        # functions); flows to each manager via
+                                                        # frame_contract_for so a manager_py
+                                                        # manager derives dims from it.
 
     def sub_by_id(self, sub_id: str) -> "SubassemblySpec | None":
         return next((s for s in self.subassemblies if s.id == sub_id), None)
@@ -354,6 +367,14 @@ class FrameContract:
     appearance_summary: str = ""                     # optional coarse whole-machine
                                                      # layout text (1c), for proportion
                                                      # context; "" when disabled
+    through_mounts: list = field(default_factory=list) # [{seam_id, front_frame, rear_frame,
+                                                     #   neighbor_sub, side}] validation pairs
+    params_text: str = ""                            # 方案B: the boss's shared parameter
+                                                     # module source (params.py). Handed to a
+                                                     # manager_py manager so it can `import
+                                                     # params` and derive every dimension from
+                                                     # the boss's authoritative formulas
+                                                     # instead of hard-coding numbers.
 
 
 @dataclass
