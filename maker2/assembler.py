@@ -53,6 +53,26 @@ def _write_assembled_mjcf(final, ctx, settings, log) -> None:
         log(f"WARNING: could not write assembled model.mjcf: {e}")
 
 
+def _run_geocheck(final, ctx, log) -> None:
+    """D3: after assembly, write a deterministic geometry self-check report (numeric — the
+    reliable fault finder, catches shaft-not-through-part / functional-vs-housing clashes that
+    a rendered view misses) plus a layered render with the housing dropped so internals show.
+    Non-blocking diagnostic, never a gate."""
+    try:
+        from . import geocheck
+        base = os.path.dirname(ctx.model_json_path)
+        meshes_dir = os.path.join(base, "meshes")
+        rep = geocheck.geometry_report(final, meshes_dir)
+        with open(os.path.join(base, "geocheck.txt"), "w", encoding="utf-8") as f:
+            f.write(rep["text"])
+        log(f"geocheck: {rep['n_issues']} issue(s)")
+        png = geocheck.render_layers(final, meshes_dir, os.path.join(base, "geocheck.png"))
+        if png:
+            log(f"geocheck: layered render -> {png}")
+    except Exception as e:
+        log(f"geocheck skipped ({type(e).__name__}: {e})")
+
+
 class AssemblerError(RuntimeError):
     """The subassemblies could not be stitched into one valid machine."""
     def __init__(self, message, *, kind="assembler", failure_report=None, report_path=""):
@@ -831,6 +851,7 @@ def _assemble_manager_py(plan, subs: dict, ctx, *, settings=None, log_fn=print):
     log(f"wrote {ctx.urdf_path} (links={len(final.links)}, poses={len(final.poses)}, "
         f"root='{final.root_link}', meshes ok={ok2})")
     _write_assembled_mjcf(final, ctx, settings, log)
+    _run_geocheck(final, ctx, log)
     return final
 
 
@@ -1117,6 +1138,7 @@ def assemble(plan, subs: dict, ctx, *, settings=None, log_fn=print) -> Kinematic
     log(f"wrote {ctx.urdf_path} (links={len(final.links)}, poses={len(final.poses)}, "
         f"root='{final.root_link}', meshes ok={ok2})")
     _write_assembled_mjcf(final, ctx, settings, log)
+    _run_geocheck(final, ctx, log)
     return final
 
 
