@@ -244,6 +244,21 @@ Emit EXACTLY ONE ```python code block defining a function `build_subassembly()` 
     handed to you. Because you and every sibling manager read the SAME params, meshing gears land
     one center-distance apart, point the same way, and weld points coincide BY CONSTRUCTION —
     there is no separate solving step.
+  * A FUNCTIONAL GEAR THAT RIDES ON A CARRIER STILL ANCHORS TO ITS OWN params MESH FRAME — this is
+    the #1 planetary-gear mistake. A planet gear sits on a carrier pin, so it is TEMPTING to just
+    stack it on the pin (pin base -> pin seat -> gear.base) and let the mate chain decide where it
+    lands. THAT IS WRONG: a planet MESHES with the sun and the ring, so it is a FUNCTIONAL part and
+    its center MUST sit at `params.planet_mesh_<i>()` (or the single `params.planet_mesh()` the boss
+    gave), the SAME gear plane the sun and ring anchor to. The sun/ring anchor there; if the planet
+    only stacks on the pin it lands at some pin-derived axial height (e.g. plate_thickness + fw/2)
+    and misses the gear plane by that much — the three gears no longer share one mesh plane and do
+    not mesh. RULE: for every part that carries a `mesh_id` OR has a matching `params.<name>()`
+    frame, place its center at that params coordinate — even if it also rides on a pin/shaft/carrier.
+    Use the pin only for the RADIAL position (which planet hole) and for spin; take the AXIAL station
+    (the gear-plane coordinate) from params, not from the mate stack. Concretely: connect the
+    planet's `base`/`center` frame so its center reaches `params.planet_mesh_<i>()`, or build the
+    pin/gear so the gear's mid-plane coincides with the params gear plane — do not let plate
+    thickness silently set the gear's axial height.
   * SUBORDINATE / structural parts you DERIVE LOCALLY: the shaft BODY length, spacers, collars,
     keys, fillets. params does NOT define these and is not supposed to. Compute them yourself in
     THIS module from the functional anchors params already gave you — e.g.
@@ -800,6 +815,15 @@ HARD RULES ON PLACEMENT (these make every subassembly line up automatically):
 - SUBORDINATE parts (spacer, shim, collar, shaft body): `a.add` them and `connect` onto a nearby
   part's frame at a station YOU compute from params anchors. Keep coaxial parts at DISTINCT axial
   stations so they never overlap.
+- A GEAR RIDING ON A CARRIER/PIN STILL ANCHORS ITS CENTER TO ITS OWN params MESH FRAME (the #1
+  planetary mistake). A planet gear rides on a carrier pin, but it MESHES with the sun and ring, so
+  it is FUNCTIONAL: its center MUST sit at `params.planet_mesh_<i>()` (the gear plane the sun and
+  ring anchor to), NOT at whatever axial height the pin/plate mate stack happens to produce. If you
+  only stack the planet on the pin (pin base -> seat -> gear.base), it lands at plate_thickness+fw/2
+  and misses the shared gear plane — the three gears no longer mesh. Use the pin for the RADIAL slot
+  and spin only; take the AXIAL station from params. Connect the planet so its center reaches
+  `params.planet_mesh_<i>()`, or size the pin so the gear mid-plane coincides with the params gear
+  plane. Same for any gear that rides on a moving carrier/arm yet must mesh across the machine.
 - A `mesh`-role frame MUST be realized on a real toothed `make_gear(...)` gear, tagged so it pairs
   with the meshing gear the neighbor subassembly builds at the SAME params point.
 - Rotating parts are marked via metadata (not a joint); the ONE input part is the driver.

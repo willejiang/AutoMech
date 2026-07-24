@@ -276,6 +276,25 @@ def diagnose_failure(session_root, report, plan, settings, log_fn=print,
  # sanity: a manager route must name a real sub; else fall back to boss
  if d.get('route') == 'manager' and d.get('blamed_sub') not in sub_ids:
   d['route'] = 'boss'; d['blamed_sub'] = ''
+ # HARD GATE: a verdict reached WITHOUT investigation is untrustworthy. The diagnostician has
+ # read-only tools for exactly this reason; if it produced ZERO successful file reads it only
+ # guessed from the machine's topology (observed: calls=[], evidence "could not access files",
+ # confidence low), then routed to the wrong sub — so every iteration re-guessed and re-routed
+ # to the same wrong place, and the geometry never improved. Refuse an uninvestigated verdict:
+ # signal `reject` so the orchestrator IGNORES this guess and falls back to the DETERMINISTIC
+ # severity routing (which localizes by the precheck violation's own sub_id, no LLM guessing).
+ # A successful read = a recorded call with no error whose tool actually reads content.
+ _READERS = {'read_json', 'read_text', 'read_source', 'search_log', 'search_files'}
+ investigated = any(c.get('tool') in _READERS and not c.get('error') for c in calls)
+ if not investigated:
+  d['confidence'] = 'low'
+  d['uninvestigated'] = True
+  d['reject'] = True
+  d['root_cause'] = ('DIAGNOSTICIAN DID NOT INVESTIGATE (no file was read) — verdict discarded. '
+                     + str(d.get('root_cause', ''))[:400])
+  if log_fn:
+   log_fn('[diagnostician] REJECTED uninvestigated verdict (0 file reads) '
+          '-> orchestrator will use deterministic severity routing')
  trace = {'source': 'precheck_diagnostician', 'attempt': attempt,
           'failure_id': report.get('failure_id'), 'calls': calls, 'decision': d}
  trace_path = analyzer_trace_path(session_root, 'diagnostician', report.get('failure_id'), attempt)

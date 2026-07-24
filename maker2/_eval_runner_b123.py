@@ -112,17 +112,27 @@ try:
         R, Tv = _RT(wloc)
         meta = dict(getattr(leaf, "cadpy_metadata", {}) or {})
         stl = os.path.join(meshes_dir, name + ".stl")
+        # The pose (R,Tv) above is the FULL local->world transform for this leaf. The STL and bbox
+        # must therefore be the leaf's PURE LOCAL geometry (its own placement stripped), so the
+        # downstream `pose applied to local mesh` gives the correct world position ONCE. Exporting
+        # the leaf as-is bakes its in-sub station (e.g. a gear at local z=70) into the mesh AND
+        # leaves it in the pose — double-counted, so every part drifts along the axis by its station
+        # distance (the planetary sun/planets/spacers "not through the shaft" bug). Strip it here.
         try:
-            export_stl(leaf, stl)
+            local_leaf = leaf.moved(leaf.location.inverse())
         except Exception:
-            export_stl(b3d.Solid(leaf.wrapped) if hasattr(leaf, "wrapped") else leaf, stl)
+            local_leaf = leaf
+        try:
+            export_stl(local_leaf, stl)
+        except Exception:
+            export_stl(b3d.Solid(local_leaf.wrapped) if hasattr(local_leaf, "wrapped") else local_leaf, stl)
         try:
             vol = float(leaf.volume)
         except Exception:
             vol = 0.0
         if vol <= 0.0:
             continue
-        bb = leaf.bounding_box()
+        bb = local_leaf.bounding_box()
         parts.append({"name": name, "R": R, "T": Tv, "metadata": meta,
                       "stl": os.path.relpath(stl, meshes_dir),
                       "volume_mm3": vol,

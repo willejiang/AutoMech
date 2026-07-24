@@ -1705,7 +1705,14 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                                                "root_cause": dx.get("root_cause", ""),
                                                "fix": dx.get("fix_instruction", ""),
                                                "route": dx.get("route", "")})
-                    if dx.get("route") == "manager" and dx.get("blamed_sub"):
+                    if dx.get("reject"):
+                        # The diagnostician gave a verdict WITHOUT investigating (0 file reads):
+                        # an untrustworthy topology guess. Discard it and fall through to the
+                        # deterministic severity routing below, which localizes the fault from the
+                        # precheck violations' own sub_ids instead of trusting the guess.
+                        log("[diagnostician] verdict rejected (uninvestigated) -> "
+                            "deterministic severity routing")
+                    elif dx.get("route") == "manager" and dx.get("blamed_sub"):
                         bs = dx["blamed_sub"]
                         feedback_by_sub[bs] = _build_critique_pack(
                             session_root, bs, dx, log_fn=log)
