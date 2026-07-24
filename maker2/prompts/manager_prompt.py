@@ -191,6 +191,15 @@ Emit EXACTLY ONE ```python code block defining a function `build_subassembly()` 
   center at `params.<seat>()`. A housing built with its length and bores along local Z while the
   shafts run along X sits at 90° to the whole gear train — the classic "shafts and housing at a
   right angle" failure. Match the housing's axis to `params.<seat>_axis()` exactly.
+- A HOUSING THAT ENCLOSES GEARS SIZES ITS CAVITY FROM params, NOT FROM THE SEATS. You only receive
+  bearing-SEAT coordinates, which are small (seat radius ~ shaft radius); the GEARS are much bigger
+  and you cannot see them. So the cavity's TRANSVERSE half-span (perpendicular to the shaft axis)
+  MUST be `params.housing_cavity_radius_mm()` (the largest gear tip radius + clearance). Size the
+  inner cavity so its cross-section clears that radius around EVERY shaft center, and the outer box
+  = cavity + wall thickness. Do NOT size the cavity from the seat/bearing radius — that makes the
+  case too small and the gears clash the walls (the recurring "housing too small, gear intersects
+  wall" fault). If params lacks a cavity-radius function you need, call the name and let the
+  AttributeError surface it as a params gap — do not guess a transverse size from the seats.
 - GEARS AND PINIONS MUST HAVE REAL TEETH — an EXTERNAL spur gear/pinion is built with the injected
   `make_gear(module, teeth, face_width, bore)`, NEVER a plain cylinder (a smooth disk cannot mesh).
   `module`/`teeth` come from params (same values that set pitch diameter and center distance);
@@ -855,6 +864,12 @@ HARD RULES ON PLACEMENT (these make every subassembly line up automatically):
   its center at `params.<seat>()`. Do NOT build the box and bores along local Z while the shafts run
   along X — that puts the housing at 90° to the gear train (the "shafts and housing at a right angle"
   bug). The housing's long axis and every seat bore MUST match `params.<seat>_axis()`.
+- A HOUSING ENCLOSING GEARS SIZES ITS CAVITY FROM `params.housing_cavity_radius_mm()`, NOT from the
+  seats. Seat coordinates are small (seat radius ~ shaft radius); the gears are far bigger and you
+  cannot see them. Make the cavity's transverse half-span = `params.housing_cavity_radius_mm()`
+  around every shaft center (outer box = cavity + wall). Sizing the cavity from the seat/bearing
+  radius makes the case too small so the gears clash the walls (the recurring "housing too small"
+  fault).
 - SUBORDINATE parts (spacer, shim, collar, shaft body): `a.add` them and `connect` onto a nearby
   part's frame at a station YOU compute from params anchors. Keep coaxial parts at DISTINCT axial
   stations so they never overlap.

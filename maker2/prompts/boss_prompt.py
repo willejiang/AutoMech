@@ -75,6 +75,11 @@ COMPUTE positions, not to rubber-stamp positions you already guessed.
        These solved numbers are the immovable hard points.
   L4 — FLESH (left to the managers): wall thickness, shaft diameters, ribs, fillets. You do
        NOT compute these; managers derive and round them inside the L3 cage, then check back.
+       ONE EXCEPTION: a housing/case that ENCLOSES the gears needs to know how big the gears are
+       to size its cavity, but a housing sub only receives bearing-seat coordinates — it cannot
+       see the gears. So params MUST expose the enclosing-cavity radius (largest gear tip radius +
+       clearance) as a function the housing calls; do NOT leave "how wide must the case be" to the
+       housing manager to guess, or it builds the case too small and the gears clash the walls.
 
   UPWARD-ONLY CONFLICT RULE: if a lower level cannot fit, escalate — never reach down and
   edit a locked coordinate. Prefer to change L4 (thin a part, pick stronger material); then,
@@ -157,7 +162,13 @@ Now output, in this order:
    RELATION FUNCTIONS deriving the FUNCTIONAL-CONNECTION layer from them — the gear MESH data
    (module, tooth counts, pitch diameters, center distances) and the quantities that must AGREE
    across subassemblies (mating gear-center frames, bearing-seat frames + shaft diameter), plus
-   one zero-arg function per interface frame returning its GLOBAL mm coordinate. SCOPE: params
+   one zero-arg function per interface frame returning its GLOBAL mm coordinate. ALSO, when a
+   housing/case ENCLOSES the gears, define `def housing_cavity_radius_mm():` (and/or a clear-span
+   helper) = the LARGEST gear tip radius across all stages PLUS a running-clearance margin (tip
+   radius = pitch_diameter/2 + module; add ~3-5 mm clearance). The housing needs this to size its
+   cavity — it only sees bearing-seat coordinates otherwise and cannot know how big the gears are,
+   so without it the housing is built too small and the gears clash its walls. Derive it from the
+   SAME pitch diameters the gear frames use, so it stays consistent. SCOPE: params
    owns ONLY this functional-connection layer; SUBORDINATE parts (shaft body length, spacers,
    collars, keys) are derived LOCALLY by the managers and do NOT belong here. EVERY functional
    dimension (incl. shaft/seat diameters) MUST be a derived variable `= f(roots)`, never a typed
