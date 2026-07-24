@@ -428,6 +428,8 @@ def _aabb_overlap(ba, bb, margin=1e-4) -> bool:
 # Flag only GROSS overlap: the shared bounding volume must be at least this fraction
 # of the SMALLER part's bounding volume. Below this, treat as a legit tight/nested fit.
 _OVERLAP_FRAC = 0.30
+_MAX_SEAM_HITS = 4   # max collision pairs reported per sub / per weld seam (worst-first), so all
+                    # real clashes surface in one iteration without a bad sub flooding the report
 
 
 def _geom_for(robot, link_name):
@@ -585,7 +587,7 @@ def _part_overlaps(robot, plan, subs: dict, log) -> list:
         meshes, adj = _sub_meshes(sub)
         sub_mesh_cache[sub.id] = meshes
         names = list(meshes)
-        worst = None
+        hits = []
         for i in range(len(names)):
             for k in range(i + 1, len(names)):
                 a, b = names[i], names[k]
@@ -593,12 +595,13 @@ def _part_overlaps(robot, plan, subs: dict, log) -> list:
                     continue
                 frac = _solid_intersection_frac(meshes[a], meshes[b], log_fn=log)
                 if frac >= _OVERLAP_FRAC:
-                    if worst is None or frac > worst[0]:
-                        worst = (frac, a, b)
+                    hits.append((frac, a, b))
                 elif frac > 0.05:
                     log(f"drop small overlap {a}~{b} ({frac:.0%} < {_OVERLAP_FRAC:.0%})")
-        if worst:
-            frac, a, b = worst
+        # Report EVERY interpenetrating pair (worst-first, capped), not just the single worst — so
+        # all collisions in a sub surface in ONE iteration instead of one-per-round.
+        hits.sort(key=lambda h: h[0], reverse=True)
+        for frac, a, b in hits[:_MAX_SEAM_HITS]:
             out.append(Violation(
                 kind="part_overlap", severity="sub", sub_id=sub.id, value=frac,
                 involved_sub_ids=[sub.id], parent_link=a, child_link=b,
@@ -636,7 +639,7 @@ def _part_overlaps(robot, plan, subs: dict, log) -> list:
                                _ns(seam.child_sub, mate_cn) if mate_cn else ""))
         # a non-mating cross-sub collision (gear vs cover) should report well below 0.30
         _NONMATE_FLOOR = 0.05
-        worst = None
+        hits = []
         for an, amesh in ma.items():
             for bn, bmesh in mb.items():
                 is_mate = frozenset((an, bn)) == mate_pair
@@ -644,13 +647,18 @@ def _part_overlaps(robot, plan, subs: dict, log) -> list:
                 # interpenetrate at all
                 report_floor = (0.60 if (mate == "insert" and is_mate) else _NONMATE_FLOOR)
                 frac = _solid_intersection_frac(amesh, bmesh, log_fn=log)
-                if frac >= report_floor and (worst is None or frac > worst[0]):
-                    worst = (frac, an, bn, is_mate)
+                if frac >= report_floor:
+                    hits.append((frac, an, bn, is_mate))
                 elif 0.0 < frac < report_floor:
                     tag = "insert-fit mating" if is_mate else "cross-sub"
                     log(f"drop {tag} overlap {an}~{bn} ({frac:.0%} < {report_floor:.0%})")
-        if worst:
-            frac, an, bn, is_mate = worst
+        # Report EVERY colliding pair over its floor, worst-first (capped) — NOT just the single
+        # worst. A seam often has several independent clashes at once (a rear bearing at 100% AND a
+        # gear eating the housing wall at 8%); reporting only the worst hid the gear clash until the
+        # bearing was fixed, so each iteration surfaced one more and never converged. Cap per seam so
+        # a badly-placed sub does not flood the report.
+        hits.sort(key=lambda h: h[0], reverse=True)
+        for frac, an, bn, is_mate in hits[:_MAX_SEAM_HITS]:
             role = _shaft_role(seam.id, seam.parent_frame, seam.child_frame, an, bn)
             out.append(Violation(
                 kind="part_overlap", severity="interface", sub_id=seam.parent_sub, value=frac,

@@ -173,14 +173,19 @@ class Settings:
     sub_conflict_max_tries: int = 3               # debugger passes before failing the
                                                    # sub up to the boss for a re-plan
     subassembly_max_managers: int = 9             # parallel per-sub manager builds
-    team_max_rounds: int = 2                       # boss↔manager fan-out runs as an
+    team_max_rounds: int = 1                       # boss↔manager fan-out runs as an
                                                    # AgentTeamRunner team round: managers
                                                    # build against shared state seeded from
                                                    # the compiled hardpoint contract, then
                                                    # re-propose seeing siblings' realized
-                                                   # interface frames. 1 ≈ the old one-shot
-                                                   # fan-out (no sibling reaction); 2+ lets
-                                                   # managers negotiate shared interfaces.
+                                                   # interface frames. 1 = one-shot fan-out
+                                                   # (no sibling reaction); 2+ lets managers
+                                                   # negotiate shared interfaces. Kept at 1 in
+                                                   # 方案B: cross-sub alignment is guaranteed by
+                                                   # the shared params module (absolute global
+                                                   # coords), so a 2nd "react to siblings" round
+                                                   # just REBUILT every already-OK sub — pure
+                                                   # waste (4 subs re-decomposed with no fault).
     enable_solver_tool: bool = False               # offer the authoritative libslvs solver
                                                    # as a `solve_constraints` tool in the
                                                    # boss/manager research pre-step, so agents

@@ -193,7 +193,12 @@ Emit EXACTLY ONE ```python code block defining a function `build_subassembly()` 
     from build123d import Location
     a = AssemblyHelper("<sub_id>")
     shaft = a.add(<built part>, "input_shaft")      # add each part with a NAME (its link name)
-    pinion = a.add(make_gear(params.MODULE_MM, params.z_pinion(), fw, bore), "pinion")
+    pinion = a.add(make_gear(params.<module_const>, params.<pinion_teeth>, fw, bore), "pinion")
+    # ^ params.<module_const>/<pinion_teeth> are PLACEHOLDERS — the boss names them for THIS
+    #   machine (it may call the module `M` or `MODULE_MM` or `m`; teeth `Z_PINION` or `z_pinion()`).
+    #   NEVER copy a literal name from this example; READ the params.py shown to you and use the
+    #   names it ACTUALLY defines. A guessed name (e.g. `params.MODULE_MM` when params defines `M`)
+    #   raises AttributeError and wastes an attempt.
     # declare NAMED mating frames (part-local), then CONNECT them (all in the LOCAL frame):
     a.rigid_frame(shaft, "pinion_seat", Location((0, 0, <axial station on the shaft>)))
     a.rigid_frame(pinion, "base", Location((0, 0, 0)))           # gear -Z face
@@ -232,9 +237,19 @@ Emit EXACTLY ONE ```python code block defining a function `build_subassembly()` 
   true front-to-rear distance from params). Then moving the sub to the front frame places the rear
   feature on the rear frame automatically. Meshing gears across subs are one center-distance apart
   because both managers read the SAME params center-distance and both anchor to their own frames.
-- `dof`/`spin_axis`/`driver`/`mesh_id`: a spinning shaft/gear is marked by giving its `a.add(...)`
-  a metadata dict (attach via the part's label details) — you do NOT need a revolute joint; tag the
-  ONE input part the physics drives as the driver; give the two meshing gears the SAME mesh id.
+- `dof`/`spin_axis`/`driver`/`mesh_id` — MOTION METADATA via the part's LABEL, in this EXACT
+  pipe format: the FIRST segment is the CLEAN part name, then `|key=value` pairs. Example:
+    pn = a.add(pinion, "pinion")
+    pn.label = "pinion|dof=spin|spin_axis=z|mesh_id=stage1"      # driver adds |driver=True
+  CRITICAL: the first `|`-segment MUST be the same clean name you used in `a.add(part, name)` —
+  it becomes the part's link name AND its STL filename. Do NOT put the whole metadata string as the
+  name and do NOT bake `dof=`/`mesh_id=` into `a.add`'s name argument: if the name is not clean, the
+  link name and the exported STL name diverge and the part SILENTLY VANISHES from the assembly
+  (this is exactly how gears disappeared — a gear labelled "pinion|dof=spin|..." got a long link
+  name that no longer matched its STL). Keep `a.add(part, "pinion")` clean; put ALL motion metadata
+  AFTER the first `|` in the label. Recognized keys: `dof` (spin|fixed|free), `spin_axis` (x|y|z),
+  `driver` (True on the ONE input part the physics drives), `mesh_id` (SAME id on the two meshing
+  gears so the pair is recovered). You do NOT need a revolute joint — this metadata is enough.
 - DIVISION OF LABOR (this is the core of the method — get it right):
   * FUNCTIONAL-CONNECTION parts come FROM params: any part that realizes the machine's function
     (meshing gears) or must line up with a neighbor subassembly (the gear it meshes with, the
@@ -259,12 +274,13 @@ Emit EXACTLY ONE ```python code block defining a function `build_subassembly()` 
     planet's `base`/`center` frame so its center reaches `params.planet_mesh_<i>()`, or build the
     pin/gear so the gear's mid-plane coincides with the params gear plane — do not let plate
     thickness silently set the gear's axial height.
-  * SUBORDINATE / structural parts you DERIVE LOCALLY: the shaft BODY length, spacers, collars,
-    keys, fillets. params does NOT define these and is not supposed to. Compute them yourself in
-    THIS module from the functional anchors params already gave you — e.g.
-    `spacer_w = (gap between two gear stations)`. Mate them with the AssemblyHelper too —
-    `a.add(part, name)` then a `rigid_frame` + `connect` onto a nearby part's frame — never by
-    typing a world coordinate.
+  * SUBORDINATE dimensions you DERIVE LOCALLY: the shaft BODY length and diameter, fillets, the
+    axial station of each part. params does NOT define these and is not supposed to. Compute them
+    yourself in THIS module from the functional anchors params gave you — e.g. `shaft_len =
+    (rear_bearing_station - front_bearing_station) + margin`. (Do NOT derive a spacer/collar/key
+    width — you are not building those parts; see KEEP IT SIMPLE. Space the real parts with EMPTY
+    gaps instead.) Mate the parts with the AssemblyHelper — `a.add(part, name)` then a `rigid_frame`
+    + `connect` onto a nearby part's frame — never by typing a world coordinate.
   * INSERT-FIT DIAMETERS ARE NOT LOCAL — take them from params. A bearing OD, its seat bore, and
     its inner bore are a mating triplet that MUST agree across subassemblies, so params owns them.
     Size a bearing's OUTER diameter to `params.<role>_bearing_od_mm()`, its bore to
@@ -294,14 +310,19 @@ Emit EXACTLY ONE ```python code block defining a function `build_subassembly()` 
   * A KEY sits in a keyway and must be SMALL — its cross-section fits INSIDE the shaft radius
     (e.g. a 2x2 mm key on a 6 mm-radius shaft), not a block straddling the gear. Do not let a
     key overlap the gear body; place it in the shaft's keyseat under the gear.
-  * Space coaxial parts along the axis with real gaps: front bearing | gear | spacer | pinion |
-    rear bearing, each at a DISTINCT axial station, none sharing the same z-run.
+  * Space coaxial parts along the axis with real gaps: front bearing | gear | pinion | rear
+    bearing, each at a DISTINCT axial station, none sharing the same z-run. Leave gaps EMPTY —
+    do not fill them with a spacer (see KEEP IT SIMPLE below).
   Aim for zero interpenetration — the pipeline rejects a subassembly whose parts overlap.
-- KEEP IT SIMPLE — OMIT fiddly small parts that only cause overlaps. A KEY, keyway, set-screw,
-  dowel, or snap-ring is NOT needed: gears transmit by TOOTH CONTACT, not by a modeled key, and
-  the pipeline never checks for one. Do NOT model a key/collar/retaining-ring unless it is the
-  functional point of the machine. Prefer the minimal part set: shaft + gears + bearings. Fewer
-  parts = fewer overlaps = a subassembly that passes.
+- KEEP IT SIMPLE — BUILD ONLY THE MINIMAL FUNCTIONAL PART SET: shaft + gears + bearings. Do NOT
+  add non-functional filler: NO spacer, NO collar, NO washer, NO key/keyway, NO set-screw, NO
+  dowel, NO snap-ring/retaining-ring, NO shim. These parts do NOTHING the physics uses (motion is
+  by TOOTH CONTACT, not through a key or a spacer) and the pipeline never checks for them — but each
+  one is one MORE chance to interpenetrate a neighbor and get the whole subassembly rejected. A
+  spacer that fills a gap and a collar that retains a bearing are exactly the low-value parts that
+  most often collide the housing or the gear. Leave the gap empty; let the bearing sit at its seat.
+  Model such a part ONLY if it is the literal functional point of the machine (rare). Fewer parts =
+  fewer overlaps = a subassembly that passes. When in doubt, DROP the part.
 
 Respond in TWO parts: first NOTES (a short plaintext plan of the parts + their placements),
 then the single ```python block. If asked to CONTINUE, output only the ```python block.
@@ -798,9 +819,11 @@ locally yourself.
 HARD RULES ON PLACEMENT (these make every subassembly line up automatically):
 - `import params` at the top. READ the `params.py` shown above. For FUNCTIONAL-CONNECTION parts
   use ONLY the names it ACTUALLY defines — the boss chose those names for THIS machine; a guessed
-  functional name will not exist (AttributeError lists what params does define). params covers
-  only the functional-connection layer, so for subordinate parts you will NOT find a params name
-  — that is expected, derive them locally.
+  functional name will not exist (AttributeError lists what params does define). This applies to
+  EVERY name including the "obvious" constants: the module may be `M` not `MODULE_MM`, the tooth
+  count `Z_PINION` not `z_pinion()` — scan the params.py above for the real name every time; do NOT
+  assume a conventional name. params covers only the functional-connection layer, so for subordinate
+  parts you will NOT find a params name — that is expected, derive them locally.
 - BUILD every part at the ORIGIN with its axis of revolution along LOCAL +Z, origin at the -Z end
   face (`align=(Align.CENTER, Align.CENTER, Align.MIN)`). Do NOT bake world position into the part.
 - ASSEMBLE with the injected `AssemblyHelper` (already in scope — do not import it). `a.add(part,
@@ -826,7 +849,12 @@ HARD RULES ON PLACEMENT (these make every subassembly line up automatically):
   plane. Same for any gear that rides on a moving carrier/arm yet must mesh across the machine.
 - A `mesh`-role frame MUST be realized on a real toothed `make_gear(...)` gear, tagged so it pairs
   with the meshing gear the neighbor subassembly builds at the SAME params point.
-- Rotating parts are marked via metadata (not a joint); the ONE input part is the driver.
+- Rotating parts are marked via the LABEL, in the EXACT pipe format `name|key=value|...` where the
+  FIRST segment is the CLEAN part name (identical to your `a.add(part, name)` name) and the rest are
+  metadata: e.g. `gear.label = "output_gear|dof=spin|spin_axis=z|mesh_id=stage2"`. The first segment
+  becomes the link name AND the STL filename — if it is not the clean add-name, the part silently
+  vanishes from the assembly. Keys: `dof` (spin|fixed|free), `spin_axis` (x|y|z), `driver` (True on
+  the ONE input part), `mesh_id` (SAME id on the two meshing gears). No revolute joint needed.
 
 Because you and every other manager take coordinates and dimensions from the SAME `params`
 functions, your mating frames coincide by construction — there is no separate solving step. Do NOT

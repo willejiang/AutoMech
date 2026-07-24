@@ -104,13 +104,28 @@ try:
     parts = []
     root_name = None
     for leaf in _leaves(comp):
-        name = (getattr(leaf, "label", "") or "").strip() or ("part_%d" % len(parts))
+        # A manager may stuff metadata into the LABEL with a pipe convention
+        # ("pinion|dof=spin|mesh_id=stage1|spin_axis=z") instead of (or in addition to) the
+        # cadpy_metadata dict. If we used the whole label as the link name, the name would be a
+        # long "pinion_dof_spin_..." that no longer matches the STL the assembler copies by
+        # a.add() name — so gears (the parts that get such labels) silently vanish. Split on '|':
+        # the FIRST field is the real part name; the rest are key=value metadata we fold into meta.
+        raw = (getattr(leaf, "label", "") or "").strip()
+        segs = [s.strip() for s in raw.split("|") if s.strip()]
+        name = (segs[0] if segs else "") or ("part_%d" % len(parts))
+        label_meta = {}
+        for seg in segs[1:]:
+            if "=" in seg:
+                k, v = seg.split("=", 1)
+                label_meta[k.strip()] = v.strip()
         # WORLD pose: a manager may wrap the whole sub in a Compound and `.moved(...)` it to its
         # global params frame; a leaf's own `.location` is then only relative to that parent, so we
         # MUST read the ACCUMULATED world transform. build123d exposes it as `global_location`.
         wloc = getattr(leaf, "global_location", None) or leaf.location
         R, Tv = _RT(wloc)
-        meta = dict(getattr(leaf, "cadpy_metadata", {}) or {})
+        # cadpy_metadata dict wins; pipe-label metadata fills any gaps (dof/mesh_id/spin_axis/driver).
+        meta = dict(label_meta)
+        meta.update(dict(getattr(leaf, "cadpy_metadata", {}) or {}))
         stl = os.path.join(meshes_dir, name + ".stl")
         # The pose (R,Tv) above is the FULL local->world transform for this leaf. The STL and bbox
         # must therefore be the leaf's PURE LOCAL geometry (its own placement stripped), so the
