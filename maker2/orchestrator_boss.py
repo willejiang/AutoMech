@@ -1717,8 +1717,14 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
                         feedback_by_sub[bs] = _build_critique_pack(
                             session_root, bs, dx, log_fn=log)
                         replan_blamed = {bs}
-                        log(f"[diagnostician] fault -> re-run ONLY '{bs}': "
-                            f"{dx.get('fix_instruction','')[:120]}")
+                        # Only the blamed sub rebuilds; every OTHER sub is REUSED from disk. Without
+                        # this the next team round rebuilt ALL 4 subs even though the diagnostician
+                        # blamed exactly one — pure waste (and it re-hit every per-sub parse bug).
+                        # feedback stays None so the boss does NOT re-plan the topology (a sub-level
+                        # geometry fix needs no new plan); the reuse set is what carries the others.
+                        reuse = {s.id for s in plan.subassemblies} - replan_blamed
+                        log(f"[diagnostician] fault -> re-run ONLY '{bs}' (reusing "
+                            f"{len(reuse)} others): {dx.get('fix_instruction','')[:100]}")
                         diagnosed = True
                     else:  # route == boss (true topology fault)
                         feedback = (f"topology fault: {dx.get('root_cause','')} "

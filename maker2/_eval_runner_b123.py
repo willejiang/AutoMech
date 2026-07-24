@@ -114,10 +114,22 @@ try:
         segs = [s.strip() for s in raw.split("|") if s.strip()]
         name = (segs[0] if segs else "") or ("part_%d" % len(parts))
         label_meta = {}
+        _AXIS_VEC = {"x": [1.0, 0.0, 0.0], "y": [0.0, 1.0, 0.0], "z": [0.0, 0.0, 1.0]}
         for seg in segs[1:]:
             if "=" in seg:
                 k, v = seg.split("=", 1)
-                label_meta[k.strip()] = v.strip()
+                k = k.strip(); v = v.strip()
+                # Normalize values so the KinematicModel stores well-typed fields. A manager writes
+                # `spin_axis=x`; stored raw as the string "x" it later deserializes as ['x'] and the
+                # reuse loader rejects it ("expected a 3-number list, got ['x']") — so a sub with any
+                # spinning part fails to REUSE and is needlessly rebuilt. Map x/y/z -> unit vector,
+                # and True/False -> bool.
+                if k == "spin_axis" and v.lower() in _AXIS_VEC:
+                    label_meta[k] = list(_AXIS_VEC[v.lower()])
+                elif v in ("True", "true", "False", "false"):
+                    label_meta[k] = v.lower() == "true"
+                else:
+                    label_meta[k] = v
         # WORLD pose: a manager may wrap the whole sub in a Compound and `.moved(...)` it to its
         # global params frame; a leaf's own `.location` is then only relative to that parent, so we
         # MUST read the ACCUMULATED world transform. build123d exposes it as `global_location`.

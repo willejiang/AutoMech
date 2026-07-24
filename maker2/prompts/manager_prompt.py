@@ -179,6 +179,18 @@ Emit EXACTLY ONE ```python code block defining a function `build_subassembly()` 
 - BUILD each part as a build123d solid in millimeters, along LOCAL +Z with its ORIGIN AT THE -Z
   END FACE. Use `align=(Align.CENTER, Align.CENTER, Align.MIN)` on a Cylinder so it spans local
   z in [0, height]. Do NOT center it on the origin. Build at the origin — mating (below) places it.
+- A HOUSING / MULTI-SEAT STRUCTURAL BODY BORES ITS SEATS ALONG THE params SEAT AXIS, NOT LOCAL Z.
+  A single-axis part (a shaft, a gear) is built along local +Z and then rotated onto its params axis
+  by the ONE final `.moved(Plane(z_dir=params.<frame>_axis()))`. A HOUSING is different: it holds
+  SEVERAL seats at once and is anchored at the origin WITHOUT that rotating move, so nothing turns
+  its local Z onto the shaft axis for you. Therefore every bearing-seat bore you cut in the housing
+  MUST be drilled along the seat's OWN `params.<seat>_axis()` direction, and the box's long dimension
+  MUST run along that same axis — do NOT assume "Z is the shaft axis". Read `params.<seat>_axis()`:
+  if it is [1,0,0] the shafts run along GLOBAL X, so the housing box is longest in X and each seat
+  Cylinder is drilled along X (`Cylinder(...).rotate(Axis.Y, 90)` or build the cutter along X), its
+  center at `params.<seat>()`. A housing built with its length and bores along local Z while the
+  shafts run along X sits at 90° to the whole gear train — the classic "shafts and housing at a
+  right angle" failure. Match the housing's axis to `params.<seat>_axis()` exactly.
 - GEARS AND PINIONS MUST HAVE REAL TEETH — an EXTERNAL spur gear/pinion is built with the injected
   `make_gear(module, teeth, face_width, bore)`, NEVER a plain cylinder (a smooth disk cannot mesh).
   `module`/`teeth` come from params (same values that set pitch diameter and center distance);
@@ -835,6 +847,14 @@ HARD RULES ON PLACEMENT (these make every subassembly line up automatically):
   realizes it, and place the part so that frame coincides with `params.<frame>()` (mate the sub's
   root onto an anchor at the params coordinate). Meshing gears across subs land one center-distance
   apart because both managers read the SAME params center-distance.
+- A HOUSING / MULTI-SEAT BODY BORES ITS SEATS ALONG `params.<seat>_axis()`, NOT LOCAL Z. If this
+  sub is a housing/base/plate holding SEVERAL bearing seats, it is anchored at the origin with NO
+  rotating `.moved`, so nothing turns local Z onto the shaft axis. READ `params.<seat>_axis()` for
+  each seat: if it is [1,0,0] the shafts run along GLOBAL X, so make the box longest in X and drill
+  every seat bore ALONG X (build the seat Cylinder along X, or `.rotate(Axis.Y, 90)` a +Z one) with
+  its center at `params.<seat>()`. Do NOT build the box and bores along local Z while the shafts run
+  along X — that puts the housing at 90° to the gear train (the "shafts and housing at a right angle"
+  bug). The housing's long axis and every seat bore MUST match `params.<seat>_axis()`.
 - SUBORDINATE parts (spacer, shim, collar, shaft body): `a.add` them and `connect` onto a nearby
   part's frame at a station YOU compute from params anchors. Keep coaxial parts at DISTINCT axial
   stations so they never overlap.
