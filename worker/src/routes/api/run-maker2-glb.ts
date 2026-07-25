@@ -56,13 +56,28 @@ export const Route = createFileRoute('/api/run-maker2-glb')({
         // Read into a Buffer and slice (the clips are tiny, ~30KB): a Node stream
         // cast to a web ReadableStream doesn't play reliably in the browser.
         if (url.searchParams.get('file') === 'video') {
-          const t = Number(url.searchParams.get('test') ?? '0');
-          const idx = Number.isFinite(t) && t >= 0 ? Math.floor(t) : 0;
-          // Sanitize cam to a bare filename (no path traversal); default primary.
-          const camRaw = url.searchParams.get('cam');
-          const cam = camRaw && /^[a-z0-9_-]+$/i.test(camRaw) ? camRaw : null;
-          const mp4 = join(runDir, 'physics', `test_${idx}`,
-            cam ? `${cam}.mp4` : 'model.mp4');
+          // Prefer an explicit run-relative path from the physics result (e.g.
+          // "physics/mujoco/model.mp4" for the single-agent path); fall back to the
+          // legacy test_<idx>/<cam>.mp4 layout. Both are constrained to runDir.
+          let mp4: string;
+          const relRaw = url.searchParams.get('path');
+          if (relRaw) {
+            const rel = relRaw.replace(/\\/g, '/');
+            if (rel.includes('..') || rel.startsWith('/')) {
+              return json({ error: 'invalid path' }, 400);
+            }
+            mp4 = join(runDir, rel);
+            if (!mp4.startsWith(runDir + sep) && mp4 !== runDir) {
+              return json({ error: 'invalid path' }, 400);
+            }
+          } else {
+            const t = Number(url.searchParams.get('test') ?? '0');
+            const idx = Number.isFinite(t) && t >= 0 ? Math.floor(t) : 0;
+            // Sanitize cam to a bare filename (no path traversal); default primary.
+            const camRaw = url.searchParams.get('cam');
+            const cam = camRaw && /^[a-z0-9_-]+$/i.test(camRaw) ? camRaw : null;
+            mp4 = join(runDir, 'physics', `test_${idx}`, cam ? `${cam}.mp4` : 'model.mp4');
+          }
           if (!existsSync(mp4)) return json({ error: 'no recording' }, 404);
           const buf = readFileSync(mp4);
           const size = buf.length;
@@ -105,7 +120,7 @@ export const Route = createFileRoute('/api/run-maker2-glb')({
         const result = await new Promise<
           { ok: true; data: Buffer } | { ok: false; err: string }
         >((res) => {
-          const p = spawn('python3',
+          const p = spawn(process.env.PYTHON_BIN || 'python3',
             ['-m', 'maker2.export_glb', urdfPath, '--stdout'],
             { cwd: REPO_ROOT,
               env: { ...process.env, PYTHONIOENCODING: 'utf-8', PYTHONUTF8: '1' } });

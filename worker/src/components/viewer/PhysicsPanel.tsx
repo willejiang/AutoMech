@@ -76,7 +76,12 @@ export function PhysicsPanel({ physics, runDir, running }: PhysicsPanelProps) {
   const m = test?.metrics ?? physics.metrics ?? {};
   const driven = m.test_kind === 'driven_mechanism';
   const pass = (test?.verdict ?? physics.verdict) !== 'FAIL' && physics.passed !== false;
-  const videoUrl = `${apiUrl('run-maker2-glb')}?dir=${encodeURIComponent(runDir)}&file=video&test=${idx}`;
+  // Prefer the run-relative video path the physics result carries (e.g.
+  // "physics/mujoco/model.mp4" for the single-agent path); fall back to test_<idx>.
+  const videoRel = test?.video ?? physics.video ?? null;
+  const videoUrl = videoRel
+    ? `${apiUrl('run-maker2-glb')}?dir=${encodeURIComponent(runDir)}&file=video&path=${encodeURIComponent(videoRel)}`
+    : `${apiUrl('run-maker2-glb')}?dir=${encodeURIComponent(runDir)}&file=video&test=${idx}`;
 
   // Load the MP4 via fetch() -> blob URL rather than a direct <video src>. A
   // <video>'s own request carries Sec-Fetch-Dest: video, which the TanStack/Nitro
