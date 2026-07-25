@@ -164,7 +164,7 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
     import os as _os
 
     from .llm.conversation import Conversation
-    from .manager import model_to_dict, save_model
+    from .manager import _extract_python_block, save_model
     from .orchestrator import make_run_context
     from .prompts.single_agent_prompt import (
         SINGLE_AGENT_SYSTEM, build_single_agent_user, build_single_agent_repair,
