@@ -526,9 +526,15 @@ def blame_faults(phys: dict, precheck_report=None, plan=None) -> dict:
 def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings) -> dict:
     """Pure-contact MuJoCo physics. Builds the MJCF from the run's model, runs the
     MuJoCo scenario runner (subprocess, with in-process fallback), and returns the
-    same result shape run_physics does. No LLM environment_designer: pure contact
-    needs no scenario design — the driver is the model's driver PART and downstream
-    parts move only if their teeth truly contact."""
+    same result shape run_physics does.
+
+    Scenario design + diagnosis: even though pure contact needs no motor, the LLM
+    environment_designer is still used to DECIDE WHAT THE TEST CHECKS — which input the
+    driver PART represents, which downstream joints/parts should move, and the pass
+    criteria — and the VLM diagnose_physics is run afterwards to CLASSIFY the failure
+    (structure / interface / scenario / camera). This is what surfaces the "designed a
+    test, ran it, analyzed the result" value in the UI. Falls back gracefully to the
+    hardcoded contact spec if the designer/gateway is unavailable."""
     from diagnose import encode_mp4
     from maker2 import mjcf_builder
     from maker2.model import RunContext
@@ -552,8 +558,36 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings) -> di
                 "summary": f"MJCF build failed: {e}", "metrics": {}, "tests": []}
 
     out_base = str(Path(run_dir) / "physics" / "mujoco")
-    spec = {"duration_s": 4.0, "run_dir": run_dir,
-            "drive": {"torque": 0.5}}
+
+    # SCENARIO DESIGN: ask environment_designer what this test should check (best-effort;
+    # the MuJoCo runner is contact-driven, so we only borrow the drive INTENT + criteria).
+    designed = None
+    driver_part = next((l.name for l in model.links
+                        if getattr(l, "driver", False)), None)
+    spec = {"duration_s": 4.0, "run_dir": run_dir, "drive": {"torque": 0.5}}
+    try:
+        designed = _design_spec(task, model, {"name": "drive", "driver": driver_part,
+                                              "strategy": "driven_mechanism"})
+        d = designed.get("drive") or {}
+        # Map the designed drive intent onto the contact spec (torque stays; the design
+        # tells us WHAT to watch + the pass criteria, which the runner + diagnoser read).
+        spec["design"] = {
+            "input_joint": d.get("input_joint"),
+            "output_joint": d.get("output_joint"),
+            "watch_joints": d.get("watch_joints", []),
+            "propagation_path": d.get("propagation_path", []),
+            "pass_criteria": designed.get("pass_criteria"),
+            "environment": designed.get("environment") or designed.get("scenario"),
+        }
+        if d.get("duration_s"):
+            spec["duration_s"] = d["duration_s"]
+        print(f"[physics] mujoco scenario designed: watch "
+              f"{len(spec['design']['watch_joints'])} joints, output "
+              f"'{spec['design'].get('output_joint')}'")
+    except Exception as e:
+        print(f"[physics] mujoco scenario designer unavailable ({e}); "
+              f"using default contact spec")
+
     # An output part = a spin/free link name-hinted as output, if any.
     out_link = next((l.name for l in model.links
                      if getattr(l, "dof", "fixed") in ("spin", "free")
@@ -575,12 +609,34 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings) -> di
         if mp4:
             video = "physics/mujoco/model.mp4"
 
+    # DIAGNOSE: VLM classifies the result (structure/interface/scenario/camera) so the
+    # UI can show "what went wrong + why", the demo's analysis value. Best-effort.
+    diagnosis = {"verdict": None, "cause": "none", "reason": ""}
+    if res.get("frames_dir"):
+        try:
+            from diagnose import diagnose_physics
+            gw = _gateway()
+            diagnosis = diagnose_physics(task, _robot_info(model),
+                                         designed or spec, m, res.get("frames_dir", ""),
+                                         base_url=gw["base_url"], api_key=gw["api_key"],
+                                         model=gw["model"])
+            print(f"[physics] mujoco VLM verdict={diagnosis.get('verdict')} "
+                  f"cause={diagnosis.get('cause')} :: {diagnosis.get('reason','')[:100]}")
+        except Exception as e:
+            print(f"[physics] mujoco diagnose unavailable ({e})")
+
     entry = {"name": "drive", "strategy": "driven_mechanism",
              "verdict": m.get("verdict"), "metrics": m,
              "summary": _summarize({"name": "drive"}, m),
+             "cause": diagnosis.get("cause", "none"),
+             "reason": diagnosis.get("reason", ""),
+             "design": spec.get("design"),
              "frames_dir": res.get("frames_dir"), "video": video}
     return {"passed": m.get("verdict") == "PASS", "verdict": m.get("verdict", "FAIL"),
             "summary": entry["summary"], "metrics": m,
+            "cause": diagnosis.get("cause", "none"),
+            "reason": diagnosis.get("reason", ""),
+            "design": spec.get("design"),
             "frames_dir": res.get("frames_dir"), "video": video,
             "tests": [entry]}
 
