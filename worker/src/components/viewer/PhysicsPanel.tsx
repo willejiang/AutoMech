@@ -148,12 +148,12 @@ export function PhysicsPanel({ physics, runDir, running }: PhysicsPanelProps) {
 
         {/* recording */}
         <div className="overflow-hidden rounded border border-adam-neutral-800 bg-black">
-          {test?.video ? (
+          {videoRel ? (
             <div>
               {blobUrl ? (
                 <video
                   key={blobUrl}
-                  className="h-auto w-full"
+                  className="mx-auto max-h-[240px] w-full object-contain"
                   controls
                   loop
                   playsInline
