@@ -174,6 +174,24 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
     ctx = make_run_context(product_prompt, out_dir)
     _os.makedirs(ctx.run_dir, exist_ok=True)
     run_dir = ctx.run_dir
+
+    # Tee every log line to <run_dir>/run.log so the backend keeps the SAME full transcript
+    # the multi-agent path does (fresh file per run). Without this the single-agent stdout is
+    # only seen live over SSE and there is no on-disk log to review why a rebuild happened.
+    _base_log = log_fn
+    try:
+        _run_log_fh = open(_os.path.join(run_dir, "run.log"), "w", encoding="utf-8", buffering=1)
+    except Exception:
+        _run_log_fh = None
+
+    def log_fn(m):
+        _base_log(m)
+        if _run_log_fh is not None:
+            try:
+                _run_log_fh.write(str(m) + "\n")
+            except Exception:
+                pass
+
     log_fn(f"[single-agent] session: {run_dir}")
 
     client = settings.manager_client()
