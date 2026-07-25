@@ -153,7 +153,7 @@ export function PhysicsPanel({ physics, runDir, running }: PhysicsPanelProps) {
               {blobUrl ? (
                 <video
                   key={blobUrl}
-                  className="mx-auto max-h-[240px] w-full object-contain"
+                  className="mx-auto max-h-[180px] w-full object-contain"
                   controls
                   loop
                   playsInline

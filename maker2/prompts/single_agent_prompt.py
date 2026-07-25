@@ -21,6 +21,25 @@ another). So parts that must interact MUST actually touch: meshing gears sit exa
 pitch-center-distance apart (center distance = module*(z1+z2)/2) with teeth engaged, and every
 part rests on real support.
 
+COMPUTE THE NUMBERS FIRST — DO NOT GUESS COORDINATES. Before you place anything, DERIVE the
+drivetrain arithmetic at the TOP of your script as plain Python variables, then compute EVERY
+gear position FROM those variables. This is the single most important step: a gear placed at a
+guessed coordinate will NOT be one center-distance from its partner, so the teeth never engage
+and the mechanism transmits nothing (the physics test then reports 0 downstream motion). Author
+it like an engineer:
+  M = 0.8                      # ONE module shared by all meshing gears (so any pair can mesh)
+  Z_INPUT, Z_OUTPUT = 12, 36   # tooth counts set the reduction ratio (=Z_OUTPUT/Z_INPUT)
+  def pitch_r(z):     return M * z / 2.0
+  def center_dist(za, zb): return M * (za + zb) / 2.0
+  cd1 = center_dist(Z_INPUT, Z_OUTPUT)        # the EXACT distance between the two gear centers
+Then place the two meshing gears their centers EXACTLY `cd1` apart (e.g. one at x=0, its partner
+at x=cd1, or split along a chosen axis), and build each gear with `make_gear(M, z, face_width,
+bore)` using the SAME M. A gear train chains this: each stage's center distance comes from its
+own tooth counts, and a shaft carrying two gears puts them at DISTINCT axial stations. NEVER
+write a gear-center coordinate as a bare number you eyeballed — it must be an expression over M
+and the tooth counts (pitch_r / center_dist). Bearings, plates and housings can use round
+sizes, but every GEAR-to-GEAR spacing is computed.
+
 OUTPUT: exactly ONE ```python code block defining `build_machine()` that returns a cadpy
 `AssemblyHelper`. These names are ALREADY INJECTED — do NOT import them:
   AssemblyHelper, make_gear, Box, Cylinder, BuildPart, BuildSketch, Circle, Polygon, extrude,
