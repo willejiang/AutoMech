@@ -10,7 +10,18 @@ import { resolve } from 'node:path';
 // the worker dev server runs from worker/, so cwd is one level up.
 const REPO_ROOT = resolve(process.cwd(), '..');
 
-type Body = { prompt?: string; model?: string; physics?: boolean; maxIters?: number };
+type Body = {
+  prompt?: string;
+  model?: string;
+  physics?: boolean;
+  maxIters?: number;
+  mode?: string;
+  managerPy?: boolean;
+  hierarchy?: boolean;
+  debuggerReadTools?: boolean;
+  kb?: boolean;
+  solver?: boolean;
+};
 
 export const Route = createFileRoute('/api/run-maker2')({
   server: {
@@ -27,8 +38,20 @@ export const Route = createFileRoute('/api/run-maker2')({
         if (body.maxIters && body.maxIters > 0)
           args.push('--max-iters', String(body.maxIters));
 
+        // Pipeline mode. Default on this branch = single-agent text-to-cad (one agent
+        // authors the whole machine). Set body.mode='hierarchy' for the boss+manager_py path.
+        if (body.mode === 'hierarchy') {
+          if (body.hierarchy !== false) args.push('--hierarchy');
+          if (body.managerPy !== false) args.push('--manager-py');
+          if (body.debuggerReadTools !== false) args.push('--debugger-read-tools');
+          if (body.kb !== false) args.push('--kb');
+          if (body.solver !== false) args.push('--solver');
+        } else {
+          args.push('--single-agent');
+        }
+
         const result = await new Promise((res) => {
-          const p = spawn('python3', args, {
+          const p = spawn(process.env.PYTHON_BIN || 'python3', args, {
             cwd: REPO_ROOT,
             env: { ...process.env, PYTHONIOENCODING: 'utf-8', PYTHONUTF8: '1' },
           });

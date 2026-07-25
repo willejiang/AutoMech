@@ -20,6 +20,7 @@ const STAGE_PREFIXES = [
   '[run]', '[1/3]', '[2/3]', '[3/3]', '[judge]', '[loop]', '[physics]',
   '[done]', '=====', 'RESULT:',
   '[boss]', '[sub:', '[assembler]', '[precheck]', '[assembled]', '[aggregate]', '[tool]',
+  '[single-agent]', '[step->model]',
 ];
 
 function sse(event: string, data: unknown): string {
@@ -51,28 +52,26 @@ export const Route = createFileRoute('/api/run-maker2-stream')({
         if (iters && Number(iters) > 0) args.push('--max-iters', iters);
         if (threadId) args.push('--thread', threadId);
         if (refineMessage) args.push('--refine-message', refineMessage);
-        // Both fresh runs AND refines go through the BOSS hierarchy. A refine re-plans
-        // the SAME machine with the change (run_boss loads the prior plan from the
-        // session and reuses unchanged subassemblies). The old single-manager
-        // --prior-model path is not used for hierarchy refines.
-        args.push('--hierarchy');
-        // 方案B: the manager authors a parametric CadQuery module that derives every
-        // coordinate from a boss-authored `params` module (no LLM-typed coordinates), and
-        // the libslvs solver stitches subs. Both flags are required for this pipeline.
-        args.push('--manager-py');
-        args.push('--solver');
-        // Local offline knowledge base (maker2/kb): the boss/manager/worker retrieve
-        // this project's output-format conventions + worked examples + prior passing
-        // designs via a kb_search tool. Always on — it is offline and cheap, and a
-        // missing/empty index degrades to a no-op (never fails the run). Requires a
-        // one-time `python -m maker2.kb.ingest` + the MiniLM cache on a fresh machine.
-        args.push('--kb');
-        // Web-search reference lookup (keyless), when the client asks for it.
-        if (url.searchParams.get('web') === '1') args.push('--web');
-        // Deep-think toggle: ON -> CadQuery worker + full debugger; OFF -> OpenSCAD +
-        // slim debugger. Only forwarded when the client set it explicitly.
-        if (deep === '1') args.push('--deep-think');
-        else if (deep === '0') args.push('--no-deep-think');
+        // Pipeline mode. On this experiment branch the DEFAULT is the single-agent
+        // text-to-cad path: ONE agent authors the WHOLE machine as one build123d script
+        // (no boss / no per-sub managers / no assembler), refines it against a rigid-conflict
+        // self-check, then runs physics. Pass ?mode=hierarchy to use the older boss+manager_py
+        // pipeline instead.
+        const mode = url.searchParams.get('mode') ?? 'single-agent';
+        if (mode === 'hierarchy') {
+          args.push('--hierarchy');
+          args.push('--manager-py');
+          args.push('--debugger-read-tools');
+          args.push('--precheck-warn-only');
+          args.push('--kb');
+          args.push('--solver');
+          if (url.searchParams.get('web') === '1') args.push('--web');
+          if (deep === '1') args.push('--deep-think');
+          else if (deep === '0') args.push('--no-deep-think');
+        } else {
+          // Single-agent text-to-cad (default on this branch).
+          args.push('--single-agent');
+        }
 
         const stream = new ReadableStream<Uint8Array>({
           start(controller) {
@@ -89,7 +88,7 @@ export const Route = createFileRoute('/api/run-maker2-stream')({
               try { controller.close(); } catch { /* already closed */ }
             };
 
-            const p = spawn('python3', args, {
+            const p = spawn(process.env.PYTHON_BIN || 'python3', args, {
               cwd: REPO_ROOT,
               env: { ...process.env, PYTHONIOENCODING: 'utf-8', PYTHONUTF8: '1',
                 PYTHONUNBUFFERED: '1' },
