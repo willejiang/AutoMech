@@ -216,10 +216,11 @@ Emit EXACTLY ONE ```python code block defining a function `build_subassembly()` 
     shaft = a.add(<built part>, "input_shaft")      # add each part with a NAME (its link name)
     pinion = a.add(make_gear(params.<module_const>, params.<pinion_teeth>, fw, bore), "pinion")
     # ^ params.<module_const>/<pinion_teeth> are PLACEHOLDERS — the boss names them for THIS
-    #   machine (it may call the module `M` or `MODULE_MM` or `m`; teeth `Z_PINION` or `z_pinion()`).
-    #   NEVER copy a literal name from this example; READ the params.py shown to you and use the
-    #   names it ACTUALLY defines. A guessed name (e.g. `params.MODULE_MM` when params defines `M`)
-    #   raises AttributeError and wastes an attempt.
+    #   machine, and the naming style VARIES per machine (uppercase, lowercase, constant, or
+    #   zero-arg function). NEVER copy a literal name from this example, and do NOT assume any
+    #   "standard" name exists: READ the params.py shown to you and use ONLY the names it
+    #   ACTUALLY defines. Calling a name params does not define raises AttributeError and wastes
+    #   an attempt — when unsure, scan the params.py block above for the closest real name.
     # declare NAMED mating frames (part-local), then CONNECT them (all in the LOCAL frame):
     a.rigid_frame(shaft, "pinion_seat", Location((0, 0, <axial station on the shaft>)))
     a.rigid_frame(pinion, "base", Location((0, 0, 0)))           # gear -Z face
@@ -841,10 +842,12 @@ HARD RULES ON PLACEMENT (these make every subassembly line up automatically):
 - `import params` at the top. READ the `params.py` shown above. For FUNCTIONAL-CONNECTION parts
   use ONLY the names it ACTUALLY defines — the boss chose those names for THIS machine; a guessed
   functional name will not exist (AttributeError lists what params does define). This applies to
-  EVERY name including the "obvious" constants: the module may be `M` not `MODULE_MM`, the tooth
-  count `Z_PINION` not `z_pinion()` — scan the params.py above for the real name every time; do NOT
-  assume a conventional name. params covers only the functional-connection layer, so for subordinate
-  parts you will NOT find a params name — that is expected, derive them locally.
+  EVERY name including the "obvious" constants: do NOT assume any conventional or "standard"
+  name (module, teeth, diameters) exists — the boss may use uppercase, lowercase, a constant, or
+  a zero-arg function, and it differs per machine. Scan the params.py above for the real name
+  every time; never call a name just because it looks canonical. params covers only the
+  functional-connection layer, so for subordinate parts you will NOT find a params name — that is
+  expected, derive them locally.
 - BUILD every part at the ORIGIN with its axis of revolution along LOCAL +Z, origin at the -Z end
   face (`align=(Align.CENTER, Align.CENTER, Align.MIN)`). Do NOT bake world position into the part.
 - ASSEMBLE with the injected `AssemblyHelper` (already in scope — do not import it). `a.add(part,
@@ -864,12 +867,13 @@ HARD RULES ON PLACEMENT (these make every subassembly line up automatically):
   its center at `params.<seat>()`. Do NOT build the box and bores along local Z while the shafts run
   along X — that puts the housing at 90° to the gear train (the "shafts and housing at a right angle"
   bug). The housing's long axis and every seat bore MUST match `params.<seat>_axis()`.
-- A HOUSING ENCLOSING GEARS SIZES ITS CAVITY FROM `params.housing_cavity_radius_mm()`, NOT from the
-  seats. Seat coordinates are small (seat radius ~ shaft radius); the gears are far bigger and you
-  cannot see them. Make the cavity's transverse half-span = `params.housing_cavity_radius_mm()`
-  around every shaft center (outer box = cavity + wall). Sizing the cavity from the seat/bearing
-  radius makes the case too small so the gears clash the walls (the recurring "housing too small"
-  fault).
+- A HOUSING ENCLOSING GEARS SIZES ITS CAVITY FROM the params quantity that gives the enclosed-gear
+  reach (whatever the boss named it — READ params.py; do not assume a fixed function name), NOT from
+  the seats. Seat coordinates are small (seat radius ~ shaft radius); the gears are far bigger and
+  you cannot see them. Make the cavity's transverse half-span reach that params radius around every
+  shaft center (outer box = cavity + wall). Sizing the cavity from the seat/bearing radius makes the
+  case too small so the gears clash the walls (the recurring "housing too small" fault). If params
+  exposes no such radius, derive a safe clearance locally rather than guessing a name.
 - SUBORDINATE parts (spacer, shim, collar, shaft body): `a.add` them and `connect` onto a nearby
   part's frame at a station YOU compute from params anchors. Keep coaxial parts at DISTINCT axial
   stations so they never overlap.
