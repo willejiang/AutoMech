@@ -26,6 +26,12 @@ from pathlib import Path
 import numpy as np
 import trimesh
 
+import re
+
+# A movable part whose name/shape matches this is a GEAR and keeps the fine (interlocking-
+# teeth) decomposition; every other mover gets a single-hull collision proxy.
+_GEAR_NAME_RE = re.compile(r"gear|pinion|wheel|cog|sprocket", re.I)
+
 
 # Bump when the decomposition logic changes so stale cached pieces are ignored.
 _CACHE_VERSION = "v2"
@@ -200,18 +206,64 @@ def decompose_model(model, meshes_dir: str, *, metrics: dict | None = None,
     paths]}; a link absent from the map (or mapped to []) means 'use the part's own
     mesh as a single hull geom'. Only parts that MOVE (dof != fixed) or appear in a
     mesh_pair are decomposed — fixed structure collides fine as its own hull, and
-    decomposition is the expensive step."""
+    decomposition is the expensive step.
+
+    A/B collision geometry: MuJoCo's per-step contact cost scales with total geom
+    count, and a fine decomposition emits ~40-64 hulls PER part. Only GEARS need that
+    fidelity (interlocking teeth are the transmission test). Every other movable part
+    — a shaft, sleeve, hand, collar — is a simple convex-ish solid that only needs to
+    occupy space without interpenetrating, so it collides fine as a SINGLE convex hull.
+    So: gears (name gear/pinion/wheel or a mesh_pair member) get the full decomposition;
+    all other movers get one hull. The VISUAL mesh is untouched — this is the low-poly
+    'B' collision proxy, the high-poly 'A' mesh still renders. Module/teeth/geometry of
+    every gear are unchanged; only NON-gear collision detail drops."""
     movers = {l.name for l in model.links if getattr(l, "dof", "fixed") != "fixed"}
+    mesh_members: set = set()
     for pair in getattr(model, "mesh_pairs", []) or []:
         movers.update(pair)
+        mesh_members.update(pair)
     out: dict[str, list[str]] = {}
     for link in model.links:
         if link.name not in movers:
             continue
+        is_gear = (link.name in mesh_members
+                   or _GEAR_NAME_RE.search(link.name or "")
+                   or _GEAR_NAME_RE.search(getattr(link, "shape_hint", "") or ""))
         stl = os.path.join(meshes_dir, f"{link.name}.stl")
-        log_fn(f"[convex] decomposing {link.name} ...")
-        pieces = decompose_part(stl, meshes_dir, link.name,
-                                metrics=metrics, log_fn=log_fn)
+        if is_gear:
+            log_fn(f"[convex] decomposing gear {link.name} (fine) ...")
+            pieces = decompose_part(stl, meshes_dir, link.name,
+                                    metrics=metrics, log_fn=log_fn)
+        else:
+            # B-proxy: one convex hull for a non-gear mover (shaft/sleeve/hand/collar).
+            pieces = _hull_only_piece(stl, meshes_dir, link.name, log_fn=log_fn)
         if pieces:
             out[link.name] = pieces
     return out
+
+
+def _hull_only_piece(stl_path: str, meshes_dir: str, part_name: str,
+                     *, log_fn=print) -> list[str]:
+    """Write a SINGLE convex-hull STL for a non-gear movable part (its low-poly collision
+    proxy), cached. Returns [path] or [] (caller then uses the part's own mesh hull)."""
+    if not os.path.exists(stl_path) or os.path.getsize(stl_path) == 0:
+        return []
+    tag = _part_hash(stl_path, "hull1")
+    cached = _existing_cache(meshes_dir, part_name, tag)
+    if cached is not None:
+        return cached
+    try:
+        mesh = trimesh.load(stl_path, force="mesh")
+        hull = mesh.convex_hull
+    except Exception as e:
+        log_fn(f"[convex] hull proxy failed for {part_name} ({e}); caller uses raw hull")
+        return []
+    if not isinstance(hull, trimesh.Trimesh) or len(hull.faces) == 0:
+        return []
+    os.makedirs(meshes_dir, exist_ok=True)
+    paths = _cache_paths(meshes_dir, part_name, 1)
+    hull.export(paths[0])
+    _write_manifest(meshes_dir, part_name, tag, 1)
+    log_fn(f"[convex] {part_name}: 1 piece (hull proxy, non-gear)")
+    return paths
+
