@@ -184,22 +184,23 @@ Emit EXACTLY ONE ```python code block defining a function `build_subassembly()` 
   by the ONE final `.moved(Plane(z_dir=params.<frame>_axis()))`. A HOUSING is different: it holds
   SEVERAL seats at once and is anchored at the origin WITHOUT that rotating move, so nothing turns
   its local Z onto the shaft axis for you. Therefore every bearing-seat bore you cut in the housing
-  MUST be drilled along the seat's OWN `params.<seat>_axis()` direction, and the box's long dimension
-  MUST run along that same axis — do NOT assume "Z is the shaft axis". Read `params.<seat>_axis()`:
-  if it is [1,0,0] the shafts run along GLOBAL X, so the housing box is longest in X and each seat
-  Cylinder is drilled along X (`Cylinder(...).rotate(Axis.Y, 90)` or build the cutter along X), its
-  center at `params.<seat>()`. A housing built with its length and bores along local Z while the
-  shafts run along X sits at 90° to the whole gear train — the classic "shafts and housing at a
-  right angle" failure. Match the housing's axis to `params.<seat>_axis()` exactly.
-- A HOUSING THAT ENCLOSES GEARS SIZES ITS CAVITY FROM params, NOT FROM THE SEATS. You only receive
-  bearing-SEAT coordinates, which are small (seat radius ~ shaft radius); the GEARS are much bigger
-  and you cannot see them. So the cavity's TRANSVERSE half-span (perpendicular to the shaft axis)
-  MUST be `params.housing_cavity_radius_mm()` (the largest gear tip radius + clearance). Size the
-  inner cavity so its cross-section clears that radius around EVERY shaft center, and the outer box
-  = cavity + wall thickness. Do NOT size the cavity from the seat/bearing radius — that makes the
-  case too small and the gears clash the walls (the recurring "housing too small, gear intersects
-  wall" fault). If params lacks a cavity-radius function you need, call the name and let the
-  AttributeError surface it as a params gap — do not guess a transverse size from the seats.
+  MUST be drilled along the shaft axis and the box's long dimension MUST run along that same axis —
+  do NOT assume "Z is the shaft axis". A seat lies on the SAME axis as the shaft/arbor through it, so
+  take its center and axis from the params anchor of THAT shaft (the arbor/pivot the boss defined) —
+  params usually has NO `params.<seat>()` / `params.<seat>_axis()` function, so do NOT call an
+  invented seat name (AttributeError wastes the attempt). If the shaft axis is [1,0,0] the shafts run
+  along GLOBAL X, so the housing box is longest in X and each seat Cylinder is drilled along X
+  (`Cylinder(...).rotate(Axis.Y, 90)` or build the cutter along X). A housing built with its length
+  and bores along local Z while the shafts run along X sits at 90° to the whole gear train — the
+  classic "shafts and housing at a right angle" failure.
+- A HOUSING THAT ENCLOSES GEARS SIZES ITS CAVITY FROM the gear reach, NOT FROM THE SEATS. You only
+  receive bearing-SEAT coordinates, which are small (seat radius ~ shaft radius); the GEARS are much
+  bigger and you cannot see them. So the cavity's TRANSVERSE half-span (perpendicular to the shaft
+  axis) must reach whatever params quantity gives the enclosed-gear reach — READ params.py for its
+  real name; if params exposes none, derive a safe clearance locally (largest gear tip radius you can
+  compute from module*teeth/2 + margin). Do NOT call an invented cavity-radius name (AttributeError
+  aborts the sub), and do NOT size the cavity from the seat/bearing radius (that makes the case too
+  small and the gears clash the walls — the recurring "housing too small" fault).
 - GEARS AND PINIONS MUST HAVE REAL TEETH — an EXTERNAL spur gear/pinion is built with the injected
   `make_gear(module, teeth, face_width, bore)`, NEVER a plain cylinder (a smooth disk cannot mesh).
   `module`/`teeth` come from params (same values that set pitch diameter and center distance);
@@ -309,9 +310,12 @@ Emit EXACTLY ONE ```python code block defining a function `build_subassembly()` 
     `params.<role>_bearing_bore_mm()`; bore a housing seat to `params.<role>_seat_bore_mm()` (which
     equals the bearing OD). NEVER write `bearing_od = shaft_dia + 12` locally — if the housing and
     the shaft each invent their own bearing/seat diameter they interpenetrate and the assembly is
-    rejected. If params is missing a `<role>_bearing_od_mm` / `<role>_seat_bore_mm` you need, that
-    is a params gap to surface (call the params name and let the AttributeError name it), NOT a
-    number to invent locally.
+    rejected. If params defines a `<role>_bearing_od_mm` / `<role>_seat_bore_mm`, USE it. If params
+    does NOT define one (READ params.py — many machines only expose shaft/arbor diameters), do NOT
+    call an invented name (an AttributeError aborts your whole sub build). Instead derive ONE local
+    diameter from a params anchor you CAN see (e.g. `od = params.<shaft>_dia_mm() + 4`) and use that
+    SAME value for BOTH the bearing OD and the matching housing seat bore, so the two never disagree.
+    The rule that matters is consistency (bearing OD == seat bore), not the source.
 - Every FRAME location you pass to `rigid_frame`/`connect` must be a part-LOCAL point (e.g.
   `Location((0,0,axial_station))`), and every DIMENSION a `params.<name>()` call or an expression
   over params names you can SEE — never a bare functional number you typed. Calling a params name
@@ -859,14 +863,20 @@ HARD RULES ON PLACEMENT (these make every subassembly line up automatically):
   realizes it, and place the part so that frame coincides with `params.<frame>()` (mate the sub's
   root onto an anchor at the params coordinate). Meshing gears across subs land one center-distance
   apart because both managers read the SAME params center-distance.
-- A HOUSING / MULTI-SEAT BODY BORES ITS SEATS ALONG `params.<seat>_axis()`, NOT LOCAL Z. If this
-  sub is a housing/base/plate holding SEVERAL bearing seats, it is anchored at the origin with NO
-  rotating `.moved`, so nothing turns local Z onto the shaft axis. READ `params.<seat>_axis()` for
-  each seat: if it is [1,0,0] the shafts run along GLOBAL X, so make the box longest in X and drill
-  every seat bore ALONG X (build the seat Cylinder along X, or `.rotate(Axis.Y, 90)` a +Z one) with
-  its center at `params.<seat>()`. Do NOT build the box and bores along local Z while the shafts run
-  along X — that puts the housing at 90° to the gear train (the "shafts and housing at a right angle"
-  bug). The housing's long axis and every seat bore MUST match `params.<seat>_axis()`.
+- A HOUSING / MULTI-SEAT BODY BORES ITS SEATS ALONG THE SHAFT AXIS, NOT LOCAL Z. If this sub is a
+  housing/base/plate holding SEVERAL bearing seats, it is anchored at the origin with NO rotating
+  `.moved`, so nothing turns local Z onto the shaft axis. A SEAT sits on the SAME axis line as the
+  shaft/arbor that passes through it — so its center and axis come from the SAME params anchor as
+  that shaft, NOT from a separate seat function. IMPORTANT: params exposes FUNCTIONAL anchors (an
+  arbor position, a pivot, a mesh center) — it usually does NOT define a `params.<seat>()` or
+  `params.<seat>_axis()`. Do NOT call an invented seat name (that raises AttributeError and wastes
+  the attempt). Instead, for each seat READ the params anchor of the shaft that seats there (e.g. the
+  arbor's position/axis the boss DID define) and bore the seat at that xy on that axis. If the boss
+  gave an explicit axis constant, use it; otherwise infer the shaft axis from the anchor geometry.
+  If [1,0,0] the shafts run along GLOBAL X, so make the box longest in X and drill every seat bore
+  ALONG X (build the seat Cylinder along X, or `.rotate(Axis.Y, 90)` a +Z one). A housing built with
+  its length and bores along local Z while the shafts run along X sits at 90° to the gear train (the
+  "shafts and housing at a right angle" bug).
 - A HOUSING ENCLOSING GEARS SIZES ITS CAVITY FROM the params quantity that gives the enclosed-gear
   reach (whatever the boss named it — READ params.py; do not assume a fixed function name), NOT from
   the seats. Seat coordinates are small (seat radius ~ shaft radius); the gears are far bigger and

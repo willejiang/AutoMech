@@ -527,13 +527,16 @@ def main() -> int:
     ap.add_argument("--debugger-read-tools", dest="debugger_read_tools", action="store_true",
                     default=None, help="give the sub debugger the analyzer's read-only tool "
                          "loop (reads run.log/reports/source) before authoring its patch.")
+    ap.add_argument("--precheck-warn-only", dest="precheck_warn_only", action="store_true",
+                    default=None, help="(DEMO) do not block on a failing precheck; still emit "
+                         "the diagnosis, then proceed to physics anyway.")
     a = ap.parse_args()
     if a.hierarchy:
         from maker2.orchestrator_boss import run_boss
         settings = None
         if (a.web or a.engine or a.deep_think is not None or a.kb
                 or a.manager_ir is not None or a.enable_solver_tool
-                or a.manager_py or a.debugger_read_tools):
+                or a.manager_py or a.debugger_read_tools or a.precheck_warn_only):
             from maker2.config import Settings
             settings = Settings.load()
             if a.web:
@@ -552,6 +555,8 @@ def main() -> int:
                 settings.manager_py = True
             if a.debugger_read_tools:
                 settings.debugger_read_tools = True
+            if a.precheck_warn_only:
+                settings.precheck_warn_only = True
         res = run_boss(a.prompt, a.out, settings=settings, do_physics=a.physics,
                        per_sub_physics=a.per_sub_physics, thread=a.thread,
                        refine_message=a.refine_message, log_fn=print)

@@ -1608,7 +1608,28 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
             json.dump(rep.to_dict(), f, indent=2)
         log("ARTIFACT_JSON:" + json.dumps({
             "kind": "precheck", "iter": it, **rep.to_dict()}))
-        if not rep.ok and getattr(settings, "enable_precheck_failure_analyzer", True):
+        # DEMO: warn-only precheck. When settings.precheck_warn_only is on, a failing
+        # precheck does NOT block the run — we still emit the diagnosis (so the UI can show
+        # "problems found"), then fall through to physics so the demo reaches the sim +
+        # analysis + iteration value even on a geometrically imperfect assembly. This is a
+        # DEMO switch, not a correctness change: the violations are recorded, not silenced.
+        _warn_only = getattr(settings, "precheck_warn_only", False)
+        if not rep.ok and _warn_only:
+            log(f"[precheck] WARN-ONLY (demo): {len(rep.violations)} violation(s) NOT blocking "
+                f"-> proceeding to physics. {rep.summary()}")
+            if getattr(settings, "enable_precheck_diagnostician", True):
+                try:
+                    from .assembly_analyzer import diagnose_failure
+                    dx = diagnose_failure(session_root, rep.to_dict(), plan, settings,
+                                          log_fn=log, report_path=precheck_path)
+                    log("ARTIFACT_JSON:" + json.dumps({"kind": "diagnosis", "iter": it,
+                                                       "decision": dx, "warn_only": True}))
+                except Exception as de:
+                    log(f"[diagnostician] warn-only diagnosis skipped ({type(de).__name__}: {de})")
+            _precheck_blocking = False  # demo: do not block downstream physics
+        else:
+            _precheck_blocking = not rep.ok
+        if _precheck_blocking and getattr(settings, "enable_precheck_failure_analyzer", True):
             repaired_precheck = False
             try:
                 from .assembly_repair import (LocalRepairTransaction, apply_candidate,
@@ -1684,7 +1705,7 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
             except Exception as ae:
                 log(f"[precheck-analyzer] local repair failed safely "
                     f"({type(ae).__name__}: {ae})")
-        if not rep.ok:
+        if _precheck_blocking:
             # 方案B DIAGNOSTICIAN routing: the pre-check reports the SYMPTOM (what overlaps).
             # Ask the read-only analyzer WHO is responsible, WHY, and the concrete fix, then route
             # to that ONE manager instead of broadcasting a re-plan to the boss. Only a true

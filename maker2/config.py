@@ -164,6 +164,13 @@ class Settings:
     enable_solver_module_repair: bool = False
     enable_solver_seat_geometry_repair: bool = True
     enable_precheck_failure_analyzer: bool = True
+    precheck_warn_only: bool = False               # DEMO: when True, a failing precheck does
+                                                   # NOT block the run — the diagnosis is still
+                                                   # emitted (UI shows the problems), then the
+                                                   # pipeline proceeds to physics anyway so a
+                                                   # demo reaches the sim + analysis + iteration
+                                                   # even on an imperfect assembly. Violations
+                                                   # are recorded, not silenced. Off by default.
     precheck_local_repair_max_attempts: int = 2
     enable_precheck_housing_geometry_repair: bool = True
     enable_sub_conflict_gate: bool = True         # check each subassembly for rigid
