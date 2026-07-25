@@ -72,6 +72,9 @@ export type IterationInfo = {
   passed?: boolean;
   breakdown?: ScoreBreakdown;
   runDir?: string;
+  // Full physics payload (verdict, metrics, tests[], video, cause/reason, design) so the
+  // workbench can render the sim video + scenario-design details, not just the score.
+  physics?: Record<string, unknown>;
 };
 
 // A rendered assembled machine for one iteration (canvas scrubbing).

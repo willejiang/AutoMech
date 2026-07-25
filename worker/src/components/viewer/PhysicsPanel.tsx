@@ -32,6 +32,20 @@ type PhysicsTest = {
   reason?: string;
   metrics?: PhysicsMetrics;
   video?: string | null;
+  design?: PhysicsDesign | null;
+};
+
+// The scenario the environment_designer authored for this test: what environment it
+// chose and — for a driven test — which input it turned, which downstream joints it
+// watched, the propagation path, and the pass criteria. Surfaced so the demo shows the
+// "we DESIGNED a physics test" step, not just the score.
+type PhysicsDesign = {
+  input_joint?: string | null;
+  output_joint?: string | null;
+  watch_joints?: string[];
+  propagation_path?: string[];
+  pass_criteria?: Record<string, unknown> | null;
+  environment?: unknown;
 };
 
 export type PhysicsResult = {
@@ -41,6 +55,9 @@ export type PhysicsResult = {
   metrics?: PhysicsMetrics;
   video?: string | null;
   tests?: PhysicsTest[];
+  cause?: string;
+  reason?: string;
+  design?: PhysicsDesign | null;
 };
 
 interface PhysicsPanelProps {
@@ -212,6 +229,59 @@ export function PhysicsPanel({ physics, runDir, running }: PhysicsPanelProps) {
             {test.summary}
           </div>
         )}
+
+        {(() => {
+          const design = (test?.design ?? physics.design) as PhysicsDesign | undefined | null;
+          if (!design) return null;
+          const watch = design.watch_joints ?? [];
+          const path = design.propagation_path ?? [];
+          const pc = design.pass_criteria;
+          return (
+            <div className="mt-2 space-y-1 border-t border-adam-neutral-800 pt-2 text-[11px]">
+              <div className="font-semibold uppercase tracking-wide text-adam-neutral-400">
+                Designed test
+              </div>
+              {design.input_joint && (
+                <div className="text-adam-neutral-300">
+                  Drives{' '}
+                  <span className="font-mono text-adam-text-primary">{design.input_joint}</span>
+                  {design.output_joint ? (
+                    <>
+                      {' '}→ output{' '}
+                      <span className="font-mono text-adam-text-primary">
+                        {design.output_joint}
+                      </span>
+                    </>
+                  ) : null}
+                </div>
+              )}
+              {watch.length > 0 && (
+                <div className="text-adam-neutral-300">
+                  Watches{' '}
+                  <span className="text-adam-text-primary">{watch.length}</span> downstream joint
+                  {watch.length === 1 ? '' : 's'}:{' '}
+                  <span className="font-mono text-adam-neutral-400">{watch.join(', ')}</span>
+                </div>
+              )}
+              {path.length > 0 && (
+                <div className="text-adam-neutral-300">
+                  Path:{' '}
+                  <span className="font-mono text-adam-neutral-400">{path.join(' → ')}</span>
+                </div>
+              )}
+              {pc && Object.keys(pc).length > 0 && (
+                <div className="text-adam-neutral-300">
+                  Pass criteria:{' '}
+                  <span className="font-mono text-adam-neutral-400">
+                    {Object.entries(pc)
+                      .map(([k, v]) => `${k}=${String(v)}`)
+                      .join(' · ')}
+                  </span>
+                </div>
+              )}
+            </div>
+          );
+        })()}
       </div>
     </div>
   );

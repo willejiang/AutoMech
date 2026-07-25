@@ -11,6 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Maker2ModelCanvas } from '@/components/viewer/Maker2ModelCanvas';
+import { PhysicsPanel, type PhysicsResult } from '@/components/viewer/PhysicsPanel';
 import { apiUrl } from '@/services/api';
 import { cn } from '@/lib/utils';
 import { PipelineTimeline } from '@/components/workbench/PipelineTimeline';
@@ -279,6 +280,7 @@ export function WorkbenchView(props: WorkbenchViewProps) {
               passed: a.passed,
               breakdown: a.score_breakdown,
               runDir: a.render_dir || a.run_dir,
+              physics: a.physics,
             },
           });
           break;
@@ -476,6 +478,15 @@ export function WorkbenchView(props: WorkbenchViewProps) {
             <div className="pt-2">
               <ScoreGraph points={scorePoints} />
             </div>
+            {selectedIterInfo?.physics && selectedIterInfo.runDir && (
+              <div className="border-t border-adam-neutral-800 pt-2">
+                <PhysicsPanel
+                  physics={selectedIterInfo.physics as unknown as PhysicsResult}
+                  runDir={selectedIterInfo.runDir}
+                  running={running}
+                />
+              </div>
+            )}
             <div className="border-t border-adam-neutral-800 pt-2">
               <PartsInspector subs={state.subs} />
             </div>
