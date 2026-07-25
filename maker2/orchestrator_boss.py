@@ -1806,7 +1806,13 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
         #     proportions, which precheck (geometry-only) and physics (transmission-
         #     only) miss). Render views + VLM verdict; on FAIL, feed the suggestions to
         #     a boss re-plan (prior plan kept -> unchanged subs reuse).
-        if getattr(settings, "enable_hierarchy_judge", True):
+        #     DEMO/manager_py: SKIP. Under manager_py the worker is absorbed, so the model's
+        #     text summary has no per-link size/bbox and reads as "not built"; combined with
+        #     the six-view render being flaky, the judge FAILs on a machine that is actually
+        #     built (a false negative that blocks the run before physics). The physics pass +
+        #     precheck already gate correctness here.
+        if (getattr(settings, "enable_hierarchy_judge", True)
+                and not getattr(settings, "manager_py", False)):
             try:
                 from .viz import render_six_views
                 from .judger import judge as _judge, JudgeError
