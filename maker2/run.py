@@ -530,7 +530,24 @@ def main() -> int:
     ap.add_argument("--precheck-warn-only", dest="precheck_warn_only", action="store_true",
                     default=None, help="(DEMO) do not block on a failing precheck; still emit "
                          "the diagnosis, then proceed to physics anyway.")
+    ap.add_argument("--single-agent", dest="single_agent", action="store_true",
+                    default=None, help="single-agent text-to-cad path: ONE agent authors the "
+                         "WHOLE machine as one build123d script (no boss/sub/assembler), "
+                         "refines against a rigid-conflict self-check, then runs physics.")
     a = ap.parse_args()
+    if a.single_agent:
+        from maker2.config import Settings
+        from maker2.single_agent import run_single_agent
+        settings = Settings.load()
+        if a.engine:
+            settings.engine = a.engine
+        if a.model:
+            settings.model = a.model.split("/", 1)[-1]
+        res = run_single_agent(a.prompt, a.out, settings, do_physics=a.physics,
+                               max_iters=(a.max_iters or 4), log_fn=print)
+        if a.json:
+            print("RESULT_JSON:" + json.dumps(res))
+        return 0 if res.get("ok") else 1
     if a.hierarchy:
         from maker2.orchestrator_boss import run_boss
         settings = None

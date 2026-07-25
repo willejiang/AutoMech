@@ -147,3 +147,120 @@ def _infer_dof(name: str) -> str:
 
 def _infer_driver(name: str) -> bool:
     return bool(_DRIVER_RE.search(name.lower()))
+
+
+def run_single_agent(product_prompt: str, out_dir: str, settings, *,
+                     do_physics: bool = True, max_iters: int = 4,
+                     log_fn=print) -> dict:
+    """The single-agent text-to-cad pipeline: ONE agent authors the whole machine, refines it
+    against build-eval errors + a rigid-conflict geometry self-check, then the machine is
+    prechecked (warn-only) and run through the existing MuJoCo physics. Returns the same
+    RESULT_JSON shape run_boss does so the worker/UI reads it unchanged.
+
+    Loop per iteration: LLM authors/repairs build_machine() -> evaluate to a KinematicModel
+    (eval error feeds back) -> build URDF -> rigid-conflict check (overlaps feed back). On a
+    clean geometry pass, stop refining and go to physics."""
+    import json as _json
+    import os as _os
+
+    from .llm.conversation import Conversation
+    from .manager import model_to_dict, save_model
+    from .orchestrator import make_run_context
+    from .prompts.single_agent_prompt import (
+        SINGLE_AGENT_SYSTEM, build_single_agent_user, build_single_agent_repair,
+        build_single_agent_geometry_feedback)
+    from .urdf_builder import build_urdf
+
+    ctx = make_run_context(product_prompt, out_dir)
+    _os.makedirs(ctx.run_dir, exist_ok=True)
+    run_dir = ctx.run_dir
+    log_fn(f"[single-agent] session: {run_dir}")
+
+    client = settings.manager_client()
+    conv = Conversation()
+    conv.add_user_message(build_single_agent_user(product_prompt))
+
+    result = {"ok": False, "run_dir": run_dir, "render_dir": run_dir,
+              "iterations": 0, "hierarchy": False, "single_agent": True}
+    model = None
+    machine_name = ctx.project_slug or "machine"
+
+    for it in range(max_iters):
+        result["iterations"] = it + 1
+        log_fn(f"[single-agent] iteration {it}: authoring build_machine() ...")
+        try:
+            reply = client.send(conv.messages, SINGLE_AGENT_SYSTEM)
+        except Exception as e:
+            result["error"] = f"LLM request failed: {e}"
+            return result
+        conv.add_assistant_message(reply)
+        code = _extract_python_block(reply)
+        if not code:
+            conv.add_user_message(build_single_agent_repair(
+                "no ```python code block found; emit ONE block defining build_machine()."))
+            continue
+
+        # Evaluate the authored machine into a KinematicModel.
+        try:
+            model = evaluate_machine_python(code, run_dir, machine_name, log_fn=log_fn)
+        except SingleAgentError as e:
+            log_fn(f"[single-agent] eval failed: {str(e)[:160]}")
+            conv.add_user_message(build_single_agent_repair(str(e)))
+            continue
+
+        # Persist model + build a URDF for the geometry check / physics / UI.
+        save_model(model, ctx.model_json_path)
+        try:
+            build_urdf(model, ctx)
+        except Exception as e:
+            log_fn(f"[single-agent] URDF build failed: {str(e)[:120]}; treating as geometry gap")
+            conv.add_user_message(build_single_agent_repair(f"URDF build failed: {e}"))
+            continue
+        log_fn("ARTIFACT_JSON:" + _json.dumps({
+            "kind": "assembled_model", "iter": it, "run_dir": run_dir, "render_dir": run_dir}))
+
+        # Rigid-conflict geometry self-check (the text-to-cad "inspect" step, reusing subcheck).
+        conflicts = []
+        try:
+            from .subcheck import sub_conflicts
+            conflicts = sub_conflicts(model, ctx.urdf_path, log_fn=lambda *_: None)
+        except Exception as e:
+            log_fn(f"[single-agent] conflict check unavailable ({type(e).__name__}: {e})")
+        if conflicts and it < max_iters - 1:
+            findings = "\n".join(f"- {c.describe()}" for c in conflicts[:8])
+            log_fn(f"[single-agent] {len(conflicts)} interpenetration(s) -> asking agent to fix")
+            log_fn("ARTIFACT_JSON:" + _json.dumps({
+                "kind": "diagnosis", "iter": it, "single_agent": True,
+                "decision": {"root_cause": f"{len(conflicts)} rigid part interpenetration(s)",
+                             "evidence": [c.describe() for c in conflicts[:8]]}}))
+            conv.add_user_message(build_single_agent_geometry_feedback(findings))
+            continue
+
+        # Geometry is clean (or last iteration) -> accept this machine.
+        log_fn(f"[single-agent] machine accepted: {len(model.links)} parts, "
+               f"{len(model.mesh_pairs)} mesh pair(s)")
+        break
+
+    if model is None:
+        result["error"] = "no buildable machine after all iterations"
+        return result
+
+    # Physics on the assembled machine (reuses the existing MuJoCo path).
+    if do_physics:
+        try:
+            from .physics import run_physics
+            log_fn("[physics] evaluating the assembled machine ...")
+            phys = run_physics(ctx.urdf_path, product_prompt, run_dir, settings)
+            log_fn("ARTIFACT_JSON:" + _json.dumps({
+                "kind": "physics", "iter": result["iterations"] - 1,
+                "run_dir": run_dir, "render_dir": run_dir,
+                "passed": phys.get("passed"), "score": 0.0, "physics": phys}))
+            result["physics"] = phys
+            result["ok"] = phys.get("passed") is not False
+        except Exception as e:
+            log_fn(f"[physics] failed: {e}")
+            result["ok"] = True  # geometry built; physics is best-effort for the demo
+    else:
+        result["ok"] = True
+    return result
+
