@@ -110,3 +110,36 @@ def build_single_agent_geometry_feedback(findings: str) -> str:
 Edit the smallest part of your build_machine() to fix these — move a part to a clear axial
 station, set two meshing gears exactly one center-distance apart, or reposition a floating part
 onto real support. Return the COMPLETE corrected ```python block for build_machine()."""
+
+
+def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: dict) -> str:
+    """Feedback after a PHYSICS run: the machine was simulated under gravity + drive, and it
+    did not work as intended. Hand the agent the measured transmission metrics + the VLM's
+    read of the recording so it can fix the mechanism (usually a mesh that does not engage)."""
+    m = metrics or {}
+    moved = m.get("moved_count")
+    watched = m.get("watched_count")
+    it = m.get("input_travel")
+    exploded = m.get("exploded")
+    cause = (diagnosis or {}).get("cause")
+    reason = (diagnosis or {}).get("reason")
+    lines = [f"PHYSICS RESULT: {summary}"]
+    if it is not None:
+        lines.append(f"- the driver turned {it} rad but {moved or 0}/{watched or 0} downstream "
+                     f"parts moved.")
+    if exploded:
+        lines.append("- the assembly JAMMED / flew apart (parts driven into each other).")
+    if cause and cause != "none":
+        lines.append(f"- diagnosis cause: {cause}.")
+    if reason:
+        lines.append(f"- what the recording shows: {reason}")
+    body = "\n".join(lines)
+    return f"""The machine was simulated in physics and it did NOT transmit motion correctly:
+
+{body}
+
+The usual cause is that meshing gears are NOT exactly one center-distance apart, so their teeth
+never engage — recompute each meshing pair's center distance = module*(z1+z2)/2 and place the
+gear centers EXACTLY that far apart, using the SAME module for both. If parts jammed, give them
+clearance. If a gear is the wrong size to reach its partner, fix its tooth count or position.
+Return the COMPLETE corrected ```python block for build_machine()."""

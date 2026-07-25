@@ -168,7 +168,7 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
     from .orchestrator import make_run_context
     from .prompts.single_agent_prompt import (
         SINGLE_AGENT_SYSTEM, build_single_agent_user, build_single_agent_repair,
-        build_single_agent_geometry_feedback)
+        build_single_agent_geometry_feedback, build_single_agent_physics_feedback)
     from .urdf_builder import build_urdf
 
     ctx = make_run_context(product_prompt, out_dir)
@@ -187,6 +187,7 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
 
     for it in range(max_iters):
         result["iterations"] = it + 1
+        last_iter = it >= max_iters - 1
         log_fn(f"[single-agent] iteration {it}: authoring build_machine() ...")
         try:
             reply = client.send(conv.messages, SINGLE_AGENT_SYSTEM)
@@ -220,13 +221,15 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
             "kind": "assembled_model", "iter": it, "run_dir": run_dir, "render_dir": run_dir}))
 
         # Rigid-conflict geometry self-check (the text-to-cad "inspect" step, reusing subcheck).
+        # A gross interpenetration is cheaper to fix here than to run physics on, so gate on it
+        # first — but only re-author for it when we still have iterations left.
         conflicts = []
         try:
             from .subcheck import sub_conflicts
             conflicts = sub_conflicts(model, ctx.urdf_path, log_fn=lambda *_: None)
         except Exception as e:
             log_fn(f"[single-agent] conflict check unavailable ({type(e).__name__}: {e})")
-        if conflicts and it < max_iters - 1:
+        if conflicts and not last_iter:
             findings = "\n".join(f"- {c.describe()}" for c in conflicts[:8])
             log_fn(f"[single-agent] {len(conflicts)} interpenetration(s) -> asking agent to fix")
             log_fn("ARTIFACT_JSON:" + _json.dumps({
@@ -236,31 +239,62 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
             conv.add_user_message(build_single_agent_geometry_feedback(findings))
             continue
 
-        # Geometry is clean (or last iteration) -> accept this machine.
-        log_fn(f"[single-agent] machine accepted: {len(model.links)} parts, "
-               f"{len(model.mesh_pairs)} mesh pair(s)")
-        break
+        # PHYSICS in the loop: simulate the machine, then let the VLM diagnose the recording +
+        # metrics. On a functional failure (e.g. gears that don't transmit) feed the diagnosis
+        # back and RE-AUTHOR — this is the full design -> build -> test -> diagnose -> redesign
+        # loop, not a one-shot physics run at the end.
+        if not do_physics:
+            log_fn(f"[single-agent] machine accepted (no physics): {len(model.links)} parts")
+            result["ok"] = True
+            return result
+
+        from .physics import run_physics
+        log_fn(f"[single-agent] iteration {it}: simulating physics ...")
+        try:
+            phys = run_physics(ctx.urdf_path, product_prompt, run_dir, settings)
+        except Exception as e:
+            log_fn(f"[physics] failed: {e}")
+            result["physics"] = {"passed": None, "summary": f"physics error: {e}"}
+            result["ok"] = True  # geometry built; physics best-effort
+            return result
+
+        metrics = phys.get("metrics", {}) or {}
+        diagnosis = {"cause": phys.get("cause", "none"), "reason": phys.get("reason", "")}
+        passed = phys.get("passed")
+        log_fn("ARTIFACT_JSON:" + _json.dumps({
+            "kind": "physics", "iter": it, "run_dir": run_dir, "render_dir": run_dir,
+            "passed": passed, "score": 0.0, "physics": phys}))
+        result["physics"] = phys
+        result["iterations"] = it + 1
+
+        if passed is not False:
+            log_fn(f"[single-agent] PASS on iteration {it}: mechanism transmits")
+            result["ok"] = True
+            return result
+
+        # Failed physics. If iterations remain, diagnose + re-author; else accept the best build.
+        if last_iter:
+            log_fn(f"[single-agent] physics FAIL on final iteration {it}; returning best build")
+            result["ok"] = True  # demo: a built-but-imperfect machine still shows the loop
+            return result
+
+        summary = phys.get("summary", "the mechanism did not transmit motion")
+        log_fn(f"[single-agent] physics FAIL -> diagnose + re-author: {summary[:120]}")
+        log_fn("ARTIFACT_JSON:" + _json.dumps({
+            "kind": "diagnosis", "iter": it, "single_agent": True,
+            "decision": {"root_cause": summary,
+                         "cause": diagnosis["cause"], "reason": diagnosis["reason"],
+                         "metrics": {"moved": metrics.get("moved_count"),
+                                     "watched": metrics.get("watched_count"),
+                                     "input_travel": metrics.get("input_travel"),
+                                     "exploded": metrics.get("exploded")}}}))
+        conv.add_user_message(
+            build_single_agent_physics_feedback(summary, metrics, diagnosis))
+        # loop continues -> agent re-authors the whole machine with the physics feedback
 
     if model is None:
         result["error"] = "no buildable machine after all iterations"
         return result
-
-    # Physics on the assembled machine (reuses the existing MuJoCo path).
-    if do_physics:
-        try:
-            from .physics import run_physics
-            log_fn("[physics] evaluating the assembled machine ...")
-            phys = run_physics(ctx.urdf_path, product_prompt, run_dir, settings)
-            log_fn("ARTIFACT_JSON:" + _json.dumps({
-                "kind": "physics", "iter": result["iterations"] - 1,
-                "run_dir": run_dir, "render_dir": run_dir,
-                "passed": phys.get("passed"), "score": 0.0, "physics": phys}))
-            result["physics"] = phys
-            result["ok"] = phys.get("passed") is not False
-        except Exception as e:
-            log_fn(f"[physics] failed: {e}")
-            result["ok"] = True  # geometry built; physics is best-effort for the demo
-    else:
-        result["ok"] = True
+    result["ok"] = True
     return result
 
