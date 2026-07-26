@@ -217,14 +217,21 @@ precise, actionable reason, and to set culprit_part):
 
 READING CONTACTS (call read_contacts for any explosion/blew-apart) — the depth and the
 radial distance r of each contact point decode the ROOT CAUSE without guessing:
+- FIRST check is_mesh_pair on each contact. If a contact is between a DECLARED MESH PAIR
+  (is_mesh_pair=true), an overlap there means the two meshing gears' CENTER DISTANCE IS TOO
+  SMALL — they are jammed into each other (a big gear can swallow a small one, so its
+  contact point sits deep inside and r LOOKS small, but they are NOT coaxial: check
+  center_dist_xy_mm > 0). The fix is ALWAYS to SPREAD the two gear centers apart to
+  center distance = module*(z1+z2)/2. NEVER report "open a bore" or "coaxial poke" for a
+  mesh pair — that is the wrong fix and sends the agent in circles. Name the two gears and
+  say "meshing gears overlap -> center distance too small -> spread them apart".
 - A pair MuJoCo reports as overlapping that precheck (real geometry) does NOT report is a
   COLLISION-HULL ARTIFACT, not a design fault. The commonest is an AXIAL POKE: a shaft's
   flat end-face pushes into a coaxial part it passes through (bridge/bearing/plate). Tell:
-  the two bodies are coaxial and the contact r is SMALL (~0-1.5 mm, inside the bore, well
-  short of the bore wall) yet depth is large. The bore is big enough (real geometry clears)
-  — the shaft is just too LONG / seated at the wrong z, so its tip buries into the part
-  above. Fix = shorten the shaft or raise the coaxial part's z; do NOT widen the bore, and
-  do NOT separate them (they belong on the same axis).
+  the two bodies are coaxial (coaxial=true / center_dist_xy_mm ~ 0) and the contact r is
+  SMALL (~0-1.5 mm, inside the bore) yet depth is large. The bore is big enough (real
+  geometry clears) — the shaft is just too LONG / seated at the wrong z. Fix = shorten the
+  shaft or raise the coaxial part's z; do NOT widen the bore, do NOT separate them.
 - A pair BOTH MuJoCo and precheck report is a REAL overlap. If r ~ the bore-wall radius,
   the bore is too small for the shaft (radial) -> widen the bore. If the two are unrelated
   parts placed on top of each other, the coordinates are wrong -> move one.
@@ -560,8 +567,13 @@ def _diag_executors(run_dir: str, frames_dir: str, metrics: dict):
                             or {}).get("contacts", [])
             except Exception:
                 mj_pairs = []
-        # The REAL-geometry overlap check (a shaft through a hole reads ~0 here, unlike
-        # MuJoCo's hulls) — computed on demand so we can compare the two verdicts.
+        # Load the model so we KNOW which contact pairs are MESHING GEARS (mesh_pairs) vs
+        # coaxial stacks — this is what tells a "gears too close, open the center distance"
+        # fault apart from an "axial poke, coaxial" one. Without it a big gear eating a
+        # small one (contact point deep inside the big gear, so r looks small) gets
+        # mis-read as a coaxial poke.
+        mesh_pairs = set()
+        poses = {}
         precheck = []
         try:
             import sys
@@ -572,19 +584,48 @@ def _diag_executors(run_dir: str, frames_dir: str, metrics: dict):
             from maker2.subcheck import sub_conflicts
             mp = os.path.join(run_dir, "kinematic_model.json")
             urdf = os.path.join(run_dir, "model.urdf")
-            if os.path.exists(mp) and os.path.exists(urdf):
+            if os.path.exists(mp):
                 model = load_model(mp)
-                for c in sub_conflicts(model, urdf, log_fn=lambda *_: None):
-                    precheck.append(c.describe())
+                for pr in (getattr(model, "mesh_pairs", None) or []):
+                    if len(pr) >= 2:
+                        mesh_pairs.add(frozenset((pr[0], pr[1])))
+                for ps in (getattr(model, "poses", None) or []):
+                    xyz = getattr(ps, "xyz_m", None)
+                    child = getattr(ps, "child", None)
+                    if child and xyz is not None:
+                        poses[child] = [float(v) * 1000.0 for v in xyz]  # mm
+                if os.path.exists(urdf):
+                    for c in sub_conflicts(model, urdf, log_fn=lambda *_: None):
+                        precheck.append(c.describe())
         except Exception as e:
-            precheck = [f"(precheck overlap unavailable: {type(e).__name__})"]
+            precheck = [f"(precheck/model unavailable: {type(e).__name__})"]
+
+        # Annotate each contact: is it a declared MESH pair? If so, meshing overlap ==
+        # center distance too small -> the fix is to SPREAD the gear centers apart, NEVER
+        # to open a bore. Also give the coaxial vs non-coaxial hint from the poses.
+        import math
+        for c in mj_pairs:
+            b1, b2 = c.get("body1"), c.get("body2")
+            is_mesh = frozenset((b1, b2)) in mesh_pairs
+            c["is_mesh_pair"] = is_mesh
+            p1, p2 = poses.get(b1), poses.get(b2)
+            if p1 and p2:
+                dxy = math.hypot(p1[0] - p2[0], p1[1] - p2[1])
+                c["center_dist_xy_mm"] = round(dxy, 2)
+                c["coaxial"] = dxy < 0.5
+            if is_mesh:
+                c["fix"] = ("MESHING GEARS overlapping -> their center distance is TOO "
+                            "SMALL; move the two gear centers APART (center distance = "
+                            "module*(z1+z2)/2). Do NOT open a bore, they are NOT coaxial.")
+
         return json.dumps({"mujoco_contacts": mj_pairs,
                            "precheck_real_overlaps": precheck,
-                           "note": "A pair in mujoco_contacts but NOT in "
-                                   "precheck_real_overlaps is a hull/decomposition "
-                                   "artifact, not a real design fault. Read r1_mm/r2_mm "
-                                   "to tell axial (r~0, coaxial) from radial (r~bore) "
-                                   "from meshing (r~tooth radius, shallow)."},
+                           "note": "is_mesh_pair=true -> the two are DECLARED meshing "
+                                   "gears; any overlap means center distance too small, "
+                                   "fix = SPREAD them apart, never a bore. is_mesh_pair="
+                                   "false + coaxial=true + small r -> axial poke (shorten "
+                                   "shaft/clear bore). A pair in mujoco_contacts but not in "
+                                   "precheck_real_overlaps is a hull artifact."},
                           ensure_ascii=False)[:6000]
 
     return {"read_sim_result": read_sim_result, "read_run_log": read_run_log,

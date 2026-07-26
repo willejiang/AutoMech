@@ -112,8 +112,18 @@ station, set two meshing gears exactly one center-distance apart, or reposition 
 onto real support. Return the COMPLETE corrected ```python block for build_machine()."""
 
 
+def _drift_symptom(reason: str | None) -> bool:
+    """The diagnosis describes the WHOLE assembly sliding/drifting when driven (i.e. it is
+    not anchored to the world), as opposed to a local overlap or gear-spacing fault."""
+    r = (reason or "").lower()
+    return any(k in r for k in ("drift", "slid", "sliding", "unanchored", "off the base",
+                                "off its base", "across the bench", "not fixed"))
+
+
 def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: dict,
-                                        stability: dict | None = None) -> str:
+                                        stability: dict | None = None,
+                                        best_code: str | None = None,
+                                        regressed: bool = False) -> str:
     """Feedback after a PHYSICS run: the machine was simulated under gravity + drive, and it
     did not work as intended. Hand the agent the measured transmission metrics + the VLM's
     read of the recording so it can fix the mechanism (usually a mesh that does not engage)."""
@@ -158,6 +168,20 @@ def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: 
             "instant contact is computed): shafts must not poke through the plates they "
             "pass — shorten them or fix their z; separate parts must not intersect.\n"
             "- Only once it settles intact does the gear-train function get tested.")
+    elif _drift_symptom(reason):
+        # Settled fine but the WHOLE assembly slides/drifts when driven — it is not anchored
+        # to the world. This is the failure that kept recurring; nail it every iteration.
+        guidance = (
+            "ANCHOR THE WHOLE MOVEMENT — the gear train is NOT fixed to the world, so driving "
+            "the input makes the entire tower slide/drift across the bench instead of the "
+            "gears turning in place. This is the ONE thing to fix now:\n"
+            "- There MUST be a base/mainplate labelled dof=fixed that rests on the ground; it "
+            "is the anchor everything else hangs off.\n"
+            "- Every arbor/shaft/bridge must be positioned relative to that fixed base so the "
+            "train is held in place — nothing should be floating free.\n"
+            "- Only the gears/arbors that are meant to rotate are dof=spin; plates, bridges, "
+            "bearings, the base are dof=fixed.\n"
+            "Do not touch gear spacing until the assembly stays put under drive.")
     elif exploded:
         guidance = (
             "The assembly EXPLODED — parts overlapped at the START pose and the contact "
@@ -179,9 +203,22 @@ def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: 
             "place the gear centers EXACTLY that far apart, using the SAME module for both. "
             "If a gear is the wrong size to reach its partner, fix its tooth count or position.")
 
+    # ROLLBACK: this iteration scored WORSE than the best version so far. Rather than let
+    # the agent keep drifting from its own worse attempt, hand back the known-best code and
+    # tell it to refine THAT — this is what stops the loop from diverging over many rounds.
+    rollback = ""
+    if regressed and best_code:
+        rollback = (
+            "\n\nIMPORTANT — YOUR LAST EDIT MADE THINGS WORSE. Do NOT continue from it. Below "
+            "is the BEST version so far (the closest to a stable, working machine). START FROM "
+            "THIS EXACT CODE and make only the SMALLEST change that fixes the problem above. "
+            "Do NOT rewrite the machine, do NOT renumber or drop parts — keep everything that "
+            "already works and touch only what the diagnosis points at:\n\n"
+            f"```python\n{best_code}\n```\n")
+
     return f"""The machine was simulated in physics and it did NOT work correctly:
 
 {body}
 
-{guidance}
+{guidance}{rollback}
 Return the COMPLETE corrected ```python block for build_machine()."""

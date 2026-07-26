@@ -149,6 +149,80 @@ def _infer_driver(name: str) -> bool:
     return bool(_DRIVER_RE.search(name.lower()))
 
 
+def _iter_score(phys: dict) -> float:
+    """Score one physics result so iterations are comparable and we can keep the BEST
+    version (and roll back to it when a later edit makes things worse).
+
+    Priority, high->low, so a stable machine ALWAYS outranks an unstable one no matter how
+    much the latter 'turned':
+      +1000  stage-1 stability PASS (settles intact on the bench — the precondition)
+      +300   did NOT explode under drive
+      +0..200 input turned toward the expected sweep (closer = higher)
+      +0..100 fraction of downstream joints that moved
+    An exploded / fallen-apart machine scores near zero, so it can never become 'best'.
+    """
+    if not phys:
+        return -1.0
+    m = phys.get("metrics") or {}
+    st = phys.get("stability") or {}
+    score = 0.0
+    # A machine that EXPLODES under drive is the worst outcome — never let it rank near a
+    # machine that stays together, even if it happened to settle (stage-1) fine. Hard floor.
+    if m.get("exploded"):
+        return -100.0 + 100.0 * min(1.0, (m.get("moved_count") or 0) / max(1, m.get("watched_count") or 1))
+    if str(st.get("verdict", "")).upper() == "PASS" and not st.get("exploded"):
+        score += 1000.0
+    score += 300.0                                # survived drive without exploding
+    # travel toward expected (expected ~ velocity*duration; fall back to a nominal 10 rad)
+    it = float(m.get("input_travel") or 0.0)
+    if it > 0 and it < 1000:                      # ignore absurd blow-up travels
+        score += min(200.0, it / 10.0 * 200.0 if it < 10 else 200.0)
+    watched = m.get("watched_count") or 0
+    moved = m.get("moved_count") or 0
+    if watched:
+        score += 100.0 * min(1.0, moved / watched)
+    if phys.get("passed") is True:
+        score += 5000.0
+    return score
+
+
+def _restore_best(best: dict, best_dir: str, run_dir: str, ctx, machine_name, log_fn):
+    """Make the main run_dir hold the BEST version's artifacts so the UI/return shows the
+    best machine, not the last (often divergent) iteration. Prefers copying the snapshot
+    files back; falls back to re-evaluating best['code'] if the snapshot is missing."""
+    import os
+    import shutil
+    copied = False
+    try:
+        if os.path.isdir(best_dir):
+            for fn in ("machine.py", "kinematic_model.json", "model.urdf"):
+                src = os.path.join(best_dir, fn)
+                if os.path.exists(src):
+                    shutil.copy2(src, os.path.join(run_dir, fn))
+                    copied = True
+    except Exception as e:
+        log_fn(f"[single-agent] restore-best copy failed: {e}")
+    if copied:
+        return
+    # Fallback: rebuild from the best code string.
+    code = best.get("code")
+    if not code:
+        return
+    try:
+        from .urdf_builder import build_urdf
+        model = evaluate_machine_python(code, run_dir, machine_name, log_fn=log_fn)
+        save_model_ref = _lazy_save_model()
+        save_model_ref(model, ctx.model_json_path)
+        build_urdf(model, ctx)
+    except Exception as e:
+        log_fn(f"[single-agent] restore-best rebuild failed: {e}")
+
+
+def _lazy_save_model():
+    from .manager import save_model
+    return save_model
+
+
 def run_single_agent(product_prompt: str, out_dir: str, settings, *,
                      do_physics: bool = True, max_iters: int = 4,
                      log_fn=print) -> dict:
@@ -198,6 +272,21 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
     conv = Conversation()
     conv.add_user_message(build_single_agent_user(product_prompt))
 
+    # RESEARCH PRE-STEP (web + local KB), same as the multi-agent manager gets. The single
+    # agent authors the WHOLE drivetrain from memory otherwise — it guesses gear modules,
+    # tooth counts and center distances, which is exactly what keeps going wrong. Look up
+    # gear math / standard sizes / worked examples FIRST so the numbers are grounded. Gated
+    # by settings.enable_reference_tools (web) / enable_kb (local); a no-op if both are off.
+    try:
+        from .tools import maybe_research
+        maybe_research(client, conv, settings,
+                       f"authoring the complete mechanism for: {product_prompt} — gear "
+                       f"module/tooth-count/center-distance math, standard sizes, and any "
+                       f"worked gear-train / watch-movement examples",
+                       collection="manager", log_fn=log_fn)
+    except Exception as e:
+        log_fn(f"[single-agent] research pre-step skipped: {e}")
+
     result = {"ok": False, "run_dir": run_dir, "render_dir": run_dir,
               "iterations": 0, "hierarchy": False, "single_agent": True}
     model = None
@@ -209,6 +298,14 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
     _HARD_CEILING = 50
     unlimited = max_iters <= 0
     iter_cap = _HARD_CEILING if unlimited else max_iters
+
+    # Keep the BEST version seen so far (highest _iter_score). When a later iteration
+    # regresses (a new edit made things worse — exploded / fell apart), we feed this best
+    # code back as the starting point so the agent refines it instead of rewriting the whole
+    # machine and losing hard-won stability. On finish we return the BEST, not the last
+    # (often-divergent) iteration.
+    best = {"score": float("-inf"), "code": None, "phys": None}
+    best_dir = _os.path.join(run_dir, "best")
 
     for it in range(iter_cap):
         result["iterations"] = it + 1
@@ -286,9 +383,29 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
         metrics = phys.get("metrics", {}) or {}
         diagnosis = {"cause": phys.get("cause", "none"), "reason": phys.get("reason", "")}
         passed = phys.get("passed")
+
+        # Score this iteration and update BEST. A higher score = closer to a working,
+        # stable machine. Snapshot the best version's code + built model/urdf so we can
+        # return it (and roll back to it) instead of the last, possibly-divergent build.
+        score = _iter_score(phys)
+        regressed = score < best["score"]
+        if score > best["score"]:
+            best = {"score": score, "code": code, "phys": phys}
+            try:
+                _os.makedirs(best_dir, exist_ok=True)
+                import shutil as _shutil
+                for fn in ("machine.py", "kinematic_model.json", "model.urdf"):
+                    src = _os.path.join(run_dir, fn)
+                    if _os.path.exists(src):
+                        _shutil.copy2(src, _os.path.join(best_dir, fn))
+            except Exception as e:
+                log_fn(f"[single-agent] best snapshot failed: {e}")
+        log_fn(f"[single-agent] iter {it} score={score:.0f} (best={best['score']:.0f}"
+               f"{', REGRESSED' if regressed else ''})")
+
         log_fn("ARTIFACT_JSON:" + _json.dumps({
             "kind": "physics", "iter": it, "run_dir": run_dir, "render_dir": run_dir,
-            "passed": passed, "score": 0.0, "physics": phys}))
+            "passed": passed, "score": score, "physics": phys}))
         result["physics"] = phys
         result["iterations"] = it + 1
 
@@ -297,10 +414,13 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
             result["ok"] = True
             return result
 
-        # Failed physics. If iterations remain, diagnose + re-author; else accept the best build.
+        # Failed physics. If iterations remain, diagnose + re-author; else return BEST.
         if last_iter:
-            log_fn(f"[single-agent] physics FAIL on final iteration {it}; returning best build")
-            result["ok"] = True  # demo: a built-but-imperfect machine still shows the loop
+            log_fn(f"[single-agent] physics FAIL on final iteration {it}; returning BEST "
+                   f"(score={best['score']:.0f})")
+            _restore_best(best, best_dir, run_dir, ctx, machine_name, log_fn)
+            result["physics"] = best["phys"] or result.get("physics")
+            result["ok"] = True
             return result
 
         summary = phys.get("summary", "the mechanism did not transmit motion")
@@ -313,14 +433,22 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
                                      "watched": metrics.get("watched_count"),
                                      "input_travel": metrics.get("input_travel"),
                                      "exploded": metrics.get("exploded")}}}))
+        # When this iteration REGRESSED below the best, feed the best code back so the agent
+        # refines the known-good version instead of rewriting from its own worse attempt.
         conv.add_user_message(
-            build_single_agent_physics_feedback(summary, metrics, diagnosis,
-                                                stability=phys.get("stability")))
-        # loop continues -> agent re-authors the whole machine with the physics feedback
+            build_single_agent_physics_feedback(
+                summary, metrics, diagnosis, stability=phys.get("stability"),
+                best_code=(best["code"] if regressed else None), regressed=regressed))
+        # loop continues -> agent refines with the physics feedback (+ rollback if regressed)
 
     if model is None:
         result["error"] = "no buildable machine after all iterations"
         return result
+    # Ran the full cap without a PASS: return the BEST version, not the last (divergent) one.
+    log_fn(f"[single-agent] cap reached; returning BEST (score={best['score']:.0f})")
+    _restore_best(best, best_dir, run_dir, ctx, machine_name, log_fn)
+    if best.get("phys"):
+        result["physics"] = best["phys"]
     result["ok"] = True
     return result
 
