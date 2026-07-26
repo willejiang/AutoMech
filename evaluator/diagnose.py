@@ -162,9 +162,90 @@ HARD RULES (these override your visual impression):
    or non-meshing gear between the moving part and the output). This is NEVER "camera";
    return verdict=fail with cause "structure", and set culprit_part to the BREAK JOINT
    named in the signals (the first path joint with ~0 travel).
+5. If the signal BLEW_APART is true, one or more parts were EJECTED far off their settle
+   position (see EXPLODED_PARTS) — the assembly is unconstrained and physically flew
+   apart. This is NEVER "camera" even if the frames look empty (the parts left the
+   frame). Return verdict=fail with cause "structure"; set culprit_part to the
+   worst-ejected part named in EXPLODED_PARTS.
+6. TWO-STAGE JUDGMENT. STAGE 1 is STABILITY: the machine is dropped under gravity with NO
+   drive and must hold together. If STABILITY_VERDICT is FAIL or STABILITY_EXPLODED is
+   true, the machine falls apart just sitting on the bench — return verdict=fail, cause
+   "structure", and do NOT pass it on any function grounds. A thing that cannot even exist
+   stably transmits nothing. Only if STAGE 1 held do you evaluate STAGE 2 (function).
+7. If BARELY_TURNED is true, the driven input swept almost no angle (< ~0.3 rad), so the
+   downstream parts that "moved" only jittered during settle — this does NOT prove the
+   mechanism transmits. Do NOT pass on 5/5-moved when the input barely turned; return
+   verdict=fail, cause "structure" (the input is effectively jammed / the train does not
+   turn), unless the input clearly SHOULD not turn for this task.
 
 Always fill "reason" with a concrete one-sentence explanation. Respond ONLY with the JSON
-schema."""
+schema.
+
+REFERENCE CASES — how a failure's MOTION reveals its ROOT CAUSE (use these to write a
+precise, actionable reason, and to set culprit_part):
+- COLLAPSE / SINKING (parts move DOWNWARD, end_z drops below its settle value, the stack
+  tilts or falls over): something is NOT FIXED to the world. A plate/bridge/frame that
+  should be the static base was left free (dof != fixed) or has no ground support, so
+  gravity pulls the assembly down. Fix = anchor the base structure (make the lower
+  plate/frame fixed and grounded). Reason should say "X collapsed downward -> the base is
+  unanchored".
+- LATERAL EJECTION / FLING (parts shoot SIDEWAYS or explode to huge displacement while
+  end_z stays ~0 and tilt ~0): this is NOT gravity — it is CONTACT FORCE from parts that
+  START OVERLAPPING. Two solids initialized interpenetrating generate an enormous spring
+  push-apart impulse the instant the sim steps, flinging them apart (often hundreds of
+  metres). But FIRST decide WHICH overlap it is — the fix differs:
+    (a) Parts that should be SEPARATE overlap (two non-coaxial parts placed on top of each
+        other, meshing gears set closer than one center-distance): the coordinates are
+        WRONG. Fix = move them to correct positions (meshing gears exactly one
+        center-distance apart; distinct parts to distinct locations).
+    (b) Parts that are SUPPOSED to be nested/coaxial overlap (a gear sitting on ITS OWN
+        arbor/shaft, a wheel on its staff, a sleeve on a post): they are correctly placed —
+        the fault is that their solids intersect (a bore smaller than the shaft, or no
+        collision filtering between a part and its own shaft). Fix = give the gear a bore
+        that clears the shaft, OR exclude that coaxial pair from self-collision — do NOT
+        move them apart, they belong on the same axis.
+  A tell for (b): the two ejected parts share the SAME x,y and differ only slightly in z,
+  and one is a shaft/arbor/staff while the other is a gear/wheel/sleeve. Do NOT recommend
+  separating a gear from its own arbor. Name the pair and say which case it is.
+- AXIAL SLIP-OFF (a gear/wheel flies along its own shaft axis and off the end): the shaft
+  is too SHORT or the gear sits at the shaft tip with no axial constraint, so meshing
+  contact's axial component pushes it off. Fix = lengthen the shaft and seat the gear on a
+  mid-shaft station with a shoulder/bearing on each side. This is still a structure fault.
+- DEAD / JAMMED (input barely turns, ~0 downstream motion, nothing ejects): meshing teeth
+  are too far apart to engage OR two parts are wedged. Not a fixturing problem — a spacing
+  one. Fix = set the meshing pair exactly one center-distance apart.
+
+READING CONTACTS (call read_contacts for any explosion/blew-apart) — the depth and the
+radial distance r of each contact point decode the ROOT CAUSE without guessing:
+- A pair MuJoCo reports as overlapping that precheck (real geometry) does NOT report is a
+  COLLISION-HULL ARTIFACT, not a design fault. The commonest is an AXIAL POKE: a shaft's
+  flat end-face pushes into a coaxial part it passes through (bridge/bearing/plate). Tell:
+  the two bodies are coaxial and the contact r is SMALL (~0-1.5 mm, inside the bore, well
+  short of the bore wall) yet depth is large. The bore is big enough (real geometry clears)
+  — the shaft is just too LONG / seated at the wrong z, so its tip buries into the part
+  above. Fix = shorten the shaft or raise the coaxial part's z; do NOT widen the bore, and
+  do NOT separate them (they belong on the same axis).
+- A pair BOTH MuJoCo and precheck report is a REAL overlap. If r ~ the bore-wall radius,
+  the bore is too small for the shaft (radial) -> widen the bore. If the two are unrelated
+  parts placed on top of each other, the coordinates are wrong -> move one.
+- A contact out at a gear's TOOTH radius (r ~ pitch radius, large) with SHALLOW depth is
+  NORMAL meshing between a declared mesh pair — do NOT flag it as a fault."""
+
+_DIAG_TOOL_HINT = """
+
+You may FIRST call read-only tools to investigate before deciding:
+- read_contacts() — THE decisive tool for any explosion / blew-apart / structure fault:
+  the simulator's own overlap verdict at the design pose, per body pair, with depth and
+  the contact point's radial distance to each body's axis, PLUS the real-geometry overlap
+  check to compare against. Call this BEFORE blaming a part — it tells you exactly which
+  pairs overlap and whether it is a real fault or a hull artifact. Do not guess "part A is
+  too wide" from keyframes when this gives you the measured truth.
+- read_sim_result(pointer?) — the FULL metrics incl. per-part displaced_parts (how far
+  each body flew, mm). ALWAYS call this when the keyframes look empty/ambiguous: parts
+  that left the frame are still recorded here, so you can judge structure from the numbers.
+- read_run_log(regex) — search this run's build/precheck/physics narration.
+- view_frame(index) — re-render one keyframe to look closer.
+When you have enough evidence, STOP calling tools and reply with ONLY the JSON verdict."""
 
 _DIAG_SCHEMA = {
     "type": "json_schema",
@@ -241,6 +322,27 @@ def _metric_signals(spec: dict, metrics: dict) -> dict:
     # dies -> the culprit part. Uses the ordered path + per-joint `watched` travel.
     break_joint = _break_joint(drive, m, input_moved)
 
+    # Exploded parts: bodies that flew far from their settle position (the runner's
+    # displaced_parts, worst-first, disp in mm). A part >0.5 m out is physically ejected
+    # -> the assembly is unconstrained / blew apart. This is a hard structure fault the
+    # VLM cannot see once the part has left the frame.
+    displaced = m.get("displaced_parts") or []
+    exploded_parts = [p for p in displaced
+                      if isinstance(p, dict) and float(p.get("disp_mm") or 0.0) > 500.0]
+    blew_apart = bool(m.get("exploded")) or bool(exploded_parts)
+
+    # Distinguish the TWO explosion modes from the motion (deterministic, so the reason
+    # is grounded in physics, not a guess): a COLLAPSE sinks (end_z drops / it tilts),
+    # a FLING shoots sideways with little vertical change -> initial rigid overlap.
+    fling_mode = ""
+    if blew_apart:
+        end_z = float(m.get("end_z") or 0.0)
+        tilt = float(m.get("max_tilt_deg") or 0.0)
+        if end_z < -0.02 or tilt > 15.0:
+            fling_mode = "collapse"       # went down / toppled -> base not anchored
+        else:
+            fling_mode = "lateral"        # shot sideways, level -> parts started overlapping
+
     notes = []
     if input_stalled:
         notes.append(f"INPUT_STALLED: input joint '{m.get('input_joint')}' moved only "
@@ -259,9 +361,26 @@ def _metric_signals(spec: dict, metrics: dict) -> dict:
         notes.append(f"BREAK_JOINT: '{break_joint}' is the first joint in the path whose "
                      f"motion is ~0 while an upstream joint moved -> it is the exact "
                      f"culprit part.")
+    if exploded_parts:
+        worst = ", ".join(f"{p.get('part')} ({float(p.get('disp_mm')) / 1000.0:.1f} m)"
+                          for p in exploded_parts[:4])
+        if fling_mode == "collapse":
+            diag = ("-> the assembly COLLAPSED downward: its base structure is not "
+                    "anchored/fixed to the world.")
+        elif fling_mode == "lateral":
+            diag = ("-> parts shot SIDEWAYS while staying level: they STARTED OVERLAPPING "
+                    "(rigid interpenetration), so the contact solver flung them apart. If "
+                    "the pair is a gear on its OWN arbor/shaft (same x,y, small z gap), the "
+                    "fix is a clearing bore or self-collision exclusion — NOT moving them "
+                    "apart; otherwise their coordinates are wrong.")
+        else:
+            diag = "-> the assembly is unconstrained and blew apart (structure)."
+        notes.append(f"EXPLODED_PARTS: parts flew off their settle position: {worst} "
+                     f"{diag} (the video may look empty because the parts left the frame.)")
     return {"input_moved": input_moved, "input_stalled": input_stalled,
             "free_spin": free_spin, "output_dead": output_dead,
-            "break_joint": break_joint,
+            "break_joint": break_joint, "exploded_parts": exploded_parts,
+            "blew_apart": blew_apart, "fling_mode": fling_mode,
             "output_reached": bool(output_reached) if output_reached is not None else None,
             "expected_input_travel": round(expected, 3), "notes": notes}
 
@@ -324,8 +443,157 @@ def _diag(verdict, cause, reason, culprit_part="", culprit_sub=""):
             "culprit_part": culprit_part or "", "culprit_sub": culprit_sub or ""}
 
 
+# --------------------------------------------------------------------------- #
+# Read-only investigation tools: the VLM can pull the FULL sim data (not just the
+# summarized metrics it is prompted with) and re-inspect any frame, so it can still
+# reason about an "empty" video — the parts flew off, but the numbers are all here.
+# --------------------------------------------------------------------------- #
+
+_DIAG_TOOLS = [
+    {"type": "function", "function": {
+        "name": "read_sim_result",
+        "description": "Read the FULL sim_result.json for this run: every metric, the "
+                       "per-body displaced_parts (name + how far each flew, mm), input "
+                       "travel, exploded flag, n_frames. Use this when the video looks "
+                       "empty or ambiguous — the numbers say what physically happened.",
+        "parameters": {"type": "object", "properties": {
+            "pointer": {"type": "string", "description": "optional dotted sub-path, e.g. "
+                        "'metrics.displaced_parts'"}}, "additionalProperties": False}}},
+    {"type": "function", "function": {
+        "name": "read_run_log",
+        "description": "Regex-search this run's run.log with a few lines of context "
+                       "(build/precheck/physics narration). Use to find WHY a part is "
+                       "missing or where the drivetrain broke.",
+        "parameters": {"type": "object", "properties": {
+            "regex": {"type": "string"},
+            "max_matches": {"type": "integer"}},
+            "required": ["regex"], "additionalProperties": False}}},
+    {"type": "function", "function": {
+        "name": "view_frame",
+        "description": "Re-render a specific keyframe index (0 = first) back to you as an "
+                       "image, to look closer at one moment in the recording.",
+        "parameters": {"type": "object", "properties": {
+            "index": {"type": "integer"}},
+            "required": ["index"], "additionalProperties": False}}},
+    {"type": "function", "function": {
+        "name": "read_contacts",
+        "description": "The MOST RELIABLE evidence for a structure fault: the simulator's "
+                       "OWN collision verdict at the design pose. Returns each "
+                       "interpenetrating body pair with depth_mm (how deep they overlap), "
+                       "and r1_mm/r2_mm (radial distance of the contact point to each "
+                       "body's axis). ALSO returns precheck_overlaps = the same run's "
+                       "REAL-geometry overlap check. COMPARE them: a pair MuJoCo reports "
+                       "but precheck does NOT is a convex-hull artifact (a decomposed "
+                       "piece filled a bore, or an axial end-face pokes a coaxial part) — "
+                       "not a real design fault; a pair BOTH report is a real overlap "
+                       "(bore too small, wrong coordinates). Interpreting r: a deep "
+                       "contact at small r (~0-1mm, bodies coaxial) = an AXIAL end-face "
+                       "poking through (part too long / wrong z), NOT radial; a contact "
+                       "near a bore-wall radius = radial (bore too small to fit the "
+                       "shaft); a contact out at a gear's tooth radius with shallow depth "
+                       "= NORMAL meshing, do not flag it.",
+        "parameters": {"type": "object", "properties": {},
+                       "additionalProperties": False}}},
+]
+
+
+def _diag_executors(run_dir: str, frames_dir: str, metrics: dict):
+    """Sandboxed read-only executors for the diagnosis tool loop, bound to this run."""
+    def _dig(obj, pointer):
+        for key in (pointer or "").split("."):
+            if not key:
+                continue
+            if isinstance(obj, dict):
+                obj = obj.get(key)
+            elif isinstance(obj, list):
+                try:
+                    obj = obj[int(key)]
+                except (ValueError, IndexError):
+                    return None
+            else:
+                return None
+        return obj
+
+    def read_sim_result(pointer=""):
+        p = os.path.join(run_dir, "sim_result.json") if run_dir else ""
+        data = None
+        if p and os.path.exists(p):
+            try:
+                data = json.loads(Path(p).read_text(encoding="utf-8"))
+            except Exception:
+                data = None
+        if data is None:
+            data = {"metrics": metrics or {}}       # fall back to what we were handed
+        sub = _dig(data, pointer) if pointer else data
+        return json.dumps(sub, ensure_ascii=False)[:6000]
+
+    def read_run_log(regex, max_matches=20):
+        p = os.path.join(run_dir, "run.log") if run_dir else ""
+        if not p or not os.path.exists(p):
+            return "(no run.log for this run)"
+        try:
+            rx = re.compile(regex, re.I)
+        except re.error as e:
+            return f"(bad regex: {e})"
+        hits = []
+        for ln in Path(p).read_text(encoding="utf-8", errors="replace").splitlines():
+            if rx.search(ln):
+                hits.append(ln[:300])
+                if len(hits) >= int(max_matches or 20):
+                    break
+        return "\n".join(hits) if hits else "(no matches)"
+
+    def view_frame(index):
+        frames = sorted(glob.glob(os.path.join(frames_dir, "rgb_*.png"))) if frames_dir else []
+        if not frames:
+            return {"error": "no frames"}
+        i = max(0, min(int(index), len(frames) - 1))
+        return {"__image__": frames[i], "index": i, "total": len(frames)}
+
+    def read_contacts():
+        # MuJoCo's own collision verdict, dumped by the runner at the design pose.
+        mj_pairs = []
+        cp = os.path.join(run_dir, "contacts.json") if run_dir else ""
+        if cp and os.path.exists(cp):
+            try:
+                mj_pairs = (json.loads(Path(cp).read_text(encoding="utf-8"))
+                            or {}).get("contacts", [])
+            except Exception:
+                mj_pairs = []
+        # The REAL-geometry overlap check (a shaft through a hole reads ~0 here, unlike
+        # MuJoCo's hulls) — computed on demand so we can compare the two verdicts.
+        precheck = []
+        try:
+            import sys
+            root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            if root not in sys.path:
+                sys.path.insert(0, root)
+            from maker2.manager import load_model
+            from maker2.subcheck import sub_conflicts
+            mp = os.path.join(run_dir, "kinematic_model.json")
+            urdf = os.path.join(run_dir, "model.urdf")
+            if os.path.exists(mp) and os.path.exists(urdf):
+                model = load_model(mp)
+                for c in sub_conflicts(model, urdf, log_fn=lambda *_: None):
+                    precheck.append(c.describe())
+        except Exception as e:
+            precheck = [f"(precheck overlap unavailable: {type(e).__name__})"]
+        return json.dumps({"mujoco_contacts": mj_pairs,
+                           "precheck_real_overlaps": precheck,
+                           "note": "A pair in mujoco_contacts but NOT in "
+                                   "precheck_real_overlaps is a hull/decomposition "
+                                   "artifact, not a real design fault. Read r1_mm/r2_mm "
+                                   "to tell axial (r~0, coaxial) from radial (r~bore) "
+                                   "from meshing (r~tooth radius, shallow)."},
+                          ensure_ascii=False)[:6000]
+
+    return {"read_sim_result": read_sim_result, "read_run_log": read_run_log,
+            "view_frame": view_frame, "read_contacts": read_contacts}
+
+
 def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
-                     frames_dirs=None, base_url=None, api_key=None, model=None) -> dict:
+                     stability=None, frames_dirs=None, base_url=None, api_key=None,
+                     model=None) -> dict:
     """VLM verdict over the sim recording. Returns {verdict, cause, reason}.
 
     `frames_dirs` (optional) maps camera_name -> frames dir; when given, a few
@@ -348,12 +616,24 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
 
     raw_pass = (metrics or {}).get("verdict") == "PASS"
     sig = _metric_signals(spec, metrics)
-    hard_fail = sig["input_stalled"] or sig["free_spin"] or sig["output_dead"]
+    # Stage-1 stability + barely-turned are hard, deterministic FAILs the VLM cannot
+    # override: a machine that explodes just settling, or an input that never really
+    # turned, cannot be a PASS regardless of what the keyframes look like.
+    _st = stability or {}
+    stability_failed = (str(_st.get("verdict", "PASS")).upper() == "FAIL"
+                        or bool(_st.get("exploded")))
+    _it = float((metrics or {}).get("input_travel") or 0.0)
+    _exp_in = float(sig.get("expected_input_travel") or 0.0)
+    barely_turned = bool(_it < max(0.3, 0.25 * _exp_in))
+    hard_fail = (sig["input_stalled"] or sig["free_spin"] or sig["output_dead"]
+                 or sig["blew_apart"] or stability_failed or barely_turned)
     sig_note = " ".join(sig["notes"])
     # Deterministic culprit from the metrics (independent of the VLM): the break joint.
     det_part = sig.get("break_joint") or ""
     if not det_part and sig["input_stalled"]:
         det_part = (metrics or {}).get("input_joint") or (spec.get("drive") or {}).get("input_joint") or ""
+    if not det_part and sig.get("exploded_parts"):
+        det_part = str(sig["exploded_parts"][0].get("part") or "")
     det_sub = _culprit_sub_of(det_part, robot_info)
 
     if not view_frames:
@@ -368,15 +648,30 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
                      "" if raw_pass else det_part, "" if raw_pass else det_sub)
 
     drive = (spec or {}).get("drive") or {}
+    st = stability or {}
+    it_val = _it
+    stability_txt = (
+        f"STAGE 1 — STABILITY (settle under gravity, NO drive; a machine must first hold "
+        f"together on the bench before any function test is meaningful):\n"
+        f"  STABILITY_VERDICT: {st.get('verdict', '(none)')}\n"
+        f"  STABILITY_EXPLODED (flew apart just settling): {st.get('exploded')}\n"
+        f"  settle_max_disp_m: {st.get('max_disp_m')}\n"
+        f"  settle_displaced_parts: {st.get('displaced_parts')}\n")
     signals_txt = (
+        stability_txt +
+        f"\nSTAGE 2 — FUNCTION (drive the input, only meaningful if STAGE 1 passed):\n"
         f"METRIC SIGNALS (authoritative):\n"
         f"  INPUT_MOVED: {sig['input_moved']}\n"
         f"  INPUT_STALLED: {sig['input_stalled']}\n"
+        f"  BARELY_TURNED (input swept < ~0.3 rad -> downstream 'motion' is settle jitter, "
+        f"NOT proven transmission): {barely_turned}\n"
         f"  FREE_SPIN: {sig['free_spin']}\n"
         f"  OUTPUT_REACHED: {sig['output_reached']}\n"
         f"  OUTPUT_DEAD (moved but output not reached): {sig['output_dead']}\n"
+        f"  BLEW_APART (parts ejected off their settle position): {sig['blew_apart']}\n"
         f"  BREAK_JOINT (first dead joint in the path): {sig.get('break_joint') or '(none)'}\n"
         f"  expected_input_travel_rad: {sig['expected_input_travel']}\n"
+        f"  actual_input_travel_rad: {round(it_val, 4)}\n"
         + ("  " + sig_note + "\n" if sig_note else ""))
     ncam = len({c for c, _ in view_frames})
     content = [{"type": "text", "text": (
@@ -401,14 +696,59 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
         content.append({"type": "image_url",
                         "image_url": {"url": f"data:image/png;base64,{_b64(fp)}"}})
 
+    # Investigation loop: the VLM sees the keyframes + signals, then may call the
+    # read-only tools (full sim_result, run.log, re-view a frame) before it commits to a
+    # verdict. This lets it reason about an empty-looking video from the hard numbers.
+    run_dir = str(Path(frames_dir).parent) if frames_dir else ""
+    execs = _diag_executors(run_dir, frames_dir, metrics)
+    messages = [{"role": "system", "content": _DIAG_SYSTEM + _DIAG_TOOL_HINT},
+                {"role": "user", "content": content}]
     try:
         c = _client(base_url, api_key)
-        r = c.chat.completions.create(
-            model=model or os.environ.get("AZURE_VLM_DEPLOYMENT", "claude-opus-4.8"),
-            messages=[{"role": "system", "content": _DIAG_SYSTEM},
-                      {"role": "user", "content": content}],
-            response_format=_DIAG_SCHEMA, max_completion_tokens=16000)
-        d = _parse_json(r.choices[0].message.content)
+        mdl = model or os.environ.get("AZURE_VLM_DEPLOYMENT", "claude-opus-4.8")
+        d = {}
+        for _round in range(6):
+            r = c.chat.completions.create(
+                model=mdl, messages=messages, tools=_DIAG_TOOLS,
+                max_completion_tokens=16000)
+            msg = r.choices[0].message
+            calls = getattr(msg, "tool_calls", None) or []
+            if not calls:
+                d = _parse_json(msg.content)
+                break
+            messages.append({"role": "assistant", "content": msg.content or "",
+                             "tool_calls": [{"id": tc.id, "type": "function",
+                                 "function": {"name": tc.function.name,
+                                              "arguments": tc.function.arguments}}
+                                            for tc in calls]})
+            for tc in calls:
+                fn = execs.get(tc.function.name)
+                try:
+                    a = json.loads(tc.function.arguments or "{}")
+                except Exception:
+                    a = {}
+                out = fn(**a) if fn else f"(no such tool: {tc.function.name})"
+                # A tool returning an image is fed back as an image content block so the
+                # model can actually look at the requested frame.
+                if isinstance(out, dict) and out.get("__image__"):
+                    messages.append({"role": "tool", "tool_call_id": tc.id,
+                                     "content": f"frame {out.get('index')}/"
+                                                f"{out.get('total')} attached below"})
+                    messages.append({"role": "user", "content": [
+                        {"type": "text", "text": f"requested frame {out.get('index')}:"},
+                        {"type": "image_url", "image_url": {
+                            "url": f"data:image/png;base64,{_b64(out['__image__'])}"}}]})
+                else:
+                    messages.append({"role": "tool", "tool_call_id": tc.id,
+                                     "content": out if isinstance(out, str) else json.dumps(out)})
+        else:
+            # Ran out of rounds without a final answer — force one plain JSON reply.
+            messages.append({"role": "user", "content":
+                "Stop investigating and answer NOW with ONLY the JSON verdict."})
+            r = c.chat.completions.create(model=mdl, messages=messages,
+                                          response_format=_DIAG_SCHEMA,
+                                          max_completion_tokens=16000)
+            d = _parse_json(r.choices[0].message.content)
     except Exception as e:
         if hard_fail:
             return _diag("fail", "structure",

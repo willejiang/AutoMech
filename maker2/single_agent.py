@@ -203,9 +203,16 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
     model = None
     machine_name = ctx.project_slug or "machine"
 
-    for it in range(max_iters):
+    # max_iters <= 0 means "iterate until physics PASSes" (the design->test->fix loop is
+    # not artificially capped). A hard ceiling still bounds a pathological run that can
+    # never converge, so it can't spin forever burning tokens.
+    _HARD_CEILING = 50
+    unlimited = max_iters <= 0
+    iter_cap = _HARD_CEILING if unlimited else max_iters
+
+    for it in range(iter_cap):
         result["iterations"] = it + 1
-        last_iter = it >= max_iters - 1
+        last_iter = (not unlimited) and it >= max_iters - 1
         log_fn(f"[single-agent] iteration {it}: authoring build_machine() ...")
         try:
             reply = client.send(conv.messages, SINGLE_AGENT_SYSTEM)
@@ -307,7 +314,8 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
                                      "input_travel": metrics.get("input_travel"),
                                      "exploded": metrics.get("exploded")}}}))
         conv.add_user_message(
-            build_single_agent_physics_feedback(summary, metrics, diagnosis))
+            build_single_agent_physics_feedback(summary, metrics, diagnosis,
+                                                stability=phys.get("stability")))
         # loop continues -> agent re-authors the whole machine with the physics feedback
 
     if model is None:

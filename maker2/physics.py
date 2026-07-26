@@ -412,16 +412,25 @@ def _design_spec(task: str, model, test: dict) -> dict:
     deterministically on top (the gateway often ignores schema keys / the role
     contract): drive ONLY the true driver_input, watch the transmission joints, and
     declare the propagation path to the output. `test` may carry a `subsystem` tag."""
-    from environment_designer import design_environment
+    from environment_designer import design_environment, revise_environment
     gw = _gateway()
     subsystem = None
     if test.get("subsystem"):
         subsystem = {"id": test.get("subsystem"), "driver": test.get("driver"),
                      "transmission": test.get("transmission"),
                      "output_joint": test.get("output_joint")}
-    spec = design_environment(task, _robot_info(model), subsystem=subsystem,
-                              base_url=gw["base_url"], api_key=gw["api_key"],
-                              model=gw["model"], web=gw.get("web", False))
+    revise = test.get("revise")
+    if revise and revise.get("prev"):
+        # Re-design after a TEST-side diagnosis (camera/scenario): feed the previous spec
+        # + the failure back so the designer fixes the observation/drive, camera included.
+        spec = revise_environment(task, _robot_info(model), revise["prev"],
+                                  revise.get("feedback", ""),
+                                  base_url=gw["base_url"], api_key=gw["api_key"],
+                                  model=gw["model"])
+    else:
+        spec = design_environment(task, _robot_info(model), subsystem=subsystem,
+                                  base_url=gw["base_url"], api_key=gw["api_key"],
+                                  model=gw["model"], web=gw.get("web", False))
     # A driven test is now signalled by the model having a drivable input (the caller
     # decides), not by a strategy enum — enforce the driver iff this test targets one.
     driver_present = bool(test.get("driver") or _roles(model).get("driver_input"))
@@ -578,6 +587,7 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings) -> di
             "propagation_path": d.get("propagation_path", []),
             "pass_criteria": designed.get("pass_criteria"),
             "environment": designed.get("environment") or designed.get("scenario"),
+            "camera": designed.get("camera"),
         }
         if d.get("duration_s"):
             spec["duration_s"] = d["duration_s"]
@@ -595,45 +605,98 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings) -> di
     if out_link:
         spec["drive"]["output_link"] = out_link
 
-    res = _run_sim_mujoco(mjcf, spec, out_base, task)
-    m = dict(res.get("metrics", {}))
-    # Carry the decomposition-degraded flag into the metrics so the score sees it.
-    if metrics_side.get("contact_degraded"):
-        m["contact_degraded"] = True
-    if metrics_side.get("constrained_meshes"):
-        m["constrained_meshes"] = metrics_side["constrained_meshes"]
-
-    video = None
-    if res.get("frames_dir"):
-        mp4 = encode_mp4(res["frames_dir"], os.path.join(out_base, "model.mp4"))
-        if mp4:
-            video = "physics/mujoco/model.mp4"
-
-    # DIAGNOSE: VLM classifies the result (structure/interface/scenario/camera) so the
-    # UI can show "what went wrong + why", the demo's analysis value. Best-effort.
+    # RUN -> DIAGNOSE, with a TEST-side retry loop. If the diagnosis blames the TEST
+    # (camera can't see it / wrong joint driven) rather than the MODEL, the scenario
+    # designer RE-DESIGNS the spec (including the camera) and we re-run — the machine is
+    # unchanged, we just fix how we observe/drive it. A MODEL fault (structure/interface)
+    # is NOT retried here: that needs the CAD redesigned, which the outer loop owns.
+    _MAX_TEST_RETRIES = 2
+    from diagnose import diagnose_physics
+    res = m = video = None
     diagnosis = {"verdict": None, "cause": "none", "reason": ""}
-    if res.get("frames_dir"):
+    stability = {}
+    for attempt in range(_MAX_TEST_RETRIES + 1):
+        res = _run_sim_mujoco(mjcf, spec, out_base, task)
+        m = dict(res.get("metrics", {}))
+        stability = res.get("stability") or {}
+        if metrics_side.get("contact_degraded"):
+            m["contact_degraded"] = True
+        if metrics_side.get("constrained_meshes"):
+            m["constrained_meshes"] = metrics_side["constrained_meshes"]
+
+        video = None
+        if res.get("frames_dir"):
+            mp4 = encode_mp4(res["frames_dir"], os.path.join(out_base, "model.mp4"))
+            if mp4:
+                video = "physics/mujoco/model.mp4"
+
+        diagnosis = {"verdict": None, "cause": "none", "reason": ""}
+        if res.get("frames_dir"):
+            try:
+                gw = _gateway()
+                diagnosis = diagnose_physics(task, _robot_info(model),
+                                             designed or spec, m, res.get("frames_dir", ""),
+                                             stability=stability,
+                                             base_url=gw["base_url"], api_key=gw["api_key"],
+                                             model=gw["model"])
+                print(f"[physics] mujoco VLM verdict={diagnosis.get('verdict')} "
+                      f"cause={diagnosis.get('cause')} :: {diagnosis.get('reason','')[:100]}")
+            except Exception as e:
+                print(f"[physics] mujoco diagnose unavailable ({e})")
+
+        cause = diagnosis.get("cause", "none")
+        # Only a TEST-side fault (camera/scenario) is worth re-designing + re-running here.
+        if cause not in ("camera", "scenario") or attempt >= _MAX_TEST_RETRIES:
+            break
         try:
-            from diagnose import diagnose_physics
+            from environment_designer import revise_environment
             gw = _gateway()
-            diagnosis = diagnose_physics(task, _robot_info(model),
-                                         designed or spec, m, res.get("frames_dir", ""),
-                                         base_url=gw["base_url"], api_key=gw["api_key"],
-                                         model=gw["model"])
-            print(f"[physics] mujoco VLM verdict={diagnosis.get('verdict')} "
-                  f"cause={diagnosis.get('cause')} :: {diagnosis.get('reason','')[:100]}")
+            fb = (f"cause={cause}. {diagnosis.get('reason', '')} "
+                  f"(input_travel={m.get('input_travel')}, "
+                  f"exploded={m.get('exploded')}, "
+                  f"moved={m.get('moved_count')}/{m.get('watched_count')})")
+            print(f"[physics] test-side fault '{cause}' (attempt {attempt + 1}) -> "
+                  f"re-designing scenario + camera and re-running")
+            designed = _design_spec(task, model, {"name": "drive", "driver": driver_part,
+                                                  "strategy": "driven_mechanism",
+                                                  "revise": {"prev": designed, "feedback": fb}})
+            d = designed.get("drive") or {}
+            spec["design"] = {
+                "input_joint": d.get("input_joint"),
+                "output_joint": d.get("output_joint"),
+                "watch_joints": d.get("watch_joints", []),
+                "propagation_path": d.get("propagation_path", []),
+                "pass_criteria": designed.get("pass_criteria"),
+                "environment": designed.get("environment") or designed.get("scenario"),
+                "camera": designed.get("camera"),
+            }
+            if d.get("duration_s"):
+                spec["duration_s"] = d["duration_s"]
         except Exception as e:
-            print(f"[physics] mujoco diagnose unavailable ({e})")
+            print(f"[physics] scenario re-design unavailable ({e}); keeping result")
+            break
+
+    # FINAL verdict is the DIAGNOSER's (VLM + hard signals + two-stage stability), not the
+    # runner's mechanical threshold — the runner's `input_travel>0.05 and moved>=1` passes a
+    # machine that barely twitched. Fall back to the mechanical verdict only if the
+    # diagnoser was unavailable (verdict is None).
+    dv = diagnosis.get("verdict")
+    if dv in ("pass", "fail"):
+        final_pass = (dv == "pass")
+        final_verdict = "PASS" if final_pass else "FAIL"
+    else:
+        final_pass = (m.get("verdict") == "PASS")
+        final_verdict = m.get("verdict", "FAIL")
 
     entry = {"name": "drive", "strategy": "driven_mechanism",
-             "verdict": m.get("verdict"), "metrics": m,
+             "verdict": final_verdict, "metrics": m, "stability": stability,
              "summary": _summarize({"name": "drive"}, m),
              "cause": diagnosis.get("cause", "none"),
              "reason": diagnosis.get("reason", ""),
              "design": spec.get("design"),
              "frames_dir": res.get("frames_dir"), "video": video}
-    return {"passed": m.get("verdict") == "PASS", "verdict": m.get("verdict", "FAIL"),
-            "summary": entry["summary"], "metrics": m,
+    return {"passed": final_pass, "verdict": final_verdict,
+            "summary": entry["summary"], "metrics": m, "stability": stability,
             "cause": diagnosis.get("cause", "none"),
             "reason": diagnosis.get("reason", ""),
             "design": spec.get("design"),

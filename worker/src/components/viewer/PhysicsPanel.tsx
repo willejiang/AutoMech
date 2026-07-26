@@ -79,9 +79,14 @@ export function PhysicsPanel({ physics, runDir, running }: PhysicsPanelProps) {
   // Prefer the run-relative video path the physics result carries (e.g.
   // "physics/mujoco/model.mp4" for the single-agent path); fall back to test_<idx>.
   const videoRel = test?.video ?? physics.video ?? null;
+  // The run_dir arrives from the backend as a Windows path with backslashes
+  // (C:\Users\...). encodeURIComponent turns those into %5C, which the dev server's
+  // router rejects before the request reaches this handler (404). Normalize to forward
+  // slashes; safeRunDir resolve()s both forms to the same absolute path.
+  const runDirUrl = runDir.replace(/\\/g, '/');
   const videoUrl = videoRel
-    ? `${apiUrl('run-maker2-glb')}?dir=${encodeURIComponent(runDir)}&file=video&path=${encodeURIComponent(videoRel)}`
-    : `${apiUrl('run-maker2-glb')}?dir=${encodeURIComponent(runDir)}&file=video&test=${idx}`;
+    ? `${apiUrl('run-maker2-glb')}?dir=${encodeURIComponent(runDirUrl)}&file=video&path=${encodeURIComponent(videoRel)}`
+    : `${apiUrl('run-maker2-glb')}?dir=${encodeURIComponent(runDirUrl)}&file=video&test=${idx}`;
 
   // Load the MP4 via fetch() -> blob URL rather than a direct <video src>. A
   // <video>'s own request carries Sec-Fetch-Dest: video, which the TanStack/Nitro
@@ -90,7 +95,7 @@ export function PhysicsPanel({ physics, runDir, running }: PhysicsPanelProps) {
   useEffect(() => {
     setVideoErr(false);
     setBlobUrl(null);
-    if (!test?.video || !runDir) return;
+    if (!videoRel || !runDir) return;
     let revoked = false;
     let objUrl: string | null = null;
     fetch(videoUrl)
@@ -105,7 +110,7 @@ export function PhysicsPanel({ physics, runDir, running }: PhysicsPanelProps) {
       revoked = true;
       if (objUrl) URL.revokeObjectURL(objUrl);
     };
-  }, [idx, runDir, test?.video, videoUrl]);
+  }, [idx, runDir, videoRel, videoUrl]);
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -146,31 +151,28 @@ export function PhysicsPanel({ physics, runDir, running }: PhysicsPanelProps) {
           </div>
         )}
 
-        {/* recording */}
-        <div className="overflow-hidden rounded border border-adam-neutral-800 bg-black">
+        {/* recording — fixed-height box so toggling the raw-log tail below does NOT
+            re-layout this container (a blob <video> repaints black on re-layout). */}
+        <div className="flex h-[200px] items-center justify-center overflow-hidden rounded border border-adam-neutral-800 bg-black">
           {videoRel ? (
-            <div>
-              {blobUrl ? (
-                <video
-                  key={blobUrl}
-                  className="mx-auto max-h-[180px] w-full object-contain"
-                  controls
-                  loop
-                  playsInline
-                  src={blobUrl}
-                />
-              ) : videoErr ? (
-                <div className="p-3 text-center text-[11px] text-red-400">
-                  Couldn’t load the recording.
-                </div>
-              ) : (
-                <div className="flex aspect-video items-center justify-center text-xs text-adam-neutral-500">
-                  Loading recording…
-                </div>
-              )}
-            </div>
+            blobUrl ? (
+              <video
+                key={blobUrl}
+                className="max-h-full w-full object-contain"
+                controls
+                loop
+                playsInline
+                src={blobUrl}
+              />
+            ) : videoErr ? (
+              <div className="p-3 text-center text-[11px] text-red-400">
+                Couldn’t load the recording.
+              </div>
+            ) : (
+              <div className="text-xs text-adam-neutral-500">Loading recording…</div>
+            )
           ) : (
-            <div className="flex aspect-video items-center justify-center p-4 text-center text-xs text-adam-neutral-500">
+            <div className="p-4 text-center text-xs text-adam-neutral-500">
               {running
                 ? 'Simulation recording will appear after the physics test.'
                 : 'No recording for this test.'}

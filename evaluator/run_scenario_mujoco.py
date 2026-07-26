@@ -56,6 +56,59 @@ def _driver_link(model):
     return spins[0] if spins else None
 
 
+def _dump_initial_contacts(m, d, mj, out_dir, log) -> None:
+    """Write the sim's OWN collision verdict at the design pose to contacts.json: every
+    detected contact as {body1, body2, depth_mm (penetration, +ve = overlap), pos_mm,
+    r1_mm/r2_mm (radial distance of the contact point to each body's local axis)}.
+
+    depth tells HOW MUCH two parts interpenetrate as MuJoCo sees them; the radial r's
+    tell WHERE — a contact at r≈bore-wall means the parts are too wide to fit (radial),
+    a contact at r≈0 with the bodies coaxial means an axial end-face is poking through
+    (axial), a contact out at the tooth radius of a mesh pair is normal meshing."""
+    import json
+    import numpy as np
+    try:
+        mj.mj_forward(m, d)
+        mj.mj_step(m, d)
+    except Exception as e:
+        log.append(f"initial-contact dump: step failed ({e})")
+        return
+    rows = []
+    for i in range(d.ncon):
+        c = d.contact[i]
+        b1 = int(m.geom_bodyid[c.geom1])
+        b2 = int(m.geom_bodyid[c.geom2])
+        if b1 == b2:
+            continue
+        n1 = m.body(b1).name or f"body{b1}"
+        n2 = m.body(b2).name or f"body{b2}"
+        depth = -float(c.dist) * 1000.0            # dist<0 => interpenetration
+        if depth <= 0.02:                          # skip mere touching
+            continue
+        pos = np.asarray(c.pos) * 1000.0
+        # radial distance of the contact point to each body's own vertical axis (its
+        # body-frame origin projected to the x,y of the contact).
+        def _r(bid):
+            bp = np.asarray(d.xpos[bid]) * 1000.0
+            return float(np.hypot(pos[0] - bp[0], pos[1] - bp[1]))
+        rows.append({"body1": n1, "body2": n2, "depth_mm": round(depth, 3),
+                     "pos_mm": [round(v, 2) for v in pos],
+                     "r1_mm": round(_r(b1), 3), "r2_mm": round(_r(b2), 3)})
+    # Collapse duplicate (multi-point) contacts to the deepest per body pair.
+    best: dict = {}
+    for r in rows:
+        key = tuple(sorted((r["body1"], r["body2"])))
+        if key not in best or r["depth_mm"] > best[key]["depth_mm"]:
+            best[key] = r
+    merged = sorted(best.values(), key=lambda r: r["depth_mm"], reverse=True)
+    try:
+        (Path(out_dir) / "contacts.json").write_text(
+            json.dumps({"contacts": merged, "n_pairs": len(merged)}, indent=2))
+        log.append(f"initial contacts: {len(merged)} interpenetrating pair(s)")
+    except Exception as e:
+        log.append(f"initial-contact dump: write failed ({e})")
+
+
 def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
     import mujoco as mj
 
@@ -82,21 +135,115 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
     except Exception as e:
         log.append(f"renderer unavailable: {e}")
 
+    # Fixed framing camera: locked on the mechanism's settle position so a part that
+    # flies off does NOT drag the auto-camera out to meters away (which shrinks the
+    # whole machine to an unreadable dot — the "black video" symptom). Built once, after
+    # settle, from the assembly's own bounding box; every frame renders through it.
+    fixed_cam = None
+
     def capture(idx: int):
         if renderer is None:
             return False
         try:
             from PIL import Image
-            renderer.update_scene(d)
+            if fixed_cam is not None:
+                renderer.update_scene(d, camera=fixed_cam)
+            else:
+                renderer.update_scene(d)
             img = renderer.render()
             Image.fromarray(img).save(frames / f"rgb_{idx:04d}.png")
             return True
         except Exception:
             return False
 
-    # ---- settle under gravity ----
+    # ---- initial contact snapshot (BEFORE settle) ----
+    # At the design pose, dump every contact MuJoCo actually detects: which two bodies,
+    # how deep they interpenetrate, where, and the radial distance of the contact point
+    # to each body's local axis. This is the GROUND TRUTH the diagnoser needs — the sim's
+    # own collision verdict — so it can tell a real geometry fault (bore too small, wrong
+    # coords) from a convex-hull artifact (a decomposed piece filling a bore, an axial
+    # end-face poking a coaxial part) instead of guessing from keyframes.
+    _dump_initial_contacts(m, d, mj, out, log)
+
+    # ---- STAGE 1: stability under gravity (settle, NO drive) ----
+    # A machine must first EXIST stably on the bench: dropped under gravity it should
+    # settle and hold together, not fall apart or collapse. This is the precondition for
+    # any function test — a thing that explodes while just sitting there transmits nothing.
+    # Track each body's drift from its pre-settle pose; if anything flies off or the stack
+    # sinks, stability FAILS and the diagnoser is told so (function data is then suspect).
+    import numpy as _np
+    xpos_pre = d.xpos.copy()
+    settle_disp = _np.zeros(m.nbody)
     for _ in range(settle_steps):
         mj.mj_step(m, d)
+        if len(d.xpos):
+            dv = _np.linalg.norm(d.xpos - xpos_pre, axis=1)
+            settle_disp = _np.maximum(settle_disp, dv)
+
+    settle_max_disp = float(settle_disp.max()) if m.nbody > 1 else 0.0
+    settle_end_z = float(d.xpos[:, 2].min()) if len(d.xpos) else 0.0
+    settle_exploded = bool(settle_max_disp > 0.5)     # a part flew >0.5 m just settling
+    _STABLE_DRIFT_M = 0.003
+    settle_displaced = []
+    try:
+        for b in range(1, m.nbody):
+            name = m.body(b).name
+            disp = float(settle_disp[b])
+            if name and disp > _STABLE_DRIFT_M:
+                settle_displaced.append({"part": name, "disp_mm": round(disp * 1000, 2)})
+        settle_displaced.sort(key=lambda e: e["disp_mm"], reverse=True)
+        settle_displaced = settle_displaced[:8]
+    except Exception:
+        settle_displaced = []
+    stability = {
+        "verdict": "FAIL" if settle_exploded else "PASS",
+        "exploded": settle_exploded,
+        "max_disp_m": round(settle_max_disp, 4),
+        "end_z": round(settle_end_z, 4),
+        "displaced_parts": settle_displaced,
+    }
+    log.append(f"stability(settle): {stability['verdict']} max_disp={settle_max_disp:.3f}m "
+               f"exploded={settle_exploded}")
+
+    # Lock the framing camera on the settled assembly. The environment DESIGNER may
+    # override azimuth/elevation/distance via spec.design.camera; a value of 0 (or a
+    # missing key) means "auto-fit this aspect". lookat + distance use a ROBUST center
+    # that ignores parts already ejected far from the pack, so a single body that flew
+    # off during settle does NOT drag the frame out to infinity (the "tiny dot" symptom).
+    cam_spec = ((spec.get("design") or {}).get("camera")) or {}
+
+    def _cam(*keys):
+        for k in keys:
+            v = cam_spec.get(k)
+            if v not in (None, 0, 0.0, ""):
+                return float(v)
+        return None
+
+    try:
+        if m.nbody > 1:
+            pts = d.xpos[1:]                       # skip world body 0
+            # Robust center: median position; keep only bodies within 5x the median
+            # spread of it, so far-ejected parts don't define the bounding box.
+            med = np.median(pts, axis=0)
+            dists = np.linalg.norm(pts - med, axis=1)
+            keep = pts[dists <= max(np.median(dists) * 5.0, 1e-6)] if len(pts) > 2 else pts
+            if len(keep) == 0:
+                keep = pts
+            lo, hi = keep.min(axis=0), keep.max(axis=0)
+            center = (lo + hi) / 2.0
+            diag = float(np.linalg.norm(hi - lo))
+            fixed_cam = mj.MjvCamera()
+            fixed_cam.type = mj.mjtCamera.mjCAMERA_FREE
+            fixed_cam.lookat[:] = center
+            dist_scale = _cam("distance_scale") or 2.5
+            fixed_cam.distance = max(diag * dist_scale, 0.05)
+            fixed_cam.azimuth = _cam("azimuth_deg", "azimuth") or 90.0
+            fixed_cam.elevation = _cam("elevation_deg", "elevation") or -25.0
+            log.append(f"camera: az={fixed_cam.azimuth} el={fixed_cam.elevation} "
+                       f"dist={fixed_cam.distance:.3f} "
+                       f"({'designer' if cam_spec else 'auto'})")
+    except Exception as e:
+        log.append(f"fixed camera unavailable: {e}")
 
     driver = _driver_link(model) if model is not None else None
     watched = [l for l in _spin_links(model)
@@ -244,7 +391,7 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
             "displaced_parts": displaced_parts,
         }
 
-    res = {"task": task, "spec": spec, "metrics": metrics,
+    res = {"task": task, "spec": spec, "metrics": metrics, "stability": stability,
            "frames_dir": str(frames) if nf else None, "n_frames": nf, "log": log}
     (out / "sim_result.json").write_text(json.dumps(res, indent=2))
     print(f"[mujoco] {'driven' if driver is not None else 'static'}: "

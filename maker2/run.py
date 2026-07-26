@@ -544,7 +544,7 @@ def main() -> int:
         if a.model:
             settings.model = a.model.split("/", 1)[-1]
         res = run_single_agent(a.prompt, a.out, settings, do_physics=a.physics,
-                               max_iters=(a.max_iters or 4), log_fn=print)
+                               max_iters=(a.max_iters or 0), log_fn=print)
         if a.json:
             print("RESULT_JSON:" + json.dumps(res))
         return 0 if res.get("ok") else 1

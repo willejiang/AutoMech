@@ -112,34 +112,76 @@ station, set two meshing gears exactly one center-distance apart, or reposition 
 onto real support. Return the COMPLETE corrected ```python block for build_machine()."""
 
 
-def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: dict) -> str:
+def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: dict,
+                                        stability: dict | None = None) -> str:
     """Feedback after a PHYSICS run: the machine was simulated under gravity + drive, and it
     did not work as intended. Hand the agent the measured transmission metrics + the VLM's
     read of the recording so it can fix the mechanism (usually a mesh that does not engage)."""
     m = metrics or {}
+    st = stability or {}
     moved = m.get("moved_count")
     watched = m.get("watched_count")
     it = m.get("input_travel")
     exploded = m.get("exploded")
+    stability_failed = (str(st.get("verdict", "PASS")).upper() == "FAIL"
+                        or bool(st.get("exploded")))
     cause = (diagnosis or {}).get("cause")
     reason = (diagnosis or {}).get("reason")
     lines = [f"PHYSICS RESULT: {summary}"]
+    if stability_failed:
+        lines.append(f"- STAGE 1 (STABILITY) FAILED: dropped on the bench under gravity with "
+                     f"NO drive, the machine did not hold together "
+                     f"(max_disp={st.get('max_disp_m')}m, displaced={st.get('displaced_parts')}).")
     if it is not None:
         lines.append(f"- the driver turned {it} rad but {moved or 0}/{watched or 0} downstream "
                      f"parts moved.")
     if exploded:
-        lines.append("- the assembly JAMMED / flew apart (parts driven into each other).")
+        lines.append("- the assembly flew apart (parts ejected from their start pose).")
     if cause and cause != "none":
         lines.append(f"- diagnosis cause: {cause}.")
     if reason:
-        lines.append(f"- what the recording shows: {reason}")
+        lines.append(f"- DIAGNOSIS (this is the measured root cause — fix THIS): {reason}")
     body = "\n".join(lines)
-    return f"""The machine was simulated in physics and it did NOT transmit motion correctly:
+
+    # The fix guidance must follow the DIAGNOSIS, not a fixed guess. STABILITY comes FIRST:
+    # a machine that falls apart just settling can't be judged on function at all. Then an
+    # explosion is a start-pose overlap (not a center-distance problem); only a DEAD/jammed
+    # train (turned but nothing moved, no explosion) points at gear spacing.
+    if stability_failed:
+        guidance = (
+            "FIX STABILITY FIRST — nothing else matters until the machine can EXIST on the "
+            "bench. Dropped under gravity with no drive, it fell apart. It must sit as a "
+            "coherent, self-supporting assembly:\n"
+            "- Give it a solid BASE (a plate/mainplate) that is dof=fixed and rests on the "
+            "ground, and mount everything off that base.\n"
+            "- Remove any START-POSE OVERLAPS (two solids intersecting fling apart the "
+            "instant contact is computed): shafts must not poke through the plates they "
+            "pass — shorten them or fix their z; separate parts must not intersect.\n"
+            "- Only once it settles intact does the gear-train function get tested.")
+    elif exploded:
+        guidance = (
+            "The assembly EXPLODED — parts overlapped at the START pose and the contact "
+            "solver flung them apart. This is NOT a gear center-distance problem. Follow "
+            "the DIAGNOSIS above literally:\n"
+            "- If a SHAFT/ARBOR pokes axially through a plate/baseplate/bearing (a coaxial "
+            "contact deep inside the bore), the shaft is too LONG or its z is wrong — "
+            "SHORTEN that shaft or move its z so its end-face clears the part it passes "
+            "through. Do NOT widen bores, do NOT move it off-axis.\n"
+            "- If two SEPARATE parts were placed intersecting, move one so their solids no "
+            "longer overlap.\n"
+            "- Meshing gears should touch only at their teeth (one center-distance apart), "
+            "NOT be buried in each other.")
+    else:
+        guidance = (
+            "The train did not transmit motion though nothing exploded — the usual cause is "
+            "meshing gears NOT exactly one center-distance apart, so their teeth never "
+            "engage. Recompute each meshing pair's center distance = module*(z1+z2)/2 and "
+            "place the gear centers EXACTLY that far apart, using the SAME module for both. "
+            "If a gear is the wrong size to reach its partner, fix its tooth count or position.")
+
+    return f"""The machine was simulated in physics and it did NOT work correctly:
 
 {body}
 
-The usual cause is that meshing gears are NOT exactly one center-distance apart, so their teeth
-never engage — recompute each meshing pair's center distance = module*(z1+z2)/2 and place the
-gear centers EXACTLY that far apart, using the SAME module for both. If parts jammed, give them
-clearance. If a gear is the wrong size to reach its partner, fix its tooth count or position.
+{guidance}
 Return the COMPLETE corrected ```python block for build_machine()."""

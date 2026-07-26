@@ -83,6 +83,13 @@ FIRST, in "success_definition", state what success physically means here (STAY S
 MOVE/ACTUATE, or TRANSMIT MOTION) and the ONE observable that decides pass/fail. The rest of
 the spec must serve it.
 
+FRAME THE CAMERA ("camera"): the recording is judged by a vision model, so it must SEE the
+moving parts. The camera is LOCKED for the whole run and does NOT follow a part that flies
+off — so aim it at the mechanism's WORKING region and choose an angle where the gear train /
+moving joints are unobstructed. For a flat bench-mounted movement, a 3/4 top-down view
+(elevation ~ -20 to -35) reads best; for a tall mechanism, a lower side view. Set
+distance_scale ~2-3 to frame the whole machine with margin. Leave a value 0 to auto-fit it.
+
 Output ONLY the JSON spec matching the provided schema."""
 
 
@@ -102,7 +109,26 @@ def _env_schema():
         "type": "string",
         "description": "one or two sentences: the sim environment you chose and WHY "
                        "(bench-mounted+driven / ground plane / fluid domain)"}
-    node["required"] = ["sim_backend", "environment"] + list(node["required"])
+    node["properties"]["camera"] = {
+        "type": "object", "additionalProperties": False,
+        "description": "how to FRAME the recording so the mechanism's motion is clearly "
+                       "visible. The camera is LOCKED for the whole run (it does NOT "
+                       "auto-track), so aim it at the mechanism's working center. Fill "
+                       "azimuth/elevation/distance_scale; leave any value 0 to let the "
+                       "runner auto-fit that aspect from the assembly's bounding box.",
+        "properties": {
+            "azimuth": {"type": "number",
+                "description": "horizontal camera angle in degrees (0-360); 90 looks "
+                               "along +Y. Pick the side that best shows the gear train."},
+            "elevation": {"type": "number",
+                "description": "vertical angle in degrees; negative looks DOWN at the "
+                               "bench (e.g. -25 for a top-ish 3/4 view of a flat movement)."},
+            "distance_scale": {"type": "number",
+                "description": "multiplier on the assembly's bounding-box diagonal for "
+                               "camera distance; ~2-3 frames the whole machine. 0 = auto."},
+        },
+        "required": ["azimuth", "elevation", "distance_scale"]}
+    node["required"] = ["sim_backend", "environment", "camera"] + list(node["required"])
     schema["json_schema"]["name"] = "environment_spec"
     return schema
 
@@ -194,6 +220,24 @@ def design_environment(task, robot_info, subsystem=None, *,
                 f"TASK: {task}{sub}\n\n{_robot_block(robot_info)}{research}\n"
                 f"Decide the simulation environment and output the scenario spec. Use ONLY "
                 f"the real joint/link names above."}]
+    return _call(msgs, base_url, api_key, model)
+
+
+def revise_environment(task, robot_info, prev_spec, feedback, *,
+                       base_url=None, api_key=None, model=None):
+    """Re-design the environment/scenario spec (INCLUDING the camera) after a physics run
+    whose diagnosis was a TEST-side fault (the camera could not see the mechanism, or the
+    scenario drove/watched the wrong thing). Uses this module's SYSTEM + ENV_SCHEMA so the
+    revised spec keeps the camera field. Returns the revised spec dict."""
+    msgs = [{"role": "system", "content": SYSTEM},
+            {"role": "user", "content":
+                f"TASK: {task}\n\n{_robot_block(robot_info)}\n"
+                f"PREVIOUS SPEC:\n{json.dumps(prev_spec, indent=2)}\n\n"
+                f"THE TEST DID NOT PRODUCE A JUDGEABLE RESULT. DIAGNOSIS:\n{feedback}\n\n"
+                f"If the camera could not see the mechanism, RE-FRAME it (fix camera "
+                f"azimuth/elevation/distance_scale so the moving parts fill the frame). "
+                f"If the wrong joint was driven or watched, fix the drive/watch_joints. "
+                f"Output a REVISED spec using ONLY the real joint/link names above."}]
     return _call(msgs, base_url, api_key, model)
 
 
