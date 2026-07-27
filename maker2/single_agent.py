@@ -456,7 +456,8 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
         from .physics import run_physics
         log_fn(f"[single-agent] iteration {it}: simulating physics ...")
         try:
-            phys = run_physics(ctx.urdf_path, product_prompt, run_dir, settings)
+            phys = run_physics(ctx.urdf_path, product_prompt, run_dir, settings,
+                               iteration=it)
         except Exception as e:
             log_fn(f"[physics] failed: {e}")
             result["physics"] = {"passed": None, "summary": f"physics error: {e}"}

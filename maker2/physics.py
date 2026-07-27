@@ -532,7 +532,8 @@ def blame_faults(phys: dict, precheck_report=None, plan=None) -> dict:
     return out
 
 
-def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings) -> dict:
+def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
+                        iteration: int | None = None) -> dict:
     """Pure-contact MuJoCo physics. Builds the MJCF from the run's model, runs the
     MuJoCo scenario runner (subprocess, with in-process fallback), and returns the
     same result shape run_physics does.
@@ -566,7 +567,11 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings) -> di
         return {"passed": False, "verdict": "FAIL",
                 "summary": f"MJCF build failed: {e}", "metrics": {}, "tests": []}
 
-    out_base = str(Path(run_dir) / "physics" / "mujoco")
+    # One directory PER ITERATION: a fixed "mujoco" dir made every iteration overwrite
+    # the previous model.mp4, so only the last run had a video and there was no way to
+    # watch the machine get better (or worse) across the loop.
+    sub = "mujoco" if iteration is None else f"mujoco_{iteration}"
+    out_base = str(Path(run_dir) / "physics" / sub)
 
     # STAGE 1 (SUPPORT), merged into the stability verdict below. The settle test measures
     # whether the machine holds together as ASSEMBLED — but a part hung on a `mount=` label
@@ -648,7 +653,7 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings) -> di
         if res.get("frames_dir"):
             mp4 = encode_mp4(res["frames_dir"], os.path.join(out_base, "model.mp4"))
             if mp4:
-                video = "physics/mujoco/model.mp4"
+                video = f"physics/{sub}/model.mp4"
 
         diagnosis = {"verdict": None, "cause": "none", "reason": ""}
         if res.get("frames_dir"):
@@ -753,7 +758,8 @@ def _run_sim_mujoco(mjcf, spec, out_base, task):
     return mjr.run(mjcf, spec, out_base, task)
 
 
-def run_physics(urdf_path: str, task: str, run_dir: str, settings=None) -> dict:
+def run_physics(urdf_path: str, task: str, run_dir: str, settings=None,
+                iteration: int | None = None) -> dict:
     """Category-aware physics on maker2's model. Returns the same shape the UI reads:
     {passed, verdict, summary, metrics, frames_dir}. `metrics` is the FINAL/primary
     test; `summary` spans all tests run.
@@ -763,7 +769,8 @@ def run_physics(urdf_path: str, task: str, run_dir: str, settings=None) -> dict:
     own dof, transmission by tooth contact). Otherwise the legacy PyBullet path."""
     engine = getattr(settings, "engine", "pybullet") if settings is not None else "pybullet"
     if engine == "mujoco":
-        return _run_physics_mujoco(urdf_path, task, run_dir, settings)
+        return _run_physics_mujoco(urdf_path, task, run_dir, settings,
+                                   iteration=iteration)
 
     import run_scenario_pybullet as pyb
     from diagnose import diagnose_physics, encode_mp4

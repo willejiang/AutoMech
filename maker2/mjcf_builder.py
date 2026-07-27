@@ -371,18 +371,27 @@ def _add_transmission(mujoco_el, model, meshes_dir, links_by_name, *,
         if par and links_by_name.get(par) and links_by_name[par].dof == "spin":
             groups.setdefault(par, []).append(name)
     for arbor, members in groups.items():
+        r_arbor = _outer_radius_m(meshes_dir, arbor)
+        locked, riding = [], []
         for b in members:
             a = arbor
             if frozenset((a, b)) in done:
+                continue
+            if not _is_pressed_on(meshes_dir, b, r_arbor):
+                riding.append(b)
                 continue
             ET.SubElement(eq, "joint", attrib={
                 "joint1": f"{b}_spin", "joint2": f"{a}_spin",
                 "polycoef": "0 1 0 0 0"})               # 1:1 same speed (compound)
             ET.SubElement(contact, "exclude", attrib={"body1": a, "body2": b})
             done.add(frozenset((a, b)))
+            locked.append(b)
             n += 1
-        if members:
-            log_fn(f"[mjcf] compound on '{arbor}': {members} locked 1:1 (same shaft)")
+        if locked:
+            log_fn(f"[mjcf] compound on '{arbor}': {locked} locked 1:1 (same shaft)")
+        if riding:
+            log_fn(f"[mjcf] on '{arbor}': {riding} RIDE FREE (bore clears the arbor) — "
+                   f"no 1:1 lock; they turn at whatever their own mesh drives them at")
 
     if n == 0:
         mujoco_el.remove(eq)
@@ -392,6 +401,62 @@ def _add_transmission(mujoco_el, model, meshes_dir, links_by_name, *,
         metrics["transmission_constraints"] = n
     log_fn(f"[mjcf] deterministic transmission: {n} constraint(s) after geometry precheck")
     return n
+
+
+def _radial_extent_m(meshes_dir: str, name: str) -> tuple[float, float] | None:
+    """(inner, outer) radius in METERS about a part's own centroid, measured in the XY
+    plane of its local frame. The inner value is the BORE: for a bored part the nearest
+    material sits at the bore wall, for a solid one it sits at the centre (~0)."""
+    src = os.path.join(meshes_dir, f"{name}.stl")
+    if not os.path.exists(src) or os.path.getsize(src) == 0:
+        return None
+    try:
+        import trimesh
+        m = trimesh.load(src, force="mesh")
+        v = np.asarray(m.vertices)
+        if v.size == 0:
+            return None
+        c = v.mean(axis=0)
+        r = np.linalg.norm(v[:, :2] - c[:2], axis=1)
+        return float(r.min()) / 1000.0, float(r.max()) / 1000.0
+    except Exception:
+        return None
+
+
+def _outer_radius_m(meshes_dir: str, name: str) -> float | None:
+    ext = _radial_extent_m(meshes_dir, name)
+    return ext[1] if ext else None
+
+
+# A bore within this much of the arbor's outer radius is a PRESS FIT; anything looser is
+# a part that RIDES on the arbor. Measured on the watch: the three pressed wheels sat at
+# 0.01-0.05 mm of clearance, the hour wheel (which turns freely on the centre arbor,
+# separated from it by the hour pipe) sat at 1.50 mm — thirty times looser. 0.3 mm is a
+# generous line between the two, and it is a real machining boundary as well: a slip fit
+# needs perceptible clearance, an interference fit has none.
+_PRESS_FIT_CLEARANCE_M = 0.0003
+
+
+def _is_pressed_on(meshes_dir: str, part: str, r_arbor: float | None) -> bool:
+    """True if `part`'s bore hugs an arbor of outer radius `r_arbor` — i.e. it is PRESSED
+    on and turns with it, rather than RIDING free on it.
+
+    The pose forest cannot tell these apart: a wheel keyed to its arbor and a wheel that
+    spins freely around that same arbor are both just children of it. But the geometry
+    can, and it is exactly the difference that makes a watch work — the hour wheel must
+    turn freely on the centre arbor (through the hour pipe) or there is no 12:1 at all.
+    Locking it 1:1 to the arbor contradicts its own meshing ratio, and MuJoCo's solver
+    then splits the difference and stalls the whole train.
+
+    Unknown geometry falls back to True, keeping the old pose-forest behaviour for
+    models we cannot measure."""
+    if not r_arbor:
+        return True
+    ext = _radial_extent_m(meshes_dir, part)
+    if ext is None:
+        return True
+    bore = ext[0]
+    return (bore - r_arbor) <= _PRESS_FIT_CLEARANCE_M
 
 
 def _world_transforms(model) -> dict:
