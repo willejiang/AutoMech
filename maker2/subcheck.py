@@ -127,20 +127,35 @@ def floating_parts(model, meshes_dir: str, log_fn=print) -> list[Floating]:
                 continue
         return False
 
-    # A part MOUNTED on another real part (its pose parent) is held BY that parent — an
-    # upper bearing bolted under a bridge, a hand pressed on a wheel — so it is NOT floating
-    # even though nothing sits directly beneath it. Only parts with no structural parent
-    # (placed as a world root) must earn their support from below.
+    # A part is held by its pose parent ONLY if it geometrically TOUCHES that parent (an
+    # upper bearing bolted under a bridge, a hand pressed on a wheel really contact it). A
+    # `mount=` label alone does NOT hold anything: a part declared on a bridge but sitting
+    # 13mm away from it in space is still floating. So exempt a part only when its solid
+    # overlaps or nearly touches its parent's solid; otherwise it must earn support from
+    # below or from a shaft through its bore.
     parent_of = {p.child: p.parent for p in model.poses if p.parent}
     present = set(meshes)
+
+    def _touches_parent(name) -> bool:
+        par = parent_of.get(name)
+        pm = meshes.get(par) if par else None
+        if pm is None:
+            return False
+        m = meshes[name]
+        try:
+            if _solid_intersection_frac(m, pm, log_fn=None) > 0.01:
+                return True
+            gap = float(m.nearest.on_surface(pm.vertices)[1].min())
+            return gap < 0.5
+        except Exception:
+            return False
 
     found: list[Floating] = []
     for name, m in meshes.items():
         if dof_of.get(name) != "fixed":
             continue
-        par = parent_of.get(name)
-        if par and par in present:
-            continue                               # mounted on a real part -> held by it
+        if _touches_parent(name):
+            continue                               # really contacts its mount -> held by it
         bottom = float(m.bounds[0][2])
         if bottom - world_bottom <= _GROUND_TOL_MM:
             continue                               # rests on the ground plane -> supported
