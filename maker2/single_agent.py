@@ -408,18 +408,24 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
         # A gross interpenetration is cheaper to fix here than to run physics on, so gate on it
         # first — but only re-author for it when we still have iterations left.
         conflicts = []
+        floaters = []
         try:
-            from .subcheck import sub_conflicts
+            from .subcheck import floating_parts, sub_conflicts
             conflicts = sub_conflicts(model, ctx.urdf_path, log_fn=lambda *_: None)
+            floaters = floating_parts(model, ctx.meshes_dir, log_fn=lambda *_: None)
         except Exception as e:
-            log_fn(f"[single-agent] conflict check unavailable ({type(e).__name__}: {e})")
-        if conflicts and not last_iter:
-            findings = "\n".join(f"- {c.describe()}" for c in conflicts[:8])
-            log_fn(f"[single-agent] {len(conflicts)} interpenetration(s) -> asking agent to fix")
+            log_fn(f"[single-agent] geometry check unavailable ({type(e).__name__}: {e})")
+        if (conflicts or floaters) and not last_iter:
+            findings = "\n".join([f"- {c.describe()}" for c in conflicts[:8]]
+                                 + [f"- {f.describe()}" for f in floaters[:8]])
+            log_fn(f"[single-agent] {len(conflicts)} interpenetration(s) + "
+                   f"{len(floaters)} floating part(s) -> asking agent to fix")
             log_fn("ARTIFACT_JSON:" + _json.dumps({
                 "kind": "diagnosis", "iter": it, "single_agent": True,
-                "decision": {"root_cause": f"{len(conflicts)} rigid part interpenetration(s)",
-                             "evidence": [c.describe() for c in conflicts[:8]]}}))
+                "decision": {"root_cause": f"{len(conflicts)} interpenetration(s), "
+                                           f"{len(floaters)} unsupported part(s)",
+                             "evidence": [c.describe() for c in conflicts[:8]]
+                                         + [f.describe() for f in floaters[:8]]}}))
             conv.add_user_message(build_single_agent_geometry_feedback(findings))
             continue
 

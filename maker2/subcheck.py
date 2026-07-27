@@ -24,6 +24,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+import numpy as np
+
 from .precheck import _OVERLAP_FRAC, _link_world_mesh, _solid_intersection_frac
 from .viz import load_robot
 
@@ -39,6 +41,137 @@ class Conflict:
     def describe(self) -> str:
         return (f"parts '{self.part_a}' and '{self.part_b}' interpenetrate "
                 f"({self.frac:.0%} of the smaller part's solid is inside the other)")
+
+
+@dataclass
+class Floating:
+    """A fixed structure part with no physical support under it — held up only by its
+    weld, so in the real machine it would have nothing to rest on."""
+
+    part: str
+    bottom_mm: float                                # world Z of the part's lowest point
+    gap_mm: float                                   # clear gap below it to the next solid
+
+    def describe(self) -> str:
+        return (f"fixed part '{self.part}' floats: its underside sits {self.bottom_mm:.1f}mm "
+                f"above the base with a {self.gap_mm:.1f}mm empty gap below it — nothing "
+                f"physically supports it, so it is held up only by its weld. Rest it on the "
+                f"part beneath it or lower its Z onto real support.")
+
+
+# A part whose underside clears everything below it by more than this (and does not sit on
+# the ground) is unsupported. 2mm tolerates a modeling seam / small clearance fit.
+_SUPPORT_GAP_MM = 2.0
+_GROUND_TOL_MM = 2.0
+
+
+def floating_parts(model, meshes_dir: str, log_fn=print) -> list[Floating]:
+    """Flag fixed STRUCTURE parts that are geometrically unsupported: their underside has
+    an empty gap below it down to the next solid AND they do not rest on the ground. This
+    catches a part welded floating in mid-air (a bridge/post/plate with nothing under it)
+    without running physics.
+
+    Geometry is read from the run's own STLs positioned by the model's WORLD transforms
+    (the URDF loader returns degenerate meshes on the single-agent path, so we go straight
+    to the STL + pose). All coordinates here are millimetres.
+
+    Exemptions (NOT floating):
+    - the base / any part resting on the ground plane (bottom ~ lowest of the assembly);
+    - a part a spin shaft physically passes THROUGH (a bearing/bridge whose bore rings an
+      arbor) — held by the radial fit, detected as a spin part overlapping its bore volume;
+    - spin/free parts (only fixed STRUCTURE is expected to rest on support).
+    Support is tested by casting rays straight DOWN from a grid over the part's underside
+    and taking the largest gap to whatever solid (any other part) they hit."""
+    import os
+
+    import trimesh
+
+    from .mjcf_builder import _world_transforms
+
+    links = list(model.links)
+    dof_of = {l.name: getattr(l, "dof", "fixed") for l in links}
+    W = _world_transforms(model)                    # meters
+
+    meshes = {}
+    for l in links:
+        stl = os.path.join(meshes_dir, f"{l.name}.stl")
+        T = W.get(l.name)
+        if not os.path.exists(stl) or T is None:
+            continue
+        try:
+            mm = trimesh.load(stl, force="mesh")     # local geometry, mm
+        except Exception:
+            continue
+        if not isinstance(mm, trimesh.Trimesh) or len(mm.faces) == 0:
+            continue
+        Tmm = T.copy()
+        Tmm[:3, 3] *= 1000.0                          # m -> mm to match the STL units
+        mm.apply_transform(Tmm)
+        meshes[l.name] = mm
+    if not meshes:
+        return []
+
+    # Ground = the lowest underside across the whole assembly (the plane it rests on).
+    world_bottom = min(float(m.bounds[0][2]) for m in meshes.values())
+
+    # A fixed part is held by a shaft (not by sitting on support) when a SPIN part's solid
+    # actually passes through it — i.e. their solids share volume (the arbor fills the bore).
+    spin_meshes = [(n, m) for n, m in meshes.items() if dof_of.get(n) == "spin"]
+
+    def _shaft_passes_through(name, m) -> bool:
+        for sn, sm in spin_meshes:
+            try:
+                if _solid_intersection_frac(m, sm, log_fn=None) > 0.02:
+                    return True
+            except Exception:
+                continue
+        return False
+
+    found: list[Floating] = []
+    for name, m in meshes.items():
+        if dof_of.get(name) != "fixed":
+            continue
+        bottom = float(m.bounds[0][2])
+        if bottom - world_bottom <= _GROUND_TOL_MM:
+            continue                               # rests on the ground plane -> supported
+        if _shaft_passes_through(name, m):
+            continue                               # a shaft fills its bore -> held by the fit
+
+        # Cast rays straight down from a grid over the part's XY footprint, starting just
+        # below its underside; the nearest hit on ANY other part is the support beneath it.
+        lo, hi = m.bounds
+        gx = np.linspace(lo[0], hi[0], 4)
+        gy = np.linspace(lo[1], hi[1], 4)
+        origins, dirs = [], []
+        for x in gx:
+            for y in gy:
+                origins.append([x, y, bottom - 0.1])
+                dirs.append([0.0, 0.0, -1.0])
+        min_gap = float("inf")
+        for onm, om in meshes.items():
+            if onm == name:
+                continue
+            try:
+                locs, _, _ = om.ray.intersects_location(
+                    ray_origins=np.array(origins), ray_directions=np.array(dirs))
+            except Exception:
+                continue
+            for loc in locs:
+                gap = (bottom - 0.1) - float(loc[2])
+                if gap >= 0:
+                    min_gap = min(min_gap, gap)
+        # No hit below at all -> falls all the way to the ground: gap = height above ground.
+        if min_gap == float("inf"):
+            min_gap = bottom - world_bottom
+        if min_gap > _SUPPORT_GAP_MM:
+            found.append(Floating(part=name, bottom_mm=bottom - world_bottom,
+                                  gap_mm=min_gap))
+
+    found.sort(key=lambda f: f.gap_mm, reverse=True)
+    if found:
+        log_fn(f"[floating] {len(found)} unsupported fixed part(s): "
+               + ", ".join(f"{f.part}({f.gap_mm:.0f}mm gap)" for f in found[:6]))
+    return found
 
 
 def sub_conflicts(model, urdf_path: str, log_fn=print) -> list[Conflict]:
