@@ -543,6 +543,12 @@ def main() -> int:
             settings.engine = a.engine
         if a.model:
             settings.model = a.model.split("/", 1)[-1]
+        if a.web:
+            settings.enable_reference_tools = True
+        if a.kb:
+            settings.enable_kb = True
+        if a.deep_think is not None:
+            settings.deep_think = a.deep_think
         res = run_single_agent(a.prompt, a.out, settings, do_physics=a.physics,
                                max_iters=(a.max_iters or 0), log_fn=print)
         if a.json:

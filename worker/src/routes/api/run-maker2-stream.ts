@@ -69,8 +69,16 @@ export const Route = createFileRoute('/api/run-maker2-stream')({
           if (deep === '1') args.push('--deep-think');
           else if (deep === '0') args.push('--no-deep-think');
         } else {
-          // Single-agent text-to-cad (default on this branch).
+          // Single-agent text-to-cad (default on this branch). It still gets the same
+          // research tools as the pipeline path: --kb (local KB) always, --web when the
+          // UI toggle set web=1, and the deep-think flag — otherwise the agent authors
+          // the whole drivetrain from memory and guesses gear math / horology it never
+          // looked up.
           args.push('--single-agent');
+          args.push('--kb');
+          if (url.searchParams.get('web') === '1') args.push('--web');
+          if (deep === '1') args.push('--deep-think');
+          else if (deep === '0') args.push('--no-deep-think');
         }
 
         const stream = new ReadableStream<Uint8Array>({
