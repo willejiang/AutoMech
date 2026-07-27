@@ -104,8 +104,10 @@ def _write_manifest(meshes_dir: str, part_name: str, tag: str, count: int) -> No
     Path(manifest).write_text(f"{tag} {count}", encoding="utf-8")
 
 
-def _coacd_pieces(mesh: "trimesh.Trimesh") -> list["trimesh.Trimesh"] | None:
-    """CoACD decomposition, or None if coacd is unavailable/errors."""
+def _coacd_pieces(mesh: "trimesh.Trimesh", *, log_fn=print) -> list["trimesh.Trimesh"] | None:
+    """CoACD decomposition, or None if coacd is unavailable/errors. On a RUNTIME error
+    (coacd present but the run failed) log it — a silent None here masqueraded as 'no
+    coacd' and let a hollow part degrade to a solid hull without any trace."""
     try:
         import coacd
     except ImportError:
@@ -122,7 +124,8 @@ def _coacd_pieces(mesh: "trimesh.Trimesh") -> list["trimesh.Trimesh"] | None:
             out.append(trimesh.Trimesh(vertices=np.asarray(verts),
                                        faces=np.asarray(faces), process=False))
         return out or None
-    except Exception:
+    except Exception as e:
+        log_fn(f"[convex] coacd run FAILED ({type(e).__name__}: {e}); falling back")
         return None
 
 
@@ -175,7 +178,7 @@ def decompose_part(stl_path: str, meshes_dir: str, part_name: str,
     if not isinstance(mesh, trimesh.Trimesh) or len(mesh.faces) == 0:
         return []
 
-    pieces = _coacd_pieces(mesh)
+    pieces = _coacd_pieces(mesh, log_fn=log_fn)
     method = "coacd"
     if pieces is None:
         pieces = _vhacd_pieces(mesh)
@@ -200,13 +203,36 @@ def decompose_part(stl_path: str, meshes_dir: str, part_name: str,
     return paths
 
 
+def _is_hollow(stl_path: str, *, ratio: float = 1.6) -> bool:
+    """True if a part's CONVEX HULL encloses substantially more volume than the part
+    itself — i.e. it has a cavity/bore/opening the hull would FILL. A solid block has
+    hull_vol ~= vol (ratio ~1.0); a ring/housing/frame has a hollow core so its hull
+    fills the interior (ratio >> 1). A fixed part like that MUST be convex-decomposed:
+    left as its own single hull it becomes a solid plug that jams everything inside it
+    (the housing_ring failure — 1000+ phantom contacts, the sim can't run).
+
+    Cheap and deterministic (one hull + two volumes), so it gates the expensive
+    decomposition to only the fixed parts that actually need it."""
+    try:
+        m = trimesh.load(stl_path, force="mesh")
+        if not isinstance(m, trimesh.Trimesh) or len(m.faces) == 0:
+            return False
+        vol = float(m.volume)
+        hull_vol = float(m.convex_hull.volume)
+        if vol <= 1e-9 or hull_vol <= 1e-9:
+            return False
+        return (hull_vol / vol) >= ratio
+    except Exception:
+        return False
+
+
 def decompose_model(model, meshes_dir: str, *, metrics: dict | None = None,
                     log_fn=print) -> dict[str, list[str]]:
-    """Decompose every movable/meshing part of a model. Returns {link_name: [piece
-    paths]}; a link absent from the map (or mapped to []) means 'use the part's own
-    mesh as a single hull geom'. Only parts that MOVE (dof != fixed) or appear in a
-    mesh_pair are decomposed — fixed structure collides fine as its own hull, and
-    decomposition is the expensive step.
+    """Decompose every movable/meshing part of a model, PLUS any fixed part that is
+    hollow (a housing/ring/frame whose convex hull would fill its cavity). Returns
+    {link_name: [piece paths]}; a link absent from the map (or mapped to []) means 'use
+    the part's own mesh as a single hull geom'. Solid fixed structure collides fine as
+    its own hull, and decomposition is the expensive step — so it is gated.
 
     A/B collision geometry: MuJoCo's per-step contact cost scales with total geom
     count, and a fine decomposition emits ~40-64 hulls PER part. Only GEARS need that
@@ -216,7 +242,12 @@ def decompose_model(model, meshes_dir: str, *, metrics: dict | None = None,
     So: gears (name gear/pinion/wheel or a mesh_pair member) get the full decomposition;
     all other movers get one hull. The VISUAL mesh is untouched — this is the low-poly
     'B' collision proxy, the high-poly 'A' mesh still renders. Module/teeth/geometry of
-    every gear are unchanged; only NON-gear collision detail drops."""
+    every gear are unchanged; only NON-gear collision detail drops.
+
+    HOLLOW FIXED PARTS are the exception to 'fixed structure collides fine as its own
+    hull': a ring/housing/open frame has a cavity, and its convex hull is a SOLID PLUG
+    that fills that cavity and interpenetrates everything mounted inside it. Those get
+    the full decomposition (which preserves the hole) even though they don't move."""
     movers = {l.name for l in model.links if getattr(l, "dof", "fixed") != "fixed"}
     mesh_members: set = set()
     for pair in getattr(model, "mesh_pairs", []) or []:
@@ -224,12 +255,21 @@ def decompose_model(model, meshes_dir: str, *, metrics: dict | None = None,
         mesh_members.update(pair)
     out: dict[str, list[str]] = {}
     for link in model.links:
-        if link.name not in movers:
+        stl = os.path.join(meshes_dir, f"{link.name}.stl")
+        is_mover = link.name in movers
+        # A fixed part is skipped UNLESS it is hollow (its hull would plug its own cavity).
+        if not is_mover:
+            if _is_hollow(stl):
+                log_fn(f"[convex] decomposing hollow fixed part {link.name} "
+                       f"(its hull would fill its cavity) ...")
+                pieces = decompose_part(stl, meshes_dir, link.name,
+                                        metrics=metrics, log_fn=log_fn)
+                if pieces:
+                    out[link.name] = pieces
             continue
         is_gear = (link.name in mesh_members
                    or _GEAR_NAME_RE.search(link.name or "")
                    or _GEAR_NAME_RE.search(getattr(link, "shape_hint", "") or ""))
-        stl = os.path.join(meshes_dir, f"{link.name}.stl")
         if is_gear:
             log_fn(f"[convex] decomposing gear {link.name} (fine) ...")
             pieces = decompose_part(stl, meshes_dir, link.name,
