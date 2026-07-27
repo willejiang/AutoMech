@@ -127,10 +127,20 @@ def floating_parts(model, meshes_dir: str, log_fn=print) -> list[Floating]:
                 continue
         return False
 
+    # A part MOUNTED on another real part (its pose parent) is held BY that parent — an
+    # upper bearing bolted under a bridge, a hand pressed on a wheel — so it is NOT floating
+    # even though nothing sits directly beneath it. Only parts with no structural parent
+    # (placed as a world root) must earn their support from below.
+    parent_of = {p.child: p.parent for p in model.poses if p.parent}
+    present = set(meshes)
+
     found: list[Floating] = []
     for name, m in meshes.items():
         if dof_of.get(name) != "fixed":
             continue
+        par = parent_of.get(name)
+        if par and par in present:
+            continue                               # mounted on a real part -> held by it
         bottom = float(m.bounds[0][2])
         if bottom - world_bottom <= _GROUND_TOL_MM:
             continue                               # rests on the ground plane -> supported
@@ -195,6 +205,23 @@ def sub_conflicts(model, urdf_path: str, log_fn=print) -> list[Conflict]:
     adj = {frozenset((p.parent, p.child))
            for p in model.poses if p.parent and p.child}
 
+    # COAXIAL SLIDING FIT exemption: a spin tube/arbor running through a fixed bearing's
+    # bore (same XY axis line) is an intended nesting even when they are NOT pose-adjacent
+    # (both may hang off the base). Their solids overlap only because the bearing STL's bore
+    # reads as filled; that is a fit, not a clash. Exempt any spin<->fixed pair whose world
+    # centres share an axis line.
+    from .mjcf_builder import _world_transforms
+    W = _world_transforms(model)
+    dof_of = {l.name: getattr(l, "dof", "fixed") for l in model.links}
+
+    def _coaxial(a, b) -> bool:
+        Ta, Tb = W.get(a), W.get(b)
+        if Ta is None or Tb is None:
+            return False
+        import numpy as _np
+        dxy = _np.array([Ta[0, 3] - Tb[0, 3], Ta[1, 3] - Tb[1, 3]]) * 1000.0
+        return float(_np.linalg.norm(dxy)) < 1.5     # centres within 1.5mm of one axis
+
     names = [l.name for l in model.links]
     meshes = {}
     for n in names:
@@ -209,6 +236,9 @@ def sub_conflicts(model, urdf_path: str, log_fn=print) -> list[Conflict]:
             a, b = present[i], present[k]
             if frozenset((a, b)) in adj:
                 continue
+            dofs = {dof_of.get(a), dof_of.get(b)}
+            if dofs == {"spin", "fixed"} and _coaxial(a, b):
+                continue                             # tube/arbor through a bearing bore -> fit
             frac = _solid_intersection_frac(meshes[a], meshes[b], log_fn=log_fn)
             if frac >= _OVERLAP_FRAC:
                 found.append(Conflict(part_a=a, part_b=b, frac=frac))
