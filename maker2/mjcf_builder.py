@@ -291,6 +291,86 @@ def _add_gear_constraints(mujoco_el, model, meshes_dir, links_by_name, *,
     return n
 
 
+def _world_transforms(model) -> dict:
+    """Accumulate each link's WORLD 4x4 transform by walking the pose forest from its
+    roots (mjcf places bodies parent-relative, so a link's world pose = product of the
+    relative poses down its chain). Returns {link_name: 4x4 np.ndarray}."""
+    children = _pose_children(model)
+    out: dict = {}
+
+    def walk(name, parent_T):
+        xyz, rpy = _rel_pose_of(model, name)
+        T = parent_T @ _mat(xyz, rpy)
+        out[name] = T
+        for p in children.get(name, []):
+            walk(p.child, T)
+
+    import numpy as _np
+    for rn in _roots(model):
+        walk(rn, _np.eye(4))
+    return out
+
+
+def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *,
+                                  metrics: dict | None, log_fn) -> int:
+    """B (deterministic) + A (warn): a ring accessory (bearing/washer/spacer/pedestal/
+    retainer/bridge) that hugs a rotating shaft is a SLIDING FIT in the real machine, not
+    a collision — but rigid-body contact treats the ring's inner wall pressing the shaft as
+    friction that STALLS the driver (the "input turned but nothing moved" failure). For each
+    spin part, exclude contact with every FIXED part whose center lies on that part's spin
+    axis (coaxial), so the bearing/washer rides the shaft instead of braking it.
+
+    A-side backstop: if a coaxial fixed ring's footprint radius is SMALLER than the shaft's
+    (i.e. it truly bites into the shaft, not just rings it), log a WARN — the CAD is wrong
+    (no bore clearance) even though the exclude lets the sim run, so the fault isn't hidden."""
+    spins = [l for l in model.links if getattr(l, "dof", "fixed") == "spin"]
+    fixeds = [l for l in model.links if getattr(l, "dof", "fixed") == "fixed"]
+    if not spins or not fixeds:
+        return 0
+    W = _world_transforms(model)
+    contact = ET.SubElement(mujoco_el, "contact")
+    n = 0
+    warns = 0
+    _COAXIAL_XY_TOL_M = 0.002  # 2mm: centers this close on the axis count as "on the shaft"
+    for s in spins:
+        Ts = W.get(s.name)
+        if Ts is None:
+            continue
+        origin = Ts[:3, 3]
+        ax = getattr(s, "spin_axis", (0.0, 0.0, 1.0)) or (0.0, 0.0, 1.0)
+        axis = Ts[:3, :3] @ np.array([float(ax[0]), float(ax[1]), float(ax[2])])
+        nrm = float(np.linalg.norm(axis))
+        axis = axis / nrm if nrm > 1e-9 else np.array([0.0, 0.0, 1.0])
+        r_shaft = _pitch_radius_m(meshes_dir, s.name)
+        for f in fixeds:
+            Tf = W.get(f.name)
+            if Tf is None:
+                continue
+            d = Tf[:3, 3] - origin
+            # perpendicular distance from the fixed part's center to the spin axis line
+            perp = float(np.linalg.norm(d - np.dot(d, axis) * axis))
+            if perp > _COAXIAL_XY_TOL_M:
+                continue
+            ET.SubElement(contact, "exclude",
+                          attrib={"body1": s.name, "body2": f.name})
+            n += 1
+            r_ring = _pitch_radius_m(meshes_dir, f.name)
+            if r_shaft and r_ring and r_ring < r_shaft - 1e-4:
+                warns += 1
+                log_fn(f"[mjcf] WARN coaxial '{f.name}' (r~{r_ring*1000:.1f}mm) bites into "
+                       f"shaft '{s.name}' (r~{r_shaft*1000:.1f}mm): no bore clearance — "
+                       f"excluded from contact so the sim runs, but the CAD bore is wrong")
+    if n == 0:
+        mujoco_el.remove(contact)
+        return 0
+    if metrics is not None:
+        metrics["coaxial_excludes"] = n
+        metrics["coaxial_bore_warns"] = warns
+    log_fn(f"[mjcf] excluded {n} coaxial bearing/washer contact(s) from the shaft "
+           f"({warns} with a too-small bore flagged)")
+    return n
+
+
 def build_mjcf(model, ctx, *, settings=None, metrics: dict | None = None,
                base_height: float = 0.01, log_fn=print) -> str:
     """Build an MJCF for the model and write it next to the URDF (model.mjcf).
@@ -331,6 +411,13 @@ def build_mjcf(model, ctx, *, settings=None, metrics: dict | None = None,
     if settings is not None and getattr(settings, "allow_gear_constraint", False):
         _add_gear_constraints(mujoco_el, model, meshes_dir, links_by_name,
                               metrics=metrics, log_fn=log_fn)
+
+    # A ring accessory (bearing/washer/spacer/retainer) coaxial with a rotating shaft is a
+    # sliding fit, not a collision — excluding those contacts stops them from braking the
+    # driver (the "input stalled, nothing turned" failure). On by default: pure-contact
+    # transmission still happens at the GEAR TEETH, which are NOT coaxial and stay collidable.
+    _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name,
+                                  metrics=metrics, log_fn=log_fn)
 
     mjcf_path = os.path.splitext(ctx.urdf_path)[0] + ".mjcf"
     ET.indent(mujoco_el)

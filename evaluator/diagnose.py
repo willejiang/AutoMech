@@ -354,7 +354,15 @@ def _metric_signals(spec: dict, metrics: dict) -> dict:
     if input_stalled:
         notes.append(f"INPUT_STALLED: input joint '{m.get('input_joint')}' moved only "
                      f"{it:.3f} rad but was commanded to sweep ~{expected:.2f} rad "
-                     f"-> the drivetrain is jammed (structure).")
+                     f"-> the drivetrain is jammed (structure). The usual cause is that a "
+                     f"part is WEDGED into the rotating input: either (a) a passive part "
+                     f"(bearing/washer/spacer/plate/hand) interpenetrates the shaft/gear it "
+                     f"surrounds and the contact friction brakes it -> give that part a "
+                     f"clearing bore or exclude the coaxial contact, do NOT move the whole "
+                     f"train; or (b) the driven gear's teeth overlap its meshing partner "
+                     f"deeper than a clearance fit (center distance too small) -> set the "
+                     f"pair exactly module*(z1+z2)/2 apart. Look for the deepest contact on "
+                     f"the input joint to tell which.")
     if free_spin:
         notes.append(f"FREE_SPIN: a watched joint moved {max_watched:.1f} rad, far "
                      f"beyond the ~{expected:.2f} rad input command, while the input "
