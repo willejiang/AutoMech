@@ -95,6 +95,23 @@ CASE EXAMPLE:
 # method, not one more helper.
 _MODELING_METHOD = """\
 HOW TO CONSTRUCT A PART (build123d modeling method — read before writing geometry):
+- KNOW WHERE YOUR PRIMITIVE'S ORIGIN IS. `Cylinder(r, h)` and `Box(l, w, h)` are CENTERED on the
+  origin: they span local z in [-h/2, +h/2], NOT [0, h]. `BuildSketch` + `extrude(amount=h)` is
+  the opposite — it grows UPWARD from z=0, spanning [0, h]. Mixing the two conventions in one
+  machine is the most common way a correct-looking stack comes out wrong, and the error is ALWAYS
+  exactly half a height — small enough in the code to survive review, fatal in the assembly.
+- STACK BY REAL FACES, NOT ASSUMED ONES. Build every part origin-at-its-BASE so that "z = the
+  previous part's top" is literally true: `Cylinder(r, h, align=(Align.CENTER, Align.CENTER,
+  Align.MIN))` spans [0, h] exactly like an extrude does. Do this for EVERY cylinder, box, tube
+  and washer you intend to stack — INCLUDING ones built inside a helper function (a helper that
+  returns a centered `Cylinder` silently re-centers every part that uses it). Then a stack reads
+  correctly:
+      pipe_z   = wheel_z + wheel_h          # the pipe sits ON the wheel
+      pipe_top = pipe_z + pipe_h            # and this really IS its top face
+      hand_z   = pipe_top                   # so the hand lands ON the pipe, touching it
+  Without Align.MIN every one of those `+ height` terms is off by half a height and the part
+  floats above (or sinks into) its neighbour by h/2. A part that must TOUCH another part must
+  take its contact coordinate from that part's REAL face.
 - CHOOSE THE CONSTRUCTION FIRST so the spec's controlling dimensions become DIRECT named
   parameters, not derived magic numbers. Profile-driven shapes (gears, rings, plates, brackets):
   ONE closed BuildSketch profile + `extrude`/`revolve`. Block-and-feature parts (housings, bases):
@@ -117,6 +134,15 @@ HOW TO CONSTRUCT A PART (build123d modeling method — read before writing geome
     ask for a helper.
   * BORE / ANNULUS (any part a shaft passes through): SUBTRACT a `Circle(bore/2)` extrude so the
     shaft has real clearance through the solid — never leave a gear/spacer/collar bore-less.
+    THIS APPLIES TO EVERY PART THAT MOUNTS BY SLIDING ONTO SOMETHING: a clock/watch hand onto its
+    pipe, a washer/spacer/collar onto its shaft, a gear or wheel onto its arbor. Such a part comes
+    out SOLID unless you cut the bore, and a solid part cannot go ONTO anything — the `mount=`
+    label then describes a physically impossible assembly and the part just hangs in the air.
+    Size the bore from the OD of the part it slides onto, never from a guessed number:
+        hand_bore_r = pipe_outer_r + 0.05      # the hand's hole matches the pipe it rides on
+    and give it enough axial length that the two really OVERLAP along the axis — a hand merely
+    resting on a pipe's top face is not mounted. Rule of thumb: if your NOTES describe a part as
+    "X on Y", then X needs a bore matching Y's outside diameter.
   * HOLE PATTERN: `with Locations(*positions): Hole(radius=...)` cuts them all at once; put the
     positions in a named list, not inline constants.
 - STABLE SELECTORS: pick faces/edges by axis, normal, or bounding position (top/bottom by Z),

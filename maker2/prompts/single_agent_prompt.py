@@ -88,7 +88,11 @@ where they must and clear where they must not.
 DISCIPLINE:
 - Include EVERY real part; do not merge a shaft into a gear or drop a bearing.
 - Space coaxial parts (front bearing | gear | pinion | rear bearing) at DISTINCT axial stations
-  so their solids never interpenetrate.
+  so their solids never interpenetrate. Compute each station from the PREVIOUS part's real top
+  face — and remember `Cylinder`/`Box` are CENTERED unless you pass
+  `align=(Align.CENTER, Align.CENTER, Align.MIN)` (see MODELING METHOD above). Getting this wrong
+  leaves every stacked part floating half its height above what it is supposed to rest on, which
+  the gravity support test WILL catch and send back to you.
 - A passive accessory that hugs a shaft (thrust washer, spacer, pedestal, collar, cap) must be
   `dof=fixed` AND sit at its OWN axial station flush against the face it backs — it must NOT
   overlap the shaft cross-section it rings. A washer buried a few mm into the shaft it surrounds
