@@ -171,9 +171,12 @@ def _emit_body(parent_el, link_name, model, links_by_name, children, piece_map,
                base_height: float, pin_base: bool):
     link = links_by_name[link_name]
     xyz, rpy = _rel_pose_of(model, link_name)
-    if is_root:
-        # Roots spawn slightly above the plane so they settle down onto it (mirrors
-        # the PyBullet base_height auto-settle) unless the base is pinned to world.
+    dof = getattr(link, "dof", "fixed")
+    # Only a body that will actually SETTLE (a free root, not pinned) spawns slightly above the
+    # plane. A fixed/spin root is grounded IN PLACE (welded to world / hinged), so lifting it by
+    # base_height would weld it hovering in mid-air. Keep its authored Z.
+    settling_root = is_root and not pin_base and dof == "free"
+    if settling_root:
         pos = (float(xyz[0]), float(xyz[1]), float(xyz[2]) + base_height)
     else:
         pos = (float(xyz[0]), float(xyz[1]), float(xyz[2]))
@@ -184,9 +187,24 @@ def _emit_body(parent_el, link_name, model, links_by_name, children, piece_map,
 
     dof = getattr(link, "dof", "fixed")
     if is_root:
-        if not pin_base:
+        # A root body's joint is chosen by its OWN dof — NOT blindly freejointed. This matters
+        # most for the single-agent path, where parts are laid out flat with NO parent/child
+        # poses, so EVERY part is a "root": if each root were freejointed, the housing, posts,
+        # bearings and every dof=fixed structural part would become an independent free body.
+        # Under gravity they sit still (looks stable), but the moment a gear spins the mesh
+        # reaction force has no fixed ground to push against, so the frame is shoved apart and
+        # "flies away". So: fixed -> WELD to world (rigid grounded frame); spin -> hinge (axle
+        # grounded in place but still rotates); free -> freejoint (a genuinely loose part).
+        # pin_base (base_rests_on_plane=False) still welds a would-be-free base to the world.
+        if dof == "fixed" or pin_base:
+            pass  # welded to world: no joint
+        elif dof == "spin":
+            ax = getattr(link, "spin_axis", (0.0, 0.0, 1.0))
+            ET.SubElement(body, "joint", attrib={
+                "name": f"{link_name}_spin", "type": "hinge",
+                "axis": f"{ax[0]:.6g} {ax[1]:.6g} {ax[2]:.6g}", "pos": "0 0 0"})
+        else:  # free
             ET.SubElement(body, "freejoint", attrib={"name": f"{link_name}_free"})
-        # pinned base: no joint => welded to world.
     elif dof == "spin":
         ax = getattr(link, "spin_axis", (0.0, 0.0, 1.0))
         ET.SubElement(body, "joint", attrib={
