@@ -58,7 +58,16 @@ HOW TO ASSEMBLE (cadpy AssemblyHelper):
 PART LABEL CONVENTION (critical — this is how downstream physics reads your intent). The FIRST
 field of each `a.add(part, "<label>")` label is the URDF-safe part NAME; the rest are `key=value`
 metadata separated by `|`:
-  - `dof=fixed|spin|free`  — fixed for plates/housings/bearings; spin for gears/wheels/shafts.
+  - `dof=fixed|spin|free`  — `spin` ONLY for a part that is MEANT to rotate to transmit motion:
+                             a gear, a pinion, a wheel, or the shaft/arbor that carries them.
+                             EVERYTHING ELSE is `fixed`, INCLUDING every accessory that merely
+                             sits on a rotating shaft — thrust washers, spacers, pedestals,
+                             collars, retainers, caps, hands. A `fixed` accessory is welded to its
+                             mount and does not move on its own. Never mark a washer/spacer/
+                             pedestal/retainer/cap/hand `spin`: making a passive collar spinnable
+                             lets it grind against the shaft it hugs and the contact solver turns
+                             that grind into friction that STALLS the driver — the whole train
+                             then reads as "does not turn". If in doubt, it is `fixed`.
   - `driver=True`          — on the ONE input part the physics test turns.
   - `mesh_id=<id>`         — put the SAME id on the TWO gears meant to mesh, so the transmission
                              check pairs them. A gear with no partner needs no mesh_id.
@@ -80,6 +89,11 @@ DISCIPLINE:
 - Include EVERY real part; do not merge a shaft into a gear or drop a bearing.
 - Space coaxial parts (front bearing | gear | pinion | rear bearing) at DISTINCT axial stations
   so their solids never interpenetrate.
+- A passive accessory that hugs a shaft (thrust washer, spacer, pedestal, collar, cap) must be
+  `dof=fixed` AND sit at its OWN axial station flush against the face it backs — it must NOT
+  overlap the shaft cross-section it rings. A washer buried a few mm into the shaft it surrounds
+  becomes a deep coaxial contact that brakes the driver; give it a bore clearing the shaft and a
+  z that places it beside, not inside, the part it serves.
 - OMIT torque-lock hardware (keys, keyways, setscrews, retaining collars) — pure contact does
   not use them and they always clash the gear hub.
 - Use capitalized True/False/None (this is Python, not JSON).
