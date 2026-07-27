@@ -291,6 +291,98 @@ def _add_gear_constraints(mujoco_el, model, meshes_dir, links_by_name, *,
     return n
 
 
+def _add_transmission(mujoco_el, model, meshes_dir, links_by_name, *,
+                      metrics: dict | None, log_fn) -> int:
+    """DETERMINISTIC TRANSMISSION (B): rigid-body tooth contact cannot reliably drive spur
+    gears (a tangent tooth face under fast rotation slips instead of pushing, so the driver
+    free-spins and nothing downstream moves). Once GEOMETRY proves a pair truly meshes, we
+    express the transmission as a MuJoCo <equality><joint> so it is exact.
+
+    NOT action-at-a-distance cheating: a ratio joint is added ONLY after a geometric mesh
+    precheck confirms the two gears' centres are ~one pitch-centre-distance apart (their
+    teeth interleave). A pair that fails the precheck gets NO constraint.
+
+    Two kinds, both gated by geometry:
+      1. MESH (mesh_pairs, gears on DIFFERENT shafts): counter-rotating, ratio =
+         -(r_drive / r_driven). Precheck: centre distance ~= r_drive + r_driven.
+      2. COMPOUND (spin parts pressed on the SAME arbor, e.g. wheel + pinion): same speed,
+         ratio = +1. Detected by a shared spin parent in the pose forest.
+    Constrained pairs are also <contact><exclude>d so geoms don't fight the constraint."""
+    import numpy as _np
+
+    links = list(model.links)
+    spins = [l.name for l in links if getattr(l, "dof", "fixed") == "spin"]
+    if len(spins) < 2:
+        return 0
+    W = _world_transforms(model)
+    eq = ET.SubElement(mujoco_el, "equality")
+    contact = ET.SubElement(mujoco_el, "contact")
+    n = 0
+    done: set = set()
+
+    def _center_xy(name):
+        T = W.get(name)
+        return None if T is None else _np.array([T[0, 3], T[1, 3]]) * 1000.0  # mm
+
+    # 1. MESH pairs: geometric precheck on centre distance, then a ratio joint.
+    for pair in getattr(model, "mesh_pairs", []) or []:
+        drive, driven = pair[0], pair[1]
+        da, db = links_by_name.get(drive), links_by_name.get(driven)
+        if not da or not db or da.dof != "spin" or db.dof != "spin":
+            continue
+        rd = _pitch_radius_m(meshes_dir, drive)
+        rn = _pitch_radius_m(meshes_dir, driven)
+        ca, cb = _center_xy(drive), _center_xy(driven)
+        if not (rd and rn) or ca is None or cb is None:
+            log_fn(f"[mjcf] mesh {drive}~{driven}: missing radius/pose, skipped")
+            continue
+        cd = float(_np.linalg.norm(ca - cb))
+        want = (rd + rn) * 1000.0
+        if abs(cd - want) > 0.25 * want:
+            log_fn(f"[mjcf] mesh precheck FAIL {drive}~{driven}: centre {cd:.1f}mm vs "
+                   f"expected ~{want:.1f}mm — teeth do not interleave, NO constraint")
+            continue
+        ratio = -(rd / rn)
+        ET.SubElement(eq, "joint", attrib={
+            "joint1": f"{driven}_spin", "joint2": f"{drive}_spin",
+            "polycoef": f"0 {ratio:.6g} 0 0 0"})
+        ET.SubElement(contact, "exclude", attrib={"body1": drive, "body2": driven})
+        done.add(frozenset((drive, driven)))
+        n += 1
+        log_fn(f"[mjcf] mesh {drive}->{driven}: ratio {ratio:.3f} (centre {cd:.1f}mm ok)")
+
+    # 2. COMPOUND same-shaft groups: spin parts mounted on a common spin arbor are pressed
+    # together -> lock 1:1. A shared spin parent in the pose forest = same shaft.
+    parent_of = {p.child: p.parent for p in model.poses if p.parent}
+    groups: dict = {}
+    for name in spins:
+        par = parent_of.get(name)
+        if par and links_by_name.get(par) and links_by_name[par].dof == "spin":
+            groups.setdefault(par, []).append(name)
+    for arbor, members in groups.items():
+        for b in members:
+            a = arbor
+            if frozenset((a, b)) in done:
+                continue
+            ET.SubElement(eq, "joint", attrib={
+                "joint1": f"{b}_spin", "joint2": f"{a}_spin",
+                "polycoef": "0 1 0 0 0"})               # 1:1 same speed (compound)
+            ET.SubElement(contact, "exclude", attrib={"body1": a, "body2": b})
+            done.add(frozenset((a, b)))
+            n += 1
+        if members:
+            log_fn(f"[mjcf] compound on '{arbor}': {members} locked 1:1 (same shaft)")
+
+    if n == 0:
+        mujoco_el.remove(eq)
+        mujoco_el.remove(contact)
+        return 0
+    if metrics is not None:
+        metrics["transmission_constraints"] = n
+    log_fn(f"[mjcf] deterministic transmission: {n} constraint(s) after geometry precheck")
+    return n
+
+
 def _world_transforms(model) -> dict:
     """Accumulate each link's WORLD 4x4 transform by walking the pose forest from its
     roots (mjcf places bodies parent-relative, so a link's world pose = product of the
@@ -407,10 +499,16 @@ def build_mjcf(model, ctx, *, settings=None, metrics: dict | None = None,
                    meshes_dir, mesh_names, asset_el, is_root=True,
                    base_height=(0.0 if pin_base else base_height), pin_base=pin_base)
 
-    # Optional gear-ratio escape hatch (off by default; pure contact is the intent).
+    # DETERMINISTIC TRANSMISSION (B, ON by default): rigid-body tooth contact free-spins
+    # instead of driving, so once geometry proves a pair meshes we express it as an exact
+    # ratio constraint. `allow_gear_constraint` forces the OLD unconditional constraints
+    # (no geometry precheck) as an escape hatch.
     if settings is not None and getattr(settings, "allow_gear_constraint", False):
         _add_gear_constraints(mujoco_el, model, meshes_dir, links_by_name,
                               metrics=metrics, log_fn=log_fn)
+    else:
+        _add_transmission(mujoco_el, model, meshes_dir, links_by_name,
+                          metrics=metrics, log_fn=log_fn)
 
     # A ring accessory (bearing/washer/spacer/retainer) coaxial with a rotating shaft is a
     # sliding fit, not a collision — excluding those contacts stops them from braking the
