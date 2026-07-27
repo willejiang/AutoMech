@@ -204,19 +204,35 @@ def decompose_part(stl_path: str, meshes_dir: str, part_name: str,
 
 
 def _is_hollow(stl_path: str, *, ratio: float = 1.6) -> bool:
-    """True if a part's CONVEX HULL encloses substantially more volume than the part
-    itself — i.e. it has a cavity/bore/opening the hull would FILL. A solid block has
-    hull_vol ~= vol (ratio ~1.0); a ring/housing/frame has a hollow core so its hull
-    fills the interior (ratio >> 1). A fixed part like that MUST be convex-decomposed:
-    left as its own single hull it becomes a solid plug that jams everything inside it
-    (the housing_ring failure — 1000+ phantom contacts, the sim can't run).
+    """True if a part has a cavity/bore/opening its CONVEX HULL would FILL — so the hull
+    is a solid plug that jams whatever is supposed to pass through it (the housing_ring
+    failure: 1000+ phantom contacts, the sim can't run).
 
-    Cheap and deterministic (one hull + two volumes), so it gates the expensive
-    decomposition to only the fixed parts that actually need it."""
+    TWO independent tests, because either alone misses real cases:
+
+    * TOPOLOGY (euler_number != 2). A closed solid with no through-hole has euler 2; a
+      part with one bore has 0, with two holes -2, and so on. This is exact, and it is
+      what catches the cases the volume ratio cannot see: a THIN plate with pivot holes
+      (skeleton_bridge measured vol 1406 vs hull 1460 -> ratio 1.04) and a THIN-WALLED
+      tube (hour_pipe: 150 vs 190 -> ratio 1.27). Both have real through-holes that
+      arbors pass through, both sailed under a 1.6 threshold, and hulling them welded
+      the whole movement solid — arbors buried 6mm inside the "plate", the driven pinion
+      swept 0.14 of 12 commanded rad.
+    * VOLUME RATIO. Keeps catching open frames / C-shapes whose opening is not a
+      topological hole at all, so euler stays 2 while the hull still fills the mouth.
+
+    Cheap and deterministic (one hull + two volumes + a face/edge count), so it gates
+    the expensive decomposition to only the parts that actually need it."""
     try:
         m = trimesh.load(stl_path, force="mesh")
         if not isinstance(m, trimesh.Trimesh) or len(m.faces) == 0:
             return False
+        # Topology first: exact, and independent of how thin the walls are.
+        try:
+            if m.is_watertight and int(m.euler_number) != 2:
+                return True
+        except Exception:
+            pass          # a non-manifold mesh has no meaningful euler; fall through
         vol = float(m.volume)
         hull_vol = float(m.convex_hull.volume)
         if vol <= 1e-9 or hull_vol <= 1e-9:
@@ -275,8 +291,20 @@ def decompose_model(model, meshes_dir: str, *, metrics: dict | None = None,
             pieces = decompose_part(stl, meshes_dir, link.name,
                                     metrics=metrics, log_fn=log_fn)
         else:
-            # B-proxy: one convex hull for a non-gear mover (shaft/sleeve/hand/collar).
-            pieces = _hull_only_piece(stl, meshes_dir, link.name, log_fn=log_fn)
+            # B-proxy: one convex hull for a non-gear mover (shaft/sleeve/hand/collar) —
+            # UNLESS it is hollow. A pipe, sleeve, bored hand or collar exists precisely
+            # so a shaft can pass THROUGH it, and a single hull fills that bore: the
+            # shaft is then embedded in a solid rod and the train welds itself shut.
+            # (hour_pipe shipped as vol=hullvol=189.92, its bore gone, minute_arbor
+            # buried 3.3mm inside it.) Those get the real decomposition, which keeps
+            # the hole; only genuinely solid movers take the cheap hull.
+            if _is_hollow(stl):
+                log_fn(f"[convex] decomposing hollow mover {link.name} "
+                       f"(a single hull would fill its bore) ...")
+                pieces = decompose_part(stl, meshes_dir, link.name,
+                                        metrics=metrics, log_fn=log_fn)
+            else:
+                pieces = _hull_only_piece(stl, meshes_dir, link.name, log_fn=log_fn)
         if pieces:
             out[link.name] = pieces
     return out
