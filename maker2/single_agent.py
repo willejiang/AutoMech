@@ -39,6 +39,28 @@ def _rot_to_rpy(R):
     return (math.atan2(-R[1][2], R[1][1]), math.atan2(-R[2][0], sy), 0.0)
 
 
+def _homogeneous(R, T):
+    return [[R[0][0], R[0][1], R[0][2], float(T[0])],
+            [R[1][0], R[1][1], R[1][2], float(T[1])],
+            [R[2][0], R[2][1], R[2][2], float(T[2])],
+            [0.0, 0.0, 0.0, 1.0]]
+
+
+def _mat_mul(a, b):
+    return [[sum(a[i][k] * b[k][j] for k in range(4)) for j in range(4)] for i in range(4)]
+
+
+def _mat_inv(m):
+    # Inverse of a rigid transform: R^-1 = R^T, t^-1 = -R^T @ t.
+    rt = [[m[j][i] for j in range(3)] for i in range(3)]
+    t = [m[0][3], m[1][3], m[2][3]]
+    nt = [-sum(rt[i][k] * t[k] for k in range(3)) for i in range(3)]
+    return [[rt[0][0], rt[0][1], rt[0][2], nt[0]],
+            [rt[1][0], rt[1][1], rt[1][2], nt[1]],
+            [rt[2][0], rt[2][1], rt[2][2], nt[2]],
+            [0.0, 0.0, 0.0, 1.0]]
+
+
 def evaluate_machine_python(script_text: str, run_dir: str, machine_name: str,
                             *, log_fn=print) -> KinematicModel:
     """Run the authored whole-machine build123d script in a sandbox and return a
@@ -93,6 +115,18 @@ def evaluate_machine_python(script_text: str, run_dir: str, machine_name: str,
     mesh_by_id: dict = {}
     root = spec.get("root") or parts[0]["name"]
     coord_log: list = []
+
+    # World transforms keyed by part name — authoritative (the agent's .moved() coords, which
+    # the move-vs-connect experiment showed give 0 positioning error). A mounted part's pose is
+    # made RELATIVE to its parent by parent_world^-1 @ child_world, so the parent/child body tree
+    # anchors the train to the world instead of every part being a free root.
+    names = {p["name"] for p in parts if float(p.get("volume_mm3", 0.0)) > 0.0}
+    world_by_name: dict = {}
+    for p in parts:
+        if float(p.get("volume_mm3", 0.0)) <= 0.0:
+            continue
+        world_by_name[p["name"]] = _homogeneous(p["R"], p["T"])
+
     for p in parts:
         name = p["name"]
         meta = p.get("metadata") or {}
@@ -108,11 +142,20 @@ def evaluate_machine_python(script_text: str, run_dir: str, machine_name: str,
             mesh_filename=f"meshes/{name}.stl",
             dof=dof, spin_axis=tuple(spin_axis), driver=driver,
             material=str(meta.get("material", "steel"))))
-        T = [float(v) / 1000.0 for v in p["T"]]
-        rpy = _rot_to_rpy(p["R"])
-        poses.append(PoseSpec(name=f"place_{name}", parent="", child=name,
+        # A valid mount names another part; otherwise treat as a world root (parent="").
+        mount = str(meta.get("mount", "") or "").strip()
+        parent = mount if (mount and mount != name and mount in names) else ""
+        if parent:
+            rel = _mat_mul(_mat_inv(world_by_name[parent]), world_by_name[name])
+            T = [rel[0][3] / 1000.0, rel[1][3] / 1000.0, rel[2][3] / 1000.0]
+            rpy = _rot_to_rpy([[rel[r][c] for c in range(3)] for r in range(3)])
+        else:
+            T = [float(v) / 1000.0 for v in p["T"]]
+            rpy = _rot_to_rpy(p["R"])
+        poses.append(PoseSpec(name=f"place_{name}", parent=parent, child=name,
                               xyz_m=tuple(T), rpy_rad=tuple(rpy)))
-        coord_log.append(f"{name}@{tuple(round(v*1000, 1) for v in T)}mm")
+        coord_log.append(f"{name}@{tuple(round(v*1000, 1) for v in T)}mm"
+                         + (f"<-{parent}" if parent else ""))
         mid = meta.get("mesh_id")
         if not mid:
             m = _MESH_RE.search(name.lower())
