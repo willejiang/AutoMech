@@ -45,7 +45,7 @@ OUTPUT: exactly ONE ```python code block defining `build_machine()` that returns
   AssemblyHelper, make_gear, Box, Cylinder, BuildPart, BuildSketch, Circle, Polygon, extrude,
   Location, Plane, Align, Mode, and build123d as b3d.
 
-HOW TO ASSEMBLE (cadpy AssemblyHelper — add the parts, THEN connect them):
+HOW TO ASSEMBLE (cadpy AssemblyHelper):
     a = AssemblyHelper("machine")
     plate = Box(60, 40, 4)
     a.add(plate, "baseplate|dof=fixed")
@@ -53,27 +53,7 @@ HOW TO ASSEMBLE (cadpy AssemblyHelper — add the parts, THEN connect them):
     a.add(g1, "input_gear|dof=spin|driver=True|mesh_id=stage1")
     g2 = make_gear(2.0, 40, 6, 8).moved(Location((20, 0, 6)))
     a.add(g2, "output_gear|dof=spin|mesh_id=stage1")
-    # DECLARE THE CONNECTIONS — which part is mounted on / supported by which. Put a named frame
-    # on each part where they join, then connect them. Every SPIN part must be connected to the
-    # FIXED part that carries its axle (a gear/shaft to its bearing or plate); every FIXED
-    # structural part must be connected into ONE rigid frame (post to plate, cover to post).
-    a.rigid_frame(plate, "input_seat", Location((-20, 0, 6)))
-    a.rigid_frame(g1, "hub", Location((0, 0, 0)))
-    a.connect((plate, "input_seat"), (g1, "hub"))               # input_gear rides on the plate
-    a.rigid_frame(plate, "output_seat", Location((20, 0, 6)))
-    a.rigid_frame(g2, "hub", Location((0, 0, 0)))
-    a.connect((plate, "output_seat"), (g2, "hub"))              # output_gear rides on the plate
     return a.build()
-
-CONNECTIONS ARE MANDATORY, NOT OPTIONAL. `a.add(...)` alone only drops a part at a coordinate; it
-does NOT tell the physics engine which parts are joined. Without connections every part is treated
-as an INDEPENDENT free body: the machine looks fine at rest but the instant a gear spins, the whole
-frame is shoved apart and flies off. So after adding all parts, for EACH part declare where it
-attaches: `a.rigid_frame(partA, "<name>", Location(local_pt))`, `a.rigid_frame(partB, "<name>",
-Location(local_pt))`, then `a.connect((partA, "frameA"), (partB, "frameB"))`. Connect the whole
-machine into ONE linked structure — no part should be left unconnected (an unconnected part = a
-loose part that falls off). A spin part stays a spinning axle; the connection only says WHAT grounds
-it, it does not weld it rigid.
 
 PART LABEL CONVENTION (critical — this is how downstream physics reads your intent). The FIRST
 field of each `a.add(part, "<label>")` label is the URDF-safe part NAME; the rest are `key=value`
