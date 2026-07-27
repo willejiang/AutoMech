@@ -174,6 +174,12 @@ def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: 
     cause = (diagnosis or {}).get("cause")
     reason = (diagnosis or {}).get("reason")
     lines = [f"PHYSICS RESULT: {summary}"]
+    unsupported = st.get("support_faults") or []
+    if unsupported:
+        lines.append("- STAGE 1 (SUPPORT) FAILED. Every mount weld was dissolved and the "
+                     "assembly settled under gravity; these parts fell, so nothing real "
+                     "holds them up:")
+        lines += [f"    * {f}" for f in unsupported[:8]]
     if stability_failed:
         lines.append(f"- STAGE 1 (STABILITY) FAILED: dropped on the bench under gravity with "
                      f"NO drive, the machine did not hold together "
@@ -193,7 +199,14 @@ def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: 
     # a machine that falls apart just settling can't be judged on function at all. Then an
     # explosion is a start-pose overlap (not a center-distance problem); only a DEAD/jammed
     # train (turned but nothing moved, no explosion) points at gear spacing.
-    if stability_failed:
+    if unsupported:
+        guidance = (
+            "FIX SUPPORT FIRST — the parts listed above are floating. Each is declared on a "
+            "mount it does not physically touch, so the label is the only thing holding it. "
+            "For EACH one: move it down/along until its solid actually MEETS the part named as "
+            "its mount, or lengthen that shaft/arbor/tube until it reaches the part. Do NOT add "
+            "a new support part, do NOT move anything not listed above.")
+    elif stability_failed:
         guidance = (
             "FIX STABILITY FIRST — nothing else matters until the machine can EXIST on the "
             "bench. Dropped under gravity with no drive, it fell apart. It must sit as a "

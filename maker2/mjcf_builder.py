@@ -39,6 +39,9 @@ _SOLVER_ITERS = 150
 _GEOM_FRICTION = "1.0 0.05 0.005"     # sliding, torsional, rolling
 _GEOM_SOLREF = "0.002 1"              # stiff, ~critically damped contact
 _GEOM_MARGIN = 0.0002                 # 0.2 mm — teeth engage just before touching
+# SUPPORT TEST only: friction pinned near-infinite so the verdict is about SUPPORT, not
+# grip. A part correctly seated (or gripped by a bore) must not creep and read as a fault.
+_SUPPORT_FRICTION = "5.0 1.0 0.5"
 
 
 def _mat(xyz, rpy) -> np.ndarray:
@@ -81,6 +84,14 @@ def _rel_pose_of(model, child: str):
 def _quat_from_rpy(rpy) -> str:
     """MuJoCo quaternion string (w x y z) from fixed-axis XYZ rpy."""
     q = tf.quaternion_from_euler(float(rpy[0]), float(rpy[1]), float(rpy[2]), axes="sxyz")
+    return f"{q[0]:.9g} {q[1]:.9g} {q[2]:.9g} {q[3]:.9g}"
+
+
+def _quat_from_matrix_rot(T) -> str:
+    """MuJoCo quaternion string (w x y z) from a 4x4 transform's rotation block."""
+    R = np.eye(4)
+    R[:3, :3] = T[:3, :3]
+    q = tf.quaternion_from_matrix(R)
     return f"{q[0]:.9g} {q[1]:.9g} {q[2]:.9g} {q[3]:.9g}"
 
 
@@ -403,6 +414,51 @@ def _world_transforms(model) -> dict:
     return out
 
 
+_COAXIAL_XY_TOL_M = 0.002  # 2mm: centers this close to the axis count as "on the shaft"
+
+
+def coaxial_pairs(model, meshes_dir, *, include_spin_spin: bool = False) -> list[tuple[str, str]]:
+    """[(spin_part, other_part)] for every part centred on a SPIN part's axis — a
+    bearing/washer/bridge/hand riding a shaft or pipe.
+
+    Shared by two consumers that must agree: the real MJCF excludes these contacts (an
+    inner wall pressing the shaft brakes the driver), and the support test treats the
+    same pairs as SUPPORT EDGES. Both follow from one physical fact — it is a radial
+    sliding fit, not a collision — so they read it from one place.
+
+    `include_spin_spin` also returns spin-on-spin pairs (a gear pressed on its arbor, a
+    pipe over a shaft). The real MJCF must NOT exclude those — a gear driven by tooth
+    contact still needs its own collisions — but for SUPPORT they are exactly as real as
+    a bearing fit: the arbor is what holds the gear up."""
+    spins = [l for l in model.links if getattr(l, "dof", "fixed") == "spin"]
+    others = [l for l in model.links
+              if getattr(l, "dof", "fixed") == "fixed" or include_spin_spin]
+    if not spins or not others:
+        return []
+    W = _world_transforms(model)
+    out: list[tuple[str, str]] = []
+    for s in spins:
+        Ts = W.get(s.name)
+        if Ts is None:
+            continue
+        origin = Ts[:3, 3]
+        ax = getattr(s, "spin_axis", (0.0, 0.0, 1.0)) or (0.0, 0.0, 1.0)
+        axis = Ts[:3, :3] @ np.array([float(ax[0]), float(ax[1]), float(ax[2])])
+        nrm = float(np.linalg.norm(axis))
+        axis = axis / nrm if nrm > 1e-9 else np.array([0.0, 0.0, 1.0])
+        for f in others:
+            if f.name == s.name:
+                continue
+            Tf = W.get(f.name)
+            if Tf is None:
+                continue
+            d = Tf[:3, 3] - origin
+            perp = float(np.linalg.norm(d - np.dot(d, axis) * axis))
+            if perp <= _COAXIAL_XY_TOL_M:
+                out.append((s.name, f.name))
+    return out
+
+
 def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *,
                                   metrics: dict | None, log_fn) -> int:
     """B (deterministic) + A (warn): a ring accessory (bearing/washer/spacer/pedestal/
@@ -461,6 +517,122 @@ def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *
     log_fn(f"[mjcf] excluded {n} coaxial bearing/washer contact(s) from the shaft "
            f"({warns} with a too-small bore flagged)")
     return n
+
+
+def build_support_mjcf(model, ctx, *, metrics: dict | None = None,
+                       log_fn=print) -> tuple[str, str]:
+    """Build the SUPPORT-TEST MJCF: every part a free body except the one already
+    resting on the ground, which stays welded to the world.
+
+    This answers "what is actually held up by real geometry?" the only way a heuristic
+    cannot fake — let gravity decide. The geometric ray test it replaces called a part
+    supported whenever ANY solid sat below it, so a stack of floating parts propping
+    each other up passed, and a 1.75 mm air gap under a watch hand read as contact.
+    Here every `mount=` weld is DISSOLVED: a part stays put only if real geometry (a
+    face it rests on, a bore gripping a shaft) holds it.
+
+    Friction is pinned near-infinite (_SUPPORT_FRICTION) so the verdict is about
+    SUPPORT, not grip: a shaft/bore radial fit counts as supported, which matches the
+    real machine — a watch hand is pressed onto its pipe and by design has nothing
+    underneath it.
+
+    The ground part keeps its weld so the assembly has a world anchor; without it the
+    whole machine free-falls together and every part reads as "fell". The anchor is the
+    lowest FIXED structure part, not simply the lowest geometry — a shaft routinely
+    pokes below the baseplate it turns in, and welding the shaft would leave the actual
+    base unsupported. The ground plane is dropped below all geometry so such a
+    protruding shaft does not spuriously rest on it.
+
+    Returns (mjcf_path, ground_part_name)."""
+    import trimesh
+
+    meshes_dir = ctx.meshes_dir
+    piece_map = decompose_model(model, meshes_dir, metrics=metrics, log_fn=log_fn)
+    W = _world_transforms(model)
+
+    dof_of = {l.name: getattr(l, "dof", "fixed") for l in model.links}
+    ground, ground_z = None, float("inf")
+    world_bottom_m = float("inf")
+    for l in model.links:
+        stl = os.path.join(meshes_dir, f"{l.name}.stl")
+        T = W.get(l.name)
+        if not os.path.exists(stl) or T is None:
+            continue
+        try:
+            mm = trimesh.load(stl, force="mesh")
+        except Exception:
+            continue
+        if not isinstance(mm, trimesh.Trimesh) or len(mm.faces) == 0:
+            continue
+        Tmm = T.copy()
+        Tmm[:3, 3] *= 1000.0
+        mm.apply_transform(Tmm)
+        z = float(mm.bounds[0][2])
+        world_bottom_m = min(world_bottom_m, z / 1000.0)
+        if dof_of.get(l.name) == "fixed" and z < ground_z:
+            ground, ground_z = l.name, z
+    if ground is None:
+        ground = model.root_link or (model.links[0].name if model.links else "")
+    if world_bottom_m == float("inf"):
+        world_bottom_m = 0.0
+
+    mujoco_el = ET.Element("mujoco",
+                           attrib={"model": (model.name or "assembly") + "_support"})
+    ET.SubElement(mujoco_el, "option", attrib={
+        "gravity": "0 0 -9.81", "timestep": f"{_TIMESTEP}",
+        "iterations": f"{_SOLVER_ITERS}", "solver": "Newton", "cone": "elliptic"})
+    ET.SubElement(mujoco_el, "size", attrib={"memory": "256M"})
+    asset_el = ET.SubElement(mujoco_el, "asset")
+    world = ET.SubElement(mujoco_el, "worldbody")
+    ET.SubElement(world, "light", attrib={"pos": "0 0 3", "dir": "0 0 -1",
+                                          "diffuse": "0.8 0.8 0.8"})
+    ET.SubElement(world, "geom", attrib={
+        "name": "ground", "type": "plane", "size": "5 5 0.1",
+        "pos": f"0 0 {world_bottom_m - 0.05:.9g}",
+        "friction": _SUPPORT_FRICTION, "condim": "4"})
+
+    # Every part is emitted FLAT at its world pose. The pose forest is deliberately NOT
+    # walked: a nested body would inherit its parent's weld and be held up by the very
+    # `mount=` label this test exists to disprove.
+    from .materials import density_of
+    mesh_names: set = set()
+    for l in model.links:
+        T = W.get(l.name)
+        if T is None:
+            continue
+        xyz = T[:3, 3]
+        body = ET.SubElement(world, "body", attrib={
+            "name": l.name,
+            "pos": f"{xyz[0]:.9g} {xyz[1]:.9g} {xyz[2]:.9g}",
+            "quat": _quat_from_matrix_rot(T)})
+        if l.name != ground:
+            ET.SubElement(body, "freejoint", attrib={"name": f"{l.name}_free"})
+        mat = getattr(l, "material", "steel") or "steel"
+        own_stl = os.path.join(meshes_dir, f"{l.name}.stl")
+        vol_m3 = _mesh_volume_m3(own_stl) if os.path.exists(own_stl) else None
+        mass = max(density_of(mat) * vol_m3, 1e-6) if vol_m3 else 0.05
+        ET.SubElement(body, "inertial", attrib={
+            "pos": "0 0 0", "mass": f"{mass:.6g}", "diaginertia": "1e-4 1e-4 1e-4"})
+        _add_geoms(body, l, piece_map, meshes_dir, mesh_names, asset_el,
+                   friction=_SUPPORT_FRICTION)
+
+    # The coaxial sliding fits must be excluded here for the SAME reason as in the real
+    # MJCF: a bore modelled as a solid ring around a shaft reads as a deep interpenetration,
+    # and the solver ejects both parts violently — every part would "rise", not fall, and
+    # the test would report nothing. support_test.py re-reads coaxial_pairs() and credits
+    # these as support edges instead, which is what makes a hand on its pipe count as held.
+    pairs = coaxial_pairs(model, meshes_dir)
+    if pairs:
+        contact = ET.SubElement(mujoco_el, "contact")
+        for s, f in pairs:
+            ET.SubElement(contact, "exclude", attrib={"body1": s, "body2": f})
+
+    path = os.path.splitext(ctx.urdf_path)[0] + "_support.mjcf"
+    ET.indent(mujoco_el)
+    Path(path).write_text(ET.tostring(mujoco_el, encoding="unicode"), encoding="utf-8")
+    log_fn(f"[support] wrote {path}: {len(model.links)} part(s) freed, "
+           f"'{ground}' welded as the ground anchor")
+    return path, ground
 
 
 def build_mjcf(model, ctx, *, settings=None, metrics: dict | None = None,

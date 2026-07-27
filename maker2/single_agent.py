@@ -415,34 +415,29 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
         # Rigid-conflict geometry self-check (the text-to-cad "inspect" step, reusing subcheck).
         # A gross interpenetration is cheaper to fix here than to run physics on, so gate on it
         # first — but only re-author for it when we still have iterations left.
+        #
+        # Support is NOT checked here any more. The ray-cast floating detector it used to run
+        # passed a stack of parts propping each other up and read a 1.75mm air gap as contact;
+        # support is now measured under gravity as part of stage-1 stability (support_test).
         conflicts = []
-        floaters = []
         try:
-            from .subcheck import floating_parts, sub_conflicts
+            from .subcheck import sub_conflicts
             conflicts = sub_conflicts(model, ctx.urdf_path, log_fn=lambda *_: None)
-            floaters = floating_parts(model, ctx.meshes_dir, log_fn=lambda *_: None)
         except Exception as e:
             log_fn(f"[single-agent] geometry check unavailable ({type(e).__name__}: {e})")
-        if (conflicts or floaters) and not last_iter:
-            findings = "\n".join([f"- {c.describe()}" for c in conflicts[:8]]
-                                 + [f"- {f.describe()}" for f in floaters[:8]])
-            # Geometry badness: count of faults + total floating gap (mm/100 as a tiebreak).
-            badness = (len(conflicts) + len(floaters)
-                       + sum(getattr(f, "parent_gap_mm", 0.0) or f.gap_mm
-                             for f in floaters) / 100.0)
+        if conflicts and not last_iter:
+            findings = "\n".join(f"- {c.describe()}" for c in conflicts[:8])
+            badness = float(len(conflicts))
             geo_regressed = badness > geo_best["badness"]
             if badness < geo_best["badness"]:
                 geo_best = {"badness": badness, "code": code}
-            log_fn(f"[single-agent] {len(conflicts)} interpenetration(s) + "
-                   f"{len(floaters)} floating part(s) -> asking agent to fix "
+            log_fn(f"[single-agent] {len(conflicts)} interpenetration(s) -> asking agent to fix "
                    f"(badness={badness:.2f}, best={geo_best['badness']:.2f}"
                    f"{', REGRESSED' if geo_regressed else ''})")
             log_fn("ARTIFACT_JSON:" + _json.dumps({
                 "kind": "diagnosis", "iter": it, "single_agent": True,
-                "decision": {"root_cause": f"{len(conflicts)} interpenetration(s), "
-                                           f"{len(floaters)} unsupported part(s)",
-                             "evidence": [c.describe() for c in conflicts[:8]]
-                                         + [f.describe() for f in floaters[:8]]}}))
+                "decision": {"root_cause": f"{len(conflicts)} interpenetration(s)",
+                             "evidence": [c.describe() for c in conflicts[:8]]}}))
             # On regression, refine the BEST-geometry code instead of the worse latest one.
             rollback_code = geo_best["code"] if (geo_regressed and geo_best["code"]) else None
             conv.add_user_message(build_single_agent_geometry_feedback(

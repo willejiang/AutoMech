@@ -568,6 +568,18 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings) -> di
 
     out_base = str(Path(run_dir) / "physics" / "mujoco")
 
+    # STAGE 1 (SUPPORT), merged into the stability verdict below. The settle test measures
+    # whether the machine holds together as ASSEMBLED — but a part hung on a `mount=` label
+    # it never touches is welded to that mount in the real MJCF, so it sits there happily
+    # and the settle sees nothing wrong. The support test dissolves every weld and lets
+    # gravity answer the question the welds hide: what is actually held by geometry?
+    try:
+        from .support_test import support_faults
+        support_fell = support_faults(model, ctx, log_fn=print)
+    except Exception as e:
+        print(f"[support] support test unavailable ({type(e).__name__}: {e})")
+        support_fell = []
+
     # SCENARIO DESIGN: ask environment_designer what this test should check (best-effort;
     # the MuJoCo runner is contact-driven, so we only borrow the drive INTENT + criteria).
     designed = None
@@ -619,6 +631,14 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings) -> di
         res = _run_sim_mujoco(mjcf, spec, out_base, task)
         m = dict(res.get("metrics", {}))
         stability = res.get("stability") or {}
+        # MERGE the support verdict into stage 1. The settle can only see parts that move;
+        # an unsupported part is welded to a mount it never touches, so it never moves and
+        # the settle passes it. A part nothing holds up is a stability failure regardless.
+        if support_fell:
+            stability = dict(stability)
+            stability["unsupported_parts"] = [f.part for f in support_fell]
+            stability["support_faults"] = [f.describe() for f in support_fell]
+            stability["verdict"] = "FAIL"
         if metrics_side.get("contact_degraded"):
             m["contact_degraded"] = True
         if metrics_side.get("constrained_meshes"):
@@ -687,6 +707,12 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings) -> di
     else:
         final_pass = (m.get("verdict") == "PASS")
         final_verdict = m.get("verdict", "FAIL")
+    # A measured support fault OVERRIDES a pass. The VLM watches the recording, where a part
+    # welded to a mount it never touches looks perfectly fine — it cannot see that nothing
+    # holds it. Gravity already answered; that measurement wins.
+    if support_fell and final_pass:
+        print(f"[support] overriding PASS: {len(support_fell)} unsupported part(s)")
+        final_pass, final_verdict = False, "FAIL"
 
     entry = {"name": "drive", "strategy": "driven_mechanism",
              "verdict": final_verdict, "metrics": m, "stability": stability,
