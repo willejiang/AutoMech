@@ -369,6 +369,14 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
     best = {"score": float("-inf"), "code": None, "phys": None}
     best_dir = _os.path.join(run_dir, "best")
 
+    # GEOMETRY rollback: the geometry gate (interpenetration + floating) has no physics
+    # score, so a run that kept re-authoring for geometry could DIVERGE — the agent adds
+    # filler parts / restructures and the fault count grows instead of shrinking. Track the
+    # fewest geometry faults seen and the code that achieved it; when a later attempt is
+    # WORSE, hand that best-geometry code back so it refines the closest version, not its
+    # own worse one. (Lower badness = better; badness = interpenetrations + floaters + gap.)
+    geo_best = {"badness": float("inf"), "code": None}
+
     for it in range(iter_cap):
         result["iterations"] = it + 1
         last_iter = (not unlimited) and it >= max_iters - 1
@@ -418,15 +426,27 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
         if (conflicts or floaters) and not last_iter:
             findings = "\n".join([f"- {c.describe()}" for c in conflicts[:8]]
                                  + [f"- {f.describe()}" for f in floaters[:8]])
+            # Geometry badness: count of faults + total floating gap (mm/100 as a tiebreak).
+            badness = (len(conflicts) + len(floaters)
+                       + sum(getattr(f, "parent_gap_mm", 0.0) or f.gap_mm
+                             for f in floaters) / 100.0)
+            geo_regressed = badness > geo_best["badness"]
+            if badness < geo_best["badness"]:
+                geo_best = {"badness": badness, "code": code}
             log_fn(f"[single-agent] {len(conflicts)} interpenetration(s) + "
-                   f"{len(floaters)} floating part(s) -> asking agent to fix")
+                   f"{len(floaters)} floating part(s) -> asking agent to fix "
+                   f"(badness={badness:.2f}, best={geo_best['badness']:.2f}"
+                   f"{', REGRESSED' if geo_regressed else ''})")
             log_fn("ARTIFACT_JSON:" + _json.dumps({
                 "kind": "diagnosis", "iter": it, "single_agent": True,
                 "decision": {"root_cause": f"{len(conflicts)} interpenetration(s), "
                                            f"{len(floaters)} unsupported part(s)",
                              "evidence": [c.describe() for c in conflicts[:8]]
                                          + [f.describe() for f in floaters[:8]]}}))
-            conv.add_user_message(build_single_agent_geometry_feedback(findings))
+            # On regression, refine the BEST-geometry code instead of the worse latest one.
+            rollback_code = geo_best["code"] if (geo_regressed and geo_best["code"]) else None
+            conv.add_user_message(build_single_agent_geometry_feedback(
+                findings, best_code=rollback_code))
             continue
 
         # PHYSICS in the loop: simulate the machine, then let the VLM diagnose the recording +

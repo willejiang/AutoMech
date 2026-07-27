@@ -122,10 +122,19 @@ Fix ONLY what this error points to and return the COMPLETE corrected script — 
 ```python block defining build_machine(). Keep every working part; do not restate the notes."""
 
 
-def build_single_agent_geometry_feedback(findings: str) -> str:
+def build_single_agent_geometry_feedback(findings: str, best_code: str | None = None) -> str:
     """Feedback from the text-to-cad inspect self-check / precheck: concrete geometry faults
     (interpenetration, gears not one center-distance apart, a part floating) the agent must fix
-    by editing the script."""
+    by editing the script. On a regression, best_code is the fewest-fault version so far —
+    hand it back so the agent refines THAT instead of its own worse attempt."""
+    rollback = ""
+    if best_code:
+        rollback = (
+            "\n\nIMPORTANT — YOUR LAST EDIT MADE THE GEOMETRY WORSE (more faults than before). "
+            "Do NOT continue from it. Below is the version with the FEWEST faults so far. START "
+            "FROM THIS EXACT CODE and make only the smallest change that fixes the faults listed "
+            "above — do NOT add parts, do NOT restructure:\n\n"
+            f"```python\n{best_code}\n```\n")
     return f"""The machine built, but a geometry check found problems:
 
 {findings}
@@ -135,7 +144,8 @@ position or length of the parts named above. Do NOT add new parts, do NOT rename
 parts, do NOT restructure the machine, do NOT touch any part not named above. A floating part
 is fixed by moving it until it TOUCHES the part it mounts on, or by lengthening the shaft/
 arbor/tube so it reaches — NOT by adding a support under it. Keep everything that already
-works. Return the COMPLETE corrected ```python block for build_machine()."""
+works.{rollback}
+Return the COMPLETE corrected ```python block for build_machine()."""
 
 
 def _drift_symptom(reason: str | None) -> bool:
