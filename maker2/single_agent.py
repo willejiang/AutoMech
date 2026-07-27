@@ -196,36 +196,55 @@ def _iter_score(phys: dict) -> float:
     """Score one physics result so iterations are comparable and we can keep the BEST
     version (and roll back to it when a later edit makes things worse).
 
-    Priority, high->low, so a stable machine ALWAYS outranks an unstable one no matter how
-    much the latter 'turned':
-      +1000  stage-1 stability PASS (settles intact on the bench — the precondition)
-      +300   did NOT explode under drive
-      +0..200 input turned toward the expected sweep (closer = higher)
-      +0..100 fraction of downstream joints that moved
-    An exploded / fallen-apart machine scores near zero, so it can never become 'best'.
+    The machine is a TRANSMISSION mechanism, so the ranking is dominated by FUNCTION —
+    how far the drive actually propagates — NOT by how sturdily a dead machine sits. An
+    earlier version gave +1000 for merely settling and +300 for not exploding, so every
+    jammed-but-stable machine tied at ~1300 and `best` was decided by input-travel noise;
+    a genuinely-turning machine that settled slightly imperfectly could score LOWER than a
+    welded brick and get rolled back. Now stability is a THRESHOLD (a hard penalty when it
+    fails, a small base when it holds), and the big gradient is functional:
+
+      passed (diagnoser verdict)      -> +10000   (a working mechanism, uncatchable by any FAIL)
+      exploded / blew apart           -> hard floor near -100 (worst; never 'best')
+      stability FAIL (but no explode) -> -500 base (a machine that can't even sit is bad)
+      stability PASS                  -> +200 base (the precondition, not a jackpot)
+      output_reached                  -> +4000   (drive crossed the whole train — the point)
+      fraction of downstream moved    -> +0..3000 (how much of the train transmits)
+      input actually turned           -> +0..800  (at least the driver broke free of a jam)
+    So a jammed machine (input ~0, nothing moved) lands near its stability base (~200) while
+    ANY real transmission outranks it, and `best`/rollback follow the diagnoser, not noise.
     """
     if not phys:
         return -1.0
     m = phys.get("metrics") or {}
     st = phys.get("stability") or {}
-    score = 0.0
-    # A machine that EXPLODES under drive is the worst outcome — never let it rank near a
-    # machine that stays together, even if it happened to settle (stage-1) fine. Hard floor.
+
+    # A working mechanism (the diagnoser passed it) is in a class of its own.
+    if phys.get("passed") is True:
+        return 10000.0
+
+    # Exploded/blew apart under drive is the worst outcome — hard floor, never near 'best'.
     if m.get("exploded"):
         return -100.0 + 100.0 * min(1.0, (m.get("moved_count") or 0) / max(1, m.get("watched_count") or 1))
-    if str(st.get("verdict", "")).upper() == "PASS" and not st.get("exploded"):
-        score += 1000.0
-    score += 300.0                                # survived drive without exploding
-    # travel toward expected (expected ~ velocity*duration; fall back to a nominal 10 rad)
-    it = float(m.get("input_travel") or 0.0)
-    if it > 0 and it < 1000:                      # ignore absurd blow-up travels
-        score += min(200.0, it / 10.0 * 200.0 if it < 10 else 200.0)
+
+    # Stability is a THRESHOLD, not a jackpot: a small base when it holds, a penalty when
+    # it fails (a machine that can't sit on the bench is worse than one that can).
+    stable = str(st.get("verdict", "")).upper() == "PASS" and not st.get("exploded")
+    score = 200.0 if stable else -500.0
+
+    # FUNCTION is the dominant gradient. Drive crossing the whole train is the goal.
+    if m.get("output_reached") is True:
+        score += 4000.0
     watched = m.get("watched_count") or 0
     moved = m.get("moved_count") or 0
     if watched:
-        score += 100.0 * min(1.0, moved / watched)
-    if phys.get("passed") is True:
-        score += 5000.0
+        score += 3000.0 * min(1.0, moved / watched)
+
+    # The driver at least breaking free of a jam is a weak-but-real signal, scaled to how
+    # much of the commanded sweep it achieved (fall back to a nominal 10 rad target).
+    it = float(m.get("input_travel") or 0.0)
+    if 0.0 < it < 1000.0:
+        score += 800.0 * min(1.0, it / 10.0)
     return score
 
 
