@@ -130,9 +130,12 @@ def build_single_agent_geometry_feedback(findings: str) -> str:
 
 {findings}
 
-Edit the smallest part of your build_machine() to fix these — move a part to a clear axial
-station, set two meshing gears exactly one center-distance apart, or reposition a floating part
-onto real support. Return the COMPLETE corrected ```python block for build_machine()."""
+Fix EXACTLY these parts and NOTHING else. Make the SMALLEST possible edit — change only the
+position or length of the parts named above. Do NOT add new parts, do NOT rename or remove
+parts, do NOT restructure the machine, do NOT touch any part not named above. A floating part
+is fixed by moving it until it TOUCHES the part it mounts on, or by lengthening the shaft/
+arbor/tube so it reaches — NOT by adding a support under it. Keep everything that already
+works. Return the COMPLETE corrected ```python block for build_machine()."""
 
 
 def _drift_symptom(reason: str | None) -> bool:

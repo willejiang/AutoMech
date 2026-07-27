@@ -45,18 +45,28 @@ class Conflict:
 
 @dataclass
 class Floating:
-    """A fixed structure part with no physical support under it — held up only by its
-    weld, so in the real machine it would have nothing to rest on."""
+    """A fixed structure part with no physical support — held up only by its weld, so in
+    the real machine it has nothing to rest on."""
 
     part: str
     bottom_mm: float                                # world Z of the part's lowest point
     gap_mm: float                                   # clear gap below it to the next solid
+    parent: str = ""                                # its declared pose parent, if any
+    parent_gap_mm: float = 0.0                      # empty gap to that parent's solid
 
     def describe(self) -> str:
+        if self.parent:
+            return (f"fixed part '{self.part}' is declared on '{self.parent}' but sits "
+                    f"{self.parent_gap_mm:.1f}mm away from it in empty space — the mount is "
+                    f"only a label, nothing physically connects them. FIX by making them "
+                    f"actually meet: move '{self.part}' so its solid touches '{self.parent}', "
+                    f"or lengthen/extend the arbor/shaft/tube between them so it reaches "
+                    f"'{self.part}'. Do NOT add new parts; do NOT move the rest of the "
+                    f"machine — only close this one {self.parent_gap_mm:.1f}mm gap.")
         return (f"fixed part '{self.part}' floats: its underside sits {self.bottom_mm:.1f}mm "
-                f"above the base with a {self.gap_mm:.1f}mm empty gap below it — nothing "
-                f"physically supports it, so it is held up only by its weld. Rest it on the "
-                f"part beneath it or lower its Z onto real support.")
+                f"above the base with a {self.gap_mm:.1f}mm empty gap below it and nothing "
+                f"holds it. FIX by resting it on the part directly beneath it (lower its Z "
+                f"until they touch) or extend a shaft up to it. Do NOT add new parts.")
 
 
 # A part whose underside clears everything below it by more than this (and does not sit on
@@ -189,8 +199,17 @@ def floating_parts(model, meshes_dir: str, log_fn=print) -> list[Floating]:
         if min_gap == float("inf"):
             min_gap = bottom - world_bottom
         if min_gap > _SUPPORT_GAP_MM:
+            # If it declared a parent, report the empty gap to THAT parent so the fix is
+            # "close this gap" (extend the arbor / drop onto the parent), not "find support".
+            par = parent_of.get(name)
+            pgap = 0.0
+            if par and par in meshes:
+                try:
+                    pgap = float(m.nearest.on_surface(meshes[par].vertices)[1].min())
+                except Exception:
+                    pgap = 0.0
             found.append(Floating(part=name, bottom_mm=bottom - world_bottom,
-                                  gap_mm=min_gap))
+                                  gap_mm=min_gap, parent=par or "", parent_gap_mm=pgap))
 
     found.sort(key=lambda f: f.gap_mm, reverse=True)
     if found:
