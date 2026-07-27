@@ -50,9 +50,9 @@ HOW TO ASSEMBLE (cadpy AssemblyHelper):
     plate = Box(60, 40, 4)
     a.add(plate, "baseplate|dof=fixed")
     g1 = make_gear(2.0, 20, 6, 8).moved(Location((-20, 0, 6)))   # module, teeth, face_width, bore
-    a.add(g1, "input_gear|dof=spin|driver=True|mesh_id=stage1")
+    a.add(g1, "input_gear|dof=spin|driver=True|mesh_id=stage1|mount=baseplate")
     g2 = make_gear(2.0, 40, 6, 8).moved(Location((20, 0, 6)))
-    a.add(g2, "output_gear|dof=spin|mesh_id=stage1")
+    a.add(g2, "output_gear|dof=spin|mesh_id=stage1|mount=baseplate")
     return a.build()
 
 PART LABEL CONVENTION (critical — this is how downstream physics reads your intent). The FIRST
@@ -63,6 +63,13 @@ metadata separated by `|`:
   - `mesh_id=<id>`         — put the SAME id on the TWO gears meant to mesh, so the transmission
                              check pairs them. A gear with no partner needs no mesh_id.
   - `spin_axis=z`          — for a spin part; round parts are built along local +Z, so this is z.
+  - `mount=<part_name>`    — the NAME of the part this one is physically carried by / mounted on
+                             (a gear mounts on its arbor or the plate; an arbor on the base; a
+                             bearing on the plate). This declares the load path — it does NOT move
+                             anything (you already placed the part with `.moved()`), it just tells
+                             the physics which part holds this one so it is anchored, not floating.
+                             The base/mainplate itself has NO mount (it rests on the ground). Every
+                             OTHER part MUST name a mount, and that mount must be an existing part.
 Give every part a UNIQUE name. Build each part at the ORIGIN along local +Z, then `.moved(
 Location((x, y, z)))` to its GLOBAL millimetre position — YOU choose the layout so parts touch
 where they must and clear where they must not.
@@ -76,6 +83,8 @@ DISCIPLINE:
 - OMIT torque-lock hardware (keys, keyways, setscrews, retaining collars) — pure contact does
   not use them and they always clash the gear hub.
 - Use capitalized True/False/None (this is Python, not JSON).
+- Give EVERY part except the base a `mount=<part_name>`: the base holds the plates/arbors, the
+  arbors hold the gears. This is what anchors the whole train to the world so it cannot drift.
 
 Respond with a short NOTES plan, then the ONE ```python block."""
 
