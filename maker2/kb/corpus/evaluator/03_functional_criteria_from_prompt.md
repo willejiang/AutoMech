@@ -57,3 +57,27 @@ which is also what makes an output/input ratio comparable to the designed one.
 - ratio is off by tens of percent -> the tooth counts are wrong, even though every joint
   moved. This is a design fault, and naming it is the only way it gets fixed.
 - no output motion at all -> not a ratio problem; something upstream is jammed or loose.
+
+## Measure the OUTPUT the product delivers, not a convenient joint nearby
+
+The ratio that matters is between the parts the USER receives — the two hands of a clock,
+the output shaft of a gearbox, the jaws of a gripper. Not the gears that drive them.
+
+Those parts are usually `dof=fixed` and therefore have no joint of their own; they are
+carried by something that turns, and the label says which:
+
+    "hour_hand|dof=fixed|mount=hour_pipe"       -> the hour hand turns with hour_pipe
+    "minute_hand|dof=fixed|mount=minute_arbor"  -> the minute hand turns with minute_arbor
+
+So the check is `minute_arbor_spin` against `hour_pipe_spin`. Follow each output part's
+`mount=` to the part that spins, and measure THOSE two.
+
+Picking a nearby gear instead looks almost right and hides real error. Measured on one
+watch: the hands were riding minute_arbor (11.074 rad) and hour_pipe (0.948 rad), a true
+ratio of 11.68 — but the check compared minute_pinion (11.937) against hour_wheel (0.948)
+and reported 12.51, inside its own ±5% band. The run PASSED with hands that were 2.7% off
+in the wrong direction, because the gear it measured is not the part the hand rides.
+
+The difference is small exactly when it is most misleading: a part one press-fit away from
+the output turns at nearly the same rate, so the number looks plausible while the machine
+that ships is wrong.

@@ -60,3 +60,29 @@ Good: "minute_arbor turns 4.9x slower than the cannon pinion pressed onto it; a 
 
 Name parts. Give the numbers you used. If the evidence genuinely does not single anything
 out, say what you ruled out rather than saying nothing.
+
+## Two joints turning at the SAME rate that should not
+
+A reduction stage that comes out 1.00 is not a mild ratio error — it means the stage does
+not exist. Some pair that was supposed to turn at different rates is locked together.
+
+    hour_pipe_spin    0.9479
+    hour_wheel_spin   0.9479     <- identical to the last digit
+
+Identical travel is the signature. Gear teeth never produce that; a rigid coupling does.
+Before blaming tooth counts, check whether the two were WELDED, and look in this order:
+
+1. **A running fit judged as a press fit.** A part that is meant to rotate freely on a
+   shaft gets locked 1:1 to it when its bore sits within press-fit clearance of that
+   shaft. In concentric motion work this is fatal in a specific way: the hour side is
+   supposed to turn slowly INSIDE the minute side, and if the pipe is pressed to the
+   centre arbor instead of riding it, the whole 12:1 is short-circuited to 1:1 and both
+   hands sweep together. Say so — the fix is bore clearance, not tooth counts.
+2. **Both parts pressed onto one shaft.** Correct for a wheel and its own pinion; wrong
+   when the two are supposed to be different stages of the train.
+3. **The stage was never built.** No constraint and no meshing pair exists between them,
+   and they only move together because a third part carries both.
+
+The counterpart symptom is a ratio that is a clean multiple or fraction of the target
+(1:1, 2x, half): that points at a missing or duplicated STAGE rather than at a tooth count
+being a few teeth off. A few-teeth error shows up as a few percent, not as a factor.

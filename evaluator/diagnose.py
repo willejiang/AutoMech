@@ -578,6 +578,27 @@ _DIAG_TOOLS = [
             "index": {"type": "integer"}},
             "required": ["index"], "additionalProperties": False}}},
     {"type": "function", "function": {
+        "name": "read_joint_travel",
+        "description": "Recorded rotation of the sim's joints. With no argument: net and "
+                       "total travel for every joint. With `name`: that joint's angle "
+                       "sampled over time, to see WHEN it stopped or whether it tracks "
+                       "another joint exactly.",
+        "parameters": {"type": "object", "additionalProperties": False,
+                       "properties": {"name": {"type": "string",
+                                               "description": "joint name, or empty for all"}},
+                       "required": ["name"]}}},
+    {"type": "function", "function": {
+        "name": "read_part_mounts",
+        "description": "Each part's dof and the part it is mounted on, from the authored "
+                       "script. Use it to find which TURNING part an output part (a hand, "
+                       "a jaw, an output flange) actually rides — that is the joint whose "
+                       "motion the user sees.",
+        "parameters": {"type": "object", "additionalProperties": False,
+                       "properties": {"pattern": {"type": "string",
+                                                  "description": "substring filter on the "
+                                                                 "part name, or empty for all"}},
+                       "required": ["pattern"]}}},
+    {"type": "function", "function": {
         "name": "read_contacts",
         "description": "The MOST RELIABLE evidence for a structure fault: the simulator's "
                        "OWN collision verdict at the design pose. Returns each "
@@ -652,6 +673,76 @@ def _diag_executors(run_dir: str, frames_dir: str, metrics: dict):
         i = max(0, min(int(index), len(frames) - 1))
         return {"__image__": frames[i], "index": i, "total": len(frames)}
 
+    def read_joint_travel(name=""):
+        """Per-sample angles from the recorded trajectory. The prompt carries only totals,
+        which cannot answer WHEN a joint stopped or whether two joints move in lockstep —
+        both of which name the fault."""
+        p = os.path.join(run_dir, "trajectory.json") if run_dir else ""
+        if not p or not os.path.exists(p):
+            return "(no trajectory recorded for this run)"
+        try:
+            doc = json.loads(Path(p).read_text(encoding="utf-8"))
+        except Exception as e:
+            return f"(trajectory unreadable: {e})"
+        joints = doc.get("joints") or {}
+        if not joints:
+            return "(trajectory has no joints)"
+        if name and name in joints:
+            seq = joints[name]
+            step = max(1, len(seq) // 24)
+            return json.dumps({"joint": name, "t": (doc.get("t") or [])[::step],
+                               "angle_rad": seq[::step]})[:4000]
+        rows = {}
+        for n, seq in joints.items():
+            if not seq:
+                continue
+            rows[n] = {
+                "net": round(abs(float(seq[-1]) - float(seq[0])), 5),
+                "total": round(sum(abs(float(b) - float(a))
+                                   for a, b in zip(seq, seq[1:])), 5)}
+        return json.dumps(rows)[:4000]
+
+    def read_part_mounts(pattern=""):
+        """Which part each part is MOUNTED on, from the authored machine script. A hand,
+        a jaw, an output flange is usually dof=fixed and carries no joint of its own, so
+        the only way to know which turning part it rides — and therefore which joint's
+        motion the user actually sees — is this label."""
+        # run_dir here is the PHYSICS output dir (…/physics/mujoco_N); the authored
+        # script lives at the run root, two levels up. Look in both.
+        p = ""
+        roots = []
+        if run_dir:
+            roots = [run_dir, os.path.dirname(os.path.dirname(run_dir)),
+                     os.path.dirname(run_dir)]
+        for root in roots:
+            for cand in ("machine.py", "manager_sub.py"):
+                q = os.path.join(root, cand)
+                if os.path.exists(q):
+                    p = q
+                    break
+            if p:
+                break
+        if not p or not os.path.exists(p):
+            return "(no authored script for this run)"
+        try:
+            txt = Path(p).read_text(encoding="utf-8", errors="replace")
+        except Exception as e:
+            return f"(script unreadable: {e})"
+        rows = []
+        for m2 in re.finditer(r'"([A-Za-z0-9_]+)\|([^"]*)"', txt):
+            label, meta = m2.group(1), m2.group(2)
+            if pattern and pattern.lower() not in label.lower():
+                continue
+            mount = ""
+            dof = ""
+            for field in meta.split("|"):
+                if field.startswith("mount="):
+                    mount = field[6:]
+                elif field.startswith("dof="):
+                    dof = field[4:]
+            rows.append(f"{label}: dof={dof or '?'} mount={mount or '(none)'}")
+        return "\n".join(rows[:60]) if rows else "(no labelled parts found)"
+
     def read_contacts():
         # MuJoCo's own collision verdict, dumped by the runner at the design pose.
         mj_pairs = []
@@ -723,7 +814,9 @@ def _diag_executors(run_dir: str, frames_dir: str, metrics: dict):
                                    "precheck_real_overlaps is a hull artifact."},
                           ensure_ascii=False)[:6000]
 
-    return {"read_sim_result": read_sim_result, "read_run_log": read_run_log,
+    return {"read_sim_result": read_sim_result,
+            "read_joint_travel": read_joint_travel,
+            "read_part_mounts": read_part_mounts, "read_run_log": read_run_log,
             "view_frame": view_frame, "read_contacts": read_contacts}
 
 
