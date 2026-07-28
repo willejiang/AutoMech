@@ -551,6 +551,14 @@ def main() -> int:
             settings.deep_think = a.deep_think
         res = run_single_agent(a.prompt, a.out, settings, do_physics=a.physics,
                                max_iters=(a.max_iters or 0), log_fn=print)
+        # Record the turn like every other entry point does. Without this a single-agent
+        # run leaves no thread.json, and the sidebar — which lists conversations by
+        # reading exactly that file — never shows the run at all. The replay support
+        # added later writes events.ndjson into the same directory, which made the
+        # threads/ folders look populated while the file the sidebar needs was missing.
+        if a.thread and res.get("run_dir"):
+            _append_thread(a.out, a.thread, a.refine_message or a.prompt, res,
+                           settings.model)
         if a.json:
             print("RESULT_JSON:" + json.dumps(res))
         return 0 if res.get("ok") else 1
