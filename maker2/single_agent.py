@@ -490,8 +490,13 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
         from .physics import run_physics
         log_fn(f"[single-agent] iteration {it}: simulating physics ...")
         try:
+            # Pass the run's logger in. physics used bare print() throughout, which the
+            # SSE stream showed but run.log never captured — so when a diagnosis failed,
+            # the ONLY record of why went to stdout and died with the process, leaving
+            # cause="none"/reason="" on disk and no way to tell a broken call from a
+            # healthy machine.
             phys = run_physics(ctx.urdf_path, product_prompt, run_dir, settings,
-                               iteration=it)
+                               iteration=it, log_fn=log_fn)
         except Exception as e:
             log_fn(f"[physics] failed: {e}")
             result["physics"] = {"passed": None, "summary": f"physics error: {e}"}

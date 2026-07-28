@@ -960,10 +960,13 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
     det_sub = _culprit_sub_of(det_part, robot_info)
 
     if not view_frames:
-        # No video to look at: trust the hard signals, else the metric verdict.
-        if hard_fail:
+        # No video to look at: trust the measurements, then the hard signals, and only
+        # then the metric verdict.
+        measured0 = _measured_reason(metrics, stability)
+        if hard_fail or (metrics or {}).get("functional_ok") is False or measured0:
             return _diag("fail", "structure",
-                         sig_note or "input jammed / parts loose (no frames)",
+                         measured0 or sig_note
+                         or "input jammed / parts loose (no frames)",
                          det_part, det_sub)
         return _diag("pass" if raw_pass else "fail",
                      "none" if raw_pass else "structure",
@@ -1096,9 +1099,20 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
                                           max_completion_tokens=16000)
             d = _parse_json(r.choices[0].message.content)
     except Exception as e:
-        if hard_fail:
+        # THE CALL DIED — fall back on what was already MEASURED, never on raw_pass alone.
+        # raw_pass is the runner's mechanical rule ("the input turned and at least one
+        # downstream joint moved"), which happily passed a watch where 1 of 6 joints moved
+        # and the hour wheel never budged. Deferring to it here reported cause="none" on a
+        # machine whose own functional check had already failed and whose bores were
+        # already known to be unassemblable.
+        measured = _measured_reason(metrics, stability)
+        func_failed = (metrics or {}).get("functional_ok") is False
+        if hard_fail or func_failed or measured:
             return _diag("fail", "structure",
-                         sig_note or f"diagnosis call failed ({e})", det_part, det_sub)
+                         (measured or sig_note
+                          or f"diagnosis call failed ({e})")
+                         + f" [diagnosis call failed: {type(e).__name__}: {e}]",
+                         det_part, det_sub)
         return _diag("pass" if raw_pass else "fail",
                      "none" if raw_pass else "structure",
                      f"diagnosis call failed ({e}); used metric verdict",

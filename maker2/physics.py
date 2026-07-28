@@ -608,7 +608,7 @@ def blame_faults(phys: dict, precheck_report=None, plan=None) -> dict:
 
 
 def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
-                        iteration: int | None = None) -> dict:
+                        iteration: int | None = None, log_fn=print) -> dict:
     """Pure-contact MuJoCo physics. Builds the MJCF from the run's model, runs the
     MuJoCo scenario runner (subprocess, with in-process fallback), and returns the
     same result shape run_physics does.
@@ -637,7 +637,7 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
     metrics_side: dict = {}
     try:
         mjcf = mjcf_builder.build_mjcf(model, ctx, settings=settings,
-                                       metrics=metrics_side, log_fn=print)
+                                       metrics=metrics_side, log_fn=log_fn)
     except Exception as e:
         return {"passed": False, "verdict": "FAIL",
                 "summary": f"MJCF build failed: {e}", "metrics": {}, "tests": []}
@@ -655,9 +655,9 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
     # gravity answer the question the welds hide: what is actually held by geometry?
     try:
         from .support_test import support_faults
-        support_fell = support_faults(model, ctx, log_fn=print)
+        support_fell = support_faults(model, ctx, log_fn=log_fn)
     except Exception as e:
-        print(f"[support] support test unavailable ({type(e).__name__}: {e})")
+        log_fn(f"[support] support test unavailable ({type(e).__name__}: {e})")
         support_fell = []
 
     # SCENARIO DESIGN: ask environment_designer what this test should check (best-effort;
@@ -693,11 +693,11 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
         }
         if d.get("duration_s"):
             spec["duration_s"] = d["duration_s"]
-        print(f"[physics] mujoco scenario designed: watch "
+        log_fn(f"[physics] mujoco scenario designed: watch "
               f"{len(spec['design']['watch_joints'])} joints, output "
               f"'{spec['design'].get('output_joint')}'")
     except Exception as e:
-        print(f"[physics] mujoco scenario designer unavailable ({e}); "
+        log_fn(f"[physics] mujoco scenario designer unavailable ({e}); "
               f"using default contact spec")
 
     # An output part = a spin/free link name-hinted as output, if any.
@@ -749,13 +749,13 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
         # counts are wrong, a gripper that never closes, a ratchet that slips back. What
         # counts as success differs per mechanism, so the designer wrote it as code and it
         # runs here against the recorded trajectory.
-        checks = _run_metrics_code(designed, out_base, log_fn=print)
+        checks = _run_metrics_code(designed, out_base, log_fn=log_fn)
         if checks:
             m["functional_checks"] = checks
             failed = [c for c in checks if not c.get("passed")]
             m["functional_ok"] = not failed
             for c in checks:
-                print(f"[physics] check '{c['name']}': value={c['value']} "
+                log_fn(f"[physics] check '{c['name']}': value={c['value']} "
                       f"expected={c['expected']} -> {'OK' if c['passed'] else 'FAILED'}"
                       + (f" ({c['detail']})" if c.get("detail") else ""))
 
@@ -774,10 +774,18 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
                                              stability=stability,
                                              base_url=gw["base_url"], api_key=gw["api_key"],
                                              model=gw["model"])
-                print(f"[physics] mujoco VLM verdict={diagnosis.get('verdict')} "
+                log_fn(f"[physics] mujoco VLM verdict={diagnosis.get('verdict')} "
                       f"cause={diagnosis.get('cause')} :: {diagnosis.get('reason','')[:100]}")
             except Exception as e:
-                print(f"[physics] mujoco diagnose unavailable ({e})")
+                # Say WHY, with the traceback. This branch silently swallowed the only
+                # record of a failed diagnosis: the message went to stdout (which run.log
+                # never captured) and the caller was handed cause="none"/reason="" with no
+                # way to tell a broken call from a healthy machine.
+                import traceback as _tb
+                log_fn(f"[physics] mujoco diagnose FAILED ({type(e).__name__}: {e})")
+                log_fn("[physics] " + _tb.format_exc()[-1200:].replace(chr(10), " | "))
+                diagnosis = {"verdict": None, "cause": "none", "reason": "",
+                             "diagnose_error": f"{type(e).__name__}: {e}"}
 
         cause = diagnosis.get("cause", "none")
         # A BROKEN CHECK IS A TEST FAULT, not a machine fault. When the designer's
@@ -807,7 +815,7 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
                   f"(input_travel={m.get('input_travel')}, "
                   f"exploded={m.get('exploded')}, "
                   f"moved={m.get('moved_count')}/{m.get('watched_count')})")
-            print(f"[physics] test-side fault '{cause}' (attempt {attempt + 1}) -> "
+            log_fn(f"[physics] test-side fault '{cause}' (attempt {attempt + 1}) -> "
                   f"re-designing scenario + camera and re-running")
             designed = _design_spec(task, model, {"name": "drive", "driver": driver_part,
                                                   "strategy": "driven_mechanism",
@@ -825,7 +833,7 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
             if d.get("duration_s"):
                 spec["duration_s"] = d["duration_s"]
         except Exception as e:
-            print(f"[physics] scenario re-design unavailable ({e}); keeping result")
+            log_fn(f"[physics] scenario re-design unavailable ({e}); keeping result")
             break
 
     # FINAL verdict is the DIAGNOSER's (VLM + hard signals + two-stage stability), not the
@@ -850,12 +858,12 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
     if functional_failed and final_pass:
         names = ", ".join(c.get("name", "?") for c in (m.get("functional_checks") or [])
                           if not c.get("passed"))
-        print(f"[physics] overriding PASS: functional check failed ({names})")
+        log_fn(f"[physics] overriding PASS: functional check failed ({names})")
         final_pass, final_verdict = False, "FAIL"
 
     overridden_by_support = bool(support_fell and final_pass)
     if overridden_by_support:
-        print(f"[support] overriding PASS: {len(support_fell)} unsupported part(s)")
+        log_fn(f"[support] overriding PASS: {len(support_fell)} unsupported part(s)")
         final_pass, final_verdict = False, "FAIL"
 
     # Say WHY in one voice. _summarize only knows the drive metrics, so on a support
@@ -907,15 +915,15 @@ def _run_sim_mujoco(mjcf, spec, out_base, task):
         result_path = out / "sim_result.json"
         if r.returncode == 0 and result_path.exists():
             return json.loads(result_path.read_text())
-        print(f"[physics] mujoco subprocess rc={r.returncode}; "
+        log_fn(f"[physics] mujoco subprocess rc={r.returncode}; "
               f"stderr tail: {(r.stderr or '')[-200:]}")
     except Exception as e:
-        print(f"[physics] mujoco subprocess failed ({e}); running in-process")
+        log_fn(f"[physics] mujoco subprocess failed ({e}); running in-process")
     return mjr.run(mjcf, spec, out_base, task)
 
 
 def run_physics(urdf_path: str, task: str, run_dir: str, settings=None,
-                iteration: int | None = None) -> dict:
+                iteration: int | None = None, log_fn=print) -> dict:
     """Category-aware physics on maker2's model. Returns the same shape the UI reads:
     {passed, verdict, summary, metrics, frames_dir}. `metrics` is the FINAL/primary
     test; `summary` spans all tests run.
@@ -926,7 +934,7 @@ def run_physics(urdf_path: str, task: str, run_dir: str, settings=None,
     engine = getattr(settings, "engine", "pybullet") if settings is not None else "pybullet"
     if engine == "mujoco":
         return _run_physics_mujoco(urdf_path, task, run_dir, settings,
-                                   iteration=iteration)
+                                   iteration=iteration, log_fn=log_fn)
 
     import run_scenario_pybullet as pyb
     from diagnose import diagnose_physics, encode_mp4
