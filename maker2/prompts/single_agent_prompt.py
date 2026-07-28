@@ -178,6 +178,26 @@ def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: 
     cause = (diagnosis or {}).get("cause")
     reason = (diagnosis or {}).get("reason")
     lines = [f"PHYSICS RESULT: {summary}"]
+
+    # BORE FITS FIRST. These are MEASURED off the STLs while the MJCF is built, before a
+    # single sim step, so unlike the VLM's read of the recording they are available on
+    # iteration 0 and they are exact. They also outrank everything below: a part whose
+    # bore is smaller than the shaft it is supposed to sit on cannot be assembled at all,
+    # so no amount of repositioning fixes it, and the train stays jammed while the agent
+    # chases whatever the camera happened to show (usually "the arbor pokes through the
+    # plate into the ground" — true, but not what is stopping the machine).
+    fits = (m.get("bore_fit_faults") or [])
+    if fits:
+        lines.append("- IMPOSSIBLE FITS (measured from your geometry, not from the video). "
+                     "Each of these parts is declared ON a shaft it cannot physically go "
+                     "onto, because its hole is smaller than that shaft:")
+        for f in fits[:10]:
+            note = ("  <- the WHOLE PART is thinner than the shaft: no bore can fit, the "
+                    "part itself must get bigger (or it does not belong on this shaft)"
+                    if f.get("impossible") else "")
+            lines.append(f"    * {f['part']}: bore r={f['bore_mm']}mm, but it sits on "
+                         f"{f['shaft']} whose outer r={f['shaft_r_mm']}mm "
+                         f"(part outer r={f['part_outer_mm']}mm){note}")
     unsupported = st.get("support_faults") or []
     if unsupported:
         lines.append("- STAGE 1 (SUPPORT) FAILED. Every mount weld was dissolved and the "
@@ -203,7 +223,20 @@ def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: 
     # a machine that falls apart just settling can't be judged on function at all. Then an
     # explosion is a start-pose overlap (not a center-distance problem); only a DEAD/jammed
     # train (turned but nothing moved, no explosion) points at gear spacing.
-    if unsupported:
+    if fits:
+        guidance = (
+            "FIX THE IMPOSSIBLE FITS FIRST — nothing downstream can work while a part is "
+            "declared on a shaft it cannot go onto. This is measured geometry, not a guess, "
+            "and it is why the train is jammed. For EACH part listed above:\n"
+            "- Take the bore radius FROM the shaft it rides: `bore_r = <shaft>_outer_r + 0.05`. "
+            "Never write a bore as a bare number, and never size it before the shaft exists.\n"
+            "- If the note says the WHOLE PART is thinner than the shaft, the bore cannot be "
+            "cut at all: either make that part large enough to ring the shaft (outer radius "
+            "clearly bigger than the shaft's), or take it off that shaft — a 3mm jewel cannot "
+            "sit on a 7mm arbor.\n"
+            "- Do NOT move parts around to work past this, and do NOT touch anything not "
+            "listed above. Fix the radii, then the rest of the diagnosis is worth reading.")
+    elif unsupported:
         guidance = (
             "FIX SUPPORT FIRST — the parts listed above are floating. Each is declared on a "
             "mount it does not physically touch, so the label is the only thing holding it. "

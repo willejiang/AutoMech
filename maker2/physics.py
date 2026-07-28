@@ -648,6 +648,13 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
             m["contact_degraded"] = True
         if metrics_side.get("constrained_meshes"):
             m["constrained_meshes"] = metrics_side["constrained_meshes"]
+        # Bore-fit faults are measured off the STLs while the MJCF is built — they exist
+        # BEFORE a single sim step, and they are the defect that actually jams the train.
+        # Carry them into the metrics the outer loop feeds back, so the agent is told
+        # "this bore is smaller than the shaft" on iteration 0 instead of after several
+        # rounds of chasing whatever the VLM happened to notice in the recording.
+        if metrics_side.get("bore_fit_faults"):
+            m["bore_fit_faults"] = metrics_side["bore_fit_faults"]
 
         video = None
         if res.get("frames_dir"):

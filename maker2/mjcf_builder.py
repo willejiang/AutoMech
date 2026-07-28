@@ -544,6 +544,7 @@ def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *
     contact = ET.SubElement(mujoco_el, "contact")
     n = 0
     warns = 0
+    fits: list = []
     _COAXIAL_XY_TOL_M = 0.002  # 2mm: centers this close on the axis count as "on the shaft"
     for s in spins:
         Ts = W.get(s.name)
@@ -567,6 +568,30 @@ def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *
             ET.SubElement(contact, "exclude",
                           attrib={"body1": s.name, "body2": f.name})
             n += 1
+            # FIT CHECK, measured not guessed: a part that sits ON a shaft must have a bore
+            # the shaft actually fits through. Compare the ring's own BORE to the shaft's
+            # OUTER radius — the earlier outer-vs-outer test only caught the crude case, and
+            # a bore too small is the exact defect that leaves the train jammed. This is
+            # deterministic and available BEFORE the sim runs, so it can be reported without
+            # waiting for a VLM to notice it in a recording.
+            ext_ring = _radial_extent_m(meshes_dir, f.name)
+            ext_shaft = _radial_extent_m(meshes_dir, s.name)
+            if ext_ring and ext_shaft:
+                bore, ring_outer = ext_ring
+                shaft_outer = ext_shaft[1]
+                # Report only a real INTERFERENCE. A bore a hair LARGER than the shaft is a
+                # correct running fit (hour_hand 2.43 on a 2.40 pipe), and flagging those
+                # would bury the genuine faults the agent must act on. 0.05mm of slop is
+                # measurement noise on a tessellated STL, not an interference.
+                if bore < shaft_outer - 5e-5:
+                    impossible = ring_outer <= shaft_outer
+                    fits.append({
+                        "part": f.name, "shaft": s.name,
+                        "bore_mm": round(bore * 1000.0, 2),
+                        "shaft_r_mm": round(shaft_outer * 1000.0, 2),
+                        "part_outer_mm": round(ring_outer * 1000.0, 2),
+                        "impossible": impossible,
+                    })
             r_ring = _pitch_radius_m(meshes_dir, f.name)
             if r_shaft and r_ring and r_ring < r_shaft - 1e-4:
                 warns += 1
@@ -579,6 +604,8 @@ def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *
     if metrics is not None:
         metrics["coaxial_excludes"] = n
         metrics["coaxial_bore_warns"] = warns
+        if fits:
+            metrics["bore_fit_faults"] = fits
     log_fn(f"[mjcf] excluded {n} coaxial bearing/washer contact(s) from the shaft "
            f"({warns} with a too-small bore flagged)")
     return n
