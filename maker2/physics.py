@@ -655,6 +655,10 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
         # rounds of chasing whatever the VLM happened to notice in the recording.
         if metrics_side.get("bore_fit_faults"):
             m["bore_fit_faults"] = metrics_side["bore_fit_faults"]
+        # Solids that genuinely occupy the same space. Measured by boolean intersection
+        # while the MJCF is built, so it needs no simulation and no VLM to notice it.
+        if metrics_side.get("interferences"):
+            m["interferences"] = metrics_side["interferences"]
 
         video = None
         if res.get("frames_dir"):
@@ -722,13 +726,24 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
     # A measured support fault OVERRIDES a pass. The VLM watches the recording, where a part
     # welded to a mount it never touches looks perfectly fine — it cannot see that nothing
     # holds it. Gravity already answered; that measurement wins.
-    if support_fell and final_pass:
+    overridden_by_support = bool(support_fell and final_pass)
+    if overridden_by_support:
         print(f"[support] overriding PASS: {len(support_fell)} unsupported part(s)")
         final_pass, final_verdict = False, "FAIL"
 
+    # Say WHY in one voice. _summarize only knows the drive metrics, so on a support
+    # override it reported "drive: PASS - 7/7 downstream joints moved" next to an overall
+    # FAIL, which reads as a contradiction and tells the agent nothing about what to fix.
+    summary_text = _summarize({"name": "drive"}, m)
+    if overridden_by_support:
+        fell = ", ".join(f.part for f in support_fell[:4])
+        summary_text = (f"transmission WORKS ({summary_text}) but the machine does not hold "
+                        f"together: {len(support_fell)} part(s) have nothing supporting them "
+                        f"({fell}) — they fall when the mount welds are released")
+
     entry = {"name": "drive", "strategy": "driven_mechanism",
              "verdict": final_verdict, "metrics": m, "stability": stability,
-             "summary": _summarize({"name": "drive"}, m),
+             "summary": summary_text,
              "cause": diagnosis.get("cause", "none"),
              "reason": diagnosis.get("reason", ""),
              "design": spec.get("design"),

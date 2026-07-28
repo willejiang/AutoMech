@@ -428,9 +428,22 @@ def _add_transmission(mujoco_el, model, meshes_dir, links_by_name, *,
 
 
 def _radial_extent_m(meshes_dir: str, name: str) -> tuple[float, float] | None:
-    """(inner, outer) radius in METERS about a part's own centroid, measured in the XY
+    """(inner, outer) radius in METERS about the part's OWN ORIGIN, measured in the XY
     plane of its local frame. The inner value is the BORE: for a bored part the nearest
-    material sits at the bore wall, for a solid one it sits at the centre (~0)."""
+    material sits at the bore wall, for a solid one it sits at the centre (~0).
+
+    Measured about the ORIGIN, not the centroid, because the origin is where the axis
+    actually is: every part is authored at the origin along local +Z and then `.moved()`
+    into place, so its bore is centred on (0,0) by construction. The centroid only
+    coincides with that for a symmetric part. A clock hand is the counter-example — its
+    bore is at one END, so a hand without a balancing tail has its centroid out in the
+    middle of the shank, several millimetres off the hole. Measured from there the
+    "smallest radius" is 0 (the centroid sits inside solid material), the hand reads as
+    having no bore at all, and every fit test built on this — press-vs-running, the
+    symmetry check, the concentricity gate — silently gets the wrong answer.
+
+    (On this movement the hands happened to be tail-balanced, so centroid and origin were
+    0.02-0.15mm apart and nothing broke. That was luck, not a property we can rely on.)"""
     src = os.path.join(meshes_dir, f"{name}.stl")
     if not os.path.exists(src) or os.path.getsize(src) == 0:
         return None
@@ -440,8 +453,7 @@ def _radial_extent_m(meshes_dir: str, name: str) -> tuple[float, float] | None:
         v = np.asarray(m.vertices)
         if v.size == 0:
             return None
-        c = v.mean(axis=0)
-        r = np.linalg.norm(v[:, :2] - c[:2], axis=1)
+        r = np.linalg.norm(v[:, :2], axis=1)
         return float(r.min()) / 1000.0, float(r.max()) / 1000.0
     except Exception:
         return None
@@ -563,6 +575,120 @@ def coaxial_pairs(model, meshes_dir, *, include_spin_spin: bool = False) -> list
     return out
 
 
+# Below this, an "overlap" is tessellation noise on two touching faces, not interference.
+_OVERLAP_TOL_MM3 = 0.05
+
+_overlap_cache: dict = {}
+_bbox_cache: dict = {}
+
+
+def _bboxes_near(meshes_dir: str, W, a: str, b: str) -> bool:
+    """True if the two placed parts are close enough that MuJoCo could report a contact —
+    their world bounding boxes overlap once grown by the contact margin. Cheap gate in
+    front of the boolean, and it keeps the exclude list to pairs that mean something."""
+    import trimesh
+    boxes = []
+    for name in (a, b):
+        if name in _bbox_cache:
+            box = _bbox_cache[name]
+        else:
+            src = os.path.join(meshes_dir, f"{name}.stl")
+            T = W.get(name)
+            if not os.path.exists(src) or T is None:
+                _bbox_cache[name] = None
+                box = None
+            else:
+                try:
+                    m = trimesh.load(src, force="mesh").copy()
+                    Tm = np.array(T, dtype=float).copy()
+                    Tm[:3, 3] *= 1000.0
+                    m.apply_transform(Tm)
+                    box = (m.bounds[0], m.bounds[1])
+                except Exception:
+                    box = None
+                _bbox_cache[name] = box
+        if box is None:
+            return False
+        boxes.append(box)
+    pad = _GEOM_MARGIN * 1000.0 * 2.0        # margin is in metres; be generous
+    lo = np.maximum(boxes[0][0], boxes[1][0]) - pad
+    hi = np.minimum(boxes[0][1], boxes[1][1]) + pad
+    return bool(np.all(hi > lo))
+
+
+def _overlap_mm3(meshes_dir: str, W, a: str, b: str) -> float | None:
+    """Volume (mm^3) where two placed part solids intersect, or None if unmeasurable.
+
+    This is the ground truth for "are these two parts interfering": it needs no assumption
+    about axes, bores or symmetry, so it is right for a multi-hole bridge, an off-centre
+    hand and a pair of meshing gears alike."""
+    key = (a, b)
+    if key in _overlap_cache:
+        return _overlap_cache[key]
+    try:
+        import trimesh
+        out = None
+        placed = []
+        for name in (a, b):
+            src = os.path.join(meshes_dir, f"{name}.stl")
+            if not os.path.exists(src) or os.path.getsize(src) == 0:
+                _overlap_cache[key] = None
+                return None
+            m = trimesh.load(src, force="mesh").copy()
+            T = W.get(name)
+            if T is None:
+                _overlap_cache[key] = None
+                return None
+            T = np.array(T, dtype=float).copy()
+            T[:3, 3] *= 1000.0                       # model poses are metres, STLs are mm
+            m.apply_transform(T)
+            placed.append(m)
+        # Cheap reject first: disjoint bounding boxes cannot intersect, and most pairs are.
+        lo = np.maximum(placed[0].bounds[0], placed[1].bounds[0])
+        hi = np.minimum(placed[0].bounds[1], placed[1].bounds[1])
+        if np.any(hi <= lo):
+            _overlap_cache[key] = 0.0
+            return 0.0
+        inter = trimesh.boolean.intersection(placed)
+        out = 0.0 if inter is None or inter.is_empty else abs(float(inter.volume))
+    except Exception:
+        out = None
+    _overlap_cache[key] = out
+    return out
+
+
+def _shares_axis(model, W, a, b, *, tol_m: float = 0.0015) -> bool:
+    """True if `a` and `b` are concentric about a common axis — i.e. one could be a bore
+    riding the other, rather than two parts that merely happen to overlap.
+
+    A bore-on-shaft fit is concentric BY DEFINITION, so this is the cheapest possible way
+    to tell a genuine running fit from an accidental collision, and it is the check whose
+    absence let a post pass through a gear unnoticed. The axis is taken from whichever
+    part spins (a spin part's own spin_axis is authoritative); if neither spins there is no
+    fit to exempt and the answer is False, so their contact is simulated normally.
+
+    `tol_m` is deliberately tight (1.5mm): parts on one arbor are concentric to well under
+    a millimetre, while anything mounted elsewhere on the plate is centimetres away."""
+    Ta, Tb = W.get(a.name), W.get(b.name)
+    if Ta is None or Tb is None:
+        return False
+    spinner = a if getattr(a, "dof", "fixed") == "spin" else (
+        b if getattr(b, "dof", "fixed") == "spin" else None)
+    if spinner is None:
+        return False
+    Ts = W[spinner.name]
+    ax = getattr(spinner, "spin_axis", (0.0, 0.0, 1.0)) or (0.0, 0.0, 1.0)
+    axis = Ts[:3, :3] @ np.array([float(ax[0]), float(ax[1]), float(ax[2])])
+    nrm = float(np.linalg.norm(axis))
+    if nrm <= 1e-9:
+        return False
+    axis = axis / nrm
+    # Perpendicular offset between the two origins, measured across that axis.
+    d = Tb[:3, 3] - Ta[:3, 3]
+    perp = float(np.linalg.norm(d - np.dot(d, axis) * axis))
+    return perp <= tol_m
+
+
 def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *,
                                   metrics: dict | None, log_fn) -> int:
     """B (deterministic) + A (warn): a ring accessory (bearing/washer/spacer/pedestal/
@@ -585,6 +711,9 @@ def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *
     warns = 0
     runners = 0
     fits: list = []
+    interferences: list = []
+    mesh_pairs_fs = {frozenset(p[:2]) for p in (getattr(model, "mesh_pairs", []) or [])
+                     if len(p) >= 2}
     excluded_pairs: set = set()
     _COAXIAL_XY_TOL_M = 0.002  # 2mm: centers this close on the axis count as "on the shaft"
     for s in spins:
@@ -658,20 +787,47 @@ def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *
                 continue
             if getattr(a, "dof", "fixed") == "fixed" and getattr(b, "dof", "fixed") == "fixed":
                 continue                    # two static parts never rub
-            ea = _radial_extent_m(meshes_dir, a.name)
-            eb = _radial_extent_m(meshes_dir, b.name)
-            if not ea or not eb:
+            # DO THE TWO SOLIDS ACTUALLY OVERLAP? That is the only question worth asking,
+            # and it is answered exactly by a boolean intersection of the placed meshes.
+            #
+            # Radius comparisons were wrong in BOTH directions. A radius is measured about
+            # one part's own centre, so a support post driven through a gear 15mm off its
+            # axis passes "post radius < gear bore" as easily as an arbor sitting IN that
+            # bore — that exclusion hid a genuine 30.5mm^3 interpenetration, and deleting
+            # the post made minute_wheel go from dead to turning. The same test called two
+            # correctly-meshing gears a 5.55mm interference.
+            #
+            # Zero overlap means the contact MuJoCo reports is an artefact of the collision
+            # proxy (convex pieces chord the inner arc of a bore, and margin fires 0.2mm
+            # early), so excluding it is right: of the ten worst contacts on this movement,
+            # eight had exactly 0.0000mm^3 of real overlap. A positive overlap is a CAD
+            # fault and must stay visible.
+            # Only NEAR pairs can be misjudged. Two parts whose bounding boxes are apart
+            # cannot produce a contact at all, so emitting an exclude for them is noise —
+            # it took the list from 4 entries to 110 and buried what the excludes mean.
+            if not _bboxes_near(meshes_dir, W, a.name, b.name):
                 continue
-            # Either one can be the bore side; take whichever direction actually clears.
-            runs = ((ea[0] - eb[1]) >= _RUNNING_FIT_CLEARANCE_M
-                    or (eb[0] - ea[1]) >= _RUNNING_FIT_CLEARANCE_M)
-            if not runs:
+            vol = _overlap_mm3(meshes_dir, W, a.name, b.name)
+            if vol is None:
+                continue                    # cannot measure -> simulate it, don't hide it
+            if vol > _OVERLAP_TOL_MM3:
+                # A MESHING PAIR IS SUPPOSED TO OVERLAP — interlocking teeth are the mesh.
+                # (cannon_pinion/minute_wheel measured 10.06mm3 of tooth engagement, which
+                # is correct engineering, not a fault.) Such a pair already has its own
+                # ratio constraint and contact exclusion, so leave it alone; reporting it
+                # would send the agent to "fix" the one thing that works.
+                if frozenset((a.name, b.name)) not in mesh_pairs_fs:
+                    interferences.append({"a": a.name, "b": b.name,
+                                          "overlap_mm3": round(vol, 3)})
                 continue
             ET.SubElement(contact, "exclude",
                           attrib={"body1": a.name, "body2": b.name})
             excluded_pairs.add(frozenset((a.name, b.name)))
             n += 1
             runners += 1
+    for iv in sorted(interferences, key=lambda x: -x["overlap_mm3"])[:10]:
+        log_fn(f"[mjcf] INTERFERENCE {iv['a']} / {iv['b']}: their solids overlap by "
+               f"{iv['overlap_mm3']}mm3 — contact is NOT excluded, the CAD is wrong")
     if runners:
         log_fn(f"[mjcf] excluded {runners} running-fit pair(s) measured from the geometry "
                f"(a bore that clears its shaft turns freely; simulating that contact only "
@@ -684,6 +840,9 @@ def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *
         metrics["coaxial_excludes"] = n
         metrics["coaxial_bore_warns"] = warns
         metrics["running_fit_excludes"] = runners
+        if interferences:
+            metrics["interferences"] = sorted(
+                interferences, key=lambda x: -x["overlap_mm3"])[:10]
         if fits:
             metrics["bore_fit_faults"] = fits
     log_fn(f"[mjcf] excluded {n} coaxial bearing/washer contact(s) from the shaft "

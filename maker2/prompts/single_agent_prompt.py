@@ -207,6 +207,19 @@ def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: 
     # geometry assembles, the mesh is correct, every constraint is healthy — the shaft
     # simply does not grip the gear, so the input turns against nothing. Deterministic and
     # measured while the MJCF is built, so it is available on iteration 0.
+    # PARTS OCCUPYING THE SAME SPACE. Measured by boolean intersection of the placed
+    # solids, so it is exact and available before the sim runs. This is the fault a
+    # rendered view shows plainly and every derived metric hides: a support post driven
+    # through a gear's teeth stops that gear dead while the arbor, the bore and the mesh
+    # all check out. (Measured: bridge_column_3 overlapped minute_wheel by 30.5mm3;
+    # deleting the post alone took the train from 5/7 to 6/7 joints turning.)
+    inter = (m.get("interferences") or [])
+    if inter:
+        lines.append("- SOLIDS OVERLAP — these parts occupy the same space, which is "
+                     "impossible to build and jams whatever must turn:")
+        for iv in inter[:8]:
+            lines.append(f"    * {iv['a']} and {iv['b']} overlap by {iv['overlap_mm3']}mm3")
+
     loose = (m.get("loose_gears") or [])
     if loose:
         lines.append("- NOT DRIVEN — these gears sit too loosely on their shafts to be "
@@ -255,7 +268,19 @@ def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: 
     # a machine that falls apart just settling can't be judged on function at all. Then an
     # explosion is a start-pose overlap (not a center-distance problem); only a DEAD/jammed
     # train (turned but nothing moved, no explosion) points at gear spacing.
-    if loose:
+    if inter:
+        guidance = (
+            "SEPARATE THE OVERLAPPING SOLIDS FIRST — two parts cannot occupy the same "
+            "space, and anything a solid passes through cannot turn. For EACH pair above, "
+            "move ONE of the two, and pick the one that is structural:\n"
+            "- A post, pillar or standoff that passes through a GEAR must be moved OUT "
+            "past that gear's tip radius (module*(teeth+2)/2), or placed at a height that "
+            "clears the gear entirely. A gear sweeps a full circle — leaving a hole for the "
+            "post does not help unless the post is on the gear's own axis.\n"
+            "- Two stacked parts on one shaft must sit at DISTINCT axial stations: compute "
+            "each one's z from the real top face of the part below it.\n"
+            "Do not shrink a gear to dodge a post, and do not touch parts not listed.")
+    elif loose:
         guidance = (
             "MAKE THE DRIVEN GEARS GRIP THEIR SHAFTS — this is why the input turns and "
             "nothing follows. The fit is decided by ONE measured number:\n"
