@@ -878,6 +878,7 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
              "verdict": final_verdict, "metrics": m, "stability": stability,
              "summary": summary_text,
              "cause": diagnosis.get("cause", "none"),
+             "evidence": diagnosis.get("evidence") or [],
              "reason": diagnosis.get("reason", ""),
              "design": spec.get("design"),
              "frames_dir": res.get("frames_dir"), "video": video}

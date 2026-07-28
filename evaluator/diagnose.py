@@ -146,6 +146,21 @@ If it FAILS, classify the CAUSE precisely AND name the exact culprit:
 When the cause is not a single part (a whole-sub or interface fault), leave "culprit_part"
 empty but still set "culprit_sub" when you can identify the responsible subassembly.
 
+HOW TO REACH A VERDICT — work in this order, and do not skip to the frames:
+1. READ THE "ALREADY MEASURED" BLOCK FIRST. Those lines are deterministic measurements
+   made before any video existed: a part that fell under gravity, a functional check that
+   missed its target, solids sharing space, a bore that cannot go on its shaft. If that
+   block names a fault, that fault IS your answer — say it, with its numbers and part
+   names. Do not answer "no specific fault was isolated" while that block is non-empty.
+2. THEN READ PER-JOINT TRAVEL. Find where the chain dies (a joint at ~0 whose neighbour
+   moved) or where a stage produced a factor it should not have. Name both parts.
+3. THEN USE THE TOOLS to confirm and to fill gaps — read_part_mounts to learn which
+   turning part an output rides, read_joint_travel for a joint's motion over time,
+   read_contacts for interpenetration, read_sim_result for anything else.
+4. ONLY THEN look at the frames, to explain or to catch what the numbers cannot show.
+Fill "evidence" with the specific things you checked and what each one showed, including
+what you ruled out. A verdict with no evidence is not usable.
+
 HARD RULES (these override your visual impression):
 1. If the signal INPUT_STALLED is true, the driven joint did NOT turn even though it was
    commanded — the drivetrain is physically jammed. This is NEVER "camera". Return
@@ -274,8 +289,20 @@ _DIAG_SCHEMA = {
                     "description": "the subassembly id the culprit part belongs to "
                                    "(the '<sub_id>' namespace prefix), or '' if unknown."},
                 "reason": {"type": "string"},
+                # Somewhere to put the work. Without a field for it there is nowhere to
+                # say "I checked X, it showed Y, so I ruled out Z" — so the model either
+                # asserts a conclusion or gives up with "no specific fault was isolated".
+                # Asking for the evidence is what turns a guess into a diagnosis.
+                "evidence": {
+                    "type": "array", "items": {"type": "string"},
+                    "description": "What you actually checked and what each showed, one "
+                                   "line each, with part names and numbers — including "
+                                   "what you ruled out. e.g. \"per-joint travel: "
+                                   "hour_pipe 0.95 vs minute_pipe 9.4, so the chain is "
+                                   "alive to the hour side\"."},
             },
-            "required": ["verdict", "cause", "culprit_part", "culprit_sub", "reason"],
+            "required": ["verdict", "cause", "culprit_part", "culprit_sub", "reason",
+                         "evidence"],
         },
     },
 }
@@ -296,6 +323,50 @@ def _kb_notes(task: str, k: int = 2) -> str:
         if text.strip():
             out.append(text.strip()[:1500])
     return "\n\n".join(out)
+
+
+NL = chr(10)
+NL2 = chr(10) * 2
+
+
+def _deterministic_findings_txt(metrics, stability) -> str:
+    """The findings that are already settled, stated plainly, for the TOP of the prompt.
+
+    Each is a measurement, not an inference, so the diagnosis should START from these and
+    use the video to explain or refine them — not re-derive them from keyframes. They were
+    previously passed only inside the METRICS json blob and went unread: a diagnosis came
+    back "no specific fault was isolated" while a support fault naming the exact part, and
+    a ratio check naming the exact stage, were sitting in that blob."""
+    m = metrics or {}
+    st = stability or {}
+    lines = []
+    for f in (st.get("support_faults") or [])[:5]:
+        lines.append("  - UNSUPPORTED: " + str(f).split(" FIX by")[0])
+    for c in (m.get("functional_checks") or []):
+        if c.get("passed"):
+            continue
+        line = (f"  - FUNCTION NOT MET: {c.get('name')} = {c.get('value')} "
+                f"(wanted {c.get('expected')})")
+        if c.get("detail"):
+            line += f" :: {c.get('detail')}"
+        lines.append(line)
+    for iv in (m.get("interferences") or [])[:5]:
+        lines.append(f"  - SOLIDS OVERLAP: {iv.get('a')} and {iv.get('b')} share "
+                     f"{iv.get('overlap_mm3')}mm3 of space")
+    for g in (m.get("loose_gears") or [])[:5]:
+        lines.append(f"  - NOT DRIVEN: {g.get('gear')} rides {g.get('shaft')} with "
+                     f"{g.get('clearance_mm')}mm clearance (needs <= "
+                     f"{g.get('press_fit_max_mm')}mm to be driven by it)")
+    for f in [x for x in (m.get("bore_fit_faults") or []) if x.get("impossible")][:5]:
+        lines.append(f"  - CANNOT ASSEMBLE: {f.get('part')} has a {f.get('bore_mm')}mm "
+                     f"bore but sits on {f.get('shaft')} of radius {f.get('shaft_r_mm')}mm")
+    if not lines:
+        return ("ALREADY MEASURED (deterministic, before any video): no assembly, support "
+                "or functional fault was detected. If the machine still fails, the "
+                "evidence is in the motion below and in the frames." + NL2)
+    return ("ALREADY MEASURED (deterministic, before any video — these are FACTS. Start "
+            "from them and name them in your reason; the frames are for explaining them, "
+            "not for re-deriving them):" + NL + NL.join(lines) + NL2)
 
 
 def _per_joint_travel_txt(frames_dir: str, drive: dict) -> str:
@@ -508,13 +579,33 @@ def _culprit_sub_of(part: str, robot_info: dict) -> str:
     return "_".join(toks[:2]) if len(toks) > 2 else part
 
 
-def _measured_reason(metrics) -> str:
-    """A reason built from DETERMINISTIC geometry already measured while the MJCF was
-    built, for when the VLM returns a verdict with no explanation. These faults are exact
-    and are the usual cause of a partial transmission, so they beat an empty string and
-    they beat a generic note."""
+def _measured_reason(metrics, stability=None) -> str:
+    """A reason built from DETERMINISTIC findings already measured before/while the MJCF
+    was built, for when the VLM returns a verdict with no explanation. These are exact,
+    so they beat an empty string and they beat a generic note.
+
+    Ordered by what a person would fix first: a part nothing holds up, then a machine that
+    runs but misses its purpose, then the assembly faults."""
     m = metrics or {}
     parts = []
+    # A part with nothing under it. This was measured by dropping the assembly under
+    # gravity, so it is not an opinion — and it was the actual fault the last time the
+    # diagnosis came back as "no specific fault was isolated".
+    fell = (stability or {}).get("support_faults") or []
+    if fell:
+        first = str(fell[0]).split(" FIX by")[0]
+        more = f" (and {len(fell) - 1} more)" if len(fell) > 1 else ""
+        parts.append(first + more + ".")
+    # The machine may run perfectly and still not do its job; that is a different fault
+    # from anything below and needs saying in its own words.
+    bad_checks = [c for c in (m.get("functional_checks") or []) if not c.get("passed")]
+    if bad_checks:
+        detail = "; ".join(
+            f"{c.get('name')}: measured {c.get('value')} against {c.get('expected')}"
+            + (f" ({c.get('detail')})" if c.get("detail") else "")
+            for c in bad_checks[:2])
+        parts.append(f"the machine runs but does not achieve what it was built for — "
+                     f"{detail}.")
     inter = m.get("interferences") or []
     if inter:
         worst = ", ".join(f"{i['a']} and {i['b']} ({i['overlap_mm3']}mm3)"
@@ -535,14 +626,17 @@ def _measured_reason(metrics) -> str:
     return " ".join(parts)
 
 
-def _diag(verdict, cause, reason, culprit_part="", culprit_sub=""):
+def _diag(verdict, cause, reason, culprit_part="", culprit_sub="", evidence=None):
     # `reason` is the ACTIONABLE part of the diagnosis — for a jammed train it carries the
     # whole "here is what to look at and what to change" instruction. A 400-char cap cut
     # that mid-word ("...exclude the coaxial con"), so the agent was handed half a sentence
     # and acted on it. These notes are machine-generated and bounded (a few hundred chars
     # per signal, a handful of signals), so the cap only ever truncated real content.
     return {"verdict": verdict, "cause": cause, "reason": str(reason)[:2000],
-            "culprit_part": culprit_part or "", "culprit_sub": culprit_sub or ""}
+            "culprit_part": culprit_part or "", "culprit_sub": culprit_sub or "",
+            # What was actually checked, so the loop (and a human) can see the working
+            # rather than only the conclusion.
+            "evidence": list(evidence or [])}
 
 
 # --------------------------------------------------------------------------- #
@@ -907,13 +1001,21 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
     # verdict this produced ("no specific fault was isolated") while the trajectory on
     # disk knew precisely which joint was dead. Rank every joint by how far it actually
     # turned, mark the driver, and hand that over with the frames.
+    # ALREADY-ESTABLISHED FACTS, first and in plain words. These were measured before the
+    # video existed — a part dropped under gravity, a functional check that failed, solids
+    # that overlap — and they usually ARE the answer. They were being passed only inside
+    # the METRICS json blob, where they went unread: the last diagnosis returned "no
+    # specific fault was isolated" while a support fault naming the exact part, and a
+    # ratio check naming the exact stage, sat in that blob.
+    findings_txt = _deterministic_findings_txt(metrics, stability)
     joints_txt = _per_joint_travel_txt(frames_dir, drive)
     ncam = len({c for c, _ in view_frames})
     content = [{"type": "text", "text": (
         f"TASK: {task}\n"
         f"DRIVEN INPUT JOINT: {drive.get('input_joint')}\n"
         f"OUTPUT JOINT (motion must reach): {drive.get('output_joint')}\n"
-        f"WATCHED JOINTS: {drive.get('watch_joints')}\n"
+        f"WATCHED JOINTS: {drive.get('watch_joints')}\n\n"
+        f"{findings_txt}"
         f"METRICS: {json.dumps(metrics)}\n\n"
         f"{signals_txt}\n"
         f"You are shown keyframes from {ncam} camera view(s), each labeled. Judge whether "
@@ -1009,6 +1111,12 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
                   "none" if verdict == "pass" else "structure")
     reason = (d.get("reason") or d.get("explanation") or d.get("detail") or "")
     reason = str(reason).strip()
+    evidence = d.get("evidence") or []
+    if isinstance(evidence, str):
+        evidence = [evidence]
+    evidence = [str(e).strip()[:300] for e in list(evidence)[:8] if str(e).strip()]
+    # If the model gave evidence but no reason, the evidence IS the useful part — better
+    # to hand back what it checked than an empty string.
     culprit_part = str(d.get("culprit_part") or "").strip()
     culprit_sub = str(d.get("culprit_sub") or "").strip()
 
@@ -1038,10 +1146,12 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
     # cause=structure" and nothing else, while the measured cause was sitting in the
     # metrics all along (four posts driven through two wheels, 11.4mm^3 each).
     if verdict == "fail" and not reason:
-        reason = _measured_reason(metrics) or sig_note or (
-            "the mechanism did not work, but no specific fault was isolated")
+        reason = (_measured_reason(metrics, stability)
+                  or ("; ".join(evidence) if evidence else "")
+                  or sig_note
+                  or "the mechanism did not work, but no specific fault was isolated")
 
     # Backfill culprit_sub from the part namespace if the model left it blank.
     if culprit_part and not culprit_sub:
         culprit_sub = _culprit_sub_of(culprit_part, robot_info)
-    return _diag(verdict, cause, reason, culprit_part, culprit_sub)
+    return _diag(verdict, cause, reason, culprit_part, culprit_sub, evidence)
