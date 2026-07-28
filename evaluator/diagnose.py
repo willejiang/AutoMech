@@ -281,6 +281,61 @@ _DIAG_SCHEMA = {
 }
 
 
+def _kb_notes(task: str, k: int = 2) -> str:
+    """Diagnosis method notes from the evaluator corpus. Best-effort: an unbuilt or
+    missing index simply means no notes, never a failed diagnosis."""
+    try:
+        from maker2 import kb
+        hits = kb.search(f"locate the fault when a mechanism partly works: {task}",
+                         collection="evaluator", k=k)
+    except Exception:
+        return ""
+    out = []
+    for h in hits or []:
+        text = (h.get("text") if isinstance(h, dict) else None) or ""
+        if text.strip():
+            out.append(text.strip()[:1500])
+    return "\n\n".join(out)
+
+
+def _per_joint_travel_txt(frames_dir: str, drive: dict) -> str:
+    """How far each joint ACTUALLY turned, from the recorded trajectory.
+
+    This is the measurement that turns "5/6 joints moved" into "hour_wheel_spin is the
+    one that did not" — and, read along the propagation path, into "the chain is alive up
+    to intermediate_pinion and dead after it", which names the culprit. Returns "" when
+    no trajectory was recorded, so an older run degrades to the previous behaviour."""
+    try:
+        p = Path(frames_dir).parent / "trajectory.json"
+        doc = json.loads(p.read_text(encoding="utf-8"))
+        joints = doc.get("joints") or {}
+        if not joints:
+            return ""
+    except Exception:
+        return ""
+    driver = str(drive.get("input_joint") or "")
+    rows = []
+    for name, seq in joints.items():
+        if not seq:
+            continue
+        net = abs(float(seq[-1]) - float(seq[0]))
+        total = sum(abs(float(b) - float(a)) for a, b in zip(seq, seq[1:]))
+        rows.append((total, net, name))
+    if not rows:
+        return ""
+    rows.sort(reverse=True)
+    lines = ["PER-JOINT TRAVEL (measured, radians — this is who moved and who did not):"]
+    for total, net, name in rows:
+        tag = ""
+        if driver and (name == driver or name.startswith(driver)
+                       or driver.endswith(name.replace("_spin", ""))):
+            tag = "  <- DRIVEN INPUT"
+        elif total < 0.05:
+            tag = "  <- DID NOT MOVE"
+        lines.append(f"  {name:32s} total={total:9.4f}  net={net:9.4f}{tag}")
+    return "\n".join(lines) + "\n\n"
+
+
 def _metric_signals(spec: dict, metrics: dict) -> dict:
     """Turn raw metrics into hard, unambiguous physics signals that gate the verdict.
 
@@ -754,6 +809,12 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
         f"  expected_input_travel_rad: {sig['expected_input_travel']}\n"
         f"  actual_input_travel_rad: {round(it_val, 4)}\n"
         + ("  " + sig_note + "\n" if sig_note else ""))
+    # PER-JOINT TRAVEL. "5 of 6 joints moved" names no part, so a diagnosis built on it
+    # can only say something moved and something did not — which is exactly the useless
+    # verdict this produced ("no specific fault was isolated") while the trajectory on
+    # disk knew precisely which joint was dead. Rank every joint by how far it actually
+    # turned, mark the driver, and hand that over with the frames.
+    joints_txt = _per_joint_travel_txt(frames_dir, drive)
     ncam = len({c for c, _ in view_frames})
     content = [{"type": "text", "text": (
         f"TASK: {task}\n"
@@ -782,7 +843,16 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
     # verdict. This lets it reason about an empty-looking video from the hard numbers.
     run_dir = str(Path(frames_dir).parent) if frames_dir else ""
     execs = _diag_executors(run_dir, frames_dir, metrics)
-    messages = [{"role": "system", "content": _DIAG_SYSTEM + _DIAG_TOOL_HINT},
+    # Method notes: how to turn per-joint numbers into a named culprit. The diagnoser had
+    # no KB at all, so its guidance was whatever fitted in the system prompt — and it kept
+    # returning "no specific fault was isolated" while the measurements on disk named the
+    # dead joint exactly.
+    system = _DIAG_SYSTEM + _DIAG_TOOL_HINT
+    notes = _kb_notes(task)
+    if notes:
+        system += ("\n\nMETHOD NOTES (from the local knowledge base — how to localise a "
+                   f"partial failure):\n{notes}")
+    messages = [{"role": "system", "content": system},
                 {"role": "user", "content": content}]
     try:
         c = _client(base_url, api_key)
