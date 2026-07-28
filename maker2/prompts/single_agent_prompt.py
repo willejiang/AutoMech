@@ -203,6 +203,21 @@ def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: 
         for part, shaft in broke_fits[:10]:
             lines.append(f"    * {part} no longer fits on {shaft}")
 
+    # A GEAR TOO LOOSE TO BE DRIVEN. Distinct from a jam and from an impossible fit: the
+    # geometry assembles, the mesh is correct, every constraint is healthy — the shaft
+    # simply does not grip the gear, so the input turns against nothing. Deterministic and
+    # measured while the MJCF is built, so it is available on iteration 0.
+    loose = (m.get("loose_gears") or [])
+    if loose:
+        lines.append("- NOT DRIVEN — these gears sit too loosely on their shafts to be "
+                     "turned by them (measured from your geometry):")
+        for g in loose[:8]:
+            tail = ("  <- this is the INPUT shaft, so NOTHING downstream can turn"
+                    if g.get("driver_shaft") else "")
+            lines.append(f"    * {g['gear']} rides {g['shaft']} with "
+                         f"{g['clearance_mm']}mm clearance; a shaft only drives a gear at "
+                         f"<= {g['press_fit_max_mm']}mm{tail}")
+
     fits = (m.get("bore_fit_faults") or [])
     if fits:
         lines.append("- IMPOSSIBLE FITS (measured from your geometry, not from the video). "
@@ -240,7 +255,19 @@ def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: 
     # a machine that falls apart just settling can't be judged on function at all. Then an
     # explosion is a start-pose overlap (not a center-distance problem); only a DEAD/jammed
     # train (turned but nothing moved, no explosion) points at gear spacing.
-    if fits:
+    if loose:
+        guidance = (
+            "MAKE THE DRIVEN GEARS GRIP THEIR SHAFTS — this is why the input turns and "
+            "nothing follows. The fit is decided by ONE measured number:\n"
+            "    clearance = bore_radius - shaft_outer_radius\n"
+            "    0 < clearance <= 0.10mm  -> PRESS FIT: the gear turns WITH the shaft\n"
+            "        clearance >  0.10mm  -> RUNNING FIT: it spins freely, undriven\n"
+            "For EACH gear listed above, shrink its bore to `shaft_outer_r + 0.05` so it is "
+            "a press fit. Do NOT move anything, do NOT change tooth counts or centre "
+            "distances — the mesh geometry already checks out. Only the bores are wrong.\n"
+            "Leave a part that is SUPPOSED to rotate freely (an hour wheel riding the "
+            "centre arbor) well above 0.10mm — that free rotation is what makes the 12:1.")
+    elif fits:
         guidance = (
             "FIX THE IMPOSSIBLE FITS FIRST — nothing downstream can work while a part is "
             "declared on a shaft it cannot go onto. This is measured geometry, not a guess, "

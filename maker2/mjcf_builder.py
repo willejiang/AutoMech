@@ -330,6 +330,8 @@ def _add_transmission(mujoco_el, model, meshes_dir, links_by_name, *,
     contact = ET.SubElement(mujoco_el, "contact")
     n = 0
     done: set = set()
+    gear_names = {g for pair in (getattr(model, "mesh_pairs", []) or []) for g in pair}
+    loose_gears: list = []
 
     def _center_xy(name):
         T = W.get(name)
@@ -379,6 +381,20 @@ def _add_transmission(mujoco_el, model, meshes_dir, links_by_name, *,
                 continue
             if not _is_pressed_on(meshes_dir, b, r_arbor):
                 riding.append(b)
+                # A GEAR that merely rides its shaft receives no torque from it. That is
+                # correct for an hour wheel on the centre arbor, and fatal for the first
+                # gear on the DRIVER — the input then turns against nothing and the whole
+                # train downstream of it is dead while every constraint looks healthy.
+                # Record the measurement so the diagnosis can say so with numbers.
+                if b in gear_names:
+                    ext_b = _radial_extent_m(meshes_dir, b)
+                    if ext_b and r_arbor:
+                        loose_gears.append({
+                            "gear": b, "shaft": a,
+                            "clearance_mm": round((ext_b[0] - r_arbor) * 1000.0, 3),
+                            "press_fit_max_mm": round(_PRESS_FIT_CLEARANCE_M * 1000.0, 3),
+                            "driver_shaft": bool(getattr(links_by_name.get(a), "driver", False)),
+                        })
                 continue
             ET.SubElement(eq, "joint", attrib={
                 "joint1": f"{b}_spin", "joint2": f"{a}_spin",
@@ -399,6 +415,14 @@ def _add_transmission(mujoco_el, model, meshes_dir, links_by_name, *,
         return 0
     if metrics is not None:
         metrics["transmission_constraints"] = n
+        if loose_gears:
+            metrics["loose_gears"] = loose_gears
+    for lg in loose_gears:
+        log_fn(f"[mjcf] '{lg['gear']}' rides '{lg['shaft']}' with {lg['clearance_mm']}mm "
+               f"clearance (press fit needs <= {lg['press_fit_max_mm']}mm), so the shaft "
+               f"does NOT drive it"
+               + (" — and that shaft is the INPUT, so nothing downstream can turn"
+                  if lg["driver_shaft"] else ""))
     log_fn(f"[mjcf] deterministic transmission: {n} constraint(s) after geometry precheck")
     return n
 
@@ -428,13 +452,28 @@ def _outer_radius_m(meshes_dir: str, name: str) -> float | None:
     return ext[1] if ext else None
 
 
-# A bore within this much of the arbor's outer radius is a PRESS FIT; anything looser is
-# a part that RIDES on the arbor. Measured on the watch: the three pressed wheels sat at
-# 0.01-0.05 mm of clearance, the hour wheel (which turns freely on the centre arbor,
-# separated from it by the hour pipe) sat at 1.50 mm — thirty times looser. 0.3 mm is a
-# generous line between the two, and it is a real machining boundary as well: a slip fit
-# needs perceptible clearance, an interference fit has none.
-_PRESS_FIT_CLEARANCE_M = 0.0003
+# HOW A BORE-ON-SHAFT FIT IS CLASSIFIED. One number splits every fit in two, so a pair
+# always has exactly one verdict — an earlier pass used two independent thresholds and any
+# clearance between them was claimed by BOTH (locked 1:1 *and* excluded as free-running).
+#
+#   clearance = bore_radius - shaft_outer_radius
+#     0 < clearance <= 0.10mm   PRESS FIT   -> lock 1:1, exclude contact (they turn as one)
+#          clearance >  0.10mm  RUNNING FIT -> no lock, exclude contact (it turns freely)
+#
+# Contact is excluded either way: a rigid-body solver has no oil film, so simulating the
+# bore wall against the shaft only produces friction that stalls the train. What the
+# threshold decides is whether TORQUE crosses the joint.
+#
+# Measured basis: on the wheels genuinely pressed to their arbors the clearance came out
+# 0.01-0.05mm, while an hour wheel riding free on the centre arbor (through its pipe) sat
+# at 1.50mm. 0.10mm sits well clear of the press-fit cluster and well below any part that
+# is meant to rotate. It is also a real machining line — an interference fit has no
+# perceptible clearance, a slip fit does.
+_PRESS_FIT_CLEARANCE_M = 0.0001
+
+# Any clearance at all means the two are not interfering, so contact is excluded;
+# the press-fit line above decides whether they are also LOCKED together.
+_RUNNING_FIT_CLEARANCE_M = 0.0
 
 
 def _is_pressed_on(meshes_dir: str, part: str, r_arbor: float | None) -> bool:
@@ -544,7 +583,9 @@ def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *
     contact = ET.SubElement(mujoco_el, "contact")
     n = 0
     warns = 0
+    runners = 0
     fits: list = []
+    excluded_pairs: set = set()
     _COAXIAL_XY_TOL_M = 0.002  # 2mm: centers this close on the axis count as "on the shaft"
     for s in spins:
         Ts = W.get(s.name)
@@ -567,6 +608,7 @@ def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *
                 continue
             ET.SubElement(contact, "exclude",
                           attrib={"body1": s.name, "body2": f.name})
+            excluded_pairs.add(frozenset((s.name, f.name)))
             n += 1
             # FIT CHECK, measured not guessed: a part that sits ON a shaft must have a bore
             # the shaft actually fits through. Compare the ring's own BORE to the shaft's
@@ -598,12 +640,50 @@ def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *
                 log_fn(f"[mjcf] WARN coaxial '{f.name}' (r~{r_ring*1000:.1f}mm) bites into "
                        f"shaft '{s.name}' (r~{r_shaft*1000:.1f}mm): no bore clearance — "
                        f"excluded from contact so the sim runs, but the CAD bore is wrong")
+    # RUNNING FITS, decided by GEOMETRY rather than by centroid distance and dof roles.
+    # The centroid test above misses two whole classes, and both stalled this movement:
+    #   * a big FIXED part whose centroid is nowhere near the axis — a mainplate is 60mm
+    #     across, so its centre sits far off the arbor running through its 24mm hole, and
+    #     the 2mm coaxial tolerance never fires. Measured: circular_skeleton_base vs
+    #     intermediate_arbor, 11.0mm of real clearance, 1.0e17 N of contact force.
+    #   * SPIN against SPIN — an hour-wheel sleeve turning on the centre arbor is the
+    #     defining fit of motion work, and the loop above only ever pairs spin with fixed.
+    # Both are answered by measuring the parts: if one's BORE clears the other's OUTER
+    # radius by a running-fit margin, they are meant to turn freely against each other and
+    # their contact is a solver artefact, not mechanics.
+    everything = list(model.links)
+    for i, a in enumerate(everything):
+        for b in everything[i + 1:]:
+            if frozenset((a.name, b.name)) in excluded_pairs:
+                continue
+            if getattr(a, "dof", "fixed") == "fixed" and getattr(b, "dof", "fixed") == "fixed":
+                continue                    # two static parts never rub
+            ea = _radial_extent_m(meshes_dir, a.name)
+            eb = _radial_extent_m(meshes_dir, b.name)
+            if not ea or not eb:
+                continue
+            # Either one can be the bore side; take whichever direction actually clears.
+            runs = ((ea[0] - eb[1]) >= _RUNNING_FIT_CLEARANCE_M
+                    or (eb[0] - ea[1]) >= _RUNNING_FIT_CLEARANCE_M)
+            if not runs:
+                continue
+            ET.SubElement(contact, "exclude",
+                          attrib={"body1": a.name, "body2": b.name})
+            excluded_pairs.add(frozenset((a.name, b.name)))
+            n += 1
+            runners += 1
+    if runners:
+        log_fn(f"[mjcf] excluded {runners} running-fit pair(s) measured from the geometry "
+               f"(a bore that clears its shaft turns freely; simulating that contact only "
+               f"produces solver friction that stalls the train)")
+
     if n == 0:
         mujoco_el.remove(contact)
         return 0
     if metrics is not None:
         metrics["coaxial_excludes"] = n
         metrics["coaxial_bore_warns"] = warns
+        metrics["running_fit_excludes"] = runners
         if fits:
             metrics["bore_fit_faults"] = fits
     log_fn(f"[mjcf] excluded {n} coaxial bearing/washer contact(s) from the shaft "

@@ -172,6 +172,37 @@ def evaluate_machine_python(script_text: str, run_dir: str, machine_name: str,
             seen = True
 
     mesh_pairs = [tuple(v[:2]) for v in mesh_by_id.values() if len(v) >= 2]
+
+    # A MESHING GEAR CANNOT BE `fixed`. In this model `dof` is relative to the WORLD:
+    # `fixed` means welded to the world and never turning. Agents keep writing
+    # `dof=fixed` on a wheel to mean "it is pressed onto its arbor and turns with it" —
+    # which is the right MECHANICS but the wrong word, and the consequences are silent
+    # and total: _add_transmission_constraints only emits a ratio joint when BOTH sides
+    # of a mesh pair spin, so a fixed pair gets no constraint AND no contact exclusion,
+    # and the two gears then grind tooth-on-tooth. (Measured on 1_12_20260728_130546:
+    # zero <equality> constraints, 1.7e17 N between hour_wheel_45t and minute_pinion_15t,
+    # and the driver managed 0.036 of 12 commanded rad.)
+    #
+    # Being a mesh_pair member is unambiguous evidence the part rotates, so promote it and
+    # take the spin axis from the spinning part it is mounted on (the arbor defines the
+    # axis; the wheel just rides it). The 1:1 press-fit lock is then re-derived downstream
+    # from bore-vs-shaft geometry, exactly as for any other part on that arbor.
+    by_name = {l.name: l for l in links}
+    parent_of = {p.child: p.parent for p in poses if p.parent}
+    for gear in {n for pair in mesh_pairs for n in pair}:
+        link = by_name.get(gear)
+        if link is None or link.dof != "fixed":
+            continue
+        host = by_name.get(parent_of.get(gear, ""))
+        link.dof = "spin"
+        if host is not None and host.dof == "spin":
+            link.spin_axis = tuple(host.spin_axis)
+        if log_fn:
+            log_fn(f"[single-agent] '{gear}' meshes with another gear but was declared "
+                   f"dof=fixed (welded to the world) — promoted to dof=spin"
+                   + (f", axis from '{host.name}'" if host is not None
+                      and host.dof == "spin" else ""))
+
     model = KinematicModel(name=machine_name, root_link=root, links=links, poses=poses,
                            mesh_pairs=mesh_pairs)
     if log_fn:
