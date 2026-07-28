@@ -162,6 +162,11 @@ Fill "evidence" with the specific things you checked and what each one showed, i
 what you ruled out. A verdict with no evidence is not usable.
 
 HARD RULES (these override your visual impression):
+0. If the ALREADY MEASURED block reports a FUNCTION NOT MET, the machine FAILED, whatever
+   the frames look like. That check is a measurement of whether it did its JOB, and the
+   difference it catches — a reduction of 10.6:1 where 12:1 was required, a gap that only
+   half closes — is invisible on video: everything still moves, it just moves wrong. Never
+   answer "pass" over a failed functional check, and say the measured number in "reason".
 1. If the signal INPUT_STALLED is true, the driven joint did NOT turn even though it was
    commanded — the drivetrain is physically jammed. This is NEVER "camera". Return
    verdict=fail with cause "structure" (the input is blocked) unless the driven joint is
@@ -1137,6 +1142,21 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
     # Enforce the hard metric rules AFTER the model — a stalled input, a free-spinning
     # output, or motion that never reaches the declared output joint are physical facts
     # the VLM cannot override, and none of them is a camera issue.
+    # A FAILED FUNCTIONAL CHECK IS NOT VISIBLE ON VIDEO, and it outranks the VLM. The
+    # check is a measurement of whether the machine did its JOB; the recording only shows
+    # that things moved. Asking a vision model to referee an 11% ratio error is asking it
+    # to tell 10.6:1 from 12:1 by eye — it cannot, and it duly returned "pass" on a watch
+    # whose own metric said 10.646 against a target of 12.0. Because it passed, the "a
+    # FAIL must say why" backfill below never fired either, so the run came back
+    # cause="none", reason="", evidence=None with the real number sitting in the metrics.
+    func_failed = (metrics or {}).get("functional_ok") is False
+    if func_failed:
+        verdict = "fail"
+        if cause not in ("structure", "scenario", "interface"):
+            cause = "structure"
+        if not reason:
+            reason = _measured_reason(metrics, stability) or sig_note
+
     if hard_fail:
         verdict = "fail"
         if cause not in ("structure", "scenario", "interface"):
