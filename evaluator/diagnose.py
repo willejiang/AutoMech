@@ -454,7 +454,12 @@ def _culprit_sub_of(part: str, robot_info: dict) -> str:
 
 
 def _diag(verdict, cause, reason, culprit_part="", culprit_sub=""):
-    return {"verdict": verdict, "cause": cause, "reason": str(reason)[:400],
+    # `reason` is the ACTIONABLE part of the diagnosis — for a jammed train it carries the
+    # whole "here is what to look at and what to change" instruction. A 400-char cap cut
+    # that mid-word ("...exclude the coaxial con"), so the agent was handed half a sentence
+    # and acted on it. These notes are machine-generated and bounded (a few hundred chars
+    # per signal, a handful of signals), so the cap only ever truncated real content.
+    return {"verdict": verdict, "cause": cause, "reason": str(reason)[:2000],
             "culprit_part": culprit_part or "", "culprit_sub": culprit_sub or ""}
 
 

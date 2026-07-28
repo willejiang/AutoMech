@@ -163,7 +163,9 @@ def _drift_symptom(reason: str | None) -> bool:
 def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: dict,
                                         stability: dict | None = None,
                                         best_code: str | None = None,
-                                        regressed: bool = False) -> str:
+                                        regressed: bool = False,
+                                        fixed_fits: list | None = None,
+                                        broke_fits: list | None = None) -> str:
     """Feedback after a PHYSICS run: the machine was simulated under gravity + drive, and it
     did not work as intended. Hand the agent the measured transmission metrics + the VLM's
     read of the recording so it can fix the mechanism (usually a mesh that does not engage)."""
@@ -186,6 +188,21 @@ def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: 
     # so no amount of repositioning fixes it, and the train stays jammed while the agent
     # chases whatever the camera happened to show (usually "the arbor pokes through the
     # plate into the ground" — true, but not what is stopping the machine).
+    # CREDIT THE EDITS THAT WORKED. The agent only ever saw one number go down and had no
+    # way to tell WHICH of its changes did it, so it reverted good work along with bad
+    # (measured: it opened the centre bores 1.1 -> 4.3mm and cleared every minute_pinion
+    # fault, then put them back at 1.1 the next round and the input travel fell from 0.016
+    # to 0.003 rad). Naming the fixed ones makes "keep this" actionable instead of a plea.
+    if fixed_fits:
+        lines.append("- YOUR LAST EDIT FIXED THESE — KEEP THEM EXACTLY AS THEY ARE, do not "
+                     "revert these bores or move these parts:")
+        for part, shaft in fixed_fits[:10]:
+            lines.append(f"    * {part} now fits on {shaft}")
+    if broke_fits:
+        lines.append("- YOUR LAST EDIT BROKE THESE (they fitted before):")
+        for part, shaft in broke_fits[:10]:
+            lines.append(f"    * {part} no longer fits on {shaft}")
+
     fits = (m.get("bore_fit_faults") or [])
     if fits:
         lines.append("- IMPOSSIBLE FITS (measured from your geometry, not from the video). "
@@ -234,8 +251,14 @@ def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: 
             "cut at all: either make that part large enough to ring the shaft (outer radius "
             "clearly bigger than the shaft's), or take it off that shaft — a 3mm jewel cannot "
             "sit on a 7mm arbor.\n"
+            "- If the 'shaft' is a WHEEL or a GEAR with a big radius (say over 8mm), the "
+            "mount itself is wrong, not the bore: bearings, washers, spacers and hands ride "
+            "on an ARBOR or a PIPE, never on the rim of a wheel. Re-`mount=` that part onto "
+            "the thin arbor/pipe that runs through the wheel, and size its bore from THAT.\n"
             "- Do NOT move parts around to work past this, and do NOT touch anything not "
-            "listed above. Fix the radii, then the rest of the diagnosis is worth reading.")
+            "listed above. Fix the radii, then the rest of the diagnosis is worth reading.\n"
+            "- KEEP every fit that already works. Changing a bore that was not listed as a "
+            "fault can only break it.")
     elif unsupported:
         guidance = (
             "FIX SUPPORT FIRST — the parts listed above are floating. Each is declared on a "

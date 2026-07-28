@@ -376,6 +376,9 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
     # WORSE, hand that best-geometry code back so it refines the closest version, not its
     # own worse one. (Lower badness = better; badness = interpenetrations + floaters + gap.)
     geo_best = {"badness": float("inf"), "code": None}
+    # Impossible bore fits from the PREVIOUS iteration, so each round can tell the agent
+    # which of its edits landed and which regressed.
+    prev_fits: set = set()
 
     for it in range(iter_cap):
         result["iterations"] = it + 1
@@ -507,6 +510,19 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
             result["ok"] = True
             return result
 
+        # What did THIS edit actually change? A single score tells the agent it got worse
+        # but not WHICH edit did it, so it "fixes" the wrong thing and undoes the parts it
+        # had already got right (measured: iteration 2 correctly opened the centre bores
+        # from 1.1 to 4.3mm, clearing every minute_pinion fault; iteration 3 put them back
+        # at 1.1 and the input travel fell from 0.016 to 0.003 rad). Diff the impossible
+        # fits against the previous iteration so the feedback can name the ones it FIXED
+        # (keep these) separately from the ones it broke or never touched.
+        fits_now = {(f["part"], f["shaft"]) for f in (metrics.get("bore_fit_faults") or [])
+                    if f.get("impossible")}
+        fixed_fits = sorted(prev_fits - fits_now)
+        broke_fits = sorted(fits_now - prev_fits)
+        prev_fits = fits_now
+
         summary = phys.get("summary", "the mechanism did not transmit motion")
         log_fn(f"[single-agent] physics FAIL -> diagnose + re-author: {summary[:120]}")
         log_fn("ARTIFACT_JSON:" + _json.dumps({
@@ -522,7 +538,8 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
         conv.add_user_message(
             build_single_agent_physics_feedback(
                 summary, metrics, diagnosis, stability=phys.get("stability"),
-                best_code=(best["code"] if regressed else None), regressed=regressed))
+                best_code=(best["code"] if regressed else None), regressed=regressed,
+                fixed_fits=fixed_fits, broke_fits=broke_fits))
         # loop continues -> agent refines with the physics feedback (+ rollback if regressed)
 
     if model is None:

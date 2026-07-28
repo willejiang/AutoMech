@@ -374,6 +374,13 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
         metrics = {
             "verdict": verdict, "test_kind": "driven_mechanism",
             "survive_s": round(dur, 2),
+            # Name the part we ACTUALLY drove. Without this the diagnosis rendered
+            # "input joint 'None' moved only 0.003 rad", which tells the agent nothing
+            # about where to look — and the whole point of that message is to point at
+            # a part. The driver is chosen from the model here, so this is the only
+            # place that knows its real name.
+            "input_joint": f"{driver.name}_spin",
+            "input_part": driver.name,
             "input_travel": round(input_travel, 4),
             "moved_count": moved, "watched_count": watched_count,
             "output_reached": output_reached, "exploded": exploded,
