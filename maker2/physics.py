@@ -77,6 +77,9 @@ def _robot_info(model) -> dict:
     return {"name": model.name,
             "joints": joints,
             "links": [l.name for l in model.links],
+            # Parts that get a hinge in the sim; the trajectory keys are "<part>_spin".
+            "spin_links": [l.name for l in model.links
+                           if getattr(l, "dof", "fixed") in ("spin", "free")],
             "roles": _roles(model),
             "subsystems": _subsystems(model)}
 
@@ -407,6 +410,35 @@ def _tag_test(test: dict, sub: dict) -> None:
 
 
 _METRICS_TIMEOUT = 30
+
+# Names a metrics check uses when it is reporting on ITSELF rather than on the machine.
+_SELF_REPORT_CHECKS = ("joints_present", "joint_missing", "missing_joints")
+
+
+def _check_is_broken(metrics: dict) -> bool:
+    """True if the functional check failed because it could not RUN, not because the
+    machine failed it. Such a result must never count against the CAD: the measurement
+    never happened."""
+    checks = (metrics or {}).get("functional_checks") or []
+    if not checks:
+        return False
+    for c in checks:
+        if c.get("passed"):
+            continue
+        name = str(c.get("name") or "").lower()
+        detail = str(c.get("detail") or "").lower()
+        if name in _SELF_REPORT_CHECKS or "missing" in detail or "not found" in detail:
+            return True
+    return False
+
+
+def _traj_keys(out_base: str) -> list:
+    """Joint keys actually present in this run's trajectory, to hand back to the designer."""
+    try:
+        p = Path(out_base) / "trajectory.json"
+        return list((json.loads(p.read_text(encoding="utf-8")).get("joints") or {}).keys())
+    except Exception:
+        return []
 
 
 def _run_metrics_code(designed, out_base: str, *, log_fn=print) -> list:
@@ -748,6 +780,23 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
                 print(f"[physics] mujoco diagnose unavailable ({e})")
 
         cause = diagnosis.get("cause", "none")
+        # A BROKEN CHECK IS A TEST FAULT, not a machine fault. When the designer's
+        # metrics_code cannot even find the joints it wants to measure, it has told us
+        # nothing about the machine — and letting that stand as a functional failure would
+        # blame the CAD for the test's mistake. (Measured: the designer reached for the
+        # URDF names `place_minute_arbor`/`place_hour_arbor` while the trajectory is keyed
+        # `minute_arbor_spin`/`hour_arbor_spin`, so its 12:1 check never ran.) Re-design
+        # the same way a camera or scenario fault is re-designed, feeding back the exact
+        # keys it should have used.
+        if _check_is_broken(m) and attempt < _MAX_TEST_RETRIES:
+            cause = "scenario"
+            diagnosis = dict(diagnosis)
+            diagnosis["reason"] = (
+                "metrics_code could not evaluate: "
+                + "; ".join(c.get("detail") or c.get("name")
+                            for c in (m.get("functional_checks") or [])[:3])
+                + ". The trajectory is keyed by SIM joint names "
+                + f"{list((_traj_keys(out_base) or [])[:12])} — use those exactly.")
         # Only a TEST-side fault (camera/scenario) is worth re-designing + re-running here.
         if cause not in ("camera", "scenario") or attempt >= _MAX_TEST_RETRIES:
             break
@@ -793,6 +842,17 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
     # A measured support fault OVERRIDES a pass. The VLM watches the recording, where a part
     # welded to a mount it never touches looks perfectly fine — it cannot see that nothing
     # holds it. Gravity already answered; that measurement wins.
+    # A FAILED FUNCTIONAL CHECK FAILS THE RUN. Reporting it and then passing anyway made
+    # the whole mechanism decorative: the watch below scored 10000 and PASSED with
+    # functional_ok=False sitting in its metrics. A check that could not RUN is excluded —
+    # that is a broken test, handled above by re-designing it.
+    functional_failed = bool(m.get("functional_ok") is False and not _check_is_broken(m))
+    if functional_failed and final_pass:
+        names = ", ".join(c.get("name", "?") for c in (m.get("functional_checks") or [])
+                          if not c.get("passed"))
+        print(f"[physics] overriding PASS: functional check failed ({names})")
+        final_pass, final_verdict = False, "FAIL"
+
     overridden_by_support = bool(support_fell and final_pass)
     if overridden_by_support:
         print(f"[support] overriding PASS: {len(support_fell)} unsupported part(s)")
@@ -802,6 +862,12 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
     # override it reported "drive: PASS - 7/7 downstream joints moved" next to an overall
     # FAIL, which reads as a contradiction and tells the agent nothing about what to fix.
     summary_text = _summarize({"name": "drive"}, m)
+    if functional_failed:
+        bad = [c for c in (m.get("functional_checks") or []) if not c.get("passed")]
+        detail = "; ".join(f"{c.get('name')}: {c.get('value')} vs expected "
+                           f"{c.get('expected')}" for c in bad[:3])
+        summary_text = (f"the machine runs ({summary_text}) but does NOT do its job: "
+                        f"{detail}")
     if overridden_by_support:
         fell = ", ".join(f.part for f in support_fell[:4])
         summary_text = (f"transmission WORKS ({summary_text}) but the machine does not hold "

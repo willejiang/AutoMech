@@ -243,10 +243,22 @@ def _robot_block(robot_info):
             f"  transmission (watch, never drive): {roles.get('transmission')}\n"
             f"  free_unrelated (ignore): {roles.get('free_unrelated')}\n"
             f"  propagation_path: {roles.get('propagation_path')}\n")
+    # The KEYS the recorded trajectory will actually carry. These are NOT the URDF joint
+    # names listed above: the simulation names a rotating part's joint "<part>_spin", so a
+    # metrics script reaching for a URDF name finds nothing and silently reports "required
+    # joints missing" instead of measuring anything. Spell them out.
+    spin_parts = list(robot_info.get("spin_links") or [])
+    traj_txt = ""
+    if spin_parts:
+        traj_txt = (
+            "\nTRAJECTORY KEYS (metrics_code MUST use exactly these — traj[\"joints\"] is "
+            "keyed by them, NOT by the URDF joint names above):\n"
+            f"  joints: {[p + '_spin' for p in spin_parts]}\n"
+            f"  bodies: {robot_info.get('links', [])}\n")
     return (f"ROBOT: {robot_info.get('name','robot')}\n"
             f"JOINT NAMES ({len(robot_info.get('joints',[]))}): {robot_info.get('joints',[])}\n"
             f"LINK NAMES ({len(robot_info.get('links',[]))}): {robot_info.get('links',[])}\n"
-            f"{role_txt}")
+            f"{role_txt}{traj_txt}")
 
 
 def design(task, robot_info, test=None, *, base_url=None, api_key=None, model=None):
