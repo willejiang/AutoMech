@@ -186,11 +186,26 @@ SPEC_SCHEMA = {
                         "max_drift": {"type": "number"},
                         "survive_s": {"type": "number"}},
                     "required": ["min_base_height", "max_drift", "survive_s"]},
+                # WHAT THIS MACHINE HAS TO ACHIEVE, as code. The fields above only say
+                # "it stayed put and something moved" — true of a machine whose tooth
+                # counts are wrong, whose gripper never closes, whose ratchet slips
+                # backwards. No fixed set of numeric fields can cover every mechanism, so
+                # the criterion is a small Python program instead: it reads the recorded
+                # trajectory and returns the checks it cares about.
+                "metrics_code": {
+                    "type": "string",
+                    "description": (
+                        "Python defining check(traj, result) -> list of "
+                        "{name, value, expected, passed, detail}. `traj` has t[], "
+                        "joints{name:[rad]}, bodies{name:[[x,y,z] mm]}; `result` is the "
+                        "sim metrics dict. Use only the stdlib and math. Return [] when "
+                        "the description pins down nothing checkable.")},
             },
             "required": ["success_definition", "reasoning",
                          "base_orientation_euler", "base_height",
                          "joint_pose", "high_friction_links", "control",
-                         "duration_s", "fixed_base", "drive", "pass_criteria"],
+                         "duration_s", "fixed_base", "drive", "pass_criteria",
+                         "metrics_code"],
         },
     },
 }

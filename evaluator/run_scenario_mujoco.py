@@ -265,10 +265,16 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
         return None, None
 
     driver_dofadr = None
+    driver_qadr = None
     a0 = 0.0
     if driver is not None:
         a0, driver_dofadr = angle_of(driver)
         a0 = a0 or 0.0
+        for _suf in ("spin", "free"):
+            _q, _ = joint_qadr(driver.name, _suf)
+            if _q is not None:
+                driver_qadr = _q
+                break
     watched_base = {}
     for l in watched:
         ang, _ = angle_of(l)
@@ -280,19 +286,76 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
     # specific part (its body name == the link name) for per-manager blame.
     xpos0 = d.xpos.copy()
 
-    torque = float((spec.get("drive") or {}).get("torque", 0.5))
+    _drive = spec.get("drive") or {}
+    torque = float(_drive.get("torque", 0.5))
+    # HOW THE INPUT IS DRIVEN. The designer already chooses `mode` and `target_velocity`
+    # (physics._design_spec defaults them to "velocity" @ 5 rad/s), but that choice used
+    # to be dropped on the way here and every machine got the same constant 0.5 N.m.
+    # On a watch movement — parts of a few milligrams, inertia ~1e-4 — that torque is
+    # absurd: it spun the input 3131 rad (498 turns) against a 12 rad command, and since
+    # the pass test only asks "did it move", the runaway counted as a PASS. Sweeping the
+    # joint at a commanded rate instead makes the test mean what it says, and makes the
+    # travel comparable to the ratio the machine is supposed to produce.
+    mode = str(_drive.get("mode") or "torque").lower()
+    target_vel = float(_drive.get("target_velocity") or 0.0)
+    sweep_rate = target_vel if target_vel > 0 else 5.0
     cap_every = max(1, drive_steps // 40)
     nf = 0
     max_disp = 0.0
     per_body_disp = np.zeros(m.nbody)
+
+    # ---- TRAJECTORY RECORDING ----
+    # Everything downstream used to see only two instants: the angle at the start and the
+    # angle at the end. That answers "did it turn" and nothing else — you cannot tell from
+    # it whether a gripper actually closed, whether a linkage traced the path it was meant
+    # to, whether a ratchet held on the back-stroke, or at what moment a train stalled.
+    # Sampling the whole run makes those questions answerable, by a metrics script or by a
+    # human reading the log. ~200 samples is plenty of resolution for mechanism behaviour
+    # and stays a small file.
+    traj_every = max(1, drive_steps // 200)
+    traj_t: list = []
+    traj_joints: dict = {}
+    traj_bodies: dict = {}
+    _traj_jnames = []
+    for _i in range(m.njnt):
+        _n = mj.mj_id2name(m, mj.mjtObj.mjOBJ_JOINT, _i)
+        if _n:
+            _traj_jnames.append((_n, int(m.jnt_qposadr[_i])))
+            traj_joints[_n] = []
+    _traj_bnames = []
+    for _i in range(1, m.nbody):
+        _n = m.body(_i).name
+        if _n:
+            _traj_bnames.append((_n, _i))
+            traj_bodies[_n] = []
+
+    def _sample_traj(step_idx: int):
+        traj_t.append(round(step_idx * float(m.opt.timestep), 5))
+        for _n, _q in _traj_jnames:
+            traj_joints[_n].append(round(float(d.qpos[_q]), 6))
+        for _n, _b in _traj_bnames:
+            p_ = d.xpos[_b]
+            traj_bodies[_n].append([round(float(p_[0]) * 1000.0, 4),
+                                    round(float(p_[1]) * 1000.0, 4),
+                                    round(float(p_[2]) * 1000.0, 4)])
     if driver is not None and driver_dofadr is not None:
+        qadr = driver_qadr if mode in ("velocity", "position", "position_sweep") else None
+        q_start = float(d.qpos[qadr]) if qadr is not None else 0.0
         for s in range(drive_steps):
-            d.qfrc_applied[driver_dofadr] = torque
+            if qadr is not None:
+                # Command the angle directly: the input tracks the designed rate exactly,
+                # so "the input turned X rad" is a fact about the TEST, not about how
+                # heavy the parts happen to be.
+                d.qpos[qadr] = q_start + sweep_rate * (s + 1) * m.opt.timestep
+            else:
+                d.qfrc_applied[driver_dofadr] = torque
             mj.mj_step(m, d)
             if len(d.xpos):
                 dvec = np.linalg.norm(d.xpos - xpos0, axis=1)
                 per_body_disp = np.maximum(per_body_disp, dvec)
                 max_disp = max(max_disp, float(dvec.max()))
+            if s % traj_every == 0:
+                _sample_traj(s)
             if s % cap_every == 0 and capture(nf):
                 nf += 1
         d.qfrc_applied[driver_dofadr] = 0.0
@@ -304,6 +367,8 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
                 dvec = np.linalg.norm(d.xpos - xpos0, axis=1)
                 per_body_disp = np.maximum(per_body_disp, dvec)
                 max_disp = max(max_disp, float(dvec.max()))
+            if s % traj_every == 0:
+                _sample_traj(s)
             if s % cap_every == 0 and capture(nf):
                 nf += 1
 
@@ -330,6 +395,21 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
                                       and abs(ang - watched_base.get(l.name, 0.0)) > 0.05)
     elif watched_count:
         output_reached = moved >= 1
+
+    # RATIO: how far the output turned per turn of the input. This is what tells a
+    # machine that works from one that merely moves — a train with the wrong tooth counts
+    # turns every joint happily and still fails its job. Recorded for whatever pair the
+    # designer nominated; comparing it against the intended reduction is the caller's job.
+    output_travel = None
+    ratio_in_out = None
+    if out_link:
+        for l in watched:
+            if l.name == out_link:
+                ang, _ = angle_of(l)
+                if ang is not None:
+                    output_travel = abs(ang - watched_base.get(l.name, 0.0))
+                    if output_travel > 1e-9:
+                        ratio_in_out = input_travel / output_travel
 
     exploded = bool(max_disp > 0.5)   # a part flew >0.5 m from settle => blew up
     # base height + tilt for stability signal
@@ -384,6 +464,10 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
             "input_travel": round(input_travel, 4),
             "moved_count": moved, "watched_count": watched_count,
             "output_reached": output_reached, "exploded": exploded,
+            "output_travel": (None if output_travel is None
+                              else round(float(output_travel), 4)),
+            "ratio_in_out": (None if ratio_in_out is None
+                             else round(float(ratio_in_out), 4)),
             "displaced_parts": displaced_parts,
             "end_z": round(end_z, 4), "max_tilt_deg": round(max_tilt, 2),
             "max_drift": round(max_disp, 4),
@@ -401,6 +485,16 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
     res = {"task": task, "spec": spec, "metrics": metrics, "stability": stability,
            "frames_dir": str(frames) if nf else None, "n_frames": nf, "log": log}
     (out / "sim_result.json").write_text(json.dumps(res, indent=2))
+    try:
+        (out / "trajectory.json").write_text(json.dumps({
+            "t": traj_t, "joints": traj_joints, "bodies": traj_bodies,
+            "timestep": float(m.opt.timestep), "n_samples": len(traj_t),
+            "driver": (driver.name if driver is not None else None),
+            "units": {"joints": "rad", "bodies": "mm", "t": "s"}}))
+        log.append(f"trajectory: {len(traj_t)} samples x "
+                   f"{len(traj_joints)} joint(s) / {len(traj_bodies)} body(ies)")
+    except Exception as e:
+        log.append(f"trajectory write failed: {e}")
     print(f"[mujoco] {'driven' if driver is not None else 'static'}: "
           f"input_travel={metrics.get('input_travel')} "
           f"moved={metrics.get('moved_count')}/{metrics.get('watched_count')} "

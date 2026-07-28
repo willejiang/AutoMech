@@ -213,6 +213,19 @@ def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: 
     # through a gear's teeth stops that gear dead while the arbor, the bore and the mesh
     # all check out. (Measured: bridge_column_3 overlapped minute_wheel by 30.5mm3;
     # deleting the post alone took the train from 5/7 to 6/7 joints turning.)
+    # WHAT THE MACHINE WAS SUPPOSED TO ACHIEVE, checked in code the test designer wrote
+    # for THIS product. Distinct from everything else here: those say the machine holds
+    # together and turns, this says whether turning accomplished the job. A train with the
+    # wrong tooth counts passes every other check and fails this one.
+    fchecks = [c for c in (m.get("functional_checks") or []) if not c.get("passed")]
+    if fchecks:
+        lines.append("- FUNCTIONAL CHECK FAILED — the machine runs, but does not do what "
+                     "it was asked to do:")
+        for c in fchecks[:6]:
+            lines.append(f"    * {c['name']}: measured {c['value']}, expected "
+                         f"{c['expected']}"
+                         + (f" — {c['detail']}" if c.get("detail") else ""))
+
     inter = (m.get("interferences") or [])
     if inter:
         lines.append("- SOLIDS OVERLAP — these parts occupy the same space, which is "
@@ -268,7 +281,16 @@ def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: 
     # a machine that falls apart just settling can't be judged on function at all. Then an
     # explosion is a start-pose overlap (not a center-distance problem); only a DEAD/jammed
     # train (turned but nothing moved, no explosion) points at gear spacing.
-    if inter:
+    if fchecks and not inter:
+        guidance = (
+            "FIX WHAT THE MACHINE IS FOR — it holds together and it turns, but the "
+            "measurement above says it does not achieve the job it was built for. This is "
+            "a DESIGN-ARITHMETIC fault, not an assembly one: recheck the numbers the "
+            "function depends on (tooth counts and the ratio they produce, lever lengths, "
+            "travel distances) against what the product description actually asks for, and "
+            "change those. Do NOT move parts, re-cut bores or restructure the assembly — "
+            "everything else already passes.")
+    elif inter:
         guidance = (
             "SEPARATE THE OVERLAPPING SOLIDS FIRST — two parts cannot occupy the same "
             "space, and anything a solid passes through cannot turn. For EACH pair above, "

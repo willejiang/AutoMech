@@ -712,6 +712,7 @@ def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *
     runners = 0
     fits: list = []
     interferences: list = []
+    mount_of = {p.child: p.parent for p in model.poses if p.parent}
     mesh_pairs_fs = {frozenset(p[:2]) for p in (getattr(model, "mesh_pairs", []) or [])
                      if len(p) >= 2}
     excluded_pairs: set = set()
@@ -745,6 +746,15 @@ def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *
             # a bore too small is the exact defect that leaves the train jammed. This is
             # deterministic and available BEFORE the sim runs, so it can be reported without
             # waiting for a VLM to notice it in a recording.
+            # ONLY judge the fit the part actually DECLARES. Being coaxial is not being
+            # mounted: a bearing and a gear both threaded onto one centre arbor share an
+            # axis while sitting at different heights, neither on the other. Comparing
+            # their radii then reads the GEAR'S TIP RADIUS as if it were a shaft and calls
+            # a perfectly good 0.90mm bore "4mm too small" (measured: 14 such reports on a
+            # movement whose transmission was working 6/6). The part's own `mount=` says
+            # what it is on, so use that and nothing else.
+            if (getattr(f, "mount", "") or mount_of.get(f.name, "")) != s.name:
+                continue
             ext_ring = _radial_extent_m(meshes_dir, f.name)
             ext_shaft = _radial_extent_m(meshes_dir, s.name)
             if ext_ring and ext_shaft:

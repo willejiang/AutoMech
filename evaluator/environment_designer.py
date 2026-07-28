@@ -90,6 +90,35 @@ moving joints are unobstructed. For a flat bench-mounted movement, a 3/4 top-dow
 (elevation ~ -20 to -35) reads best; for a tall mechanism, a lower side view. Set
 distance_scale ~2-3 to frame the whole machine with margin. Leave a value 0 to auto-fit it.
 
+WRITE THE FUNCTIONAL CHECK ("metrics_code"): say IN CODE what this machine has to achieve.
+Everything else in this spec only establishes that the thing stayed put and something moved
+— which is equally true of a gear train whose tooth counts are wrong, a gripper that never
+closes, a ratchet that slips backwards. Those are the failures that matter, they differ for
+every mechanism, and no fixed list of numeric fields can express them. A short program can.
+
+Define exactly one function:
+
+    def check(traj, result):
+        # traj["t"]       -> [seconds]
+        # traj["joints"]  -> {joint_name: [angle_rad, ...]}   same length as t
+        # traj["bodies"]  -> {body_name: [[x, y, z] mm, ...]} same length as t
+        # result          -> the measured metrics dict (input_travel, moved_count, ...)
+        return [ {"name": ..., "value": ..., "expected": ...,
+                  "passed": True/False, "detail": "..."} ]
+
+Derive the criterion from the USER'S OWN DESCRIPTION, not from what the model happens to
+contain. Read the domain word for the number hiding in it: a device showing hours and
+minutes on one axis means those two outputs are geared 12:1; "a 20:1 reducer" states the
+number outright; "a hand-cranked fan" pins down nothing but that the output must turn.
+Then express it over the trajectory — a ratio of total travels, a displacement that must
+reach some value, a sign that must never reverse, a gap that must close.
+
+Rules: stdlib + math only, no imports of anything else, no file or network access. Keep it
+short and defensive (a joint you name may be missing — return a failed check saying so
+rather than raising). If the description pins down nothing checkable, return [] — an
+invented criterion fails a machine that was built exactly as asked, and the next iteration
+then "fixes" something that was never broken.
+
 Output ONLY the JSON spec matching the provided schema."""
 
 
@@ -191,6 +220,22 @@ def _web_research(task, robot_info, base_url=None, api_key=None, model=None):
 
 
 
+def _kb_notes(task: str, k: int = 3) -> str:
+    """Top matches from the evaluator corpus for this task. Best-effort: the KB is a local
+    index that may be absent or unbuilt, and a designer with no notes is still a designer."""
+    try:
+        from maker2 import kb
+        hits = kb.search(f"functional criterion for: {task}", collection="evaluator", k=k)
+    except Exception:
+        return ""
+    out = []
+    for h in hits or []:
+        text = (h.get("text") if isinstance(h, dict) else None) or ""
+        if text.strip():
+            out.append(text.strip()[:1200])
+    return "\n\n".join(out)
+
+
 def design_environment(task, robot_info, subsystem=None, *,
                        base_url=None, api_key=None, model=None, web=False):
     """One call: choose the sim environment + emit the scenario spec for it.
@@ -215,6 +260,12 @@ def design_environment(task, robot_info, subsystem=None, *,
         if notes:
             research = ("\n\nWEB RESEARCH (realistic test parameters — use where "
                         f"relevant):\n{notes[:3000]}")
+    # Local KB: how to turn a product description into a criterion that can be checked.
+    # Without this the designer had no guidance on `metrics_code` beyond the schema text,
+    # and the corpus written for exactly this question sat unread.
+    kb_notes = _kb_notes(task)
+    if kb_notes:
+        research += f"\n\nMETHOD NOTES (from the local knowledge base):\n{kb_notes}"
     msgs = [{"role": "system", "content": SYSTEM},
             {"role": "user", "content":
                 f"TASK: {task}{sub}\n\n{_robot_block(robot_info)}{research}\n"

@@ -406,6 +406,49 @@ def _tag_test(test: dict, sub: dict) -> None:
     test.setdefault("output_joint", sub.get("output_joint"))
 
 
+_METRICS_TIMEOUT = 30
+
+
+def _run_metrics_code(designed, out_base: str, *, log_fn=print) -> list:
+    """Run the designer's `metrics_code` over this run's trajectory, in a subprocess.
+
+    Returns the list of checks, or [] when there is nothing to run (no code, no
+    trajectory) or the code failed — a broken check is a broken CHECK, never a verdict
+    about the machine, so it must not turn into a functional failure."""
+    code = ((designed or {}).get("metrics_code") or "").strip() if isinstance(designed, dict) else ""
+    if not code:
+        return []
+    base = Path(out_base)
+    traj = base / "trajectory.json"
+    result = base / "sim_result.json"
+    if not traj.exists():
+        log_fn("[physics] metrics_code skipped: this run recorded no trajectory")
+        return []
+    code_path = base / "metrics.py"
+    out_path = base / "metrics_result.json"
+    try:
+        code_path.write_text(code, encoding="utf-8")
+        r = subprocess.run(
+            [sys.executable, str(Path(_ROOT) / "evaluator" / "_metrics_runner.py"),
+             str(code_path), str(traj), str(result), str(out_path)],
+            capture_output=True, text=True, timeout=_METRICS_TIMEOUT)
+        if not out_path.exists():
+            log_fn(f"[physics] metrics_code produced no result "
+                   f"({(r.stderr or r.stdout or '').strip()[-200:]})")
+            return []
+        payload = json.loads(out_path.read_text(encoding="utf-8"))
+    except subprocess.TimeoutExpired:
+        log_fn(f"[physics] metrics_code timed out after {_METRICS_TIMEOUT}s; ignored")
+        return []
+    except Exception as e:
+        log_fn(f"[physics] metrics_code could not run ({type(e).__name__}: {e}); ignored")
+        return []
+    if not payload.get("ok"):
+        log_fn(f"[physics] metrics_code error: {payload.get('error')}")
+        return []
+    return payload.get("checks") or []
+
+
 def _design_spec(task: str, model, test: dict) -> dict:
     """environment_designer -> a spec for this test (ONE call that picks the sim
     environment + emits the scenario). For a DRIVEN test we still ENFORCE the role map
@@ -595,8 +638,18 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
         designed = _design_spec(task, model, {"name": "drive", "driver": driver_part,
                                               "strategy": "driven_mechanism"})
         d = designed.get("drive") or {}
-        # Map the designed drive intent onto the contact spec (torque stays; the design
-        # tells us WHAT to watch + the pass criteria, which the runner + diagnoser read).
+        # HONOUR THE DESIGNED DRIVE. _design_spec already settles `mode` and
+        # `target_velocity` (defaulting to velocity @ 5 rad/s), but those were dropped
+        # here and the runner fell back to a fixed 0.5 N.m for every machine. A watch
+        # movement weighs milligrams, so that torque spun its input 3131 rad against a
+        # 12 rad command — and because the pass test only asks "did it move", the runaway
+        # scored as a PASS. Sweeping at the designed rate makes input travel a property
+        # of the TEST rather than of how heavy the parts happen to be, which is also what
+        # makes an output/input ratio meaningful.
+        spec["drive"] = dict(spec.get("drive") or {})
+        for _k in ("mode", "target_velocity", "torque"):
+            if d.get(_k) is not None:
+                spec["drive"][_k] = d[_k]
         spec["design"] = {
             "input_joint": d.get("input_joint"),
             "output_joint": d.get("output_joint"),
@@ -659,6 +712,20 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
         # while the MJCF is built, so it needs no simulation and no VLM to notice it.
         if metrics_side.get("interferences"):
             m["interferences"] = metrics_side["interferences"]
+        # FUNCTIONAL CHECK: did the machine do its JOB? Everything above establishes that
+        # it held together and that parts moved — equally true of a train whose tooth
+        # counts are wrong, a gripper that never closes, a ratchet that slips back. What
+        # counts as success differs per mechanism, so the designer wrote it as code and it
+        # runs here against the recorded trajectory.
+        checks = _run_metrics_code(designed, out_base, log_fn=print)
+        if checks:
+            m["functional_checks"] = checks
+            failed = [c for c in checks if not c.get("passed")]
+            m["functional_ok"] = not failed
+            for c in checks:
+                print(f"[physics] check '{c['name']}': value={c['value']} "
+                      f"expected={c['expected']} -> {'OK' if c['passed'] else 'FAILED'}"
+                      + (f" ({c['detail']})" if c.get("detail") else ""))
 
         video = None
         if res.get("frames_dir"):
