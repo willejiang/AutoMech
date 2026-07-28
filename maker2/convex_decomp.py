@@ -5,8 +5,9 @@ a bore, a bracket) only collides as its convex hull unless it is first broken in
 convex PIECES. This module turns one part STL into N convex-piece STLs, cached by
 content hash so a re-run is free.
 
-Fallback chain (coacd is NOT installed on this machine, so the fallback IS the
-default path — see the plan's resolved decision):
+Fallback chain (coacd IS installed here, on the python3 interpreter the pipeline runs
+under; the fallbacks only matter on an interpreter that lacks it, and taking one is
+LOGGED so a slow run is never a mystery):
   1. coacd            — best quality, if importable.
   2. trimesh V-HACD   — trimesh.decomposition.convex_decomposition (needs a VHACD
                         binary; on many boxes this just returns the hull).
@@ -21,6 +22,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -36,8 +38,30 @@ _GEAR_NAME_RE = re.compile(r"gear|pinion|wheel|cog|sprocket", re.I)
 # Bump when the decomposition logic changes so stale cached pieces are ignored.
 _CACHE_VERSION = "v2"
 
-# CoACD defaults tuned for mechanical parts: a lower threshold keeps tooth concavity.
+# CoACD concavity threshold, in TWO tiers, because the cost of a tight threshold is
+# superlinear and only gear teeth actually need it.
+#
+# Measured on this watch (hour_wheel, 2136 faces):
+#     threshold 0.05 -> 48 pieces, 180.5s
+#     threshold 0.10 ->  4 pieces,  37.5s
+#     threshold 0.15 ->  1 piece,    0.9s   <- collapsed to the hull: bore FILLED, the
+#                                              exact failure _is_hollow exists to prevent
+# So 0.10 is the knee, and 0.15 is over the cliff.
+#
+# GEARS keep 0.05: interlocking teeth ARE the transmission test, and a tooth flank that
+# gets merged into a neighbouring hull stops meshing. Everything else takes 0.10, which
+# on the bored parts was verified to KEEP THE BORE — piece volume tracked the part's real
+# volume, not its hull (hour_pipe 45.6 vs part 42.1, hull 74.5) — while cutting hour_pipe
+# from 84.7s to 23.9s. Fewer pieces also makes every sim step cheaper, since MuJoCo's
+# contact cost scales with geom count.
 _COACD_THRESHOLD = 0.05
+_COACD_THRESHOLD_COARSE = 0.10
+# Voxel resolution for coacd's preprocessing pass. The default is far finer than these
+# millimetre-scale parts need and was pure overhead (144.3s vs 180.5s at the same result).
+_COACD_PREPROCESS_RES = 20
+
+# One-shot guard so the "no coacd" notice is logged once per process, not per part.
+_COACD_MISSING_LOGGED = False
 
 # Convex pieces below this volume (STL units = mm^3) are dropped: a near-zero sliver from
 # VHACD/CoACD (e.g. a tooth-tip splinter on a small pinion) has no usable inertia and makes
@@ -104,13 +128,22 @@ def _write_manifest(meshes_dir: str, part_name: str, tag: str, count: int) -> No
     Path(manifest).write_text(f"{tag} {count}", encoding="utf-8")
 
 
-def _coacd_pieces(mesh: "trimesh.Trimesh", *, log_fn=print) -> list["trimesh.Trimesh"] | None:
+def _coacd_pieces(mesh: "trimesh.Trimesh", *, fine: bool = True,
+                  log_fn=print) -> list["trimesh.Trimesh"] | None:
     """CoACD decomposition, or None if coacd is unavailable/errors. On a RUNTIME error
     (coacd present but the run failed) log it — a silent None here masqueraded as 'no
     coacd' and let a hollow part degrade to a solid hull without any trace."""
     try:
         import coacd
     except ImportError:
+        # Say so ONCE. A silent None here is indistinguishable from "coacd ran and found
+        # nothing", so a run on an interpreter without coacd quietly took the much slower
+        # VHACD path and nothing in the log said why.
+        global _COACD_MISSING_LOGGED
+        if not _COACD_MISSING_LOGGED:
+            _COACD_MISSING_LOGGED = True
+            log_fn(f"[convex] coacd not importable on {sys.executable} — "
+                   f"falling back to VHACD/hull (slower, coarser)")
         return None
     try:
         try:
@@ -118,7 +151,10 @@ def _coacd_pieces(mesh: "trimesh.Trimesh", *, log_fn=print) -> list["trimesh.Tri
         except Exception:
             pass
         cmesh = coacd.Mesh(mesh.vertices, mesh.faces)
-        parts = coacd.run_coacd(cmesh, threshold=_COACD_THRESHOLD)
+        parts = coacd.run_coacd(
+            cmesh,
+            threshold=_COACD_THRESHOLD if fine else _COACD_THRESHOLD_COARSE,
+            preprocess_resolution=_COACD_PREPROCESS_RES)
         out = []
         for verts, faces in parts:
             out.append(trimesh.Trimesh(vertices=np.asarray(verts),
@@ -145,7 +181,8 @@ def _vhacd_pieces(mesh: "trimesh.Trimesh") -> list["trimesh.Trimesh"] | None:
 
 
 def decompose_part(stl_path: str, meshes_dir: str, part_name: str,
-                   *, metrics: dict | None = None, log_fn=print) -> list[str]:
+                   *, fine: bool = True, metrics: dict | None = None,
+                   log_fn=print) -> list[str]:
     """Decompose one part STL into convex-piece STLs (cached). Returns the list of
     piece STL paths (absolute). On the hull fallback, sets metrics["contact_degraded"]
     = True. If the STL is missing/unloadable, returns [] and the caller should treat
@@ -164,6 +201,7 @@ def decompose_part(stl_path: str, meshes_dir: str, part_name: str,
     except ImportError:
         have_coacd = False
     backend = "coacd" if have_coacd else "vhacd_or_hull"
+    backend += "" if fine else "_coarse"     # a tier change must invalidate the cache
     tag = _part_hash(stl_path, backend)
 
     cached = _existing_cache(meshes_dir, part_name, tag)
@@ -178,7 +216,7 @@ def decompose_part(stl_path: str, meshes_dir: str, part_name: str,
     if not isinstance(mesh, trimesh.Trimesh) or len(mesh.faces) == 0:
         return []
 
-    pieces = _coacd_pieces(mesh, log_fn=log_fn)
+    pieces = _coacd_pieces(mesh, fine=fine, log_fn=log_fn)
     method = "coacd"
     if pieces is None:
         pieces = _vhacd_pieces(mesh)
@@ -269,44 +307,80 @@ def decompose_model(model, meshes_dir: str, *, metrics: dict | None = None,
     for pair in getattr(model, "mesh_pairs", []) or []:
         movers.update(pair)
         mesh_members.update(pair)
-    out: dict[str, list[str]] = {}
+
+    # PASS 1 — classify every link (cheap: a hull + two volumes + an euler count each).
+    # Kept separate from the work so the expensive pass below is a flat list of
+    # independent jobs, which is what makes it parallelisable.
+    jobs: list[tuple[str, str, str]] = []          # (link_name, stl, kind)
     for link in model.links:
         stl = os.path.join(meshes_dir, f"{link.name}.stl")
         is_mover = link.name in movers
         # A fixed part is skipped UNLESS it is hollow (its hull would plug its own cavity).
         if not is_mover:
             if _is_hollow(stl):
-                log_fn(f"[convex] decomposing hollow fixed part {link.name} "
-                       f"(its hull would fill its cavity) ...")
-                pieces = decompose_part(stl, meshes_dir, link.name,
-                                        metrics=metrics, log_fn=log_fn)
-                if pieces:
-                    out[link.name] = pieces
+                jobs.append((link.name, stl, "hollow_fixed"))
             continue
         is_gear = (link.name in mesh_members
                    or _GEAR_NAME_RE.search(link.name or "")
                    or _GEAR_NAME_RE.search(getattr(link, "shape_hint", "") or ""))
         if is_gear:
-            log_fn(f"[convex] decomposing gear {link.name} (fine) ...")
-            pieces = decompose_part(stl, meshes_dir, link.name,
-                                    metrics=metrics, log_fn=log_fn)
+            jobs.append((link.name, stl, "gear"))
+        # B-proxy: one convex hull for a non-gear mover (shaft/sleeve/hand/collar) —
+        # UNLESS it is hollow. A pipe, sleeve, bored hand or collar exists precisely
+        # so a shaft can pass THROUGH it, and a single hull fills that bore: the
+        # shaft is then embedded in a solid rod and the train welds itself shut.
+        # (hour_pipe shipped as vol=hullvol=189.92, its bore gone, minute_arbor
+        # buried 3.3mm inside it.) Those get the real decomposition, which keeps
+        # the hole; only genuinely solid movers take the cheap hull.
+        elif _is_hollow(stl):
+            jobs.append((link.name, stl, "hollow_mover"))
         else:
-            # B-proxy: one convex hull for a non-gear mover (shaft/sleeve/hand/collar) —
-            # UNLESS it is hollow. A pipe, sleeve, bored hand or collar exists precisely
-            # so a shaft can pass THROUGH it, and a single hull fills that bore: the
-            # shaft is then embedded in a solid rod and the train welds itself shut.
-            # (hour_pipe shipped as vol=hullvol=189.92, its bore gone, minute_arbor
-            # buried 3.3mm inside it.) Those get the real decomposition, which keeps
-            # the hole; only genuinely solid movers take the cheap hull.
-            if _is_hollow(stl):
-                log_fn(f"[convex] decomposing hollow mover {link.name} "
-                       f"(a single hull would fill its bore) ...")
-                pieces = decompose_part(stl, meshes_dir, link.name,
-                                        metrics=metrics, log_fn=log_fn)
-            else:
-                pieces = _hull_only_piece(stl, meshes_dir, link.name, log_fn=log_fn)
+            jobs.append((link.name, stl, "hull"))
+
+    _LABEL = {
+        "hollow_fixed": "hollow fixed part {} (its hull would fill its cavity)",
+        "gear": "gear {} (fine)",
+        "hollow_mover": "hollow mover {} (a single hull would fill its bore)",
+    }
+
+    def _work(job):
+        name, stl, kind = job
+        if kind == "hull":
+            return name, _hull_only_piece(stl, meshes_dir, name, log_fn=lambda *_: None)
+        local: dict = {}
+        # Only a GEAR needs the fine threshold — its teeth have to interlock. A bored
+        # bearing/washer/pipe just has to keep its hole, which the coarse tier does.
+        pieces = decompose_part(stl, meshes_dir, name, fine=(kind == "gear"),
+                                metrics=local, log_fn=lambda *_: None)
+        return name, pieces, local
+
+    # PASS 2 — do the work. Parts are INDEPENDENT (each reads one STL and writes its own
+    # `<part>_cvx_*.stl` + manifest, cached by content hash), so decomposing them one at a
+    # time just serialises a pile of CPU-bound jobs. A watch movement is 20+ parts and the
+    # gated-in hollow ones each take a real decomposition, which is what made a cold run
+    # slow. Threads are enough: coacd/VHACD do their work in native code and release the
+    # GIL, and the per-part I/O is a file write.
+    out: dict[str, list[str]] = {}
+    heavy = [j for j in jobs if j[2] != "hull"]
+    for name, stl, kind in heavy:
+        log_fn(f"[convex] decomposing {_LABEL[kind].format(name)} ...")
+    if len(jobs) > 1:
+        from concurrent.futures import ThreadPoolExecutor
+        workers = min(len(jobs), (os.cpu_count() or 4))
+        with ThreadPoolExecutor(max_workers=workers) as ex:
+            results = list(ex.map(_work, jobs))
+    else:
+        results = [_work(j) for j in jobs]
+
+    for res in results:
+        name, pieces = res[0], res[1]
+        # Merge each part's metrics centrally: `metrics` is shared run state and the
+        # workers must not race on it. contact_degraded is sticky — one degraded part
+        # flags the whole run — which is exactly what an OR-merge preserves.
+        if metrics is not None and len(res) > 2 and res[2].get("contact_degraded"):
+            metrics["contact_degraded"] = True
         if pieces:
-            out[link.name] = pieces
+            out[name] = pieces
     return out
 
 

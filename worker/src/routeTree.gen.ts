@@ -30,6 +30,7 @@ import { Route as ApiPromptGeneratorRouteImport } from './routes/api/prompt-gene
 import { Route as ApiParametricChatRouteImport } from './routes/api/parametric-chat'
 import { Route as ApiMeshRouteImport } from './routes/api/mesh'
 import { Route as ApiMaker2ThreadRouteImport } from './routes/api/maker2-thread'
+import { Route as ApiMaker2ReplayRouteImport } from './routes/api/maker2-replay'
 import { Route as ApiListMaker2RunsRouteImport } from './routes/api/list-maker2-runs'
 import { Route as ApiFalWebhookRouteImport } from './routes/api/fal-webhook'
 import { Route as ApiEvaluateModelRouteImport } from './routes/api/evaluate-model'
@@ -152,6 +153,11 @@ const ApiMaker2ThreadRoute = ApiMaker2ThreadRouteImport.update({
   path: '/api/maker2-thread',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiMaker2ReplayRoute = ApiMaker2ReplayRouteImport.update({
+  id: '/api/maker2-replay',
+  path: '/api/maker2-replay',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiListMaker2RunsRoute = ApiListMaker2RunsRouteImport.update({
   id: '/api/list-maker2-runs',
   path: '/api/list-maker2-runs',
@@ -257,6 +263,7 @@ export interface FileRoutesByFullPath {
   '/api/evaluate-model': typeof ApiEvaluateModelRoute
   '/api/fal-webhook': typeof ApiFalWebhookRoute
   '/api/list-maker2-runs': typeof ApiListMaker2RunsRoute
+  '/api/maker2-replay': typeof ApiMaker2ReplayRoute
   '/api/maker2-thread': typeof ApiMaker2ThreadRoute
   '/api/mesh': typeof ApiMeshRoute
   '/api/parametric-chat': typeof ApiParametricChatRoute
@@ -295,6 +302,7 @@ export interface FileRoutesByTo {
   '/api/evaluate-model': typeof ApiEvaluateModelRoute
   '/api/fal-webhook': typeof ApiFalWebhookRoute
   '/api/list-maker2-runs': typeof ApiListMaker2RunsRoute
+  '/api/maker2-replay': typeof ApiMaker2ReplayRoute
   '/api/maker2-thread': typeof ApiMaker2ThreadRoute
   '/api/mesh': typeof ApiMeshRoute
   '/api/parametric-chat': typeof ApiParametricChatRoute
@@ -335,6 +343,7 @@ export interface FileRoutesById {
   '/api/evaluate-model': typeof ApiEvaluateModelRoute
   '/api/fal-webhook': typeof ApiFalWebhookRoute
   '/api/list-maker2-runs': typeof ApiListMaker2RunsRoute
+  '/api/maker2-replay': typeof ApiMaker2ReplayRoute
   '/api/maker2-thread': typeof ApiMaker2ThreadRoute
   '/api/mesh': typeof ApiMeshRoute
   '/api/parametric-chat': typeof ApiParametricChatRoute
@@ -376,6 +385,7 @@ export interface FileRouteTypes {
     | '/api/evaluate-model'
     | '/api/fal-webhook'
     | '/api/list-maker2-runs'
+    | '/api/maker2-replay'
     | '/api/maker2-thread'
     | '/api/mesh'
     | '/api/parametric-chat'
@@ -414,6 +424,7 @@ export interface FileRouteTypes {
     | '/api/evaluate-model'
     | '/api/fal-webhook'
     | '/api/list-maker2-runs'
+    | '/api/maker2-replay'
     | '/api/maker2-thread'
     | '/api/mesh'
     | '/api/parametric-chat'
@@ -453,6 +464,7 @@ export interface FileRouteTypes {
     | '/api/evaluate-model'
     | '/api/fal-webhook'
     | '/api/list-maker2-runs'
+    | '/api/maker2-replay'
     | '/api/maker2-thread'
     | '/api/mesh'
     | '/api/parametric-chat'
@@ -492,6 +504,7 @@ export interface RootRouteChildren {
   ApiEvaluateModelRoute: typeof ApiEvaluateModelRoute
   ApiFalWebhookRoute: typeof ApiFalWebhookRoute
   ApiListMaker2RunsRoute: typeof ApiListMaker2RunsRoute
+  ApiMaker2ReplayRoute: typeof ApiMaker2ReplayRoute
   ApiMaker2ThreadRoute: typeof ApiMaker2ThreadRoute
   ApiMeshRoute: typeof ApiMeshRoute
   ApiParametricChatRoute: typeof ApiParametricChatRoute
@@ -653,6 +666,13 @@ declare module '@tanstack/react-router' {
       path: '/api/maker2-thread'
       fullPath: '/api/maker2-thread'
       preLoaderRoute: typeof ApiMaker2ThreadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/maker2-replay': {
+      id: '/api/maker2-replay'
+      path: '/api/maker2-replay'
+      fullPath: '/api/maker2-replay'
+      preLoaderRoute: typeof ApiMaker2ReplayRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/list-maker2-runs': {
@@ -831,6 +851,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiEvaluateModelRoute: ApiEvaluateModelRoute,
   ApiFalWebhookRoute: ApiFalWebhookRoute,
   ApiListMaker2RunsRoute: ApiListMaker2RunsRoute,
+  ApiMaker2ReplayRoute: ApiMaker2ReplayRoute,
   ApiMaker2ThreadRoute: ApiMaker2ThreadRoute,
   ApiMeshRoute: ApiMeshRoute,
   ApiParametricChatRoute: ApiParametricChatRoute,

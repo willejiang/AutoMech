@@ -7,6 +7,7 @@ import {
   Brain,
   ChevronDown,
   ChevronUp,
+  Square,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -15,7 +16,7 @@ import { PhysicsPanel, type PhysicsResult } from '@/components/viewer/PhysicsPan
 import { apiUrl } from '@/services/api';
 import { cn } from '@/lib/utils';
 import { PipelineTimeline } from '@/components/workbench/PipelineTimeline';
-import { BenchmarkPanel } from '@/components/workbench/BenchmarkPanel';
+import { PartsGhostPanel } from '@/components/workbench/PartsGhostPanel';
 import { ScoreGraph } from '@/components/workbench/ScoreGraph';
 import { PartsInspector } from '@/components/workbench/PartsInspector';
 import type {
@@ -175,6 +176,10 @@ function reducer(state: State, action: Action): State {
   }
 }
 
+// Stable identity so <Maker2ModelCanvas>'s ghosting effect doesn't re-run every render
+// on an iteration nobody has ghosted anything in.
+const EMPTY_GHOSTED: Set<string> = new Set();
+
 export function WorkbenchView(props: WorkbenchViewProps) {
   const { prompt, model, iters, threadId, deep } = props;
   const navigate = useNavigate();
@@ -205,6 +210,29 @@ export function WorkbenchView(props: WorkbenchViewProps) {
   // so the header can note a pending change if the user flips the toggle mid-run.
   const runDeepRef = useRef<boolean>(deepThink);
   const [collapsedLog, setCollapsedLog] = useState(true);
+  // True when this view rendered a RECORDED run rather than starting a live one.
+  const [replayed, setReplayed] = useState(false);
+  // True when the user STOPPED this run, so the header can say so rather than
+  // showing it as a run that finished on its own.
+  const [stopped, setStopped] = useState(false);
+
+  // STOP the live run. Closing the EventSource drops the HTTP connection, which
+  // fires `request.signal`'s abort in run-maker2-stream and kills the python
+  // child — the server side already handles that. We must also mark the run done
+  // ourselves: no `end` event will ever arrive now, so without this the UI spins
+  // forever on a run that is already dead.
+  const stop = useCallback(() => {
+    esRef.current?.close();
+    esRef.current = null;
+    setStopped(true);
+    dispatch({ type: 'done' });
+  }, []);
+
+  // Per-part ghosting for the model on the canvas. Keyed by iteration: each iteration
+  // is a different machine, so a part hidden in iter 2 must not silently stay hidden
+  // when you scrub to iter 5 where that name may mean something else (or not exist).
+  const [partNames, setPartNames] = useState<string[]>([]);
+  const [ghostedByIter, setGhostedByIter] = useState<Record<number, Set<string>>>({});
 
   // Fetch the assembled GLB for one iteration and drop the blob into that entry.
   const loadGlb = useCallback((iter: number, dir: string) => {
@@ -216,111 +244,164 @@ export function WorkbenchView(props: WorkbenchViewProps) {
       });
   }, []);
 
-  // Open the SSE for this run. Guarded against React 19 strict-mode double mount
-  // by startedRef so we never open two EventSources.
-  useEffect(() => {
-    if (startedRef.current || !prompt) return;
-    startedRef.current = true;
-    runDeepRef.current = deepThink;
-
-    const qs = new URLSearchParams({
-      prompt,
-      iters: String(iters),
-      thread: threadId,
-      web: '1',
-      deep: deepThink ? '1' : '0',
-    });
-    if (model) qs.set('model', model);
-
-    const es = new EventSource(`${apiUrl('run-maker2-stream')}?${qs.toString()}`);
-    esRef.current = es;
-
-    const onLine = (e: Event) => {
-      const raw = JSON.parse((e as MessageEvent).data).raw as string;
-      dispatch({ type: 'line', raw });
-    };
-    es.addEventListener('stage', onLine);
-    es.addEventListener('log', onLine);
-
-    es.addEventListener('artifact', (e) => {
-      const a = JSON.parse((e as MessageEvent).data) as ArtifactEvent;
-      switch (a.kind) {
-        case 'gate':
-          dispatch({
-            type: 'gate',
-            gate: {
-              layer: a.layer,
-              code: a.code,
-              detail: a.detail,
-              culprit: a.culprit,
-              ok: a.ok,
-              sub_id: a.sub_id,
-              iter: a.iter,
-            },
-          });
+  // Apply ONE pipeline event to the view state. Shared by the live SSE and by
+  // replay, so a recorded run renders through exactly the same path it did live.
+  const applyEvent = useCallback(
+    (event: string, data: unknown) => {
+      switch (event) {
+        case 'stage':
+        case 'log':
+          dispatch({ type: 'line', raw: (data as { raw: string }).raw });
           break;
-        case 'subassembly':
-          dispatch({
-            type: 'sub',
-            sub: { sub_id: a.sub_id, ok: a.ok, run_dir: a.run_dir },
-          });
-          break;
-        case 'assembled_model': {
-          const dir = a.render_dir || a.run_dir;
-          dispatch({ type: 'assembled', iter: a.iter, run_dir: dir });
-          loadGlb(a.iter, dir);
+        case 'artifact': {
+          const a = data as ArtifactEvent;
+          switch (a.kind) {
+            case 'gate':
+              dispatch({
+                type: 'gate',
+                gate: {
+                  layer: a.layer,
+                  code: a.code,
+                  detail: a.detail,
+                  culprit: a.culprit,
+                  ok: a.ok,
+                  sub_id: a.sub_id,
+                  iter: a.iter,
+                },
+              });
+              break;
+            case 'subassembly':
+              dispatch({
+                type: 'sub',
+                sub: { sub_id: a.sub_id, ok: a.ok, run_dir: a.run_dir },
+              });
+              break;
+            case 'assembled_model': {
+              const dir = a.render_dir || a.run_dir;
+              dispatch({ type: 'assembled', iter: a.iter, run_dir: dir });
+              loadGlb(a.iter, dir);
+              break;
+            }
+            case 'physics':
+              dispatch({
+                type: 'physics',
+                info: {
+                  iter: a.iter,
+                  score: a.score,
+                  passed: a.passed,
+                  breakdown: a.score_breakdown,
+                  runDir: a.render_dir || a.run_dir,
+                  physics: a.physics,
+                },
+              });
+              break;
+            // precheck / mesh_progress are surfaced elsewhere (gates + canvas); no
+            // dedicated state needed here for the first cut.
+            default:
+              break;
+          }
           break;
         }
-        case 'physics':
+        case 'result': {
+          const r = data as Maker2Result;
+          if (r.hard_failed || r.error) {
+            dispatch({
+              type: 'error',
+              error: r.error || 'The pipeline did not produce a model.',
+            });
+          }
+          break;
+        }
+        case 'error': {
+          const d = data as { error?: string; tail?: string };
           dispatch({
-            type: 'physics',
-            info: {
-              iter: a.iter,
-              score: a.score,
-              passed: a.passed,
-              breakdown: a.score_breakdown,
-              runDir: a.render_dir || a.run_dir,
-              physics: a.physics,
-            },
+            type: 'error',
+            error: (d?.error ?? 'stream error') + (d?.tail ? `\n${d.tail}` : ''),
           });
           break;
-        // precheck / mesh_progress are surfaced elsewhere (gates + canvas); no
-        // dedicated state needed here for the first cut.
+        }
+        case 'end':
+          dispatch({ type: 'done' });
+          break;
         default:
           break;
       }
-    });
+    },
+    [loadGlb],
+  );
 
-    es.addEventListener('result', (e) => {
-      const r = JSON.parse((e as MessageEvent).data) as Maker2Result;
-      if (r.hard_failed || r.error) {
-        dispatch({ type: 'error', error: r.error || 'The pipeline did not produce a model.' });
+  // Open this run. REPLAY-FIRST: a run that already happened is recorded as an
+  // event log (run-maker2-stream tees every event to the thread), so opening it
+  // from history REPLAYS that recording. Only a thread with NO recording starts a
+  // live run — otherwise clicking a past run re-ran the whole pipeline and
+  // overwrote the very result the user clicked on.
+  useEffect(() => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    let cancelled = false;
+
+    const live = () => {
+      if (cancelled || !prompt) {
+        // No recording AND no prompt to run: nothing to show. Don't leave the UI
+        // spinning forever on a thread that has neither.
+        if (!prompt) dispatch({ type: 'done' });
+        return;
       }
-    });
+      runDeepRef.current = deepThink;
+      setReplayed(false);
 
-    es.addEventListener('error', (e) => {
-      const data = (e as MessageEvent).data;
-      if (data) {
+      const qs = new URLSearchParams({
+        prompt,
+        iters: String(iters),
+        thread: threadId,
+        web: '1',
+        deep: deepThink ? '1' : '0',
+      });
+      if (model) qs.set('model', model);
+
+      const es = new EventSource(`${apiUrl('run-maker2-stream')}?${qs.toString()}`);
+      esRef.current = es;
+      const on = (name: string) => (e: Event) => {
+        const raw = (e as MessageEvent).data;
+        if (!raw && name !== 'error') return;
         try {
-          const d = JSON.parse(data) as { error?: string; tail?: string };
-          dispatch({
-            type: 'error',
-            error: (d.error ?? 'stream error') + (d.tail ? `\n${d.tail}` : ''),
-          });
+          applyEvent(name, raw ? JSON.parse(raw) : {});
         } catch {
-          dispatch({ type: 'error', error: 'stream error' });
+          /* a malformed frame is not worth tearing the run down */
         }
+        if (name === 'end') es.close();
+      };
+      for (const name of ['stage', 'log', 'artifact', 'result', 'error', 'end']) {
+        es.addEventListener(name, on(name));
       }
-    });
+    };
 
-    es.addEventListener('end', () => {
-      dispatch({ type: 'done' });
-      es.close();
-    });
+    // Ask for a recording first. A network/route failure just falls through to a
+    // live run, so this can never make the page worse than it was.
+    fetch(`${apiUrl('maker2-replay')}?id=${encodeURIComponent(threadId)}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.statusText)))
+      .then((doc: { recorded?: boolean; events?: { event: string; data: unknown }[] }) => {
+        if (cancelled) return;
+        const events = doc?.events ?? [];
+        if (!doc?.recorded || events.length === 0) {
+          live();
+          return;
+        }
+        setReplayed(true);
+        for (const ev of events) applyEvent(ev.event, ev.data);
+        dispatch({ type: 'done' });
+      })
+      .catch(() => {
+        if (!cancelled) live();
+      });
+
+    return () => {
+      cancelled = true;
+    };
     // deepThink is intentionally read at open time only (a mid-run flip affects the
     // next run); startedRef guards against re-open on its change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [prompt, model, iters, threadId, loadGlb]);
+  }, [prompt, model, iters, threadId, applyEvent]);
 
   // On unmount, close the stream AND reset the guard so a StrictMode remount opens
   // a fresh EventSource (else the double-mount closes the first and the guard
@@ -348,6 +429,10 @@ export function WorkbenchView(props: WorkbenchViewProps) {
     .filter((i): i is IterationInfo & { score: number } => typeof i.score === 'number')
     .map((i) => ({ iter: i.iter, score: i.score }));
 
+  // Ghosting is per-iteration; -1 is the "nothing selected yet" bucket.
+  const ghostKey = selectedIter ?? -1;
+  const ghosted = ghostedByIter[ghostKey] ?? EMPTY_GHOSTED;
+
   const running = !state.done;
   const deepPending = runDeepRef.current !== deepThink;
 
@@ -363,16 +448,34 @@ export function WorkbenchView(props: WorkbenchViewProps) {
           <div className="text-xs text-adam-neutral-400">
             workbench (maker2){model ? ` · ${model}` : ''} ·{' '}
             {iters > 0 ? `max ${iters} iter` : 'loops until it works'}
-            {running ? ' · running…' : ' · done'}
+            {replayed
+              ? ' · recorded run'
+              : stopped
+                ? ' · stopped'
+                : running
+                  ? ' · running…'
+                  : ' · done'}
           </div>
         </div>
+        {/* Stop: only for a LIVE run. Closing the SSE aborts the request, which the
+            server turns into a kill of the python child. A replay has nothing to stop. */}
+        {running && !replayed && (
+          <button
+            onClick={stop}
+            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-red-500/60 bg-red-500/10 px-3 py-1 text-xs font-medium text-red-400 transition-colors hover:bg-red-500/20"
+            title="Stop this run now — kills the generation process."
+          >
+            <Square className="h-3.5 w-3.5" />
+            Stop
+          </button>
+        )}
         {/* Deep-think toggle: CadQuery + full debugger when on, OpenSCAD + slim
             when off. A mid-run flip only takes effect on the next run. */}
-        <div className="flex flex-col items-end gap-0.5">
+        <div className="flex shrink-0 flex-col items-end gap-0.5">
           <button
             onClick={() => setDeepThink(!deepThink)}
             className={cn(
-              'flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors',
+              'flex items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition-colors',
               deepThink
                 ? 'border-adam-blue bg-adam-blue/15 text-adam-blue'
                 : 'border-adam-neutral-700 bg-adam-neutral-900/40 text-adam-neutral-400 hover:text-adam-text-primary',
@@ -395,7 +498,14 @@ export function WorkbenchView(props: WorkbenchViewProps) {
           <ScrollArea className="min-h-0 flex-1">
             <PipelineTimeline lines={state.stageLines} gates={state.gates} done={state.done} />
             <div className="border-t border-adam-neutral-800" />
-            <BenchmarkPanel gates={state.gates} />
+            <PartsGhostPanel
+              parts={partNames}
+              ghosted={ghosted}
+              onChange={(next) =>
+                setGhostedByIter((prev) => ({ ...prev, [ghostKey]: next }))
+              }
+              iter={selectedIter}
+            />
           </ScrollArea>
         </div>
 
@@ -435,6 +545,8 @@ export function WorkbenchView(props: WorkbenchViewProps) {
           <div className="relative min-h-0 flex-1">
             <Maker2ModelCanvas
               glbBlob={canvasGlb}
+            ghosted={ghosted}
+            onParts={setPartNames}
               status={canvasFailed ? 'failed' : 'loading'}
               failedReason={canvasFailed ? state.error ?? undefined : undefined}
             />

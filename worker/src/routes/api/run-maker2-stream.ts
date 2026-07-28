@@ -1,7 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { corsHeaders, methodNotAllowed, preflight } from '@/server/api';
 import { spawn } from 'node:child_process';
-import { resolve } from 'node:path';
+import { createWriteStream, mkdirSync, type WriteStream } from 'node:fs';
+import { resolve, sep } from 'node:path';
 
 // DEV bridge (SSE): the maker2 editor opens an EventSource here and we stream the
 // Python run's stdout line-by-line so the UI can show real per-stage progress
@@ -25,6 +26,27 @@ const STAGE_PREFIXES = [
 
 function sse(event: string, data: unknown): string {
   return `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+}
+
+// REPLAY LOG. Every event this endpoint sends is also appended to
+// output/threads/<thread>/events.ndjson, so opening the run later can REPLAY it
+// instead of spawning python again. Without this the only record of a run is
+// thread.json's one-line summary + the run_dir artifacts, and the frontend has
+// nothing to render from — which is exactly why opening a past run re-ran it.
+const OUTPUT_ROOT = resolve(REPO_ROOT, 'output');
+const THREADS_ROOT = resolve(OUTPUT_ROOT, 'threads');
+
+function openEventLog(threadId: string | undefined): WriteStream | null {
+  if (!threadId) return null;
+  const dir = resolve(THREADS_ROOT, threadId);
+  // A thread id is one uuid-ish segment; reject anything that escapes the root.
+  if (dir !== THREADS_ROOT && !dir.startsWith(THREADS_ROOT + sep)) return null;
+  try {
+    mkdirSync(dir, { recursive: true });
+    return createWriteStream(resolve(dir, 'events.ndjson'), { flags: 'w' });
+  } catch {
+    return null;   // a log we can't write must never break the live run
+  }
 }
 
 export const Route = createFileRoute('/api/run-maker2-stream')({
@@ -85,14 +107,23 @@ export const Route = createFileRoute('/api/run-maker2-stream')({
           start(controller) {
             const enc = new TextEncoder();
             let closed = false;
-            const send = (s: string) => {
+            const log = openEventLog(threadId);
+            const raw = (s: string) => {
               if (closed) return;
               try { controller.enqueue(enc.encode(s)); }
               catch { closed = true; }   // controller closed under us
             };
+            // Send an event AND record it for replay. `open`/`end` are recorded
+            // too so a replay reproduces the same event sequence the live client saw.
+            const send = (event: string, data: unknown) => {
+              raw(sse(event, data));
+              try { log?.write(JSON.stringify({ event, data }) + '\n'); }
+              catch { /* a broken log must not kill the run */ }
+            };
             const close = () => {
               if (closed) return;
               closed = true;
+              try { log?.end(); } catch { /* ignore */ }
               try { controller.close(); } catch { /* already closed */ }
             };
 
@@ -104,8 +135,8 @@ export const Route = createFileRoute('/api/run-maker2-stream')({
 
             // Flush an immediate comment + open event so the client (and any
             // buffering proxy) sees bytes before python finishes booting.
-            send(`: open\n\n`);
-            send(sse('open', { prompt }));
+            raw(`: open\n\n`);
+            send('open', { prompt });
 
             let buf = '';        // partial-line carryover across chunks
             let tail = '';       // last bytes, surfaced if the run dies w/o a result
@@ -120,10 +151,10 @@ export const Route = createFileRoute('/api/run-maker2-stream')({
                 const m = line.match(/^RESULT_JSON:(\{.*\})\s*$/);
                 if (m) {
                   try {
-                    send(sse('result', JSON.parse(m[1])));
+                    send('result', JSON.parse(m[1]));
                     gotResult = true;
                   } catch {
-                    send(sse('log', { raw: line }));
+                    send('log', { raw: line });
                   }
                   continue;
                 }
@@ -133,32 +164,32 @@ export const Route = createFileRoute('/api/run-maker2-stream')({
                 const am = line.match(/^ARTIFACT_JSON:(\{.*\})\s*$/);
                 if (am) {
                   try {
-                    send(sse('artifact', JSON.parse(am[1])));
+                    send('artifact', JSON.parse(am[1]));
                   } catch {
-                    send(sse('log', { raw: line }));
+                    send('log', { raw: line });
                   }
                   continue;
                 }
                 const isStage = STAGE_PREFIXES.some((pre) => line.startsWith(pre));
-                send(sse(isStage ? 'stage' : 'log', { raw: line }));
+                send(isStage ? 'stage' : 'log', { raw: line });
               }
             };
 
             p.stdout.on('data', onData);
             p.stderr.on('data', onData);
             p.on('error', (e) => {
-              send(sse('error', { error: `spawn failed: ${String(e)}` }));
+              send('error', { error: `spawn failed: ${String(e)}` });
               close();
             });
             p.on('close', () => {
-              if (buf.trim()) send(sse('log', { raw: buf }));
+              if (buf.trim()) send('log', { raw: buf });
               if (!gotResult) {
-                send(sse('error', {
+                send('error', {
                   error: 'maker2 produced no result',
                   tail: tail.slice(-400),
-                }));
+                });
               }
-              send(sse('end', {}));
+              send('end', {});
               close();
             });
 
