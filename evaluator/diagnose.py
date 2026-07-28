@@ -453,6 +453,33 @@ def _culprit_sub_of(part: str, robot_info: dict) -> str:
     return "_".join(toks[:2]) if len(toks) > 2 else part
 
 
+def _measured_reason(metrics) -> str:
+    """A reason built from DETERMINISTIC geometry already measured while the MJCF was
+    built, for when the VLM returns a verdict with no explanation. These faults are exact
+    and are the usual cause of a partial transmission, so they beat an empty string and
+    they beat a generic note."""
+    m = metrics or {}
+    parts = []
+    inter = m.get("interferences") or []
+    if inter:
+        worst = ", ".join(f"{i['a']} and {i['b']} ({i['overlap_mm3']}mm3)"
+                          for i in inter[:4])
+        parts.append(f"{len(inter)} pair(s) of parts occupy the same space: {worst}. "
+                     f"A solid driven through a wheel stops it turning.")
+    loose = m.get("loose_gears") or []
+    if loose:
+        worst = ", ".join(f"{g['gear']} on {g['shaft']} ({g['clearance_mm']}mm)"
+                          for g in loose[:4])
+        parts.append(f"{len(loose)} gear(s) sit too loosely on their shafts to be driven: "
+                     f"{worst}.")
+    fits = [f for f in (m.get("bore_fit_faults") or []) if f.get("impossible")]
+    if fits:
+        worst = ", ".join(f"{f['part']} on {f['shaft']}" for f in fits[:4])
+        parts.append(f"{len(fits)} part(s) have a bore smaller than the shaft they mount "
+                     f"on and cannot be assembled: {worst}.")
+    return " ".join(parts)
+
+
 def _diag(verdict, cause, reason, culprit_part="", culprit_sub=""):
     # `reason` is the ACTIONABLE part of the diagnosis — for a jammed train it carries the
     # whole "here is what to look at and what to change" instruction. A 400-char cap cut
@@ -841,6 +868,15 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
         reason = (reason + " (input did not move; not a camera issue)").strip()
         if det_part:
             culprit_part = det_part
+
+    # A FAIL MUST SAY WHY. The backfill above only fires on `hard_fail`, so a run where
+    # every hard signal passed (the input turned, motion reached the output) but the VLM
+    # still called it a fail came back with an EMPTY reason — the agent was told "FAIL,
+    # cause=structure" and nothing else, while the measured cause was sitting in the
+    # metrics all along (four posts driven through two wheels, 11.4mm^3 each).
+    if verdict == "fail" and not reason:
+        reason = _measured_reason(metrics) or sig_note or (
+            "the mechanism did not work, but no specific fault was isolated")
 
     # Backfill culprit_sub from the part namespace if the model left it blank.
     if culprit_part and not culprit_sub:
