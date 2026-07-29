@@ -290,32 +290,27 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
                           </span>
                         </li>
                       );
-                      // maker2 run -> reopen the saved run read-only (pass its dir).
+                      // maker2 run -> reopen it in the WORKBENCH, the same view a new
+                      // run streams into. Sending it to /maker2/$runId instead opened a
+                      // different view with a different layout and none of the replay,
+                      // which read as "it started a new run" — the run was there, just
+                      // rendered somewhere the user had never seen it.
                       if (item.kind === 'maker2') {
                         return (
                           <Link
                             key={item.id}
-                            to="/maker2/$runId"
+                            to="/workbench/$runId"
                             params={{
                               runId: encodeURIComponent(
                                 item.run.threadId || item.run.run_dir,
                               ),
                             }}
-                            search={
-                              item.run.threadId
-                                ? {
-                                    prompt: item.run.prompt,
-                                    model: item.run.model,
-                                    iters: item.run.maxIters,
-                                    thread: item.run.threadId,
-                                  }
-                                : {
-                                    prompt: item.run.prompt,
-                                    model: item.run.model,
-                                    iters: item.run.maxIters,
-                                    dir: item.run.run_dir,
-                                  }
-                            }
+                            search={{
+                              prompt: item.run.prompt,
+                              model: item.run.model,
+                              iters: item.run.maxIters,
+                              thread: item.run.threadId || undefined,
+                            }}
                             onClick={closeOnMobile}
                           >
                             {titleSpan}

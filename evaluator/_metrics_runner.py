@@ -18,8 +18,34 @@ from __future__ import annotations
 
 import json
 import math
+import re
 import sys
 import traceback
+
+# How far a measured value may sit from a numeric target before we overrule the designer's
+# own "passed". 5% is loose enough for simulation noise and tooth-count rounding, tight
+# enough that a missing or extra stage cannot hide inside it.
+_TOLERANCE = 0.05
+
+
+def _target_number(expected):
+    """The number a non-numeric `expected` is really asking for, or None.
+
+    Targets arrive as the designer wrote them: 12.0, "~12:1", "12:1", "approx 12". Ratios
+    written "a:b" mean a/b. Anything with no number in it ("closes", "monotonic") returns
+    None and that check keeps the designer's verdict.
+    """
+    if isinstance(expected, bool) or expected is None:
+        return None
+    if isinstance(expected, (int, float)):
+        return float(expected) if math.isfinite(float(expected)) else None
+    nums = re.findall(r"-?\d+(?:\.\d+)?", str(expected))
+    if not nums:
+        return None
+    if len(nums) >= 2 and ":" in str(expected):
+        a, b = float(nums[0]), float(nums[1])
+        return a / b if b else None
+    return float(nums[0])
 
 
 def main() -> int:
@@ -84,12 +110,29 @@ def main() -> int:
                 passed = bool(item.get("passed"))
             except Exception:
                 passed = False
+            value = _num_or_str(item.get("value"))
+            expected = _num_or_str(item.get("expected"))
+            detail = str(item.get("detail") or "")[:300]
+            # The designer writes both the measurement AND the band it is judged against,
+            # so it can pass itself: one watch reported 9.738 against "~12:1" and called it
+            # passed — 19% off, and the hands visibly never changed their angle. Whenever
+            # the target is a number we can read, the tolerance is ours, not the
+            # designer's. Non-numeric targets ("closes", "never decreases") stay its call.
+            target = _target_number(expected)
+            if target is not None and isinstance(value, float):
+                err = abs(value - target) / abs(target) if target else abs(value)
+                within = err <= _TOLERANCE
+                if passed and not within:
+                    detail = (detail + " | REJECTED: %.4g vs target %.4g is %.1f%% off, "
+                              "over the %.0f%% tolerance" % (
+                                  value, target, err * 100, _TOLERANCE * 100))[:300]
+                passed = passed and within
             checks.append({
                 "name": str(item.get("name") or "check")[:80],
-                "value": _num_or_str(item.get("value")),
-                "expected": _num_or_str(item.get("expected")),
+                "value": value,
+                "expected": expected,
                 "passed": passed,
-                "detail": str(item.get("detail") or "")[:300],
+                "detail": detail,
             })
     _write({"ok": True, "checks": checks})
     return 0
