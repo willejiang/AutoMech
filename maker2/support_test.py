@@ -37,7 +37,17 @@ _FIT_GAP_MM = 0.3
 def _really_fits(model, meshes_dir: str, a: str, b: str) -> bool:
     """Do parts `a` and `b` actually meet? A shaft only supports a ring it truly passes
     through: sharing an axis LINE is not enough, since a hand parked past the end of its
-    arbor is still perfectly on-axis."""
+    arbor is still perfectly on-axis.
+
+    Measured as a RADIAL fit in the z-band the two share, not as a 3D vertex distance. A
+    smooth cylinder carries vertices only on its end rings, so asking "how far is the
+    nearest tube vertex from the hand" on a hand that sits mid-tube measures a DIAGONAL to
+    the rim, not the gap. On one watch that read 0.354mm -- exactly hypot(0.350 axial to
+    the rim, 0.050 real radial gap) -- for a hand correctly fitted with 0.05mm clearance.
+    The fit was rejected, the hand fell in the settle test, and the agent spent six
+    iterations shoving it along Z (breaking transmission each time) chasing a gap that was
+    never axial.
+    """
     import os
 
     import numpy as np
@@ -69,25 +79,112 @@ def _really_fits(model, meshes_dir: str, a: str, b: str) -> bool:
     hi = min(float(ma.bounds[1][2]), float(mb.bounds[1][2]))
     if hi - lo < _FIT_GAP_MM:
         return False
+    # Radial fit, measured only in the shared z-band. One of the two is the bore and the
+    # other the shaft; which is which follows from the geometry, so test both directions
+    # and accept the one that describes a ring around a post.
     try:
-        return float(ma.nearest.on_surface(mb.vertices)[1].min()) <= _FIT_GAP_MM
+        band = 0.5 * (lo + hi)
+        gaps = []
+        for inner, outer in ((ma, mb), (mb, ma)):
+            iv = inner.vertices[(inner.vertices[:, 2] >= lo) & (inner.vertices[:, 2] <= hi)]
+            ov = outer.vertices[(outer.vertices[:, 2] >= lo) & (outer.vertices[:, 2] <= hi)]
+            # A smooth cylinder may carry no vertices inside the band; fall back to its
+            # full extent, which is the same radius for a part of constant section.
+            if len(iv) == 0:
+                iv = inner.vertices
+            if len(ov) == 0:
+                ov = outer.vertices
+            if len(iv) == 0 or len(ov) == 0:
+                continue
+            shaft_r = float(np.linalg.norm(ov[:, :2], axis=1).max())
+            bore_r = float(np.linalg.norm(iv[:, :2], axis=1).min())
+            gaps.append(bore_r - shaft_r)
+        if not gaps:
+            return False
+        # Negative = interference (still a fit, and a tight one); positive = clearance.
+        return min(abs(g) for g in gaps) <= _FIT_GAP_MM
     except Exception:
         return False
+
+
+def _radial_gap(model, meshes_dir: str, part: str, carrier: str):
+    """Bore-minus-shaft radius in mm when `part` rings `carrier` concentrically, else None.
+
+    Only meaningful for two parts that share an axis AND overlap along it: that is the
+    case where "it fell" means the bore is too loose, not that the part sits above a gap.
+    Returns None otherwise so the caller keeps the axial wording.
+    """
+    import os
+
+    import numpy as np
+    import trimesh
+
+    from .mjcf_builder import _world_transforms
+
+    try:
+        W = _world_transforms(model)
+        got = []
+        for n in (part, carrier):
+            stl = os.path.join(meshes_dir, f"{n}.stl")
+            T = W.get(n)
+            if not os.path.exists(stl) or T is None:
+                return None
+            mm = trimesh.load(stl, force="mesh")
+            if not isinstance(mm, trimesh.Trimesh) or len(mm.faces) == 0:
+                return None
+            Tmm = T.copy()
+            Tmm[:3, 3] *= 1000.0
+            mm.apply_transform(Tmm)
+            got.append(mm)
+        ring, shaft = got
+        lo = max(float(ring.bounds[0][2]), float(shaft.bounds[0][2]))
+        hi = min(float(ring.bounds[1][2]), float(shaft.bounds[1][2]))
+        if hi - lo < _FIT_GAP_MM:
+            return None                                  # no axial overlap -> not a ring
+        rv = ring.vertices[(ring.vertices[:, 2] >= lo) & (ring.vertices[:, 2] <= hi)]
+        sv = shaft.vertices[(shaft.vertices[:, 2] >= lo) & (shaft.vertices[:, 2] <= hi)]
+        if len(rv) == 0:
+            rv = ring.vertices
+        if len(sv) == 0:
+            sv = shaft.vertices
+        if len(rv) == 0 or len(sv) == 0:
+            return None
+        gap = (float(np.linalg.norm(rv[:, :2], axis=1).min())
+               - float(np.linalg.norm(sv[:, :2], axis=1).max()))
+        return gap if gap > 0 else None                  # interference is a different fault
+    except Exception:
+        return None
 
 
 class Fell:
     """One part that dropped when its mount weld was dissolved: nothing real held it."""
 
-    def __init__(self, part: str, drop_mm: float, parent: str = ""):
+    def __init__(self, part: str, drop_mm: float, parent: str = "", radial_mm=None):
         self.part = part
         self.drop_mm = drop_mm
         self.parent = parent
+        # Radial clearance to the declared carrier when the two ARE concentric, else None.
+        self.radial_mm = radial_mm
 
     def describe(self) -> str:
+        base = (f"part '{self.part}' FELL {self.drop_mm:.1f}mm when the assembly was "
+                f"settled under gravity: nothing physically supports it.")
+        if self.parent and self.radial_mm is not None:
+            # Concentric but too loose. Telling this part to move DOWN is useless advice:
+            # it is a ring around a post, the gap is RADIAL, and sliding along the axis
+            # never closes it. One watch burned six iterations shoving the hand along Z,
+            # breaking the gear train each time, because the message only offered that.
+            return (base + f" It is concentric with '{self.parent}' and overlaps it along "
+                    f"the axis, but its bore is {self.radial_mm:.3f}mm LARGER in radius, "
+                    f"so it hangs in air around it. In this simulation a bore within "
+                    f"0.10mm of the shaft is a PRESS fit (it is carried, and turns 1:1 "
+                    f"with it); anything looser is a running fit and is carried by "
+                    f"nothing. FIX by tightening the bore of '{self.part}' to within "
+                    f"0.10mm of '{self.parent}'. Do NOT move it along the axis — the gap "
+                    f"is radial, not vertical — and do NOT add a new support part.")
         where = (f" It is declared on '{self.parent}', but that is only a label — "
                  f"the two never touch.") if self.parent else ""
-        return (f"part '{self.part}' FELL {self.drop_mm:.1f}mm when the assembly was "
-                f"settled under gravity: nothing physically supports it.{where} FIX by "
+        return (base + where + f" FIX by "
                 f"making it actually meet the part that carries it — move '{self.part}' "
                 f"down until its solid touches that part, or lengthen the shaft/arbor/"
                 f"tube so it reaches '{self.part}'. Do NOT add a new support part.")
@@ -165,7 +262,9 @@ def support_faults(model, ctx, *, log_fn=print) -> list[Fell]:
         par = parent_of.get(name, "")
         if par and par in fell:
             continue                                    # its support fell -> downstream
-        found.append(Fell(part=name, drop_mm=dz, parent=par))
+        found.append(Fell(part=name, drop_mm=dz, parent=par,
+                          radial_mm=_radial_gap(model, ctx.meshes_dir, name, par)
+                          if par else None))
     found.sort(key=lambda f: f.drop_mm, reverse=True)
     if found:
         log_fn(f"[support] {len(found)} unsupported part(s) (of {len(fell)} that fell; "

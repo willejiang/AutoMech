@@ -545,15 +545,24 @@ def coaxial_pairs(model, meshes_dir, *, include_spin_spin: bool = False) -> list
     `include_spin_spin` also returns spin-on-spin pairs (a gear pressed on its arbor, a
     pipe over a shaft). The real MJCF must NOT exclude those — a gear driven by tooth
     contact still needs its own collisions — but for SUPPORT they are exactly as real as
-    a bearing fit: the arbor is what holds the gear up."""
+    a bearing fit: the arbor is what holds the gear up.
+
+    In that mode a FIXED part may also be the carrier. Support flows down a chain of
+    concentric parts — an hour hand rides its pipe, the pipe rides the centre arbor — and
+    when only spin parts could carry, a hand whose pipe happened to be declared fixed had
+    no carrier at all and fell in the settle test, while the identical design with a
+    spinning pipe passed. Carrying something is a property of the geometry, not of whether
+    the carrier itself turns."""
     spins = [l for l in model.links if getattr(l, "dof", "fixed") == "spin"]
+    carriers = list(model.links) if include_spin_spin else spins
     others = [l for l in model.links
               if getattr(l, "dof", "fixed") == "fixed" or include_spin_spin]
-    if not spins or not others:
+    if not carriers or not others:
         return []
     W = _world_transforms(model)
     out: list[tuple[str, str]] = []
-    for s in spins:
+    seen: set = set()
+    for s in carriers:
         Ts = W.get(s.name)
         if Ts is None:
             continue
@@ -571,6 +580,12 @@ def coaxial_pairs(model, meshes_dir, *, include_spin_spin: bool = False) -> list
             d = Tf[:3, 3] - origin
             perp = float(np.linalg.norm(d - np.dot(d, axis) * axis))
             if perp <= _COAXIAL_XY_TOL_M:
+                # One edge per unordered pair: with every link a candidate carrier, a
+                # concentric pair would otherwise be emitted twice (once from each end).
+                key = frozenset((s.name, f.name))
+                if key in seen:
+                    continue
+                seen.add(key)
                 out.append((s.name, f.name))
     return out
 
