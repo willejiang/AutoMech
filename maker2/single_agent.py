@@ -137,14 +137,19 @@ def evaluate_machine_python(script_text: str, run_dir: str, machine_name: str,
         spin_axis = meta.get("spin_axis")
         if not isinstance(spin_axis, (list, tuple)) or len(spin_axis) != 3:
             spin_axis = (0.0, 0.0, 1.0)
+        # A valid mount names another part; otherwise treat as a world root (parent="").
+        # Resolved BEFORE the link is built, because it belongs on the LINK as well as on
+        # the pose. A dof=fixed part has no joint of its own, so the link record is the
+        # only place the test designer can learn what carries it; when this lived only on
+        # the pose, every link serialized with no mount and the designer fell back to
+        # guessing a nearby gear -- reporting a ratio between two parts nobody can see.
+        mount = str(meta.get("mount", "") or "").strip()
+        parent = mount if (mount and mount != name and mount in names) else ""
         links.append(LinkSpec(
             name=name, description=meta.get("description", name),
             mesh_filename=f"meshes/{name}.stl",
             dof=dof, spin_axis=tuple(spin_axis), driver=driver,
-            material=str(meta.get("material", "steel"))))
-        # A valid mount names another part; otherwise treat as a world root (parent="").
-        mount = str(meta.get("mount", "") or "").strip()
-        parent = mount if (mount and mount != name and mount in names) else ""
+            material=str(meta.get("material", "steel")), mount=parent))
         if parent:
             rel = _mat_mul(_mat_inv(world_by_name[parent]), world_by_name[name])
             T = [rel[0][3] / 1000.0, rel[1][3] / 1000.0, rel[2][3] / 1000.0]

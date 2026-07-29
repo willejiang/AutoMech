@@ -80,6 +80,14 @@ def _robot_info(model) -> dict:
             # Parts that get a hinge in the sim; the trajectory keys are "<part>_spin".
             "spin_links": [l.name for l in model.links
                            if getattr(l, "dof", "fixed") in ("spin", "free")],
+            # What each dof=fixed part RIDES ON. Such a part has no joint of its own, so
+            # its motion is only readable through its carrier. Without this the designer
+            # cannot tell which joint a clock hand corresponds to, picks a plausible gear
+            # nearby, and reports a ratio between two parts the user never sees.
+            "carried_parts": {l.name: getattr(l, "mount", "")
+                              for l in model.links
+                              if getattr(l, "dof", "fixed") == "fixed"
+                              and getattr(l, "mount", "")},
             "roles": _roles(model),
             "subsystems": _subsystems(model)}
 

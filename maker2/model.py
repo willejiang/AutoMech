@@ -65,6 +65,15 @@ class LinkSpec:
                                                      # (maker2/materials.py); MuJoCo mass =
                                                      # density x mesh volume. Optional;
                                                      # defaults to steel.
+    mount: str = ""                                  # the part this one RIDES ON, "" = base.
+                                                     # A dof="fixed" part has no joint of its
+                                                     # own, so this is the ONLY record of
+                                                     # which spinning part carries it. The
+                                                     # test designer needs it to know that a
+                                                     # clock hand is measured through the
+                                                     # arbor or pipe it is mounted to; without
+                                                     # it, it guesses a nearby gear and reads
+                                                     # a ratio off two parts nobody sees.
 
 
 @dataclass

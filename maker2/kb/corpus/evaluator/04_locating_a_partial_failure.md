@@ -70,6 +70,11 @@ not exist. Some pair that was supposed to turn at different rates is locked toge
     hour_wheel_spin   0.9479     <- identical to the last digit
 
 Identical travel is the signature. Gear teeth never produce that; a rigid coupling does.
+It is worth more than any ratio computed from the same run: if the two parts the user
+watches read the same, report the coupling fault and do NOT report a ratio, whatever
+number some other pair of parts happens to give. One watch measured 9.7:1 between an
+input pinion and a wheel while both hands sat at 1.2677 rad and visibly never parted.
+
 Before blaming tooth counts, check whether the two were WELDED, and look in this order:
 
 1. **A running fit judged as a press fit.** A part that is meant to rotate freely on a

@@ -61,16 +61,22 @@ which is also what makes an output/input ratio comparable to the designed one.
 ## Measure the OUTPUT the product delivers, not a convenient joint nearby
 
 The ratio that matters is between the parts the USER receives — the two hands of a clock,
-the output shaft of a gearbox, the jaws of a gripper. Not the gears that drive them.
+the output shaft of a gearbox, the jaws of a gripper. That is, things like `minute_hand`
+and `hour_hand`. NOT the pinions, wheels, arbors and pipes that drive them: those are the
+transmission, they are not what the product delivers, and no number measured between two
+of them is the criterion no matter how close to the target it lands.
 
-Those parts are usually `dof=fixed` and therefore have no joint of their own; they are
-carried by something that turns, and the label says which:
+Those output parts are usually `dof=fixed` and therefore have no joint of their own; they
+are carried by something that turns, and the label says which:
 
     "hour_hand|dof=fixed|mount=hour_pipe"       -> the hour hand turns with hour_pipe
     "minute_hand|dof=fixed|mount=minute_arbor"  -> the minute hand turns with minute_arbor
 
-So the check is `minute_arbor_spin` against `hour_pipe_spin`. Follow each output part's
-`mount=` to the part that spins, and measure THOSE two.
+Do NOT name the carrier from memory or from what a part is called — read `mount=` off the
+model in front of you and follow it. If a mount names another fixed part, keep walking
+until you reach one that spins; that joint is what you measure. Two different designs of
+the same machine put the minute hand on different members, so a rule like "measure the
+arbor" is right in one and nonsense in the next.
 
 Picking a nearby gear instead looks almost right and hides real error. Measured on one
 watch: the hands were riding minute_arbor (11.074 rad) and hour_pipe (0.948 rad), a true
@@ -80,4 +86,13 @@ in the wrong direction, because the gear it measured is not the part the hand ri
 
 The difference is small exactly when it is most misleading: a part one press-fit away from
 the output turns at nearly the same rate, so the number looks plausible while the machine
-that ships is wrong.
+that ships is wrong. On a later watch the same mistake was total rather than small — the
+check read cannon_pinion against hour_wheel and reported 9.7:1, while the two parts the
+hands actually rode turned 1.2677 and 1.2677 rad, identically. The hands overlapped for the
+whole recording. Every digit of that 9.7 was measured off parts nobody looks at.
+
+## A ratio between two carriers that come out equal is not a ratio
+
+Before reporting any ratio, check whether the two carriers you resolved read the same to
+within noise. If they do, the stage between them does not exist — they are welded, and the
+right output is that break, not a number. See `04_locating_a_partial_failure.md`.

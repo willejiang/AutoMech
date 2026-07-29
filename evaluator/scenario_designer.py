@@ -255,10 +255,36 @@ def _robot_block(robot_info):
             "keyed by them, NOT by the URDF joint names above):\n"
             f"  joints: {[p + '_spin' for p in spin_parts]}\n"
             f"  bodies: {robot_info.get('links', [])}\n")
+    # The user-facing output parts and the joint each one's motion is actually readable
+    # through. These are dof=fixed — they have no joint of their own — so measuring one
+    # means measuring its carrier. Resolved here rather than left to the designer: asked
+    # to work it out itself it reached for a nearby gear, and a gear one press fit from
+    # the output turns at nearly the right rate, so the ratio looked plausible while the
+    # two parts the user actually watches were locked together turning as one.
+    carried = robot_info.get("carried_parts") or {}
+    carry_txt = ""
+    if carried:
+        spin_set = set(spin_parts)
+        lines = []
+        for part, mount in sorted(carried.items()):
+            # A mount may name another fixed part; walk to the first carrier that spins.
+            seen, cur = set(), mount
+            while cur and cur not in spin_set and cur not in seen:
+                seen.add(cur)
+                cur = carried.get(cur, "")
+            lines.append(
+                f"  {part} rides {mount}"
+                + (f" -> measure traj[\"joints\"][\"{cur}_spin\"]" if cur in spin_set
+                   else "  (no spinning carrier: this part cannot move)"))
+        carry_txt = (
+            "\nOUTPUT PARTS AND THE JOINT THAT CARRIES EACH (these are the parts the USER "
+            "watches — hands, jaws, an output shaft. Measure the joints named here and no "
+            "others. An intermediate pinion / wheel / arbor / pipe is NOT an output, even "
+            "when its reading looks close):\n" + "\n".join(lines) + "\n")
     return (f"ROBOT: {robot_info.get('name','robot')}\n"
             f"JOINT NAMES ({len(robot_info.get('joints',[]))}): {robot_info.get('joints',[])}\n"
             f"LINK NAMES ({len(robot_info.get('links',[]))}): {robot_info.get('links',[])}\n"
-            f"{role_txt}{traj_txt}")
+            f"{role_txt}{traj_txt}{carry_txt}")
 
 
 def design(task, robot_info, test=None, *, base_url=None, api_key=None, model=None):
