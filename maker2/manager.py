@@ -117,6 +117,7 @@ def _link_from_dict(d: dict, idx: int) -> LinkSpec:
         spin_axis=_as_tuple3(d.get("spin_axis"), (0.0, 0.0, 1.0)),
         driver=bool(d.get("driver", False)),
         material=str(d.get("material") or "steel").strip().lower() or "steel",
+        mount=str(d.get("mount") or "").strip(),
     ))
 
 
@@ -312,6 +313,9 @@ def model_to_dict(model: KinematicModel) -> dict:
                 "spin_axis": list(l.spin_axis),
                 "driver": l.driver,
                 "material": l.material,
+                # What a dof=fixed part rides on. This serializer is hand-written, so a new
+                # LinkSpec field is silently dropped unless it is listed here.
+                "mount": l.mount,
             }
             for l in model.links
         ],

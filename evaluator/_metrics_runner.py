@@ -27,6 +27,15 @@ import traceback
 # enough that a missing or extra stage cannot hide inside it.
 _TOLERANCE = 0.05
 
+# A target phrased as a BOUND is satisfied by exceeding it. "> 1.0 rad" met by 11.9 rad is a
+# pass, not a 1090%-off failure -- reading a bound as an equality target turned two correct
+# checks into false failures and buried the one real fault (a 76.9:1 ratio against 12:1) in
+# noise the diagnoser then had to reason through.
+_LOWER_BOUND_RE = re.compile(
+    r"(>=|>|≥|at least|no less than|more than|minimum|min\b|over)", re.I)
+_UPPER_BOUND_RE = re.compile(
+    r"(<=|<|≤|at most|no more than|less than|under|maximum|max\b|within|below)", re.I)
+
 
 def _target_number(expected):
     """The number a non-numeric `expected` is really asking for, or None.
@@ -46,6 +55,18 @@ def _target_number(expected):
         a, b = float(nums[0]), float(nums[1])
         return a / b if b else None
     return float(nums[0])
+
+
+def _bound_kind(expected):
+    """"lower" / "upper" if `expected` states a bound rather than a value, else None."""
+    if not isinstance(expected, str):
+        return None
+    # Upper first: "no more than" contains "more than".
+    if _UPPER_BOUND_RE.search(expected):
+        return "upper"
+    if _LOWER_BOUND_RE.search(expected):
+        return "lower"
+    return None
 
 
 def main() -> int:
@@ -119,13 +140,27 @@ def main() -> int:
             # the target is a number we can read, the tolerance is ours, not the
             # designer's. Non-numeric targets ("closes", "never decreases") stay its call.
             target = _target_number(expected)
+            bound = _bound_kind(item.get("expected"))
             if target is not None and isinstance(value, float):
-                err = abs(value - target) / abs(target) if target else abs(value)
-                within = err <= _TOLERANCE
+                if bound == "lower":
+                    # Satisfied by meeting or exceeding it. Only overrule a claimed pass
+                    # that does not actually clear the bar.
+                    within = value >= target
+                elif bound == "upper":
+                    within = value <= target
+                else:
+                    err = abs(value - target) / abs(target) if target else abs(value)
+                    within = err <= _TOLERANCE
                 if passed and not within:
-                    detail = (detail + " | REJECTED: %.4g vs target %.4g is %.1f%% off, "
-                              "over the %.0f%% tolerance" % (
-                                  value, target, err * 100, _TOLERANCE * 100))[:300]
+                    if bound:
+                        detail = (detail + " | REJECTED: %.4g does not satisfy %s" % (
+                            value, expected))[:300]
+                    else:
+                        detail = (detail + " | REJECTED: %.4g vs target %.4g is %.1f%% off, "
+                                  "over the %.0f%% tolerance" % (
+                                      value, target,
+                                      abs(value - target) / abs(target) * 100 if target
+                                      else 0.0, _TOLERANCE * 100))[:300]
                 passed = passed and within
             checks.append({
                 "name": str(item.get("name") or "check")[:80],
