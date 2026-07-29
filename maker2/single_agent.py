@@ -284,6 +284,44 @@ def _iter_score(phys: dict) -> float:
     return score
 
 
+def _snapshot_iteration(run_dir: str, it: int, log_fn) -> str:
+    """Freeze this iteration's geometry into ``iter_<n>/`` and return that directory.
+
+    machine.py, model.urdf and meshes/ all live at FIXED names in run_dir, so every
+    iteration overwrote the last one. Only the videos survived, because they alone were
+    written per-iteration. The canvas looked like it kept each version, but it only held
+    blobs fetched live in that browser session -- reopening a finished run re-fetched the
+    one directory three times and showed the final model under every version tab, and the
+    earlier geometry was gone from disk entirely.
+
+    The URDF references meshes by the relative path "meshes/<part>.stl", so a directory
+    holding both is self-contained and the existing GLB route renders it as-is.
+    Best-effort: a snapshot failure must never take the iteration down with it.
+    """
+    import os
+    import shutil
+    dst = os.path.join(run_dir, f"iter_{it}")
+    try:
+        os.makedirs(dst, exist_ok=True)
+        for fn in ("machine.py", "kinematic_model.json", "model.urdf", "machine.step"):
+            src = os.path.join(run_dir, fn)
+            if os.path.exists(src):
+                shutil.copy2(src, os.path.join(dst, fn))
+        meshes = os.path.join(run_dir, "meshes")
+        if os.path.isdir(meshes):
+            # Part meshes only: the *_cvx_*.stl convex pieces are physics scratch, are
+            # regenerated per run, and would multiply the snapshot size for nothing.
+            mdst = os.path.join(dst, "meshes")
+            os.makedirs(mdst, exist_ok=True)
+            for fn in os.listdir(meshes):
+                if fn.endswith(".stl") and "_cvx" not in fn:
+                    shutil.copy2(os.path.join(meshes, fn), os.path.join(mdst, fn))
+        return dst
+    except Exception as e:
+        log_fn(f"[single-agent] iteration snapshot failed: {e}")
+        return run_dir
+
+
 def _restore_best(best: dict, best_dir: str, run_dir: str, ctx, machine_name, log_fn):
     """Make the main run_dir hold the BEST version's artifacts so the UI/return shows the
     best machine, not the last (often divergent) iteration. Prefers copying the snapshot
@@ -448,8 +486,13 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
             log_fn(f"[single-agent] URDF build failed: {str(e)[:120]}; treating as geometry gap")
             conv.add_user_message(build_single_agent_repair(f"URDF build failed: {e}"))
             continue
+        # Freeze this version before the next iteration overwrites the fixed filenames,
+        # and point the UI at the snapshot so reopening the run shows each version's own
+        # geometry instead of the final one under every tab.
+        snap = _snapshot_iteration(run_dir, it, log_fn)
         log_fn("ARTIFACT_JSON:" + _json.dumps({
-            "kind": "assembled_model", "iter": it, "run_dir": run_dir, "render_dir": run_dir}))
+            "kind": "assembled_model", "iter": it, "run_dir": run_dir,
+            "render_dir": snap}))
 
         # Rigid-conflict geometry self-check (the text-to-cad "inspect" step, reusing subcheck).
         # A gross interpenetration is cheaper to fix here than to run physics on, so gate on it
