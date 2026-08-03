@@ -215,6 +215,97 @@ like error — it grows with speed (48.8% at 20 rad/s) and any output load diver
 Good enough to *look* right on video; not good enough to judge a 12:1 ratio, which is
 exactly the check the loop depends on.
 
+### 3b. `solref` dominates the gear error — and the repo's value is the bad one
+
+Re-measured on a REAL pair from the watch run `1_12_20260729_174747` (minute_pinion tip r
+4.154mm, intermediate_wheel tip r 14.637mm, centre distance 18.00mm; ideal ratio -0.2838).
+SDF collision, mu = 0, input commanded at 3 rad/s for 1 s. Only `solref` varies:
+
+| solref | what it is | ratio | err |
+|---|---|---|---|
+| unset / `0.02 1` | MuJoCo default | -0.2420 | **14.7%** |
+| `0.01 1` | | -0.0887 | 68.7% |
+| **`0.002 1`** | **the repo's `_GEOM_SOLREF`** | -0.0773 | **72.8%** |
+| `0.0004 1` | 2x timestep | +0.2610 | 192% (sign flips) |
+
+The STIFFER the contact, the WORSE gears transmit — the opposite of the intuition the
+constant was chosen on. `mjcf_builder._GEOM_SOLREF = "0.002 1"` is commented "stiff,
+~critically damped contact" and was tuned for convex-decomposition teeth; under SDF it
+costs a factor of ~5 in ratio accuracy. Section 3's 12.6% was measured at the DEFAULT
+solref, so it is not comparable to anything the pipeline actually runs.
+
+This also explains a wrong turn worth recording: measuring SDF with the repo's own
+constants (solref 0.002, mu 1.0) gives ratio -0.0040 (98.6% off) and reads as "SDF cannot
+transmit through gear teeth at all" — a conclusion that is false, and one I reached and
+had to retract. **Any comparison of SDF vs convex decomposition must state its solref.**
+
+Two corollaries:
+- Convex decomposition at mu = 0 is not merely inaccurate but unusable (ratio +5.79 on the
+  same pair, wrong sign). Its ~55% at mu = 1 depends on friction dragging the wheel around
+  — i.e. the current pipeline transmits partly by friction covering for tooth geometry.
+- The residual error is NOT backlash. See 3c.
+
+### 3c. The gear error is a jittering contact set, and no knob fixes it
+
+Same pair, SDF, mu = 0, solref `0.02 1` (the good one). Four independent sweeps:
+
+**Duration** — backlash would lose a fixed angle once, so its share would FALL with time:
+
+| input | ratio | err | angle lost vs ideal |
+|---|---|---|---|
+| 1.5 rad (0.5 s) | -0.2561 | 9.8% | +0.042 rad |
+| 3 rad (1 s) | -0.2420 | 14.7% | +0.125 |
+| 6 rad (2 s) | -0.1979 | 30.3% | +0.515 |
+| 12 rad (4 s) | -0.1486 | 47.6% | +1.623 |
+| 24 rad (8 s) | -0.1427 | 49.7% | +3.386 |
+
+The lost angle grows monotonically, roughly proportional to total rotation. This is
+CONTINUOUS SLIP, not a gap traversed once. Section 3's "backlash-like" reading is wrong.
+
+**Timestep** — a genuine discretisation error must converge as dt -> 0. It diverges:
+
+| dt | err | mean penetration |
+|---|---|---|
+| 4e-4 | 28.4% | -0.083 mm |
+| 2e-4 | 30.3% | -0.084 |
+| 1e-4 | 87.8% | -0.114 |
+| 5e-5 | 99.7% | -0.104 |
+| 2e-5 | **152.8%** | -0.083 |
+
+**solimp** — no monotone relationship either (30.3 / 51.7 / 76.4 / 87.5% across default /
+very stiff / extreme / soft), and penetration stays pinned at -0.08..-0.11 mm regardless.
+
+**Contact state** during a clean run: 3.3% of steps have NO contact at all (longest
+unbroken gap 7.4 ms = 0.022 rad of input); when in contact, 20.7 points on average
+(max 40) at a mean penetration of -0.075 mm, worst -0.245 mm.
+
+So: not friction (3), not backlash, not integration accuracy, not constraint stiffness.
+The contact SET itself is unstable — SDF re-solves the tooth-flank intersection every step
+and the 20-40 points jump in position and normal between adjacent steps, so the solver
+faces a different constraint system each time (`Linesearch objective is not convex`
+throughout). A smaller timestep samples that jitter more densely and accumulates more
+error, which is why the sweep runs the wrong way. Same disease as section 2's cylindrical
+fit, different surface.
+
+**Consequence: there is no setting that makes contact-driven gear ratio trustworthy.**
+`<equality>` for the ratio is not a stopgap, it is the only correct option available.
+
+### 3d. SDF speed: it depends entirely on contact density
+
+Both "SDF is 17x faster" and "SDF is 16x slower" are true; they are different scenarios.
+Measured on the same watch parts, 2500 steps, identical friction:
+
+| scenario | convex decomposition | SDF | |
+|---|---|---|---|
+| meshing gear pair (dense contact) | 105 geoms, **0.13 s**, ncon 12 | 2 geoms, **2.31 s**, ncon 28 | SDF **18x slower** |
+| 4 parts spread apart (sparse contact) | 173 geoms, **25.26 s**, ncon 768 | 4 geoms, **7.64 s**, ncon 143 | SDF **3.3x faster** |
+| model load | 0.42 s | 0.41 s | equal |
+
+Per contact point SDF is dearer; but it generates far fewer points and removes the
+N-pieces x M-pieces broadphase entirely (that watch decomposes 13 parts into 255 convex
+pieces). Dense sustained contact on few parts favours decomposition; many complex parts
+that mostly do NOT touch favour SDF.
+
 ## 4. Engine shopping
 
 The session started from a fair objection — `mount=` is a fiction. A part is told which
