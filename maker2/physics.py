@@ -418,6 +418,10 @@ def _tag_test(test: dict, sub: dict) -> None:
 
 
 _METRICS_TIMEOUT = 30
+# The support test runs in parallel with the designer call and the simulation, so this is
+# only a backstop against a wedged convex decomposition, not a normal wait: by the time it
+# is joined it has already had those seconds to work in.
+_SUPPORT_TIMEOUT = 900
 
 # Names a metrics check uses when it is reporting on ITSELF rather than on the machine.
 _SELF_REPORT_CHECKS = ("joints_present", "joint_missing", "missing_joints")
@@ -661,12 +665,26 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
     # it never touches is welded to that mount in the real MJCF, so it sits there happily
     # and the settle sees nothing wrong. The support test dissolves every weld and lets
     # gravity answer the question the welds hide: what is actually held by geometry?
-    try:
-        from .support_test import support_faults
-        support_fell = support_faults(model, ctx, settings=settings, log_fn=log_fn)
-    except Exception as e:
-        log_fn(f"[support] support test unavailable ({type(e).__name__}: {e})")
-        support_fell = []
+    #
+    # RUN IT IN THE BACKGROUND. It shares no data with the scenario design or the sim —
+    # its verdict is only merged into `stability` once both are done — and it is the
+    # slowest thing in the iteration: it builds its own MJCF from the CONVEX
+    # decomposition (SDF drops contacts in a full assembly; see build_support_mjcf), and
+    # decomposing a 14-part movement takes minutes while the designer call and the sim
+    # take seconds. Overlapping them hides nearly all of that cost.
+    support_fell: list = []
+    _support_err: list = []
+
+    def _run_support():
+        try:
+            from .support_test import support_faults
+            support_fell.extend(support_faults(model, ctx, settings=settings,
+                                               log_fn=log_fn))
+        except Exception as e:
+            _support_err.append(f"{type(e).__name__}: {e}")
+
+    _support_thread = threading.Thread(target=_run_support, daemon=True)
+    _support_thread.start()
 
     # SCENARIO DESIGN: ask environment_designer what this test should check (best-effort;
     # the MuJoCo runner is contact-driven, so we only borrow the drive INTENT + criteria).
@@ -738,6 +756,18 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
         res = _run_sim_mujoco(mjcf, spec, out_base, task, log_fn=log_fn)
         m = dict(res.get("metrics", {}))
         stability = res.get("stability") or {}
+        # The background support test must be in before its verdict is merged. By now it
+        # has had the designer call and a full simulation to run in, so this usually
+        # returns at once; the timeout only stops a wedged decomposition from hanging the
+        # whole run (an absent support check is a missing check, never a machine verdict).
+        if _support_thread is not None:
+            _support_thread.join(timeout=_SUPPORT_TIMEOUT)
+            if _support_thread.is_alive():
+                log_fn(f"[support] still running after {_SUPPORT_TIMEOUT}s; "
+                       f"continuing without its verdict")
+            elif _support_err:
+                log_fn(f"[support] support test unavailable ({_support_err[0]})")
+            _support_thread = None
         # MERGE the support verdict into stage 1. The settle can only see parts that move;
         # an unsupported part is welded to a mount it never touches, so it never moves and
         # the settle passes it. A part nothing holds up is a stability failure regardless.
