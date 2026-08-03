@@ -177,12 +177,44 @@ def _add_geoms(body_el, link, piece_map, meshes_dir, mesh_names, asset_el,
                 "type": "box", "size": f"{hx:.6g} {hy:.6g} {hz:.6g}", **common})
 
 
+def _pose_matrix(xyz, rpy):
+    """4x4 transform from an (xyz, rpy) pair, for accumulating a chain to world."""
+    T = tf.euler_matrix(float(rpy[0]), float(rpy[1]), float(rpy[2]), axes="sxyz")
+    T[0, 3], T[1, 3], T[2, 3] = float(xyz[0]), float(xyz[1]), float(xyz[2])
+    return T
+
+
 def _emit_body(parent_el, link_name, model, links_by_name, children, piece_map,
                meshes_dir, mesh_names, asset_el, *, is_root: bool,
-               base_height: float, pin_base: bool):
+               base_height: float, pin_base: bool,
+               world_el=None, parent_T=None):
     link = links_by_name[link_name]
     xyz, rpy = _rel_pose_of(model, link_name)
     dof = getattr(link, "dof", "fixed")
+    # A LOOSE PART IS NOT ANYBODY'S CHILD. MuJoCo allows <freejoint> only on a top-level
+    # body, so a dof=free part nested under its mount ("the ball rests on the chute")
+    # made the whole model fail to load — "free joint can only be used on top level" —
+    # and the run died before a single step. `mount` positions a part; it does not weld
+    # it. For a free part the mount chain is only how we know WHERE it starts, so hoist
+    # it to the world with its accumulated world pose and let contact do the rest.
+    if dof == "free" and not is_root and world_el is not None and parent_T is not None:
+        T = parent_T @ _pose_matrix(xyz, rpy)
+        body = ET.SubElement(world_el, "body", attrib={
+            "name": link_name,
+            "pos": f"{T[0, 3]:.9g} {T[1, 3]:.9g} {T[2, 3]:.9g}",
+            "quat": _quat_from_matrix_rot(T)})
+        ET.SubElement(body, "freejoint", attrib={"name": f"{link_name}_free"})
+        _emit_inertial_and_geoms(body, link, link_name, piece_map, meshes_dir,
+                                 mesh_names, asset_el)
+        # Its own children keep hanging off it (now a top-level body), so a free part
+        # carrying something still carries it.
+        for p in children.get(link_name, []):
+            _emit_body(body, p.child, model, links_by_name, children, piece_map,
+                       meshes_dir, mesh_names, asset_el, is_root=False,
+                       base_height=0.0, pin_base=False,
+                       world_el=world_el, parent_T=T)
+        return
+
     # Only a body that will actually SETTLE (a free root, not pinned) spawns slightly above the
     # plane. A fixed/spin root is grounded IN PLACE (welded to world / hinged), so lifting it by
     # base_height would weld it hovering in mid-air. Keep its authored Z.
@@ -195,6 +227,7 @@ def _emit_body(parent_el, link_name, model, links_by_name, children, piece_map,
         "name": link_name,
         "pos": f"{pos[0]:.9g} {pos[1]:.9g} {pos[2]:.9g}",
         "quat": _quat_from_rpy(rpy)})
+    my_T = (parent_T if parent_T is not None else np.eye(4)) @ _pose_matrix(pos, rpy)
 
     dof = getattr(link, "dof", "fixed")
     if is_root:
@@ -225,8 +258,20 @@ def _emit_body(parent_el, link_name, model, links_by_name, children, piece_map,
         ET.SubElement(body, "freejoint", attrib={"name": f"{link_name}_free"})
     # dof == "fixed": no joint (welded to its parent body).
 
-    # Per-part mass from the material's density x the part's solid volume; fall back to
-    # the old flat placeholder when the STL/volume is unavailable so the model still loads.
+    _emit_inertial_and_geoms(body, link, link_name, piece_map, meshes_dir,
+                             mesh_names, asset_el)
+
+    for p in children.get(link_name, []):
+        _emit_body(body, p.child, model, links_by_name, children, piece_map,
+                   meshes_dir, mesh_names, asset_el, is_root=False,
+                   base_height=0.0, pin_base=False,
+                   world_el=world_el, parent_T=my_T)
+
+
+def _emit_inertial_and_geoms(body, link, link_name, piece_map, meshes_dir,
+                             mesh_names, asset_el):
+    """Per-part mass from the material's density x the part's solid volume, then its
+    geoms. Shared by the normal nested path and the hoisted free-part path."""
     from .materials import density_of, friction_of
     mat = getattr(link, "material", "steel") or "steel"
     own_stl = os.path.join(meshes_dir, f"{link_name}.stl")
@@ -242,11 +287,6 @@ def _emit_body(parent_el, link_name, model, links_by_name, children, piece_map,
             "diaginertia": "1e-4 1e-4 1e-4"})
     _add_geoms(body, link, piece_map, meshes_dir, mesh_names, asset_el,
                friction=friction_of(mat))
-
-    for p in children.get(link_name, []):
-        _emit_body(body, p.child, model, links_by_name, children, piece_map,
-                   meshes_dir, mesh_names, asset_el, is_root=False,
-                   base_height=0.0, pin_base=False)
 
 
 def _pitch_radius_m(meshes_dir: str, link_name: str) -> float | None:
@@ -1025,7 +1065,8 @@ def build_mjcf(model, ctx, *, settings=None, metrics: dict | None = None,
             continue
         _emit_body(world, rn, model, links_by_name, children, piece_map,
                    meshes_dir, mesh_names, asset_el, is_root=True,
-                   base_height=(0.0 if pin_base else base_height), pin_base=pin_base)
+                   base_height=(0.0 if pin_base else base_height), pin_base=pin_base,
+                   world_el=world, parent_T=np.eye(4))
 
     # DETERMINISTIC TRANSMISSION (B, ON by default): rigid-body tooth contact free-spins
     # instead of driving, so once geometry proves a pair meshes we express it as an exact
