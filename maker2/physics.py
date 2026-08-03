@@ -726,7 +726,7 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
     diagnosis = {"verdict": None, "cause": "none", "reason": ""}
     stability = {}
     for attempt in range(_MAX_TEST_RETRIES + 1):
-        res = _run_sim_mujoco(mjcf, spec, out_base, task)
+        res = _run_sim_mujoco(mjcf, spec, out_base, task, log_fn=log_fn)
         m = dict(res.get("metrics", {}))
         stability = res.get("stability") or {}
         # MERGE the support verdict into stage 1. The settle can only see parts that move;
@@ -907,7 +907,7 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
             "tests": [entry]}
 
 
-def _run_sim_mujoco(mjcf, spec, out_base, task):
+def _run_sim_mujoco(mjcf, spec, out_base, task, *, log_fn=print):
     """Run the MuJoCo runner in a SUBPROCESS (isolates any GL/renderer state), reading
     back sim_result.json. Falls back to in-process on subprocess failure."""
     import run_scenario_mujoco as mjr
@@ -924,9 +924,10 @@ def _run_sim_mujoco(mjcf, spec, out_base, task):
         if r.returncode == 0 and result_path.exists():
             return json.loads(result_path.read_text())
         log_fn(f"[physics] mujoco subprocess rc={r.returncode}; "
-              f"stderr tail: {(r.stderr or '')[-200:]}")
+              f"stderr tail: {(r.stderr or '')[-1500:]}")
     except Exception as e:
-        log_fn(f"[physics] mujoco subprocess failed ({e}); running in-process")
+        log_fn(f"[physics] mujoco subprocess failed ({type(e).__name__}: {e}); "
+              f"running in-process")
     return mjr.run(mjcf, spec, out_base, task)
 
 
