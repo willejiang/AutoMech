@@ -156,6 +156,64 @@ def _radial_gap(model, meshes_dir: str, part: str, carrier: str):
         return None
 
 
+def _declared_carriers(link) -> list:
+    """Every part `link` says carries it: the primary mount plus any extra mounts."""
+    out = []
+    for c in ([getattr(link, "mount", "")]
+              + list(getattr(link, "extra_mounts", None) or [])):
+        c = (str(c) or "").strip()
+        if c and c not in out:
+            out.append(c)
+    return out
+
+
+def _touches(model, meshes_dir: str, a: str, b: str, tol_mm: float) -> bool:
+    """Do the two solids actually MEET, measured on the STLs in world pose?
+
+    Surface distance, not an axis test: this catches a part sitting flat on a bridge or
+    a plate, which `_really_fits` (a ring-on-shaft radial test) cannot see.
+    """
+    import os
+
+    import trimesh
+
+    from .mjcf_builder import _world_transforms
+
+    try:
+        W = _world_transforms(model)
+        got = []
+        for n in (a, b):
+            stl = os.path.join(meshes_dir, f"{n}.stl")
+            T = W.get(n)
+            if not os.path.exists(stl) or T is None:
+                return False
+            mm = trimesh.load(stl, force="mesh")
+            if not isinstance(mm, trimesh.Trimesh) or len(mm.faces) == 0:
+                return False
+            Tmm = T.copy()
+            Tmm[:3, 3] *= 1000.0
+            mm.apply_transform(Tmm)
+            got.append(mm)
+        ma, mb = got
+        # BOTH directions, and keep the smaller. Sampling only one solid's vertices
+        # measures a distance that depends on where that solid happens to carry
+        # vertices: a long plain arbor has them only at its two end rings, so a pinion
+        # pressed onto its middle reads 2.2mm from the arbor's vertices while the
+        # pinion's own vertices sit 0.005mm from the arbor's surface — the real
+        # interference. One direction called that correct press fit unsupported.
+        best = float("inf")
+        for src, tgt in ((ma, mb), (mb, ma)):
+            pts = src.vertices
+            if len(pts) == 0:
+                continue
+            if len(pts) > 400:
+                pts = pts[:: max(1, len(pts) // 400)]
+            best = min(best, float(trimesh.proximity.closest_point(tgt, pts)[1].min()))
+        return best <= tol_mm
+    except Exception:
+        return False
+
+
 class Fell:
     """One part that dropped when its mount weld was dissolved: nothing real held it."""
 
@@ -241,6 +299,7 @@ def support_faults(model, ctx, *, settings=None, log_fn=print) -> list[Fell]:
     # LINE, so a hand hovering 10mm past the end of its arbor is still "on the axis" — that
     # is the exact false pass this whole rewrite exists to kill. Require the two solids to
     # actually meet (the shaft passes through the bore), measured on the STLs in world pose.
+    links_by_name = {l.name: l for l in model.links}
     coaxial: dict = {}
     for s, f in coaxial_pairs(model, ctx.meshes_dir, include_spin_spin=True):
         if not _really_fits(model, ctx.meshes_dir, s, f):
@@ -251,6 +310,31 @@ def support_faults(model, ctx, *, settings=None, log_fn=print) -> list[Fell]:
         held = [o for o in coaxial.get(name, ()) if o not in fell]
         if held:
             del fell[name]
+
+    # SAME CREDIT FOR A PART THAT SIMPLY TOUCHES ITS CARRIER. The exclusions above are
+    # not the only ones in the support MJCF, and a part whose declared carrier is right
+    # there against it did not fall for want of support — the contact that held it was
+    # removed, or the solver dropped it. Measured on run 1_12_20260803_195154 iter_1:
+    # intermediate_upper_bearing sits flat on skeleton_bearing_bridge (surface distance
+    # 0.0000mm, 2.00mm of axial overlap) and was still reported unsupported, as was
+    # intermediate_pinion_11t, pressed onto its arbor with a correct 0.005mm
+    # interference. Neither is coaxial-ring-on-shaft, so the credit above never saw them.
+    #
+    # The test still means what it says: a part is credited only when its solid actually
+    # MEETS a carrier that itself stayed up. A part declared onto something it does not
+    # touch — the fault this whole module exists to catch — has no such contact and
+    # still falls.
+    _TOUCH_MM = 0.05
+    for name in list(fell):
+        l = links_by_name.get(name)
+        if l is None:
+            continue
+        for car in _declared_carriers(l):
+            if car in fell or car not in links_by_name:
+                continue
+            if _touches(model, ctx.meshes_dir, name, car, _TOUCH_MM):
+                del fell[name]
+                break
 
     # ROOT CAUSE ONLY. When a bearing floats 0.5mm off the baseplate, everything stacked
     # above it falls too — reporting all 14 parts buries the 3 real faults and invites the

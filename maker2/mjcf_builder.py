@@ -1202,9 +1202,30 @@ def build_support_mjcf(model, ctx, *, metrics: dict | None = None,
     import trimesh
 
     meshes_dir = ctx.meshes_dir
-    use_sdf = getattr(settings, "sdf_collision", True) if settings is not None else True
-    piece_map = ({} if use_sdf
-                 else decompose_model(model, meshes_dir, metrics=metrics, log_fn=log_fn))
+    # THE SUPPORT TEST RUNS ON CONVEX GEOMETRY, even when the real MJCF uses SDF.
+    #
+    # SDF loses contacts in a full assembly. Measured on run 1_12_20260803_195154
+    # iter_1: rear_bridge_post sits EXACTLY on the base (gap +0.0000mm, its underside
+    # inside the base solid) and is byte-identical to front_bridge_post, which never
+    # falls. With 2 bodies it holds (-0.025mm); with 4 it holds (-0.018mm); with all 17
+    # it falls 52.068mm. Stepping through it, the post starts with 40 contacts on the
+    # base, keeps them for ~2000 steps, then the contact count drops to zero and it
+    # free-falls. Under convex decomposition the same geometry does not fall (-1.96mm).
+    # So the trigger is scene scale, not the part — something in SDF's contact budget
+    # drops a pair that is genuinely touching.
+    #
+    # This matters here more than anywhere else because the verdict is per-part blame:
+    # the run above reported the post as unsupported for four straight iterations, and
+    # the agent, told to "move it down until it touches", buried it 0.1mm, then 4mm
+    # (straight through a 4mm-thick base), then 1mm — destroying a design whose gear
+    # train was already correct (11.820 against a 12:1 target).
+    #
+    # The precision SDF buys is not needed for THIS question. Support asks "is anything
+    # holding this part up", where a convex hull that slightly overfills a bore only
+    # makes a fit MORE supported, never less. The real MJCF keeps SDF, where bore
+    # clearance decides whether torque crosses and the precision is the whole point.
+    piece_map = decompose_model(model, meshes_dir, metrics=metrics, log_fn=log_fn)
+    use_sdf = False
     W = _world_transforms(model)
 
     dof_of = {l.name: getattr(l, "dof", "fixed") for l in model.links}
