@@ -726,6 +726,46 @@ _PRESS_FIT_CLEARANCE_M = 0.0001
 # the press-fit line above decides whether they are also LOCKED together.
 _RUNNING_FIT_CLEARANCE_M = 0.0
 
+# HOW DEEP A DELIBERATE INTERFERENCE FIT GOES. A press fit is defined by the bore being
+# SMALLER than the shaft — hundredths of a millimetre, which is what makes it grip — so
+# the two solids necessarily intersect. Past this depth the parts are not fitted, they are
+# driven through each other, and that IS a CAD fault worth reporting.
+_MAX_PRESS_INTERFERENCE_M = 2.0e-5           # 0.02 mm, 4x the 0.005 the prompt asks for
+
+
+def _is_press_fit_overlap(model, meshes_dir, a, b) -> bool:
+    """Is the overlap between `a` and `b` a deliberate INTERFERENCE FIT?
+
+    True only when all three hold, so a post punched through a gear cannot qualify:
+      * one part DECLARES the other as a mount (being coaxial is not being mounted —
+        two wheels threaded onto one arbor share an axis while riding neither);
+      * they are concentric within the coaxial tolerance;
+      * the bore is under the shaft by no more than _MAX_PRESS_INTERFERENCE_M.
+    The verdict is the RADIAL interference, never the overlap volume: volume scales with
+    part size, so the same 5um press fit measures 0.063mm3 on one part and far more on a
+    bigger one, while "the bore is 5um under the shaft" is the engineering class itself.
+    """
+    import numpy as _np
+    an, bn = a.name, b.name
+    declared = (bn in _mounts_of(a)) or (an in _mounts_of(b))
+    if not declared:
+        return False
+    W = _world_transforms(model)
+    Ta, Tb = W.get(an), W.get(bn)
+    if Ta is None or Tb is None:
+        return False
+    if float(_np.hypot(Ta[0, 3] - Tb[0, 3], Ta[1, 3] - Tb[1, 3])) > _COAXIAL_XY_TOL_M:
+        return False
+    ea, eb = _radial_extent_m(meshes_dir, an), _radial_extent_m(meshes_dir, bn)
+    if not ea or not eb:
+        return False
+    # Whichever way round the pair is, the ring's bore against the shaft's outer radius.
+    for ring, shaft in ((ea, eb), (eb, ea)):
+        interference = shaft[1] - ring[0]                # >0 means the bore is undersize
+        if 0.0 < interference <= _MAX_PRESS_INTERFERENCE_M:
+            return True
+    return False
+
 
 def _is_pressed_on(meshes_dir: str, part: str, r_arbor: float | None) -> bool:
     """True if `part`'s bore hugs an arbor of outer radius `r_arbor` — i.e. it is PRESSED
@@ -966,6 +1006,7 @@ def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *
     runners = 0
     fits: list = []
     interferences: list = []
+    press_fits: list = []
     mount_of = {p.child: p.parent for p in model.poses if p.parent}
     mesh_pairs_fs = {frozenset(p[:2]) for p in (getattr(model, "mesh_pairs", []) or [])
                      if len(p) >= 2}
@@ -1080,7 +1121,22 @@ def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *
                 # is correct engineering, not a fault.) Such a pair already has its own
                 # ratio constraint and contact exclusion, so leave it alone; reporting it
                 # would send the agent to "fix" the one thing that works.
-                if frozenset((a.name, b.name)) not in mesh_pairs_fs:
+                # A PRESS FIT IS THE SAME KIND OF DELIBERATE OVERLAP. An interference fit
+                # is DEFINED by the bore being smaller than the shaft, so the two solids
+                # must intersect — that is what makes it grip. Reported as a CAD fault it
+                # cost a whole run: told "their solids overlap by 0.063mm3, the CAD is
+                # wrong", the agent opened every gear bore to shaft_r + 0.05, turning each
+                # press fit into a running fit, and the train went dead (measured
+                # 1_12_20260803_175836, iteration 2, whose own comment reads "Gear bores
+                # use running-clearance dimensions to eliminate the reported 0.063/0.125
+                # mm3 interference volumes").
+                # Judged on the RADIAL interference, not the volume: volume scales with
+                # part size, so 0.063mm3 means nothing on its own, while "the bore is 5um
+                # under the shaft" is exactly the engineering class.
+                if _is_press_fit_overlap(model, meshes_dir, a, b):
+                    press_fits.append({"a": a.name, "b": b.name,
+                                       "overlap_mm3": round(vol, 3)})
+                elif frozenset((a.name, b.name)) not in mesh_pairs_fs:
                     interferences.append({"a": a.name, "b": b.name,
                                           "overlap_mm3": round(vol, 3)})
                 continue
@@ -1092,6 +1148,10 @@ def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *
     for iv in sorted(interferences, key=lambda x: -x["overlap_mm3"])[:10]:
         log_fn(f"[mjcf] INTERFERENCE {iv['a']} / {iv['b']}: their solids overlap by "
                f"{iv['overlap_mm3']}mm3 — contact is NOT excluded, the CAD is wrong")
+    if press_fits:
+        log_fn(f"[mjcf] {len(press_fits)} press fit(s) overlap BY DESIGN (a bore under its "
+               f"shaft is what grips): "
+               + ", ".join(f"{p['a']}/{p['b']}" for p in press_fits[:6]))
     if runners:
         log_fn(f"[mjcf] excluded {runners} running-fit pair(s) measured from the geometry "
                f"(a bore that clears its shaft turns freely; simulating that contact only "
