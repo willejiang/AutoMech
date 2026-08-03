@@ -192,6 +192,23 @@ SPEC_SCHEMA = {
                 # backwards. No fixed set of numeric fields can cover every mechanism, so
                 # the criterion is a small Python program instead: it reads the recorded
                 # trajectory and returns the checks it cares about.
+                # HOW THIS MACHINE IS DRIVEN, as code. `drive` above is a form with two
+                # boxes (velocity / position_sweep) and a whole class of mechanism fits in
+                # neither: anything that stores energy and releases it is set to a pose and
+                # then let go. Asked to express a trebuchet through `drive`, the designer
+                # could only say "spin the throwing arm at 5 rad/s" — which turned the arm
+                # two full turns and tested nothing about throwing. Same move as
+                # `metrics_code`: where a fixed schema cannot span the space, use code.
+                "control_code": {
+                    "type": "string",
+                    "description": (
+                        "Optional Python defining setup(m, d) and/or control(m, d, t) "
+                        "against the MuJoCo model/data. setup() runs once after settle "
+                        "(set d.qpos[...] to wind/preload a pose); control() runs EVERY "
+                        "step with elapsed seconds t and may drive, release at a moment, "
+                        "phase several joints, or do nothing (pure gravity). Overrides "
+                        "`drive` when present. stdlib + math + numpy as np only. Return "
+                        "\"\" to use the built-in `drive` instead.")},
                 "metrics_code": {
                     "type": "string",
                     "description": (
@@ -205,7 +222,7 @@ SPEC_SCHEMA = {
                          "base_orientation_euler", "base_height",
                          "joint_pose", "high_friction_links", "control",
                          "duration_s", "fixed_base", "drive", "pass_criteria",
-                         "metrics_code"],
+                         "control_code", "metrics_code"],
         },
     },
 }

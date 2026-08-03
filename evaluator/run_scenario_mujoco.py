@@ -109,6 +109,48 @@ def _dump_initial_contacts(m, d, mj, out_dir, log) -> None:
         log.append(f"initial-contact dump: write failed ({e})")
 
 
+def _load_control_code(spec: dict, log: list):
+    """Compile the designer's free-form `control_code` into (setup, control, err).
+
+    The `drive` schema is a fill-in-the-blanks form with two boxes — velocity and
+    position_sweep — and a whole class of machines fits in neither. A trebuchet is
+    wound back and then RELEASED: nothing drives it, gravity does the work, and asked
+    to express that through `drive` the designer could only say "spin the throwing arm
+    at 5 rad/s", which turned the arm two full turns and tested nothing. `metrics_code`
+    already solved the same problem on the judging side by being code instead of
+    fields; this is that idea applied to the driving side.
+
+    Two optional functions:
+        setup(m, d)        -- opening pose, run once after settle (wind the spring:
+                              d.qpos[...] = -1.0). Free to do nothing.
+        control(m, d, t)   -- called EVERY step with the elapsed driven time. Free to
+                              drive, to release at a moment, to phase several joints,
+                              or to do nothing at all (pure gravity).
+
+    Returns (setup, control, error_string). Any failure yields (None, None, msg): the
+    run then falls back to the built-in drive, because a broken control script is a
+    broken SCRIPT, never a verdict about the machine.
+    """
+    code = (spec.get("control_code") or "").strip()
+    if not code:
+        return None, None, None
+    ns: dict = {"math": math, "np": np, "numpy": np}
+    try:
+        exec(compile(code, "<control>", "exec"), ns)
+    except Exception as e:
+        msg = f"control_code did not compile ({type(e).__name__}: {e})"
+        log.append(msg)
+        return None, None, msg
+    setup = ns.get("setup") if callable(ns.get("setup")) else None
+    control = ns.get("control") if callable(ns.get("control")) else None
+    if setup is None and control is None:
+        msg = "control_code defines neither setup() nor control()"
+        log.append(msg)
+        return None, None, msg
+    log.append(f"control_code: setup={setup is not None} control={control is not None}")
+    return setup, control, None
+
+
 def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
     import mujoco as mj
 
@@ -249,6 +291,20 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
     watched = [l for l in _spin_links(model)
                if driver is None or l.name != driver.name] if model is not None else []
 
+    # ---- designer-authored opening pose + per-step control ----
+    # Compiled here, applied below. setup() runs AFTER settle and BEFORE the baseline
+    # angles are read, so a mechanism wound back to its starting pose is measured from
+    # that pose, not from where gravity happened to drop it.
+    user_setup, user_control, control_err = _load_control_code(spec, log)
+    if user_setup is not None:
+        try:
+            user_setup(m, d)
+            mj.mj_forward(m, d)
+            log.append("control_code: setup() applied")
+        except Exception as e:
+            control_err = f"setup() raised ({type(e).__name__}: {e})"
+            log.append(control_err)
+
     def joint_qadr(link_name, suffix):
         try:
             j = m.joint(f"{link_name}_{suffix}")
@@ -338,10 +394,31 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
             traj_bodies[_n].append([round(float(p_[0]) * 1000.0, 4),
                                     round(float(p_[1]) * 1000.0, 4),
                                     round(float(p_[2]) * 1000.0, 4)])
-    if driver is not None and driver_dofadr is not None:
-        qadr = driver_qadr if mode in ("velocity", "position", "position_sweep") else None
-        q_start = float(d.qpos[qadr]) if qadr is not None else 0.0
-        for s in range(drive_steps):
+    # ---- THE OBSERVATION LOOP (runs UNCONDITIONALLY) ----
+    # This loop used to sit inside `if driver is not None and driver_dofadr is not None`,
+    # and so did the trajectory sampling and the frame capture. A mechanism with no motor
+    # — a trebuchet released from a wound pose, anything storing and releasing energy —
+    # has no driver, failed that gate, and the whole loop was skipped: no trajectory.json,
+    # no frames, nothing for metrics_code to judge. (Trebuchet run 1kg_10m_20260730_125604
+    # produced no evaluable data at all for exactly this reason.) Observation is not
+    # conditional on there being something to drive; only the DRIVING is.
+    built_in_drive = (driver is not None and driver_dofadr is not None
+                      and user_control is None)
+    qadr = (driver_qadr if built_in_drive
+            and mode in ("velocity", "position", "position_sweep") else None)
+    q_start = float(d.qpos[qadr]) if qadr is not None else 0.0
+    for s in range(drive_steps):
+        if user_control is not None:
+            # Designer's own code owns the input. It may drive, release, phase several
+            # joints, or do nothing — and a raise inside it must not take the run down,
+            # so the first failure disables it and the rest of the run is still observed.
+            try:
+                user_control(m, d, s * float(m.opt.timestep))
+            except Exception as e:
+                control_err = f"control() raised at step {s} ({type(e).__name__}: {e})"
+                log.append(control_err)
+                user_control = None
+        elif built_in_drive:
             if qadr is not None:
                 # Command the angle directly: the input tracks the designed rate exactly,
                 # so "the input turned X rad" is a fact about the TEST, not about how
@@ -349,28 +426,17 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
                 d.qpos[qadr] = q_start + sweep_rate * (s + 1) * m.opt.timestep
             else:
                 d.qfrc_applied[driver_dofadr] = torque
-            mj.mj_step(m, d)
-            if len(d.xpos):
-                dvec = np.linalg.norm(d.xpos - xpos0, axis=1)
-                per_body_disp = np.maximum(per_body_disp, dvec)
-                max_disp = max(max_disp, float(dvec.max()))
-            if s % traj_every == 0:
-                _sample_traj(s)
-            if s % cap_every == 0 and capture(nf):
-                nf += 1
+        mj.mj_step(m, d)
+        if len(d.xpos):
+            dvec = np.linalg.norm(d.xpos - xpos0, axis=1)
+            per_body_disp = np.maximum(per_body_disp, dvec)
+            max_disp = max(max_disp, float(dvec.max()))
+        if s % traj_every == 0:
+            _sample_traj(s)
+        if s % cap_every == 0 and capture(nf):
+            nf += 1
+    if built_in_drive and qadr is None:
         d.qfrc_applied[driver_dofadr] = 0.0
-    else:
-        # No driver — a stand-still stability observation.
-        for s in range(drive_steps):
-            mj.mj_step(m, d)
-            if len(d.xpos):
-                dvec = np.linalg.norm(d.xpos - xpos0, axis=1)
-                per_body_disp = np.maximum(per_body_disp, dvec)
-                max_disp = max(max_disp, float(dvec.max()))
-            if s % traj_every == 0:
-                _sample_traj(s)
-            if s % cap_every == 0 and capture(nf):
-                nf += 1
 
     # ---- measure transmission ----
     input_travel = 0.0
@@ -481,6 +547,14 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
             "max_drift": round(max_disp, 4), "exploded": exploded,
             "displaced_parts": displaced_parts,
         }
+
+    # Whether the designer's own script drove this run, and whether it broke. Downstream
+    # needs to tell "the machine did nothing" from "the script that was supposed to move
+    # it crashed" — otherwise a bad control script reads as a bad machine.
+    if user_control is not None or user_setup is not None or control_err:
+        metrics["control_code"] = "designer" if not control_err else "failed"
+    if control_err:
+        metrics["control_code_error"] = control_err
 
     res = {"task": task, "spec": spec, "metrics": metrics, "stability": stability,
            "frames_dir": str(frames) if nf else None, "n_frames": nf, "log": log}

@@ -701,6 +701,15 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
         }
         if d.get("duration_s"):
             spec["duration_s"] = d["duration_s"]
+        # The designer's own drive script, when the `drive` form could not express this
+        # machine (anything wound and released). The runner falls back to `drive` if this
+        # is empty or fails to compile, so passing it through is always safe.
+        _cc = (designed.get("control_code") or "").strip()
+        if _cc:
+            spec["control_code"] = _cc
+            log_fn(f"[physics] designer authored control_code ({len(_cc)} chars); "
+                   f"it drives this run instead of drive.mode="
+                   f"{spec['drive'].get('mode')}")
         log_fn(f"[physics] mujoco scenario designed: watch "
               f"{len(spec['design']['watch_joints'])} joints, output "
               f"'{spec['design'].get('output_joint')}'")

@@ -90,6 +90,32 @@ moving joints are unobstructed. For a flat bench-mounted movement, a 3/4 top-dow
 (elevation ~ -20 to -35) reads best; for a tall mechanism, a lower side view. Set
 distance_scale ~2-3 to frame the whole machine with margin. Leave a value 0 to auto-fit it.
 
+WRITE THE DRIVE ("control_code"), when the two `drive` modes cannot express this machine.
+`drive` offers only "spin the input at a constant rate" and "sweep it across a range". A
+mechanism that STORES energy and RELEASES it fits neither: a trebuchet, a catapult, a
+mousetrap, a spring-driven escapement is set to a wound pose and then LET GO — nothing
+drives it, gravity or the spring does the work. Driving such a thing at a constant rate
+does not test it; it turns the throwing arm in circles and measures nothing.
+
+So you may instead write the drive as code, defining either or both of:
+
+    def setup(m, d):
+        # runs ONCE after the assembly settles, before any measurement baseline is taken.
+        # Set the opening pose: d.qpos[m.joint("arm_spin").qposadr[0]] = -1.0 to wind it.
+
+    def control(m, d, t):
+        # runs EVERY step; t is elapsed driven seconds. Drive (d.qfrc_applied[...] = ...,
+        # or command d.qpos[...]), release at a moment (if t < 1.0: drive, else: nothing),
+        # phase several joints, or do nothing at all for a pure-gravity release.
+
+Reach a joint by NAME, never by a guessed index: `j = m.joint("<part>_spin")` then
+`d.qpos[j.qposadr[0]]` / `d.qfrc_applied[j.dofadr[0]]`. The joint names are the TRAJECTORY
+KEYS listed below. stdlib + math + numpy as np only; no file or network access. Keep it
+short and defensive — a joint you name may be missing, so guard the lookup rather than
+raise. Return "" for control_code when the ordinary `drive` block already says it (a
+hand-cranked gearbox, a clock wound by its input arbor): the built-in drive is the
+comparable, well-tested path and code is only worth it when the form cannot say the thing.
+
 WRITE THE FUNCTIONAL CHECK ("metrics_code"): say IN CODE what this machine has to achieve.
 Everything else in this spec only establishes that the thing stayed put and something moved
 — which is equally true of a gear train whose tooth counts are wrong, a gripper that never
