@@ -98,8 +98,18 @@ DISCIPLINE:
   overlap the shaft cross-section it rings. A washer buried a few mm into the shaft it surrounds
   becomes a deep coaxial contact that brakes the driver; give it a bore clearing the shaft and a
   z that places it beside, not inside, the part it serves.
-- OMIT torque-lock hardware (keys, keyways, setscrews, retaining collars) — pure contact does
-  not use them and they always clash the gear hub.
+- SIZE EVERY BORE AS A FIT, never as a bare number. A hole that a shaft goes through is one of
+  exactly three things, decided by `clearance = bore_radius - shaft_outer_radius`:
+    `shaft_outer_r - 0.005`  INTERFERENCE (press) fit — bore very slightly SMALLER than the
+                             shaft, so it grips and the part turns WITH it. Gears, pinions and
+                             hands are fixed to their arbors this way.
+    `shaft_outer_r + 0.05`   CLEARANCE (running) fit — free to turn, too tight to wobble. A
+                             wheel riding an arbor it must NOT turn with, a shaft in a bearing.
+    anything looser          NOT A FIT: the part rattles, nothing locates it, it drives nothing.
+  These are hundredths of a millimetre; a 0.5mm or 1mm gap is a hole, not a fit. Always write
+  the bore in terms of the shaft's radius, and only after that shaft exists.
+- OMIT torque-lock hardware (keys, keyways, setscrews, retaining collars) — the press fit above
+  is what locks a gear to its arbor, and this hardware always clashes the gear hub.
 - Use capitalized True/False/None (this is Python, not JSON).
 - Give EVERY part except the base a `mount=<part_name>`: the base holds the plates/arbors, the
   arbors hold the gears. This is what anchors the whole train to the world so it cannot drift.
@@ -305,22 +315,35 @@ def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: 
     elif loose:
         guidance = (
             "MAKE THE DRIVEN GEARS GRIP THEIR SHAFTS — this is why the input turns and "
-            "nothing follows. The fit is decided by ONE measured number:\n"
+            "nothing follows. A fit is ONE measured number, and real machining has only "
+            "three classes of it:\n"
             "    clearance = bore_radius - shaft_outer_radius\n"
-            "    0 < clearance <= 0.10mm  -> PRESS FIT: the gear turns WITH the shaft\n"
-            "        clearance >  0.10mm  -> RUNNING FIT: it spins freely, undriven\n"
-            "For EACH gear listed above, shrink its bore to `shaft_outer_r + 0.05` so it is "
-            "a press fit. Do NOT move anything, do NOT change tooth counts or centre "
+            "    -0.01 <= clearance < 0   INTERFERENCE (press) fit: the bore is very "
+            "slightly SMALLER than the shaft, so metal grips metal and the part turns WITH "
+            "the shaft. This is how a gear/pinion/hand is fixed to its arbor.\n"
+            "     0 <= clearance <= 0.10  CLEARANCE (running) fit: just enough room to turn "
+            "freely, not enough to wobble. This is a wheel riding an arbor it must NOT turn "
+            "with, or a shaft in a bearing.\n"
+            "         clearance > 0.10    LOOSE — not a fit at all: the part rattles, "
+            "nothing locates it, and it drives nothing.\n"
+            "These are hundredths of a millimetre. An interference fit has NO perceptible "
+            "gap; a 0.5mm or 1mm 'clearance' is a hole, not a fit.\n"
+            "For EACH gear listed above, set its bore to `shaft_outer_r - 0.005` so it is a "
+            "genuine press fit. Do NOT move anything, do NOT change tooth counts or centre "
             "distances — the mesh geometry already checks out. Only the bores are wrong.\n"
-            "Leave a part that is SUPPOSED to rotate freely (an hour wheel riding the "
-            "centre arbor) well above 0.10mm — that free rotation is what makes the 12:1.")
+            "A part that is SUPPOSED to rotate freely (an hour wheel riding the centre "
+            "arbor) takes `shaft_outer_r + 0.05` — a running fit, NOT a loose hole. That "
+            "free rotation is what makes the 12:1.")
     elif fits:
         guidance = (
             "FIX THE IMPOSSIBLE FITS FIRST — nothing downstream can work while a part is "
             "declared on a shaft it cannot go onto. This is measured geometry, not a guess, "
             "and it is why the train is jammed. For EACH part listed above:\n"
-            "- Take the bore radius FROM the shaft it rides: `bore_r = <shaft>_outer_r + 0.05`. "
-            "Never write a bore as a bare number, and never size it before the shaft exists.\n"
+            "- Take the bore radius FROM the shaft it rides, and pick the class by what the "
+            "part must DO: `bore_r = <shaft>_outer_r - 0.005` if it must turn WITH the shaft "
+            "(press fit), `<shaft>_outer_r + 0.05` if it must turn freely ON it (running "
+            "fit). Never write a bore as a bare number, and never size it before the shaft "
+            "exists.\n"
             "- If the note says the WHOLE PART is thinner than the shaft, the bore cannot be "
             "cut at all: either make that part large enough to ring the shaft (outer radius "
             "clearly bigger than the shaft's), or take it off that shaft — a 3mm jewel cannot "

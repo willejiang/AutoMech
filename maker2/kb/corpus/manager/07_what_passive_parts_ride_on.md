@@ -53,4 +53,7 @@ actually contacts.
   question is a wheel. That turns a wrong mount into a hollowed-out ring and still does not
   assemble.
 - Do not size a bore from a round number. Take it from the outer radius of the part it
-  slides onto: `bore_r = <that part>_outer_r + 0.05`.
+  slides onto, and pick the class from what it must do: `<that part>_outer_r + 0.05` for a
+  passive part that slides on and turns freely (bearing, washer, spacer, hand), or
+  `<that part>_outer_r - 0.005` for one that must turn WITH the shaft. See
+  `08_mujoco_fits_press_vs_running.md`.
