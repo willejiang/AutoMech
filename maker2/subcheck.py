@@ -144,21 +144,40 @@ def floating_parts(model, meshes_dir: str, log_fn=print) -> list[Floating]:
     # overlaps or nearly touches its parent's solid; otherwise it must earn support from
     # below or from a shaft through its bore.
     parent_of = {p.child: p.parent for p in model.poses if p.parent}
+    links_by_name = {l.name: l for l in model.links}
     present = set(meshes)
 
-    def _touches_parent(name) -> bool:
+    def _carriers(name) -> list:
+        """Every part that claims to carry this one. A shaft running through two
+        bearings is held by both, and touching EITHER is enough to be supported —
+        checking only the pose parent called such a shaft floating whenever the other
+        bearing happened to be the one named."""
+        out = []
+        l = links_by_name.get(name)
+        if l is not None:
+            for c in [getattr(l, "mount", "")] + list(getattr(l, "extra_mounts", []) or []):
+                c = (c or "").strip()
+                if c and c not in out:
+                    out.append(c)
         par = parent_of.get(name)
-        pm = meshes.get(par) if par else None
-        if pm is None:
-            return False
-        m = meshes[name]
-        try:
-            if _solid_intersection_frac(m, pm, log_fn=None) > 0.01:
-                return True
-            gap = float(m.nearest.on_surface(pm.vertices)[1].min())
-            return gap < 0.5
-        except Exception:
-            return False
+        if par and par not in out:
+            out.append(par)
+        return out
+
+    def _touches_parent(name) -> bool:
+        for par in _carriers(name):
+            pm = meshes.get(par)
+            if pm is None:
+                continue
+            m = meshes[name]
+            try:
+                if _solid_intersection_frac(m, pm, log_fn=None) > 0.01:
+                    return True
+                if float(m.nearest.on_surface(pm.vertices)[1].min()) < 0.5:
+                    return True
+            except Exception:
+                continue
+        return False
 
     found: list[Floating] = []
     for name, m in meshes.items():

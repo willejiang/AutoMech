@@ -237,6 +237,127 @@ def _inertial_attrib(src: str, mass_kg: float) -> dict:
             "fullinertia": " ".join(f"{v:.6g}" for v in full)}
 
 
+def _mounts_of(link) -> list:
+    """Every part that carries `link`, primary mount first.
+
+    `mount` is a single string because MuJoCo's body tree allowed a part only one
+    parent — a shaft running through two bearings could name just one of them, and the
+    other became decoration the support test then reported as holding nothing. Bodies
+    are flat now, so supporters are a LIST; `mount` stays the primary one (everything
+    that reads a single carrier still works) and `extra_mounts` holds the rest.
+    """
+    out = []
+    m = (getattr(link, "mount", "") or "").strip()
+    if m:
+        out.append(m)
+    for e in (getattr(link, "extra_mounts", None) or []):
+        e = str(e).strip()
+        if e and e not in out:
+            out.append(e)
+    return out
+
+
+def _spin_carrier(link_name, links_by_name):
+    """The nearest SPINNING part up `link_name`'s mount chain, or None.
+
+    A dof=fixed part mounted on a rotating one (a hand on its arbor, a collar on a
+    shaft) has to turn WITH it. Under the old nested emitter that was free: being the
+    child of a spinning body meant sharing its rotation. Flat bodies have no parent to
+    inherit from, so the carrier has to be found and the rotation re-imposed."""
+    seen = set()
+    n = link_name
+    while n and n not in seen:
+        seen.add(n)
+        l = links_by_name.get(n)
+        if l is None:
+            return None
+        if getattr(l, "dof", "fixed") == "spin":
+            return n
+        n = getattr(l, "mount", "")
+    return None
+
+
+def _emit_flat(world_el, model, links_by_name, piece_map, meshes_dir, mesh_names,
+               asset_el, eq_el, *, base_height: float, pin_base: bool, log_fn=print):
+    """Emit EVERY part as a direct child of <worldbody>, carrying its absolute world
+    pose, and say out loud the two things body nesting used to provide implicitly.
+
+    Nesting never carried POSITION. The agent authors absolute `.moved()` coordinates
+    and the builder back-computed a relative pose from them, so re-parenting a part
+    moved it nowhere (verified: flattening two real runs changes every body's world
+    position by 0.000000 mm). What nesting did carry was:
+
+      1. `mount` had to form a TREE, because MuJoCo forbids a body having two parents.
+         That is why a shaft held by two bearings could only ever name one of them —
+         the second bearing became decoration, and the support test reported the shaft
+         as unheld. Flat bodies have no parent, so a part may now name every part that
+         genuinely carries it.
+      2. MuJoCo does not collide a body with its own parent. A 21-part chain therefore
+         exempted 20 pairs from contact, and a counterweight could pass through the
+         frame that was supposed to stop it. Flat bodies exempt nothing (measured: 12
+         parent-child exemptions -> 0).
+
+    What must now be stated explicitly:
+      - a dof=fixed part on static structure was welded by BEING a child -> <weld>;
+      - a dof=fixed part riding a SPINNING carrier turned with it -> it needs the
+        carrier's own hinge plus a 1:1 ratio. Welding it to the spinning body instead
+        LOCKS THE SHAFT (the part has no joint of its own to absorb the constraint) and
+        kills the whole train — measured: the watch's 12:1 went to zero output.
+    """
+    n_weld = n_ride = 0
+    W = _world_transforms(model)
+    for link in model.links:
+        name = link.name
+        T = W.get(name)
+        if T is None:
+            continue
+        dof = getattr(link, "dof", "fixed")
+        pos = [float(T[0, 3]), float(T[1, 3]), float(T[2, 3])]
+        # Only a part that will actually SETTLE spawns slightly above the plane; a
+        # welded/hinged part is grounded in place and lifting it would strand it in
+        # mid-air.
+        if dof == "free" and not pin_base:
+            pos[2] += base_height
+        body = ET.SubElement(world_el, "body", attrib={
+            "name": name,
+            "pos": f"{pos[0]:.9g} {pos[1]:.9g} {pos[2]:.9g}",
+            "quat": _quat_from_matrix_rot(T)})
+
+        mount = getattr(link, "mount", "")
+        carrier = _spin_carrier(mount, links_by_name) if mount else None
+        if dof == "spin":
+            ax = getattr(link, "spin_axis", (0.0, 0.0, 1.0))
+            ET.SubElement(body, "joint", attrib={
+                "name": f"{name}_spin", "type": "hinge",
+                "axis": f"{ax[0]:.6g} {ax[1]:.6g} {ax[2]:.6g}", "pos": "0 0 0"})
+        elif dof == "free" and not pin_base:
+            ET.SubElement(body, "freejoint", attrib={"name": f"{name}_free"})
+        elif dof == "fixed" and carrier and carrier in links_by_name:
+            # Rides a rotating carrier: same axis, locked 1:1 to it.
+            ax = getattr(links_by_name[carrier], "spin_axis", (0.0, 0.0, 1.0))
+            ET.SubElement(body, "joint", attrib={
+                "name": f"{name}_spin", "type": "hinge",
+                "axis": f"{ax[0]:.6g} {ax[1]:.6g} {ax[2]:.6g}", "pos": "0 0 0"})
+            ET.SubElement(eq_el, "joint", attrib={
+                "joint1": f"{name}_spin", "joint2": f"{carrier}_spin",
+                "polycoef": "0 1 0 0 0"})
+            n_ride += 1
+        elif dof == "fixed":
+            # Static structure. Welded to each part that carries it; a part with no
+            # mount (the base) is left welded to the world by having no joint at all.
+            for sup in _mounts_of(link):
+                if sup in links_by_name and getattr(
+                        links_by_name[sup], "dof", "fixed") != "free":
+                    ET.SubElement(eq_el, "weld", attrib={"body1": name, "body2": sup})
+                    n_weld += 1
+
+        _emit_inertial_and_geoms(body, link, name, piece_map, meshes_dir,
+                                 mesh_names, asset_el)
+    if n_weld or n_ride:
+        log_fn(f"[mjcf] flat bodies: {n_weld} weld(s) to structure, "
+               f"{n_ride} part(s) locked 1:1 to a rotating carrier")
+
+
 def _emit_body(parent_el, link_name, model, links_by_name, children, piece_map,
                meshes_dir, mesh_names, asset_el, *, is_root: bool,
                base_height: float, pin_base: bool,
@@ -1108,13 +1229,16 @@ def build_mjcf(model, ctx, *, settings=None, metrics: dict | None = None,
     children = _pose_children(model)
     mesh_names: set = set()
     roots = _roots(model)
-    for rn in roots:
-        if rn not in links_by_name:
-            continue
-        _emit_body(world, rn, model, links_by_name, children, piece_map,
-                   meshes_dir, mesh_names, asset_el, is_root=True,
-                   base_height=(0.0 if pin_base else base_height), pin_base=pin_base,
-                   world_el=world, parent_T=np.eye(4))
+    # FLAT BODIES. Every part is a direct child of <worldbody> with its absolute world
+    # pose; `mount` becomes a pure load-path declaration instead of also dictating the
+    # body tree. See _emit_flat for what that buys and what it costs.
+    struct_eq = ET.SubElement(mujoco_el, "equality")
+    _emit_flat(world, model, links_by_name, piece_map, meshes_dir, mesh_names,
+               asset_el, struct_eq,
+               base_height=(0.0 if pin_base else base_height), pin_base=pin_base,
+               log_fn=log_fn)
+    if not len(struct_eq):
+        mujoco_el.remove(struct_eq)
 
     # DETERMINISTIC TRANSMISSION (B, ON by default): rigid-body tooth contact free-spins
     # instead of driving, so once geometry proves a pair meshes we express it as an exact

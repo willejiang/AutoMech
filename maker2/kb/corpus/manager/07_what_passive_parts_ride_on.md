@@ -32,6 +32,21 @@ actually contacts.
     hour_wheel_thrust_washer  mount="hour_pipe"     # correct: it rides the pipe
     hour_wheel_thrust_washer  mount="hour_wheel"    # wrong: nothing to ride
 
+## Support is not a tree: name EVERY carrier
+
+`mount=` takes a comma-separated LIST. A shaft running through two bearings is held by
+both, and writing only one leaves the other decorative — the support test then drops the
+shaft and blames the CAD for a part that was actually supported twice.
+
+    minute_arbor   mount="lower_bearing,upper_bearing"    # a shaft in two bearings
+    bridge         mount="left_post,right_post"           # a bridge spans its pillars
+    hour_pipe      mount="hour_wheel"                     # one carrier: still just one name
+
+The first name is the primary carrier (the one a fit is measured against); the rest are
+additional supporters. List them because they are real, not to be safe: a part that names
+a carrier it does not physically touch is a different fault, and the gravity settle finds
+that one too.
+
 ## Where each kind of part belongs
 
 | part | rides on | never on |

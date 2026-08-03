@@ -118,6 +118,8 @@ def _link_from_dict(d: dict, idx: int) -> LinkSpec:
         driver=bool(d.get("driver", False)),
         material=str(d.get("material") or "steel").strip().lower() or "steel",
         mount=str(d.get("mount") or "").strip(),
+        extra_mounts=[str(x).strip() for x in (d.get("extra_mounts") or [])
+                      if str(x).strip()],
     ))
 
 
@@ -316,6 +318,9 @@ def model_to_dict(model: KinematicModel) -> dict:
                 # What a dof=fixed part rides on. This serializer is hand-written, so a new
                 # LinkSpec field is silently dropped unless it is listed here.
                 "mount": l.mount,
+                # The OTHER parts that carry it (a shaft in a second bearing). Omitted
+                # when empty so existing kinematic_model.json files are byte-identical.
+                **({"extra_mounts": list(l.extra_mounts)} if l.extra_mounts else {}),
             }
             for l in model.links
         ],

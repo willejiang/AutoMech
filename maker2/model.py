@@ -74,6 +74,18 @@ class LinkSpec:
                                                      # arbor or pipe it is mounted to; without
                                                      # it, it guesses a nearby gear and reads
                                                      # a ratio off two parts nobody sees.
+    extra_mounts: list = field(default_factory=list)  # ADDITIONAL parts that carry this one.
+                                                     # Support is not a tree: a shaft running
+                                                     # through two bearings is held by both.
+                                                     # `mount` could name only one of them
+                                                     # (MuJoCo forbids a body having two
+                                                     # parents), so the second bearing became
+                                                     # decoration and the support test
+                                                     # reported the shaft as unheld. MJCF
+                                                     # bodies are flat now, so the rest of the
+                                                     # supporters live here. `mount` stays the
+                                                     # primary one, so every consumer that
+                                                     # wants a single carrier is unchanged.
 
 
 @dataclass

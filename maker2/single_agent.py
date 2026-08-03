@@ -143,13 +143,23 @@ def evaluate_machine_python(script_text: str, run_dir: str, machine_name: str,
         # only place the test designer can learn what carries it; when this lived only on
         # the pose, every link serialized with no mount and the designer fell back to
         # guessing a nearby gear -- reporting a ratio between two parts nobody can see.
-        mount = str(meta.get("mount", "") or "").strip()
-        parent = mount if (mount and mount != name and mount in names) else ""
+        # SUPPORT IS NOT A TREE. `mount=a,b` lists every part that carries this one — a
+        # shaft running through two bearings is held by both. Only the FIRST is used as
+        # the pose parent (poses stay a forest; MJCF bodies are flat anyway, so the
+        # parent is now just the frame the relative pose is expressed in and moves
+        # nothing). The rest ride along on the link as extra_mounts, where the support
+        # and fit checks read them.
+        raw = str(meta.get("mount", "") or "")
+        wanted = [s.strip() for s in raw.split(",") if s.strip()]
+        valid = [s for s in wanted if s != name and s in names]
+        mount = valid[0] if valid else ""
+        parent = mount
         links.append(LinkSpec(
             name=name, description=meta.get("description", name),
             mesh_filename=f"meshes/{name}.stl",
             dof=dof, spin_axis=tuple(spin_axis), driver=driver,
-            material=str(meta.get("material", "steel")), mount=parent))
+            material=str(meta.get("material", "steel")), mount=parent,
+            extra_mounts=valid[1:]))
         if parent:
             rel = _mat_mul(_mat_inv(world_by_name[parent]), world_by_name[name])
             T = [rel[0][3] / 1000.0, rel[1][3] / 1000.0, rel[2][3] / 1000.0]
