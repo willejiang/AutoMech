@@ -184,6 +184,59 @@ def _pose_matrix(xyz, rpy):
     return T
 
 
+def _mesh_inertia_m(src: str, mass_kg: float):
+    """(fullinertia_6, com_m) for an STL authored in mm, scaled to `mass_kg`, or None.
+
+    Every part used to ship a flat `diaginertia="1e-4 1e-4 1e-4"` with a comment claiming
+    MuJoCo would refine it from the geom. It does not: an explicit <inertial> is taken
+    verbatim. Measured on one release gate, that constant was 125x its real inertia AND
+    isotropic — a slender lever and a ball became dynamically identical, and every spin
+    part's rotational behaviour rested on it. Mass stays ours (density x true solid
+    volume, which the convex hull would overstate); only the inertia comes from the mesh.
+
+    Returned as MuJoCo's `fullinertia` (ixx iyy izz ixy ixz iyz) about the centre of mass
+    IN THE BODY FRAME, not as principal components: principal magnitudes are only correct
+    alongside the rotation that orders them, and an asymmetric part given them in the body
+    frame is wrong about which axis is easy to turn.
+    """
+    try:
+        import trimesh
+        mesh = trimesh.load(src, force="mesh")
+        if not mesh.is_watertight:
+            mesh = mesh.convex_hull
+        m_native = abs(float(mesh.mass))
+        if m_native <= 0:
+            return None
+        # trimesh works in the authored unit (mm) at density 1. Inertia scales as
+        # length^2 (1e-6 for mm->m); renormalise off its mass to the mass we computed.
+        I = np.asarray(mesh.moment_inertia, dtype=float) * (mass_kg / m_native) * 1.0e-6
+        d = [float(I[0, 0]), float(I[1, 1]), float(I[2, 2])]
+        if not all(np.isfinite(I).flatten()) or min(d) <= 0:
+            return None
+        # MuJoCo rejects a non-positive-definite inertia; a degenerate tessellation can
+        # produce one, and that must fall back rather than fail the whole model load.
+        if min(np.linalg.eigvalsh((I + I.T) / 2.0)) <= 0:
+            return None
+        full = [d[0], d[1], d[2], float(I[0, 1]), float(I[0, 2]), float(I[1, 2])]
+        com = [float(v) / 1000.0 for v in np.asarray(mesh.center_mass, dtype=float)]
+        return full, com
+    except Exception:
+        return None
+
+
+def _inertial_attrib(src: str, mass_kg: float) -> dict:
+    """The <inertial> attributes for a part: real inertia + centre of mass when the mesh
+    can be measured, else the old flat placeholder so the model still loads."""
+    got = _mesh_inertia_m(src, mass_kg) if src and os.path.exists(src) else None
+    if got is None:
+        return {"pos": "0 0 0", "mass": f"{mass_kg:.6g}",
+                "diaginertia": "1e-4 1e-4 1e-4"}
+    full, com = got
+    return {"pos": f"{com[0]:.9g} {com[1]:.9g} {com[2]:.9g}",
+            "mass": f"{mass_kg:.6g}",
+            "fullinertia": " ".join(f"{v:.6g}" for v in full)}
+
+
 def _emit_body(parent_el, link_name, model, links_by_name, children, piece_map,
                meshes_dir, mesh_names, asset_el, *, is_root: bool,
                base_height: float, pin_base: bool,
@@ -278,13 +331,9 @@ def _emit_inertial_and_geoms(body, link, link_name, piece_map, meshes_dir,
     vol_m3 = _mesh_volume_m3(own_stl) if os.path.exists(own_stl) else None
     if vol_m3:
         mass = max(density_of(mat) * vol_m3, 1e-6)       # kg; floor so MuJoCo is happy
-        ET.SubElement(body, "inertial", attrib={
-            "pos": "0 0 0", "mass": f"{mass:.6g}",
-            "diaginertia": "1e-4 1e-4 1e-4"})            # MuJoCo refines from geom
     else:
-        ET.SubElement(body, "inertial", attrib={
-            "pos": "0 0 0", "mass": "0.05",
-            "diaginertia": "1e-4 1e-4 1e-4"})
+        mass = 0.05
+    ET.SubElement(body, "inertial", attrib=_inertial_attrib(own_stl, mass))
     _add_geoms(body, link, piece_map, meshes_dir, mesh_names, asset_el,
                friction=friction_of(mat))
 
@@ -1007,8 +1056,7 @@ def build_support_mjcf(model, ctx, *, metrics: dict | None = None,
         own_stl = os.path.join(meshes_dir, f"{l.name}.stl")
         vol_m3 = _mesh_volume_m3(own_stl) if os.path.exists(own_stl) else None
         mass = max(density_of(mat) * vol_m3, 1e-6) if vol_m3 else 0.05
-        ET.SubElement(body, "inertial", attrib={
-            "pos": "0 0 0", "mass": f"{mass:.6g}", "diaginertia": "1e-4 1e-4 1e-4"})
+        ET.SubElement(body, "inertial", attrib=_inertial_attrib(own_stl, mass))
         _add_geoms(body, l, piece_map, meshes_dir, mesh_names, asset_el,
                    friction=_SUPPORT_FRICTION)
 
