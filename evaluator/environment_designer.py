@@ -314,21 +314,8 @@ def revise_environment(task, robot_info, prev_spec, feedback, *,
                 f"If the camera could not see the mechanism, RE-FRAME it (fix camera "
                 f"azimuth/elevation/distance_scale so the moving parts fill the frame). "
                 f"If the wrong joint was driven or watched, fix the drive/watch_joints. "
-                f"KEEP the previous spec's \"control_code\" and \"metrics_code\" verbatim "
-                f"unless the diagnosis says THEY are what was wrong. A retry is meant to "
-                f"fix how the machine is OBSERVED, and dropping control_code silently "
-                f"reverts the drive to a constant-velocity motor — which for a mechanism "
-                f"that is wound and released tests nothing. "
                 f"Output a REVISED spec using ONLY the real joint/link names above."}]
-    spec = _call(msgs, base_url, api_key, model)
-    # Carry the previous drive/criterion across if the model dropped it anyway. Losing
-    # control_code does not read as an error downstream — the runner just falls back to
-    # `drive`, so the gate that was supposed to be swung open once and released came back
-    # as a motor turning at 5 rad/s, and the retry silently tested a different machine.
-    for _k in ("control_code", "metrics_code"):
-        if not (spec.get(_k) or "").strip() and (prev_spec.get(_k) or "").strip():
-            spec[_k] = prev_spec[_k]
-    return spec
+    return _call(msgs, base_url, api_key, model)
 
 
 if __name__ == "__main__":
