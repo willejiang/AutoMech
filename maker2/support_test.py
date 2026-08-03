@@ -190,7 +190,7 @@ class Fell:
                 f"tube so it reaches '{self.part}'. Do NOT add a new support part.")
 
 
-def support_faults(model, ctx, *, log_fn=print) -> list[Fell]:
+def support_faults(model, ctx, *, settings=None, log_fn=print) -> list[Fell]:
     """Build the support MJCF, settle it under gravity, and return the parts that fell.
 
     Returns [] when MuJoCo is unavailable or the model cannot be built — an absent
@@ -205,7 +205,7 @@ def support_faults(model, ctx, *, log_fn=print) -> list[Fell]:
     from .mjcf_builder import build_support_mjcf, coaxial_pairs
 
     try:
-        path, ground = build_support_mjcf(model, ctx, log_fn=log_fn)
+        path, ground = build_support_mjcf(model, ctx, settings=settings, log_fn=log_fn)
         m = mj.MjModel.from_xml_path(path)
     except Exception as e:
         log_fn(f"[support] could not build/load the support model ({e}); skipping")

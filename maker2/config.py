@@ -80,6 +80,15 @@ class Settings:
                                                    # run_scenario_mujoco) builds its MJCF from
                                                    # the model JSON; the visual URDF is kept
                                                    # only for the appearance-judge render.
+    sdf_collision: bool = True                    # collision geometry: MuJoCo type="sdf"
+                                                   # read straight off each part's STL, so a
+                                                   # bore stays a bore. Convex decomposition
+                                                   # FILLS cavities — a real +0.100mm running
+                                                   # fit read as 0.245mm of interpenetration —
+                                                   # and costs 131-288s per model against
+                                                   # 1.3-1.9s for SDF, paid again every
+                                                   # iteration because the geometry is new.
+                                                   # False falls back to convex pieces.
     allow_gear_constraint: bool = False           # escape hatch: if a specific gear pair
                                                    # won't transmit by pure tooth contact,
                                                    # add a MuJoCo <equality> gear-ratio

@@ -137,18 +137,37 @@ def _is_hullable(src: str) -> bool:
 
 
 def _add_geoms(body_el, link, piece_map, meshes_dir, mesh_names, asset_el,
-               friction: str = _GEOM_FRICTION):
-    """Attach one <geom> per convex piece (movable/meshing parts) or one for the
-    part's own mesh. Registers each referenced <mesh> in <asset> once. A degenerate
-    (coplanar) piece that MuJoCo cannot hull is replaced by a thin BOX geom of the same
-    bounding size, so a razor-thin part collides approximately instead of crashing the
-    model load. ``friction`` is the part's per-material contact triple."""
-    pieces = piece_map.get(link.name)
-    if pieces:
-        sources = pieces
-    else:
+               friction: str = _GEOM_FRICTION, sdf: bool = True):
+    """Attach the part's collision geoms. Registers each referenced <mesh> in <asset>
+    once. ``friction`` is the part's per-material contact triple.
+
+    With ``sdf`` (the default) ONE geom is emitted per part, of type "sdf", reading the
+    part's ORIGINAL STL: MuJoCo evaluates a signed distance field, so a bore is a bore.
+    Otherwise the part is represented by its convex decomposition — one geom per piece,
+    or a thin BOX for a piece too degenerate to hull.
+
+    Why SDF is the default (all measured on this repo's own runs, see
+    docs/CONTACT_PHYSICS_FINDINGS.md):
+      - convex pieces FILL a cavity. An hour pipe with a 1.600mm bore on a 1.500mm arbor
+        — a real +0.100mm running fit — was reported as 0.245mm of INTERPENETRATION;
+        SDF reports no contact, correctly. Every fit tolerance in this repo was widened
+        to absorb that artefact.
+      - decomposition is the dominant cost of building a model: 288s for 13 parts (252
+        pieces) and 131s for 29 parts, versus 1.3-1.9s for SDF. It is cached per part,
+        but the loop authors NEW geometry every iteration, so the cache almost never
+        hits and the run pays it again.
+    Contact-heavy scenes step slower under SDF, but that is seconds against minutes.
+    """
+    if sdf:
         own = os.path.join(meshes_dir, f"{link.name}.stl")
         sources = [own] if os.path.exists(own) and os.path.getsize(own) > 0 else []
+    else:
+        pieces = piece_map.get(link.name)
+        if pieces:
+            sources = pieces
+        else:
+            own = os.path.join(meshes_dir, f"{link.name}.stl")
+            sources = [own] if os.path.exists(own) and os.path.getsize(own) > 0 else []
     rgba = ""
     if len(getattr(link, "color", ()) or ()) == 4:
         c = link.color
@@ -158,7 +177,16 @@ def _add_geoms(body_el, link, piece_map, meshes_dir, mesh_names, asset_el,
                   "margin": f"{_GEOM_MARGIN}", "condim": "4"}
         if rgba:
             common["rgba"] = rgba
-        if _is_hullable(src):
+        if sdf:
+            mesh_name = f"{link.name}_sdf"
+            if mesh_name not in mesh_names:
+                ET.SubElement(asset_el, "mesh", attrib={
+                    "name": mesh_name, "file": os.path.abspath(src),
+                    "scale": "0.001 0.001 0.001"})   # mm -> m
+                mesh_names.add(mesh_name)
+            ET.SubElement(body_el, "geom",
+                          attrib={"type": "sdf", "mesh": mesh_name, **common})
+        elif _is_hullable(src):
             mesh_name = f"{link.name}_m{i}"
             if mesh_name not in mesh_names:
                 ET.SubElement(asset_el, "mesh", attrib={
@@ -278,7 +306,8 @@ def _spin_carrier(link_name, links_by_name):
 
 
 def _emit_flat(world_el, model, links_by_name, piece_map, meshes_dir, mesh_names,
-               asset_el, eq_el, *, base_height: float, pin_base: bool, log_fn=print):
+               asset_el, eq_el, *, base_height: float, pin_base: bool,
+               sdf: bool = True, log_fn=print):
     """Emit EVERY part as a direct child of <worldbody>, carrying its absolute world
     pose, and say out loud the two things body nesting used to provide implicitly.
 
@@ -352,7 +381,7 @@ def _emit_flat(world_el, model, links_by_name, piece_map, meshes_dir, mesh_names
                     n_weld += 1
 
         _emit_inertial_and_geoms(body, link, name, piece_map, meshes_dir,
-                                 mesh_names, asset_el)
+                                 mesh_names, asset_el, sdf=sdf)
     if n_weld or n_ride:
         log_fn(f"[mjcf] flat bodies: {n_weld} weld(s) to structure, "
                f"{n_ride} part(s) locked 1:1 to a rotating carrier")
@@ -433,7 +462,7 @@ def _emit_body(parent_el, link_name, model, links_by_name, children, piece_map,
     # dof == "fixed": no joint (welded to its parent body).
 
     _emit_inertial_and_geoms(body, link, link_name, piece_map, meshes_dir,
-                             mesh_names, asset_el)
+                             mesh_names, asset_el, sdf=False)
 
     for p in children.get(link_name, []):
         _emit_body(body, p.child, model, links_by_name, children, piece_map,
@@ -443,7 +472,7 @@ def _emit_body(parent_el, link_name, model, links_by_name, children, piece_map,
 
 
 def _emit_inertial_and_geoms(body, link, link_name, piece_map, meshes_dir,
-                             mesh_names, asset_el):
+                             mesh_names, asset_el, sdf: bool = True):
     """Per-part mass from the material's density x the part's solid volume, then its
     geoms. Shared by the normal nested path and the hoisted free-part path."""
     from .materials import density_of, friction_of
@@ -456,7 +485,7 @@ def _emit_inertial_and_geoms(body, link, link_name, piece_map, meshes_dir,
         mass = 0.05
     ET.SubElement(body, "inertial", attrib=_inertial_attrib(own_stl, mass))
     _add_geoms(body, link, piece_map, meshes_dir, mesh_names, asset_el,
-               friction=friction_of(mat))
+               friction=friction_of(mat), sdf=sdf)
 
 
 def _pitch_radius_m(meshes_dir: str, link_name: str) -> float | None:
@@ -1086,7 +1115,7 @@ def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *
 
 
 def build_support_mjcf(model, ctx, *, metrics: dict | None = None,
-                       log_fn=print) -> tuple[str, str]:
+                       settings=None, log_fn=print) -> tuple[str, str]:
     """Build the SUPPORT-TEST MJCF: every part a free body except the one already
     resting on the ground, which stays welded to the world.
 
@@ -1113,7 +1142,9 @@ def build_support_mjcf(model, ctx, *, metrics: dict | None = None,
     import trimesh
 
     meshes_dir = ctx.meshes_dir
-    piece_map = decompose_model(model, meshes_dir, metrics=metrics, log_fn=log_fn)
+    use_sdf = getattr(settings, "sdf_collision", True) if settings is not None else True
+    piece_map = ({} if use_sdf
+                 else decompose_model(model, meshes_dir, metrics=metrics, log_fn=log_fn))
     W = _world_transforms(model)
 
     dof_of = {l.name: getattr(l, "dof", "fixed") for l in model.links}
@@ -1179,7 +1210,7 @@ def build_support_mjcf(model, ctx, *, metrics: dict | None = None,
         mass = max(density_of(mat) * vol_m3, 1e-6) if vol_m3 else 0.05
         ET.SubElement(body, "inertial", attrib=_inertial_attrib(own_stl, mass))
         _add_geoms(body, l, piece_map, meshes_dir, mesh_names, asset_el,
-                   friction=_SUPPORT_FRICTION)
+                   friction=_SUPPORT_FRICTION, sdf=use_sdf)
 
     # The coaxial sliding fits must be excluded here for the SAME reason as in the real
     # MJCF: a bore modelled as a solid ring around a shaft reads as a deep interpenetration,
@@ -1205,7 +1236,11 @@ def build_mjcf(model, ctx, *, settings=None, metrics: dict | None = None,
     """Build an MJCF for the model and write it next to the URDF (model.mjcf).
     Returns the MJCF path. Decomposes movable/meshing parts first (cached)."""
     meshes_dir = ctx.meshes_dir
-    piece_map = decompose_model(model, meshes_dir, metrics=metrics, log_fn=log_fn)
+    # SDF reads each part's own STL, so there is nothing to decompose — and skipping it
+    # is where the build-time saving lives (131-288s -> 1.3-1.9s on this repo's runs).
+    use_sdf = getattr(settings, "sdf_collision", True) if settings is not None else True
+    piece_map = ({} if use_sdf
+                 else decompose_model(model, meshes_dir, metrics=metrics, log_fn=log_fn))
 
     pin_base = not getattr(settings, "base_rests_on_plane", True) if settings else False
 
@@ -1236,7 +1271,7 @@ def build_mjcf(model, ctx, *, settings=None, metrics: dict | None = None,
     _emit_flat(world, model, links_by_name, piece_map, meshes_dir, mesh_names,
                asset_el, struct_eq,
                base_height=(0.0 if pin_base else base_height), pin_base=pin_base,
-               log_fn=log_fn)
+               sdf=use_sdf, log_fn=log_fn)
     if not len(struct_eq):
         mujoco_el.remove(struct_eq)
 

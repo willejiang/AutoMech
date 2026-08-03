@@ -663,7 +663,7 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
     # gravity answer the question the welds hide: what is actually held by geometry?
     try:
         from .support_test import support_faults
-        support_fell = support_faults(model, ctx, log_fn=log_fn)
+        support_fell = support_faults(model, ctx, settings=settings, log_fn=log_fn)
     except Exception as e:
         log_fn(f"[support] support test unavailable ({type(e).__name__}: {e})")
         support_fell = []
