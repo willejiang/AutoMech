@@ -206,9 +206,13 @@ SPEC_SCHEMA = {
                         "against the MuJoCo model/data. setup() runs once after settle "
                         "(set d.qpos[...] to wind/preload a pose); control() runs EVERY "
                         "step with elapsed seconds t and may drive, release at a moment, "
-                        "phase several joints, or do nothing (pure gravity). Overrides "
-                        "`drive` when present. stdlib + math + numpy as np only. Return "
-                        "\"\" to use the built-in `drive` instead.")},
+                        "or phase several joints. Overrides `drive` when present. stdlib "
+                        "+ math + numpy as np only. For a machine NOTHING should drive "
+                        "(a gravity release), still define control() with a bare `pass` "
+                        "— an empty string means 'use the built-in `drive`', which spins "
+                        "the input at a constant rate, and that is the opposite of "
+                        "letting it go. Leave it \"\" only when a steady driven input is "
+                        "genuinely right (a hand-cranked gearbox).")},
                 "metrics_code": {
                     "type": "string",
                     "description": (

@@ -112,9 +112,24 @@ Reach a joint by NAME, never by a guessed index: `j = m.joint("<part>_spin")` th
 `d.qpos[j.qposadr[0]]` / `d.qfrc_applied[j.dofadr[0]]`. The joint names are the TRAJECTORY
 KEYS listed below. stdlib + math + numpy as np only; no file or network access. Keep it
 short and defensive — a joint you name may be missing, so guard the lookup rather than
-raise. Return "" for control_code when the ordinary `drive` block already says it (a
-hand-cranked gearbox, a clock wound by its input arbor): the built-in drive is the
-comparable, well-tested path and code is only worth it when the form cannot say the thing.
+raise.
+
+WHEN NOTHING SHOULD DRIVE THE MACHINE, STILL DEFINE control() — WITH `pass`:
+
+    def control(m, d, t):
+        pass        # pure gravity: the ball rolls, the arm falls, nothing is actuated
+
+An EMPTY control_code does NOT mean "do not drive". It means "I have no opinion, use the
+`drive` block" — and `drive` spins the input at a constant rate. So a gravity-release
+mechanism that leaves control_code blank gets its gate/arm turned by a 5 rad/s motor,
+which is the one thing it must not do. "Nothing drives it" is a DECISION, and a decision
+has to be written down: `pass` is that sentence. If you also need an opening pose, write
+setup() as well and still write control() with `pass`.
+
+Leave control_code "" ONLY when the ordinary `drive` block genuinely says it — a
+hand-cranked gearbox, a clock wound by its input arbor, anything whose input really is
+turned at a steady rate by an outside hand. That path is the comparable, well-tested one;
+code is worth it when the form cannot say the thing.
 
 WRITE THE FUNCTIONAL CHECK ("metrics_code"): say IN CODE what this machine has to achieve.
 Everything else in this spec only establishes that the thing stayed put and something moved
