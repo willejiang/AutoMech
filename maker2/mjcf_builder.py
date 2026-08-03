@@ -1272,12 +1272,21 @@ def build_support_mjcf(model, ctx, *, metrics: dict | None = None,
         _add_geoms(body, l, piece_map, meshes_dir, mesh_names, asset_el,
                    friction=_SUPPORT_FRICTION, sdf=use_sdf)
 
-    # The coaxial sliding fits must be excluded here for the SAME reason as in the real
-    # MJCF: a bore modelled as a solid ring around a shaft reads as a deep interpenetration,
-    # and the solver ejects both parts violently — every part would "rise", not fall, and
-    # the test would report nothing. support_test.py re-reads coaxial_pairs() and credits
-    # these as support edges instead, which is what makes a hand on its pipe count as held.
-    pairs = coaxial_pairs(model, meshes_dir)
+    # COAXIAL FITS: exclude them only under convex decomposition. A bore approximated by
+    # convex pieces is a solid ring around the shaft, so the pair reads as a deep
+    # interpenetration and the solver ejects both parts violently — every part would
+    # "rise", not fall, and the test would report nothing. support_test.py re-reads
+    # coaxial_pairs() and credits those as support edges instead.
+    #
+    # Under SDF the bore IS a bore, so that exclusion now deletes the very contact this
+    # test exists to measure. Measured on run 1_12_20260803_191330: minute_hand had a
+    # correct 0.005mm interference fit on its arbor — gripped, by design — and was still
+    # reported as "declared on minute_arbor, but the two never touch" and 11.6mm fallen,
+    # because the contact holding it had been excluded. The agent read that as "not tight
+    # enough" and opened the interference to 0.080mm on the next iteration, which then
+    # tripped the CAD-fault check. Keeping the contact drops the false verdicts (measured
+    # 9 parts "fell" -> 2, and the two that remain have real air under them).
+    pairs = [] if use_sdf else coaxial_pairs(model, meshes_dir)
     if pairs:
         contact = ET.SubElement(mujoco_el, "contact")
         for s, f in pairs:
