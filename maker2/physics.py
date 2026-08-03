@@ -710,6 +710,13 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
             log_fn(f"[physics] designer authored control_code ({len(_cc)} chars); "
                    f"it drives this run instead of drive.mode="
                    f"{spec['drive'].get('mode')}")
+        else:
+            # Say so. A missing control_code silently reverts the drive to a constant
+            # velocity motor, which for a wound-and-released mechanism tests nothing —
+            # and on one retry that happened with no trace in the log at all.
+            log_fn(f"[physics] no control_code this round; driving with the built-in "
+                   f"drive.mode={spec['drive'].get('mode')} "
+                   f"@ {spec['drive'].get('target_velocity')} rad/s")
         log_fn(f"[physics] mujoco scenario designed: watch "
               f"{len(spec['design']['watch_joints'])} joints, output "
               f"'{spec['design'].get('output_joint')}'")
