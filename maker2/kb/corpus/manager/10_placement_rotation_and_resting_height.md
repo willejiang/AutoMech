@@ -1,7 +1,8 @@
 # Placing a part: rotation and resting height
 
-Two mistakes account for most parts that end up in the wrong place. Both look correct in
-the code and are only visible once the machine is rendered or simulated.
+A handful of mistakes account for most parts that end up in the wrong place. All of them
+look correct in the code, build without error, and are only visible once the machine is
+rendered or simulated.
 
 ## 1. `Axis.X` / `Axis.Y` / `Axis.Z` pass through the WORLD ORIGIN
 
@@ -46,9 +47,66 @@ blades = [blade0.rotate(hub_axis, a) for a in (0.0, 90.0, 180.0, 270.0)]
 
 The same applies to `Location((x,y,z), (rx,ry,rz))`: the rotation is applied about the
 part's own origin *before* the translation, which is what you want — but only if the part's
-origin is where you think it is. See §3.
+origin is where you think it is (§4) and you rotate about the right axis (§2).
 
-## 2. A part that rests on something: its height is DERIVED, never typed
+## 2. A radial array: three things must agree
+
+Blades on a propeller, spokes on a wheel, vanes on an impeller, planets on a carrier — all
+are one element repeated around a shaft. Three choices have to point the same way, and
+getting any one wrong produces a flat or edge-on array that still builds without error:
+
+1. the PLANE the element is sketched on,
+2. the AXIS it is rotated about,
+3. the direction of the SHAFT it sits on.
+
+`BuildSketch()` with no argument sketches on **Plane.XY** and `extrude` grows along **+Z**.
+So a bare `BuildSketch()` element lies flat, with its length in X/Y and its thickness in Z.
+Rotating that about Z keeps every copy in the same horizontal plane.
+
+```python
+# WRONG — measured on a P-51 whose propeller shaft runs along X
+def prism(points, h):
+    with BuildPart() as bp:
+        with BuildSketch():          # <- Plane.XY: the blade lies FLAT
+            Polygon(*points)
+        extrude(amount=h)            # <- thickness along Z
+    return bp.part
+
+blade_template = prism(profile, 3.0)                 # x=19, y=77, z=3  (flat)
+for angle in (0.0, 120.0, 240.0):
+    blade = blade_template.moved(Location((PROP_X, 0.0, hub_z), (0.0, 0.0, angle)))
+```
+
+All three copies come back spanning `z = 60.0 .. 63.0` — 3mm of thickness, no spread at
+all. The propeller is a pinwheel lying on top of the aircraft instead of a disc in front
+of it.
+
+For a shaft along X, sketch on `Plane.YZ` and rotate about X:
+
+```python
+with BuildSketch(Plane.YZ):          # blade stands UP, across the shaft
+    Polygon(*profile)
+extrude(amount=thickness)            # thickness now runs along X, the shaft direction
+
+for angle in (0.0, 120.0, 240.0):
+    blade = blade_template.moved(Location((PROP_X, 0.0, hub_z), (angle, 0.0, 0.0)))
+    #                                                            ^^^^^ rotate about X
+```
+
+The rule, whatever the shaft direction: **the rotation angle goes on the SAME axis the
+shaft runs along, and the element is sketched on the plane PERPENDICULAR to it.**
+
+| shaft along | sketch on | rotation tuple |
+|-------------|-----------|----------------|
+| X (nose-forward: propeller, spinner) | `Plane.YZ` | `(angle, 0, 0)` |
+| Y | `Plane.XZ` | `(0, angle, 0)` |
+| Z (vertical: turntable, planet carrier) | `Plane.XY` (the default) | `(0, 0, angle)` |
+
+A quick check before moving on: print the element's bounding box. Its LONG dimension must
+be perpendicular to the shaft, and its THIN dimension must be along the shaft. If the thin
+dimension is not on the shaft axis, the array will be flat.
+
+## 3. A part that rests on something: its height is DERIVED, never typed
 
 A wheel touching the ground, a gear sitting on a bearing, a plate on posts — the height is
 determined by what is underneath plus the part's own size. Writing the number by hand
@@ -81,7 +139,7 @@ stage1_top        = stage1_z + gear_face
 Then moving the baseplate, or making a bearing thicker, moves everything above it
 correctly and by itself.
 
-## 3. Where a part's origin actually is
+## 4. Where a part's origin actually is
 
 A `Location` rotates about the part's own origin, and that origin is not always the centre:
 

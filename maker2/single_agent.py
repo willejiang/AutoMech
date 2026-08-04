@@ -25,6 +25,22 @@ from .model import KinematicModel, LinkSpec, PoseSpec
 _EXEC_TIMEOUT = 300  # a whole machine is heavier than one sub
 _RUNNER = (Path(__file__).parent / "_eval_runner_machine.py").read_text(encoding="utf-8")
 _MESH_RE = re.compile(r"__mesh[_-]?([a-z0-9]+)$", re.I)
+# Frames in the AGENT'S file, which is the only place it can fix anything. build123d and
+# OCCT frames tell it nothing it can act on.
+_MACHINE_FRAME_RE = re.compile(r'File "[^"]*machine\.py", line (\d+), in (\w+)\n\s*(.+)')
+
+
+def _fault_site(trace: str) -> str:
+    """' at machine.py:455 in build_machine() -> `loft()`', or '' if not locatable.
+
+    OCCT raises with an empty message (`Standard_DomainError: `), so without this the
+    agent is told only which C++ exception class fired. The last frame inside machine.py
+    is the line it actually wrote, which is what it needs to change."""
+    frames = _MACHINE_FRAME_RE.findall(trace or "")
+    if not frames:
+        return ""
+    line, func, src = frames[-1]
+    return f" at machine.py:{line} in {func}() -> `{src.strip()[:120]}`"
 
 
 class SingleAgentError(ValueError):
@@ -101,7 +117,16 @@ def evaluate_machine_python(script_text: str, run_dir: str, machine_name: str,
         err = (payload or {}).get("error") if payload else None
         trace = (payload or {}).get("trace") if payload else ""
         tail = trace or (r.stderr or r.stdout or "").strip()[-400:]
-        raise SingleAgentError(f"machine build123d eval failed: {err or tail}")
+        # `err or tail` used to DROP the traceback whenever there was an error string, and
+        # OCCT's exceptions carry no message: the agent was handed exactly
+        # "Standard_DomainError: " — no line, no operation, nothing to act on — and could
+        # only rewrite the whole script and hope. Keep both, and pull out the frames in
+        # the agent's OWN file so the useful line is first.
+        where = _fault_site(trace)
+        detail = f"{err}{where}" if err else tail
+        if err and trace:
+            detail = f"{detail}\n\nTraceback (last frames):\n{trace[-600:]}"
+        raise SingleAgentError(f"machine build123d eval failed: {detail}")
     if not out_json.exists():
         raise SingleAgentError("machine eval produced no machine_eval.json")
 
