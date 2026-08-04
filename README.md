@@ -11,6 +11,7 @@ concrete fix hints, and the design is revised until it physically works.
 > ANYmal stand-still run (tilt read 2.1°), while the VLM watching the frames
 > correctly said *FAIL — "tips onto its side by frame 3, ends overturned."*
 > A design is only as good as the judge, and the judge has to watch the machine work.
+<img width="640" height="480" alt="model2" src="https://github.com/user-attachments/assets/53cfa242-1966-4c2b-93ea-ad89cec07d29" />
 
 ## Demo
 
