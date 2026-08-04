@@ -10,7 +10,9 @@ import type { GateLayer, GateResult } from './types';
 
 // The 8 stages, in order, with the log-line prefix(es) that mark each one as
 // reached. Prefixes come from the maker2 loop's stdout (see Maker2EditorView).
-const STAGES = [
+// The HIERARCHY pipeline: a boss splits the machine into subassemblies, managers lay
+// out parts, workers author CAD, and an assembler stitches them back together.
+const HIERARCHY_STAGES = [
   {
     key: 'boss',
     label: 'Boss — split into subassemblies',
@@ -53,12 +55,53 @@ const STAGES = [
   },
 ] as const;
 
-type StageKey = (typeof STAGES)[number]['key'];
+// The SINGLE-AGENT pipeline, which is what this app runs by default. Its log prefixes
+// are entirely different — one agent authors the whole machine, the geometry is compiled
+// ([convex]/[mjcf]), gravity answers what holds it up ([support]), physics drives it, and
+// a diagnosis feeds the next iteration. Matching it against the hierarchy stages above
+// left every dot stuck on 'pending' for a run that was in fact progressing fine.
+const SINGLE_AGENT_STAGES = [
+  {
+    key: 'author',
+    label: 'Author — write build_machine()',
+    match: (l: string) => l.includes('authoring build_machine'),
+  },
+  {
+    key: 'compile',
+    label: 'Compile — solids + collision geometry',
+    match: (l: string) =>
+      l.includes('part(s),') || l.startsWith('[convex]') || l.startsWith('[mjcf]'),
+  },
+  {
+    key: 'support',
+    label: 'Support — what actually holds it up',
+    match: (l: string) => l.includes('[support]'),
+  },
+  {
+    key: 'physics',
+    label: 'Physics — drive + evaluate',
+    match: (l: string) => l.startsWith('[physics]') || l.includes('simulating physics'),
+  },
+  {
+    key: 'diagnose',
+    label: 'Diagnose — score + re-author',
+    match: (l: string) =>
+      l.includes('score=') || l.includes('-> diagnose') || l.includes('PASS on iteration'),
+  },
+] as const;
+
+type Stage = {
+  key: string;
+  label: string;
+  match: (l: string) => boolean;
+};
+
+type StageKey = string;
 type StageState = 'pending' | 'active' | 'done';
 
 // Which gate layer's results are surfaced under each stage's badge. The judge and
 // physics stages have no deterministic gate layer of their own.
-const STAGE_GATE_LAYER: Partial<Record<StageKey, GateLayer>> = {
+const STAGE_GATE_LAYER: Record<string, GateLayer> = {
   boss: 'boss',
   manager: 'manager',
   worker: 'worker',
@@ -67,14 +110,27 @@ const STAGE_GATE_LAYER: Partial<Record<StageKey, GateLayer>> = {
   support: 'assembled',
 };
 
-function deriveStageStates(lines: string[], done: boolean): Record<StageKey, StageState> {
+// Which pipeline produced these lines? Read it off the log rather than plumbing the
+// mode down: a replayed thread carries its own lines and no route state.
+function pickStages(lines: string[]): readonly Stage[] {
+  const hierarchy = lines.some(
+    (l) => l.startsWith('[boss]') || l.startsWith('[sub:') || l.startsWith('[assembler]'),
+  );
+  return hierarchy ? HIERARCHY_STAGES : SINGLE_AGENT_STAGES;
+}
+
+function deriveStageStates(
+  lines: string[],
+  done: boolean,
+  stages: readonly Stage[],
+): Record<StageKey, StageState> {
   const out = {} as Record<StageKey, StageState>;
   const seen = new Set<StageKey>();
   for (const line of lines) {
-    for (const s of STAGES) if (s.match(line)) seen.add(s.key);
+    for (const s of stages) if (s.match(line)) seen.add(s.key);
   }
-  const lastSeenIdx = Math.max(-1, ...STAGES.map((s, i) => (seen.has(s.key) ? i : -1)));
-  STAGES.forEach((s, i) => {
+  const lastSeenIdx = Math.max(-1, ...stages.map((s, i) => (seen.has(s.key) ? i : -1)));
+  stages.forEach((s, i) => {
     if (done) {
       // Whole run finished: everything that was ever seen is done; the rest stays
       // pending (a run can legitimately end before physics if it hard-failed).
@@ -141,14 +197,15 @@ export function PipelineTimeline({
   gates: GateResult[];
   done: boolean;
 }) {
-  const states = deriveStageStates(lines, done);
+  const stages = pickStages(lines);
+  const states = deriveStageStates(lines, done, stages);
   return (
     <div className="px-3 py-2">
       <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-adam-neutral-400">
         Pipeline
       </div>
       <ul className="space-y-1.5">
-        {STAGES.map((s) => {
+        {stages.map((s) => {
           const st = states[s.key];
           const badge = badgeForLayer(gates, STAGE_GATE_LAYER[s.key]);
           return (
