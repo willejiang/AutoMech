@@ -14,6 +14,10 @@ must be CC-licensed or public-domain; record it below with its license.
 - `corpus/manager/09_curved_geometry_build123d.md` — loft/revolve/sweep/fillet for
   wings, fuselages, ducts and fairings. Every code block in it was executed against
   build123d 0.11.1; the quoted volumes are what it produced.
+- `corpus/manager/10_placement_rotation_and_resting_height.md` — Axis.X/Y/Z pass
+  through the world origin (a rotated copy orbits (0,0,0), not the hub); resting
+  height must be derived from what is underneath; where each construct's origin is.
+  Every figure in it was executed against build123d 0.11.1.
 - `corpus/manager/golden_01_turntable.md` — hand-authored bearing+shaft+platter example.
 - `corpus/manager/golden_02_gear_pair.md` — hand-authored meshing gear-pair example.
 - `corpus/manager/golden_03_bearing_shaft.md` — hand-authored rotating-hardware atom.

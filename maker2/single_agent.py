@@ -436,16 +436,29 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
                           images=images)
 
     # RESEARCH PRE-STEP (web + local KB), same as the multi-agent manager gets. The single
-    # agent authors the WHOLE drivetrain from memory otherwise — it guesses gear modules,
-    # tooth counts and center distances, which is exactly what keeps going wrong. Look up
-    # gear math / standard sizes / worked examples FIRST so the numbers are grounded. Gated
-    # by settings.enable_reference_tools (web) / enable_kb (local); a no-op if both are off.
+    # agent authors the WHOLE machine from memory otherwise — it guesses dimensions and
+    # standard sizes, which is exactly what keeps going wrong. Look them up FIRST so the
+    # numbers are grounded. Gated by settings.enable_reference_tools (web) /
+    # enable_kb (local); a no-op if both are off.
+    #
+    # THE BRIEF MUST NOT NAME A MACHINE CLASS. This used to ask for "gear
+    # module/tooth-count/center-distance math ... worked gear-train / watch-movement
+    # examples", which was written when the pipeline only built gearboxes. It then steered
+    # EVERY run at gears: asked for a P-51, the agent dutifully searched for gear modules
+    # and never once searched for how to model a wing — so the curved-geometry doc sitting
+    # in the KB was never retrieved and the aircraft came out of boxes and cylinders.
+    # Name the CATEGORIES of thing to look up and let the prompt decide which apply.
     try:
         from .tools import maybe_research
         maybe_research(client, conv, settings,
-                       f"authoring the complete mechanism for: {product_prompt} — gear "
-                       f"module/tooth-count/center-distance math, standard sizes, and any "
-                       f"worked gear-train / watch-movement examples",
+                       f"authoring the complete machine for: {product_prompt} — look up "
+                       f"whatever THIS machine actually needs: the build123d/CadQuery "
+                       f"operations its shapes require (curved or organic bodies need "
+                       f"loft/revolve/sweep/fillet, not just boxes and cylinders), how to "
+                       f"place and orient parts correctly, the mechanisms that produce the "
+                       f"motion it must produce, the arithmetic that governs them (gear "
+                       f"module/tooth-count/centre-distance if it has gears), standard "
+                       f"sizes and fits, and any worked example of a similar machine",
                        collection="manager", log_fn=log_fn)
     except Exception as e:
         log_fn(f"[single-agent] research pre-step skipped: {e}")
