@@ -1069,6 +1069,32 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
             calls = getattr(msg, "tool_calls", None) or []
             if not calls:
                 d = _parse_json(msg.content)
+                # THE INVESTIGATION IS NOT THE VERDICT. A tools= call carries no
+                # response_format (a schema would forbid the tool calls), so when the model
+                # stops investigating it answers in whatever shape it likes — and it
+                # answers in PROSE. _parse_json then returns {}, every field falls to its
+                # default, and a correct diagnosis is thrown away and replaced by "no
+                # specific fault was isolated". Measured on this repo's watch run: after
+                # two real tool calls the model wrote "the input minute_shaft_spin swept
+                # 14.85 rad but the very next part, minute_cannon_pinion_spin, moved only
+                # 0.004 rad — a total cliff to zero", which names the break point exactly.
+                # The agent was handed the boilerplate instead, for 7 iterations.
+                # So: ask again, WITH the schema, for the verdict only.
+                if not d:
+                    ask = list(messages) + [
+                        {"role": "assistant", "content": msg.content or ""},
+                        {"role": "user", "content":
+                            "Now give ONLY the JSON verdict for what you just found. "
+                            "Put your finding above in `reason` verbatim, and name the "
+                            "part you identified in `culprit_part`."}]
+                    r2 = c.chat.completions.create(
+                        model=mdl, messages=ask, response_format=_DIAG_SCHEMA,
+                        max_completion_tokens=16000)
+                    d = _parse_json(r2.choices[0].message.content)
+                    # Even if that reply is also unparseable, the prose is a real finding
+                    # and is worth more than the boilerplate default.
+                    if not d and (msg.content or "").strip():
+                        d = {"reason": (msg.content or "").strip()[:1000]}
                 break
             messages.append({"role": "assistant", "content": msg.content or "",
                              "tool_calls": [{"id": tc.id, "type": "function",
