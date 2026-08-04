@@ -332,6 +332,60 @@ def _snapshot_iteration(run_dir: str, it: int, log_fn) -> str:
         return run_dir
 
 
+def _summarize_conflicts(conflicts: list, max_lines: int = 40) -> str:
+    """Group interpenetrations by the part they centre on, worst offender first.
+
+    A big machine produces far more conflicts than fit in a feedback message, and the
+    truncated list this replaces (`conflicts[:8]`) was actively harmful: on the P-51 run
+    the agent saw 8 of 63, and the NEXT round showed a different 8 (zero overlap with the
+    previous set). It never saw the whole picture, so each round it fixed what it could
+    see and broke something it could not — 63 -> 39 over six rounds, with a regression
+    (47 -> 51) in the middle, while rewriting ~1000 lines each time.
+
+    Grouping is what makes the list short enough to send whole. Measured on that run's
+    iteration 5: 39 conflicts across 41 parts, but 19 of them involve `main_fuselage`
+    alone. Reported as one line — "main_fuselage overlaps 19 parts" — the agent gets one
+    fixable cause instead of 19 symptoms, and the remaining tail is small enough to list
+    in full."""
+    if not conflicts:
+        return ""
+    from collections import defaultdict
+    partners: dict = defaultdict(list)
+    for c in conflicts:
+        partners[c.part_a].append((c.part_b, c.frac))
+        partners[c.part_b].append((c.part_a, c.frac))
+
+    # Cover the conflict set greedily: repeatedly take the part in most remaining pairs,
+    # so a hub that overlaps 19 things is reported once, not once per victim.
+    remaining = {frozenset((c.part_a, c.part_b)): c for c in conflicts}
+    lines: list[str] = []
+    while remaining and len(lines) < max_lines:
+        counts: dict = defaultdict(int)
+        for pair in remaining:
+            for p in pair:
+                counts[p] += 1
+        hub = max(counts, key=lambda p: (counts[p], p))
+        hits = [(pair, c) for pair, c in remaining.items() if hub in pair]
+        if len(hits) == 1:
+            lines.append(f"- {hits[0][1].describe()}")
+        else:
+            others = sorted(
+                ((next(iter(pair - {hub})), c.frac) for pair, c in hits),
+                key=lambda t: -t[1])
+            worst = ", ".join(f"{n} ({f:.0%})" for n, f in others[:6])
+            more = f", and {len(others) - 6} more" if len(others) > 6 else ""
+            lines.append(
+                f"- '{hub}' interpenetrates {len(others)} parts — one cause, not "
+                f"{len(others)} separate faults. Overlaps: {worst}{more}. Check "
+                f"'{hub}' itself: its size, its origin, or where it is placed.")
+        for pair, _ in hits:
+            remaining.pop(pair, None)
+
+    if remaining:
+        lines.append(f"- ...and {len(remaining)} further overlapping pair(s) not listed.")
+    return "\n".join(lines)
+
+
 def _restore_best(best: dict, best_dir: str, run_dir: str, ctx, machine_name, log_fn):
     """Make the main run_dir hold the BEST version's artifacts so the UI/return shows the
     best machine, not the last (often divergent) iteration. Prefers copying the snapshot
@@ -557,7 +611,7 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
         except Exception as e:
             log_fn(f"[single-agent] geometry check unavailable ({type(e).__name__}: {e})")
         if conflicts and not last_iter:
-            findings = "\n".join(f"- {c.describe()}" for c in conflicts[:8])
+            findings = _summarize_conflicts(conflicts)
             badness = float(len(conflicts))
             geo_regressed = badness > geo_best["badness"]
             if badness < geo_best["badness"]:
@@ -565,10 +619,14 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
             log_fn(f"[single-agent] {len(conflicts)} interpenetration(s) -> asking agent to fix "
                    f"(badness={badness:.2f}, best={geo_best['badness']:.2f}"
                    f"{', REGRESSED' if geo_regressed else ''})")
+            # The artifact carries the GROUPED view, the same thing the agent was shown.
+            # It used to log conflicts[:8] — so a run's record said "63 interpenetrations"
+            # and then listed 8 of them, and which 8 changed every round, which is what
+            # made the loop's behaviour so hard to read from the log afterwards.
             log_fn("ARTIFACT_JSON:" + _json.dumps({
                 "kind": "diagnosis", "iter": it, "single_agent": True,
                 "decision": {"root_cause": f"{len(conflicts)} interpenetration(s)",
-                             "evidence": [c.describe() for c in conflicts[:8]]}}))
+                             "evidence": findings.split("\n")}}))
             # On regression, refine the BEST-geometry code instead of the worse latest one.
             rollback_code = geo_best["code"] if (geo_regressed and geo_best["code"]) else None
             conv.add_user_message(build_single_agent_geometry_feedback(

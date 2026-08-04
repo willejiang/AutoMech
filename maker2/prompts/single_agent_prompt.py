@@ -188,7 +188,19 @@ position or length of the parts named above. Do NOT add new parts, do NOT rename
 parts, do NOT restructure the machine, do NOT touch any part not named above. A floating part
 is fixed by moving it until it TOUCHES the part it mounts on, or by lengthening the shaft/
 arbor/tube so it reaches — NOT by adding a support under it. Keep everything that already
-works.{rollback}
+works.
+
+SMALL EDITS WIN, AND THIS IS MEASURED, NOT ADVICE. On a 1000-line machine, the round that
+changed 43 lines removed 8 faults; the round that changed 244 lines ADDED 4. Rewriting
+whole sections re-rolls the dice on parts that were already correct. Return the same script
+with a handful of numbers changed.
+
+WHEN ONE PART OVERLAPS MANY, FIX THAT PART, NOT ITS VICTIMS. A line reading "'X'
+interpenetrates 19 parts" is one fault with 19 symptoms — X is too big, or its origin is
+not where you assumed, or it is in the wrong place. Moving the 19 others is 19 chances to
+break something; correcting X is one edit. Check what X's construct's origin actually is
+(a `Box`/`Cylinder` is centred; `align=Align.MIN` starts at z=0 and grows up; `make_gear`
+starts at its -Z end face) before deciding it is a placement error.{rollback}
 Return the COMPLETE corrected ```python block for build_machine()."""
 
 
