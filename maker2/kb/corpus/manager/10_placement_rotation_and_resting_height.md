@@ -47,7 +47,7 @@ blades = [blade0.rotate(hub_axis, a) for a in (0.0, 90.0, 180.0, 270.0)]
 
 The same applies to `Location((x,y,z), (rx,ry,rz))`: the rotation is applied about the
 part's own origin *before* the translation, which is what you want — but only if the part's
-origin is where you think it is (§4) and you rotate about the right axis (§2).
+origin is where you think it is (§5) and you rotate about the right axis (§2).
 
 ## 2. A radial array: three things must agree
 
@@ -84,9 +84,11 @@ of it.
 For a shaft along X, sketch on `Plane.YZ` and rotate about X:
 
 ```python
-with BuildSketch(Plane.YZ):          # blade stands UP, across the shaft
-    Polygon(*profile)
-extrude(amount=thickness)            # thickness now runs along X, the shaft direction
+with BuildPart() as blade_bp:
+    with BuildSketch(Plane.YZ):      # blade stands UP, across the shaft
+        Polygon(*profile)
+    extrude(amount=thickness)        # thickness now runs along X, the shaft direction
+blade_template = blade_bp.part
 
 for angle in (0.0, 120.0, 240.0):
     blade = blade_template.moved(Location((PROP_X, 0.0, hub_z), (angle, 0.0, 0.0)))
@@ -106,7 +108,63 @@ A quick check before moving on: print the element's bounding box. Its LONG dimen
 be perpendicular to the shaft, and its THIN dimension must be along the shaft. If the thin
 dimension is not on the shaft axis, the array will be flat.
 
-## 3. A part that rests on something: its height is DERIVED, never typed
+## 3. Slicing along an axis: use `Plane.XZ.offset(d)`, do NOT build your own `Plane`
+
+Lofting a wing, a blade or a tapered duct means sketching a section at several stations
+along one axis. `Plane.XZ` sits at y=0 and there is no `Plane.XZ(y=-24)`, so it is tempting
+to construct the plane by hand. That is where a whole aircraft ended up underground:
+
+```python
+# WRONG — every part built through this function came out MIRRORED in Z
+def xz_plane(y):
+    return Plane(origin=(0, y, 0), x_dir=(1, 0, 0), z_dir=(0, 1, 0))
+```
+
+A `Plane`'s in-plane Y axis is DERIVED, not declared: it is `z_dir x x_dir`. With
+`x_dir=(1,0,0)` and `z_dir=(0,1,0)` that gives `y_dir = (0, 0, -1)` — "up" inside the
+sketch points at world DOWN. A section drawn at `zc = +70`, meaning 70mm above the ground,
+lands at world `z = -70`:
+
+    sketch zc = +70   ->   world z = -74.0 .. -70.0
+
+The wings and tailplanes of a P-51 sat 77-85mm below the display base. Nothing else was
+wrong: 128 of the 132 parts were fine, because only the four surfaces went through that
+one function. Note also that the interpenetration check did NOT catch it — a wing buried
+under the ground plane collides with nothing.
+
+Use the built-in plane and shift it. Its orientation is already correct:
+
+```python
+Plane.XZ.offset(d).y_dir == (0, 0, 1)      # in-plane "up" IS world up
+```
+
+```python
+# RIGHT — measured: a section drawn at zc=70 lands at world z=65.8..77.0
+with BuildPart() as wing:
+    with BuildSketch(Plane.XZ.offset(24.0)):    Polygon(*root_profile)   # y = -24
+    with BuildSketch(Plane.XZ.offset(158.0)):   Polygon(*tip_profile)    # y = -158
+    loft()
+```
+
+**`offset` moves along the plane's NORMAL, and `Plane.XZ`'s normal is -Y**, so a positive
+offset goes to negative y:
+
+| call | lands at |
+|------|----------|
+| `Plane.XZ.offset(+24)` | y = **-24** |
+| `Plane.XZ.offset(-24)` | y = **+24** |
+
+If that sign is confusing, state the origin explicitly instead — this form is also correct
+and has no sign to get backwards:
+
+```python
+Plane(origin=(0, y, 0), x_dir=(1, 0, 0), z_dir=(0, -1, 0))   # y_dir = (0,0,1)
+```
+
+Whenever you do construct a `Plane` yourself, print `plane.y_dir` and confirm it points
+where you assume before drawing anything on it.
+
+## 4. A part that rests on something: its height is DERIVED, never typed
 
 A wheel touching the ground, a gear sitting on a bearing, a plate on posts — the height is
 determined by what is underneath plus the part's own size. Writing the number by hand
@@ -139,7 +197,7 @@ stage1_top        = stage1_z + gear_face
 Then moving the baseplate, or making a bearing thicker, moves everything above it
 correctly and by itself.
 
-## 4. Where a part's origin actually is
+## 5. Where a part's origin actually is
 
 A `Location` rotates about the part's own origin, and that origin is not always the centre:
 
