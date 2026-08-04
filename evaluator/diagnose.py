@@ -360,8 +360,8 @@ def _deterministic_findings_txt(metrics, stability) -> str:
                      f"{iv.get('overlap_mm3')}mm3 of space")
     for g in (m.get("loose_gears") or [])[:5]:
         lines.append(f"  - NOT DRIVEN: {g.get('gear')} rides {g.get('shaft')} with "
-                     f"{g.get('clearance_mm')}mm clearance (needs <= "
-                     f"{g.get('press_fit_max_mm')}mm to be driven by it)")
+                     f"{g.get('clearance_mm')}mm clearance (to be driven by it the bore "
+                     f"must be UNDER the shaft; any clearance rides free)")
     for f in [x for x in (m.get("bore_fit_faults") or []) if x.get("impossible")][:5]:
         lines.append(f"  - CANNOT ASSEMBLE: {f.get('part')} has a {f.get('bore_mm')}mm "
                      f"bore but sits on {f.get('shaft')} of radius {f.get('shaft_r_mm')}mm")

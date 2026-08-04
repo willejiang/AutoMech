@@ -258,8 +258,8 @@ def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: 
             tail = ("  <- this is the INPUT shaft, so NOTHING downstream can turn"
                     if g.get("driver_shaft") else "")
             lines.append(f"    * {g['gear']} rides {g['shaft']} with "
-                         f"{g['clearance_mm']}mm clearance; a shaft only drives a gear at "
-                         f"<= {g['press_fit_max_mm']}mm{tail}")
+                         f"{g['clearance_mm']}mm clearance; a shaft only drives a gear "
+                         f"whose bore is UNDER it (interference fit){tail}")
 
     fits = (m.get("bore_fit_faults") or [])
     if fits:

@@ -547,7 +547,7 @@ def _add_transmission(mujoco_el, model, meshes_dir, links_by_name, *,
                         loose_gears.append({
                             "gear": b, "shaft": a,
                             "clearance_mm": round((ext_b[0] - r_arbor) * 1000.0, 3),
-                            "press_fit_max_mm": round(_PRESS_FIT_CLEARANCE_M * 1000.0, 3),
+                            "press_fit_needs": "bore under the shaft (any clearance rides free)",
                             "driver_shaft": bool(getattr(links_by_name.get(a), "driver", False)),
                         })
                 continue
@@ -574,7 +574,7 @@ def _add_transmission(mujoco_el, model, meshes_dir, links_by_name, *,
             metrics["loose_gears"] = loose_gears
     for lg in loose_gears:
         log_fn(f"[mjcf] '{lg['gear']}' rides '{lg['shaft']}' with {lg['clearance_mm']}mm "
-               f"clearance (press fit needs <= {lg['press_fit_max_mm']}mm), so the shaft "
+               f"clearance ({lg['press_fit_needs']}), so the shaft "
                f"does NOT drive it"
                + (" — and that shaft is the INPUT, so nothing downstream can turn"
                   if lg["driver_shaft"] else ""))
@@ -619,27 +619,33 @@ def _outer_radius_m(meshes_dir: str, name: str) -> float | None:
     return ext[1] if ext else None
 
 
-# HOW A BORE-ON-SHAFT FIT IS CLASSIFIED. One number splits every fit in two, so a pair
+# HOW A BORE-ON-SHAFT FIT IS CLASSIFIED. One line splits every fit in two, so a pair
 # always has exactly one verdict — an earlier pass used two independent thresholds and any
 # clearance between them was claimed by BOTH (locked 1:1 *and* excluded as free-running).
 #
-#   clearance = bore_radius - shaft_outer_radius
-#     0 < clearance <= 0.10mm   PRESS FIT   -> lock 1:1, exclude contact (they turn as one)
-#          clearance >  0.10mm  RUNNING FIT -> no lock, exclude contact (it turns freely)
+#   interference = shaft_outer_radius - bore_radius
+#     interference >  0   PRESS FIT   -> lock 1:1, exclude contact (they turn as one)
+#     interference <= 0   RUNNING FIT -> no lock, exclude contact (it turns freely)
 #
 # Contact is excluded either way: a rigid-body solver has no oil film, so simulating the
-# bore wall against the shaft only produces friction that stalls the train. What the
-# threshold decides is whether TORQUE crosses the joint.
+# bore wall against the shaft only produces friction that stalls the train. What the sign
+# decides is whether TORQUE crosses the joint.
 #
-# Measured basis: on the wheels genuinely pressed to their arbors the clearance came out
-# 0.01-0.05mm, while an hour wheel riding free on the centre arbor (through its pipe) sat
-# at 1.50mm. 0.10mm sits well clear of the press-fit cluster and well below any part that
-# is meant to rotate. It is also a real machining line — an interference fit has no
-# perceptible clearance, a slip fit does.
-_PRESS_FIT_CLEARANCE_M = 0.0001
+# The line is the SIGN, not a tolerance, and it is the same one `_is_press_fit_overlap`
+# uses for the CAD-fault exemption: a press fit grips because the bore is UNDER the shaft.
+# This used to be "clearance <= 0.10mm counts as pressed", which is scale-dependent and
+# therefore wrong: 0.10mm is a tight fit on a 20mm gearbox shaft and larger than the whole
+# fit on a 1mm watch arbor, so every legitimate watch running fit was welded 1:1 and the
+# gear ratio it was sized for could not physically exist. `_MAX_PRESS_INTERFERENCE_M`
+# below still bounds how DEEP a press may go before it is a modelling fault.
+#
+# Radii are read back from STL, whose float32 coordinates quantise a nominal 1.0mm bore to
+# within ~1e-10 m of its shaft. A designer who writes bore == shaft means "keyed to it",
+# so a nominal fit must land on PRESSED and never be decided by which way the rounding
+# fell. _FIT_SIGN_EPS_M is that noise floor: far above float32 round-trip error, far below
+# the 0.005mm interference the prompt asks for, so it can never absorb a real fit.
+_FIT_SIGN_EPS_M = 1.0e-8                      # 10 nm
 
-# Any clearance at all means the two are not interfering, so contact is excluded;
-# the press-fit line above decides whether they are also LOCKED together.
 _RUNNING_FIT_CLEARANCE_M = 0.0
 
 # HOW DEEP A DELIBERATE INTERFERENCE FIT GOES. A press fit is defined by the bore being
@@ -684,8 +690,8 @@ def _is_press_fit_overlap(model, meshes_dir, a, b) -> bool:
 
 
 def _is_pressed_on(meshes_dir: str, part: str, r_arbor: float | None) -> bool:
-    """True if `part`'s bore hugs an arbor of outer radius `r_arbor` — i.e. it is PRESSED
-    on and turns with it, rather than RIDING free on it.
+    """True if `part` is PRESSED onto an arbor of outer radius `r_arbor` — i.e. it is
+    keyed to it and turns with it, rather than RIDING free around it.
 
     The pose forest cannot tell these apart: a wheel keyed to its arbor and a wheel that
     spins freely around that same arbor are both just children of it. But the geometry
@@ -694,6 +700,13 @@ def _is_pressed_on(meshes_dir: str, part: str, r_arbor: float | None) -> bool:
     Locking it 1:1 to the arbor contradicts its own meshing ratio, and MuJoCo's solver
     then splits the difference and stalls the whole train.
 
+    A press fit is the bore being UNDER the shaft — the same definition
+    `_is_press_fit_overlap` applies. Any clearance at all, however small, is a running
+    fit. This predicate used to accept up to +0.1mm of clearance as "pressed", which at
+    watch scale swallowed every legitimate running fit: a 0.05mm clearance around a
+    1.0mm arbor is a deliberate free fit, and welding it 1:1 destroyed the ratio the
+    gears had been sized for.
+
     Unknown geometry falls back to True, keeping the old pose-forest behaviour for
     models we cannot measure."""
     if not r_arbor:
@@ -701,8 +714,8 @@ def _is_pressed_on(meshes_dir: str, part: str, r_arbor: float | None) -> bool:
     ext = _radial_extent_m(meshes_dir, part)
     if ext is None:
         return True
-    bore = ext[0]
-    return (bore - r_arbor) <= _PRESS_FIT_CLEARANCE_M
+    interference = r_arbor - ext[0]          # >0 means the bore is undersize: it grips
+    return interference > -_FIT_SIGN_EPS_M   # nominal (bore == shaft) counts as keyed
 
 
 def _world_transforms(model) -> dict:

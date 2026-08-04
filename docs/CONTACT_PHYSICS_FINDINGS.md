@@ -28,9 +28,22 @@ and led me to the wrong conclusion twice. Name the geoms and read them by name �
 `mjGEOM_MESH == 7`, `mjGEOM_SDF == 8`.
 
 This single change would retire the tolerances that exist only to absorb mesh error:
-`_FIT_GAP_MM = 0.3` (support_test) and arguably `_PRESS_FIT_CLEARANCE_M = 0.10`
-(mjcf_builder). The real transition measured on a 1.200mm bore is between **0.001 and
-0.005 mm** of clearance — two orders of magnitude tighter than the current threshold.
+`_FIT_GAP_MM = 0.3` (support_test) and `_PRESS_FIT_CLEARANCE_M = 0.10` (mjcf_builder).
+The real transition measured on a 1.200mm bore is between **0.001 and 0.005 mm** of
+clearance — two orders of magnitude tighter than that threshold.
+
+> **Resolved for `_PRESS_FIT_CLEARANCE_M` (2026-08-04).** The constant is deleted, and
+> not by retuning it: the classification is now the SIGN of the interference
+> (`shaft_r - bore > 0` = pressed), which is what `_is_press_fit_overlap` already used.
+> Any absolute millimetre threshold is scale-dependent and therefore wrong for *some*
+> machine — 0.10mm is a tight fit on a 20mm gearbox shaft and wider than the entire fit
+> on a 1mm watch arbor. It cost a whole 7-iteration watch run: `hour_pipe` cleared its
+> arbor by 0.050mm (a correct running fit), was classified pressed, and got welded 1:1 to
+> the minute shaft while its own gear mesh demanded 0.122 — two equality constraints in
+> contradiction, so the solver split the difference and returned 1.90:1 where the design
+> said 12:1. The gears were correct in every iteration; the agent was told the ratio was
+> wrong and kept re-cutting teeth that were already right. `_FIT_SIGN_EPS_M` is the
+> float32 noise floor that keeps a nominal `bore == shaft` on the pressed side.
 
 ## 2. Interference fits blow the contact force up to ~1e15 N
 
@@ -370,7 +383,7 @@ question was how much of that could be deleted and left to physics instead.
 | "these two touch / clear each other" | SDF collision, measured | 0.05mm clearance reads as ncon=0, exactly; convex hulls reported -0.55mm of false contact |
 | "this part rests on that one" | gravity settle test | already in use; normal face contact is stable |
 | "this fit is press vs running" | measured clearance | the transition is sharp and real: 0.976 -> 0.000 between 0.001 and 0.005 mm |
-| tolerances tuned for mesh error (`_FIT_GAP_MM=0.3`, arguably `_PRESS_FIT_CLEARANCE_M=0.10`) | real fit classes | SDF resolves microns, so a threshold can mean H7/h6 instead of "mesh slop" |
+| tolerances tuned for mesh error (`_FIT_GAP_MM=0.3`; `_PRESS_FIT_CLEARANCE_M=0.10`, since deleted — see §1) | real fit classes | SDF resolves microns, so a fit can be classified by its sign instead of by "mesh slop" |
 
 **Cannot, and the reason is not laziness:**
 
