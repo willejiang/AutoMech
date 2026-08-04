@@ -41,9 +41,11 @@ export function LauncherView() {
   return (
     <div className="flex h-full flex-col items-center justify-center px-6">
       <div className="w-full max-w-2xl">
-        <h1 className="mb-1 text-center text-3xl font-semibold tracking-tight">
-          AutoMech
-        </h1>
+        <img
+          src="/automech-logo.png"
+          alt="AutoMech"
+          className="mx-auto mb-3 h-9 w-auto"
+        />
         <p className="mb-8 text-center text-sm text-muted-foreground">
           Describe a machine. It gets built, simulated, and rebuilt until it works.
         </p>

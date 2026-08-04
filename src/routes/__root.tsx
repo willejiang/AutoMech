@@ -13,7 +13,11 @@ export const Route = createRootRoute({
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { title: 'AutoMech' },
     ],
-    links: [{ rel: 'stylesheet', href: appCss }],
+    links: [
+      { rel: 'stylesheet', href: appCss },
+      { rel: 'icon', type: 'image/svg+xml', href: '/automech-icon.svg' },
+      { rel: 'icon', type: 'image/x-icon', href: '/automech-icon.ico' },
+    ],
   }),
   component: RootComponent,
   errorComponent: ({ error }) => (

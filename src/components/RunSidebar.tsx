@@ -37,9 +37,14 @@ export function RunSidebar({ activeId }: { activeId?: string }) {
 
   return (
     <div className="flex h-full w-64 shrink-0 flex-col border-r border-border bg-card/40">
+      <Link to="/" className="block px-4 pb-3 pt-4 hover:opacity-80">
+        {/* 1451x320 source, height-constrained so it stays crisp on HiDPI */}
+        <img src="/automech-logo.png" alt="AutoMech" className="h-6 w-auto" />
+      </Link>
+
       <Link
         to="/"
-        className="flex items-center gap-2 border-b border-border px-4 py-3 text-sm hover:bg-accent/40"
+        className="mx-3 mb-1 flex items-center gap-2 rounded border border-border px-3 py-2 text-sm hover:bg-accent/40"
       >
         <Plus size={14} />
         New machine
