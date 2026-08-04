@@ -51,6 +51,39 @@ stays first-party and license-clean, while whatever *you* are allowed to read (a
 CC-licensed course, a textbook you own, internal standards) stays on your machine under
 your own terms. The directory and its README are created on first ingest.
 
+## Importing a PDF
+
+`kb.ingest` reads markdown, so a book goes through the converter first:
+
+    python -m maker2.kb.pdf_import book.pdf --collection manager            # -> corpus/
+    python -m maker2.kb.pdf_import book.pdf --collection manager --local    # -> corpus_local/
+    python -m maker2.kb.pdf_import book.pdf --pages 40-120 --title "..."
+    python -m maker2.kb.ingest manager
+
+Needs `pip install pypdf` (optional; nothing at runtime imports it). One `## p.N` header
+per page, so a retrieved hit traces back to a page in the original. Text layer only — it
+does not OCR, and it says so plainly when a PDF turns out to be a scan.
+
+WHICH DIRECTORY IS THE LICENCE DECISION. `corpus/` is committed and published with this
+repo, so only first-party or PUBLIC-DOMAIN material belongs there. `--local` writes to the
+gitignored `corpus_local/` for anything you hold a licence to but may not redistribute.
+The tool cannot tell the difference; it prints which one it wrote to every run.
+
+### Public-domain sources worth having
+
+US publications before 1929 are out of copyright — free to download, ingest and
+redistribute, with no attribution duty, no ShareAlike, no non-commercial clause. That
+covers the classic kinematics atlases, which are also a better fit for this pipeline than
+a modern design text: they map MECHANISM -> FUNCTION, which is the choice the authoring
+agent has to make, where a modern text mostly sizes a part already chosen.
+
+- Henry T. Brown, *507 Mechanical Movements* (1868) — 507 mechanisms, one per entry.
+- Franz Reuleaux, *The Kinematics of Machinery* (1876) — mechanism classification; the
+  basis of Cornell's KMODDL collection.
+
+Both are on archive.org. Note they are SCANS: OCR them (e.g. `ocrmypdf`) before importing,
+or the converter will correctly report that there is no text to extract.
+
 Two things worth knowing before filling it:
 
 - **Ingest reports the split** — `manager: 50 chunks (49 first-party + 1 local)` — and

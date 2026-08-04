@@ -146,6 +146,9 @@ agents search. Layout mirrors `../corpus/`: one directory per collection.
       analyzer/    failure diagnosis
       compiler/    assembly/solver notes
 
+A PDF is converted first (`python -m maker2.kb.pdf_import book.pdf --collection manager
+--local`), which writes the markdown here for you.
+
 A file named `golden_*.md` is kept as ONE chunk, so a complete worked example comes back
 whole instead of in fragments. Anything else is split by `## ` section.
 
