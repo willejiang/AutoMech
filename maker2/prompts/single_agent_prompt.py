@@ -41,9 +41,17 @@ and the tooth counts (pitch_r / center_dist). Bearings, plates and housings can 
 sizes, but every GEAR-to-GEAR spacing is computed.
 
 OUTPUT: exactly ONE ```python code block defining `build_machine()` that returns a cadpy
-`AssemblyHelper`. These names are ALREADY INJECTED — do NOT import them:
+`AssemblyHelper`. These names are ALREADY INJECTED — you do not need to import them:
   AssemblyHelper, make_gear, Box, Cylinder, BuildPart, BuildSketch, Circle, Polygon, extrude,
   Location, Plane, Align, Mode, and build123d as b3d.
+That list is a CONVENIENCE, NOT A LIMIT: the whole of build123d is available, so import
+anything else you need. Boxes and cylinders cannot make a wing, a fuselage, a duct or a
+fairing — `loft` (blend sketches on different planes), `revolve` (spin a profile),
+`sweep` (drag a profile along a path) and `fillet`/`chamfer` can:
+  from build123d import (Sphere, Torus, Cone, Spline, Bezier, Polyline, Line, Helix,
+                         revolve, loft, sweep, offset, fillet, chamfer, mirror, scale,
+                         BuildLine, make_face, make_hull, add, Axis, Rotation, Pos)
+Ask the KB for "curved geometry build123d" for worked wing/fuselage/duct skeletons.
 
 HOW TO ASSEMBLE (cadpy AssemblyHelper):
     a = AssemblyHelper("machine")
