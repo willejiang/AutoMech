@@ -223,6 +223,14 @@ def ingest(collections: list[str] | None = None, *, log=print) -> dict[str, int]
                     if str((c.get("meta") or {}).get("source", "")).startswith("corpus_local:"))
         extra = f" ({n - local} first-party + {local} local)" if local else ""
         log(f"[kb.ingest] {coll}: {n} chunks{extra} -> {store.collection_dir(coll)}")
+        # THE INDEX IS A TRACKED FILE. Once local docs are in it, `git add` on the index
+        # commits their TEXT — chunks.jsonl stores it verbatim — which is exactly what
+        # keeping corpus_local/ out of the repo was for. The directory being gitignored
+        # protects the source and not the artefact built from it, so say so here.
+        if local:
+            log(f"[kb.ingest] {coll}: index now contains local text and is a TRACKED "
+                f"file. Do NOT commit maker2/kb/index/{coll}/ — restore it with "
+                f"`git checkout -- maker2/kb/index/` before committing.")
     return counts
 
 

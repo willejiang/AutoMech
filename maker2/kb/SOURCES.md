@@ -51,6 +51,48 @@ stays first-party and license-clean, while whatever *you* are allowed to read (a
 CC-licensed course, a textbook you own, internal standards) stays on your machine under
 your own terms. The directory and its README are created on first ingest.
 
+## Importing from Wikipedia
+
+    python -m maker2.kb.wiki_import --preset gears --preset mechanisms
+    python -m maker2.kb.wiki_import Gear "Four-bar linkage" Escapement
+    python -m maker2.kb.ingest manager
+
+Wikipedia is the one reference source tried here whose FORMULAS survive. A scanned book
+OCRs its equations into noise; a born-digital lecture PDF keeps the symbols but scrambles
+the layout, so a fraction arrives as separate fragments. Wikipedia's API returns plain
+text with the LaTeX still in it, so `p = 2*pi*r/N` and the Grashof condition
+`S + L <= P + Q` come through verbatim.
+
+Presets: `gears`, `mechanisms`, `shafts_fits`, `drives` (40 articles, ~710k chars).
+Non-technical sections (History, Etymology, See also, Applications...) are dropped by
+default; `--keep-all` keeps them.
+
+DEFAULT IS `corpus_local/`, NOT the committed corpus, because Wikipedia is CC BY-SA:
+attribution plus a share-alike condition that can extend to derivative works. Each file
+carries its attribution header regardless. `--commit` writes to `corpus/` instead — only
+use it if you have decided share-alike is acceptable for a published corpus.
+
+**The INDEX is a tracked file.** `chunks.jsonl` stores chunk text verbatim, so once local
+docs are ingested, committing `maker2/kb/index/` publishes that text — which is what
+keeping `corpus_local/` out of the repo was meant to prevent. Ingest prints a warning when
+this happens; run `git checkout -- maker2/kb/index/` before committing.
+
+### What it is and is not good for
+
+Measured on the 40-article pull, with 581 local chunks against 57 first-party ones (10:1):
+
+- The first-party contracts HOLD. Queries for the output format, dof rules and curved
+  geometry still return our own docs (0/5 Wikipedia hits on format and dof).
+- Gear arithmetic is genuinely improved — `wiki_gear_train.md` returns the circular-pitch
+  and tooth-thickness relations in usable form.
+- Mechanism selection is hit and miss. "Turn rotation into reciprocating linear motion"
+  returns universal joint and ball screw, not slider-crank: these are encyclopedia
+  articles organised by topic, not a function-to-mechanism index, and the slider-crank
+  article defines stroke in prose without ever writing `stroke = 2 * crank_radius`.
+
+So it grounds terminology and governing equations; it does not hand the agent a number it
+can put straight into `build_machine()`. That last step is still hand-written.
+
 ## Importing a PDF
 
 `kb.ingest` reads markdown, so a book goes through the converter first:
