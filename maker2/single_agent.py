@@ -124,8 +124,16 @@ def evaluate_machine_python(script_text: str, run_dir: str, machine_name: str,
         # the agent's OWN file so the useful line is first.
         where = _fault_site(trace)
         detail = f"{err}{where}" if err else tail
-        if err and trace:
-            detail = f"{detail}\n\nTraceback (last frames):\n{trace[-600:]}"
+        # Only append the raw traceback when it ADDS something. A SyntaxError already
+        # carries its own file and line, and its traceback is all runner frames — pure
+        # noise for the agent, which has to be told what to change, not how Python got
+        # there. `[-600:]` also used to slice mid-header, printing
+        # "Traceback (last frames):\nTraceback (most recent " and nothing else.
+        if err and trace and not where and "SyntaxError" not in str(err):
+            frames = [ln for ln in trace.splitlines()
+                      if ln.strip() and not ln.startswith("Traceback (")]
+            if frames:
+                detail = f"{detail}\n\nLast frames:\n" + "\n".join(frames[-8:])
         raise SingleAgentError(f"machine build123d eval failed: {detail}")
     if not out_json.exists():
         raise SingleAgentError("machine eval produced no machine_eval.json")
@@ -602,7 +610,11 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
         try:
             model = evaluate_machine_python(code, run_dir, machine_name, log_fn=log_fn)
         except SingleAgentError as e:
-            log_fn(f"[single-agent] eval failed: {str(e)[:160]}")
+            # First line only: it now carries the exception, the file, the line and the
+            # failing call, and that is the whole diagnosis. Slicing at 160 characters cut
+            # through the traceback that follows and printed a dangling "Traceback (most
+            # recent " to the console. The AGENT still gets the full text below.
+            log_fn(f"[single-agent] eval failed: {str(e).splitlines()[0][:300]}")
             conv.add_user_message(build_single_agent_repair(str(e)))
             continue
 
