@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from '@tanstack/react-router';
-import { History, Plus } from 'lucide-react';
+import { History, Plus, Settings } from 'lucide-react';
 import { apiJson } from '@/services/api';
 import { cn } from '@/lib/utils';
 
@@ -92,6 +92,14 @@ export function RunSidebar({ activeId }: { activeId?: string }) {
           </Link>
         ))}
       </div>
+
+      <Link
+        to="/settings"
+        className="flex items-center gap-2 border-t border-border px-4 py-2.5 text-xs text-muted-foreground hover:bg-accent/40 hover:text-foreground"
+      >
+        <Settings size={13} />
+        Settings
+      </Link>
     </div>
   );
 }

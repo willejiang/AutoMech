@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { corsHeaders, methodNotAllowed, preflight } from '@/server/api';
 import { spawn } from 'node:child_process';
-import { createWriteStream, mkdirSync, type WriteStream } from 'node:fs';
+import { createWriteStream, existsSync, mkdirSync, type WriteStream } from 'node:fs';
 import { resolve, sep } from 'node:path';
 
 // DEV bridge (SSE): the maker2 editor opens an EventSource here and we stream the
@@ -128,10 +128,18 @@ export const Route = createFileRoute('/api/run-maker2-stream')({
               try { controller.close(); } catch { /* already closed */ }
             };
 
+            // LLM credentials saved through /api/llm-settings. maker2/config.py
+            // resolves defaults < this JSON < env vars, so pointing it at the file is
+            // the whole integration — nothing about the key travels in the query
+            // string, and an unset file just leaves the env/default gateway in place.
+            const llmConfig = resolve(REPO_ROOT, '.automech', 'llm.json');
             const p = spawn(process.env.PYTHON_BIN || 'python3', args, {
               cwd: REPO_ROOT,
               env: { ...process.env, PYTHONIOENCODING: 'utf-8', PYTHONUTF8: '1',
-                PYTHONUNBUFFERED: '1' },
+                PYTHONUNBUFFERED: '1',
+                ...(existsSync(llmConfig)
+                  ? { WORKFLOW4FREECAD_CONFIG: llmConfig }
+                  : {}) },
             });
 
             // Flush an immediate comment + open event so the client (and any
