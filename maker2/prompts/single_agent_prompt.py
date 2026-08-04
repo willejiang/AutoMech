@@ -124,10 +124,25 @@ DISCIPLINE:
 Respond with a short NOTES plan, then the ONE ```python block."""
 
 
-def build_single_agent_user(product_prompt: str) -> str:
+def build_single_agent_user(product_prompt: str, has_image: bool = False) -> str:
+    """The agent's opening message.
+
+    When ``has_image`` is set the caller attaches the image to this same message, so the
+    text must point AT it rather than restate the machine — otherwise the model treats the
+    prompt as the specification and the picture as decoration. Same convention as
+    build_boss_user/build_manager_user."""
+    if has_image:
+        task = ("Build the machine shown in the ATTACHED IMAGE. Work from what you SEE — "
+                "the parts, how many there are, how they are arranged, and which ones must "
+                "turn. Use this text only as a hint about what it is:\n"
+                f'"{product_prompt}".\n\n'
+                "Where the image cannot tell you a dimension, choose a sensible engineering "
+                "value and say so in the NOTES; do not invent parts the image does not show.")
+    else:
+        task = f'Product: "{product_prompt}"'
     return f"""Author the complete machine for this product as one build_machine() script.
 
-Product: "{product_prompt}"
+{task}
 
 Write NOTES (the parts you will build, their rough sizes, dof, and how they mesh/touch), then
 the single ```python block."""

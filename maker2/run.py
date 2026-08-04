@@ -463,6 +463,9 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="maker2: manager + cadam SCAD worker -> URDF")
     ap.add_argument("prompt", help="natural-language product description")
     ap.add_argument("--out", default="output")
+    ap.add_argument("--image", default=None,
+                    help="reference photo/drawing of the machine to build; attached to the "
+                         "authoring agent's first message (single-agent path)")
     ap.add_argument("--model", default=None, help="LLM for manager + worker (e.g. anthropic/claude-opus-4.8)")
     ap.add_argument("--manager-only", action="store_true",
                     help="stop after the URDF contract (no geometry)")
@@ -550,7 +553,8 @@ def main() -> int:
         if a.deep_think is not None:
             settings.deep_think = a.deep_think
         res = run_single_agent(a.prompt, a.out, settings, do_physics=a.physics,
-                               max_iters=(a.max_iters or 0), log_fn=print)
+                               max_iters=(a.max_iters or 0), image_path=a.image,
+                               log_fn=print)
         # Record the turn like every other entry point does. Without this a single-agent
         # run leaves no thread.json, and the sidebar — which lists conversations by
         # reading exactly that file — never shows the run at all. The replay support

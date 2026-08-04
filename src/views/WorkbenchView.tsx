@@ -45,6 +45,8 @@ interface WorkbenchViewProps {
   // toggles could not reach Python no matter what the user picked.
   web?: boolean;
   mode?: 'single-agent' | 'hierarchy';
+  // Upload id of a reference image; the run route turns it back into a path for --image.
+  image?: string;
 }
 
 type Maker2Result = {
@@ -189,6 +191,7 @@ export function WorkbenchView(props: WorkbenchViewProps) {
   const { prompt, model, iters, threadId, deep } = props;
   const web = props.web ?? true;
   const mode = props.mode ?? 'single-agent';
+  const image = props.image;
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(reducer, initialState);
   const startedRef = useRef(false);
@@ -366,6 +369,14 @@ export function WorkbenchView(props: WorkbenchViewProps) {
         mode,
       });
       if (model) qs.set('model', model);
+      // The image id ends in .png/.jpg, and a request URL ENDING in an image extension is
+      // served as a static asset before it ever reaches the API route ("Cannot GET
+      // /api/run-maker2-stream"). A trailing marker keeps the extension off the end of the
+      // URL. Verified against the dev server: same id last = 404, not last = run starts.
+      if (image) {
+        qs.set('image', image);
+        qs.set('_', '1');
+      }
 
       const es = new EventSource(`${apiUrl('run-maker2-stream')}?${qs.toString()}`);
       esRef.current = es;

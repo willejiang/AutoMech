@@ -371,6 +371,7 @@ def _lazy_save_model():
 
 def run_single_agent(product_prompt: str, out_dir: str, settings, *,
                      do_physics: bool = True, max_iters: int = 4,
+                     image_path: str | None = None,
                      log_fn=print) -> dict:
     """The single-agent text-to-cad pipeline: ONE agent authors the whole machine, refines it
     against build-eval errors + a rigid-conflict geometry self-check, then the machine is
@@ -379,7 +380,12 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
 
     Loop per iteration: LLM authors/repairs build_machine() -> evaluate to a KinematicModel
     (eval error feeds back) -> build URDF -> rigid-conflict check (overlaps feed back). On a
-    clean geometry pass, stop refining and go to physics."""
+    clean geometry pass, stop refining and go to physics.
+
+    ``image_path`` attaches a reference photo/drawing to the FIRST message, so the agent
+    builds what it sees instead of what the prompt says. Only the first: every later message
+    is feedback about the agent's own geometry, and re-sending the picture each round costs
+    tokens without adding information the conversation does not already carry."""
     import json as _json
     import os as _os
 
@@ -416,7 +422,18 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
 
     client = settings.manager_client()
     conv = Conversation()
-    conv.add_user_message(build_single_agent_user(product_prompt))
+    # An image that cannot be loaded must STOP the run. Degrading to text-only would build
+    # a different machine than the one asked for and report success, and the divergence
+    # would only surface at the judge — as "wrong shape", with no hint that the picture was
+    # never seen.
+    images = None
+    if image_path:
+        from .imageutil import load_image_block
+        images = [load_image_block(image_path)]
+        log_fn(f"[single-agent] using input image: {image_path}")
+    conv.add_user_message(build_single_agent_user(product_prompt,
+                                                 has_image=bool(image_path)),
+                          images=images)
 
     # RESEARCH PRE-STEP (web + local KB), same as the multi-agent manager gets. The single
     # agent authors the WHOLE drivetrain from memory otherwise — it guesses gear modules,
@@ -469,7 +486,16 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
         last_iter = (not unlimited) and it >= max_iters - 1
         log_fn(f"[single-agent] iteration {it}: authoring build_machine() ...")
         try:
-            reply = client.send(conv.messages, SINGLE_AGENT_SYSTEM)
+            # get_messages_for_api, NOT conv.messages: the raw list is the INTERNAL format,
+            # whose image blocks are {"type":"image","media_type",...}. Only this call
+            # converts them to the provider's shape (OpenAI's image_url data-URI), and a
+            # gateway handed the internal block rejects the whole request with
+            # HTTP 400 "type has to be either 'image_url' or 'text'". Text-only messages
+            # pass through either way, which is why this went unnoticed until an image was
+            # attached. manager.py already sends through this path.
+            reply = client.send(
+                conv.get_messages_for_api(api_style=client.api_style),
+                SINGLE_AGENT_SYSTEM)
         except Exception as e:
             result["error"] = f"LLM request failed: {e}"
             return result

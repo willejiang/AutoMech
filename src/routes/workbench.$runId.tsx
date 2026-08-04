@@ -14,6 +14,8 @@ type WorkbenchSearch = {
   // pipeline.
   web?: number;
   mode?: 'single-agent' | 'hierarchy';
+  // Id of an image uploaded via /api/upload-image; the run route resolves it to a path.
+  image?: string;
 };
 
 export const Route = createFileRoute('/workbench/$runId')({
@@ -29,13 +31,14 @@ export const Route = createFileRoute('/workbench/$runId')({
     deep: Number(search.deep) === 1 ? 1 : undefined,
     web: Number(search.web) === 0 ? 0 : 1,
     mode: search.mode === 'hierarchy' ? 'hierarchy' : 'single-agent',
+    image: typeof search.image === 'string' && search.image ? search.image : undefined,
   }),
   component: WorkbenchPage,
 });
 
 function WorkbenchPage() {
   const { runId } = Route.useParams();
-  const { prompt, model, iters, thread, deep, web, mode } = Route.useSearch();
+  const { prompt, model, iters, thread, deep, web, mode, image } = Route.useSearch();
   return (
     <div className="h-screen w-screen">
       <WorkbenchView
@@ -46,6 +49,7 @@ function WorkbenchPage() {
         deep={deep === 1}
         web={web !== 0}
         mode={mode}
+        image={image}
       />
     </div>
   );

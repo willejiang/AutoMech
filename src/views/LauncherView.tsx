@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { ArrowUp, BookOpen, Brain, Globe, Layers } from 'lucide-react';
+import { ArrowUp, BookOpen, Brain, Globe, ImagePlus, Layers, Loader2, X } from 'lucide-react';
+import { apiUrl } from '@/services/api';
 import { cn } from '@/lib/utils';
 
 // The launcher. There is no "articulated" toggle here — in cadam that switch chose
@@ -21,19 +22,46 @@ export function LauncherView() {
   const [deep, setDeep] = useState(true);
   const [hierarchy, setHierarchy] = useState(false);
 
+  // A reference image is uploaded BEFORE the run starts: the run stream is an EventSource,
+  // which can only GET, so the file cannot ride along with the prompt. We keep the id the
+  // upload returns and pass that instead.
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const [image, setImage] = useState<{ id: string; name: string } | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [imageError, setImageError] = useState('');
+
+  const pickImage = async (file: File) => {
+    setUploading(true);
+    setImageError('');
+    try {
+      const body = new FormData();
+      body.append('image', file);
+      const r = await fetch(apiUrl('upload-image'), { method: 'POST', body });
+      const data = (await r.json()) as { id?: string; name?: string; error?: string };
+      if (!r.ok || !data.id) throw new Error(data.error || `upload failed (${r.status})`);
+      setImage({ id: data.id, name: data.name || file.name });
+    } catch (e) {
+      setImageError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const start = () => {
     const text = prompt.trim();
-    if (!text) return;
+    // With a picture attached the text is only a hint, so it need not carry the machine.
+    if (!text && !image) return;
     navigate({
       to: '/workbench/$runId',
       params: { runId: crypto.randomUUID() },
       search: {
-        prompt: text,
+        prompt: text || 'the machine in the attached image',
         model,
         iters: 0,
         deep: deep ? 1 : undefined,
         web: web ? 1 : 0,
         mode: hierarchy ? 'hierarchy' : 'single-agent',
+        image: image?.id,
       },
     });
   };
@@ -64,6 +92,29 @@ export function LauncherView() {
           />
 
           <div className="mt-3 flex flex-wrap items-center gap-2">
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/png,image/jpeg,image/gif,image/webp"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) void pickImage(f);
+                e.target.value = '';   // same file twice in a row must still fire
+              }}
+            />
+            <Toggle
+              on={!!image}
+              onClick={() => (image ? setImage(null) : fileRef.current?.click())}
+              icon={
+                uploading ? <Loader2 size={13} className="animate-spin" />
+                  : image ? <X size={13} /> : <ImagePlus size={13} />
+              }
+              title={image ? `${image.name} — click to remove` : 'Build what is in a photo'}
+            >
+              {image ? truncate(image.name) : 'Image'}
+            </Toggle>
+
             <Toggle on={web} onClick={() => setWeb(!web)} icon={<Globe size={13} />}>
               Web
             </Toggle>
@@ -96,7 +147,7 @@ export function LauncherView() {
 
             <button
               onClick={start}
-              disabled={!prompt.trim()}
+              disabled={!prompt.trim() && !image}
               className="rounded bg-primary p-1.5 text-primary-foreground disabled:opacity-30"
               title="Build it (Cmd/Ctrl + Enter)"
             >
@@ -104,9 +155,18 @@ export function LauncherView() {
             </button>
           </div>
         </div>
+
+        {imageError && (
+          <p className="mt-2 text-xs text-destructive">{imageError}</p>
+        )}
       </div>
     </div>
   );
+}
+
+/** Keep a long filename from pushing the toggle row onto a second line. */
+function truncate(name: string, max = 18) {
+  return name.length <= max ? name : `${name.slice(0, max - 1)}…`;
 }
 
 function Toggle({

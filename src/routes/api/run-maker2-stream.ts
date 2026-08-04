@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { corsHeaders, methodNotAllowed, preflight } from '@/server/api';
+import { uploadPath } from './upload-image';
 import { spawn } from 'node:child_process';
 import { createWriteStream, existsSync, mkdirSync, type WriteStream } from 'node:fs';
 import { resolve, sep } from 'node:path';
@@ -101,6 +102,17 @@ export const Route = createFileRoute('/api/run-maker2-stream')({
           if (url.searchParams.get('web') === '1') args.push('--web');
           if (deep === '1') args.push('--deep-think');
           else if (deep === '0') args.push('--no-deep-think');
+          // A reference image, uploaded separately (EventSource cannot POST a body). Only
+          // the single-agent path reads it — the hierarchy path's boss takes an image too,
+          // but nothing here has ever passed one, so wiring that is a separate change.
+          const img = url.searchParams.get('image');
+          if (img) {
+            const p = uploadPath(img);
+            if (p) args.push('--image', p);
+            else return new Response(sse('error', { error: `unknown image id: ${img}` }), {
+              headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
+            });
+          }
         }
 
         const stream = new ReadableStream<Uint8Array>({
