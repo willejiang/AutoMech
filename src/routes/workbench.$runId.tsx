@@ -9,6 +9,11 @@ type WorkbenchSearch = {
   iters: number;
   thread?: string;
   deep?: number;
+  // Research + pipeline switches from the launcher. `web` defaults ON (1) so a link
+  // without it behaves as before; `mode` picks the single agent or the boss/manager
+  // pipeline.
+  web?: number;
+  mode?: 'single-agent' | 'hierarchy';
 };
 
 export const Route = createFileRoute('/workbench/$runId')({
@@ -22,13 +27,15 @@ export const Route = createFileRoute('/workbench/$runId')({
         : 0,
     thread: typeof search.thread === 'string' ? search.thread : undefined,
     deep: Number(search.deep) === 1 ? 1 : undefined,
+    web: Number(search.web) === 0 ? 0 : 1,
+    mode: search.mode === 'hierarchy' ? 'hierarchy' : 'single-agent',
   }),
   component: WorkbenchPage,
 });
 
 function WorkbenchPage() {
   const { runId } = Route.useParams();
-  const { prompt, model, iters, thread, deep } = Route.useSearch();
+  const { prompt, model, iters, thread, deep, web, mode } = Route.useSearch();
   return (
     <div className="h-screen w-screen">
       <WorkbenchView
@@ -37,6 +44,8 @@ function WorkbenchPage() {
         iters={iters}
         threadId={thread || runId}
         deep={deep === 1}
+        web={web !== 0}
+        mode={mode}
       />
     </div>
   );

@@ -1,17 +1,17 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { LauncherView } from '@/views/LauncherView';
+import { RunSidebar } from '@/components/RunSidebar';
 
 export const Route = createFileRoute('/')({
-  component: Landing,
+  component: Home,
 });
 
-function Landing() {
+function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="text-center">
-        <div className="text-2xl font-semibold tracking-tight">AutoMech</div>
-        <div className="mt-2 text-sm text-muted-foreground">
-          scaffold up — workbench lands next
-        </div>
+    <div className="flex h-screen w-screen">
+      <RunSidebar />
+      <div className="min-w-0 flex-1">
+        <LauncherView />
       </div>
     </div>
   );

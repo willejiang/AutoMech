@@ -40,6 +40,11 @@ interface WorkbenchViewProps {
   iters: number;
   threadId: string;
   deep?: boolean;
+  // Research + pipeline switches, passed through to the run. `web` used to be
+  // hard-coded to '1' here and `mode` was never sent at all, so the launcher's
+  // toggles could not reach Python no matter what the user picked.
+  web?: boolean;
+  mode?: 'single-agent' | 'hierarchy';
 }
 
 type Maker2Result = {
@@ -182,6 +187,8 @@ const EMPTY_GHOSTED: Set<string> = new Set();
 
 export function WorkbenchView(props: WorkbenchViewProps) {
   const { prompt, model, iters, threadId, deep } = props;
+  const web = props.web ?? true;
+  const mode = props.mode ?? 'single-agent';
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(reducer, initialState);
   const startedRef = useRef(false);
@@ -354,8 +361,9 @@ export function WorkbenchView(props: WorkbenchViewProps) {
         prompt,
         iters: String(iters),
         thread: threadId,
-        web: '1',
+        web: web ? '1' : '0',
         deep: deepThink ? '1' : '0',
+        mode,
       });
       if (model) qs.set('model', model);
 
