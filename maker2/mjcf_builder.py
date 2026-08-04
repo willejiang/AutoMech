@@ -404,8 +404,9 @@ def _emit_inertial_and_geoms(body, link, link_name, piece_map, meshes_dir,
                friction=friction_of(mat), sdf=sdf)
 
 
-def _pitch_radius_m(meshes_dir: str, link_name: str) -> float | None:
-    """Estimate a gear's pitch radius (meters) from the XY extent of its STL (mm)."""
+def _tip_radius_m(meshes_dir: str, link_name: str) -> float | None:
+    """A gear's TIP radius (meters) from the XY extent of its STL (mm) — the outermost
+    point of the teeth, which is what a bounding box can actually see."""
     stl = os.path.join(meshes_dir, f"{link_name}.stl")
     if not (os.path.exists(stl) and os.path.getsize(stl) > 0):
         return None
@@ -418,18 +419,62 @@ def _pitch_radius_m(meshes_dir: str, link_name: str) -> float | None:
         return None
 
 
+def _pitch_radii_m(meshes_dir: str, a: str, b: str,
+                   centre_m: float) -> tuple[float, float] | None:
+    """The PITCH radii (meters) of a meshing pair, solved from the pair itself.
+
+    Speed ratio is the ratio of PITCH radii (equivalently of tooth counts), never of tip
+    radii — and a bounding box only sees the tips. Tip overshoots pitch by one module,
+    which does not cancel in a reduction: on a 15T/45T pair at m=0.6 the tip ratio is
+    17/47 = 0.362 instead of 15/45 = 0.333, an 18% error that made a designed 12:1 watch
+    simulate at 9.9:1. The small gear is hurt most (+2 teeth on 15 is +13%, on 45 it is
+    +4.4%), so the measured ratio is always dragged toward 1:1.
+
+    Two meshing spur gears must share a module, and that is the extra equation needed to
+    recover it from geometry alone — no tooth count, no module, no metadata, so it works
+    whatever API the designer used to author the gear:
+
+        centre = r_a + r_b,  r_i = tip_i - m   =>   m = (tip_a + tip_b - centre) / 2
+
+    Measured on this repo's watch run: module 0.5978 vs a true 0.6, giving pitch radii
+    within 0.002mm and a stage ratio within 5e-4 of the tooth ratio (0.05% vs 18%).
+    Integer tooth counts are deliberately NOT recovered by rounding 2r/m: the module
+    estimate is not accurate enough to divide by, and it snapped a real 48T wheel to 49T
+    — worse than the continuous value it came from.
+
+    Returns None when either mesh or the centre distance is unusable, leaving the caller
+    to fall back on tip radii.
+    """
+    ta = _tip_radius_m(meshes_dir, a)
+    tb = _tip_radius_m(meshes_dir, b)
+    if not ta or not tb or not centre_m or centre_m <= 0:
+        return None
+    module = (ta + tb - centre_m) / 2.0
+    # A module must be positive and small next to the gears it cuts. Outside that the
+    # pair is not a plain meshing spur pair (wrong centre distance, a non-gear caught by
+    # name, profile-shifted teeth) and the solve would return nonsense.
+    if not (0.0 < module < 0.5 * min(ta, tb)):
+        return None
+    ra, rb = ta - module, tb - module
+    if ra <= 0 or rb <= 0:
+        return None
+    return ra, rb
+
+
 def _add_gear_constraints(mujoco_el, model, meshes_dir, links_by_name, *,
                           metrics: dict | None, log_fn) -> int:
     """ESCAPE HATCH (settings.allow_gear_constraint): for each mesh_pair, add a MuJoCo
     <equality><joint> gear-ratio constraint so the driven gear tracks the driver even
-    when crude tooth contact would jam. Ratio = -(r_drive / r_driven) (meshed spur
-    gears counter-rotate). Because the constraint REPLACES contact as the transmission
-    mechanism, the two gears are also added to <contact><exclude> so their teeth don't
-    collide and fight the constraint. Returns how many constraints were added and
-    records metrics["constrained_meshes"]."""
+    when crude tooth contact would jam. Ratio = -(pitch_drive / pitch_driven) (meshed
+    spur gears counter-rotate). Because the constraint REPLACES contact as the
+    transmission mechanism, the two gears are also added to <contact><exclude> so their
+    teeth don't collide and fight the constraint. Returns how many constraints were added
+    and records metrics["constrained_meshes"]."""
     pairs = getattr(model, "mesh_pairs", []) or []
     if not pairs:
         return 0
+    import numpy as _np
+    W = _world_transforms(model)
     eq = ET.SubElement(mujoco_el, "equality")
     contact = ET.SubElement(mujoco_el, "contact")
     n = 0
@@ -438,8 +483,17 @@ def _add_gear_constraints(mujoco_el, model, meshes_dir, links_by_name, *,
         db = links_by_name.get(driven)
         if not da or not db or da.dof != "spin" or db.dof != "spin":
             continue
-        rd = _pitch_radius_m(meshes_dir, drive)
-        rn = _pitch_radius_m(meshes_dir, driven)
+        # Same correction as the deterministic path: the ratio is of PITCH radii, and a
+        # bounding box only sees the tips. Solve the shared module out of the pair.
+        Ta, Tb = W.get(drive), W.get(driven)
+        centre = (float(_np.hypot(Ta[0, 3] - Tb[0, 3], Ta[1, 3] - Tb[1, 3]))
+                  if Ta is not None and Tb is not None else 0.0)
+        pitch = _pitch_radii_m(meshes_dir, drive, driven, centre)
+        if pitch:
+            rd, rn = pitch
+        else:
+            rd = _tip_radius_m(meshes_dir, drive)
+            rn = _tip_radius_m(meshes_dir, driven)
         ratio = -(rd / rn) if (rd and rn) else -1.0
         ET.SubElement(eq, "joint", attrib={
             "joint1": f"{driven}_spin", "joint2": f"{drive}_spin",
@@ -498,26 +552,38 @@ def _add_transmission(mujoco_el, model, meshes_dir, links_by_name, *,
         da, db = links_by_name.get(drive), links_by_name.get(driven)
         if not da or not db or da.dof != "spin" or db.dof != "spin":
             continue
-        rd = _pitch_radius_m(meshes_dir, drive)
-        rn = _pitch_radius_m(meshes_dir, driven)
+        rd = _tip_radius_m(meshes_dir, drive)
+        rn = _tip_radius_m(meshes_dir, driven)
         ca, cb = _center_xy(drive), _center_xy(driven)
         if not (rd and rn) or ca is None or cb is None:
             log_fn(f"[mjcf] mesh {drive}~{driven}: missing radius/pose, skipped")
             continue
         cd = float(_np.linalg.norm(ca - cb))
+        # Precheck on TIP radii: teeth interleave, so the centre distance sits just under
+        # the tip sum (by 2 modules). The 25% band covers that and any modelling slop.
         want = (rd + rn) * 1000.0
         if abs(cd - want) > 0.25 * want:
             log_fn(f"[mjcf] mesh precheck FAIL {drive}~{driven}: centre {cd:.1f}mm vs "
                    f"expected ~{want:.1f}mm — teeth do not interleave, NO constraint")
             continue
-        ratio = -(rd / rn)
+        # The ratio is of PITCH radii, solved from the pair (see _pitch_radii_m). Tip
+        # radii overshoot pitch by a module and do NOT cancel in a reduction.
+        pitch = _pitch_radii_m(meshes_dir, drive, driven, cd / 1000.0)
+        if pitch:
+            pd, pn = pitch
+            how = ""
+        else:
+            pd, pn = rd, rn
+            how = " [tip radii — module solve failed, ratio is approximate]"
+        ratio = -(pd / pn)
         ET.SubElement(eq, "joint", attrib={
             "joint1": f"{driven}_spin", "joint2": f"{drive}_spin",
             "polycoef": f"0 {ratio:.6g} 0 0 0"})
         ET.SubElement(contact, "exclude", attrib={"body1": drive, "body2": driven})
         done.add(frozenset((drive, driven)))
         n += 1
-        log_fn(f"[mjcf] mesh {drive}->{driven}: ratio {ratio:.3f} (centre {cd:.1f}mm ok)")
+        log_fn(f"[mjcf] mesh {drive}->{driven}: ratio {ratio:.3f} "
+               f"(centre {cd:.1f}mm ok){how}")
 
     # 2. COMPOUND same-shaft groups: spin parts mounted on a common spin arbor are pressed
     # together -> lock 1:1. A shared spin parent in the pose forest = same shaft.
@@ -950,7 +1016,7 @@ def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *
         axis = Ts[:3, :3] @ np.array([float(ax[0]), float(ax[1]), float(ax[2])])
         nrm = float(np.linalg.norm(axis))
         axis = axis / nrm if nrm > 1e-9 else np.array([0.0, 0.0, 1.0])
-        r_shaft = _pitch_radius_m(meshes_dir, s.name)
+        r_shaft = _tip_radius_m(meshes_dir, s.name)   # outer radius of the shaft
         for f in fixeds:
             Tf = W.get(f.name)
             if Tf is None:
@@ -997,7 +1063,7 @@ def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *
                         "part_outer_mm": round(ring_outer * 1000.0, 2),
                         "impossible": impossible,
                     })
-            r_ring = _pitch_radius_m(meshes_dir, f.name)
+            r_ring = _tip_radius_m(meshes_dir, f.name)   # outer radius of the ring
             if r_shaft and r_ring and r_ring < r_shaft - 1e-4:
                 warns += 1
                 log_fn(f"[mjcf] WARN coaxial '{f.name}' (r~{r_ring*1000:.1f}mm) bites into "
