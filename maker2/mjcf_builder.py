@@ -11,12 +11,15 @@ Build rules:
   * <worldbody> holds a ground <geom type="plane"> + a light. The assembly is NOT
     fixed-base: its root body rests on the plane by mass (or is pinned to the world
     only when settings.base_rests_on_plane is False).
-  * Each link becomes a nested <body> under its POSE parent, at the pose's relative
-    transform. dof: fixed -> no joint (welded to parent), spin -> <joint type="hinge"
-    axis=spin_axis>, free -> <freejoint>.
-  * Geometry: one <geom mesh=...> per CoACD piece of a movable/meshing part (so
-    concavity collides), else one geom for the part's own mesh. STL mm -> meters via
-    <mesh scale="0.001 0.001 0.001">.
+  * Each link becomes a FLAT <body> directly under <worldbody>, carrying its absolute
+    world pose. dof: spin -> <joint type="hinge" axis=spin_axis>, free -> <freejoint>,
+    fixed -> an <equality><weld> to each part that carries it (or, when it rides a
+    rotating carrier, that carrier's hinge plus a 1:1 ratio). Nesting is NOT used: it
+    never carried position, and it forced `mount` to be a tree while exempting every
+    parent-child pair from contact. See _emit_flat.
+  * Geometry: one <geom type="sdf"> per part off its own STL, so a bore stays a bore.
+    settings.sdf_collision=False falls back to one geom per CoACD piece. STL mm ->
+    meters via <mesh scale="0.001 0.001 0.001">.
 
 Only imported when settings.engine == "mujoco".
 """
@@ -82,7 +85,11 @@ def _rel_pose_of(model, child: str):
 
 
 def _quat_from_rpy(rpy) -> str:
-    """MuJoCo quaternion string (w x y z) from fixed-axis XYZ rpy."""
+    """MuJoCo quaternion string (w x y z) from fixed-axis XYZ rpy.
+
+    Kept for `mjcf_skeleton`, whose quaternion->rpy parser is documented as this
+    function's inverse: the MJCF the MANAGER authors is nested and carries rpy, while
+    what this module now EMITS is flat and goes through _quat_from_matrix_rot."""
     q = tf.quaternion_from_euler(float(rpy[0]), float(rpy[1]), float(rpy[2]), axes="sxyz")
     return f"{q[0]:.9g} {q[1]:.9g} {q[2]:.9g} {q[3]:.9g}"
 
@@ -203,13 +210,6 @@ def _add_geoms(body_el, link, piece_map, meshes_dir, mesh_names, asset_el,
                           max(ext[2] / 2, 2.5e-4))
             ET.SubElement(body_el, "geom", attrib={
                 "type": "box", "size": f"{hx:.6g} {hy:.6g} {hz:.6g}", **common})
-
-
-def _pose_matrix(xyz, rpy):
-    """4x4 transform from an (xyz, rpy) pair, for accumulating a chain to world."""
-    T = tf.euler_matrix(float(rpy[0]), float(rpy[1]), float(rpy[2]), axes="sxyz")
-    T[0, 3], T[1, 3], T[2, 3] = float(xyz[0]), float(xyz[1]), float(xyz[2])
-    return T
 
 
 def _mesh_inertia_m(src: str, mass_kg: float):
@@ -385,90 +385,6 @@ def _emit_flat(world_el, model, links_by_name, piece_map, meshes_dir, mesh_names
     if n_weld or n_ride:
         log_fn(f"[mjcf] flat bodies: {n_weld} weld(s) to structure, "
                f"{n_ride} part(s) locked 1:1 to a rotating carrier")
-
-
-def _emit_body(parent_el, link_name, model, links_by_name, children, piece_map,
-               meshes_dir, mesh_names, asset_el, *, is_root: bool,
-               base_height: float, pin_base: bool,
-               world_el=None, parent_T=None):
-    link = links_by_name[link_name]
-    xyz, rpy = _rel_pose_of(model, link_name)
-    dof = getattr(link, "dof", "fixed")
-    # A LOOSE PART IS NOT ANYBODY'S CHILD. MuJoCo allows <freejoint> only on a top-level
-    # body, so a dof=free part nested under its mount ("the ball rests on the chute")
-    # made the whole model fail to load — "free joint can only be used on top level" —
-    # and the run died before a single step. `mount` positions a part; it does not weld
-    # it. For a free part the mount chain is only how we know WHERE it starts, so hoist
-    # it to the world with its accumulated world pose and let contact do the rest.
-    if dof == "free" and not is_root and world_el is not None and parent_T is not None:
-        T = parent_T @ _pose_matrix(xyz, rpy)
-        body = ET.SubElement(world_el, "body", attrib={
-            "name": link_name,
-            "pos": f"{T[0, 3]:.9g} {T[1, 3]:.9g} {T[2, 3]:.9g}",
-            "quat": _quat_from_matrix_rot(T)})
-        ET.SubElement(body, "freejoint", attrib={"name": f"{link_name}_free"})
-        _emit_inertial_and_geoms(body, link, link_name, piece_map, meshes_dir,
-                                 mesh_names, asset_el)
-        # Its own children keep hanging off it (now a top-level body), so a free part
-        # carrying something still carries it.
-        for p in children.get(link_name, []):
-            _emit_body(body, p.child, model, links_by_name, children, piece_map,
-                       meshes_dir, mesh_names, asset_el, is_root=False,
-                       base_height=0.0, pin_base=False,
-                       world_el=world_el, parent_T=T)
-        return
-
-    # Only a body that will actually SETTLE (a free root, not pinned) spawns slightly above the
-    # plane. A fixed/spin root is grounded IN PLACE (welded to world / hinged), so lifting it by
-    # base_height would weld it hovering in mid-air. Keep its authored Z.
-    settling_root = is_root and not pin_base and dof == "free"
-    if settling_root:
-        pos = (float(xyz[0]), float(xyz[1]), float(xyz[2]) + base_height)
-    else:
-        pos = (float(xyz[0]), float(xyz[1]), float(xyz[2]))
-    body = ET.SubElement(parent_el, "body", attrib={
-        "name": link_name,
-        "pos": f"{pos[0]:.9g} {pos[1]:.9g} {pos[2]:.9g}",
-        "quat": _quat_from_rpy(rpy)})
-    my_T = (parent_T if parent_T is not None else np.eye(4)) @ _pose_matrix(pos, rpy)
-
-    dof = getattr(link, "dof", "fixed")
-    if is_root:
-        # A root body's joint is chosen by its OWN dof — NOT blindly freejointed. This matters
-        # most for the single-agent path, where parts are laid out flat with NO parent/child
-        # poses, so EVERY part is a "root": if each root were freejointed, the housing, posts,
-        # bearings and every dof=fixed structural part would become an independent free body.
-        # Under gravity they sit still (looks stable), but the moment a gear spins the mesh
-        # reaction force has no fixed ground to push against, so the frame is shoved apart and
-        # "flies away". So: fixed -> WELD to world (rigid grounded frame); spin -> hinge (axle
-        # grounded in place but still rotates); free -> freejoint (a genuinely loose part).
-        # pin_base (base_rests_on_plane=False) still welds a would-be-free base to the world.
-        if dof == "fixed" or pin_base:
-            pass  # welded to world: no joint
-        elif dof == "spin":
-            ax = getattr(link, "spin_axis", (0.0, 0.0, 1.0))
-            ET.SubElement(body, "joint", attrib={
-                "name": f"{link_name}_spin", "type": "hinge",
-                "axis": f"{ax[0]:.6g} {ax[1]:.6g} {ax[2]:.6g}", "pos": "0 0 0"})
-        else:  # free
-            ET.SubElement(body, "freejoint", attrib={"name": f"{link_name}_free"})
-    elif dof == "spin":
-        ax = getattr(link, "spin_axis", (0.0, 0.0, 1.0))
-        ET.SubElement(body, "joint", attrib={
-            "name": f"{link_name}_spin", "type": "hinge",
-            "axis": f"{ax[0]:.6g} {ax[1]:.6g} {ax[2]:.6g}", "pos": "0 0 0"})
-    elif dof == "free":
-        ET.SubElement(body, "freejoint", attrib={"name": f"{link_name}_free"})
-    # dof == "fixed": no joint (welded to its parent body).
-
-    _emit_inertial_and_geoms(body, link, link_name, piece_map, meshes_dir,
-                             mesh_names, asset_el, sdf=False)
-
-    for p in children.get(link_name, []):
-        _emit_body(body, p.child, model, links_by_name, children, piece_map,
-                   meshes_dir, mesh_names, asset_el, is_root=False,
-                   base_height=0.0, pin_base=False,
-                   world_el=world_el, parent_T=my_T)
 
 
 def _emit_inertial_and_geoms(body, link, link_name, piece_map, meshes_dir,
