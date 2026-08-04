@@ -306,6 +306,57 @@ N-pieces x M-pieces broadphase entirely (that watch decomposes 13 parts into 255
 pieces). Dense sustained contact on few parts favours decomposition; many complex parts
 that mostly do NOT touch favour SDF.
 
+### 3e. SDF silently DROPS contacts as the assembly grows — and it is not memory
+
+MuJoCo's SDF collision is not a geometric query. From `mjmodel.h`:
+
+```c
+// sdf collision settings
+int sdf_initpoints;     // number of starting points for gradient descent   (default 40)
+int sdf_iterations;     // max number of iterations for gradient descent    (default 10)
+```
+
+It is a **gradient descent** that can fail to converge, and when it does the contact is
+simply absent — no warning, no error.
+
+Observed on run `1_12_20260803_195154` iter_1. `rear_bridge_post` sits exactly on the
+baseplate (gap +0.0000mm, its underside inside the base solid) and is byte-identical to
+`front_bridge_post`, which never falls (252 verts, 500 faces, volume 54.943, both convex,
+mirrored positions y = -36.00 / +36.00).
+
+| scene | outcome |
+|---|---|
+| post + base (2 bodies) | holds, -0.025mm |
+| + bridge + front post (4 bodies) | holds, -0.018mm |
+| whole assembly (17 bodies) | **falls 52.068mm** |
+| whole assembly, convex decomposition | holds, -1.96mm |
+
+Stepping through the full scene: the post starts with **40 contacts** on the base — that
+is `sdf_initpoints` exactly — holds them for ~2000 steps, then the count drops to zero and
+it free-falls. So the trigger is scene scale, not the part.
+
+What it is NOT:
+
+| suspicion | test | result |
+|---|---|---|
+| arena memory exhausted | `<size memory="2G">` | **identical** (19.815mm fall, ncon 321) |
+| `mjMAXCONPAIR = 50` overrun | count contacts | 40 < 50, never reached |
+| the part / its position | 6 positions in a synthetic scene | never reproduces |
+
+Raising `sdf_iterations` 10 -> 50 improves it (19.815mm -> 4.370mm of fall) but does not
+fix it: still far past the 1.5mm the support test calls a fall, and every step costs more.
+
+**Consequence.** Anything whose verdict is "did these two touch" must not run on SDF at
+assembly scale. `build_support_mjcf` therefore pins itself to convex decomposition —
+overfilling a bore only makes a fit read as MORE supported, never less, so the artefact is
+harmless there. The real MJCF keeps SDF, where bore clearance decides whether torque
+crosses and the precision is the whole point.
+
+The cost of not knowing this was four wasted iterations: the post was reported unsupported
+each time, and the agent, told to "move it down until it touches", buried it 0.1mm, then
+4mm (through a 4mm-thick base), then 1mm — while that design's gear train was already
+correct at 11.820 against a 12:1 target.
+
 ## 4. Engine shopping
 
 The session started from a fair objection — `mount=` is a fiction. A part is told which
