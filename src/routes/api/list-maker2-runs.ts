@@ -7,7 +7,6 @@ import { resolve, join, basename } from 'node:path';
 // thread (output/threads/<id>/thread.json) with one entry per thread showing its
 // latest turn. Legacy runs that predate threads are listed as single-turn
 // entries (reopened read-only by run_dir). No DB.
-// The app now runs FROM the repo root (it used to live in worker/, one level down).
 const REPO_ROOT = process.cwd();
 const OUTPUT_ROOT = resolve(REPO_ROOT, 'output');
 const THREADS_ROOT = resolve(OUTPUT_ROOT, 'threads');

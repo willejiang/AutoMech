@@ -4,14 +4,13 @@ import { spawn } from 'node:child_process';
 import { createWriteStream, existsSync, mkdirSync, type WriteStream } from 'node:fs';
 import { resolve, sep } from 'node:path';
 
-// DEV bridge (SSE): the maker2 editor opens an EventSource here and we stream the
+// DEV bridge (SSE): the editor opens an EventSource here and we stream the
 // Python run's stdout line-by-line so the UI can show real per-stage progress
-// (manager -> cadam SCAD worker -> URDF -> judge -> physics) instead of a dead
+// (agent -> build -> judge -> physics) instead of a dead
 // spinner. The buffered sibling (run-maker2.ts) stays for the parameter-panel
 // button. NO auth (dev/test). EventSource can only GET + can't set headers, so the
 // prompt/model/iters ride in the query string. maker2 is a package at the repo
-// root; the worker dev server runs from worker/, so cwd is one level up.
-// The app now runs FROM the repo root (it used to live in worker/, one level down).
+// root, which is also where this app runs from.
 const REPO_ROOT = process.cwd();
 
 // maker2/run.py prints these stage markers; the client classifies a line into a

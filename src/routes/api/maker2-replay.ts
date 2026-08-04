@@ -7,7 +7,6 @@ import { resolve, sep } from 'node:path';
 // sends to output/threads/<id>/events.ndjson; this hands that log back so opening a
 // historical run RENDERS it instead of spawning python and re-running the whole
 // pipeline (which was destroying the very run the user clicked on). NO auth.
-// The app now runs FROM the repo root (it used to live in worker/, one level down).
 const REPO_ROOT = process.cwd();
 const THREADS_ROOT = resolve(REPO_ROOT, 'output', 'threads');
 

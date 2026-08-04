@@ -6,7 +6,6 @@ import { resolve, join, sep } from 'node:path';
 // DEV bridge: read one maker2 conversation thread from disk so the editor can
 // render all past turns and know which model to show + which prior model to feed
 // the next refine. thread.json is written by maker2/run.py (--thread). NO auth.
-// The app now runs FROM the repo root (it used to live in worker/, one level down).
 const REPO_ROOT = process.cwd();
 const OUTPUT_ROOT = resolve(REPO_ROOT, 'output');
 const THREADS_ROOT = resolve(OUTPUT_ROOT, 'threads');

@@ -3,15 +3,14 @@
 > 🎉🏆 **Our AutoMech project won 2nd place in the Hardware AI Innovation track at the Microsoft Global Intern Hackathon 2026!** 🎉🥈
 
 **Task-oriented CAD generation, closed-loop with physics.** Instead of producing
-geometry that merely *looks* plausible, every design is simulated in **NVIDIA Isaac
-Sim** under the user's actual task and judged by a vision model. Failures come back
-as rendered frames plus concrete fix hints, and the design is revised until it
-physically works.
+geometry that merely *looks* plausible, every design is **simulated under the user's
+actual task** and judged on what it did. Failures come back as metrics, frames, and
+concrete fix hints, and the design is revised until it physically works.
 
 > **Thesis (shown empirically):** numeric pose metrics gave a *false PASS* on the
 > ANYmal stand-still run (tilt read 2.1°), while the VLM watching the frames
 > correctly said *FAIL — "tips onto its side by frame 3, ends overturned."*
-> The camera/VLM judge is what makes the evaluation trustworthy.
+> A design is only as good as the judge, and the judge has to watch the machine work.
 
 ## Demo
 
@@ -27,124 +26,212 @@ https://github.com/willejiang/AutoMech/raw/main/assets/AutoMech1.mp4
 
 ## What this is
 
-Two halves connected by a file contract, run as a closed loop:
+**One app, one command.** `npm run dev` serves the AutoMech web UI, which spawns the
+Python pipeline directly and streams its stages back over SSE. Everything runs on
+your machine, on the **CPU** — no GPU, no Docker, no database.
 
-- **Maker** = [`worker/`](worker/) — **cadam**, a text→OpenSCAD web app (React + Vite
-  + Supabase, OpenSCAD-WASM in the browser). Turns a prompt into a `.scad` model.
-- **Evaluator** = [`evaluator/`](evaluator/) — **NVIDIA Isaac Sim + Isaac Lab**,
-  running in Docker on a GPU box. Simulates the design under the task and returns a
-  VLM pass/fail with per-failure frames + fix hints.
-- **Orchestrator** = [`orchestrator/`](orchestrator/) — the outer automation loop
-  that drives maker → render → visual gate → URDF author → evaluator → feedback.
+- **Maker** = [`maker2/`](maker2/) — the CAD pipeline. An agent authors the machine as
+  a **build123d** script, exports per-part meshes, and a VLM judges six rendered views.
+- **Evaluator** = [`evaluator/`](evaluator/) — the physics half. MuJoCo drives the
+  machine under the task and reports whether it *did the job*, not whether it looks
+  right. Failures come back as metrics + video and drive the next iteration.
+- **UI** = [`src/`](src/) — React 19 + TanStack Start. Prompt bar, live pipeline
+  timeline, orbitable 3D model, physics panel with the recorded MP4, and past runs.
 
-See [`DESIGN_LOOP.md`](DESIGN_LOOP.md) and [`evaluator/ARCHITECTURE.md`](evaluator/ARCHITECTURE.md)
-for the full architecture with diagrams.
+```bash
+npm install && npm run dev      # → http://localhost:3000
+```
 
-> **Isaac Sim and Isaac Lab are NOT in this repo.** They are installed/cloned
-> externally (see [Setup B](#setup-b--evaluator-isaac-sim--isaac-lab)). This repo
-> only holds the evaluator's *scripts*, which run **inside** the Isaac Sim
-> container. Links: [Isaac Sim](https://developer.nvidia.com/isaac-sim) ·
-> [Isaac Lab](https://github.com/isaac-sim/IsaacLab).
+There is a **second, older path** in this repo — `orchestrator/` driving Isaac Sim on a
+GPU box. It is what the hackathon demo above ran, and it still works, but it is no
+longer the main line. It is documented in
+[Appendix: the Isaac Sim path](#appendix--the-isaac-sim-path-original-loop).
+
+See [`maker2/PIPELINE.md`](maker2/PIPELINE.md) for the pipeline internals and
+[`DESIGN_LOOP.md`](DESIGN_LOOP.md) for the loop's architecture.
 
 ---
 
-## maker2 — the URDF-first articulated pipeline (runs locally, no GPU)
+## The pipeline
 
-`maker2/` is a newer, self-contained path that builds **articulated** models
-(gearboxes, cranks, tourbillons, robots) and evaluates them on the **CPU** — no
-Isaac Sim, no GPU box. It is driven from a dedicated UI in the cadam web app
-(the **Articulated** toggle in the prompt bar → `/maker2/$id`).
-
-**Pipeline** (`python -m maker2.run "<prompt>" --json --physics`):
+The default path is **single-agent**: one agent authors the *whole* machine as one
+build123d script. Earlier versions split the machine across a boss and per-subassembly
+managers, and each seam between agents was a place for the assembly to go wrong; one
+agent holding the whole model has no seams to get wrong.
 
 ```
-manager (LLM)      decompose the prompt into a URDF CONTRACT: links + joints,
-  │                per-link color, and the input `driver` joint. One JSON object.
+agent (LLM)        prompt → ONE build123d script: every part, its pose, and how the
+  │                parts join. Optionally grounded by the local KB and web search.
   ▼
-SCAD worker (LLM)  ONE cadam SCAD call → a module per link → per-link STL.
-  │                Geometry is filled to match the manager's URDF.
+build             the script runs → per-part meshes + a rigid-conflict self-check
+  │               (interference vs. clearance fits, unsupported parts, overlaps).
+  │               Conflicts go back to the agent with coordinates, not adjectives.
   ▼
-URDF assembled     yourdfpy builds model.urdf; materials give each part a color.
-  │
+judge (VLM)       six offscreen views; FAIL feeds concrete fixes into the next pass.
   ▼
-judge (VLM)        renders 6 offscreen views and judges the assembled model;
-  │                FAIL → suggestions feed the manager to re-decompose (refine loop).
+MJCF assembled    every part a flat body in world coordinates; joints become MuJoCo
+  │               joints, static structure becomes equality welds, collision geometry
+  │               is signed-distance (SDF) off the original mesh.
   ▼
-physics (PyBullet) category-aware: strategy_selector picks static_stability vs
-                   driven_mechanism; scenario_designer writes the sim spec;
-                   run_scenario_pybullet drives the input joint and checks the
-                   downstream joints transmit motion. Records an MP4 per test.
+physics (MuJoCo)  strategy_selector picks the test; scenario_designer writes free
+                  setup(m,d) / control(m,d,t) Python; the run measures whether the
+                  machine DID THE JOB. Records an MP4 per test.
 ```
+
+**Why physics, and not just a prettier render.** A gearbox that renders perfectly can
+still be a solid brick. The test drives the input and measures the output — parts that
+must turn, turn; parts that must stay put, stay put. The judge that matters is the one
+watching what the machine *does*.
 
 **Key files:**
 
 | Path | What |
 |------|------|
 | [`maker2/run.py`](maker2/run.py) | Driver + refine loop; writes `result.json`, `run.json`, per-thread `thread.json`. |
-| [`maker2/manager.py`](maker2/manager.py) · [`maker2/prompts/`](maker2/prompts/) | Prompt → `KinematicModel` (links/joints/color/driver); multi-turn refine. |
-| [`maker2/scad_worker.py`](maker2/scad_worker.py) · [`maker2/scad_render.py`](maker2/scad_render.py) | One SCAD call → per-link STL via the native OpenSCAD CLI. |
-| [`maker2/urdf_builder.py`](maker2/urdf_builder.py) · [`maker2/viz.py`](maker2/viz.py) | Assemble the URDF (with material colors); render the judge's 6 offscreen views. |
-| [`maker2/export_glb.py`](maker2/export_glb.py) | Assemble the URDF → one colored `.glb` for the orbitable canvas. |
-| [`maker2/physics.py`](maker2/physics.py) | Orchestrates `strategy_selector`→`scenario_designer`→`run_scenario_pybullet`; encodes a per-test MP4. |
-| [`maker2/config.py`](maker2/config.py) | Gateway/model settings; `base_url` reads `FREECAD_AI_BASE_URL` (defaults to the local `:8313` proxy). |
+| [`maker2/single_agent.py`](maker2/single_agent.py) · [`maker2/prompts/`](maker2/prompts/) | The default path: one agent → one build123d script → self-check → refine. |
+| [`maker2/mjcf_builder.py`](maker2/mjcf_builder.py) | Parts → MJCF: flat world-space bodies, real mesh inertia, SDF collision, press-fit vs. clearance fits. |
+| [`maker2/physics.py`](maker2/physics.py) | `strategy_selector` → `scenario_designer` → MuJoCo run; encodes a per-test MP4. Support test runs in parallel. |
+| [`maker2/support_test.py`](maker2/support_test.py) | Is every part actually held up by something, or is it floating? |
+| [`maker2/kb/`](maker2/kb/) | Retrieval corpus (fits, materials, what passive parts ride on) injected into the agent's prompt. |
+| [`maker2/config.py`](maker2/config.py) | All settings; resolution order is defaults < JSON file < env vars < CLI. |
+| [`evaluator/run_scenario_mujoco.py`](evaluator/run_scenario_mujoco.py) | Runs the scenario, including the designer's own `setup`/`control` functions. |
 
-**Physics: a real machine test, not a stand-still fool test.** For a mechanism,
-`run_scenario_pybullet.py` bench-mounts the model, drives the `driver` input joint,
-and measures whether the **downstream joints move** (transmission) — a solid brick
-no longer "passes" a gearbox test. `strategy_selector.py` (env-configurable client,
-defaults to the local gateway) picks the strategy + backend; `scenario_designer.py`
-writes the `drive` block. Each test's frames are stitched into an MP4
-(`imageio-ffmpeg`, `+faststart`) shown in the editor's physics panel.
+### Hierarchical (boss → managers → assembler)
 
-**Web UI** (in `worker/`): the **Articulated** toggle streams the pipeline stages
-live (SSE from `run-maker2.run`), renders the colored model in an orbitable canvas,
-and shows a **physics panel** beside it with the driven-test breakdown + the
-recorded MP4 (per-test Prev/Next). Runs persist as disk-backed **threads** and
-reopen from the sidebar for multi-turn refinement. Relevant routes:
-[`run-maker2-stream.ts`](worker/src/routes/api/run-maker2-stream.ts) (SSE),
-[`run-maker2-glb.ts`](worker/src/routes/api/run-maker2-glb.ts) (glb/scad/result/video),
-[`list-maker2-runs.ts`](worker/src/routes/api/list-maker2-runs.ts) +
-[`maker2-thread.ts`](worker/src/routes/api/maker2-thread.ts).
-
-**Run it locally:**
-```bash
-pip install -r evaluator/requirements.txt      # pybullet, imageio-ffmpeg, ...
-# an OpenAI-compatible gateway on :8313 (or set FREECAD_AI_BASE_URL) + OpenSCAD CLI
-python -m maker2.run "a hand-cranked gear reducer" --json --physics
-# or use the UI: cd worker && npm run dev → toggle "Articulated" in the prompt bar
-```
-
-### Hierarchical (boss → managers → assembler) — big machines
-
-The block above is the single-manager path. For a machine too large for one manager to
-emit in one response (a full watch, a multi-stage gearbox, a tourbillon), pass
-`--hierarchy`: a **boss** LLM splits the machine into subassemblies and authors a
-connection graph of typed seams (**no placement coordinates**); one **manager** builds
-each subassembly in isolation; a deterministic **assembler/compiler** stitches them into
-one machine. Gear meshes are solved by the compiler — it places each meshing subassembly
-at the true center-distance read from the built gears (`module × teeth`), so gears engage
-by construction rather than by the boss guessing coordinates.
+Still available with `--hierarchy`, for machines big enough that one script gets
+unwieldy. A **boss** splits the machine into subassemblies and authors a graph of typed
+seams (**topology, never placement coordinates**); one **manager** builds each
+subassembly in isolation; a deterministic **assembler** solves the placement — gear
+meshes land at the true center distance read off the built gears (`module × teeth`),
+so they engage by construction rather than by an LLM guessing coordinates.
 
 ```bash
-python -m maker2.run "create a two-stage gear reducer" --hierarchy --kb --deep-think --json
+python -m maker2.run "a two-stage gear reducer" --hierarchy --kb --deep-think --json
 ```
 
-See **[`maker2/PIPELINE.md`](maker2/PIPELINE.md)** for the full hierarchical workflow: every
-agent's I/O, the deterministic compilers/gates between them, and how each gate's rejection
-routes back (per-sub rebuild vs. boss re-plan).
+See **[`maker2/PIPELINE.md`](maker2/PIPELINE.md)** for every agent's I/O, the
+deterministic gates between them, and how a rejection routes back (rebuild one
+subassembly vs. re-plan the whole machine).
 
 ---
 
-## The three tiers (what runs where)
+## What runs where
 
-This is the part that trips people up: there are **three execution locations**, not
-two. The client drives the server over SSH; the server runs the GPU container.
+One machine, three processes. The browser talks to the app; the app spawns Python.
+
+```mermaid
+flowchart TB
+    B["Browser — prompt bar, pipeline timeline,<br/>3D canvas, physics panel + MP4"]
+    A["Node — TanStack Start / Nitro (src/)<br/>routes/api/* spawn Python, tee SSE to disk"]
+    P["Python — maker2 + evaluator<br/>build123d → meshes → MJCF → MuJoCo"]
+    G["Any OpenAI-compatible LLM gateway"]
+    D[("output/threads/&lt;id&gt;/<br/>events.ndjson · model.glb · MJCF · MP4")]
+
+    B -->|"GET /api/run-maker2-stream (SSE)"| A
+    A -->|"spawn python -m maker2.run --json"| P
+    P -->|"stdout stage lines → SSE events"| A
+    A -->|"stage / artifact / result"| B
+    P <-->|"chat + vision"| G
+    P --> D
+    A --> D
+
+    classDef c fill:#1e3a5f,stroke:#4a90d9,color:#fff
+    class B,A,P,G,D c
+```
+
+| Component | Where | GPU? |
+|-----------|-------|------|
+| `src/` — UI + API routes | your machine, Node | no |
+| `maker2/` — CAD agents, MJCF build | your machine, Python | no |
+| `evaluator/run_scenario_mujoco.py` — physics | your machine, Python | no |
+| LLM gateway | wherever you point it | — |
+
+The Node↔Python handoff is **a subprocess and its stdout**, not a network call: the
+API route spawns `python -m maker2.run`, turns each stage line into an SSE event, and
+tees the stream to `output/threads/<id>/events.ndjson` so reopening a run replays it.
+Nothing needs a database.
+
+---
+
+## Repo layout
+
+| Path | What |
+|------|------|
+| [`src/`](src/) | **The app** — React 19 + TanStack Start UI and the API routes that spawn the pipeline. |
+| [`maker2/`](maker2/) | **Maker** — the CAD pipeline: agents, build123d geometry, MJCF assembly, gates, and the retrieval KB. |
+| [`evaluator/`](evaluator/) | **Evaluator** — the MuJoCo/PyBullet scenario runners, `strategy_selector`/`scenario_designer`, and the VLM judge. |
+| [`maker2/PIPELINE.md`](maker2/PIPELINE.md) | Pipeline internals: agent I/O and the deterministic gates between them. |
+| [`docs/`](docs/) | Findings and plans — notably [`CONTACT_PHYSICS_FINDINGS.md`](docs/CONTACT_PHYSICS_FINDINGS.md) (what MuJoCo contact actually does at assembly scale). |
+| [`orchestrator/`](orchestrator/) | The older Isaac Sim loop — see the appendix. |
+| `assets/AutoMech1.mp4` | Demo recording. |
+
+---
+
+## Setup
+
+**Prerequisites**
+
+- **Node.js** `^20.19.0 || >=22.12.0`, **npm** `>=10`.
+- **Python 3.10+**.
+- An **OpenAI-compatible LLM gateway** — either your own key or a local proxy.
+
+**Install and run**
+
+```bash
+npm install
+python -m pip install -r maker2/requirements.txt
+python -m pip install -r evaluator/requirements.txt   # mujoco, trimesh, imageio-ffmpeg, ...
+
+npm run dev        # → http://localhost:3000
+```
+
+**Point it at a model.** Open **Settings** in the sidebar and fill in the gateway URL,
+model, and API key; "Save & test" makes a real call and tells you whether the gateway
+answers. The key is stored server-side in `.automech/llm.json` (mode `0600`,
+gitignored) and never goes in the browser.
+
+Equivalently, by environment — these win over the settings file:
+
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `FREECAD_AI_BASE_URL` | gateway base URL; the `/v1` suffix is required | `http://127.0.0.1:8313/v1` |
+| `FREECAD_AI_API_KEY` | key for that gateway | — |
+| `FREECAD_AI_MODEL` | model id | `claude-opus-4.8` |
+| `PYTHON_BIN` | interpreter the app spawns | `python3` |
+
+Full resolution order is **defaults < `.automech/llm.json` < environment < CLI flags**
+([`maker2/config.py`](maker2/config.py)).
+
+**Or skip the UI** and run the pipeline straight from the terminal:
+
+```bash
+python -m maker2.run "a hand-cranked gear reducer" --json --physics
+python -m maker2.run "a two-stage gear reducer" --hierarchy --kb --deep-think --json
+```
+
+**Tests** are executable golden scripts, not a pytest suite — run one directly:
+
+```bash
+python -m maker2.tests.golden_two_gears
+npm run typecheck
+```
+
+---
+
+## Appendix — the Isaac Sim path (original loop)
+
+The loop that won the hackathon, kept because it still runs and because its thesis —
+*trust the camera, not the pose numbers* — is what the current physics test inherited.
+It is heavier: a GPU box, Docker, and Isaac Sim, none of which the main path needs.
+
+`orchestrator/` drives: generate → render → six-view visual gate → author a manifest →
+simulate in Isaac Sim → feed failures back. Three execution locations, not two — the
+client drives the server over SSH, and the server runs the GPU container.
 
 ```mermaid
 flowchart TB
     subgraph CLIENT["① CLIENT — your laptop / dev machine"]
         direction TB
-        C1["cadam dev server (worker/)<br/>Node + Vite, browser UI"]
         C2["orchestrator/automech_loop.py<br/>(--dry-run when box offline)"]
         C3["render_views.py<br/>native OpenSCAD CLI → STL + 6 views"]
     end
@@ -171,116 +258,45 @@ flowchart TB
     classDef client fill:#1e3a5f,stroke:#4a90d9,color:#fff
     classDef server fill:#2d4a2d,stroke:#5cb85c,color:#fff
     classDef docker fill:#5a2d2d,stroke:#d9534f,color:#fff
-    class C1,C2,C3 client
+    class C2,C3 client
     class S1,S2 server
     class D1,D2 docker
 ```
-
-| Component | Tier | GPU? |
-|-----------|------|------|
-| cadam web app (`worker/`) | ① client (or any web host) | no |
-| `orchestrator/*.py` (loop, gen, render, gate, author) | ① client | no |
-| `evaluate.sh`, `loop.py`, `scenario_designer.py` | ② server **host** | no |
-| `analyze.py` (VLM judge — holds the key) | ② server **host** | no |
-| `run_eval.py` / `run_scenario.py` / `run_eval_urdf.py` | ③ Docker container | **yes** |
-| `isaaclab/*.sh` (RL train/play/convert) | ③ Docker container | **yes** |
 
 **Why the split:** the container has the GPU but must not hold the VLM API key, so
 `analyze.py` runs on the host. The host↔container handoff is **a file on a shared
 mount** (`sim_result.json`), not a network call. Note the path rewrite: the host's
 `/data/physcad/...` is the container's `/work/...` — same bytes, two names.
 
----
-
-## Repo layout
-
-| Path | What |
-|------|------|
-| [`worker/`](worker/) | **Maker** — cadam text→OpenSCAD web app (Node/Vite/Supabase). Also hosts the **maker2** articulated-CAD UI (see below). |
-| [`maker2/`](maker2/) | **maker2** — URDF-first articulated pipeline: manager decomposes a prompt into links+joints, one cadam SCAD worker fills geometry, a VLM judges the assembled model, and PyBullet drives/evaluates it. |
-| [`evaluator/`](evaluator/) | **Evaluator** — Isaac Sim runners + `isaaclab/` scripts + the VLM judge. Also the **CPU PyBullet** runner (`run_scenario_pybullet.py`) + `strategy_selector`/`scenario_designer` that maker2 drives. |
-| [`orchestrator/`](orchestrator/) | **Loop** — ties maker → evaluator into one automation loop. |
-| [`DESIGN_LOOP.md`](DESIGN_LOOP.md) | Architecture of the two nested loops (diagrams). |
-| [`evaluator/ARCHITECTURE.md`](evaluator/ARCHITECTURE.md) | Evaluator file call-graph + the two entry paths. |
-| [`orchestrator/README.md`](orchestrator/README.md) | How the outer loop is wired + run. |
-| `assets/AutoMech1.mp4` | Demo recording. |
-
 > ⚠️ **Not in this repo (installed externally):** Isaac Sim (the
 > `nvcr.io/nvidia/isaac-sim:6.0.1` Docker image) and Isaac Lab (cloned from GitHub).
 > The repo carries only the *scripts* that run inside that container.
+> [Isaac Sim](https://developer.nvidia.com/isaac-sim) ·
+> [Isaac Lab](https://github.com/isaac-sim/IsaacLab).
 
----
+Architecture in detail: [`DESIGN_LOOP.md`](DESIGN_LOOP.md) ·
+[`evaluator/ARCHITECTURE.md`](evaluator/ARCHITECTURE.md) ·
+[`orchestrator/README.md`](orchestrator/README.md).
 
-## Prerequisites
+### Prerequisites
 
-**Client side (laptop / dev machine):**
-- **Node.js** `^20.19.0 || >=22.12.0`, **npm** `>=10` — for cadam (`worker/`).
-- **OpenSCAD** (native CLI) + the BOSL2/MCAD libraries — for headless `.scad`
-  rendering in the orchestrator. [openscad.org](https://openscad.org/).
-- **Python 3** with `openai` — for `orchestrator/` and host-side VLM calls.
+**Client:** Node **≥20.19**, **OpenSCAD** native CLI + BOSL2/MCAD
+([openscad.org](https://openscad.org/)), Python 3 with `openai`.
 
-**Server side (GPU box):**
-- An **NVIDIA GPU** with RT cores (A10 proven) + driver **≥ 595.58.03** (Isaac Sim
-  6.0.1 requirement).
-- **Docker** + **NVIDIA Container Toolkit** (`--runtime=nvidia --gpus all`).
-- Host dirs: **`/data/physcad`** (artifacts, mounts to `/work`) and
-  **`/data/isaac-cache`** (shader cache, persists between runs).
-- **Python 3** with `openai` on the host — `analyze.py` runs here.
+**GPU box:** an **NVIDIA GPU** with RT cores (A10 proven) + driver **≥ 595.58.03**;
+**Docker** + **NVIDIA Container Toolkit**; host dirs **`/data/physcad`** (mounts to
+`/work`) and **`/data/isaac-cache`**; Python 3 with `openai` on the host.
 
 > **China-network note:** `nvcr.io` (NGC) works for pulling Isaac Sim; Docker Hub
 > and `nvidia.github.io` are blocked. Use USTC/Tsinghua mirrors for apt + the
 > NVIDIA Container Toolkit `.debs`, and the Tsinghua pip index for Isaac Lab
 > (`install_isaaclab.sh` already sets `PIP_INDEX_URL`).
 
----
-
-## Setup A — Maker (cadam)
-
-cadam is a real **SSR web app** (TanStack Start + Nitro), not a static export, and
-it has a **hard Supabase dependency** — auth, the conversation DB, and image/mesh
-storage are hit on every generation request. There is no built-in headless/CLI mode.
-
-```bash
-cd worker
-npm install
-# build the client + server bundles (→ worker/dist/)
-npm run build
-# dev server on http://localhost:3000  (preview build: npm run preview → :4173)
-npm run dev
-```
-
-**Required environment** (create `worker/.env` — no `.env.example` ships):
-
-| Variable | Purpose | Required |
-|----------|---------|----------|
-| `VITE_SUPABASE_URL` | Supabase project URL | ✅ |
-| `VITE_SUPABASE_ANON_KEY` | Supabase anon key (client auth) | ✅ |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role (server) | ✅ |
-| `LLM_GATEWAY_URL` | OpenAI-compatible LLM gateway (multi-provider, picks VLM by id) | ✅ |
-| `ANTHROPIC_API_KEY` | Claude models (via gateway) | ✅ |
-| `OPENROUTER_API_KEY` | GPT/Gemini routing (via gateway) | ✅ |
-| `BILLING_SERVICE_URL` / `BILLING_SERVICE_KEY` | token-usage tracking | ✅ |
-| `OPENAI_API_KEY` / `GOOGLE_API_KEY` / `FAL_KEY` | image/mesh generation | optional |
-| `VITE_POSTHOG_PROJECT_KEY` / `VITE_POSTHOG_HOST` | analytics | optional |
-
-You'll need a Supabase project with the schema in [`worker/supabase/`](worker/supabase/)
-applied. Without Supabase, cadam will not authenticate or persist a conversation, so
-generation won't run.
-
-> **Driving cadam headlessly (in the loop):** the orchestrator does **not** boot
-> this web app. It replicates cadam's generation by calling the LLM directly with
-> cadam's own prompt (`WORKER_MODE=direct`), then renders the `.scad` with the
-> native OpenSCAD CLI. So for the automation loop you do **not** need Supabase — see
-> [`orchestrator/README.md`](orchestrator/README.md). The full web app above is for
-> interactive use / the demo.
-
----
-
-## Setup B — Evaluator (Isaac Sim + Isaac Lab)
+### Setup — Isaac Sim + Isaac Lab
 
 Done **on the GPU server**. Neither Isaac Sim nor Isaac Lab lives in this repo.
 
-### 8a. Pull Isaac Sim 6.0.1 (Docker image, from NGC)
+#### 1. Pull Isaac Sim 6.0.1 (Docker image, from NGC)
 
 ```bash
 docker pull nvcr.io/nvidia/isaac-sim:6.0.1   # anonymous pull works; ~20 GB
@@ -289,7 +305,7 @@ docker pull nvcr.io/nvidia/isaac-sim:6.0.1   # anonymous pull works; ~20 GB
 [NGC catalog](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/isaac-sim).
 Verify GPU-in-container: `docker run --rm --gpus all nvcr.io/nvidia/isaac-sim:6.0.1 nvidia-smi`.
 
-### 8b. Install Isaac Lab into the container → commit `isaac-lab:6.0.1`
+#### 2. Install Isaac Lab into the container → commit `isaac-lab:6.0.1`
 
 Isaac Lab is **cloned, not vendored**. Put it in the host dir that mounts to
 `/work` so it appears at `/work/IsaacLab` inside the container:
@@ -330,21 +346,19 @@ docker commit <container_id> isaac-lab:6.0.1
 > first, and update the image tag in `evaluator/evaluate.sh` + `evaluator/loop.py`
 > to match.
 
-### 8c. Host config
+#### 3. Host config
 
 ```bash
 mkdir -p /data/physcad /data/isaac-cache
 cp evaluator/.env.example evaluator/.env   # then fill in the VLM endpoint + key
 ```
 `evaluator/.env` drives `analyze.py` / `scenario_designer.py`. It points at any
-OpenAI-compatible LLM gateway; pick the VLM via `AZURE_VLM_DEPLOYMENT` using cadam's
+OpenAI-compatible LLM gateway; pick the VLM via `AZURE_VLM_DEPLOYMENT` using
 `provider/model` ids (`anthropic/claude-opus-4.8`, `openai/gpt-5.4`,
 `google/gemini-3.1-pro-preview`), or use Azure OpenAI directly — see the comments in
 [`evaluator/.env.example`](evaluator/.env.example).
 
----
-
-## Running it
+### Running the Isaac path
 
 **(a) Evaluator on a single design dir** (manifest + `.scad`/`.stl`):
 ```bash
@@ -371,7 +385,7 @@ Drop `--dry-run` once the GPU box is up.
 > ⚠️ **`--dry-run` is NOT zero-setup.** It stubs **only** the Isaac Sim step (so you
 > don't need the GPU box / Docker). The stages *before* it still run for real and
 > have hard prerequisites:
-> - **`orchestrator/.env` with a working VLM endpoint + key** — cadam generation, the
+> - **`orchestrator/.env` with a working VLM endpoint + key** — generation, the
 >   visual gate, and the URDF author all make live LLM/VLM calls. Without it the very
 >   first step fails with `KeyError: 'AZURE_OPENAI_ENDPOINT'`.
 > - **The native OpenSCAD CLI on PATH** (`OPENSCAD_BIN` or `openscad`) — the render
@@ -396,6 +410,8 @@ Drop `--dry-run` once the GPU box is up.
 
 ## Links
 
+- **build123d** — https://build123d.readthedocs.io/
+- **MuJoCo** — https://mujoco.readthedocs.io/
 - **Isaac Sim** — https://developer.nvidia.com/isaac-sim
 - **Isaac Lab** (repo) — https://github.com/isaac-sim/IsaacLab
 - **Isaac Lab** (docs / install) — https://isaac-sim.github.io/IsaacLab/

@@ -4,11 +4,10 @@ import { spawn } from 'node:child_process';
 import { resolve } from 'node:path';
 
 // DEV bridge: frontend posts a PROMPT + selected model -> shell to maker2
-// (manager -> cadam SCAD worker -> articulated URDF -> appearance judge ->
-// optional PyBullet physics). NO auth (dev/test). maker2 produces the URDF, so
-// there is NO separate urdf_author step. maker2 is a package at the repo root;
-// the worker dev server runs from worker/, so cwd is one level up.
-// The app now runs FROM the repo root (it used to live in worker/, one level down).
+// (agent -> build123d geometry -> appearance judge -> optional physics). NO auth
+// (dev/test). maker2 emits the simulation model itself, so there is NO separate
+// author step. maker2 is a package at the repo root, which is also where this app
+// runs from.
 const REPO_ROOT = process.cwd();
 
 type Body = {

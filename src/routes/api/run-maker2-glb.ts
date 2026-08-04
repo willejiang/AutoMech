@@ -9,7 +9,6 @@ import { resolve, join, sep } from 'node:path';
 //   GET ?dir=<run_dir>&file=scad    -> the generated model.scad as text/plain
 // The .glb is what the orbitable solid canvas renders; the .scad is shown on the
 // left. NO auth (dev/test). maker2 lives at the repo root; worker cwd is one up.
-// The app now runs FROM the repo root (it used to live in worker/, one level down).
 const REPO_ROOT = process.cwd();
 const OUTPUT_ROOT = resolve(REPO_ROOT, 'output');
 
