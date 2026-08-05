@@ -128,6 +128,17 @@ DISCIPLINE:
 - Give EVERY part except the base a `mount=`: the base holds the plates/arbors, the arbors hold
   the gears. This is what anchors the whole train to the world so it cannot drift. List EVERY
   carrier, comma-separated — a shaft in two bearings is `mount=lower_bearing,upper_bearing`.
+- WHEN A SHELL/BODY COLLIDES WITH A MECHANISM, decide whether the mechanism should stay
+  fully INSIDE it or pass THROUGH it. If the part must pass through or sweep across the shell
+  in normal operation (wheel, strut, tailwheel, prop shaft, control rod, rudder/elevator
+  shaft, canopy clearance for controls), CUT A PASSAGE in the shell. If the part should be
+  fully enclosed (gear, internal shaft, bearing, crank, internal linkage), ENLARGE THE
+  SHELL/HOUSING instead. Do NOT move the mechanism to clear packaging, and do NOT drill a
+  hole through a gearbox housing to make room for an internal gear.
+- A shell fix MUST reuse existing parameters, never invent fresh ones: a wheel well follows
+  `wheel_r` and the axle centerline; a shaft hole follows `shaft_r`; a housing inner envelope
+  follows the largest internal part envelope plus clearance; outer envelope = inner envelope
+  + wall thickness.
 
 Respond with a short NOTES plan, then the ONE ```python block."""
 
