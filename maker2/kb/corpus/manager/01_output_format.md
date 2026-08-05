@@ -12,7 +12,7 @@ gravity (meshing teeth, a cam lifting a follower, a falling weight).
 A SINGLE JSON object with `parts`, `mates`, and (in subassembly mode) `frames`:
 - `parts` — one entry per physical part, with its geometry parameters: `name`,
   `shape_hint`, `size_mm`, `origin_note`, `color`, `material`, `dof`, `spin_axis`,
-  `driver`.
+  `slide_axis`, `driver`. 
 - `mates` — one entry per connection: which port of one part connects to which port
   of another, and the mate type. The solver places the parts from these.
 - `root_part` — the ONE part pinned at the origin (usually the base/frame/housing).
@@ -32,9 +32,10 @@ A part:
   vocabulary (see the dimension-vocabulary doc).
 - `origin_note` — where the part's LOCAL origin sits and which way it points.
 - `color` — `[r, g, b]` in 0..1, matching the part's real material.
-- `dof` — `fixed | spin | free`.
+- `dof` — `fixed | spin | slide | free`.
 - `spin_axis` — unit vector; the rotation axis when `dof` is `spin`.
-- `driver` — true on the ONE part the physics test drives. At most one.
+- `slide_axis` — unit vector; the translation axis when `dof` is `slide`.
+- `driver` — true on the ONE part the physics test drives. At most one; may sit on a `spin` or `slide` part.
 - `material` — optional; `steel | brass | ruby | plastic | aluminum | titanium |
   rubber | wood | gold`. Sets mass (density x volume) and contact friction.
 

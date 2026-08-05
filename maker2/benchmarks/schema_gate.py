@@ -19,7 +19,7 @@ from . import GateError
 # Reuse the boss's authoritative enum sets so the gate can't drift from the parser.
 from ..boss import _VALID_ROLES  # {"mount","power_in","power_out","mesh"}
 
-_VALID_DOF = {"fixed", "spin", "free"}
+_VALID_DOF = {"fixed", "spin", "slide", "free"}
 _VALID_SEAM_KIND = {"weld", "power"}
 
 # Dimension keys that must be strictly positive per shape_hint. Free-text shapes are
@@ -50,15 +50,22 @@ def manager_schema_gate(model) -> list[GateError]:
             errors.append(GateError(
                 "manager", "ERR_SCHEMA_MGR_DRIVER_FIXED",
                 f"link '{l.name}' is driver=true but dof='fixed'; the driven part must "
-                "spin or be free",
+                "spin, slide, or be free",
                 l.name))
-        # a spin part needs a real rotation axis.
+        # motion parts need a real axis.
         if dof == "spin":
             axis = tuple(getattr(l, "spin_axis", (0.0, 0.0, 1.0)) or ())
             if len(axis) != 3 or not any(abs(float(c)) > 1e-9 for c in axis):
                 errors.append(GateError(
                     "manager", "ERR_SCHEMA_MGR_NOAXIS",
                     f"spin link '{l.name}' has a zero/invalid spin_axis {axis}",
+                    l.name))
+        if dof == "slide":
+            axis = tuple(getattr(l, "slide_axis", (1.0, 0.0, 0.0)) or ())
+            if len(axis) != 3 or not any(abs(float(c)) > 1e-9 for c in axis):
+                errors.append(GateError(
+                    "manager", "ERR_SCHEMA_MGR_NOSLIDEAXIS",
+                    f"slide link '{l.name}' has a zero/invalid slide_axis {axis}",
                     l.name))
         # DEGENERACY guard (the MjModel.from_xml crash case), NOT a naming policy.
         # Managers name dims freely (gear_dia, wheel_dia, tube_outer_dia, wheel_thk,

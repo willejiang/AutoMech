@@ -45,7 +45,7 @@ def _load_model(run_dir: str):
 
 
 def _spin_links(model):
-    return [l for l in model.links if getattr(l, "dof", "fixed") in ("spin", "free")]
+    return [l for l in model.links if getattr(l, "dof", "fixed") in ("spin", "slide", "free")]
 
 
 def _driver_link(model):
@@ -312,30 +312,40 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
         except Exception:
             return None, None
 
-    # Baseline angles (post-settle) for the driver + watched parts.
-    def angle_of(link):
-        for suf in ("spin", "free"):
+    def joint_info(link):
+        for suf, kind, unit in (("spin", "spin", "rad"),
+                                ("slide", "slide", "m"),
+                                ("free", "free", "rad")):
             qadr, dofadr = joint_qadr(link.name, suf)
             if qadr is not None:
-                return float(d.qpos[qadr]), dofadr
-        return None, None
+                return {"suffix": suf, "kind": kind, "unit": unit,
+                        "qadr": qadr, "dofadr": dofadr,
+                        "name": f"{link.name}_{suf}"}
+        return None
+
+    # Baseline travel coordinate (post-settle) for the driver + watched parts.
+    def coord_of(link):
+        info = joint_info(link)
+        if info is not None:
+            return float(d.qpos[info["qadr"]]), info["dofadr"], info
+        return None, None, None
 
     driver_dofadr = None
     driver_qadr = None
+    driver_info = None
     a0 = 0.0
     if driver is not None:
-        a0, driver_dofadr = angle_of(driver)
+        a0, driver_dofadr, driver_info = coord_of(driver)
         a0 = a0 or 0.0
-        for _suf in ("spin", "free"):
-            _q, _ = joint_qadr(driver.name, _suf)
-            if _q is not None:
-                driver_qadr = _q
-                break
+        if driver_info is not None:
+            driver_qadr = driver_info["qadr"]
     watched_base = {}
+    watched_info = {}
     for l in watched:
-        ang, _ = angle_of(l)
-        if ang is not None:
+        ang, _, info = coord_of(l)
+        if ang is not None and info is not None:
             watched_base[l.name] = ang
+            watched_info[l.name] = info
 
     # Track exploded = any body flew far from its start (settle-relative). Also keep the
     # settle position of every body so we can attribute a FLOATING/EXPLODING fault to the
@@ -371,6 +381,7 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
     traj_every = max(1, drive_steps // 200)
     traj_t: list = []
     traj_joints: dict = {}
+    traj_joint_meta: dict = {}
     traj_bodies: dict = {}
     _traj_jnames = []
     for _i in range(m.njnt):
@@ -378,6 +389,11 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
         if _n:
             _traj_jnames.append((_n, int(m.jnt_qposadr[_i])))
             traj_joints[_n] = []
+            _kind = ("slide" if _n.endswith("_slide") else
+                     "spin" if _n.endswith("_spin") else
+                     "free" if _n.endswith("_free") else "unknown")
+            traj_joint_meta[_n] = {"kind": _kind,
+                                   "unit": "m" if _kind == "slide" else "rad"}
     _traj_bnames = []
     for _i in range(1, m.nbody):
         _n = m.body(_i).name
@@ -439,42 +455,47 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
         d.qfrc_applied[driver_dofadr] = 0.0
 
     # ---- measure transmission ----
+    def moved_enough(info, delta):
+        return abs(delta) > (0.001 if info and info.get("kind") == "slide" else 0.05)
+
     input_travel = 0.0
+    input_unit = driver_info.get("unit") if driver_info else "rad"
     if driver is not None:
-        a1, _ = angle_of(driver)
+        a1, _, _ = coord_of(driver)
         input_travel = abs((a1 or 0.0) - a0)
     moved = 0
     for l in watched:
-        ang, _ = angle_of(l)
+        ang, _, info = coord_of(l)
         if ang is None:
             continue
-        if abs(ang - watched_base.get(l.name, 0.0)) > 0.05:
+        if moved_enough(info, ang - watched_base.get(l.name, 0.0)):
             moved += 1
     watched_count = len(watched_base)
     output_reached = None
     out_link = (spec.get("drive") or {}).get("output_link")
+    out_info = None
     if out_link:
         for l in watched:
             if l.name == out_link:
-                ang, _ = angle_of(l)
+                ang, _, out_info = coord_of(l)
                 output_reached = bool(ang is not None
-                                      and abs(ang - watched_base.get(l.name, 0.0)) > 0.05)
+                                      and moved_enough(out_info, ang - watched_base.get(l.name, 0.0)))
     elif watched_count:
         output_reached = moved >= 1
 
-    # RATIO: how far the output turned per turn of the input. This is what tells a
-    # machine that works from one that merely moves — a train with the wrong tooth counts
-    # turns every joint happily and still fails its job. Recorded for whatever pair the
-    # designer nominated; comparing it against the intended reduction is the caller's job.
+    # RATIO: only meaningful when input and output use the SAME unit family. A slider's
+    # meters against a rotor's radians is not a reduction ratio.
     output_travel = None
+    output_unit = out_info.get("unit") if out_info else None
     ratio_in_out = None
     if out_link:
         for l in watched:
             if l.name == out_link:
-                ang, _ = angle_of(l)
+                ang, _, out_info = coord_of(l)
                 if ang is not None:
                     output_travel = abs(ang - watched_base.get(l.name, 0.0))
-                    if output_travel > 1e-9:
+                    output_unit = out_info.get("unit") if out_info else None
+                    if output_travel > 1e-9 and output_unit == input_unit:
                         ratio_in_out = input_travel / output_travel
 
     exploded = bool(max_disp > 0.5)   # a part flew >0.5 m from settle => blew up
@@ -520,18 +541,19 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
         metrics = {
             "verdict": verdict, "test_kind": "driven_mechanism",
             "survive_s": round(dur, 2),
-            # Name the part we ACTUALLY drove. Without this the diagnosis rendered
-            # "input joint 'None' moved only 0.003 rad", which tells the agent nothing
-            # about where to look — and the whole point of that message is to point at
-            # a part. The driver is chosen from the model here, so this is the only
-            # place that knows its real name.
-            "input_joint": f"{driver.name}_spin",
+            # Name the part and the actual joint we drove. Without this the diagnosis
+            # rendered "input joint 'None' moved only 0.003 rad", which tells the agent
+            # nothing about where to look — and a slide driver would then also be mislabeled
+            # as `*_spin` and radians.
+            "input_joint": (driver_info.get("name") if driver_info else f"{driver.name}_spin"),
             "input_part": driver.name,
             "input_travel": round(input_travel, 4),
+            "input_unit": input_unit,
             "moved_count": moved, "watched_count": watched_count,
             "output_reached": output_reached, "exploded": exploded,
             "output_travel": (None if output_travel is None
                               else round(float(output_travel), 4)),
+            "output_unit": output_unit,
             "ratio_in_out": (None if ratio_in_out is None
                              else round(float(ratio_in_out), 4)),
             "displaced_parts": displaced_parts,
@@ -561,10 +583,11 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
     (out / "sim_result.json").write_text(json.dumps(res, indent=2))
     try:
         (out / "trajectory.json").write_text(json.dumps({
-            "t": traj_t, "joints": traj_joints, "bodies": traj_bodies,
+            "t": traj_t, "joints": traj_joints, "joint_meta": traj_joint_meta,
+            "bodies": traj_bodies,
             "timestep": float(m.opt.timestep), "n_samples": len(traj_t),
             "driver": (driver.name if driver is not None else None),
-            "units": {"joints": "rad", "bodies": "mm", "t": "s"}}))
+            "units": {"bodies": "mm", "t": "s"}}))
         log.append(f"trajectory: {len(traj_t)} samples x "
                    f"{len(traj_joints)} joint(s) / {len(traj_bodies)} body(ies)")
     except Exception as e:

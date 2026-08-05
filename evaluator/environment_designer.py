@@ -70,7 +70,7 @@ Then reason from first principles of rigid-body mechanics for the SCENARIO itsel
 
 MACHINERY DRIVE (when the environment is bench-mounted + driven): you are given a ROLE MAP
 (deterministic, from the URDF). Drive EXACTLY the ONE "driver_input" as "input_joint"
-(velocity mode, ~3-6 rad/s for a rotating input, or position_sweep for a lever). Set
+(velocity mode, ~3-6 rad/s for a rotating input, or a modest linear speed for a sliding input, or position_sweep for a lever). Set
 "self_collision": true so gears mesh by tooth contact. Set "watch_joints" = the role map's
 "transmission" joints (observed, never driven). Declare "propagation_path" (input->...->
 output) and "output_joint"; the test PASSES only when driving the input makes motion REACH
@@ -108,7 +108,8 @@ So you may instead write the drive as code, defining either or both of:
         # or command d.qpos[...]), release at a moment (if t < 1.0: drive, else: nothing),
         # phase several joints, or do nothing at all for a pure-gravity release.
 
-Reach a joint by NAME, never by a guessed index: `j = m.joint("<part>_spin")` then
+Reach a joint by NAME, never by a guessed index: `j = m.joint("<part>_spin")` for a rotary
+input or `j = m.joint("<part>_slide")` for a translational one, then
 `d.qpos[j.qposadr[0]]` / `d.qfrc_applied[j.dofadr[0]]`. The joint names are the TRAJECTORY
 KEYS listed below. stdlib + math + numpy as np only; no file or network access. Keep it
 short and defensive — a joint you name may be missing, so guard the lookup rather than
@@ -141,7 +142,8 @@ Define exactly one function:
 
     def check(traj, result):
         # traj["t"]       -> [seconds]
-        # traj["joints"]  -> {joint_name: [angle_rad, ...]}   same length as t
+        # traj["joints"]  -> {joint_name: [qpos, ...]} same length as t;
+        #                     see traj["joint_meta"][name]["unit"] for rad vs m
         # traj["bodies"]  -> {body_name: [[x, y, z] mm, ...]} same length as t
         # result          -> the measured metrics dict (input_travel, moved_count, ...)
         return [ {"name": ..., "value": ..., "expected": ...,

@@ -91,7 +91,7 @@ try:
             if "=" in seg:
                 k, v = seg.split("=", 1)
                 k = k.strip(); v = v.strip()
-                if k == "spin_axis" and v.lower() in _AXIS_VEC:
+                if k in ("spin_axis", "slide_axis") and v.lower() in _AXIS_VEC:
                     label_meta[k] = list(_AXIS_VEC[v.lower()])
                 elif v in ("True", "true", "False", "false"):
                     label_meta[k] = v.lower() == "true"

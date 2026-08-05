@@ -66,9 +66,13 @@ HOW TO ASSEMBLE (cadpy AssemblyHelper):
 PART LABEL CONVENTION (critical — this is how downstream physics reads your intent). The FIRST
 field of each `a.add(part, "<label>")` label is the URDF-safe part NAME; the rest are `key=value`
 metadata separated by `|`:
-  - `dof=fixed|spin|free`  — `spin` ONLY for a part that is MEANT to rotate to transmit motion:
+  - `dof=fixed|spin|slide|free`  — `spin` ONLY for a part that is MEANT to rotate to transmit motion:
                              a gear, a pinion, a wheel, or the shaft/arbor that carries them.
-                             EVERYTHING ELSE is `fixed`, INCLUDING every accessory that merely
+                             `slide` is for a guided linear carriage / rack / plunger / slider:
+                             it moves only along one axis and does NOT rotate. A round bore with
+                             clearance around a round shaft is NOT enough to justify `slide` —
+                             without anti-rotation geometry it is a cylindrical/free fit, not a
+                             slider. EVERYTHING ELSE is `fixed`, INCLUDING every accessory that merely
                              sits on a rotating shaft — thrust washers, spacers, pedestals,
                              collars, retainers, caps, hands. A `fixed` accessory is welded to its
                              mount and does not move on its own. Never mark a washer/spacer/
@@ -80,6 +84,7 @@ metadata separated by `|`:
   - `mesh_id=<id>`         — put the SAME id on the TWO gears meant to mesh, so the transmission
                              check pairs them. A gear with no partner needs no mesh_id.
   - `spin_axis=z`          — for a spin part; round parts are built along local +Z, so this is z.
+  - `slide_axis=x|y|z`     — for a slide part; the ONLY axis it may translate along.
   - `mount=<part>` or       — the NAME(S) of the part(s) that physically carry this one (a gear
     `mount=<partA>,<partB>`   mounts on its arbor or the plate; an arbor on the base; a bearing on
                              the plate). This declares the LOAD PATH — it does NOT move anything

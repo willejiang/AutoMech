@@ -6,6 +6,10 @@ Motion replaces joints entirely. Each part declares a `dof`:
   plate, bridge, post, bearing, jewel, screw, pin, the base). MOST parts are fixed.
 - `spin` — rotates freely about an implied axle along `spin_axis` (a gear on a
   shaft, a wheel on an axle, a rotor, a balance). Give it a unit `spin_axis`.
+- `slide` — translates only along `slide_axis` (a guided carriage, rack, plunger,
+  slider block). Use this for a part that is allowed to move linearly but NOT rotate.
+  A round bore with clearance around a round shaft is NOT a slider by itself — without
+  anti-rotation geometry that is a free/cylindrical fit, not `slide`.
 - `free` — a free-floating 6-DOF body (a loose ball, an unpinned pendulum bob).
   Use sparingly.
 
@@ -18,6 +22,11 @@ arbors/shafts, rotors, and a balance. If unsure, it is fixed.
 A cage or carriage that rotates as a whole is ONE spin part. Its plates, bridges,
 posts, and jewels are fixed and welded to it — NOT their own spin bodies. Marking
 structure `spin` makes those parts fly apart under gravity.
+
+A slider or rack is the translational analogue: the CARRIAGE/RACK is the ONE
+`slide` part, while its guide rails, bushings and frame stay `fixed`. Do not mark the
+rails themselves `slide`, and do not fake a slider by putting a `free` body around a
+round shaft.
 
 ## Coaxial parts that turn together = ONE spin part
 

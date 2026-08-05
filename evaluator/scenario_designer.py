@@ -96,12 +96,14 @@ URDF topology) naming every joint's role. OBEY IT:
   single real power source (the crank/handle/winder/mainspring). A real mechanism has ONE
   input that PROPAGATES through the train — NEVER drive multiple joints at once, and NEVER
   drive a "transmission" or "free_unrelated" joint.
-- Use "mode":"velocity" with a modest "target_velocity" (~3-6 rad/s) for a rotating input,
-  or "position_sweep" over the joint's range for a lever. Set "self_collision": true so
-  gears/teeth actually contact and MESH (gears couple by tooth contact, not by a joint).
-- Set "watch_joints" = the role map's "transmission" joints — the downstream gears the mesh
-  should drive. These are OBSERVED ONLY, never actuated. Set "min_watched_travel" to a small
-  angle (~0.05-0.2 rad) that counts as "it moved".
+- Use "mode":"velocity" with a modest "target_velocity" (~3-6 rad/s for a rotating input,
+  or a modest linear speed for a sliding one), or "position_sweep" over the joint's range
+  for a lever. Set "self_collision": true so gears/teeth actually contact and MESH (gears
+  couple by tooth contact, not by a joint).
+- Set "watch_joints" = the role map's "transmission" joints — the downstream joints the
+  mechanism should drive. These are OBSERVED ONLY, never actuated. Set
+  "min_watched_travel" to a small travel that counts as "it moved" (radians for rotary
+  joints, meters for sliders).
 - Declare "propagation_path" (the role map's ordered input->...->output chain) and
   "output_joint" (the role map's output — the far end of the train). The test PASSES only
   when driving the input makes motion REACH "output_joint" — NOT merely that "some watched
@@ -140,7 +142,7 @@ SPEC_SCHEMA = {
                             "joint": {"type": "string"},
                             "angle": {"type": "number"}},
                         "required": ["joint", "angle"]},
-                    "description": "list of {joint, angle(rad)}. Only real joint names."},
+                    "description": "list of {joint, qpos}. Rotary joints use radians; slide joints use meters. Only real joint names."},
                 "high_friction_links": {
                     "type": "array", "items": {"type": "string"}},
                 "control": {
@@ -162,7 +164,7 @@ SPEC_SCHEMA = {
                         "input_joint": {"type": "string",
                             "description": "the joint to drive (crank/input). Real name."},
                         "mode": {"type": "string", "enum": ["velocity", "position_sweep"]},
-                        "target_velocity": {"type": "number", "description": "rad/s for velocity mode"},
+                        "target_velocity": {"type": "number", "description": "velocity-mode rate (rad/s for spin joints, m/s for slide joints)"},
                         "sweep": {"type": "array", "items": {"type": "number"},
                             "description": "[lo, hi] rad for position_sweep mode"},
                         "duration_s": {"type": "number"},
@@ -264,17 +266,15 @@ def _robot_block(robot_info):
             f"  transmission (watch, never drive): {roles.get('transmission')}\n"
             f"  free_unrelated (ignore): {roles.get('free_unrelated')}\n"
             f"  propagation_path: {roles.get('propagation_path')}\n")
-    # The KEYS the recorded trajectory will actually carry. These are NOT the URDF joint
-    # names listed above: the simulation names a rotating part's joint "<part>_spin", so a
-    # metrics script reaching for a URDF name finds nothing and silently reports "required
-    # joints missing" instead of measuring anything. Spell them out.
-    spin_parts = list(robot_info.get("spin_links") or [])
+    # The KEYS the recorded trajectory will actually carry. These are NOT necessarily
+    # "<part>_spin" any more: sliders emit "<part>_slide" and free bodies "<part>_free".
+    motion_key_by_part = robot_info.get("motion_key_by_part") or {}
     traj_txt = ""
-    if spin_parts:
+    if motion_key_by_part:
         traj_txt = (
             "\nTRAJECTORY KEYS (metrics_code MUST use exactly these — traj[\"joints\"] is "
             "keyed by them, NOT by the URDF joint names above):\n"
-            f"  joints: {[p + '_spin' for p in spin_parts]}\n"
+            f"  joints_by_part: {motion_key_by_part}\n"
             f"  bodies: {robot_info.get('links', [])}\n")
     # The user-facing output parts and the joint each one's motion is actually readable
     # through. These are dof=fixed — they have no joint of their own — so measuring one
@@ -285,23 +285,23 @@ def _robot_block(robot_info):
     carried = robot_info.get("carried_parts") or {}
     carry_txt = ""
     if carried:
-        spin_set = set(spin_parts)
         lines = []
         for part, mount in sorted(carried.items()):
-            # A mount may name another fixed part; walk to the first carrier that spins.
+            # A mount may name another fixed part; walk to the first carrier with a real
+            # trajectory key (spin/slide/free).
             seen, cur = set(), mount
-            while cur and cur not in spin_set and cur not in seen:
+            while cur and cur not in motion_key_by_part and cur not in seen:
                 seen.add(cur)
                 cur = carried.get(cur, "")
             lines.append(
                 f"  {part} rides {mount}"
-                + (f" -> measure traj[\"joints\"][\"{cur}_spin\"]" if cur in spin_set
-                   else "  (no spinning carrier: this part cannot move)"))
+                + (f" -> measure traj[\"joints\"][\"{motion_key_by_part[cur]}\"]" if cur in motion_key_by_part
+                   else "  (no moving carrier: this part cannot move)"))
         carry_txt = (
             "\nOUTPUT PARTS AND THE JOINT THAT CARRIES EACH (these are the parts the USER "
             "watches — hands, jaws, an output shaft. Measure the joints named here and no "
-            "others. An intermediate pinion / wheel / arbor / pipe is NOT an output, even "
-            "when its reading looks close):\n" + "\n".join(lines) + "\n")
+            "others. An intermediate gear/slider/arbor is NOT an output just because its "
+            "reading looks convenient):\n" + "\n".join(lines) + "\n")
     return (f"ROBOT: {robot_info.get('name','robot')}\n"
             f"JOINT NAMES ({len(robot_info.get('joints',[]))}): {robot_info.get('joints',[])}\n"
             f"LINK NAMES ({len(robot_info.get('links',[]))}): {robot_info.get('links',[])}\n"

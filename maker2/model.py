@@ -58,8 +58,9 @@ class LinkSpec:
     origin_note: str = ""                           # e.g. "attach point at origin, +Z up"
     color: tuple = ()                               # display RGBA 0..1, () -> palette fallback
     mesh_filename: str = ""                         # RELATIVE "meshes/<name>.stl"
-    dof: str = "fixed"                              # "fixed" | "spin" | "free"
+    dof: str = "fixed"                              # "fixed" | "spin" | "slide" | "free"
     spin_axis: tuple = (0.0, 0.0, 1.0)             # rotation axis for dof=="spin"
+    slide_axis: tuple = (1.0, 0.0, 0.0)            # translation axis for dof=="slide"
     driver: bool = False                            # the ONE part the physics test drives
     material: str = "steel"                         # material class -> density + friction
                                                      # (maker2/materials.py); MuJoCo mass =
@@ -160,7 +161,8 @@ class KinematicModel:
         """LEGACY VIEW: synthesize URDF/PyBullet joints from poses + link dof so the
         old sim/URDF path keeps working during the MuJoCo migration. A pose whose
         CHILD link is dof=="spin" becomes a continuous joint on that link's spin_axis;
-        dof=="free" also maps to continuous (best-effort; the real 6-DOF lives in
+        dof=="slide" becomes a prismatic joint on its slide_axis; dof=="free" still
+        maps to continuous as a best-effort legacy fallback (the real 6-DOF lives in
         MuJoCo); dof=="fixed" is a fixed joint. Poses with an empty parent (forest
         roots) are skipped — the URDF builder welds those to the base separately."""
         out: list[JointSpec] = []
@@ -170,8 +172,18 @@ class KinematicModel:
                 continue
             link = dof_by_link.get(p.child)
             d = link.dof if link else "fixed"
-            axis = tuple(link.spin_axis) if link else (0.0, 0.0, 1.0)
-            jtype = "continuous" if d in ("spin", "free") else "fixed"
+            if d == "spin":
+                axis = tuple(link.spin_axis) if link else (0.0, 0.0, 1.0)
+                jtype = "continuous"
+            elif d == "slide":
+                axis = tuple(getattr(link, "slide_axis", (1.0, 0.0, 0.0))) if link else (1.0, 0.0, 0.0)
+                jtype = "prismatic"
+            elif d == "free":
+                axis = tuple(link.spin_axis) if link else (0.0, 0.0, 1.0)
+                jtype = "continuous"
+            else:
+                axis = (0.0, 0.0, 1.0)
+                jtype = "fixed"
             out.append(JointSpec(
                 name=p.name, type=jtype, parent=p.parent, child=p.child,
                 xyz_m=tuple(p.xyz_m), rpy_rad=tuple(p.rpy_rad),

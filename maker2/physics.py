@@ -74,12 +74,20 @@ def _robot_info(model) -> dict:
             joints.append({"name": j.name, "type": j.type,
                            "parent": j.parent, "child": j.child,
                            "driver": bool(getattr(j, "driver", False))})
+    motion_key_by_part = {}
+    for l in model.links:
+        d = getattr(l, "dof", "fixed")
+        if d == "spin":
+            motion_key_by_part[l.name] = f"{l.name}_spin"
+        elif d == "slide":
+            motion_key_by_part[l.name] = f"{l.name}_slide"
+        elif d == "free":
+            motion_key_by_part[l.name] = f"{l.name}_free"
     return {"name": model.name,
             "joints": joints,
             "links": [l.name for l in model.links],
-            # Parts that get a hinge in the sim; the trajectory keys are "<part>_spin".
-            "spin_links": [l.name for l in model.links
-                           if getattr(l, "dof", "fixed") in ("spin", "free")],
+            # Parts that get a direct joint in the sim, keyed by the actual trajectory key.
+            "motion_key_by_part": motion_key_by_part,
             # What each dof=fixed part RIDES ON. Such a part has no joint of its own, so
             # its motion is only readable through its carrier. Without this the designer
             # cannot tell which joint a clock hand corresponds to, picks a plausible gear
@@ -566,8 +574,9 @@ def _summarize(test: dict, m: dict) -> str:
         reach = ("" if m.get("output_reached") is None
                  else " reached output" if m.get("output_reached")
                  else " but output DEAD")
-        return (f"{test.get('name','drive')}: {m.get('verdict')} — input turned "
-                f"{m.get('input_travel')} rad, {m.get('moved_count')}/"
+        unit = m.get("input_unit") or "rad"
+        return (f"{test.get('name','drive')}: {m.get('verdict')} — input moved "
+                f"{m.get('input_travel')} {unit}, {m.get('moved_count')}/"
                 f"{m.get('watched_count')} downstream joints moved" + reach
                 + (" (JAMMED/EXPLODED)" if m.get('exploded') else ""))
     return (f"{test.get('name','stability')}: {m.get('verdict')} — settled z="
@@ -737,7 +746,7 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
 
     # An output part = a spin/free link name-hinted as output, if any.
     out_link = next((l.name for l in model.links
-                     if getattr(l, "dof", "fixed") in ("spin", "free")
+                     if getattr(l, "dof", "fixed") in ("spin", "slide", "free")
                      and _OUTPUT_HINT.search(l.name)), None)
     if out_link:
         spec["drive"]["output_link"] = out_link

@@ -45,7 +45,7 @@ from .prompts.manager_prompt import (MANAGER_SYSTEM, manager_system,
 from .twophase import stream_two_part
 
 
-_VALID_DOF = {"fixed", "spin", "free"}
+_VALID_DOF = {"fixed", "spin", "slide", "free"}
 _URDF_SAFE = re.compile(r"^[a-z][a-z0-9_]*$")
 
 
@@ -106,6 +106,8 @@ def _link_from_dict(d: dict, idx: int) -> LinkSpec:
     if dof not in _VALID_DOF:
         raise ValueError(f"links[{idx}] '{name}': dof '{dof}' invalid "
                          f"(expected one of {sorted(_VALID_DOF)})")
+    spin_axis = _as_tuple3(d.get("spin_axis"), (0.0, 0.0, 1.0))
+    slide_axis = _as_tuple3(d.get("slide_axis"), (1.0, 0.0, 0.0))
     return _canonicalize_link_axis(LinkSpec(
         name=name.strip(),
         description=str(desc),
@@ -114,7 +116,8 @@ def _link_from_dict(d: dict, idx: int) -> LinkSpec:
         origin_note=str(d.get("origin_note") or ""),
         color=_parse_color(d.get("color")),
         dof=dof,
-        spin_axis=_as_tuple3(d.get("spin_axis"), (0.0, 0.0, 1.0)),
+        spin_axis=spin_axis,
+        slide_axis=slide_axis,
         driver=bool(d.get("driver", False)),
         material=str(d.get("material") or "steel").strip().lower() or "steel",
         mount=str(d.get("mount") or "").strip(),
@@ -313,6 +316,7 @@ def model_to_dict(model: KinematicModel) -> dict:
                 "mesh_filename": l.mesh_filename,
                 "dof": l.dof,
                 "spin_axis": list(l.spin_axis),
+                "slide_axis": list(getattr(l, "slide_axis", (1.0, 0.0, 0.0))),
                 "driver": l.driver,
                 "material": l.material,
                 # What a dof=fixed part rides on. This serializer is hand-written, so a new

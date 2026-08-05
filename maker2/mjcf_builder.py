@@ -328,10 +328,9 @@ def _emit_flat(world_el, model, links_by_name, piece_map, meshes_dir, mesh_names
 
     What must now be stated explicitly:
       - a dof=fixed part on static structure was welded by BEING a child -> <weld>;
-      - a dof=fixed part riding a SPINNING carrier turned with it -> it needs the
-        carrier's own hinge plus a 1:1 ratio. Welding it to the spinning body instead
-        LOCKS THE SHAFT (the part has no joint of its own to absorb the constraint) and
-        kills the whole train — measured: the watch's 12:1 went to zero output.
+      - a dof=slide part needs a real translational joint, not a free body with a round
+        hole around a shaft; without the joint it can rotate/tilt and is not a slider at
+        all.
     """
     n_weld = n_ride = 0
     W = _world_transforms(model)
@@ -358,6 +357,11 @@ def _emit_flat(world_el, model, links_by_name, piece_map, meshes_dir, mesh_names
             ax = getattr(link, "spin_axis", (0.0, 0.0, 1.0))
             ET.SubElement(body, "joint", attrib={
                 "name": f"{name}_spin", "type": "hinge",
+                "axis": f"{ax[0]:.6g} {ax[1]:.6g} {ax[2]:.6g}", "pos": "0 0 0"})
+        elif dof == "slide":
+            ax = getattr(link, "slide_axis", (1.0, 0.0, 0.0))
+            ET.SubElement(body, "joint", attrib={
+                "name": f"{name}_slide", "type": "slide",
                 "axis": f"{ax[0]:.6g} {ax[1]:.6g} {ax[2]:.6g}", "pos": "0 0 0"})
         elif dof == "free" and not pin_base:
             ET.SubElement(body, "freejoint", attrib={"name": f"{name}_free"})

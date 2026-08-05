@@ -328,10 +328,13 @@ def evaluate_machine_python(script_text: str, run_dir: str, machine_name: str,
         if float(p.get("volume_mm3", 0.0)) <= 0.0:
             continue
         dof = str(meta.get("dof", "")) or _infer_dof(name)
-        driver = bool(meta.get("driver", False)) or (_infer_driver(name) and dof == "spin")
+        driver = bool(meta.get("driver", False)) or (_infer_driver(name) and dof in ("spin", "slide"))
         spin_axis = meta.get("spin_axis")
         if not isinstance(spin_axis, (list, tuple)) or len(spin_axis) != 3:
             spin_axis = (0.0, 0.0, 1.0)
+        slide_axis = meta.get("slide_axis")
+        if not isinstance(slide_axis, (list, tuple)) or len(slide_axis) != 3:
+            slide_axis = (1.0, 0.0, 0.0)
         # A valid mount names another part; otherwise treat as a world root (parent="").
         # Resolved BEFORE the link is built, because it belongs on the LINK as well as on
         # the pose. A dof=fixed part has no joint of its own, so the link record is the
@@ -352,7 +355,7 @@ def evaluate_machine_python(script_text: str, run_dir: str, machine_name: str,
         links.append(LinkSpec(
             name=name, description=meta.get("description", name),
             mesh_filename=f"meshes/{name}.stl",
-            dof=dof, spin_axis=tuple(spin_axis), driver=driver,
+            dof=dof, spin_axis=tuple(spin_axis), slide_axis=tuple(slide_axis), driver=driver,
             material=str(meta.get("material", "steel")), mount=parent,
             extra_mounts=valid[1:]))
         if parent:

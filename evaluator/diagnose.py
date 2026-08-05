@@ -385,6 +385,7 @@ def _per_joint_travel_txt(frames_dir: str, drive: dict) -> str:
         p = Path(frames_dir).parent / "trajectory.json"
         doc = json.loads(p.read_text(encoding="utf-8"))
         joints = doc.get("joints") or {}
+        meta = doc.get("joint_meta") or {}
         if not joints:
             return ""
     except Exception:
@@ -396,19 +397,20 @@ def _per_joint_travel_txt(frames_dir: str, drive: dict) -> str:
             continue
         net = abs(float(seq[-1]) - float(seq[0]))
         total = sum(abs(float(b) - float(a)) for a, b in zip(seq, seq[1:]))
-        rows.append((total, net, name))
+        unit = str((meta.get(name) or {}).get("unit") or "rad")
+        kind = str((meta.get(name) or {}).get("kind") or "spin")
+        rows.append((total, net, name, kind, unit))
     if not rows:
         return ""
     rows.sort(reverse=True)
-    lines = ["PER-JOINT TRAVEL (measured, radians — this is who moved and who did not):"]
-    for total, net, name in rows:
+    lines = ["PER-JOINT TRAVEL (measured — this is who moved and who did not):"]
+    for total, net, name, kind, unit in rows:
         tag = ""
-        if driver and (name == driver or name.startswith(driver)
-                       or driver.endswith(name.replace("_spin", ""))):
+        if driver and name == driver:
             tag = "  <- DRIVEN INPUT"
-        elif total < 0.05:
+        elif total < (0.001 if kind == "slide" else 0.05):
             tag = "  <- DID NOT MOVE"
-        lines.append(f"  {name:32s} total={total:9.4f}  net={net:9.4f}{tag}")
+        lines.append(f"  {name:32s} total={total:9.4f} {unit:3s}  net={net:9.4f} {unit:3s}{tag}")
     return "\n".join(lines) + "\n\n"
 
 
@@ -424,27 +426,29 @@ def _metric_signals(spec: dict, metrics: dict) -> dict:
     drive = (spec or {}).get("drive") or {}
     m = metrics or {}
     it = float(m.get("input_travel") or 0.0)
+    input_unit = str(m.get("input_unit") or "rad")
 
     # What the input SHOULD have swept if the motor turned freely: |vel| * duration
-    # (velocity mode) or the sweep span (position mode). A conservative floor.
+    # (velocity mode) or the sweep span (position mode). For `slide`, the units are
+    # translational (m, m/s); for `spin`, rotational (rad, rad/s).
     dur = float(drive.get("duration_s") or (spec or {}).get("duration_s") or 3.0)
     if drive.get("mode") == "position_sweep":
         sw = drive.get("sweep") or [0.0, 6.283]
         expected = abs(float(sw[1]) - float(sw[0]))
     else:
         expected = abs(float(drive.get("target_velocity") or 3.0)) * dur
-    expected = max(expected, 0.1)
+    expected = max(expected, 0.001 if input_unit == "m" else 0.1)
 
-    # Stalled: commanded to sweep a meaningful angle but moved <5% of it (and <0.1 rad).
-    input_stalled = bool(it < 0.1 and it < 0.05 * expected)
+    # Stalled: commanded to sweep a meaningful amount but moved <5% of it.
+    tiny = 0.001 if input_unit == "m" else 0.1
+    input_stalled = bool(it < tiny and it < 0.05 * expected)
     input_moved = not input_stalled
 
-    # Free-spin: any watched joint swept WAY past the input command (2x the expected
-    # input sweep) while the input itself barely moved -> not a real reduction, it's
-    # an unconstrained joint kicked loose. (A real reducer never outruns its input.)
+    # Free-spin only makes physical sense for rotational chains.
     watched = m.get("watched") or {}
     max_watched = max((abs(float(v)) for v in watched.values()), default=0.0)
-    free_spin = bool(max_watched > 2.0 * expected and it < 0.5 * max_watched)
+    free_spin = bool(input_unit == "rad"
+                     and max_watched > 2.0 * expected and it < 0.5 * max_watched)
 
     # Output-not-reached: the input turned and SOME transmission moved, but the
     # declared OUTPUT joint (the far end of the train) did NOT -> the drivetrain is
@@ -784,18 +788,22 @@ def _diag_executors(run_dir: str, frames_dir: str, metrics: dict):
         except Exception as e:
             return f"(trajectory unreadable: {e})"
         joints = doc.get("joints") or {}
+        meta = doc.get("joint_meta") or {}
         if not joints:
             return "(trajectory has no joints)"
         if name and name in joints:
             seq = joints[name]
             step = max(1, len(seq) // 24)
-            return json.dumps({"joint": name, "t": (doc.get("t") or [])[::step],
-                               "angle_rad": seq[::step]})[:4000]
+            unit = (meta.get(name) or {}).get("unit") or "rad"
+            return json.dumps({"joint": name, "unit": unit,
+                               "t": (doc.get("t") or [])[::step],
+                               "qpos": seq[::step]})[:4000]
         rows = {}
         for n, seq in joints.items():
             if not seq:
                 continue
             rows[n] = {
+                "unit": (meta.get(n) or {}).get("unit") or "rad",
                 "net": round(abs(float(seq[-1]) - float(seq[0])), 5),
                 "total": round(sum(abs(float(b) - float(a))
                                    for a, b in zip(seq, seq[1:])), 5)}
