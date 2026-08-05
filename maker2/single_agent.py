@@ -18,6 +18,7 @@ import os
 import re
 import subprocess
 import sys
+from itertools import combinations
 from pathlib import Path
 
 from .model import KinematicModel, LinkSpec, PoseSpec
@@ -41,6 +42,167 @@ def _fault_site(trace: str) -> str:
         return ""
     line, func, src = frames[-1]
     return f" at machine.py:{line} in {func}() -> `{src.strip()[:120]}`"
+
+
+# Conservative connectivity gate. The graph is DELIBERATELY over-connected:
+# two parts get an edge whenever their REAL mesh distance is < 10mm. That admits many
+# false edges (a shaft near a shell, two clearanced fits), but that is the point — we want
+# a one-sided test that only fails on clear disconnection. If even this supergraph is not
+# connected, the assembly is obviously in pieces. Likewise, a declared connection whose two
+# parts are not even within 10mm is almost certainly fiction.
+_CONNECT_TOL_MM = 10.0
+
+
+def _declared_edges(model) -> set[frozenset]:
+    """Edges the agent has already DECLARED in today's language: mounts and mesh pairs.
+
+    This is gate 2 before a richer JSON schema exists. When a support/mesh relation has
+    been declared but does not even appear in the conservative proximity graph, we know the
+    declaration and the geometry disagree badly enough to stop here rather than score the
+    shape."""
+    edges: set[frozenset] = set()
+    for l in model.links:
+        for m in [getattr(l, "mount", "")] + list(getattr(l, "extra_mounts", []) or []):
+            m = (m or "").strip()
+            if m:
+                edges.add(frozenset((l.name, m)))
+    groups: dict[str, list[str]] = {}
+    for l in model.links:
+        mid = str(getattr(l, "mesh_id", "") or "").strip()
+        if mid:
+            groups.setdefault(mid, []).append(l.name)
+    for names in groups.values():
+        for a, b in combinations(sorted(set(names)), 2):
+            edges.add(frozenset((a, b)))
+    return edges
+
+
+def _bbox_gap_mm(a, b) -> float:
+    """Minimum gap between two axis-aligned boxes in mm (0 if they overlap on all axes)."""
+    dx = max(0.0, a[0] - b[3], b[0] - a[3])
+    dy = max(0.0, a[1] - b[4], b[1] - a[4])
+    dz = max(0.0, a[2] - b[5], b[2] - a[5])
+    return float((dx * dx + dy * dy + dz * dz) ** 0.5)
+
+
+def _proximity_graph(machine_eval_json: str, *, tol_mm: float = _CONNECT_TOL_MM):
+    """Undirected supergraph over parts whose REAL mesh distance is < tol_mm.
+
+    Uses the build123d-evaluated world transforms from machine_eval.json, not the derived
+    KinematicModel poses, so rotated parts are tested in the coordinates the authoring
+    script actually produced."""
+    import trimesh
+
+    ev = json.loads(Path(machine_eval_json).read_text(encoding="utf-8"))
+    root = Path(machine_eval_json).parent
+    nodes, meshes, bbs = [], {}, {}
+    for p in ev.get("parts") or []:
+        stl = root / "meshes" / f"{p['name']}.stl"
+        if not stl.exists():
+            continue
+        try:
+            m = trimesh.load(stl, force="mesh")
+        except Exception:
+            continue
+        if not isinstance(m, trimesh.Trimesh) or len(m.faces) == 0:
+            continue
+        import numpy as _np
+        R = _np.array(p["R"], dtype=float)
+        T = _np.array(p["T"], dtype=float)
+        v = m.vertices @ R.T + T
+        wm = trimesh.Trimesh(vertices=v, faces=m.faces, process=False)
+        nodes.append(p["name"])
+        meshes[p["name"]] = wm
+        lo, hi = wm.bounds
+        bbs[p["name"]] = (float(lo[0]), float(lo[1]), float(lo[2]),
+                           float(hi[0]), float(hi[1]), float(hi[2]))
+    E: set[frozenset] = set()
+    for a, b in combinations(nodes, 2):
+        if _bbox_gap_mm(bbs[a], bbs[b]) > tol_mm:
+            continue
+        ma, mb = meshes[a], meshes[b]
+        # If the AABBs overlap, these parts are certainly in the conservative graph.
+        if _bbox_gap_mm(bbs[a], bbs[b]) <= 0.0:
+            E.add(frozenset((a, b)))
+            continue
+        # Real mesh distance (sampled both ways to avoid one sparse mesh hiding a gap).
+        try:
+            va, vb = ma.vertices, mb.vertices
+            if len(va) > 400:
+                va = va[::max(1, len(va) // 400)]
+            if len(vb) > 400:
+                vb = vb[::max(1, len(vb) // 400)]
+            da = float(trimesh.proximity.closest_point(mb, va)[1].min())
+            db = float(trimesh.proximity.closest_point(ma, vb)[1].min())
+            if min(da, db) < tol_mm:
+                E.add(frozenset((a, b)))
+        except Exception:
+            pass
+    return nodes, E
+
+
+def _connected_components(nodes: list[str], edges: set[frozenset]) -> list[list[str]]:
+    """Connected components of the conservative proximity graph, largest first."""
+    adj = {n: set() for n in nodes}
+    for e in edges:
+        if len(e) != 2:
+            continue
+        a, b = tuple(e)
+        adj[a].add(b); adj[b].add(a)
+    seen, comps = set(), []
+    for n in nodes:
+        if n in seen:
+            continue
+        q, comp = [n], []
+        seen.add(n)
+        while q:
+            x = q.pop()
+            comp.append(x)
+            for y in adj[x]:
+                if y not in seen:
+                    seen.add(y); q.append(y)
+        comps.append(sorted(comp))
+    comps.sort(key=lambda c: (-len(c), c[0]))
+    return comps
+
+
+def _summarize_components(comps: list[list[str]], max_parts: int = 10) -> list[str]:
+    """`subgraph1{a,b,c,...}` lines for the agent/log, largest-first."""
+    out = []
+    for i, comp in enumerate(comps, start=1):
+        head = ", ".join(comp[:max_parts])
+        more = f", ... (+{len(comp) - max_parts} more)" if len(comp) > max_parts else ""
+        out.append(f"subgraph{i}{{{head}{more}}}")
+    return out
+
+
+def _connectivity_gate(model, machine_eval_json: str):
+    """Return None if the conservative proximity graph is connected and every declared edge
+    appears in it; else a dict describing the failure for the agent.
+
+    Gate 1: BFS connectivity on the over-connected graph.
+    Gate 2: every declared edge must at least appear in that graph (e ∈ E).
+    """
+    nodes, edges = _proximity_graph(machine_eval_json)
+    comps = _connected_components(nodes, edges)
+    declared = _declared_edges(model)
+    missing = sorted(declared - edges, key=lambda e: tuple(sorted(e)))
+    if len(comps) == 1 and not missing:
+        return None
+    evidence = []
+    if len(comps) > 1:
+        evidence.append(
+            f"conservative proximity graph is DISCONNECTED at {_CONNECT_TOL_MM:.0f}mm: "
+            + "; ".join(_summarize_components(comps)))
+    if missing:
+        show = []
+        for e in missing[:12]:
+            a, b = tuple(sorted(e))
+            show.append(f"{a}<->{b}")
+        tail = f", ... (+{len(missing)-12} more)" if len(missing) > 12 else ""
+        evidence.append("declared edges missing from the proximity graph: "
+                        + ", ".join(show) + tail)
+    return {"root_cause": "connectivity gate failed", "evidence": evidence}
 
 
 class SingleAgentError(ValueError):
@@ -634,9 +796,31 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
             "kind": "assembled_model", "iter": it, "run_dir": run_dir,
             "render_dir": snap}))
 
+        # Connectivity gate before any overlap counting. The graph is deliberately
+        # over-connected: any two STLs within 10mm get an edge. If even THAT graph is
+        # disconnected, the machine is obviously in pieces; and if a declared mount/mesh
+        # edge is not even present in that graph, the declaration and the geometry disagree
+        # so strongly there is no point counting interpenetrations yet. This is the cheap,
+        # one-sided gate the overlap score was missing: it fails only on clear disconnection,
+        # never on a correct 0.05mm fit.
+        gate = None
+        try:
+            gate = _connectivity_gate(model, str(Path(run_dir) / "machine_eval.json"))
+        except Exception as e:
+            log_fn(f"[single-agent] connectivity gate unavailable ({type(e).__name__}: {e})")
+        if gate and not last_iter:
+            findings = "\n".join(f"- {x}" for x in gate.get("evidence") or [])
+            log_fn(f"[single-agent] connectivity gate failed -> asking agent to fix")
+            log_fn("ARTIFACT_JSON:" + _json.dumps({
+                "kind": "diagnosis", "iter": it, "single_agent": True,
+                "decision": {"root_cause": gate.get("root_cause", "connectivity gate failed"),
+                             "evidence": gate.get("evidence") or []}}))
+            conv.add_user_message(build_single_agent_geometry_feedback(findings))
+            continue
+
         # Rigid-conflict geometry self-check (the text-to-cad "inspect" step, reusing subcheck).
         # A gross interpenetration is cheaper to fix here than to run physics on, so gate on it
-        # first — but only re-author for it when we still have iterations left.
+        # next — but only re-author for it when we still have iterations left.
         #
         # Support is NOT checked here any more. The ray-cast floating detector it used to run
         # passed a stack of parts propping each other up and read a 1.75mm air gap as contact;
