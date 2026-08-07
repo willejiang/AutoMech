@@ -542,6 +542,19 @@ def _design_spec(task: str, model, test: dict) -> dict:
                       f"'{drive.get('input_joint')}' -> '{driver}' (role: driver_input)")
             drive["input_joint"] = driver
         drive.setdefault("mode", "velocity")
+        # Weight is not the divider. If the compiler has replaced the transmission with an
+        # exact kinematic stage (currently fixed-member planetary), qpos is the truthful
+        # fixture for a ratio/propagation check. Otherwise pin closures and contact-loaded
+        # mechanisms use a servo so friction/collision can slow or stall the input.
+        has_pin_linkage = any(getattr(r, "mate_type", "") in ("pin", "revolute")
+                              for r in (getattr(model, "relations", None) or []))
+        exact_kinematic_stage = bool(getattr(model, "planetary_stages", None))
+        if exact_kinematic_stage:
+            drive["drive_method"] = "direct_qpos"
+        elif has_pin_linkage:
+            drive["drive_method"] = "servo"
+        else:
+            drive.setdefault("drive_method", "servo")
         if not drive.get("target_velocity"):
             drive["target_velocity"] = 5.0
         if not drive.get("duration_s"):
@@ -714,7 +727,7 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
         # of the TEST rather than of how heavy the parts happen to be, which is also what
         # makes an output/input ratio meaningful.
         spec["drive"] = dict(spec.get("drive") or {})
-        for _k in ("mode", "target_velocity", "torque"):
+        for _k in ("mode", "drive_method", "target_velocity", "torque"):
             if d.get(_k) is not None:
                 spec["drive"][_k] = d[_k]
         spec["design"] = {
@@ -744,10 +757,13 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
         log_fn(f"[physics] mujoco scenario designer unavailable ({e}); "
               f"using default contact spec")
 
-    # An output part = a spin/free link name-hinted as output, if any.
-    out_link = next((l.name for l in model.links
-                     if getattr(l, "dof", "fixed") in ("spin", "slide", "free")
-                     and _OUTPUT_HINT.search(l.name)), None)
+    # An explicitly-authored output link wins. Otherwise fall back to a name-hinted
+    # movable part, as before.
+    out_link = str(getattr(model, "output_link", "") or "").strip()
+    if not out_link:
+        out_link = next((l.name for l in model.links
+                         if getattr(l, "dof", "fixed") in ("spin", "slide", "free")
+                         and _OUTPUT_HINT.search(l.name)), None)
     if out_link:
         spec["drive"]["output_link"] = out_link
 
@@ -985,13 +1001,21 @@ def run_physics(urdf_path: str, task: str, run_dir: str, settings=None,
     {passed, verdict, summary, metrics, frames_dir}. `metrics` is the FINAL/primary
     test; `summary` spans all tests run.
 
-    Engine dispatch (maker2-mujoco-contact): when settings.engine == "mujoco", run the
-    pure-contact MuJoCo path (build the MJCF from the model, drive the driver PART's
-    own dof, transmission by tooth contact). Otherwise the legacy PyBullet path."""
+    Engine dispatch: `mujoco` runs the pure-contact MuJoCo path, `simscape` runs the
+    Simscape bridge/export backend (and ingests a real external result when available),
+    and everything else uses the legacy PyBullet path."""
     engine = getattr(settings, "engine", "pybullet") if settings is not None else "pybullet"
     if engine == "mujoco":
         return _run_physics_mujoco(urdf_path, task, run_dir, settings,
                                    iteration=iteration, log_fn=log_fn)
+    if engine == "simscape":
+        from .simscape_backend import run_simscape_backend
+        model = _load_model(run_dir)
+        if model is None:
+            return {"passed": False, "verdict": "FAIL",
+                    "summary": "no model to export to Simscape", "metrics": {}, "tests": []}
+        return run_simscape_backend(model, urdf_path, task, run_dir, settings,
+                                    iteration=iteration, log_fn=log_fn)
 
     import run_scenario_pybullet as pyb
     from diagnose import diagnose_physics, encode_mp4

@@ -32,7 +32,8 @@ from .imageutil import ImageLoadError, load_image_block
 from .jsonutil import extract_json_object
 from .llm.client import LLMError
 from .llm.conversation import Conversation
-from .model import KinematicModel, LinkSpec, PoseSpec
+from .model import (KinematicModel, LinkSpec, MateSpec, MotionJointSpec,
+                    PlanetaryStageSpec, PortSpec, PoseSpec, TransmissionSpec)
 from .prompts.manager_prompt import (MANAGER_SYSTEM, manager_system,
                                      build_manager_coarser,
                                      build_manager_evaluator_feedback,
@@ -115,6 +116,7 @@ def _link_from_dict(d: dict, idx: int) -> LinkSpec:
         size_mm={str(k): v for k, v in size.items()},
         origin_note=str(d.get("origin_note") or ""),
         color=_parse_color(d.get("color")),
+        mesh_filename=str(d.get("mesh_filename") or "").strip(),
         dof=dof,
         spin_axis=spin_axis,
         slide_axis=slide_axis,
@@ -159,12 +161,115 @@ def _mesh_pairs_from(obj: dict) -> list:
     return out
 
 
+def _port_from_dict(d: dict, idx: int) -> PortSpec:
+    if not isinstance(d, dict):
+        raise ValueError(f"ports[{idx}] is not an object")
+    name = d.get("name")
+    if not isinstance(name, str) or not name.strip():
+        raise ValueError(f"ports[{idx}] is missing a non-empty 'name'")
+    return PortSpec(
+        name=name.strip(),
+        type=str(d.get("type") or "flat_face").strip() or "flat_face",
+        xyz_mm=_as_tuple3(d.get("xyz_mm"), (0.0, 0.0, 0.0)),
+        axis=_as_tuple3(d.get("axis"), (0.0, 0.0, 1.0)),
+        diameter_mm=float(d.get("diameter_mm") or 0.0),
+        depth_mm=float(d.get("depth_mm") or 0.0),
+        pitch_radius_mm=float(d.get("pitch_radius_mm") or 0.0),
+        normal_sign=float(d.get("normal_sign") or 1.0),
+    )
+
+
+def _relation_from_dict(d: dict, idx: int) -> MateSpec:
+    if not isinstance(d, dict):
+        raise ValueError(f"relations[{idx}] is not an object")
+    for k in ("name", "mate_type", "base_part", "base_port", "incoming_part", "incoming_port"):
+        if not isinstance(d.get(k), str) or not str(d.get(k)).strip():
+            raise ValueError(f"relations[{idx}] is missing '{k}'")
+    sep = d.get("separation_axis") or ()
+    if isinstance(sep, str):
+        _MAP = {
+            "+x": (1.0, 0.0, 0.0), "-x": (-1.0, 0.0, 0.0),
+            "+y": (0.0, 1.0, 0.0), "-y": (0.0, -1.0, 0.0),
+            "+z": (0.0, 0.0, 1.0), "-z": (0.0, 0.0, -1.0),
+        }
+        sep = _MAP.get(sep.strip().lower(), ())
+    elif isinstance(sep, (list, tuple)) and len(sep) == 3:
+        sep = tuple(float(x) for x in sep)
+    else:
+        sep = ()
+    return MateSpec(
+        name=str(d["name"]).strip(),
+        mate_type=str(d["mate_type"]).strip(),
+        base_part=str(d["base_part"]).strip(),
+        base_port=str(d["base_port"]).strip(),
+        incoming_part=str(d["incoming_part"]).strip(),
+        incoming_port=str(d["incoming_port"]).strip(),
+        offset_mm=float(d.get("offset_mm") or 0.0),
+        angle_rad=float(d.get("angle_rad") or 0.0),
+        flip=bool(d.get("flip", True)),
+        axis_angle_deg=float(d.get("axis_angle_deg") or 0.0),
+        separation_axis=sep,
+        offset_e_mm=float(d.get("offset_e_mm") or 0.0),
+    )
+
+
+def _motion_joint_from_dict(d: dict, idx: int) -> MotionJointSpec:
+    if not isinstance(d, dict):
+        raise ValueError(f"motion_joints[{idx}] is not an object")
+    for k in ("name", "child", "type"):
+        if not isinstance(d.get(k), str) or not str(d.get(k)).strip():
+            raise ValueError(f"motion_joints[{idx}] is missing '{k}'")
+    return MotionJointSpec(
+        name=str(d["name"]).strip(), parent=str(d.get("parent") or "").strip(),
+        child=str(d["child"]).strip(), type=str(d["type"]).strip(),
+        axis=_as_tuple3(d.get("axis"), (0.0, 0.0, 1.0)),
+        pos_mm=_as_tuple3(d.get("pos_mm"), (0.0, 0.0, 0.0)))
+
+
+def _transmission_from_dict(d: dict, idx: int) -> TransmissionSpec:
+    if not isinstance(d, dict):
+        raise ValueError(f"transmissions[{idx}] is not an object")
+    for k in ("name", "type", "driving_link", "driven_link"):
+        if not isinstance(d.get(k), str) or not str(d.get(k)).strip():
+            raise ValueError(f"transmissions[{idx}] is missing '{k}'")
+    return TransmissionSpec(
+        name=str(d["name"]).strip(), type=str(d["type"]).strip(),
+        driving_link=str(d["driving_link"]).strip(),
+        driven_link=str(d["driven_link"]).strip(), ratio=float(d.get("ratio") or 0.0))
+
+
+def _planetary_stage_from_dict(d: dict, idx: int) -> PlanetaryStageSpec:
+    if not isinstance(d, dict):
+        raise ValueError(f"planetary_stages[{idx}] is not an object")
+    for k in ("name", "sun", "ring", "carrier"):
+        if not isinstance(d.get(k), str) or not str(d.get(k)).strip():
+            raise ValueError(f"planetary_stages[{idx}] is missing '{k}'")
+    planets = []
+    for p in d.get("planets") or []:
+        if isinstance(p, dict) and p.get("gear"):
+            planets.append({"gear": str(p["gear"]).strip(),
+                            "pin": str(p.get("pin") or "").strip()})
+    return PlanetaryStageSpec(
+        name=str(d["name"]).strip(), sun=str(d["sun"]).strip(),
+        ring=str(d["ring"]).strip(), carrier=str(d["carrier"]).strip(),
+        planets=planets, sun_teeth=int(d.get("sun_teeth") or 0),
+        planet_teeth=int(d.get("planet_teeth") or 0),
+        ring_teeth=int(d.get("ring_teeth") or 0),
+        fixed_member=str(d.get("fixed_member") or "ring"),
+        input_member=str(d.get("input_member") or "sun"),
+        output_member=str(d.get("output_member") or "carrier"))
+
+
 def parse_model(text: str) -> KinematicModel:
     """Parse an LLM response into a (not-yet-validated) KinematicModel.
 
     Pure-contact contract: `links` (with dof) + `poses` (parent-relative placements)
     + optional `mesh_pairs`. Accepts the legacy `joints` key as an alias for `poses`
-    so a saved pre-migration model still loads (its joint types collapse to poses)."""
+    so a saved pre-migration model still loads (its joint types collapse to poses).
+
+    Richer frontends may also persist optional `ports_by_link`, `relations`, `output_link`,
+    and `watch_links` side channels; older files omit them.
+    """
     obj = json.loads(extract_json_object(text))
     if not isinstance(obj, dict):
         raise ValueError("top-level JSON value is not an object")
@@ -176,12 +281,36 @@ def parse_model(text: str) -> KinematicModel:
         raise ValueError("'links' must be a non-empty array")
     if not isinstance(poses, list):
         raise ValueError("'poses' must be an array")
+    ports_by_link = {}
+    raw_ports = obj.get("ports_by_link") or {}
+    if isinstance(raw_ports, dict):
+        for link, ports in raw_ports.items():
+            if isinstance(link, str) and isinstance(ports, list):
+                ports_by_link[link.strip()] = [_port_from_dict(p, i) for i, p in enumerate(ports)]
+    relations = []
+    raw_rel = obj.get("relations") or []
+    if isinstance(raw_rel, list):
+        relations = [_relation_from_dict(d, i) for i, d in enumerate(raw_rel)]
+    watch_links = [str(x).strip() for x in (obj.get("watch_links") or []) if str(x).strip()]
+    motion_joints = [_motion_joint_from_dict(d, i)
+                     for i, d in enumerate(obj.get("motion_joints") or [])]
+    transmissions = [_transmission_from_dict(d, i)
+                     for i, d in enumerate(obj.get("transmissions") or [])]
+    planetary_stages = [_planetary_stage_from_dict(d, i)
+                        for i, d in enumerate(obj.get("planetary_stages") or [])]
     return KinematicModel(
         name=str(obj.get("name") or "product"),
         root_link=str(obj.get("root_link") or ""),
         links=[_link_from_dict(d, i) for i, d in enumerate(links)],
         poses=[_pose_from_dict(d, i) for i, d in enumerate(poses)],
         mesh_pairs=_mesh_pairs_from(obj),
+        ports_by_link=ports_by_link,
+        relations=relations,
+        motion_joints=motion_joints,
+        transmissions=transmissions,
+        planetary_stages=planetary_stages,
+        output_link=str(obj.get("output_link") or ""),
+        watch_links=watch_links,
     )
 
 
@@ -274,7 +403,53 @@ def _validate_model(model: KinematicModel) -> None:
     model.mesh_pairs = [(_remap(a), _remap(b)) for (a, b) in model.mesh_pairs]
     model.root_link = _remap(model.root_link)
 
-    # 4. Weak guard: pose endpoints must reference real links; no self-loops.
+    # 4. Explicit motion forest: remap endpoints, enforce one parent/child and no cycles.
+    motion_names: set[str] = set()
+    motion_parent: dict[str, str] = {}
+    for j in getattr(model, "motion_joints", []) or []:
+        j.name = _slugify(j.name, "motion_joint")
+        if j.name in motion_names:
+            problems.append(f"duplicate motion joint '{j.name}'")
+        motion_names.add(j.name)
+        j.parent, j.child = _remap(j.parent), _remap(j.child)
+        if j.type not in ("fixed", "hinge", "slide"):
+            problems.append(f"motion joint '{j.name}' has unsupported type '{j.type}'")
+        if j.parent and j.parent not in valid_links:
+            problems.append(f"motion joint '{j.name}' references unknown parent '{j.parent}'")
+        if j.child not in valid_links:
+            problems.append(f"motion joint '{j.name}' references unknown child '{j.child}'")
+        if j.parent == j.child:
+            problems.append(f"motion joint '{j.name}' is a self-loop")
+        if j.child in motion_parent:
+            problems.append(f"motion child '{j.child}' has multiple parents")
+        motion_parent[j.child] = j.parent
+        if sum(float(x) ** 2 for x in j.axis) <= 1e-12:
+            problems.append(f"motion joint '{j.name}' has a zero axis")
+    for child in motion_parent:
+        seen = set()
+        node = child
+        while node in motion_parent and motion_parent[node]:
+            if node in seen:
+                problems.append(f"motion forest contains a cycle through '{node}'")
+                break
+            seen.add(node)
+            node = motion_parent[node]
+
+    for t in getattr(model, "transmissions", []) or []:
+        t.driving_link, t.driven_link = _remap(t.driving_link), _remap(t.driven_link)
+        if t.driving_link not in valid_links or t.driven_link not in valid_links:
+            problems.append(f"transmission '{t.name}' references an unknown link")
+    for s in getattr(model, "planetary_stages", []) or []:
+        s.sun, s.ring, s.carrier = _remap(s.sun), _remap(s.ring), _remap(s.carrier)
+        s.planets = [{"gear": _remap(p.get("gear", "")), "pin": _remap(p.get("pin", ""))}
+                     for p in s.planets]
+        roles = [s.sun, s.ring, s.carrier] + [p["gear"] for p in s.planets]
+        if any(n not in valid_links for n in roles):
+            problems.append(f"planetary stage '{s.name}' references an unknown link")
+        if not s.planets:
+            problems.append(f"planetary stage '{s.name}' has no planets")
+
+    # 5. Weak guard: pose endpoints must reference real links; no self-loops.
     for p in model.poses:
         if p.parent and p.parent not in valid_links:
             problems.append(f"pose '{p.name}' references unknown parent '{p.parent}'")
@@ -301,8 +476,12 @@ def _validate_model(model: KinematicModel) -> None:
 # --------------------------------------------------------------------------- #
 
 def model_to_dict(model: KinematicModel) -> dict:
-    """Serialize a KinematicModel to the same JSON shape the manager emits."""
-    return {
+    """Serialize a KinematicModel to the same JSON shape the manager emits.
+
+    Optional richer mechanism side channels (`ports_by_link`, `relations`, watch/output
+    hints) are emitted only when present so old files stay byte-identical.
+    """
+    out = {
         "name": model.name,
         "root_link": model.root_link,
         "links": [
@@ -340,6 +519,65 @@ def model_to_dict(model: KinematicModel) -> dict:
         ],
         "mesh_pairs": [list(pair) for pair in model.mesh_pairs],
     }
+    if getattr(model, "ports_by_link", None):
+        out["ports_by_link"] = {
+            str(link): [
+                {
+                    "name": p.name,
+                    "type": p.type,
+                    "xyz_mm": list(p.xyz_mm),
+                    "axis": list(p.axis),
+                    **({"diameter_mm": p.diameter_mm} if p.diameter_mm else {}),
+                    **({"depth_mm": p.depth_mm} if p.depth_mm else {}),
+                    **({"pitch_radius_mm": p.pitch_radius_mm} if p.pitch_radius_mm else {}),
+                    **({"normal_sign": p.normal_sign} if p.normal_sign != 1.0 else {}),
+                }
+                for p in ports
+            ]
+            for link, ports in (model.ports_by_link or {}).items()
+            if ports
+        }
+    if getattr(model, "relations", None):
+        out["relations"] = [
+            {
+                "name": r.name,
+                "mate_type": r.mate_type,
+                "base_part": r.base_part,
+                "base_port": r.base_port,
+                "incoming_part": r.incoming_part,
+                "incoming_port": r.incoming_port,
+                **({"offset_mm": r.offset_mm} if r.offset_mm else {}),
+                **({"angle_rad": r.angle_rad} if r.angle_rad else {}),
+                **({"flip": r.flip} if r.flip is not True else {}),
+                **({"axis_angle_deg": r.axis_angle_deg} if r.axis_angle_deg else {}),
+                **({"separation_axis": list(r.separation_axis)} if r.separation_axis else {}),
+                **({"offset_e_mm": r.offset_e_mm} if r.offset_e_mm else {}),
+            }
+            for r in model.relations
+        ]
+    if getattr(model, "motion_joints", None):
+        out["motion_joints"] = [
+            {"name": j.name, "parent": j.parent, "child": j.child, "type": j.type,
+             "axis": list(j.axis), "pos_mm": list(j.pos_mm)}
+            for j in model.motion_joints]
+    if getattr(model, "transmissions", None):
+        out["transmissions"] = [
+            {"name": t.name, "type": t.type, "driving_link": t.driving_link,
+             "driven_link": t.driven_link, **({"ratio": t.ratio} if t.ratio else {})}
+            for t in model.transmissions]
+    if getattr(model, "planetary_stages", None):
+        out["planetary_stages"] = [
+            {"name": s.name, "sun": s.sun, "ring": s.ring, "carrier": s.carrier,
+             "planets": list(s.planets), "sun_teeth": s.sun_teeth,
+             "planet_teeth": s.planet_teeth, "ring_teeth": s.ring_teeth,
+             "fixed_member": s.fixed_member, "input_member": s.input_member,
+             "output_member": s.output_member}
+            for s in model.planetary_stages]
+    if getattr(model, "output_link", ""):
+        out["output_link"] = model.output_link
+    if getattr(model, "watch_links", None):
+        out["watch_links"] = list(model.watch_links)
+    return out
 
 
 def save_model(model: KinematicModel, path: str) -> None:

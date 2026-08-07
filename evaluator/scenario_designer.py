@@ -98,7 +98,18 @@ URDF topology) naming every joint's role. OBEY IT:
   drive a "transmission" or "free_unrelated" joint.
 - Use "mode":"velocity" with a modest "target_velocity" (~3-6 rad/s for a rotating input,
   or a modest linear speed for a sliding one), or "position_sweep" over the joint's range
-  for a lever. Set "self_collision": true so gears/teeth actually contact and MESH (gears
+  for a lever. Choose drive method by WHAT THE TEST MUST PROVE, not by weight alone:
+  * "servo" when friction, contact force, collision/jamming, load capacity, slip, or soft
+    pin/closure tracking affects the verdict. The input must be allowed to slow or stall.
+  * "direct_qpos" for a kinematic transmission whose motion is already expressed by exact
+    equality/ratio constraints and whose test only asks whether coordinates propagate with
+    the right path/ratio. This includes ultra-light watches and a planetary stage compiled
+    to Willis constraints; no physical tooth-friction claim may be made from that run.
+  Never choose direct_qpos merely because a mechanism is heavy: it can force geometry through
+  collisions. Never choose servo merely because it is medium-weight: if contact/friction is
+  intentionally replaced by exact constraints, servo adds numerical sensitivity without
+  testing extra physics. Set
+  "self_collision": true so gears/teeth actually contact and MESH (gears
   couple by tooth contact, not by a joint).
 - Set "watch_joints" = the role map's "transmission" joints — the downstream joints the
   mechanism should drive. These are OBSERVED ONLY, never actuated. Set
@@ -164,6 +175,8 @@ SPEC_SCHEMA = {
                         "input_joint": {"type": "string",
                             "description": "the joint to drive (crank/input). Real name."},
                         "mode": {"type": "string", "enum": ["velocity", "position_sweep"]},
+                        "drive_method": {"type": "string", "enum": ["servo", "direct_qpos"],
+                            "description": "servo when friction/contact/collision/load/stall is part of the claim; direct_qpos when exact kinematic equality/ratio constraints replace contact and only propagation/ratio is being tested. Weight alone is not the criterion"},
                         "target_velocity": {"type": "number", "description": "velocity-mode rate (rad/s for spin joints, m/s for slide joints)"},
                         "sweep": {"type": "array", "items": {"type": "number"},
                             "description": "[lo, hi] rad for position_sweep mode"},
@@ -178,7 +191,7 @@ SPEC_SCHEMA = {
                             "description": "the far end of the train; motion must REACH this to pass"},
                         "propagation_path": {"type": "array", "items": {"type": "string"},
                             "description": "ordered input->...->output joint chain"}},
-                    "required": ["input_joint", "mode", "target_velocity", "sweep",
+                    "required": ["input_joint", "mode", "drive_method", "target_velocity", "sweep",
                                  "duration_s", "self_collision", "watch_joints",
                                  "min_watched_travel", "output_joint", "propagation_path"]},
                 "pass_criteria": {

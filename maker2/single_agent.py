@@ -21,11 +21,17 @@ import sys
 from itertools import combinations
 from pathlib import Path
 
-from .model import KinematicModel, LinkSpec, PoseSpec
+from .model import (KinematicModel, LinkSpec, MateSpec, MotionJointSpec,
+                    PlanetaryStageSpec, PortSpec, PoseSpec, TransmissionSpec)
 
 _EXEC_TIMEOUT = 300  # a whole machine is heavier than one sub
 _RUNNER = (Path(__file__).parent / "_eval_runner_machine.py").read_text(encoding="utf-8")
 _MESH_RE = re.compile(r"__mesh[_-]?([a-z0-9]+)$", re.I)
+_REL_AXIS = {
+    "+x": (1.0, 0.0, 0.0), "-x": (-1.0, 0.0, 0.0),
+    "+y": (0.0, 1.0, 0.0), "-y": (0.0, -1.0, 0.0),
+    "+z": (0.0, 0.0, 1.0), "-z": (0.0, 0.0, -1.0),
+}
 # Frames in the AGENT'S file, which is the only place it can fix anything. build123d and
 # OCCT frames tell it nothing it can act on.
 _MACHINE_FRAME_RE = re.compile(r'File "[^"]*machine\.py", line (\d+), in (\w+)\n\s*(.+)')
@@ -217,6 +223,122 @@ def _rot_to_rpy(R):
     return (math.atan2(-R[1][2], R[1][1]), math.atan2(-R[2][0], sy), 0.0)
 
 
+def _tuple3(v, default=(0.0, 0.0, 0.0)) -> tuple:
+    if not isinstance(v, (list, tuple)) or len(v) != 3:
+        return tuple(default)
+    try:
+        return tuple(float(x) for x in v)
+    except Exception:
+        return tuple(default)
+
+
+def _port_from_json(d: dict) -> PortSpec:
+    return PortSpec(
+        name=str(d.get("name") or "").strip(),
+        type=str(d.get("type") or "flat_face").strip() or "flat_face",
+        xyz_mm=_tuple3(d.get("xyz_mm"), (0.0, 0.0, 0.0)),
+        axis=_tuple3(d.get("axis"), (0.0, 0.0, 1.0)),
+        diameter_mm=float(d.get("diameter_mm") or 0.0),
+        depth_mm=float(d.get("depth_mm") or 0.0),
+        pitch_radius_mm=float(d.get("pitch_radius_mm") or 0.0),
+        normal_sign=float(d.get("normal_sign") or 1.0),
+    )
+
+
+def _relation_from_json(d: dict) -> MateSpec:
+    sep = d.get("separation_axis") or ()
+    if isinstance(sep, str):
+        sep = _REL_AXIS.get(sep.strip().lower(), ())
+    else:
+        sep = _tuple3(sep, ()) if isinstance(sep, (list, tuple)) and len(sep) == 3 else ()
+    return MateSpec(
+        name=str(d.get("name") or "").strip(),
+        mate_type=str(d.get("mate_type") or "").strip(),
+        base_part=str(d.get("base_part") or "").strip(),
+        base_port=str(d.get("base_port") or "").strip(),
+        incoming_part=str(d.get("incoming_part") or "").strip(),
+        incoming_port=str(d.get("incoming_port") or "").strip(),
+        offset_mm=float(d.get("offset_mm") or 0.0),
+        angle_rad=float(d.get("angle_rad") or 0.0),
+        flip=bool(d.get("flip", True)),
+        axis_angle_deg=float(d.get("axis_angle_deg") or 0.0),
+        separation_axis=sep,
+        offset_e_mm=float(d.get("offset_e_mm") or 0.0),
+    )
+
+
+def _parse_relation_sidecars(obj: dict | None, names: set[str]):
+    if not isinstance(obj, dict):
+        return {}, [], "", [], [], [], []
+    ports_by_link = {}
+    raw_ports = obj.get("ports_by_link") or {}
+    if isinstance(raw_ports, dict):
+        for link, ports in raw_ports.items():
+            if not isinstance(link, str) or link not in names or not isinstance(ports, list):
+                continue
+            parsed = []
+            for p in ports:
+                if isinstance(p, dict) and str(p.get("name") or "").strip():
+                    parsed.append(_port_from_json(p))
+            if parsed:
+                ports_by_link[link] = parsed
+    relations = []
+    raw_rel = obj.get("relations") or []
+    if isinstance(raw_rel, list):
+        for r in raw_rel:
+            if not isinstance(r, dict):
+                continue
+            rel = _relation_from_json(r)
+            if (rel.name and rel.base_part in names and rel.incoming_part in names
+                    and rel.base_port and rel.incoming_port and rel.mate_type):
+                relations.append(rel)
+    output_link = str(obj.get("output_link") or "").strip()
+    if output_link not in names:
+        output_link = ""
+    watch_links = [str(x).strip() for x in (obj.get("watch_links") or [])
+                   if str(x).strip() in names]
+    motion_joints = []
+    for d in obj.get("motion_joints") or []:
+        if not isinstance(d, dict):
+            continue
+        parent, child = str(d.get("parent") or "").strip(), str(d.get("child") or "").strip()
+        if child not in names or (parent and parent not in names):
+            continue
+        motion_joints.append(MotionJointSpec(
+            name=str(d.get("name") or f"motion_{child}"), parent=parent, child=child,
+            type=str(d.get("type") or "hinge"), axis=_tuple3(d.get("axis"), (0, 0, 1)),
+            pos_mm=_tuple3(d.get("pos_mm"), (0, 0, 0))))
+    transmissions = []
+    for d in obj.get("transmissions") or []:
+        if not isinstance(d, dict):
+            continue
+        a, b = str(d.get("driving_link") or "").strip(), str(d.get("driven_link") or "").strip()
+        if a in names and b in names:
+            transmissions.append(TransmissionSpec(
+                name=str(d.get("name") or f"transmit_{a}_{b}"),
+                type=str(d.get("type") or "gear_external"), driving_link=a, driven_link=b,
+                ratio=float(d.get("ratio") or 0.0)))
+    planetary_stages = []
+    for d in obj.get("planetary_stages") or []:
+        if not isinstance(d, dict):
+            continue
+        planets = [{"gear": str(p.get("gear") or "").strip(),
+                    "pin": str(p.get("pin") or "").strip()}
+                   for p in (d.get("planets") or []) if isinstance(p, dict)]
+        stage = PlanetaryStageSpec(
+            name=str(d.get("name") or "planetary_stage"), sun=str(d.get("sun") or ""),
+            ring=str(d.get("ring") or ""), carrier=str(d.get("carrier") or ""),
+            planets=planets, sun_teeth=int(d.get("sun_teeth") or 0),
+            planet_teeth=int(d.get("planet_teeth") or 0), ring_teeth=int(d.get("ring_teeth") or 0),
+            fixed_member=str(d.get("fixed_member") or "ring"),
+            input_member=str(d.get("input_member") or "sun"),
+            output_member=str(d.get("output_member") or "carrier"))
+        if all(n in names for n in (stage.sun, stage.ring, stage.carrier)):
+            planetary_stages.append(stage)
+    return (ports_by_link, relations, output_link, watch_links, motion_joints,
+            transmissions, planetary_stages)
+
+
 def _homogeneous(R, T):
     return [[R[0][0], R[0][1], R[0][2], float(T[0])],
             [R[1][0], R[1][1], R[1][2], float(T[1])],
@@ -240,7 +362,8 @@ def _mat_inv(m):
 
 
 def evaluate_machine_python(script_text: str, run_dir: str, machine_name: str,
-                            *, log_fn=print) -> KinematicModel:
+                            *, mechanism: dict | None = None,
+                            log_fn=print) -> KinematicModel:
     """Run the authored whole-machine build123d script in a sandbox and return a
     KinematicModel with GLOBAL poses (mm->m). Also writes machine.step next to the eval
     output for the self-check loop. Raises SingleAgentError on any failure (with the
@@ -310,6 +433,7 @@ def evaluate_machine_python(script_text: str, run_dir: str, machine_name: str,
     mesh_by_id: dict = {}
     root = spec.get("root") or parts[0]["name"]
     coord_log: list = []
+    watch_links: list[str] = []
 
     # World transforms keyed by part name — authoritative (the agent's .moved() coords, which
     # the move-vs-connect experiment showed give 0 positioning error). A mounted part's pose is
@@ -385,6 +509,48 @@ def evaluate_machine_python(script_text: str, run_dir: str, machine_name: str,
             seen = True
 
     mesh_pairs = [tuple(v[:2]) for v in mesh_by_id.values() if len(v) >= 2]
+    (ports_by_link, relations, output_link, watch_links, motion_joints,
+     transmissions, planetary_stages) = _parse_relation_sidecars(
+        mechanism or spec.get("mechanism"), names)
+
+    # Relation-authored pin/revolute semantics supersede the old fixed+mount fallback. A part
+    # constrained by pin relations at its ports (the connecting rod case) is neither welded to
+    # a carrier nor a decorative support: it must move as a body under the relation layer. The
+    # simplest truthful lowering in the current single-agent path is to promote such a part from
+    # fixed -> free and let MuJoCo equality/connect constraints hold its ports to their mates.
+    pin_parts = set()
+    pin_relation_count: dict[str, int] = {}
+    for rel in relations:
+        # Only true linkage mates (pin/revolute) should promote a body into the relation
+        # layer. A journal_bearing support or a press_fit seat does NOT mean the support part
+        # becomes free: those remain correctly represented by the existing dof/mount path.
+        if rel.mate_type in ("pin", "revolute"):
+            pin_parts.add(rel.incoming_part)
+            pin_relation_count[rel.incoming_part] = pin_relation_count.get(rel.incoming_part, 0) + 1
+    by_name = {l.name: l for l in links}
+    motion_children = {j.child for j in motion_joints}
+    for part in sorted(pin_parts):
+        link = by_name.get(part)
+        if link is None:
+            continue
+        # Explicit motion-tree children keep their local hinge/slide. Undeclared linkage
+        # bodies (the two-pin slider-crank rod) remain flat/free and close via relations.
+        if part in motion_children:
+            continue
+        was_dof = link.dof
+        # A part governed by pin/revolute relations is a relation-constrained rigid link,
+        # not a support-mounted body with its own independent motion class. In the current
+        # runtime the truthful lowering is a free body whose motion is closed by equality/
+        # connect at its ports. Apply that unconditionally so agent-authored labels cannot
+        # contradict the relation layer.
+        link.dof = "free"
+        link.mount = ""
+        link.extra_mounts = []
+        if log_fn and (was_dof != "free" or part in pin_relation_count):
+            nrel = pin_relation_count.get(part, 0)
+            log_fn(f"[single-agent] relation layer normalized '{part}' from dof={was_dof} to dof=free "
+                   f"because it is governed by {nrel} pin/revolute relation(s); those relations, "
+                   "not part-level dof or mount labels, define its motion")
 
     # A MESHING GEAR CANNOT BE `fixed`. In this model `dof` is relative to the WORLD:
     # `fixed` means welded to the world and never turning. Agents keep writing
@@ -417,10 +583,14 @@ def evaluate_machine_python(script_text: str, run_dir: str, machine_name: str,
                       and host.dof == "spin" else ""))
 
     model = KinematicModel(name=machine_name, root_link=root, links=links, poses=poses,
-                           mesh_pairs=mesh_pairs)
+                           mesh_pairs=mesh_pairs, ports_by_link=ports_by_link,
+                           relations=relations, motion_joints=motion_joints,
+                           transmissions=transmissions, planetary_stages=planetary_stages,
+                           output_link=output_link, watch_links=watch_links)
     if log_fn:
         log_fn(f"[single-agent] {machine_name}: {len(links)} part(s), "
-               f"{len(mesh_pairs)} mesh pair(s), STEP={'yes' if spec.get('step') or (run/'machine.step').exists() else 'no'}")
+               f"{len(mesh_pairs)} mesh pair(s), relations={len(relations)}, "
+               f"watch_links={len(watch_links)}, STEP={'yes' if spec.get('step') or (run/'machine.step').exists() else 'no'}")
     return model
 
 
@@ -768,12 +938,13 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
         code = _extract_python_block(reply)
         if not code:
             conv.add_user_message(build_single_agent_repair(
-                "no ```python code block found; emit ONE block defining build_machine()."))
+                "no ```python code block found; emit one python block that defines MECHANISM and build_machine()."))
             continue
 
         # Evaluate the authored machine into a KinematicModel.
         try:
-            model = evaluate_machine_python(code, run_dir, machine_name, log_fn=log_fn)
+            model = evaluate_machine_python(code, run_dir, machine_name,
+                                            log_fn=log_fn)
         except SingleAgentError as e:
             # First line only: it now carries the exception, the file, the line and the
             # failing call, and that is the whole diagnosis. Slicing at 160 characters cut

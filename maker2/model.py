@@ -125,17 +125,78 @@ class JointSpec:
 
 
 @dataclass
+class MotionJointSpec:
+    """One edge in the dynamic coordinate forest.
+
+    Unlike ``mount`` (support/load path) and ``PoseSpec`` (initial placement), this says
+    that the child's joint frame moves with ``parent``. Empty parent means world. Closed
+    linkage edges remain in ``relations`` instead of being forced into this forest.
+    """
+
+    name: str
+    parent: str
+    child: str
+    type: str = "hinge"                              # fixed | hinge | slide
+    axis: tuple = (0.0, 0.0, 1.0)                    # parent/local joint axis
+    pos_mm: tuple = (0.0, 0.0, 0.0)                  # child-local joint origin
+
+
+@dataclass
+class TransmissionSpec:
+    """A deterministic relation between dynamic coordinates."""
+
+    name: str
+    type: str                                         # gear_external|gear_internal|compound_1to1
+    driving_link: str
+    driven_link: str
+    ratio: float = 0.0                                # 0 = derive from geometry
+
+
+@dataclass
+class PlanetaryStageSpec:
+    """A declared epicyclic stage; first lowering supports one fixed member."""
+
+    name: str
+    sun: str
+    ring: str
+    carrier: str
+    planets: list = field(default_factory=list)       # [{"gear": ..., "pin": ...}, ...]
+    sun_teeth: int = 0
+    planet_teeth: int = 0
+    ring_teeth: int = 0
+    fixed_member: str = "ring"
+    input_member: str = "sun"
+    output_member: str = "carrier"
+
+
+@dataclass
 class KinematicModel:
     """The manager's decomposition: a FOREST of links placed by parent-relative
     poses. Pure contact — no joint tree, no single-root requirement. `mesh_pairs`
     names the gear pairs MEANT to couple by tooth contact (the transmission-fail
-    detector needs this, since no joint encodes a mesh)."""
+    detector needs this, since no joint encodes a mesh).
+
+    Side channels:
+      * `ports_by_link` / `relations` let richer frontends (single-agent relation
+        schema, connection-graph managers) preserve mechanism intent past pure poses.
+        They are optional and ignored by older paths.
+      * `output_link` / `watch_links` are runtime observation hints: which part a
+        driven test should regard as the intended output, and which parts should be
+        watched instead of the legacy "every movable except the driver" fallback.
+    """
 
     name: str
     root_link: str
     links: list[LinkSpec] = field(default_factory=list)
     poses: list[PoseSpec] = field(default_factory=list)
     mesh_pairs: list = field(default_factory=list)  # [(drive_link, driven_link), ...]
+    ports_by_link: dict = field(default_factory=dict, compare=False, repr=False)
+    relations: list = field(default_factory=list, compare=False, repr=False)  # list[MateSpec]
+    motion_joints: list = field(default_factory=list, compare=False, repr=False)  # list[MotionJointSpec]
+    transmissions: list = field(default_factory=list, compare=False, repr=False)  # list[TransmissionSpec]
+    planetary_stages: list = field(default_factory=list, compare=False, repr=False)  # list[PlanetaryStageSpec]
+    output_link: str = field(default="", compare=False, repr=False)
+    watch_links: list = field(default_factory=list, compare=False, repr=False)
     # Hierarchy side-channel: when a subassembly manager builds under a boss frame
     # contract, its realized interface-frame placements land here (not part of the
     # URDF contract; model_to_dict/_validate_model ignore it). See maker2/boss.py.

@@ -34,6 +34,15 @@ import trimesh.transformations as tf
 
 from .convex_decomp import decompose_model
 
+_PIN_MATE_TYPES = {"pin", "revolute", "journal_bearing", "ball_bearing"}
+# The support test dissolves declarative mount welds, but a pin-ended linkage is real
+# assembly topology, not support metadata. Bearing relations stay contact-tested: retaining
+# their ideal connect would let a shaft pass even when its authored bearing geometry misses.
+_SUPPORT_CLOSURE_TYPES = {"pin", "revolute"}
+_SUPPORT_PORT_GAP_MM = 0.25
+_SUPPORT_AXIS_COS = 0.995
+_SUPPORT_DIAMETER_GAP_MM = 0.30
+
 
 # Contact/solver tuning for meshing gear teeth. These are the knobs the golden
 # 2-gear test exists to validate — if teeth tunnel or jitter, tune here.
@@ -51,6 +60,181 @@ def _mat(xyz, rpy) -> np.ndarray:
     m = tf.euler_matrix(float(rpy[0]), float(rpy[1]), float(rpy[2]), axes="sxyz")
     m[:3, 3] = [float(xyz[0]), float(xyz[1]), float(xyz[2])]
     return m
+
+
+def _port_world_frame(port) -> np.ndarray:
+    xyz = getattr(port, "xyz_mm", (0.0, 0.0, 0.0))
+    axis = getattr(port, "axis", (0.0, 0.0, 1.0))
+    o = np.asarray([float(xyz[0]), float(xyz[1]), float(xyz[2])], dtype=float) / 1000.0
+    z = np.asarray([float(axis[0]), float(axis[1]), float(axis[2])], dtype=float)
+    n = float(np.linalg.norm(z))
+    z = z / n if n > 1e-9 else np.array([0.0, 0.0, 1.0])
+    ref = np.array([1.0, 0.0, 0.0]) if abs(z[0]) < 0.9 else np.array([0.0, 1.0, 0.0])
+    x = np.cross(ref, z)
+    xn = float(np.linalg.norm(x))
+    x = x / xn if xn > 1e-9 else np.array([1.0, 0.0, 0.0])
+    y = np.cross(z, x)
+    T = np.eye(4)
+    T[:3, 0], T[:3, 1], T[:3, 2] = x, y, z
+    T[:3, 3] = o
+    return T
+
+
+def _relation_connect_sites(model, mujoco_el, world, log_fn=print):
+    """Emit MuJoCo sites + equality/connect constraints for single-agent linkage relations.
+
+    Current scope is intentionally narrow: pin/revolute-like relations between two already
+    placed moving/static bodies. This preserves honest linkage intent without trying to solve
+    a new full mechanism compiler in one step.
+    """
+    rels = list(getattr(model, "relations", None) or [])
+    ports_by_link = getattr(model, "ports_by_link", None) or {}
+    if not rels or not ports_by_link:
+        return 0
+    bodies = _body_index(world)
+    if not bodies:
+        return 0
+    W = _world_transforms(model)
+    eq = None
+    count = 0
+    motion_by_child = _motion_joint_by_child(model)
+    planetary_planets = {p.get("gear", "")
+                         for s in (getattr(model, "planetary_stages", None) or [])
+                         for p in s.planets}
+    for rel in rels:
+        if getattr(rel, "mate_type", "") not in _PIN_MATE_TYPES:
+            continue
+        # An explicit local hinge already supplies this revolute DOF and position
+        # inheritance. Re-emitting the old pin connect would close the child back to a
+        # world-flat pin and overconstrain a planet. Two-pin flat linkages have no explicit
+        # motion child, so both slider-crank closure connects remain untouched.
+        if rel.incoming_part in motion_by_child and rel.incoming_part in planetary_planets:
+            continue
+        bp = next((p for p in ports_by_link.get(rel.base_part, [])
+                   if p.name == rel.base_port), None)
+        ip = next((p for p in ports_by_link.get(rel.incoming_part, [])
+                   if p.name == rel.incoming_port), None)
+        if bp is None or ip is None:
+            continue
+        base_body = bodies.get(rel.base_part)
+        inc_body = bodies.get(rel.incoming_part)
+        if base_body is None or inc_body is None:
+            continue
+        Tb = W.get(rel.base_part)
+        Ti = W.get(rel.incoming_part)
+        if Tb is None or Ti is None:
+            continue
+        Pbw = Tb @ _port_world_frame(bp)
+        Piw = Ti @ _port_world_frame(ip)
+        site_b = f"{rel.name}_base_site"
+        site_i = f"{rel.name}_incoming_site"
+        # Sites are body-local. Subtracting only translation works for identity bodies but
+        # moves every port on a rotated connecting rod. Apply the inverse body rotation.
+        pb_local = Tb[:3, :3].T @ (Pbw[:3, 3] - Tb[:3, 3])
+        pi_local = Ti[:3, :3].T @ (Piw[:3, 3] - Ti[:3, 3])
+        ET.SubElement(base_body, "site", attrib={
+            "name": site_b,
+            "pos": f"{pb_local[0]:.9g} {pb_local[1]:.9g} {pb_local[2]:.9g}",
+            "size": "0.0015",
+            "rgba": "0 0 0 0",
+        })
+        ET.SubElement(inc_body, "site", attrib={
+            "name": site_i,
+            "pos": f"{pi_local[0]:.9g} {pi_local[1]:.9g} {pi_local[2]:.9g}",
+            "size": "0.0015",
+            "rgba": "0 0 0 0",
+        })
+        if eq is None:
+            eq = ET.SubElement(mujoco_el, "equality")
+        ET.SubElement(eq, "connect", attrib={"site1": site_b, "site2": site_i})
+        count += 1
+    if count and log_fn:
+        log_fn(f"[mjcf] relation layer: emitted {count} equality/connect constraint(s)")
+    return count
+
+
+def _validated_support_relations(model, mujoco_el, world,
+                                 log_fn=print) -> tuple[int, list, list]:
+    """Restore geometry-backed pin closure after support bodies have been freed.
+
+    The support test removes mount welds to expose decorative/floating structure. Pin and
+    revolute relations are different: they are the physical topology of a linkage. Deleting
+    both ends of a connecting rod and then reporting that it fell is a false unsupported
+    verdict. Restore only shaft-in-bore closures whose authored ports agree in world position,
+    axis, diameter, and axial engagement. Bearings remain contact-tested.
+    """
+    rels = list(getattr(model, "relations", None) or [])
+    ports_by_link = getattr(model, "ports_by_link", None) or {}
+    bodies = _body_index(world)
+    W = _world_transforms(model)
+    eq = None
+    count = 0
+    accepted = []
+    rejected = []
+
+    for rel in rels:
+        if getattr(rel, "mate_type", "") not in _SUPPORT_CLOSURE_TYPES:
+            continue
+        bp = next((p for p in ports_by_link.get(rel.base_part, [])
+                   if p.name == rel.base_port), None)
+        ip = next((p for p in ports_by_link.get(rel.incoming_part, [])
+                   if p.name == rel.incoming_port), None)
+        Tb, Ti = W.get(rel.base_part), W.get(rel.incoming_part)
+        base_body, inc_body = bodies.get(rel.base_part), bodies.get(rel.incoming_part)
+        reason = ""
+        if bp is None or ip is None:
+            reason = "missing port"
+        elif Tb is None or Ti is None or base_body is None or inc_body is None:
+            reason = "missing body pose"
+        else:
+            Pbw = Tb @ _port_world_frame(bp)
+            Piw = Ti @ _port_world_frame(ip)
+            gap_mm = float(np.linalg.norm(Pbw[:3, 3] - Piw[:3, 3]) * 1000.0)
+            ab = Pbw[:3, 2] / max(float(np.linalg.norm(Pbw[:3, 2])), 1e-12)
+            ai = Piw[:3, 2] / max(float(np.linalg.norm(Piw[:3, 2])), 1e-12)
+            axis_cos = abs(float(np.dot(ab, ai)))
+            types = {str(getattr(bp, "type", "")), str(getattr(ip, "type", ""))}
+            db = float(getattr(bp, "diameter_mm", 0.0) or 0.0)
+            di = float(getattr(ip, "diameter_mm", 0.0) or 0.0)
+            depths = [float(getattr(p, "depth_mm", 0.0) or 0.0) for p in (bp, ip)]
+            if gap_mm > _SUPPORT_PORT_GAP_MM:
+                reason = f"port centers differ by {gap_mm:.3f}mm"
+            elif axis_cos < _SUPPORT_AXIS_COS:
+                reason = f"port axes are not coaxial (|dot|={axis_cos:.4f})"
+            elif not ({"shaft", "bore"} <= types):
+                reason = f"needs shaft+bore ports, got {sorted(types)}"
+            elif db <= 0.0 or di <= 0.0 or abs(db - di) > 2.0 * _SUPPORT_DIAMETER_GAP_MM:
+                reason = f"port diameters do not form a fit ({db:.3f}/{di:.3f}mm)"
+            elif min(depths) <= 0.0:
+                reason = "missing axial engagement depth"
+            else:
+                pb_local = Tb[:3, :3].T @ (Pbw[:3, 3] - Tb[:3, 3])
+                pi_local = Ti[:3, :3].T @ (Piw[:3, 3] - Ti[:3, 3])
+                site_b = f"{rel.name}_support_base_site"
+                site_i = f"{rel.name}_support_incoming_site"
+                ET.SubElement(base_body, "site", attrib={
+                    "name": site_b,
+                    "pos": f"{pb_local[0]:.9g} {pb_local[1]:.9g} {pb_local[2]:.9g}",
+                    "size": "0.0015", "rgba": "0 0 0 0",
+                })
+                ET.SubElement(inc_body, "site", attrib={
+                    "name": site_i,
+                    "pos": f"{pi_local[0]:.9g} {pi_local[1]:.9g} {pi_local[2]:.9g}",
+                    "size": "0.0015", "rgba": "0 0 0 0",
+                })
+                if eq is None:
+                    eq = ET.SubElement(mujoco_el, "equality")
+                ET.SubElement(eq, "connect", attrib={"site1": site_b, "site2": site_i})
+                accepted.append({"relation": rel.name,
+                                 "parts": [rel.base_part, rel.incoming_part]})
+                count += 1
+        if reason:
+            rejected.append({"relation": rel.name, "reason": reason})
+
+    if count or rejected:
+        log_fn(f"[support] retained {count} validated pin/revolute closure(s); "
+               f"rejected {len(rejected)} invalid closure(s)")
+    return count, accepted, rejected
 
 
 def _pose_children(model) -> dict:
@@ -341,11 +525,10 @@ def _emit_flat(world_el, model, links_by_name, piece_map, meshes_dir, mesh_names
             continue
         dof = getattr(link, "dof", "fixed")
         pos = [float(T[0, 3]), float(T[1, 3]), float(T[2, 3])]
-        # Only a part that will actually SETTLE spawns slightly above the plane; a
-        # welded/hinged part is grounded in place and lifting it would strand it in
-        # mid-air.
-        if dof == "free" and not pin_base:
-            pos[2] += base_height
+        # IMPORTANT: do NOT spawn-lift free parts. Relation-layer connect sites are
+        # authored against the model/world pose contract; lifting only the free body
+        # creates a frame mismatch (observed as a fixed +10mm pin-site drift) and breaks
+        # closure in slider-crank linkages.
         body = ET.SubElement(world_el, "body", attrib={
             "name": name,
             "pos": f"{pos[0]:.9g} {pos[1]:.9g} {pos[2]:.9g}",
@@ -376,19 +559,122 @@ def _emit_flat(world_el, model, links_by_name, piece_map, meshes_dir, mesh_names
                 "polycoef": "0 1 0 0 0"})
             n_ride += 1
         elif dof == "fixed":
-            # Static structure. Welded to each part that carries it; a part with no
-            # mount (the base) is left welded to the world by having no joint at all.
-            for sup in _mounts_of(link):
-                if sup in links_by_name and getattr(
-                        links_by_name[sup], "dof", "fixed") != "free":
-                    ET.SubElement(eq_el, "weld", attrib={"body1": name, "body2": sup})
-                    n_weld += 1
+            # A fixed accessory on a MOVING carrier must itself be movable before the
+            # weld can make the pair rigid. A top-level body with no joint is fixed to
+            # the world, so welding it to a slider/free linkage silently anchors the
+            # carrier (for example, a wrist pin welded to a piston slider). Static
+            # structure keeps the cheaper jointless-body representation.
+            mounts = [sup for sup in _mounts_of(link) if sup in links_by_name]
+            moving_mount = any(
+                getattr(links_by_name[sup], "dof", "fixed") in ("slide", "free")
+                for sup in mounts
+            )
+            if moving_mount and not pin_base:
+                ET.SubElement(body, "freejoint", attrib={"name": f"{name}_carried_free"})
+            # A part with no mount (the base) remains fixed to the world. Weld every
+            # declared carrier, including free relation-constrained carriers.
+            for sup in mounts:
+                ET.SubElement(eq_el, "weld", attrib={"body1": name, "body2": sup})
+                n_weld += 1
 
         _emit_inertial_and_geoms(body, link, name, piece_map, meshes_dir,
                                  mesh_names, asset_el, sdf=sdf)
     if n_weld or n_ride:
         log_fn(f"[mjcf] flat bodies: {n_weld} weld(s) to structure, "
                f"{n_ride} part(s) locked 1:1 to a rotating carrier")
+
+
+def _body_index(world_el) -> dict:
+    """Recursive body lookup; motion-forest children are not direct world children."""
+    return {b.get("name"): b for b in world_el.iter("body") if b.get("name")}
+
+
+def _motion_joint_by_child(model) -> dict:
+    return {j.child: j for j in (getattr(model, "motion_joints", None) or [])}
+
+
+def _joint_name_for_link(model, link_name: str, kind: str = "spin") -> str:
+    j = _motion_joint_by_child(model).get(link_name)
+    return j.name if j is not None else f"{link_name}_{kind}"
+
+
+def _emit_hybrid(world_el, model, links_by_name, piece_map, meshes_dir, mesh_names,
+                 asset_el, eq_el, *, base_height: float, pin_base: bool,
+                 sdf: bool = True, log_fn=print):
+    """Emit explicit moving-coordinate islands as nested MuJoCo bodies.
+
+    Links outside ``motion_joints`` retain the proven flat representation. An explicit child
+    receives its initial parent-local transform, so arbitrary serial arms, gimbals and
+    slide-on-turntable chains inherit all upstream motion. Closed linkage bodies are simply
+    left undeclared here and remain flat/free with relation closure.
+    """
+    joints = list(getattr(model, "motion_joints", None) or [])
+    if not joints:
+        return _emit_flat(world_el, model, links_by_name, piece_map, meshes_dir, mesh_names,
+                          asset_el, eq_el, base_height=base_height, pin_base=pin_base,
+                          sdf=sdf, log_fn=log_fn)
+    W = _world_transforms(model)
+    by_child = {j.child: j for j in joints}
+    children: dict[str, list] = {}
+    for j in joints:
+        children.setdefault(j.parent, []).append(j)
+    emitted: set[str] = set()
+
+    def emit(name: str, parent_el, parent_T=None):
+        if name in emitted or name not in links_by_name or name not in W:
+            return
+        link, T = links_by_name[name], W[name]
+        local = T if parent_T is None else np.linalg.inv(parent_T) @ T
+        body = ET.SubElement(parent_el, "body", attrib={
+            "name": name,
+            "pos": f"{local[0,3]:.9g} {local[1,3]:.9g} {local[2,3]:.9g}",
+            "quat": _quat_from_matrix_rot(local)})
+        joint = by_child.get(name)
+        if joint is not None:
+            if joint.type != "fixed":
+                jt = "hinge" if joint.type == "hinge" else "slide"
+                ax = joint.axis
+                p = joint.pos_mm
+                ET.SubElement(body, "joint", attrib={
+                    "name": joint.name, "type": jt,
+                    "axis": f"{ax[0]:.6g} {ax[1]:.6g} {ax[2]:.6g}",
+                    "pos": f"{p[0]/1000.0:.9g} {p[1]/1000.0:.9g} {p[2]/1000.0:.9g}"})
+        else:
+            dof = getattr(link, "dof", "fixed")
+            if dof == "spin":
+                ax = link.spin_axis
+                ET.SubElement(body, "joint", {"name": f"{name}_spin", "type": "hinge",
+                    "axis": f"{ax[0]:.6g} {ax[1]:.6g} {ax[2]:.6g}", "pos": "0 0 0"})
+            elif dof == "slide":
+                ax = link.slide_axis
+                ET.SubElement(body, "joint", {"name": f"{name}_slide", "type": "slide",
+                    "axis": f"{ax[0]:.6g} {ax[1]:.6g} {ax[2]:.6g}", "pos": "0 0 0"})
+            elif dof == "free" and not pin_base:
+                ET.SubElement(body, "freejoint", {"name": f"{name}_free"})
+        _emit_inertial_and_geoms(body, link, name, piece_map, meshes_dir,
+                                 mesh_names, asset_el, sdf=sdf)
+        emitted.add(name)
+        for edge in children.get(name, []):
+            emit(edge.child, body, T)
+
+    # Explicit roots first, then every undeclared flat body. A motion root whose parent is
+    # world is emitted once under worldbody; descendants recurse from it.
+    for edge in children.get("", []):
+        emit(edge.child, world_el, None)
+    explicit_children = set(by_child)
+    for link in model.links:
+        if link.name in explicit_children:
+            continue
+        emit(link.name, world_el, None)
+    # A parent may itself be an undeclared flat body; attach its declared children now.
+    index = _body_index(world_el)
+    for parent, edges in children.items():
+        if not parent or parent not in index or parent not in W:
+            continue
+        for edge in edges:
+            emit(edge.child, index[parent], W[parent])
+    log_fn(f"[mjcf] hybrid motion forest: {len(joints)} explicit joint edge(s), "
+           f"{len(emitted)} body(ies)")
 
 
 def _emit_inertial_and_geoms(body, link, link_name, piece_map, meshes_dir,
@@ -500,7 +786,8 @@ def _add_gear_constraints(mujoco_el, model, meshes_dir, links_by_name, *,
             rn = _tip_radius_m(meshes_dir, driven)
         ratio = -(rd / rn) if (rd and rn) else -1.0
         ET.SubElement(eq, "joint", attrib={
-            "joint1": f"{driven}_spin", "joint2": f"{drive}_spin",
+            "joint1": _joint_name_for_link(model, driven),
+            "joint2": _joint_name_for_link(model, drive),
             "polycoef": f"0 {ratio:.6g} 0 0 0"})
         ET.SubElement(contact, "exclude", attrib={"body1": drive, "body2": driven})
         n += 1
@@ -515,7 +802,155 @@ def _add_gear_constraints(mujoco_el, model, meshes_dir, links_by_name, *,
     return n
 
 
+def _add_explicit_transmissions(mujoco_el, model, meshes_dir, links_by_name, *,
+                                metrics: dict | None, log_fn) -> set:
+    """Compile declared transmissions before any legacy pose-based inference.
+
+    A ``compound_1to1`` is one atomic decision: a geometry-backed press fit becomes a
+    scalar joint equality and its rigid-body contact is excluded. Leaving only the overlap
+    exemption creates two independent, interpenetrating bodies; leaving only the equality
+    makes the solver fight the intended lock through contact.
+    """
+    declared = list(getattr(model, "transmissions", None) or [])
+    if not declared:
+        return set()
+    consumed: set = set()
+    rejected = []
+    eq = ET.SubElement(mujoco_el, "equality")
+    contact = ET.SubElement(mujoco_el, "contact")
+    for t in declared:
+        a, b = links_by_name.get(t.driving_link), links_by_name.get(t.driven_link)
+        reason = ""
+        if a is None or b is None:
+            reason = "unknown driving or driven link"
+        elif t.type == "compound_1to1":
+            pair = frozenset((a.name, b.name))
+            has_press_relation = any(
+                getattr(r, "mate_type", "") == "press_fit"
+                and {r.base_part, r.incoming_part} == {a.name, b.name}
+                for r in (getattr(model, "relations", None) or []))
+            if not has_press_relation:
+                reason = "compound_1to1 has no matching press_fit relation"
+            elif not _is_press_fit_overlap(model, meshes_dir, a, b):
+                reason = "declared press_fit ports/geometry do not form a valid interference fit"
+            else:
+                ratio = float(t.ratio or 1.0)
+                driving, driven = a, b
+                # The physical input tag is authoritative. Agent-authored compound direction
+                # is often reversed (sun->input although input_shaft is driver=True). With
+                # direct qpos, the commanded coordinate must be equality joint2 and the
+                # follower joint1, otherwise the soft constraint chases a teleported follower.
+                if getattr(b, "driver", False) and not getattr(a, "driver", False):
+                    driving, driven = b, a
+                    if ratio:
+                        ratio = 1.0 / ratio
+                ET.SubElement(eq, "joint", {
+                    "joint1": _joint_name_for_link(model, driven.name),
+                    "joint2": _joint_name_for_link(model, driving.name),
+                    "polycoef": f"0 {ratio:.9g} 0 0 0"})
+                ET.SubElement(contact, "exclude", {"body1": a.name, "body2": b.name})
+                consumed.add(pair)
+                log_fn(f"[mjcf] explicit compound '{t.name}': "
+                       f"{driven.name}={ratio:g}*{driving.name}; press-fit contact excluded")
+        elif t.type in ("gear_external", "gear_internal"):
+            ratio = float(t.ratio or 0.0)
+            if not ratio:
+                reason = f"{t.type} requires a nonzero explicit ratio"
+            else:
+                ET.SubElement(eq, "joint", {
+                    "joint1": _joint_name_for_link(model, b.name),
+                    "joint2": _joint_name_for_link(model, a.name),
+                    "polycoef": f"0 {ratio:.9g} 0 0 0"})
+                ET.SubElement(contact, "exclude", {"body1": a.name, "body2": b.name})
+                consumed.add(frozenset((a.name, b.name)))
+        else:
+            reason = f"unsupported transmission type '{t.type}'"
+        if reason:
+            rejected.append({"transmission": t.name, "reason": reason})
+            log_fn(f"[mjcf] transmission '{t.name}' rejected: {reason}")
+    if not len(eq):
+        mujoco_el.remove(eq)
+    if not len(contact):
+        mujoco_el.remove(contact)
+    if metrics is not None:
+        metrics["explicit_transmission_pairs"] = len(consumed)
+        if rejected:
+            metrics["transmission_rejections"] = rejected
+    return consumed
+
+
+def _add_planetary_transmission(mujoco_el, model, links_by_name, *,
+                                metrics: dict | None, log_fn) -> set:
+    """Lower validated fixed-ring planetary stages to scalar joint constraints.
+
+    Planets already orbit because their local hinges are nested under the carrier by the
+    generic motion forest. These equalities provide carrier ratio and carrier-relative
+    planet self-spin. The returned pair set is the only planetary tooth-overlap exemption.
+    """
+    stages = list(getattr(model, "planetary_stages", None) or [])
+    if not stages:
+        return set()
+    W = _world_transforms(model)
+    accepted: set = set()
+    rejected = []
+    eq = ET.SubElement(mujoco_el, "equality")
+    contact = ET.SubElement(mujoco_el, "contact")
+    for s in stages:
+        reason = ""
+        if s.fixed_member != "ring" or s.input_member != "sun" or s.output_member != "carrier":
+            reason = "only fixed-ring, sun-input, carrier-output stages are supported"
+        elif min(s.sun_teeth, s.planet_teeth, s.ring_teeth) <= 0:
+            reason = "tooth counts must be positive"
+        elif s.ring_teeth != s.sun_teeth + 2 * s.planet_teeth:
+            reason = "ring_teeth must equal sun_teeth + 2*planet_teeth"
+        elif any(n not in links_by_name for n in (s.sun, s.ring, s.carrier)):
+            reason = "missing sun/ring/carrier link"
+        elif getattr(links_by_name[s.ring], "dof", "fixed") != "fixed":
+            reason = "ring is not fixed"
+        else:
+            Tc = W.get(s.carrier)
+            radii = []
+            for p in s.planets:
+                Tp = W.get(p.get("gear", ""))
+                if Tc is None or Tp is None:
+                    reason = "missing carrier/planet pose"
+                    break
+                radii.append(float(np.linalg.norm(Tp[:2, 3] - Tc[:2, 3])))
+            if radii and max(radii) - min(radii) > 0.0005:
+                reason = "planet orbit radii disagree by more than 0.5mm"
+        if reason:
+            rejected.append({"stage": s.name, "reason": reason})
+            continue
+        sun_joint = _joint_name_for_link(model, s.sun)
+        carrier_joint = _joint_name_for_link(model, s.carrier)
+        carrier_ratio = s.sun_teeth / float(s.sun_teeth + s.ring_teeth)
+        ET.SubElement(eq, "joint", {"joint1": carrier_joint, "joint2": sun_joint,
+                                    "polycoef": f"0 {carrier_ratio:.9g} 0 0 0"})
+        planet_ratio = -(s.ring_teeth / float(s.planet_teeth))
+        for p in s.planets:
+            gear = p["gear"]
+            ET.SubElement(eq, "joint", {
+                "joint1": _joint_name_for_link(model, gear), "joint2": carrier_joint,
+                "polycoef": f"0 {planet_ratio:.9g} 0 0 0"})
+            for peer in (s.sun, s.ring):
+                key = frozenset((peer, gear))
+                accepted.add(key)
+                ET.SubElement(contact, "exclude", {"body1": peer, "body2": gear})
+        log_fn(f"[mjcf] planetary '{s.name}': fixed ring, carrier/sun={carrier_ratio:.6g}, "
+               f"{len(s.planets)} planet(s), {2*len(s.planets)} mesh exemption(s)")
+    if not len(eq):
+        mujoco_el.remove(eq)
+    if not len(contact):
+        mujoco_el.remove(contact)
+    if metrics is not None:
+        metrics["planetary_mesh_pairs"] = len(accepted)
+        if rejected:
+            metrics["planetary_rejections"] = rejected
+    return accepted
+
+
 def _add_transmission(mujoco_el, model, meshes_dir, links_by_name, *,
+                      consumed_pairs: set | None = None,
                       metrics: dict | None, log_fn) -> int:
     """DETERMINISTIC TRANSMISSION (B): rigid-body tooth contact cannot reliably drive spur
     gears (a tangent tooth face under fast rotation slips instead of pushing, so the driver
@@ -551,8 +986,11 @@ def _add_transmission(mujoco_el, model, meshes_dir, links_by_name, *,
         return None if T is None else _np.array([T[0, 3], T[1, 3]]) * 1000.0  # mm
 
     # 1. MESH pairs: geometric precheck on centre distance, then a ratio joint.
+    consumed_pairs = consumed_pairs or set()
     for pair in getattr(model, "mesh_pairs", []) or []:
         drive, driven = pair[0], pair[1]
+        if frozenset((drive, driven)) in consumed_pairs:
+            continue
         da, db = links_by_name.get(drive), links_by_name.get(driven)
         if not da or not db or da.dof != "spin" or db.dof != "spin":
             continue
@@ -581,7 +1019,8 @@ def _add_transmission(mujoco_el, model, meshes_dir, links_by_name, *,
             how = " [tip radii — module solve failed, ratio is approximate]"
         ratio = -(pd / pn)
         ET.SubElement(eq, "joint", attrib={
-            "joint1": f"{driven}_spin", "joint2": f"{drive}_spin",
+            "joint1": _joint_name_for_link(model, driven),
+            "joint2": _joint_name_for_link(model, drive),
             "polycoef": f"0 {ratio:.6g} 0 0 0"})
         ET.SubElement(contact, "exclude", attrib={"body1": drive, "body2": driven})
         done.add(frozenset((drive, driven)))
@@ -593,8 +1032,13 @@ def _add_transmission(mujoco_el, model, meshes_dir, links_by_name, *,
     # together -> lock 1:1. A shared spin parent in the pose forest = same shaft.
     parent_of = {p.child: p.parent for p in model.poses if p.parent}
     groups: dict = {}
+    motion_children = set(_motion_joint_by_child(model))
     for name in spins:
+        if name in motion_children:
+            continue                    # explicit local hinge is not a same-shaft compound
         par = parent_of.get(name)
+        if par and frozenset((par, name)) in consumed_pairs:
+            continue                    # explicit transmission already owns this pair
         if par and links_by_name.get(par) and links_by_name[par].dof == "spin":
             groups.setdefault(par, []).append(name)
     for arbor, members in groups.items():
@@ -622,7 +1066,8 @@ def _add_transmission(mujoco_el, model, meshes_dir, links_by_name, *,
                         })
                 continue
             ET.SubElement(eq, "joint", attrib={
-                "joint1": f"{b}_spin", "joint2": f"{a}_spin",
+                "joint1": _joint_name_for_link(model, b),
+                "joint2": _joint_name_for_link(model, a),
                 "polycoef": "0 1 0 0 0"})               # 1:1 same speed (compound)
             ET.SubElement(contact, "exclude", attrib={"body1": a, "body2": b})
             done.add(frozenset((a, b)))
@@ -728,32 +1173,59 @@ _MAX_PRESS_INTERFERENCE_M = 2.0e-5           # 0.02 mm, 4x the 0.005 the prompt 
 def _is_press_fit_overlap(model, meshes_dir, a, b) -> bool:
     """Is the overlap between `a` and `b` a deliberate INTERFERENCE FIT?
 
-    True only when all three hold, so a post punched through a gear cannot qualify:
-      * one part DECLARES the other as a mount (being coaxial is not being mounted —
-        two wheels threaded onto one arbor share an axis while riding neither);
-      * they are concentric within the coaxial tolerance;
-      * the bore is under the shaft by no more than _MAX_PRESS_INTERFERENCE_M.
-    The verdict is the RADIAL interference, never the overlap volume: volume scales with
-    part size, so the same 5um press fit measures 0.063mm3 on one part and far more on a
-    bigger one, while "the bore is 5um under the shaft" is the engineering class itself.
+    Prefer an explicit press-fit relation's LOCAL port diameters. A compound shaft body may
+    also contain a crank web or gear: its whole-STL outer radius is not the radius of the
+    named seat, and using it misclassified a 3.000/2.995mm flywheel fit as 13mm of collision.
+    Fall back to STL extents only for legacy models without a usable relation.
     """
     import numpy as _np
     an, bn = a.name, b.name
-    declared = (bn in _mounts_of(a)) or (an in _mounts_of(b))
-    if not declared:
-        return False
     W = _world_transforms(model)
     Ta, Tb = W.get(an), W.get(bn)
     if Ta is None or Tb is None:
+        return False
+
+    ports = getattr(model, "ports_by_link", None) or {}
+    for rel in (getattr(model, "relations", None) or []):
+        if getattr(rel, "mate_type", "") != "press_fit":
+            continue
+        if {rel.base_part, rel.incoming_part} != {an, bn}:
+            continue
+        bp = next((p for p in ports.get(rel.base_part, []) if p.name == rel.base_port), None)
+        ip = next((p for p in ports.get(rel.incoming_part, [])
+                   if p.name == rel.incoming_port), None)
+        if bp is None or ip is None:
+            continue
+        typed = {str(getattr(bp, "type", "")): bp, str(getattr(ip, "type", "")): ip}
+        shaft, bore = typed.get("shaft"), typed.get("bore")
+        if shaft is None or bore is None:
+            continue
+        Ts, Tbore = W.get(rel.base_part), W.get(rel.incoming_part)
+        if getattr(bp, "type", "") == "bore":
+            Ts, Tbore = Tbore, Ts
+        Ps = Ts @ _port_world_frame(shaft)
+        Pb = Tbore @ _port_world_frame(bore)
+        center_gap = Ps[:3, 3] - Pb[:3, 3]
+        axis = Ps[:3, 2] / max(float(_np.linalg.norm(Ps[:3, 2])), 1e-12)
+        radial_gap = float(_np.linalg.norm(center_gap - _np.dot(center_gap, axis) * axis))
+        axis_cos = abs(float(_np.dot(axis, Pb[:3, 2]) /
+                             max(float(_np.linalg.norm(Pb[:3, 2])), 1e-12)))
+        interference = (float(shaft.diameter_mm) - float(bore.diameter_mm)) / 2000.0
+        if (radial_gap <= _COAXIAL_XY_TOL_M and axis_cos >= _SUPPORT_AXIS_COS
+                and 0.0 < interference <= _MAX_PRESS_INTERFERENCE_M):
+            return True
+        return False
+
+    declared = (bn in _mounts_of(a)) or (an in _mounts_of(b))
+    if not declared:
         return False
     if float(_np.hypot(Ta[0, 3] - Tb[0, 3], Ta[1, 3] - Tb[1, 3])) > _COAXIAL_XY_TOL_M:
         return False
     ea, eb = _radial_extent_m(meshes_dir, an), _radial_extent_m(meshes_dir, bn)
     if not ea or not eb:
         return False
-    # Whichever way round the pair is, the ring's bore against the shaft's outer radius.
     for ring, shaft in ((ea, eb), (eb, ea)):
-        interference = shaft[1] - ring[0]                # >0 means the bore is undersize
+        interference = shaft[1] - ring[0]
         if 0.0 < interference <= _MAX_PRESS_INTERFERENCE_M:
             return True
     return False
@@ -983,7 +1455,8 @@ def _shares_axis(model, W, a, b, *, tol_m: float = 0.0015) -> bool:
 
 
 def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *,
-                                  metrics: dict | None, log_fn) -> int:
+                                  metrics: dict | None, log_fn,
+                                  intentional_mesh_pairs: set | None = None) -> int:
     """B (deterministic) + A (warn): a ring accessory (bearing/washer/spacer/pedestal/
     retainer/bridge) that hugs a rotating shaft is a SLIDING FIT in the real machine, not
     a collision — but rigid-body contact treats the ring's inner wall pressing the shaft as
@@ -1009,6 +1482,12 @@ def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *
     mount_of = {p.child: p.parent for p in model.poses if p.parent}
     mesh_pairs_fs = {frozenset(p[:2]) for p in (getattr(model, "mesh_pairs", []) or [])
                      if len(p) >= 2}
+    mesh_pairs_fs.update(intentional_mesh_pairs or set())
+    pin_pairs_fs = {
+        frozenset((r.base_part, r.incoming_part))
+        for r in (getattr(model, "relations", None) or [])
+        if getattr(r, "mate_type", "") in ("pin", "revolute")
+    }
     excluded_pairs: set = set()
     _COAXIAL_XY_TOL_M = 0.002  # 2mm: centers this close on the axis count as "on the shaft"
     for s in spins:
@@ -1114,6 +1593,13 @@ def _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name, *
             vol = _overlap_mm3(meshes_dir, W, a.name, b.name)
             if vol is None:
                 continue                    # cannot measure -> simulate it, don't hide it
+            pair_key = frozenset((a.name, b.name))
+            # A local crank-pin/big-end running fit cannot be represented by MuJoCo's
+            # body-level exclude without also disabling rod-vs-main-shaft/web collisions.
+            # Keep the whole pair collidable; SDF preserves the bore and the equality
+            # relation holds the pin center. If the geometry sweeps into the web, it jams.
+            if pair_key in pin_pairs_fs:
+                continue
             if vol > _OVERLAP_TOL_MM3:
                 # A MESHING PAIR IS SUPPOSED TO OVERLAP — interlocking teeth are the mesh.
                 # (cannon_pinion/minute_wheel measured 10.06mm3 of tooth engagement, which
@@ -1292,6 +1778,17 @@ def build_support_mjcf(model, ctx, *, metrics: dict | None = None,
         _add_geoms(body, l, piece_map, meshes_dir, mesh_names, asset_el,
                    friction=_SUPPORT_FRICTION, sdf=use_sdf)
 
+    # Mount welds and drives stay removed, but validated pin-ended linkage closure is real
+    # topology. Retaining it lets gravity test the assembled mechanism instead of testing
+    # whether a connecting rod falls after both of its pins were deleted.
+    support_constraints, accepted_relations, rejected_relations = (
+        _validated_support_relations(model, mujoco_el, world, log_fn=log_fn))
+    if metrics is not None:
+        metrics["support_relation_constraints"] = support_constraints
+        metrics["support_relation_acceptances"] = accepted_relations
+        if rejected_relations:
+            metrics["support_relation_rejections"] = rejected_relations
+
     # COAXIAL FITS: exclude them only under convex decomposition. A bore approximated by
     # convex pieces is a solid ring around the shaft, so the pair reads as a deep
     # interpenetration and the solver ejects both parts violently — every part would
@@ -1321,7 +1818,7 @@ def build_support_mjcf(model, ctx, *, metrics: dict | None = None,
 
 
 def build_mjcf(model, ctx, *, settings=None, metrics: dict | None = None,
-               base_height: float = 0.01, log_fn=print) -> str:
+               base_height: float = 0.0, log_fn=print) -> str:
     """Build an MJCF for the model and write it next to the URDF (model.mjcf).
     Returns the MJCF path. Decomposes movable/meshing parts first (cached)."""
     meshes_dir = ctx.meshes_dir
@@ -1357,7 +1854,7 @@ def build_mjcf(model, ctx, *, settings=None, metrics: dict | None = None,
     # pose; `mount` becomes a pure load-path declaration instead of also dictating the
     # body tree. See _emit_flat for what that buys and what it costs.
     struct_eq = ET.SubElement(mujoco_el, "equality")
-    _emit_flat(world, model, links_by_name, piece_map, meshes_dir, mesh_names,
+    _emit_hybrid(world, model, links_by_name, piece_map, meshes_dir, mesh_names,
                asset_el, struct_eq,
                base_height=(0.0 if pin_base else base_height), pin_base=pin_base,
                sdf=use_sdf, log_fn=log_fn)
@@ -1368,19 +1865,27 @@ def build_mjcf(model, ctx, *, settings=None, metrics: dict | None = None,
     # instead of driving, so once geometry proves a pair meshes we express it as an exact
     # ratio constraint. `allow_gear_constraint` forces the OLD unconditional constraints
     # (no geometry precheck) as an escape hatch.
+    explicit_pairs = _add_explicit_transmissions(
+        mujoco_el, model, meshes_dir, links_by_name, metrics=metrics, log_fn=log_fn)
+    planetary_pairs = _add_planetary_transmission(
+        mujoco_el, model, links_by_name, metrics=metrics, log_fn=log_fn)
+    consumed_pairs = explicit_pairs | planetary_pairs
     if settings is not None and getattr(settings, "allow_gear_constraint", False):
         _add_gear_constraints(mujoco_el, model, meshes_dir, links_by_name,
                               metrics=metrics, log_fn=log_fn)
     else:
         _add_transmission(mujoco_el, model, meshes_dir, links_by_name,
-                          metrics=metrics, log_fn=log_fn)
+                          consumed_pairs=consumed_pairs, metrics=metrics, log_fn=log_fn)
+
+    _relation_connect_sites(model, mujoco_el, world, log_fn=log_fn)
 
     # A ring accessory (bearing/washer/spacer/retainer) coaxial with a rotating shaft is a
     # sliding fit, not a collision — excluding those contacts stops them from braking the
     # driver (the "input stalled, nothing turned" failure). On by default: pure-contact
     # transmission still happens at the GEAR TEETH, which are NOT coaxial and stay collidable.
-    _add_coaxial_bearing_excludes(mujoco_el, model, meshes_dir, links_by_name,
-                                  metrics=metrics, log_fn=log_fn)
+    _add_coaxial_bearing_excludes(
+        mujoco_el, model, meshes_dir, links_by_name, metrics=metrics, log_fn=log_fn,
+        intentional_mesh_pairs=consumed_pairs)
 
     mjcf_path = os.path.splitext(ctx.urdf_path)[0] + ".mjcf"
     ET.indent(mujoco_el)

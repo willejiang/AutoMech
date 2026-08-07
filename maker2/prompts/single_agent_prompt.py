@@ -40,8 +40,11 @@ write a gear-center coordinate as a bare number you eyeballed — it must be an 
 and the tooth counts (pitch_r / center_dist). Bearings, plates and housings can use round
 sizes, but every GEAR-to-GEAR spacing is computed.
 
-OUTPUT: exactly ONE ```python code block defining `build_machine()` that returns a cadpy
-`AssemblyHelper`. These names are ALREADY INJECTED — you do not need to import them:
+OUTPUT: after your short NOTES, emit exactly ONE ```python code block.
+Inside that python block you must provide BOTH:
+1. `MECHANISM = {...}` — a plain Python dict describing the mechanism semantics
+2. `build_machine()` — returning a cadpy `AssemblyHelper`
+These names are ALREADY INJECTED — you do not need to import them:
   AssemblyHelper, make_gear, Box, Cylinder, BuildPart, BuildSketch, Circle, Polygon, extrude,
   Location, Plane, Align, Mode, and build123d as b3d.
 That list is a CONVENIENCE, NOT A LIMIT: the whole of build123d is available, so import
@@ -63,9 +66,114 @@ HOW TO ASSEMBLE (cadpy AssemblyHelper):
     a.add(g2, "output_gear|dof=spin|mesh_id=stage1|mount=baseplate")
     return a.build()
 
-PART LABEL CONVENTION (critical — this is how downstream physics reads your intent). The FIRST
-field of each `a.add(part, "<label>")` label is the URDF-safe part NAME; the rest are `key=value`
-metadata separated by `|`:
+MECHANISM PYTHON DICT (new canonical relation layer for single-agent)
+Inside the python block, define:
+MECHANISM = {{
+  "name": "<machine name>",
+  "output_link": "<optional intended output part name>",
+  "watch_links": ["<optional parts to watch during the driven test>", ...],
+  "ports_by_link": {{
+    "<part name>": [
+      {{"name": "<port>", "type": "bore|shaft|gear_mesh|flat_face|cylindrical",
+       "xyz_mm": [x,y,z], "axis": [x,y,z], "diameter_mm": <optional>,
+       "pitch_radius_mm": <optional>, "depth_mm": <optional>, "normal_sign": <optional>}}
+    ]
+  }},
+  "relations": [
+    {{"name": "<relation>", "mate_type": "coaxial|face_to_face|gear_spur_external|gear_bevel|worm|pin|revolute|cylindrical|press_fit|journal_bearing|coaxial_face",
+     "base_part": "<part>", "base_port": "<port>",
+     "incoming_part": "<part>", "incoming_port": "<port>",
+     "offset_mm": <optional>, "angle_rad": <optional>,
+     "separation_axis": "+x|-x|+y|-y|+z|-z or [x,y,z]", "axis_angle_deg": <optional>}}
+  ],
+  "motion_joints": [
+    {{"name": "<joint>", "parent": "<moving parent part, or empty for world>",
+      "child": "<part whose joint frame follows parent>", "type": "hinge|slide",
+      "axis": [x,y,z], "pos_mm": [optional child-local pivot x,y,z]}}
+  ],
+  "transmissions": [
+    {{"name": "<transmission>", "type": "gear_external|gear_internal|compound_1to1",
+      "driving_link": "<part>", "driven_link": "<part>", "ratio": <0 to derive>}}
+  ],
+  "planetary_stages": [
+    {{"name": "<stage>", "sun": "<part>", "ring": "<part>",
+      "carrier": "<part>", "planets": [{{"gear":"<part>","pin":"<part>"}}],
+      "sun_teeth": <int>, "planet_teeth": <int>, "ring_teeth": <int>,
+      "fixed_member":"ring", "input_member":"sun", "output_member":"carrier"}}
+  ]
+}}
+
+Use this dict to tell the runtime what the REAL mechanism relations are. It is the truthful
+mechanism description. The python geometry must MATCH it.
+
+Rules for `MECHANISM`:
+- Include ONLY parts that exist in the python assembly under the SAME names.
+- For ordinary gear trains and shafts, `dof/spin/slide/mount` labels remain valid on the parts.
+- For linkage truth, use `relations` instead of faking a part as `fixed` or `free`.
+- FOUR SEPARATE SEMANTICS: `mount` is structural support; `motion_joints` is moving-coordinate
+  inheritance; `relations` closes non-tree linkage edges; `transmissions`/`planetary_stages`
+  couples speeds and identifies legal tooth engagement. Never substitute one for another.
+- Use `motion_joints` whenever a joint origin/axis moves with another part: serial robot arms
+  (base->shoulder->elbow->wrist), yaw/pitch/roll gimbals, a rotary table on a slide, a wheel on
+  a steering knuckle, a rotor on a tilting nacelle, a roller on a moving arm, and planet gears
+  on a carrier. Declare them explicitly; names and `mount` do not imply a motion parent.
+- Closed mechanisms are different. A slider-crank connecting rod or four-bar coupler with two
+  independent pin endpoints has NO motion parent: leave it relation-controlled so the runtime
+  emits a flat/free body plus all closure connects. Never nest it under one arbitrarily chosen end.
+- Planetary example: sun and carrier use world-parent hinges; every planet uses a carrier-parent
+  offset hinge; ring stays fixed; `planetary_stages` declares the teeth and roles. This creates
+  carrier-driven orbit plus local planet self-spin and the complete sun/planet + ring/planet mesh set.
+- CRITICAL RULE: if a part is constrained by one or more `pin` / `revolute` relations, do NOT
+  also use its part-level `dof` to describe how it moves. The relations are the truth. In the
+  current single-agent runtime, such a part may temporarily be emitted as `dof=free` so MuJoCo
+  can move it, but that is only an implementation detail — never describe it as an unconstrained
+  free body in NOTES or geometry reasoning.
+- For a crank-slider:
+  * the crankshaft still spins (`dof=spin` on the crank part)
+  * the piston still slides (`dof=slide` on the slider part)
+  * the connecting rod should be described by pin/revolute relations at its two ends
+    (`mate_type: "pin"` or `"revolute"`)
+  * once the rod is described by those pin/revolute relations, do NOT use `dof` to explain the
+    rod's motion and do NOT call it a free body; its motion is determined by the relations
+  * do not weld the rod to the slider
+  * HARDPOINT-FIRST MODELING ORDER: solve the crank-pin center, wrist-pin center, rod axis, and
+    slider axis FIRST; derive bore sizes, rod-end outer radii, cheek thickness, pocket size, and
+    guide passage SECOND; only then build the solid piston, guide, and support bodies. Never size
+    a rod pocket or guide opening from guessed local box dimensions when those shapes are supposed
+    to clear a rod defined by pin centers and rod-end radii.
+  * For THIS crank-slider case specifically, every port in `ports_by_link` must be written in the
+    part's LOCAL coordinates, never in assembled world coordinates. Solve the hardpoint in world
+    space first, then convert it to the part-local port by subtracting that part's own placement
+    offset (and applying the part's local frame if rotated). Do not guess local port numbers and
+    do not copy world coordinates directly into the port.
+  * the guide constrains the slider, NOT the rod: give the rod its own passage through the
+    entire motion range and never let the guide body intersect the rod
+  * the piston/slider must be built as a true wrist-pin carrier: the wrist pin passes through
+    real upper/lower cheeks or bosses, and the rod small end must have clear working space around
+    that pin so force can pass into the slider instead of dying in an overlap
+  * size and cut the piston pocket / rod passage from the rod's actual motion envelope, not from
+    a guessed static box; if the rod is angled, the clearance must fit that angled body
+  * if a pin or press-fit relation is declared, the geometry must honor it with positive clearance
+    (running fit) or explicit intended interference; never rely on nominally equal radii to avoid overlap
+  * HARD RULE FOR PIN/REVOLUTE JOINT GEOMETRY: the only allowed solid overlap at a pin joint is the
+    shaft volume inside the declared bore. No other solid from either part may occupy that pin cylinder.
+    Concretely: after placing both parts, the pin axis neighborhood (radius = shaft_radius + 0.05 mm,
+    over the declared shaft depth) must be clear except for the shaft itself and the intended bore wall.
+  * For the rod small-end and wrist-pin specifically: cut true relief around the pin through the rod eye
+    thickness so the rod body does not intersect the pin outside the bore. The bore carries the joint;
+    the surrounding rod solid must stay outside the pin envelope.
+  * For flywheel-on-shaft press-fit specifically: place the flywheel on the declared flywheel seat
+    axial window only. Its z-span must be derived from seat center and flywheel thickness
+    (`flywheel_z = seat_center_z - flywheel_h/2`) and must not intrude into crank web / shaft solids.
+  * if the wrist-pin/rod/crank closure cannot be represented honestly with the available
+    parts, say so in NOTES and prefer a conservative `MECHANISM` dict over a fake one.
+- `watch_links` should list the parts whose motion the driven test should observe. Use this when
+  the default watcher heuristic would miss the right bodies or include decorative free bodies.
+- `output_link` should name the intended mechanism output part when there is one.
+
+PART LABEL CONVENTION (still required — this is how downstream physics reads your intent for the
+actual built parts). The FIRST field of each `a.add(part, "<label>")` label is the URDF-safe part
+NAME; the rest are `key=value` metadata separated by `|`:
   - `dof=fixed|spin|slide|free`  — `spin` ONLY for a part that is MEANT to rotate to transmit motion:
                              a gear, a pinion, a wheel, or the shaft/arbor that carries them.
                              `slide` is for a guided linear carriage / rack / plunger / slider:
@@ -145,7 +253,7 @@ DISCIPLINE:
   follows the largest internal part envelope plus clearance; outer envelope = inner envelope
   + wall thickness.
 
-Respond with a short NOTES plan, then the ONE ```python block."""
+Respond with a short NOTES plan, then the ONE ```python block containing both `MECHANISM = {...}` and `build_machine()`."""
 
 
 def build_single_agent_user(product_prompt: str, has_image: bool = False) -> str:
@@ -169,7 +277,7 @@ def build_single_agent_user(product_prompt: str, has_image: bool = False) -> str
 {task}
 
 Write NOTES (the parts you will build, their rough sizes, dof, and how they mesh/touch), then
-the single ```python block."""
+the single ```python block containing both `MECHANISM = {...}` and `build_machine()`."""
 
 
 def build_single_agent_repair(error: str) -> str:
@@ -178,8 +286,11 @@ def build_single_agent_repair(error: str) -> str:
 
 {error}
 
-Fix ONLY what this error points to and return the COMPLETE corrected script — the single
-```python block defining build_machine(). Keep every working part; do not restate the notes."""
+Fix ONLY what this error points to and return the COMPLETE corrected response in the SAME format:
+1. short NOTES
+2. `MECHANISM = {...}` inside that python block
+3. the same python block must also define `build_machine()`
+Keep every working part; do not restate the notes."""
 
 
 def build_single_agent_geometry_feedback(findings: str, best_code: str | None = None) -> str:
@@ -217,7 +328,8 @@ not where you assumed, or it is in the wrong place. Moving the 19 others is 19 c
 break something; correcting X is one edit. Check what X's construct's origin actually is
 (a `Box`/`Cylinder` is centred; `align=Align.MIN` starts at z=0 and grows up; `make_gear`
 starts at its -Z end face) before deciding it is a placement error.{rollback}
-Return the COMPLETE corrected ```python block for build_machine()."""
+Return the COMPLETE corrected response in the SAME format as before:
+- one complete ```python block containing both `MECHANISM = {...}` and `build_machine()`"""
 
 
 def _drift_symptom(reason: str | None) -> bool:
@@ -369,6 +481,22 @@ def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: 
             "post does not help unless the post is on the gear's own axis.\n"
             "- Two stacked parts on one shaft must sit at DISTINCT axial stations: compute "
             "each one's z from the real top face of the part below it.\n"
+            "- For a crank-slider, if the connecting rod overlaps the guide or slider, do NOT "
+            "treat the rod as a free body to dodge around it. Re-solve the hardpoints first "
+            "(crank pin center, wrist pin center, rod axis), then re-derive the rod pocket and "
+            "guide passage from that geometry. Redesign the guide as an open crosshead-style "
+            "guide and rebuild the slider around a true wrist-pin joint (upper/lower cheeks or "
+            "bosses with a real rod pocket).\n"
+            "- If wrist_pin overlaps piston_slider, enlarge the pin bore / cheek clearance or "
+            "split the slider into cheeks + bridge; do NOT leave the pin embedded in solid "
+            "slider material.\n"
+            "- If connecting_rod overlaps wrist_pin, treat this as a real geometry fault: keep "
+            "the bore concentric to the pin, then remove surrounding rod solid from the pin "
+            "envelope (add relief / thin the eye / trim the cheek) so only the shaft-in-bore "
+            "region remains. Do NOT move the pin off-axis and do NOT fake this with dof labels.\n"
+            "- If crankshaft overlaps flywheel at a press-fit seat, solve z from the seat center: "
+            "flywheel_z = seat_center_z - flywheel_h/2, and shorten/reposition the shaft/web "
+            "segment so the flywheel volume occupies only its seat window.\n"
             "Do not shrink a gear to dodge a post, and do not touch parts not listed.")
     elif loose:
         guidance = (
@@ -485,4 +613,5 @@ def build_single_agent_physics_feedback(summary: str, metrics: dict, diagnosis: 
 {body}
 
 {guidance}{rollback}
-Return the COMPLETE corrected ```python block for build_machine()."""
+Return the COMPLETE corrected response in the SAME format as before:
+- one complete ```python block containing both `MECHANISM = {...}` and `build_machine()`"""

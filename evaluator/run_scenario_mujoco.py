@@ -45,6 +45,10 @@ def _load_model(run_dir: str):
 
 
 def _spin_links(model):
+    watched = list(getattr(model, "watch_links", None) or [])
+    if watched:
+        watch_set = {w for w in watched}
+        return [l for l in model.links if l.name in watch_set]
     return [l for l in model.links if getattr(l, "dof", "fixed") in ("spin", "slide", "free")]
 
 
@@ -312,7 +316,19 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
         except Exception:
             return None, None
 
+    explicit_joint = {j.child: j for j in (getattr(model, "motion_joints", None) or [])}
+
     def joint_info(link):
+        declared = explicit_joint.get(link.name)
+        if declared is not None:
+            try:
+                j = m.joint(declared.name)
+                kind = "slide" if declared.type == "slide" else "spin"
+                return {"suffix": kind, "kind": kind, "unit": "m" if kind == "slide" else "rad",
+                        "qadr": m.jnt_qposadr[j.id], "dofadr": m.jnt_dofadr[j.id],
+                        "name": declared.name}
+            except Exception:
+                pass
         for suf, kind, unit in (("spin", "spin", "rad"),
                                 ("slide", "slide", "m"),
                                 ("free", "free", "rad")):
@@ -363,6 +379,7 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
     # joint at a commanded rate instead makes the test mean what it says, and makes the
     # travel comparable to the ratio the machine is supposed to produce.
     mode = str(_drive.get("mode") or "torque").lower()
+    drive_method = str(_drive.get("drive_method") or "servo").lower()
     target_vel = float(_drive.get("target_velocity") or 0.0)
     sweep_rate = target_vel if target_vel > 0 else 5.0
     cap_every = max(1, drive_steps // 40)
@@ -389,9 +406,10 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
         if _n:
             _traj_jnames.append((_n, int(m.jnt_qposadr[_i])))
             traj_joints[_n] = []
-            _kind = ("slide" if _n.endswith("_slide") else
-                     "spin" if _n.endswith("_spin") else
-                     "free" if _n.endswith("_free") else "unknown")
+            _jt = int(m.jnt_type[_i])
+            _kind = ("free" if _jt == int(mj.mjtJoint.mjJNT_FREE) else
+                     "slide" if _jt == int(mj.mjtJoint.mjJNT_SLIDE) else
+                     "spin" if _jt == int(mj.mjtJoint.mjJNT_HINGE) else "unknown")
             traj_joint_meta[_n] = {"kind": _kind,
                                    "unit": "m" if _kind == "slide" else "rad"}
     _traj_bnames = []
@@ -420,9 +438,38 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
     # conditional on there being something to drive; only the DRIVING is.
     built_in_drive = (driver is not None and driver_dofadr is not None
                       and user_control is None)
-    qadr = (driver_qadr if built_in_drive
-            and mode in ("velocity", "position", "position_sweep") else None)
+    direct_qpos = (built_in_drive and drive_method == "direct_qpos"
+                   and mode in ("velocity", "position", "position_sweep"))
+    qadr = driver_qadr if built_in_drive else None
     q_start = float(d.qpos[qadr]) if qadr is not None else 0.0
+    # A physical servo can be stalled by collision and lets equality constraints transmit
+    # load. Direct qpos remains an explicit test fixture for milligram watch movements.
+    servo_kp = float(_drive.get("servo_kp") or 25.0)
+    servo_kd = float(_drive.get("servo_kd") or 1.0)
+    servo_force = float(_drive.get("servo_force") or max(abs(torque), 0.5))
+    if built_in_drive:
+        log.append(f"drive: method={drive_method} mode={mode} rate={sweep_rate:g}")
+
+    def project_joint_equalities():
+        """Hard-project scalar joint equalities for the direct-qpos fixture.
+
+        MuJoCo equalities are intentionally soft dynamics constraints. Combining a
+        teleported input coordinate with soft follower constraints makes the followers lag
+        and can even rebound. Direct-qpos is explicitly kinematic, so propagate every
+        equality polynomial joint2 -> joint1 to a fixed point. Servo mode never calls this.
+        """
+        for _ in range(4):
+            for ei in range(m.neq):
+                if int(m.eq_type[ei]) != int(mj.mjtEq.mjEQ_JOINT):
+                    continue
+                j1, j2 = int(m.eq_obj1id[ei]), int(m.eq_obj2id[ei])
+                if j1 < 0 or j2 < 0:
+                    continue
+                q1, q2 = int(m.jnt_qposadr[j1]), int(m.jnt_qposadr[j2])
+                x = float(d.qpos[q2])
+                c = m.eq_data[ei]
+                d.qpos[q1] = c[0] + x * (c[1] + x * (c[2] + x * (c[3] + x * c[4])))
+
     for s in range(drive_steps):
         if user_control is not None:
             # Designer's own code owns the input. It may drive, release, phase several
@@ -435,11 +482,20 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
                 log.append(control_err)
                 user_control = None
         elif built_in_drive:
-            if qadr is not None:
-                # Command the angle directly: the input tracks the designed rate exactly,
-                # so "the input turned X rad" is a fact about the TEST, not about how
-                # heavy the parts happen to be.
-                d.qpos[qadr] = q_start + sweep_rate * (s + 1) * m.opt.timestep
+            target = q_start + sweep_rate * (s + 1) * m.opt.timestep
+            if direct_qpos and qadr is not None:
+                # Explicit kinematic fixture: command the input, then project every declared
+                # ratio/compound equality so the whole coordinate graph advances together.
+                d.qpos[qadr] = target
+                project_joint_equalities()
+                mj.mj_forward(m, d)
+            elif qadr is not None:
+                # PD servo: collision can stop it, and pin/revolute equality constraints get
+                # time to carry the load instead of chasing a teleported input coordinate.
+                err = target - float(d.qpos[qadr])
+                vel = float(d.qvel[driver_dofadr])
+                effort = servo_kp * err - servo_kd * (vel - sweep_rate)
+                d.qfrc_applied[driver_dofadr] = max(-servo_force, min(servo_force, effort))
             else:
                 d.qfrc_applied[driver_dofadr] = torque
         mj.mj_step(m, d)
@@ -451,7 +507,7 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
             _sample_traj(s)
         if s % cap_every == 0 and capture(nf):
             nf += 1
-    if built_in_drive and qadr is None:
+    if built_in_drive and not direct_qpos:
         d.qfrc_applied[driver_dofadr] = 0.0
 
     # ---- measure transmission ----

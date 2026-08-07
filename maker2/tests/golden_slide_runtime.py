@@ -73,6 +73,10 @@ def build_machine():
     mjcf = build_mjcf(model, ctx, settings=None, metrics={}, log_fn=lambda *_: None)
     text = open(mjcf, encoding="utf-8").read()
     assert 'name="carriage_slide"' in text and 'type="slide"' in text and 'axis="1 0 0"' in text
+    # A fixed payload mounted on a slider must not be a top-level jointless body:
+    # that would fix it to the world, and its weld would anchor the carriage at qpos=0.
+    assert 'name="payload_carried_free"' in text, text
+    assert '<weld body1="payload" body2="carriage"' in text, text
 
     spec = {"run_dir": run, "duration_s": 1.0,
             "drive": {"mode": "velocity", "target_velocity": 0.02}}

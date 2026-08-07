@@ -40,13 +40,14 @@ try:
     ns["make_gear"] = _make_gear
     ns["b3d"] = b3d
     for _n in ("BuildPart", "BuildSketch", "Cylinder", "Box", "Circle", "Polygon",
-               "extrude", "Location", "Plane", "Align", "Mode"):
+               "extrude", "Location", "Plane", "Align", "Mode", "add"):
         ns[_n] = getattr(b3d, _n)
     ns["AssemblyHelper"] = AssemblyHelper
 
     with open(src_path, "r", encoding="utf-8") as f:
         code = f.read()
     exec(compile(code, src_path, "exec"), ns)
+    mechanism = ns.get("MECHANISM") if isinstance(ns.get("MECHANISM"), dict) else {}
     # Single-agent path: the WHOLE machine is one build_machine() (no boss/sub split).
     fn = ns.get("build_machine") or ns.get("build_subassembly")
     if fn is None:
@@ -124,8 +125,16 @@ try:
                       "bbox": [bb.min.X, bb.min.Y, bb.min.Z, bb.max.X, bb.max.Y, bb.max.Z]})
         if root_name is None:
             root_name = name
+    payload = {"ok": True, "parts": parts, "root": root_name}
+    mech = {}
+    for k in ("ports_by_link", "relations", "motion_joints", "transmissions",
+              "planetary_stages", "output_link", "watch_links"):
+        if k in mechanism:
+            mech[k] = mechanism[k]
+    if mech:
+        payload["mechanism"] = mech
     with open(out_json, "w", encoding="utf-8") as f:
-        json.dump({"ok": True, "parts": parts, "root": root_name}, f)
+        json.dump(payload, f)
     # Export the WHOLE machine as one STEP so the text-to-cad inspect tool can run
     # selector-level precision checks on it (the self-check loop).
     step_out = os.path.join(os.path.dirname(out_json), "machine.step")

@@ -71,7 +71,14 @@ Then reason from first principles of rigid-body mechanics for the SCENARIO itsel
 MACHINERY DRIVE (when the environment is bench-mounted + driven): you are given a ROLE MAP
 (deterministic, from the URDF). Drive EXACTLY the ONE "driver_input" as "input_joint"
 (velocity mode, ~3-6 rad/s for a rotating input, or a modest linear speed for a sliding input, or position_sweep for a lever). Set
-"self_collision": true so gears mesh by tooth contact. Set "watch_joints" = the role map's
+Choose drive method by what the verdict depends on, NOT by weight alone. Set
+"drive_method":"servo" when friction, tooth/contact force, collision/jamming, load, slip, or
+soft closure tracking must be tested — the input must be allowed to stall. Set
+"drive_method":"direct_qpos" when exact equality/ratio constraints already replace physical
+contact and the claim is only kinematic propagation/ratio; examples are ultra-light watches
+and a planetary stage compiled to Willis constraints. A direct-qpos run makes no claim about
+friction or load capacity. Heavy mechanisms do not automatically qualify because qpos can
+force them through collisions. Set "self_collision": true so gears mesh by tooth contact. Set "watch_joints" = the role map's
 "transmission" joints (observed, never driven). Declare "propagation_path" (input->...->
 output) and "output_joint"; the test PASSES only when driving the input makes motion REACH
 the output. Never drive a transmission or unrelated joint, never drive more than one input.

@@ -262,8 +262,10 @@ def support_faults(model, ctx, *, settings=None, log_fn=print) -> list[Fell]:
 
     from .mjcf_builder import build_support_mjcf, coaxial_pairs
 
+    support_metrics: dict = {}
     try:
-        path, ground = build_support_mjcf(model, ctx, settings=settings, log_fn=log_fn)
+        path, ground = build_support_mjcf(
+            model, ctx, settings=settings, metrics=support_metrics, log_fn=log_fn)
         m = mj.MjModel.from_xml_path(path)
     except Exception as e:
         log_fn(f"[support] could not build/load the support model ({e}); skipping")
@@ -309,6 +311,23 @@ def support_faults(model, ctx, *, settings=None, log_fn=print) -> list[Fell]:
     for name in list(fell):
         held = [o for o in coaxial.get(name, ()) if o not in fell]
         if held:
+            del fell[name]
+
+    # A valid pin closure is support topology even when its soft equality constraint allows
+    # a couple millimetres of solver settling. Credit a fallen body only when it is connected
+    # by at least two validated pin/revolute relations to bodies that did not fall: a single
+    # pin still allows a pendulum to drop and must not mask a genuinely unheld part.
+    closure_neighbors: dict = {}
+    for entry in support_metrics.get("support_relation_acceptances", []):
+        parts = list(entry.get("parts") or [])
+        if len(parts) != 2:
+            continue
+        a, b = parts
+        closure_neighbors.setdefault(a, set()).add(b)
+        closure_neighbors.setdefault(b, set()).add(a)
+    for name in list(fell):
+        held = [o for o in closure_neighbors.get(name, ()) if o not in fell]
+        if len(held) >= 2:
             del fell[name]
 
     # SAME CREDIT FOR A PART THAT SIMPLY TOUCHES ITS CARRIER. The exclusions above are
