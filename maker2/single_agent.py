@@ -630,6 +630,10 @@ def _iter_score(phys: dict) -> float:
     """
     if not phys:
         return -1.0
+    diagnosis = phys.get("diagnosis") or {}
+    if diagnosis and not (diagnosis.get("routing") or {}).get("allow_agent_refinement", False):
+        # Harness/compiler/numerical/evaluator failures are not comparable CAD iterations.
+        return float("-inf")
     m = phys.get("metrics") or {}
     st = phys.get("stability") or {}
 
@@ -1054,8 +1058,27 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
             return result
 
         metrics = phys.get("metrics", {}) or {}
-        diagnosis = {"cause": phys.get("cause", "none"), "reason": phys.get("reason", "")}
+        diagnosis = phys.get("diagnosis") or {
+            "cause": phys.get("cause", "none"), "reason": phys.get("reason", ""),
+            "fault_domain": "evaluator", "verified": False,
+            "routing": {"allow_agent_refinement": False, "action": "halt_harness"}}
         passed = phys.get("passed")
+
+        if passed is not True and not (diagnosis.get("routing") or {}).get(
+                "allow_agent_refinement", False):
+            # Publish the completed simulation before halting. Previously this early return
+            # happened before the normal physics artifact below, so the frontend kept the
+            # iteration spinner active and could not show a failure/video already on disk.
+            log_fn("ARTIFACT_JSON:" + _json.dumps({
+                "kind": "physics", "iter": it, "run_dir": run_dir,
+                "render_dir": run_dir, "passed": passed, "physics": phys}))
+            log_fn(f"[single-agent] physics fault belongs to harness domain "
+                   f"'{diagnosis.get('fault_domain', 'evaluator')}' "
+                   f"({diagnosis.get('fault_code', 'unverified')}); refusing CAD regeneration")
+            result.update({"ok": False, "physics": phys, "diagnosis": diagnosis,
+                           "iterations": it + 1,
+                           "error": diagnosis.get("reason") or "unverified harness failure"})
+            return result
 
         # Score this iteration and update BEST. A higher score = closer to a working,
         # stable machine. Snapshot the best version's code + built model/urdf so we can

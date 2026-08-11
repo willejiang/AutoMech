@@ -170,6 +170,24 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
     m = mj.MjModel.from_xml_path(mjcf)
     d = mj.MjData(m)
 
+    def state_is_finite() -> bool:
+        return bool(np.isfinite(d.qpos).all() and np.isfinite(d.qvel).all()
+                    and np.isfinite(d.qacc).all() and np.isfinite(d.xpos).all())
+
+    def numerical_failure(phase: str, step: int) -> dict:
+        reason = f"non-finite MuJoCo state during {phase} at step {step}"
+        log.append(reason)
+        metrics = {"verdict": "FAIL", "test_kind": "driven_mechanism",
+                   "simulator_error": reason, "exploded": False,
+                   "moved_count": 0, "watched_count": 0,
+                   "numerical_health": {"finite": False, "phase": phase, "step": step}}
+        result = {"task": task, "spec": spec, "metrics": metrics,
+                  "stability": {"verdict": "UNAVAILABLE", "exploded": False},
+                  "frames_dir": None, "n_frames": 0, "log": log}
+        (out / "sim_result.json").write_text(json.dumps(result, indent=2))
+        print(f"[mujoco] numerical failure: {reason}")
+        return result
+
     dur = float(spec.get("duration_s", 4.0))
     settle_steps = int(0.5 / m.opt.timestep)      # ~0.5 s settle
     drive_steps = int(dur / m.opt.timestep)
@@ -220,8 +238,10 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
     import numpy as _np
     xpos_pre = d.xpos.copy()
     settle_disp = _np.zeros(m.nbody)
-    for _ in range(settle_steps):
+    for settle_step in range(settle_steps):
         mj.mj_step(m, d)
+        if not state_is_finite():
+            return numerical_failure("settle", settle_step)
         if len(d.xpos):
             dv = _np.linalg.norm(d.xpos - xpos_pre, axis=1)
             settle_disp = _np.maximum(settle_disp, dv)
@@ -317,8 +337,32 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
             return None, None
 
     explicit_joint = {j.child: j for j in (getattr(model, "motion_joints", None) or [])}
+    manifest_coordinate_map = {}
+    try:
+        manifest = json.loads((Path(run_dir) / "builder_manifest.json").read_text(
+            encoding="utf-8"))
+        if int(manifest.get("manifest_version") or 0) >= 3:
+            manifest_coordinate_map = dict((manifest.get("topology_plan") or {}).get(
+                "coordinate_map") or {})
+    except Exception:
+        pass
 
     def joint_info(link):
+        if link.name in manifest_coordinate_map:
+            mapped = manifest_coordinate_map[link.name]
+            if mapped is None:
+                return None
+            try:
+                j = m.joint(mapped)
+                jt = int(m.jnt_type[j.id])
+                kind = ("slide" if jt == int(mj.mjtJoint.mjJNT_SLIDE) else
+                        "free" if jt == int(mj.mjtJoint.mjJNT_FREE) else "spin")
+                return {"suffix": kind, "kind": kind,
+                        "unit": "m" if kind == "slide" else "rad",
+                        "qadr": m.jnt_qposadr[j.id], "dofadr": m.jnt_dofadr[j.id],
+                        "name": mapped}
+            except Exception:
+                return None
         declared = explicit_joint.get(link.name)
         if declared is not None:
             try:
@@ -488,6 +532,12 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
                 # ratio/compound equality so the whole coordinate graph advances together.
                 d.qpos[qadr] = target
                 project_joint_equalities()
+                # This mode is an exact kinematic fixture, not a zero-effort
+                # dynamics test. A subsequent mj_step would let contact impulses
+                # overwrite the projected followers before trajectory sampling.
+                # Servo mode below is the finite-effort/contact-sensitive test.
+                d.qvel[:] = 0.0
+                d.qacc[:] = 0.0
                 mj.mj_forward(m, d)
             elif qadr is not None:
                 # PD servo: collision can stop it, and pin/revolute equality constraints get
@@ -498,7 +548,10 @@ def run(mjcf: str, spec: dict, out_dir: str, task: str) -> dict:
                 d.qfrc_applied[driver_dofadr] = max(-servo_force, min(servo_force, effort))
             else:
                 d.qfrc_applied[driver_dofadr] = torque
-        mj.mj_step(m, d)
+        if not direct_qpos:
+            mj.mj_step(m, d)
+        if not state_is_finite():
+            return numerical_failure("drive", s)
         if len(d.xpos):
             dvec = np.linalg.norm(d.xpos - xpos0, axis=1)
             per_body_disp = np.maximum(per_body_disp, dvec)

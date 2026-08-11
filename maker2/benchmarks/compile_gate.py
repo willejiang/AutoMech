@@ -28,6 +28,12 @@ def compile_gate(model, ctx, settings, *, log_fn=print) -> list[GateError]:
     reads the rendered meshes under ctx.meshes_dir). Only meaningful for the MuJoCo engine."""
     if getattr(settings, "engine", "mujoco") != "mujoco":
         return []
+    if getattr(settings, "mjcf_compiler_mode", "agent") == "agent":
+        # Topology requires the assembled machine: a sub alone cannot decide whether an
+        # interface edge becomes tree inheritance, closure or an independent coordinate.
+        # The final physics compile is the single agent-owned acceptance point.
+        log_fn("[compile] agent MJCF compiler deferred until final assembled KinematicModel")
+        return []
     try:
         import mujoco                                    # noqa: F401
         from ..mjcf_builder import build_mjcf

@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>maker2 — Hierarchical Pipeline</title>
+<style>
+:root{
+  color-scheme:light dark;--page:#f9f9f7;--surface:#fcfcfb;--surface-2:#f3f3ef;
+  --ink:#0b0b0b;--ink-2:#52514e;--muted:#77756f;--line:#dddcd5;--axis:#c3c2b7;
+  --llm:#2a78d6;--python:#1baf7a;--solver:#4a3aa7;--artifact:#eda100;
+  --warn:#eb6834;--fail:#d03b3b;--good:#008300;--shadow:0 10px 28px rgba(11,11,11,.07);
+  --radius:16px;--mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+}
+@media(prefers-color-scheme:dark){:root{
+  --page:#0d0d0d;--surface:#1a1a19;--surface-2:#232321;--ink:#fff;--ink-2:#c3c2b7;
+  --muted:#aaa89f;--line:#30302d;--axis:#383835;--llm:#3987e5;--python:#199e70;
+  --solver:#9085e9;--artifact:#c98500;--warn:#d95926;--fail:#e66767;--good:#0ca30c;
+  --shadow:0 10px 28px rgba(0,0,0,.28)
+}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--page);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+.skip{position:absolute;left:-9999px}.skip:focus{left:12px;top:12px;z-index:10;background:var(--surface);padding:10px;border:2px solid var(--llm)}
+header{max-width:1520px;margin:auto;padding:48px 28px 24px}.eyebrow{font:700 12px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--llm)}
+h1{max-width:980px;margin:.5rem 0;font-size:clamp(32px,5vw,68px);line-height:1.02;letter-spacing:-.045em}header>p{max-width:920px;color:var(--ink-2);font-size:17px}
+.invariant{display:grid;grid-template-columns:auto 1fr;gap:14px;max-width:920px;margin-top:22px;padding:16px 18px;border:1px solid var(--line);border-left:5px solid var(--solver);background:var(--surface);border-radius:12px}.invariant b{color:var(--solver)}
+.controls{position:sticky;top:0;z-index:8;display:flex;gap:8px;align-items:center;overflow-x:auto;padding:12px max(28px,calc((100vw - 1464px)/2));background:color-mix(in srgb,var(--page) 90%,transparent);backdrop-filter:blur(12px);border-block:1px solid var(--line)}
+button{white-space:nowrap;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 13px;border-radius:999px;font:650 13px/1 system-ui;cursor:pointer}button:hover,button:focus-visible{border-color:var(--llm);outline:3px solid color-mix(in srgb,var(--llm) 22%,transparent);outline-offset:2px}button[aria-pressed=true]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+main{max-width:1520px;margin:auto;padding:28px;display:flex;flex-direction:column}.legend{display:flex;flex-wrap:wrap;gap:14px;margin:0 0 24px;color:var(--ink-2);font-size:13px;order:0}.execution-flow{order:1}.pipeline{order:2}.route-matrix{order:3}.artifact-map{order:4}.fallback{order:5}.key{display:flex;align-items:center;gap:7px}.swatch{width:11px;height:11px;border-radius:3px;background:var(--c);border:1px solid color-mix(in srgb,var(--c) 70%,var(--ink))}
+.pipeline{display:grid;grid-template-columns:repeat(4,minmax(270px,1fr));gap:18px;align-items:start}.stage{position:relative;min-width:0;padding:16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow);transition:opacity .2s,transform .2s,border-color .2s}.stage::after{content:"→";position:absolute;right:-18px;top:52px;z-index:2;color:var(--muted);font-size:24px}.stage:nth-child(4n)::after,.stage:last-child::after{content:none}.stage h2{display:flex;gap:10px;align-items:flex-start;margin:0 0 13px;font-size:18px;line-height:1.25}.num{display:grid;place-items:center;flex:0 0 28px;height:28px;border-radius:8px;background:var(--ink);color:var(--surface);font:700 12px var(--mono)}
+.node{position:relative;margin:9px 0;padding:12px;border:1px solid var(--line);border-left:4px solid var(--type,var(--python));border-radius:10px;background:var(--surface-2)}.node strong{display:block;line-height:1.25}.node p{margin:5px 0 0;color:var(--ink-2);font-size:13px}.node code,.artifact-list code{font-family:var(--mono);font-size:12px}.node.llm{--type:var(--llm)}.node.python{--type:var(--python)}.node.solver{--type:var(--solver)}.node.artifact{--type:var(--artifact)}.node.warn{--type:var(--warn)}.node.good{--type:var(--good)}
+.flow{display:flex;align-items:center;gap:8px;margin:5px 0;color:var(--muted);font:700 10px/1.2 var(--mono);letter-spacing:.04em;text-transform:uppercase}.flow::before,.flow::after{content:"";height:1px;background:var(--line);flex:1}.loop{margin:10px 0;padding:9px 11px;border:1px dashed var(--warn);border-radius:9px;color:var(--ink-2);font-size:12px}.loop b{color:var(--warn)}
+details{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}summary{cursor:pointer;font-weight:700;font-size:13px;color:var(--ink-2)}details ul{padding-left:20px;margin:8px 0;color:var(--ink-2);font-size:13px}
+.wide{grid-column:span 2}.full{grid-column:1/-1}.repair-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.repair-grid .node{margin:0}.accept{border:1px solid var(--good);background:color-mix(in srgb,var(--good) 7%,var(--surface))}.rollback{border:1px dashed var(--fail);background:color-mix(in srgb,var(--fail) 6%,var(--surface))}
+.route-matrix,.artifact-map{margin-top:18px;padding:20px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow)}.route-matrix h2,.artifact-map h2{margin-top:0}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font:700 11px var(--mono);text-transform:uppercase;color:var(--muted)}.route{font-weight:750}.route.boss{color:var(--llm)}.route.sub{color:var(--python)}.route.tx{color:var(--solver)}
+.artifact-list{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.artifact-list section{padding:12px;background:var(--surface-2);border-radius:10px;border-top:4px solid var(--artifact)}.artifact-list h3{margin:0 0 8px;font-size:14px}.artifact-list ul{margin:0;padding-left:18px;color:var(--ink-2);font-size:12px}
+.fallback{margin-top:20px;padding:20px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}.fallback ol{columns:2;column-gap:42px}.fallback li{break-inside:avoid;margin-bottom:8px}.source{font:12px var(--mono);color:var(--muted)}
+.execution-flow{margin-top:26px;padding:22px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow)}.execution-flow>header{padding:0;margin:0 0 18px}.execution-flow>header h2{margin:0 0 6px;font-size:clamp(24px,3vw,36px);letter-spacing:-.025em}.execution-flow>header p{margin:0;color:var(--ink-2);font-size:14px}.flowchart-figure{margin:18px 0 26px}.flowchart-figure figcaption{display:flex;align-items:baseline;gap:10px;margin:0 0 9px;font-weight:800;font-size:18px}.flowchart-figure figcaption small{color:var(--muted);font:500 11px var(--mono)}.flowchart-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface-2);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--surface) 50%,transparent)}.flowchart{display:block;width:100%;min-width:1180px;height:auto}.fc-edge{fill:none;stroke:var(--muted);stroke-width:2.2;marker-end:url(#arrow)}.fc-loop{fill:none;stroke:var(--fail);stroke-width:2.2;stroke-dasharray:7 5;marker-end:url(#arrow-fail)}.fc-process{fill:var(--surface);stroke:var(--python);stroke-width:2}.fc-solver{fill:var(--surface);stroke:var(--solver);stroke-width:2.5}.fc-llm{fill:var(--surface);stroke:var(--llm);stroke-width:2}.fc-artifact{fill:var(--surface);stroke:var(--artifact);stroke-width:2}.fc-decision{fill:var(--surface);stroke:var(--warn);stroke-width:2.5}.fc-success{fill:color-mix(in srgb,var(--good) 8%,var(--surface));stroke:var(--good);stroke-width:2.5}.fc-failure{fill:color-mix(in srgb,var(--fail) 7%,var(--surface));stroke:var(--fail);stroke-width:2.5}.fc-io{fill:var(--surface);stroke:var(--artifact);stroke-width:2;stroke-dasharray:5 4}.fc-title{fill:var(--ink);font:750 14px system-ui,-apple-system,"Segoe UI",sans-serif;text-anchor:middle}.fc-code{fill:var(--ink-2);font:11px var(--mono);text-anchor:middle}.fc-note{fill:var(--muted);font:10px system-ui,-apple-system,"Segoe UI",sans-serif;text-anchor:middle}.fc-edge-label{fill:var(--ink);font:750 11px system-ui,-apple-system,"Segoe UI",sans-serif;paint-order:stroke;stroke:var(--surface-2);stroke-width:5px;stroke-linejoin:round;text-anchor:middle}.fc-lane{fill:var(--muted);font:800 11px var(--mono);letter-spacing:1px}.flow-subgraph{margin:16px 0;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2);transition:opacity .2s,transform .2s,border-color .2s}.flow-subgraph h3{display:flex;align-items:center;gap:9px;margin:0 0 12px;font-size:17px}.flow-lanes{display:grid;grid-template-columns:minmax(210px,.85fr) minmax(320px,1.45fr) minmax(220px,.9fr);gap:12px;align-items:start}.lane{min-width:0}.lane-title{margin:0 0 7px;color:var(--muted);font:750 10px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase}.io-list{margin:0;padding:10px 11px 10px 26px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink-2);font-size:12px}.io-list li+li{margin-top:5px}.io-label{display:inline-block;margin-right:5px;padding:2px 6px;border-radius:5px;background:var(--ink);color:var(--surface);font:700 9px/1.4 var(--mono);letter-spacing:.05em}.call-chain{display:flex;flex-direction:column;gap:7px}.call-step{padding:9px 10px;border-left:4px solid var(--python);border-radius:8px;background:var(--surface);font-size:12px}.call-step.solver{border-left-color:var(--solver)}.call-step.llm{border-left-color:var(--llm)}.call-step.artifact{border-left-color:var(--artifact)}.call-step code{font-family:var(--mono);font-weight:700}.call-arrow{text-align:center;color:var(--muted);font:700 11px var(--mono)}.decision-row{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:11px}.decision{padding:10px;border:1px solid var(--line);border-radius:9px;background:var(--surface);font-size:12px}.decision strong{display:block;margin-bottom:4px}.decision.ok{border-top:4px solid var(--good)}.decision.fail{border-top:4px solid var(--fail)}.decision.route-back{border-top:4px solid var(--warn)}.connector{margin:8px 0;text-align:center;color:var(--muted);font:700 10px var(--mono);letter-spacing:.04em}.field-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.field-grid code{display:block;padding:7px;border:1px solid var(--line);border-radius:7px;background:var(--surface);font-size:11px;overflow-wrap:anywhere}
+[data-dim=true]{opacity:.18;filter:grayscale(1)}[data-hit=true]{border-color:var(--llm);transform:translateY(-2px)}
+footer{max-width:1520px;margin:auto;padding:34px 28px 64px;color:var(--muted);font-size:13px}
+@media(max-width:1180px){.pipeline{grid-template-columns:repeat(2,minmax(280px,1fr))}.stage:nth-child(4n)::after{content:"→"}.stage:nth-child(2n)::after{content:none}.artifact-list{grid-template-columns:repeat(2,1fr)}.flow-lanes{grid-template-columns:1fr 1.5fr}.flow-lanes .lane:last-child{grid-column:1/-1}.decision-row{grid-template-columns:1fr 1fr}}
+@media(max-width:680px){header{padding:34px 18px 18px}.controls{padding:10px 18px}main{padding:18px}.pipeline{grid-template-columns:1fr}.stage,.wide,.full{grid-column:1}.stage::after,.stage:nth-child(4n)::after{content:"↓";right:50%;top:auto;bottom:-22px}.repair-grid,.artifact-list,.flow-lanes,.decision-row,.field-grid{grid-template-columns:1fr}.flow-lanes .lane:last-child{grid-column:auto}.execution-flow{padding:15px}.fallback ol{columns:1}.wide-table{overflow-x:auto}h1{font-size:38px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+@media(forced-colors:active){.node,.stage{border:1px solid CanvasText}.node{border-left-width:6px}button[aria-pressed=true]{outline:3px solid Highlight}}
+@media print{.controls{display:none}body{background:#fff;color:#000}.pipeline{grid-template-columns:repeat(2,1fr)}.stage,.route-matrix,.artifact-map,.execution-flow{box-shadow:none}.stage,.flow-subgraph{break-inside:avoid}.stage::after{display:none}details>*{display:block!important}.fallback ol{columns:2}}
+</style>
+</head>
+<body>
+<a class="skip" href="#diagram">Skip to pipeline</a>
+<header>
+  <div class="eyebrow">maker2 / current implementation</div>
+  <h1>Hierarchical CAD assembly, with deterministic authority.</h1>
+  <p>A prompt becomes a validated articulated machine through a Boss connection graph, parallel subassembly builds, authoritative libslvs placement, real-solid prechecks, visual judgment, and driven physics. Failures return only to the layer that owns them.</p>
+  <div class="invariant"><b>Core invariant</b><span>The <strong>Boss authors topology and typed seams—not final coordinates.</strong> Python owns numeric placement, CAD mutation, validation, acceptance, and rollback. The Analyzer is read-only and may select only a Python-generated allowlisted candidate.</span></div>
+</header>
+<nav class="controls" aria-label="Diagram highlights">
+  <button data-filter="happy" aria-pressed="false">Happy path</button>
+  <button data-filter="boss" aria-pressed="false">Boss routing</button>
+  <button data-filter="sub" aria-pressed="false">Per-sub routing</button>
+  <button data-filter="analyzer" aria-pressed="false">Analyzer transactions</button>
+  <button data-filter="artifact" aria-pressed="false">Artifacts</button>
+  <button data-filter="execution" aria-pressed="false">执行代码流</button>
+  <button id="expand">Expand all</button><button id="reset">Reset</button><button onclick="print()">Print</button>
+</nav>
+<main id="diagram">
+<div class="legend" aria-label="Node legend">
+  <span class="key"><i class="swatch" style="--c:var(--llm)"></i>LLM decision</span>
+  <span class="key"><i class="swatch" style="--c:var(--python)"></i>Deterministic Python</span>
+  <span class="key"><i class="swatch" style="--c:var(--solver)"></i>Authoritative solver / transaction</span>
+  <span class="key"><i class="swatch" style="--c:var(--artifact)"></i>Persisted artifact</span>
+  <span class="key"><i class="swatch" style="--c:var(--warn)"></i>Feedback / retry</span>
+</div>
+
+<section class="pipeline" aria-label="Hierarchical maker2 pipeline">
+<article class="stage" data-tags="happy artifact">
+ <h2><span class="num">01</span>Entry & run state</h2>
+ <div class="node python"><strong>CLI dispatch</strong><p><code>python -m maker2.run "…" --hierarchy --json [--physics]</code> routes to <code>run_boss()</code>.</p></div>
+ <div class="flow">initialize</div>
+ <div class="node artifact"><strong>Session root</strong><p>Creates <code>&lt;slug&gt;_boss_&lt;timestamp&gt;/</code>, <code>run.log</code>, iteration state, safety ceilings, and keep-best score state.</p></div>
+ <details><summary>Flags and controls</summary><ul><li><code>--kb</code> enables offline retrieval.</li><li><code>--web</code> enables reference tools.</li><li><code>--deep-think</code> selects the richer worker/debugger path.</li><li><code>--no-manager-ir</code> falls back from connection-graph manager IR.</li><li><code>max_total_iters</code> and no-progress ceilings prevent runaway loops.</li></ul></details>
+</article>
+
+<article class="stage" data-tags="happy boss artifact">
+ <h2><span class="num">02</span>Boss plans topology</h2>
+ <div class="node llm"><strong>Boss: product → connection graph</strong><p>Defines subassemblies, frame contracts, typed <em>weld</em>/<em>power</em> seams, and ownership. Replans with prior plan + fault feedback.</p></div>
+ <div class="flow">deterministic gate</div>
+ <div class="node python"><strong>Schema + support gate</strong><p>Rejects malformed plans and floating power-only structures before any CAD is built.</p></div>
+ <div class="node artifact"><strong><code>subassembly_plan.json</code></strong><p>Stable sub IDs allow unchanged subassemblies to be reused across Boss iterations.</p></div>
+ <div class="loop"><b>Boss return:</b> interface/seam/topology fault → replan; rebuild only named affected subs when possible.</div>
+ <details><summary>What the Boss does not own</summary><ul><li>No authoritative cross-sub placement coordinates.</li><li>No arbitrary source edits.</li><li>Rough frame hints may feed the appearance proxy, but libslvs owns solved placement.</li></ul></details>
+</article>
+
+<article class="stage wide" data-tags="happy sub artifact">
+ <h2><span class="num">03</span>Parallel subassembly build</h2>
+ <div class="repair-grid">
+  <div class="node llm"><strong>Manager</strong><p>Authors parts, mates, ports, and realized frames for one isolated subassembly. Best-of-N or split mode may be used.</p></div>
+  <div class="node solver"><strong><code>mate_solver</code></strong><p>Compiles the connection graph into a local <code>KinematicModel</code>; no LLM placement fallback.</p></div>
+  <div class="node python"><strong>Manager gates</strong><p>Schema, connectivity, frame realization/drift, seat ownership. Declared-box overlap is warning-only.</p></div>
+  <div class="node llm"><strong>CAD worker</strong><p>CadQuery by default; OpenSCAD is the legacy fallback. Emits one script and STL per physical link.</p></div>
+  <div class="node python"><strong>Worker + conflict gates</strong><p>Watertightness blocks. Real-solid interpenetration invokes a localized subdebugger loop.</p></div>
+  <div class="node python"><strong>Final local validation</strong><p>Recheck frames after debugging, write URDF, then require MJCF to load in MuJoCo.</p></div>
+ </div>
+ <div class="loop"><b>Local return:</b> worker defect → worker/debugger; subassembly contract defect → only that Manager reruns. Other built subs remain reusable.</div>
+ <details><summary>Per-sub outputs</summary><ul><li><code>sub_&lt;id&gt;/kinematic_model.json</code> and <code>sub_frames.json</code></li><li><code>cq/&lt;link&gt;.py</code>, <code>meshes/&lt;link&gt;.stl</code>, <code>model.urdf</code></li><li><code>SubResult</code> carries the model, build results, realized frames, and status into assembly.</li></ul></details>
+</article>
+
+<article class="stage wide" data-tags="happy analyzer artifact boss">
+ <h2><span class="num">04</span>Authoritative assembly</h2>
+ <div class="repair-grid">
+  <div class="node python"><strong>Namespace + merge</strong><p>Links become <code>&lt;sub&gt;_&lt;link&gt;</code>; meshes and local poses are consolidated.</p></div>
+  <div class="node python"><strong>Closed-form seed</strong><p>Provides only an initial guess for the simultaneous constraint solve.</p></div>
+  <div class="node solver"><strong>libslvs authority</strong><p>Hard housing mounts, shaft axes, gear distances, face overlap, zero placement DOF, and valid SE(3).</p></div>
+ </div>
+ <div class="flow">success</div>
+ <div class="node artifact"><strong>Assembled contract</strong><p>Writes <code>model.urdf</code>, <code>model.mjcf</code>, <code>kinematic_model.json</code>, solved world frames, and <code>assembly_constraint_report.json</code>.</p></div>
+ <details><summary>Failure classification</summary><ul><li>libslvs inconsistency, residual, axis, DOF, or face-overlap failure raises <code>AssemblerError(kind="authoritative_solver")</code>.</li><li>Structural/name failures use existing contract repair, then Boss routing.</li></ul></details>
+</article>
+
+<article class="stage wide" data-tags="analyzer boss artifact">
+ <h2><span class="num">05</span>Solver-failure Analyzer transaction</h2>
+ <div class="repair-grid">
+  <div class="node python"><strong>Generate candidates</strong><p>Python computes allowed pose/seat candidates and exact rebuild scope.</p></div>
+  <div class="node llm"><strong>Read-only Analyzer</strong><p>Searches artifacts, logs, source, and KB. It must simulate before selecting one candidate ID.</p></div>
+  <div class="node solver"><strong><code>LocalRepairTransaction</code></strong><p>Snapshots affected sub state and disk bytes, applies one candidate, then reassembles through libslvs.</p></div>
+ </div>
+ <div class="repair-grid">
+  <div class="node good accept"><strong>Solver accepts</strong><p>Adopt <code>local_repair_N/</code> in the same Boss iteration.</p></div>
+  <div class="node warn rollback"><strong>Still invalid</strong><p>Try the next bounded attempt with the new structured solver report.</p></div>
+  <div class="node warn rollback"><strong>Exhausted/escalated</strong><p>Rollback byte-for-byte, then use contract repair or original Boss routing.</p></div>
+ </div>
+ <details><summary>Trace</summary><ul><li><code>analyzer_traces/slvs_&lt;failure_id&gt;_attempt_N.json</code></li><li>Analyzer never writes source, invents coordinates, or bypasses the solver.</li></ul></details>
+</article>
+
+<article class="stage" data-tags="happy boss">
+ <h2><span class="num">06</span>Post-assembly gates</h2>
+ <div class="node python"><strong>Module consistency</strong><p>Meshing gears must have the same module.</p></div>
+ <div class="node python"><strong>Solved mesh distance</strong><p>Checks compiler-solved world frames—not Boss guesses.</p></div>
+ <div class="node python"><strong>Auto-nudge</strong><p>Separates non-seamed overlaps and records a Manager hint; does not silently validate a bad seam.</p></div>
+ <div class="node python"><strong>Assembled support</strong><p>Weld chain to root blocks on floating subs; orientation-dependent grounding is warning-only.</p></div>
+ <div class="loop"><b>Blocking interface result:</b> return to Boss before expensive judgment or physics.</div>
+</article>
+
+<article class="stage full" data-tags="happy analyzer artifact boss sub">
+ <h2><span class="num">07</span>Real-solid precheck + physical housing repair</h2>
+ <div class="repair-grid">
+  <div class="node python"><strong>Structured precheck</strong><p>Loads the assembled URDF. Checks realized frames, gear distance, unseamed AABBs, and authoritative real-solid intersection at the unchanged 30% threshold.</p></div>
+  <div class="node artifact"><strong><code>precheck_report.json</code></strong><p>Stable failure/violation IDs; seam, sub, namespaced/local links, shaft role, overlap fraction, threshold, and observations.</p></div>
+  <div class="node python"><strong>Candidate proof</strong><p>Requires three unique solved shaft lines and six front/rear mappings; transforms intersections into plate-local 2D centers.</p></div>
+  <div class="node python"><strong>Geometry safety</strong><p>Proves editable CQ constructs, axis/diameter/depth provenance, edge margin, bore web thickness, and complete transaction scope.</p></div>
+  <div class="node llm"><strong>Precheck Analyzer</strong><p>Inspects the mapping, old/new centers, preserved cutter properties, checks, target IDs, and two-link rebuild scope.</p></div>
+  <div class="node solver"><strong>Transactional physical patch</strong><p>Patch front/rear plate scripts to explicit three-point patterns; rebuild only the two plates; synchronize six seat frames to those same centers.</p></div>
+ </div>
+ <div class="flow">reassemble + rerun precheck</div>
+ <div class="repair-grid">
+  <div class="node good accept"><strong>Strict acceptance</strong><p>All targets disappear; no new violation signature; aggregate overlap decreases; libslvs and affected URDFs remain valid; precheck is fully clean.</p></div>
+  <div class="node warn rollback"><strong>Any regression</strong><p>Rollback every source, frame, mesh, model, and in-memory change byte-for-byte.</p></div>
+  <div class="node python"><strong>Original routing remains</strong><p>Interface → Boss. Local sub fault → blamed Manager. No threshold suppression or bearing/frame-only substitute.</p></div>
+ </div>
+ <details><summary>Attempt artifacts</summary><ul><li><code>precheck_local_repair_N/candidate_set.json</code></li><li><code>analyzer_decision.json</code>, <code>assembly_constraint_report.json</code>, <code>precheck_report.json</code>, <code>acceptance.json</code>, URDF/MJCF</li><li><code>analyzer_traces/precheck_&lt;failure_id&gt;_attempt_N.json</code></li></ul></details>
+</article>
+
+<article class="stage wide" data-tags="happy boss sub artifact">
+ <h2><span class="num">08</span>Judge, physics & keep-best</h2>
+ <div class="repair-grid">
+  <div class="node llm"><strong>Six-view appearance judge</strong><p>Checks assembled completeness, proportions, floating parts, and prompt match. Suggestions feed a Boss replan.</p></div>
+  <div class="node python"><strong>Driven physics</strong><p>PyBullet or MuJoCo drives the mechanism, checks transmission/stability, and localizes blame to a sub or interface.</p></div>
+  <div class="node python"><strong>Score + monotonic loop</strong><p>Combines physics, precheck, and judge. Snapshot a new best; restore the prior best after regression.</p></div>
+ </div>
+ <div class="loop"><b>Stop:</b> pass + score target, plateau, max iteration, safety ceiling, or unavailable physics. <b>Continue:</b> localized blame reruns one Manager; interface blame replans the Boss.</div>
+ <details><summary>Final outputs</summary><ul><li><code>views/</code>, <code>judge.json</code>, physics recordings and metrics</li><li><code>best_snapshot/</code>, <code>result.json</code>, <code>run.json</code>, complete <code>run.log</code></li></ul></details>
+</article>
+
+<article class="stage wide" data-tags="artifact happy">
+ <h2><span class="num">09</span>Deliverable</h2>
+ <div class="node good"><strong>Accepted articulated machine</strong><p>Assembled URDF + MJCF, per-link CAD/STLs, solved frame report, precheck evidence, appearance verdict, and task-oriented physics evidence.</p></div>
+ <div class="node artifact"><strong>Disk-backed run history</strong><p>Every Boss iteration and local repair has its own directory. Prior assemblies remain inspectable; passing subs may enter the local KB memory.</p></div>
+ <p class="source">Primary driver: maker2/orchestrator_boss.py · Assembly: maker2/assembler.py · Solver: maker2/slvs_adapter.py</p>
+</article>
+</section>
+
+<section class="execution-flow" lang="zh-CN" data-tags="execution happy analyzer artifact boss sub" aria-labelledby="execution-title">
+<header>
+  <div class="eyebrow">code execution / I/O map</div>
+  <h2 id="execution-title">Manager / Worker / Assembler / Precheck 执行代码流</h2>
+  <p>下面按真实函数调用顺序展示完整主线：Manager 生成局部机构 → Worker 构建物理零件 → Assembler + libslvs 权威组装 → Precheck 实体检查。每一阶段都标明输入、内存输出、落盘文件、失败分支和修复回路。</p>
+</header>
+
+<figure class="flowchart-figure" data-tags="execution happy sub artifact boss">
+<figcaption>流程图 1：Manager + Worker Subassembly Build <small>每个 sub 并行执行；局部失败只返回拥有该故障的层</small></figcaption>
+<div class="flowchart-wrap">
+<svg class="flowchart" viewBox="0 0 1540 1110" role="img" aria-labelledby="manager-fc-title manager-fc-desc">
+<title id="manager-fc-title">Manager 和 Worker 代码执行流程图</title>
+<desc id="manager-fc-desc">run_boss 调用 build_all_subassemblies 并行构建每个 sub；Manager 输出 connection graph，经 mate solver 和 manager gates 后交给 CAD Worker，依次通过 worker、conflict、frame 和 compile gates，最终输出 SubResult 并交给 assembler。</desc>
+<defs>
+ <marker id="arrow-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="var(--muted)"/></marker>
+ <marker id="arrow-m-fail" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="var(--fail)"/></marker>
+</defs>
+<style>.manager-chart .fc-edge{marker-end:url(#arrow-m)}.manager-chart .fc-loop{marker-end:url(#arrow-m-fail)}</style>
+<g class="manager-chart">
+ <text class="fc-lane" x="28" y="28">ORCHESTRATOR INPUT</text><text class="fc-lane" x="350" y="28">MANAGER STAGE</text><text class="fc-lane" x="820" y="28">WORKER + LOCAL GATES</text><text class="fc-lane" x="1280" y="28">OUTPUT</text>
+ <!-- main spine -->
+ <path class="fc-edge" d="M250 105H315"/><path class="fc-edge" d="M545 105H605"/><path class="fc-edge" d="M715 150V190"/>
+ <path class="fc-edge" d="M715 260V300"/><path class="fc-edge" d="M715 390V435"/>
+ <path class="fc-edge" d="M825 480H880"/><path class="fc-edge" d="M990 525V565"/><path class="fc-edge" d="M990 655V695"/>
+ <path class="fc-edge" d="M990 785V825"/><path class="fc-edge" d="M990 915V950"/>
+ <path class="fc-edge" d="M1100 995H1250"/>
+ <path class="fc-edge" d="M1380 1035V1070H1480"/>
+ <!-- manager retries -->
+ <path class="fc-loop" d="M605 345H500V105H605"/>
+ <path class="fc-loop" d="M605 480H455V105H605"/>
+ <!-- worker retry -->
+ <path class="fc-loop" d="M880 610H805V480H880"/>
+ <path class="fc-loop" d="M880 740H770V480H880"/>
+ <path class="fc-loop" d="M880 870H735V105H605"/>
+ <path class="fc-loop" d="M880 995H700V105H605"/>
+ <!-- build failure routing -->
+ <path class="fc-loop" d="M315 105H285V1010H370"/>
+ <!-- input -->
+ <polygon class="fc-io" points="28,60 220,60 250,105 220,150 28,150 0,105"/>
+ <text class="fc-title" x="125" y="84">run_boss() 输入</text><text class="fc-code" x="125" y="105">plan · settings · feedback_by_sub</text><text class="fc-code" x="125" y="125">reuse · session_root</text>
+ <rect class="fc-process" x="315" y="65" width="230" height="80" rx="10"/><text class="fc-title" x="430" y="88">build_all_subassemblies()</text><text class="fc-code" x="430" y="108">ThreadPoolExecutor</text><text class="fc-note" x="430" y="128">reuse 直接 load；其他 sub 并行 build</text>
+ <!-- manager -->
+ <rect class="fc-llm" x="605" y="70" width="220" height="80" rx="10"/><text class="fc-title" x="715" y="94">build_subassembly()</text><text class="fc-code" x="715" y="114">Manager decompose / patch</text><text class="fc-note" x="715" y="132">one isolated sub + frame contract</text>
+ <rect class="fc-llm" x="605" y="190" width="220" height="70" rx="10"/><text class="fc-title" x="715" y="214">Manager 输出 graph</text><text class="fc-code" x="715" y="234">parts · mates · ports · frames</text><text class="fc-note" x="715" y="251">JSON，不直接接受坐标为权威</text>
+ <rect class="fc-solver" x="605" y="300" width="220" height="90" rx="10"/><text class="fc-title" x="715" y="324">mate_solver</text><text class="fc-code" x="715" y="344">solve_connection_graph()</text><text class="fc-code" x="715" y="362">→ local KinematicModel</text><text class="fc-note" x="715" y="380">失败：MateSolveError</text>
+ <polygon class="fc-decision" points="715,435 825,480 715,525 605,480"/><text class="fc-title" x="715" y="470">Manager gates 通过？</text><text class="fc-code" x="715" y="489">schema/connect/frame/seat</text><text class="fc-code" x="715" y="505">frame drift</text>
+ <text class="fc-edge-label" x="552" y="332">MateSolveError → Manager</text><text class="fc-edge-label" x="547" y="465">否 → Manager rerun</text><text class="fc-edge-label" x="852" y="468">是</text>
+ <!-- worker -->
+ <rect class="fc-llm" x="880" y="435" width="220" height="90" rx="10"/><text class="fc-title" x="990" y="458">CAD Worker</text><text class="fc-code" x="990" y="478">CadQuery default</text><text class="fc-code" x="990" y="496">OpenSCAD legacy fallback</text><text class="fc-note" x="990" y="514">每个 link → script + STL</text>
+ <polygon class="fc-decision" points="990,565 1100,610 990,655 880,610"/><text class="fc-title" x="990" y="603">Worker gate 通过？</text><text class="fc-code" x="990" y="622">ERR_MANIFOLD blocks</text><text class="fc-code" x="990" y="638">ERR_DIM warns</text>
+ <text class="fc-edge-label" x="830" y="596">否 → Worker rebuild</text><text class="fc-edge-label" x="1008" y="677">是</text>
+ <polygon class="fc-decision" points="990,695 1100,740 990,785 880,740"/><text class="fc-title" x="990" y="733">Real-mesh conflict？</text><text class="fc-code" x="990" y="752">subcheck boolean overlap</text><text class="fc-code" x="990" y="768">threshold exceeded?</text>
+ <text class="fc-edge-label" x="820" y="724">有 → subdebugger</text><text class="fc-edge-label" x="1008" y="807">无</text>
+ <rect class="fc-llm" x="1160" y="690" width="235" height="95" rx="10"/><text class="fc-title" x="1277" y="714">Subdebugger loop</text><text class="fc-code" x="1277" y="734">move/resize offenders</text><text class="fc-code" x="1277" y="752">rebuild changed links</text><text class="fc-note" x="1277" y="772">然后重新 subcheck</text>
+ <path class="fc-loop" d="M1100 740H1160"/><path class="fc-loop" d="M1277 785V810H1120V740H1100"/>
+ <polygon class="fc-decision" points="990,825 1100,870 990,915 880,870"/><text class="fc-title" x="990" y="862">Frame recheck 通过？</text><text class="fc-code" x="990" y="881">final model frames</text><text class="fc-code" x="990" y="897">unrealized / drift</text>
+ <text class="fc-edge-label" x="820" y="854">否 → Manager rerun</text><text class="fc-edge-label" x="1008" y="935">是</text>
+ <polygon class="fc-decision" points="990,950 1100,995 990,1040 880,995"/><text class="fc-title" x="990" y="987">Compile gate 通过？</text><text class="fc-code" x="990" y="1006">build_mjcf + MuJoCo load</text><text class="fc-code" x="990" y="1022">ERR_COMPILE blocks</text>
+ <text class="fc-edge-label" x="810" y="979">否 → Manager rerun</text><text class="fc-edge-label" x="1158" y="982">是</text>
+ <!-- outputs -->
+ <polygon class="fc-io" points="1250,950 1480,950 1520,995 1480,1040 1250,1040 1210,995"/>
+ <text class="fc-title" x="1365" y="974">SubResult(ok=True)</text><text class="fc-code" x="1365" y="994">model · results · sub_frames</text><text class="fc-code" x="1365" y="1012">ctx · meshes · model.urdf</text><text class="fc-note" x="1365" y="1028">进入 subs[sub_id]</text>
+ <rect class="fc-success" x="1260" y="1060" width="250" height="45" rx="10"/><text class="fc-title" x="1385" y="1081">全部 subs OK → assembler 输入</text><text class="fc-code" x="1385" y="1098">dict[str, SubResult]</text>
+ <rect class="fc-failure" x="370" y="970" width="250" height="80" rx="10"/><text class="fc-title" x="495" y="995">任一 sub build 失败</text><text class="fc-code" x="495" y="1015">feedback_by_sub[failed]</text><text class="fc-code" x="495" y="1033">reuse = all - failed → next Boss it</text>
+ <!-- I/O side notes -->
+ <rect class="fc-artifact" x="1130" y="90" width="350" height="130" rx="10"/><text class="fc-title" x="1305" y="114">Manager / Worker 落盘</text><text class="fc-code" x="1305" y="136">sub_&lt;id&gt;/kinematic_model.json</text><text class="fc-code" x="1305" y="156">sub_frames.json · cq/&lt;link&gt;.py</text><text class="fc-code" x="1305" y="176">meshes/&lt;link&gt;.stl · model.urdf</text><text class="fc-code" x="1305" y="196">model.mjcf (compile gate)</text>
+</g>
+</svg>
+</div>
+</figure>
+
+<figure class="flowchart-figure" data-tags="execution happy analyzer artifact boss">
+<figcaption>流程图 2：Assembler + libslvs + Solver Analyzer <small>实线 = 主执行；红色虚线 = 失败/回滚/重试</small></figcaption>
+<div class="flowchart-wrap">
+<svg class="flowchart" viewBox="0 0 1420 910" role="img" aria-labelledby="assembler-fc-title assembler-fc-desc">
+<title id="assembler-fc-title">Assembler 代码执行流程图</title>
+<desc id="assembler-fc-desc">从 run_boss 输入 plan 和 subs，进入 assembler assemble，调用 libslvs；求解失败进入只读 Analyzer 和事务修复，成功后生成 URDF MJCF 并进入 post assembly gates。</desc>
+<defs>
+ <marker id="arrow-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="var(--muted)"/></marker>
+ <marker id="arrow-a-fail" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="var(--fail)"/></marker>
+</defs>
+<style>.assembler-chart .fc-edge{marker-end:url(#arrow-a)}.assembler-chart .fc-loop{marker-end:url(#arrow-a-fail)}</style>
+<g class="assembler-chart">
+ <text class="fc-lane" x="30" y="28">INPUT</text><text class="fc-lane" x="455" y="28">ASSEMBLER CODE</text><text class="fc-lane" x="1100" y="28">OUTPUT / FAILURE</text>
+ <!-- edges first -->
+ <path class="fc-edge" d="M220 105H300"/><path class="fc-edge" d="M440 105H505"/>
+ <path class="fc-edge" d="M620 145V185"/><path class="fc-edge" d="M620 255V295"/><path class="fc-edge" d="M620 365V405"/>
+ <path class="fc-edge" d="M620 515V555"/><path class="fc-edge" d="M620 625V665"/><path class="fc-edge" d="M620 735V775"/>
+ <path class="fc-edge" d="M735 460H835"/><path class="fc-edge" d="M1075 460H1130"/>
+ <path class="fc-loop" d="M975 500V545"/><path class="fc-loop" d="M975 615V645"/><path class="fc-loop" d="M865 700H790V330H735"/>
+ <path class="fc-loop" d="M1085 700H1160"/>
+ <path class="fc-loop" d="M735 700H815"/><path class="fc-loop" d="M1035 700H1085"/>
+ <path class="fc-loop" d="M505 700H405V825H270"/>
+ <path class="fc-edge" d="M735 820H1090"/>
+ <!-- input -->
+ <polygon class="fc-io" points="30,65 195,65 220,105 195,145 30,145 5,105"/>
+ <text class="fc-title" x="112" y="88">run_boss 本轮输入</text><text class="fc-code" x="112" y="108">plan · subs · settings</text><text class="fc-code" x="112" y="125">assembly_iter_&lt;it&gt; ctx</text>
+ <!-- call -->
+ <rect class="fc-process" x="300" y="70" width="140" height="70" rx="10"/><text class="fc-title" x="370" y="96">调用</text><text class="fc-code" x="370" y="117">assembler.assemble()</text>
+ <rect class="fc-process" x="505" y="75" width="230" height="70" rx="10"/><text class="fc-title" x="620" y="99">① 校验 + 实例展开</text><text class="fc-code" x="620" y="119">subs/root · _sub_instance_ids</text>
+ <rect class="fc-process" x="505" y="185" width="230" height="70" rx="10"/><text class="fc-title" x="620" y="209">② Namespace + merge</text><text class="fc-code" x="620" y="229">links · poses · copy STL</text><text class="fc-note" x="620" y="246">内存：merged links / mesh_pairs</text>
+ <rect class="fc-process" x="505" y="295" width="230" height="70" rx="10"/><text class="fc-title" x="620" y="319">③ 分类 + 仅生成 seed</text><text class="fc-code" x="620" y="339">_classify_subs()</text><text class="fc-code" x="620" y="355">_place_mesh_cluster()</text>
+ <rect class="fc-solver" x="505" y="405" width="230" height="70" rx="10"/><text class="fc-title" x="620" y="429">④ libslvs 权威求解</text><text class="fc-code" x="620" y="449">build → solve → reconstruct</text><text class="fc-code" x="620" y="465">→ validate solution</text>
+ <polygon class="fc-decision" points="620,405 735,460 620,515 505,460"/><text class="fc-title" x="620" y="454">Solver 合格？</text><text class="fc-code" x="620" y="473">status/DOF/SE(3)/gear</text>
+ <!-- overlap redraw solver behind diamond is intentional; decision visible -->
+ <text class="fc-edge-label" x="773" y="450">否：SlvsSolveError</text><text class="fc-edge-label" x="640" y="540">是</text>
+ <rect class="fc-process" x="505" y="555" width="230" height="70" rx="10"/><text class="fc-title" x="620" y="580">⑤ Weld BFS</text><text class="fc-code" x="620" y="600">bridge poses · power mesh pairs</text>
+ <rect class="fc-process" x="505" y="665" width="230" height="70" rx="10"/><text class="fc-title" x="620" y="689">⑥ Model 验收</text><text class="fc-code" x="620" y="709">driver · forest guard</text><text class="fc-code" x="620" y="725">_validate_model()</text>
+ <rect class="fc-artifact" x="505" y="775" width="230" height="90" rx="10"/><text class="fc-title" x="620" y="798">⑦ 编译并落盘</text><text class="fc-code" x="620" y="818">build_urdf · save_model</text><text class="fc-code" x="620" y="836">_write_assembled_mjcf</text><text class="fc-note" x="620" y="854">返回 final + assembly_frames_world</text>
+ <!-- solver failure branch -->
+ <rect class="fc-artifact" x="835" y="415" width="240" height="85" rx="10"/><text class="fc-title" x="955" y="438">失败报告落盘</text><text class="fc-code" x="955" y="458">assembly_constraint_report.json</text><text class="fc-note" x="955" y="478">failure_id · stages · gear_pairs</text>
+ <rect class="fc-process" x="1130" y="425" width="250" height="70" rx="10"/><text class="fc-title" x="1255" y="449">Python 生成候选</text><text class="fc-code" x="1255" y="469">generate_repair_candidates()</text>
+ <rect class="fc-llm" x="865" y="545" width="220" height="70" rx="10"/><text class="fc-title" x="975" y="569">只读 Analyzer</text><text class="fc-code" x="975" y="589">simulate → candidate ID</text><text class="fc-note" x="975" y="606">不写文件、不造坐标</text>
+ <rect class="fc-solver" x="865" y="645" width="220" height="110" rx="10"/><text class="fc-title" x="975" y="670">LocalRepairTransaction</text><text class="fc-code" x="975" y="691">snapshot memory + disk</text><text class="fc-code" x="975" y="711">apply_candidate()</text><text class="fc-code" x="975" y="731">reassemble local_repair_N</text>
+ <polygon class="fc-decision" points="975,645 1085,700 975,755 865,700"/><text class="fc-title" x="975" y="695">修复后合格？</text><text class="fc-code" x="975" y="714">重新经过 libslvs</text>
+ <text class="fc-edge-label" x="823" y="687">是：回主线</text><text class="fc-edge-label" x="1120" y="686">否/越界/耗尽</text>
+ <rect class="fc-failure" x="1160" y="650" width="225" height="100" rx="10"/><text class="fc-title" x="1272" y="675">Rollback + 原始路由</text><text class="fc-code" x="1272" y="696">byte-for-byte restore</text><text class="fc-code" x="1272" y="716">contract repair</text><text class="fc-code" x="1272" y="736">→ Boss re-plan</text>
+ <rect class="fc-failure" x="45" y="785" width="225" height="80" rx="10"/><text class="fc-title" x="157" y="810">普通 AssemblerError</text><text class="fc-code" x="157" y="830">missing frame / forest / URDF</text><text class="fc-code" x="157" y="849">→ contract repair → Boss</text>
+ <polygon class="fc-io" points="1090,780 1360,780 1390,820 1360,860 1090,860 1060,820"/><text class="fc-title" x="1225" y="802">Assembler 输出</text><text class="fc-code" x="1225" y="822">model.urdf · model.mjcf · meshes</text><text class="fc-code" x="1225" y="840">kinematic_model.json · solved report</text>
+ <text class="fc-edge-label" x="900" y="810">success → post-assembly gates → precheck</text>
+</g>
+</svg>
+</div>
+</figure>
+
+<figure class="flowchart-figure" data-tags="execution happy analyzer artifact boss sub">
+<figcaption>流程图 3：Precheck + 六孔物理修复 + 最终路由 <small>每次修复都必须重新 assembler + libslvs + precheck</small></figcaption>
+<div class="flowchart-wrap">
+<svg class="flowchart" viewBox="0 0 1540 1040" role="img" aria-labelledby="precheck-fc-title precheck-fc-desc">
+<title id="precheck-fc-title">Precheck 代码执行和修复流程图</title>
+<desc id="precheck-fc-desc">从 assembled URDF 进入四项 precheck，生成结构化报告；若满足三轴六孔模式，进入只读 Analyzer 和事务物理修复，重新组装和 precheck 后严格验收，否则回滚并按 severity 路由。</desc>
+<defs>
+ <marker id="arrow-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="var(--muted)"/></marker>
+ <marker id="arrow-p-fail" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="var(--fail)"/></marker>
+</defs>
+<style>.precheck-chart .fc-edge{marker-end:url(#arrow-p)}.precheck-chart .fc-loop{marker-end:url(#arrow-p-fail)}</style>
+<g class="precheck-chart">
+ <text class="fc-lane" x="30" y="28">INPUT</text><text class="fc-lane" x="325" y="28">PRECHECK CODE</text><text class="fc-lane" x="880" y="28">REPAIR TRANSACTION</text><text class="fc-lane" x="1290" y="28">ROUTING</text>
+ <!-- main edges -->
+ <path class="fc-edge" d="M245 95H320"/><path class="fc-edge" d="M540 95H595"/><path class="fc-edge" d="M705 140V175"/>
+ <path class="fc-edge" d="M705 245V280"/><path class="fc-edge" d="M705 350V385"/><path class="fc-edge" d="M705 455V490"/>
+ <path class="fc-edge" d="M705 560V595"/><path class="fc-edge" d="M815 640H900"/><path class="fc-edge" d="M705 685V750"/>
+ <path class="fc-edge" d="M1015 685V735"/><path class="fc-edge" d="M1015 805V835"/><path class="fc-edge" d="M1015 905V925"/>
+ <path class="fc-edge" d="M1125 970H1245"/>
+ <path class="fc-loop" d="M905 970H835V640H815"/>
+ <path class="fc-loop" d="M705 685V720H1365V790"/>
+ <path class="fc-loop" d="M1245 970H1200V1015H715V685"/>
+ <!-- input -->
+ <polygon class="fc-io" points="30,55 215,55 245,95 215,135 30,135 0,95"/>
+ <text class="fc-title" x="122" y="78">precheck 输入</text><text class="fc-code" x="122" y="98">plan · subs</text><text class="fc-code" x="122" y="116">assembled model.urdf</text>
+ <rect class="fc-process" x="320" y="60" width="220" height="70" rx="10"/><text class="fc-title" x="430" y="84">load_robot()</text><text class="fc-code" x="430" y="105">URDF → robot + scene meshes</text>
+ <rect class="fc-process" x="595" y="70" width="220" height="70" rx="10"/><text class="fc-title" x="705" y="94">Check 1 · WELD frame</text><text class="fc-code" x="705" y="115">parent/child frame realized?</text>
+ <rect class="fc-process" x="595" y="175" width="220" height="70" rx="10"/><text class="fc-title" x="705" y="199">Check 2 · gear distance</text><text class="fc-code" x="705" y="220">actual center vs pitch sum</text>
+ <rect class="fc-process" x="595" y="280" width="220" height="70" rx="10"/><text class="fc-title" x="705" y="304">Check 3 · unseamed AABB</text><text class="fc-code" x="705" y="325">无 seam 的 subs 是否相交</text>
+ <rect class="fc-solver" x="595" y="385" width="220" height="70" rx="10"/><text class="fc-title" x="705" y="409">Check 4 · real solid</text><text class="fc-code" x="705" y="430">_part_overlaps()</text><text class="fc-code" x="705" y="446">manifold boolean · 30%</text>
+ <rect class="fc-artifact" x="595" y="490" width="220" height="70" rx="10"/><text class="fc-title" x="705" y="514">PrecheckReport</text><text class="fc-code" x="705" y="535">failure/violation IDs</text><text class="fc-note" x="705" y="552">precheck_report.json</text>
+ <polygon class="fc-decision" points="705,595 815,640 705,685 595,640"/><text class="fc-title" x="705" y="635">rep.ok？</text><text class="fc-code" x="705" y="653">violations == 0</text>
+ <text class="fc-edge-label" x="852" y="629">否</text><text class="fc-edge-label" x="722" y="714">是</text>
+ <rect class="fc-success" x="595" y="750" width="220" height="80" rx="10"/><text class="fc-title" x="705" y="775">Precheck clean</text><text class="fc-code" x="705" y="797">→ appearance judge</text><text class="fc-code" x="705" y="815">→ physics → score</text>
+ <!-- repair -->
+ <polygon class="fc-decision" points="1015,595 1125,640 1015,685 905,640"/><text class="fc-title" x="1015" y="632">支持六孔候选？</text><text class="fc-code" x="1015" y="650">3 roles · 6 mappings</text><text class="fc-code" x="1015" y="666">2 editable plates</text>
+ <text class="fc-edge-label" x="1028" y="715">是</text><text class="fc-edge-label" x="1205" y="624">否 → 原始路由</text>
+ <rect class="fc-process" x="900" y="735" width="230" height="70" rx="10"/><text class="fc-title" x="1015" y="759">Python 几何证明</text><text class="fc-code" x="1015" y="779">shaft→plate-local centers</text><text class="fc-note" x="1015" y="797">cutter · edge margin · web · scope</text>
+ <rect class="fc-llm" x="900" y="835" width="230" height="70" rx="10"/><text class="fc-title" x="1015" y="859">只读 Precheck Analyzer</text><text class="fc-code" x="1015" y="879">simulate → allowlisted ID</text><text class="fc-note" x="1015" y="897">analyzer_decision.json</text>
+ <rect class="fc-solver" x="885" y="925" width="260" height="90" rx="10"/><text class="fc-title" x="1015" y="949">事务物理 patch</text><text class="fc-code" x="1015" y="969">2 CQ scripts → rebuild 2 STL</text><text class="fc-code" x="1015" y="987">sync 6 frames → validate URDF</text><text class="fc-note" x="1015" y="1004">reassemble(libslvs) → precheck again</text>
+ <polygon class="fc-decision" points="1365,790 1480,850 1365,910 1250,850"/><text class="fc-title" x="1365" y="838">Strict accept？</text><text class="fc-code" x="1365" y="856">targets gone · no new sig</text><text class="fc-code" x="1365" y="874">overlap↓ · fully clean</text>
+ <path class="fc-edge" d="M1145 970H1195V850H1250"/><text class="fc-edge-label" x="1192" y="835">比较 baseline/after</text>
+ <rect class="fc-success" x="1245" y="935" width="240" height="75" rx="10"/><text class="fc-title" x="1365" y="960">接受 repair context</text><text class="fc-code" x="1365" y="980">same Boss iteration</text><text class="fc-note" x="1365" y="997">→ judge / physics</text>
+ <text class="fc-edge-label" x="1380" y="925">是</text>
+ <rect class="fc-failure" x="1245" y="605" width="240" height="80" rx="10"/><text class="fc-title" x="1365" y="630">无候选 / escalate</text><text class="fc-code" x="1365" y="650">保留 baseline report</text><text class="fc-code" x="1365" y="668">→ severity routing</text>
+ <path class="fc-loop" d="M1365 790V685"/><text class="fc-edge-label" x="1432" y="735">否：rollback</text>
+ <rect class="fc-failure" x="1245" y="705" width="240" height="70" rx="10"/><text class="fc-title" x="1365" y="730">byte-for-byte rollback</text><text class="fc-code" x="1365" y="750">source · frames · STL · model</text>
+ <path class="fc-loop" d="M1365 705V685"/>
+ <!-- routing -->
+ <polygon class="fc-decision" points="1365,355 1480,415 1365,475 1250,415"/><text class="fc-title" x="1365" y="405">severity？</text><text class="fc-code" x="1365" y="424">interface / sub</text>
+ <path class="fc-loop" d="M1365 605V475"/>
+ <rect class="fc-failure" x="1225" y="235" width="280" height="75" rx="10"/><text class="fc-title" x="1365" y="260">interface → Boss re-plan</text><text class="fc-code" x="1365" y="280">replan_blamed only</text><text class="fc-note" x="1365" y="297">其他 subs reuse</text>
+ <rect class="fc-process" x="1225" y="505" width="280" height="75" rx="10"/><text class="fc-title" x="1365" y="530">sub → blamed Manager</text><text class="fc-code" x="1365" y="550">feedback_by_sub</text><text class="fc-note" x="1365" y="567">reuse = all - blamed</text>
+ <path class="fc-loop" d="M1365 355V310"/><path class="fc-loop" d="M1365 475V505"/><text class="fc-edge-label" x="1415" y="332">interface</text><text class="fc-edge-label" x="1400" y="492">sub</text>
+</g>
+</svg>
+</div>
+</figure>
+
+<article class="flow-subgraph" data-tags="execution happy artifact boss">
+<h3><span class="num">A0</span>编排器调用入口：<code>run_boss()</code></h3>
+<div class="flow-lanes">
+ <div class="lane"><div class="lane-title">输入 I</div><ul class="io-list"><li><span class="io-label">PLAN</span><code>SubassemblyPlan</code></li><li><span class="io-label">SUBS</span><code>dict[str, SubResult]</code></li><li><span class="io-label">CFG</span><code>Settings</code></li><li><span class="io-label">STATE</span>Boss iteration <code>it</code>、reuse、feedback</li></ul></div>
+ <div class="lane"><div class="lane-title">执行 CODE</div><div class="call-chain"><div class="call-step"><code>make_run_context(.../assembly_iter_&lt;it&gt;)</code><br>创建本轮组装上下文。</div><div class="call-arrow">↓</div><div class="call-step solver"><code>assembler.assemble(plan, subs, assembly_ctx, settings, log_fn)</code></div><div class="call-arrow">↓ success</div><div class="call-step"><code>post-assembly gates → precheck(...) → judge → physics</code></div></div></div>
+ <div class="lane"><div class="lane-title">输出 O</div><ul class="io-list"><li><span class="io-label">MEM</span><code>final: KinematicModel</code></li><li><span class="io-label">CTX</span>active <code>assembly_ctx</code></li><li><span class="io-label">DIR</span><code>assembly_iter_&lt;it&gt;/</code></li><li><span class="io-label">LOG</span><code>run.log</code> + ARTIFACT_JSON</li></ul></div>
+</div>
+<div class="decision-row"><div class="decision ok"><strong>✓ assemble 成功</strong>进入 module/mesh/support gates，再进入 precheck。</div><div class="decision fail"><strong>✕ authoritative_solver</strong>携带 <code>failure_report</code>，进入 Solver Analyzer 事务。</div><div class="decision route-back"><strong>↩ 普通 assembler failure</strong>先 contract repair；仍失败则 Boss re-plan。</div></div>
+<p class="source">maker2/orchestrator_boss.py · run_boss() · Step 4 / Step 5</p>
+</article>
+
+<article class="flow-subgraph" data-tags="execution happy artifact boss">
+<h3><span class="num">A1</span><code>assembler.assemble()</code>：从 SubResult 到整机模型</h3>
+<div class="flow-lanes">
+ <div class="lane"><div class="lane-title">输入 I</div><ul class="io-list"><li><code>plan: SubassemblyPlan</code></li><li><code>subs: {sub_id: SubResult}</code></li><li><code>ctx: RunContext</code></li><li><code>settings.cross_sub_solver</code>，默认 <code>slvs</code></li><li>每个 sub 的 model、STL、<code>sub_frames</code></li></ul></div>
+ <div class="lane"><div class="lane-title">执行 CODE</div><div class="call-chain">
+   <div class="call-step"><code>validate subs/root_sub</code>：所有 sub 必须构建成功，根 sub 必须存在。</div>
+   <div class="call-step"><code>_sub_instance_ids()</code>：展开重复实例及其 root pose。</div>
+   <div class="call-step"><code>_namespaced_links() / _namespaced_poses()</code>：链接改名为 <code>&lt;sub&gt;_&lt;link&gt;</code>，复制 STL，合并内部 mesh pairs。</div>
+   <div class="call-step"><code>_classify_subs()</code> → <code>gear_ids, base_id</code>。</div>
+   <div class="call-step"><code>_place_mesh_cluster()</code>：只产生 closed-form seed，不是最终 placement。</div>
+   <div class="call-step solver"><code>solve_cross_sub_placements()</code>：libslvs 同时求解所有跨 sub 刚体约束。</div>
+   <div class="call-step"><code>weld BFS</code>：<code>_bridge_pose_from_ports()</code> / <code>_bridge_pose_instance()</code> 生成 bridge poses；power seam 只记 mesh pair。</div>
+   <div class="call-step"><code>driver propagation → forest guard → _validate_model()</code></div>
+   <div class="call-step artifact"><code>build_urdf() → save_model() → _write_assembled_mjcf()</code></div>
+ </div></div>
+ <div class="lane"><div class="lane-title">输出 O</div><ul class="io-list"><li><span class="io-label">MEM</span>assembled <code>KinematicModel</code></li><li><span class="io-label">FRAMES</span><code>assembly_frames_world</code></li><li><span class="io-label">FILES</span><code>model.urdf</code>、<code>model.mjcf</code></li><li><code>kinematic_model.json</code></li><li><code>meshes/*.stl</code></li><li><code>assembly_constraint_report.json</code></li></ul></div>
+</div>
+<div class="decision-row"><div class="decision ok"><strong>✓ 正常返回</strong><code>return final</code>，后续 gate 读取 solved frames。</div><div class="decision fail"><strong>✕ <code>AssemblerError(kind="authoritative_solver")</code></strong><code>failure_report</code> + <code>report_path</code> 已结构化。</div><div class="decision route-back"><strong>↩ <code>AssemblerError(kind="assembler")</code></strong>缺 sub/frame、forest placement、模型或 URDF 校验失败。</div></div>
+<p class="source">maker2/assembler.py · assemble()</p>
+</article>
+
+<article class="flow-subgraph" data-tags="execution happy analyzer artifact boss">
+<h3><span class="num">A2</span>libslvs 权威求解内部</h3>
+<div class="flow-lanes">
+ <div class="lane"><div class="lane-title">输入 I</div><ul class="io-list"><li><code>plan</code> + <code>subs</code></li><li><code>seed_placed</code>（仅初值）</li><li><code>gear_ids / base_id</code></li><li>helpers：frame/link/gear geometry readers</li></ul><details><summary>约束输入</summary><ul><li>housing mount coincidence</li><li>shaft anchor + axis</li><li>gear point-on-line + axial position</li><li>gear target center distance</li></ul></details></div>
+ <div class="lane"><div class="lane-title">执行 CODE</div><div class="call-chain"><div class="call-step solver"><code>build_cross_sub_problem()</code><br>构造 entities、constraints、RigidStageSpec、diagnostics。</div><div class="call-arrow">↓</div><div class="call-step solver"><code>solve_problem()</code><br>调用 py-slvs System，输出 status、DOF、failed constraints、solved points。</div><div class="call-arrow">↓</div><div class="call-step solver"><code>reconstruct_placements()</code><br>从 solved anchor/axis 重建每个 stage 的 4×4 SE(3)。</div><div class="call-arrow">↓</div><div class="call-step solver"><code>validate_authoritative_solution()</code><br>检查 status、DOF=0、SE(3)、gear radial distance、axis angle、face overlap。</div><div class="call-arrow">↓</div><div class="call-step artifact"><code>report_dict()</code> / <code>failure_report_dict()</code></div></div></div>
+ <div class="lane"><div class="lane-title">输出 O</div><ul class="io-list"><li><span class="io-label">OK</span><code>PlacementResult</code></li><li><code>AssemblyConstraintProblem</code></li><li><code>placements: dict[sub_id, 4x4]</code></li><li><code>residuals</code></li><li><span class="io-label">FAIL</span><code>SlvsSolveError</code></li><li>stable <code>failure_id</code>、solver、stages、gear_pairs、diagnostics</li></ul></div>
+</div>
+<div class="field-grid" aria-label="Authoritative validation fields"><code>status == okay</code><code>dof == expected_dof == 0</code><code>failed_constraint_ids == []</code><code>RᵀR = I, det(R)=1</code><code>gear_distance ≤ tolerance</code><code>axis_angle ≤ 0.1°</code><code>face_overlap &gt; minimum</code><code>all values finite</code></div>
+<p class="source">maker2/slvs_adapter.py · solve_cross_sub_placements()</p>
+</article>
+
+<article class="flow-subgraph" data-tags="execution analyzer artifact boss">
+<h3><span class="num">A3</span>Solver Analyzer：只读选择 + 可回滚本地事务</h3>
+<div class="flow-lanes">
+ <div class="lane"><div class="lane-title">输入 I</div><ul class="io-list"><li>solver <code>failure_report</code></li><li><code>plan</code>、<code>subs</code>、settings</li><li>Python 生成的 allowlisted candidates</li><li>session artifacts、source、run.log、KB（只读）</li></ul></div>
+ <div class="lane"><div class="lane-title">执行 CODE</div><div class="call-chain"><div class="call-step"><code>generate_repair_candidates()</code> → pose / housing candidates + exact rebuild scope。</div><div class="call-step solver"><code>LocalRepairTransaction.__enter__()</code>：deepcopy 内存 + copytree affected sub 目录。</div><div class="call-step llm"><code>analyze_failure(source="slvs")</code>：read/search → <code>simulate_candidate</code> → 输出一个 candidate ID 或 escalate。</div><div class="call-step"><code>apply_candidate()</code>：只改 Python 已计算的值。</div><div class="call-step solver"><code>assembler.assemble(local_repair_N/)</code>：重新跑完整 libslvs authority。</div></div></div>
+ <div class="lane"><div class="lane-title">输出 O</div><ul class="io-list"><li><code>decision</code>：repair/escalate</li><li><code>selected_candidate_id</code></li><li><code>local_repair_N/</code> assembled artifacts</li><li><code>analyzer_traces/slvs_&lt;id&gt;_attempt_N.json</code></li><li>成功时更新 active <code>assembly_ctx</code></li></ul></div>
+</div>
+<div class="decision-row"><div class="decision ok"><strong>✓ reassemble 成功</strong>采用 repair context，回到 assembly success 主线。</div><div class="decision route-back"><strong>↻ 仍是 authoritative failure</strong>读取新 report，在 attempt 上限内继续。</div><div class="decision fail"><strong>✕ escalate / scope escape / exhausted</strong><code>tx.rollback()</code>，再走 contract repair 或 Boss re-plan。</div></div>
+</article>
+
+<article class="flow-subgraph" data-tags="execution happy artifact boss sub">
+<h3><span class="num">P1</span><code>precheck()</code>：整机几何的四层检查</h3>
+<div class="flow-lanes">
+ <div class="lane"><div class="lane-title">输入 I</div><ul class="io-list"><li><code>plan: SubassemblyPlan</code></li><li><code>subs: dict[str, SubResult]</code></li><li><code>assembled_urdf: str</code></li><li><code>log_fn</code></li></ul></div>
+ <div class="lane"><div class="lane-title">执行 CODE</div><div class="call-chain"><div class="call-step"><code>load_robot(assembled_urdf)</code></div><div class="call-step"><code>Check 1</code>：每条 WELD seam 的 parent/child frame 是否 realized。</div><div class="call-step"><code>Check 2</code>：gear mesh 实际中心距 vs pitch radii sum。</div><div class="call-step"><code>Check 3</code>：没有 seam 的 subs 是否 AABB interpenetrate。</div><div class="call-step solver"><code>Check 4</code>：<code>_part_overlaps()</code> → <code>_solid_intersection_frac()</code>，用 manifold 真实实体布尔交；阈值保持 30%。</div></div></div>
+ <div class="lane"><div class="lane-title">输出 O</div><ul class="io-list"><li><span class="io-label">MEM</span><code>PrecheckReport</code></li><li><code>ok</code></li><li><code>failure_id</code></li><li><code>aggregate_overlap</code></li><li><code>violations[]</code></li><li><span class="io-label">FILE</span><code>precheck_report.json</code></li></ul></div>
+</div>
+<details><summary>Violation 结构化 I/O 字段</summary><div class="field-grid"><code>violation_id</code><code>kind / severity</code><code>sub_id / involved_sub_ids</code><code>seam_id</code><code>parent_link / child_link</code><code>parent_local_link / child_local_link</code><code>shaft_role</code><code>overlap_fraction / threshold</code><code>observations</code><code>detail / value</code></div></details>
+<div class="decision-row"><div class="decision ok"><strong>✓ <code>rep.ok</code></strong>进入 appearance judge / physics。</div><div class="decision fail"><strong>✕ interface violation</strong>若满足六孔模式先尝试物理 repair；否则 Boss re-plan。</div><div class="decision route-back"><strong>↩ 只有 sub violation</strong>只重跑 blamed Manager，其他 subs reuse。</div></div>
+<p class="source">maker2/precheck.py · precheck() · _part_overlaps()</p>
+</article>
+
+<article class="flow-subgraph" data-tags="execution analyzer artifact boss sub">
+<h3><span class="num">P2</span>Precheck 六孔物理修复：从 solved shaft lines 到严格验收</h3>
+<div class="flow-lanes">
+ <div class="lane"><div class="lane-title">输入 I</div><ul class="io-list"><li>baseline <code>precheck_report</code></li><li>successful <code>assembly_constraint_report.json</code></li><li><code>plan / subs / assembly_ctx / settings</code></li><li>三条 collision roles：input、inter、output</li></ul><details><summary>候选必须证明</summary><ul><li>3 条唯一 authoritative shaft lines</li><li>front/rear 共 6 个唯一 frame↔bore mapping</li><li>恰好 2 个 machine-editable plate links</li><li>cutter axis/diameter/counterbore/depth provenance</li><li>edge margin、bore web、完整 transaction scope</li></ul></details></div>
+ <div class="lane"><div class="lane-title">执行 CODE</div><div class="call-chain"><div class="call-step"><code>generate_precheck_repair_candidates()</code><br>将 shaft lines 变换到 plate local，和 bore plane 求交，生成两个 plate 的三点中心数组。</div><div class="call-step llm"><code>analyze_failure(source="precheck")</code><br>只读查看 mapping、old/new centers、cutter properties、margin/web、target IDs、rebuild scope。</div><div class="call-step solver"><code>LocalRepairTransaction</code>：快照 housing sub 的内存与全部目录字节。</div><div class="call-step"><code>apply_candidate()</code><br>改写 front/rear CQ scripts → <code>rebuild_link()</code> 两个 STL → 同步六个 seat frames → validate sub URDF。</div><div class="call-step solver"><code>assembler.assemble(precheck_local_repair_N/)</code><br>再次经过 libslvs，而不是接受局部猜测。</div><div class="call-step"><code>precheck()</code> 再跑真实实体检查。</div><div class="call-step solver"><code>precheck_repair_acceptance()</code> 严格比较 baseline / after。</div></div></div>
+ <div class="lane"><div class="lane-title">输出 O</div><ul class="io-list"><li><code>candidate_set.json</code></li><li><code>analyzer_decision.json</code></li><li><code>assembly_constraint_report.json</code></li><li><code>precheck_report.json</code></li><li><code>acceptance.json</code></li><li><code>model.urdf / model.mjcf</code></li><li><code>analyzer_traces/precheck_&lt;id&gt;_attempt_N.json</code></li></ul></div>
+</div>
+<div class="field-grid" aria-label="Strict precheck repair acceptance"><code>target_violation_ids ∩ after_ids == ∅</code><code>new_violation_signatures == ∅</code><code>after_overlap &lt; before_overlap</code><code>after.ok == true</code><code>changed links == declared links</code><code>all six frames synchronized</code></div>
+<div class="decision-row"><div class="decision ok"><strong>✓ 全部条件成立</strong>采用 <code>precheck_local_repair_N</code>，不增加 Boss iteration。</div><div class="decision fail"><strong>✕ 任一条件失败</strong>回滚 CQ source、sub_frames、STL、URDF、model、results 与内存状态。</div><div class="decision route-back"><strong>↩ 无候选 / Analyzer escalate</strong>保留原始 precheck report，执行既有 severity routing。</div></div>
+<p class="source">maker2/assembly_repair.py · generate_precheck_repair_candidates() · apply_candidate() · precheck_repair_acceptance()</p>
+</article>
+
+<article class="flow-subgraph" data-tags="execution happy boss sub analyzer">
+<h3><span class="num">R</span>最终路由：修复失败不会吞掉原始故障</h3>
+<div class="decision-row"><div class="decision ok"><strong>✓ assembly + precheck clean</strong>→ six-view judge → physics → score / keep-best。</div><div class="decision route-back"><strong>↩ interface / seam fault</strong>→ Boss re-plan；<code>replan_blamed</code> 指定受影响 subs，其他复用。</div><div class="decision route-back"><strong>↩ sub-local fault</strong>→ <code>feedback_by_sub</code>；只重跑 blamed Manager。</div><div class="decision ok"><strong>✓ solver transaction 成功</strong>→ 返回 assembly success 主线。</div><div class="decision fail"><strong>✕ transaction escalation/failure</strong>→ byte-for-byte rollback → contract repair / Boss。</div><div class="decision fail"><strong>✕ structural/name assembler fault</strong>→ `_try_contract_repair("assembler")`；仍失败再 Boss。</div></div>
+</article>
+</section>
+
+<section class="route-matrix" data-tags="boss sub analyzer">
+<h2>Fault locality determines the return path</h2>
+<div class="wide-table"><table>
+<thead><tr><th>Failure observed</th><th>Authority</th><th>Return path</th><th>Scope retained</th></tr></thead>
+<tbody>
+<tr><td>Malformed plan, unsupported seam, floating weld chain, cross-sub mesh fault</td><td>Boss/assembled deterministic gates</td><td class="route boss">Boss re-plan</td><td>Reuse unchanged sub IDs; rebuild named seam owners</td></tr>
+<tr><td>Connectivity, frame drift, non-manifold mesh, local conflict, compile failure</td><td>Manager/worker/sub gates</td><td class="route sub">Blamed Manager or worker/debugger</td><td>All unrelated subassemblies reused</td></tr>
+<tr><td>Authoritative placement failure with an allowlisted local candidate</td><td>libslvs + Python acceptance</td><td class="route tx">Solver Analyzer transaction</td><td>Only declared affected subs are snapshotted/mutated</td></tr>
+<tr><td>Three housing plate/bearing collisions with proven six-bore mapping</td><td>Real-solid precheck + Python acceptance</td><td class="route tx">Precheck Analyzer transaction</td><td>Only front/rear plate links rebuilt</td></tr>
+<tr><td>Appearance failure or unlocalized physics interface fault</td><td>VLM judge / physics diagnoser</td><td class="route boss">Boss re-plan</td><td>Prior plan and reusable sub builds carried forward</td></tr>
+<tr><td>Localized physics fault</td><td>Physics diagnoser</td><td class="route sub">Blamed Manager</td><td>Exact culprit part/sub feedback; all others reused</td></tr>
+<tr><td>Score regression</td><td>Deterministic scoring loop</td><td class="route tx">Restore best snapshot</td><td>Resume from best known sub set, not the regression</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="artifact-map" data-tags="artifact">
+<h2>Artifact map</h2>
+<div class="artifact-list">
+<section><h3>Session root</h3><ul><li><code>subassembly_plan.json</code></li><li><code>run.log</code></li><li><code>result.json</code></li><li><code>run.json</code></li><li><code>best_snapshot/</code></li></ul></section>
+<section><h3>Per subassembly</h3><ul><li><code>sub_&lt;id&gt;/kinematic_model.json</code></li><li><code>sub_frames.json</code></li><li><code>cq/*.py</code></li><li><code>meshes/*.stl</code></li><li><code>model.urdf</code></li></ul></section>
+<section><h3>Assembly iteration</h3><ul><li><code>assembly_iter_N/model.urdf</code></li><li><code>model.mjcf</code></li><li><code>assembly_constraint_report.json</code></li><li><code>precheck_report.json</code></li><li><code>views/</code> + <code>judge.json</code></li></ul></section>
+<section><h3>Local repair evidence</h3><ul><li><code>local_repair_N/</code></li><li><code>precheck_local_repair_N/</code></li><li><code>candidate_set.json</code></li><li><code>analyzer_decision.json</code></li><li><code>acceptance.json</code></li><li><code>analyzer_traces/</code></li></ul></section>
+</div>
+</section>
+
+<section class="fallback">
+<h2>Text-only workflow</h2>
+<ol>
+<li>Parse CLI flags and create a disk-backed Boss session.</li><li>Boss decomposes the prompt into subassemblies and typed seams.</li><li>Deterministic Boss gates reject invalid topology before CAD.</li><li>Managers build subassembly connection graphs in parallel.</li><li><code>mate_solver</code> compiles each graph into a local kinematic model.</li><li>CAD workers create and validate each physical link.</li><li>Subdebugger resolves real-solid local conflicts; frame and compile gates rerun.</li><li>Assembler namespaces and merges all accepted subs.</li><li>libslvs authoritatively solves all cross-sub placement constraints.</li><li>A solver failure may enter a bounded read-only Analyzer transaction.</li><li>Post-assembly module, spacing, overlap, and support gates run.</li><li>Structured precheck measures real-solid collisions.</li><li>A supported housing collision may enter the six-bore physical repair transaction.</li><li>Appearance judge reviews six assembled views.</li><li>Physics drives the mechanism and localizes failures.</li><li>Scoring snapshots improvements and restores regressions.</li><li>Pass yields the complete articulated machine and evidence bundle.</li>
+</ol>
+</section>
+</main>
+<footer>Current hierarchical path documented from <code>maker2/run.py</code>, <code>orchestrator_boss.py</code>, <code>assembler.py</code>, <code>slvs_adapter.py</code>, <code>assembly_repair.py</code>, <code>assembly_analyzer.py</code>, and <code>precheck.py</code>.</footer>
+<script>
+const filterButtons=[...document.querySelectorAll('[data-filter]')];
+const tagged=[...document.querySelectorAll('[data-tags]')];
+function setFilter(tag){
+ filterButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter===tag)));
+ tagged.forEach(el=>{const hit=el.dataset.tags.split(' ').includes(tag);el.dataset.dim=String(!hit);el.dataset.hit=String(hit)});
+}
+filterButtons.forEach(b=>b.addEventListener('click',()=>{const on=b.getAttribute('aria-pressed')==='true';on?reset():setFilter(b.dataset.filter)}));
+function reset(){filterButtons.forEach(b=>b.setAttribute('aria-pressed','false'));tagged.forEach(el=>{delete el.dataset.dim;delete el.dataset.hit})}
+document.getElementById('reset').addEventListener('click',reset);
+let expanded=false;document.getElementById('expand').addEventListener('click',e=>{expanded=!expanded;document.querySelectorAll('details').forEach(d=>d.open=expanded);e.currentTarget.textContent=expanded?'Collapse all':'Expand all'});
+document.querySelectorAll('.node,.call-step,.decision').forEach(n=>{n.tabIndex=0;n.addEventListener('focus',()=>n.closest('.stage,.flow-subgraph')?.setAttribute('data-hit','true'));n.addEventListener('blur',()=>{if(!filterButtons.some(b=>b.getAttribute('aria-pressed')==='true'))n.closest('.stage,.flow-subgraph')?.removeAttribute('data-hit')})});
+</script>
+</body>
+</html>

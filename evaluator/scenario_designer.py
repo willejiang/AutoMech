@@ -288,6 +288,7 @@ def _robot_block(robot_info):
             "\nTRAJECTORY KEYS (metrics_code MUST use exactly these — traj[\"joints\"] is "
             "keyed by them, NOT by the URDF joint names above):\n"
             f"  joints_by_part: {motion_key_by_part}\n"
+            f"  allowed_joint_keys: {robot_info.get('trajectory_joint_names', [])}\n"
             f"  bodies: {robot_info.get('links', [])}\n")
     # The user-facing output parts and the joint each one's motion is actually readable
     # through. These are dof=fixed — they have no joint of their own — so measuring one

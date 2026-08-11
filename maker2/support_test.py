@@ -264,8 +264,17 @@ def support_faults(model, ctx, *, settings=None, log_fn=print) -> list[Fell]:
 
     support_metrics: dict = {}
     try:
-        path, ground = build_support_mjcf(
-            model, ctx, settings=settings, metrics=support_metrics, log_fn=log_fn)
+        if getattr(settings, "mjcf_compiler_mode", "agent") == "agent":
+            from .mjcf_support_derivative import derive_support_mjcf
+            accepted = os.path.splitext(ctx.urdf_path)[0] + ".mjcf"
+            manifest = os.path.join(ctx.run_dir, "builder_manifest.json")
+            facts = os.path.join(ctx.run_dir, "mjcf_facts.json")
+            path, ground = derive_support_mjcf(
+                accepted, manifest, facts, os.path.join(ctx.run_dir, "model_support.mjcf"))
+            log_fn(f"[support] derived accepted agent topology -> {path}")
+        else:
+            path, ground = build_support_mjcf(
+                model, ctx, settings=settings, metrics=support_metrics, log_fn=log_fn)
         m = mj.MjModel.from_xml_path(path)
     except Exception as e:
         log_fn(f"[support] could not build/load the support model ({e}); skipping")
@@ -290,45 +299,38 @@ def support_faults(model, ctx, *, settings=None, log_fn=print) -> list[Fell]:
         if float(drop[b]) > _FALL_MM:
             fell[name] = float(drop[b])
 
-    # RADIAL FIT = SUPPORT. A part clamped around a shaft/pipe is held by the fit, and in
-    # the real machine has nothing under it by design (a watch hand is pressed onto its
-    # pipe). Its contact is excluded in the support MJCF — otherwise the bore reads as
-    # interpenetration and the solver ejects it — so it falls here as an artifact of the
-    # exclusion, not as a real fault. Credit the fit as support instead. Support flows
-    # both ways: the ring rides the shaft, and the shaft is journalled in the ring.
-    #
-    # But the fit must be REAL. coaxial_pairs() only tests distance to the infinite axis
-    # LINE, so a hand hovering 10mm past the end of its arbor is still "on the axis" — that
-    # is the exact false pass this whole rewrite exists to kill. Require the two solids to
-    # actually meet (the shaft passes through the bore), measured on the STLs in world pose.
     links_by_name = {l.name: l for l in model.links}
-    coaxial: dict = {}
-    for s, f in coaxial_pairs(model, ctx.meshes_dir, include_spin_spin=True):
-        if not _really_fits(model, ctx.meshes_dir, s, f):
-            continue
-        coaxial.setdefault(s, set()).add(f)
-        coaxial.setdefault(f, set()).add(s)
-    for name in list(fell):
-        held = [o for o in coaxial.get(name, ()) if o not in fell]
-        if held:
-            del fell[name]
+    if getattr(settings, "mjcf_compiler_mode", "agent") != "agent":
+        # Legacy-only heuristic credit. Agent mode owns support semantics in its accepted
+        # support_patches; deterministic support must not reverse the agent's topology decision.
+        coaxial: dict = {}
+        for s, f in coaxial_pairs(model, ctx.meshes_dir, include_spin_spin=True):
+            if not _really_fits(model, ctx.meshes_dir, s, f):
+                continue
+            coaxial.setdefault(s, set()).add(f)
+            coaxial.setdefault(f, set()).add(s)
+        for name in list(fell):
+            held = [o for o in coaxial.get(name, ()) if o not in fell]
+            if held:
+                del fell[name]
 
     # A valid pin closure is support topology even when its soft equality constraint allows
     # a couple millimetres of solver settling. Credit a fallen body only when it is connected
     # by at least two validated pin/revolute relations to bodies that did not fall: a single
     # pin still allows a pendulum to drop and must not mask a genuinely unheld part.
-    closure_neighbors: dict = {}
-    for entry in support_metrics.get("support_relation_acceptances", []):
-        parts = list(entry.get("parts") or [])
-        if len(parts) != 2:
-            continue
-        a, b = parts
-        closure_neighbors.setdefault(a, set()).add(b)
-        closure_neighbors.setdefault(b, set()).add(a)
-    for name in list(fell):
-        held = [o for o in closure_neighbors.get(name, ()) if o not in fell]
-        if len(held) >= 2:
-            del fell[name]
+    if getattr(settings, "mjcf_compiler_mode", "agent") != "agent":
+        closure_neighbors: dict = {}
+        for entry in support_metrics.get("support_relation_acceptances", []):
+            parts = list(entry.get("parts") or [])
+            if len(parts) != 2:
+                continue
+            a, b = parts
+            closure_neighbors.setdefault(a, set()).add(b)
+            closure_neighbors.setdefault(b, set()).add(a)
+        for name in list(fell):
+            held = [o for o in closure_neighbors.get(name, ()) if o not in fell]
+            if len(held) >= 2:
+                del fell[name]
 
     # SAME CREDIT FOR A PART THAT SIMPLY TOUCHES ITS CARRIER. The exclusions above are
     # not the only ones in the support MJCF, and a part whose declared carrier is right
@@ -343,17 +345,18 @@ def support_faults(model, ctx, *, settings=None, log_fn=print) -> list[Fell]:
     # MEETS a carrier that itself stayed up. A part declared onto something it does not
     # touch — the fault this whole module exists to catch — has no such contact and
     # still falls.
-    _TOUCH_MM = 0.05
-    for name in list(fell):
-        l = links_by_name.get(name)
-        if l is None:
-            continue
-        for car in _declared_carriers(l):
-            if car in fell or car not in links_by_name:
+    if getattr(settings, "mjcf_compiler_mode", "agent") != "agent":
+        _TOUCH_MM = 0.05
+        for name in list(fell):
+            l = links_by_name.get(name)
+            if l is None:
                 continue
-            if _touches(model, ctx.meshes_dir, name, car, _TOUCH_MM):
-                del fell[name]
-                break
+            for car in _declared_carriers(l):
+                if car in fell or car not in links_by_name:
+                    continue
+                if _touches(model, ctx.meshes_dir, name, car, _TOUCH_MM):
+                    del fell[name]
+                    break
 
     # ROOT CAUSE ONLY. When a bearing floats 0.5mm off the baseplate, everything stacked
     # above it falls too — reporting all 14 parts buries the 3 real faults and invites the

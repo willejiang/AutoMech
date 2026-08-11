@@ -39,12 +39,10 @@ from .urdf_builder import build_urdf, validate_urdf
 
 
 def _write_assembled_mjcf(final, ctx, settings, log) -> None:
-    """Write the assembled machine's MJCF (model.mjcf) next to model.urdf, from the
-    SAME merged KinematicModel. build_mjcf is the sole simulation compiler (CoACD,
-    mm->m, mass, solver tuning) and physics rebuilds it authoritatively at run time;
-    this just persists a matching on-disk artifact so the assembled machine has an
-    MJCF, not only a (render-only) URDF. Best-effort — a failure here never breaks the
-    assembly, since physics does not depend on this file existing."""
+    """Persist legacy debug MJCF only; agent topology compilation happens once in physics."""
+    if getattr(settings, "mjcf_compiler_mode", "agent") == "agent":
+        log("deferred assembled MJCF to the final physics topology compiler")
+        return
     try:
         from .mjcf_builder import build_mjcf
         path = build_mjcf(final, ctx, settings=settings, log_fn=log)

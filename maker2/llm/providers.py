@@ -16,7 +16,7 @@ PROVIDERS = {
     # native tool calls.
     "local_gateway": {
         "base_url": "http://127.0.0.1:8313/v1",
-        "default_model": "claude-opus-4.8",
+        "default_model": "gpt-5.6-sol",
         "api_style": "openai",
         "supports_tools": False,
     },

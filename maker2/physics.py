@@ -65,9 +65,12 @@ def _load_model(run_dir: str):
         return None
 
 
-def _robot_info(model) -> dict:
-    """Selector/designer input: movable joints (with chain) + links + driver tag +
-    a deterministic ROLE MAP (what can move and what can't) derived from topology."""
+def _robot_info(model, run_dir: str | None = None) -> dict:
+    """Selector/designer input with accepted simulator coordinate names.
+
+    Manifest v3 is authoritative when available. Legacy ``<link>_spin`` inference is
+    retained only for backends/artifacts that have no agent-authored builder manifest.
+    """
     joints = []
     for j in model.joints:
         if j.type in _MOVABLE:
@@ -75,19 +78,35 @@ def _robot_info(model) -> dict:
                            "parent": j.parent, "child": j.child,
                            "driver": bool(getattr(j, "driver", False))})
     motion_key_by_part = {}
-    for l in model.links:
-        d = getattr(l, "dof", "fixed")
-        if d == "spin":
-            motion_key_by_part[l.name] = f"{l.name}_spin"
-        elif d == "slide":
-            motion_key_by_part[l.name] = f"{l.name}_slide"
-        elif d == "free":
-            motion_key_by_part[l.name] = f"{l.name}_free"
+    emitted_joint_names = []
+    if run_dir:
+        try:
+            manifest = json.loads(Path(run_dir, "builder_manifest.json").read_text(
+                encoding="utf-8"))
+            if int(manifest.get("manifest_version") or 0) >= 3:
+                coordinate_map = dict((manifest.get("topology_plan") or {}).get(
+                    "coordinate_map") or {})
+                motion_key_by_part = {part: joint for part, joint in coordinate_map.items()
+                                      if joint}
+                emitted_joint_names = list(manifest.get("joints") or [])
+        except Exception:
+            pass
+    if not motion_key_by_part:
+        for l in model.links:
+            d = getattr(l, "dof", "fixed")
+            if d == "spin":
+                motion_key_by_part[l.name] = f"{l.name}_spin"
+            elif d == "slide":
+                motion_key_by_part[l.name] = f"{l.name}_slide"
+            elif d == "free":
+                motion_key_by_part[l.name] = f"{l.name}_free"
+        emitted_joint_names = sorted(set(motion_key_by_part.values()))
     return {"name": model.name,
             "joints": joints,
             "links": [l.name for l in model.links],
             # Parts that get a direct joint in the sim, keyed by the actual trajectory key.
             "motion_key_by_part": motion_key_by_part,
+            "trajectory_joint_names": emitted_joint_names,
             # What each dof=fixed part RIDES ON. Such a part has no joint of its own, so
             # its motion is only readable through its carrier. Without this the designer
             # cannot tell which joint a clock hand corresponds to, picks a plausible gear
@@ -501,7 +520,7 @@ def _run_metrics_code(designed, out_base: str, *, log_fn=print) -> list:
     return payload.get("checks") or []
 
 
-def _design_spec(task: str, model, test: dict) -> dict:
+def _design_spec(task: str, model, test: dict, *, run_dir: str | None = None) -> dict:
     """environment_designer -> a spec for this test (ONE call that picks the sim
     environment + emits the scenario). For a DRIVEN test we still ENFORCE the role map
     deterministically on top (the gateway often ignores schema keys / the role
@@ -518,12 +537,12 @@ def _design_spec(task: str, model, test: dict) -> dict:
     if revise and revise.get("prev"):
         # Re-design after a TEST-side diagnosis (camera/scenario): feed the previous spec
         # + the failure back so the designer fixes the observation/drive, camera included.
-        spec = revise_environment(task, _robot_info(model), revise["prev"],
+        spec = revise_environment(task, _robot_info(model, run_dir), revise["prev"],
                                   revise.get("feedback", ""),
                                   base_url=gw["base_url"], api_key=gw["api_key"],
                                   model=gw["model"])
     else:
-        spec = design_environment(task, _robot_info(model), subsystem=subsystem,
+        spec = design_environment(task, _robot_info(model, run_dir), subsystem=subsystem,
                                   base_url=gw["base_url"], api_key=gw["api_key"],
                                   model=gw["model"], web=gw.get("web", False))
     # A driven test is now signalled by the model having a drivable input (the caller
@@ -542,13 +561,25 @@ def _design_spec(task: str, model, test: dict) -> dict:
                       f"'{drive.get('input_joint')}' -> '{driver}' (role: driver_input)")
             drive["input_joint"] = driver
         drive.setdefault("mode", "velocity")
-        # Weight is not the divider. If the compiler has replaced the transmission with an
-        # exact kinematic stage (currently fixed-member planetary), qpos is the truthful
-        # fixture for a ratio/propagation check. Otherwise pin closures and contact-loaded
-        # mechanisms use a servo so friction/collision can slow or stall the input.
+        # Weight is not the divider. Exact-qpos is selected from authored mechanics:
+        # planetary stages and independent rotating sleeves linked by a running journal
+        # both use declared scalar transmissions whose exact ratio is the test target.
+        # Pin closures and ordinary contact-loaded mechanisms remain finite-effort servo
+        # tests so friction/collision can slow or stall the input.
+        relations = list(getattr(model, "relations", None) or [])
         has_pin_linkage = any(getattr(r, "mate_type", "") in ("pin", "revolute")
-                              for r in (getattr(model, "relations", None) or []))
-        exact_kinematic_stage = bool(getattr(model, "planetary_stages", None))
+                              for r in relations)
+        links_by_name = {link.name: link for link in model.links}
+        has_independent_running_sleeves = any(
+            getattr(relation, "mate_type", "") in ("journal_bearing", "ball_bearing")
+            and getattr(links_by_name.get(relation.base_part), "dof", "fixed") == "spin"
+            and getattr(links_by_name.get(relation.incoming_part), "dof", "fixed") == "spin"
+            for relation in relations
+        )
+        exact_kinematic_stage = (bool(getattr(model, "planetary_stages", None))
+                                 or (bool(getattr(model, "transmissions", None))
+                                     and has_independent_running_sleeves
+                                     and not has_pin_linkage))
         if exact_kinematic_stage:
             drive["drive_method"] = "direct_qpos"
         elif has_pin_linkage:
@@ -673,8 +704,17 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
         mjcf = mjcf_builder.build_mjcf(model, ctx, settings=settings,
                                        metrics=metrics_side, log_fn=log_fn)
     except Exception as e:
+        from evaluator.attribution import diagnosis as make_diagnosis
+        report = getattr(e, "report", {})
+        diag = make_diagnosis(
+            "builder_compiler", "mjcf_agent_compile_failed",
+            f"MJCF topology compiler failed: {e}", verified=True,
+            evidence=[{"kind": "mjcf_gate_report", "observation": report}])
         return {"passed": False, "verdict": "FAIL",
-                "summary": f"MJCF build failed: {e}", "metrics": {}, "tests": []}
+                "summary": f"MJCF compiler failed: {e}",
+                "metrics": {"compile_report": report,
+                            "numerical_health": {"finite": True}},
+                "cause": "backend", "reason": str(e), "diagnosis": diag, "tests": []}
 
     # One directory PER ITERATION: a fixed "mujoco" dir made every iteration overwrite
     # the previous model.mp4, so only the last run had a video and there was no way to
@@ -716,7 +756,8 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
     spec = {"duration_s": 4.0, "run_dir": run_dir, "drive": {"torque": 0.5}}
     try:
         designed = _design_spec(task, model, {"name": "drive", "driver": driver_part,
-                                              "strategy": "driven_mechanism"})
+                                              "strategy": "driven_mechanism"},
+                                run_dir=run_dir)
         d = designed.get("drive") or {}
         # HONOUR THE DESIGNED DRIVE. _design_spec already settles `mode` and
         # `target_velocity` (defaulting to velocity @ 5 rad/s), but those were dropped
@@ -891,7 +932,8 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
                   f"re-designing scenario + camera and re-running")
             designed = _design_spec(task, model, {"name": "drive", "driver": driver_part,
                                                   "strategy": "driven_mechanism",
-                                                  "revise": {"prev": designed, "feedback": fb}})
+                                                  "revise": {"prev": designed, "feedback": fb}},
+                                    run_dir=run_dir)
             d = designed.get("drive") or {}
             spec["design"] = {
                 "input_joint": d.get("input_joint"),
@@ -954,6 +996,40 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
                         f"together: {len(support_fell)} part(s) have nothing supporting them "
                         f"({fell}) — they fall when the mount welds are released")
 
+    # Deterministic attribution gates any outer-loop regeneration. The VLM diagnosis is a
+    # hypothesis until authored IR, builder manifest and hard geometry evidence agree.
+    from evaluator.attribution import attribute_from_evidence, diagnosis as make_diagnosis
+    from maker2.physics_probes import manifest_probe
+    manifest_path = metrics_side.get("builder_manifest") or os.path.join(
+        run_dir, "builder_manifest.json")
+    probe = manifest_probe(model, manifest_path)
+    if not probe.get("ok", False):
+        attribution = attribute_from_evidence(manifest_diff=probe, metrics=m)
+    elif m.get("interferences"):
+        culprits = [{"kind": "part_pair", "name": f"{x['a']}/{x['b']}"}
+                    for x in m["interferences"][:6]]
+        attribution = make_diagnosis(
+            "agent_geometry", "real_geometry_interference",
+            "Deterministic solid intersection found in authored geometry.", verified=True,
+            evidence=[{"kind": "geometry_overlap", "observation": m["interferences"][:6]}],
+            culprits=culprits)
+    elif support_fell:
+        attribution = make_diagnosis(
+            "agent_geometry", "unsupported_part",
+            "Gravity support probe found authored parts without physical support.", verified=True,
+            evidence=[{"kind": "support_probe", "observation": [f.describe() for f in support_fell]}],
+            culprits=[{"kind": "part", "name": f.part} for f in support_fell])
+    elif cause in ("camera", "scenario") or _check_is_broken(m):
+        attribution = make_diagnosis(
+            "runner_scenario", "camera_or_scenario_fault",
+            diagnosis.get("reason", "The test setup, observation or metrics code is invalid."),
+            verified=True, evidence=diagnosis.get("evidence"))
+    else:
+        attribution = attribute_from_evidence(
+            manifest_diff=probe, metrics=m, evaluator_verdict=final_verdict,
+            hard_pass=(m.get("verdict") == "PASS" and not functional_failed))
+    diagnosis = {**diagnosis, **attribution}
+
     entry = {"name": "drive", "strategy": "driven_mechanism",
              "verdict": final_verdict, "metrics": m, "stability": stability,
              "summary": summary_text,
@@ -966,7 +1042,7 @@ def _run_physics_mujoco(urdf_path: str, task: str, run_dir: str, settings,
             "summary": entry["summary"], "metrics": m, "stability": stability,
             "cause": diagnosis.get("cause", "none"),
             "reason": diagnosis.get("reason", ""),
-            "design": spec.get("design"),
+            "design": spec.get("design"), "diagnosis": diagnosis,
             "frames_dir": res.get("frames_dir"), "video": video,
             "tests": [entry]}
 
@@ -987,12 +1063,23 @@ def _run_sim_mujoco(mjcf, spec, out_base, task, *, log_fn=print):
         result_path = out / "sim_result.json"
         if r.returncode == 0 and result_path.exists():
             return json.loads(result_path.read_text())
-        log_fn(f"[physics] mujoco subprocess rc={r.returncode}; "
-              f"stderr tail: {(r.stderr or '')[-1500:]}")
+        reason = f"MuJoCo subprocess exited {r.returncode}: {(r.stderr or r.stdout or '')[-1500:]}"
+        log_fn(f"[physics] {reason}")
+    except subprocess.TimeoutExpired as e:
+        # A timed-out native solver must not be run again in this process. The old fallback
+        # doubled a 10-minute wait and let NaN-spamming MuJoCo wedge the entire frontend run.
+        reason = f"MuJoCo subprocess timed out after {e.timeout}s"
+        log_fn(f"[physics] {reason}; refusing unsafe in-process retry")
     except Exception as e:
-        log_fn(f"[physics] mujoco subprocess failed ({type(e).__name__}: {e}); "
-              f"running in-process")
-    return mjr.run(mjcf, spec, out_base, task)
+        reason = f"MuJoCo subprocess failed ({type(e).__name__}: {e})"
+        log_fn(f"[physics] {reason}; refusing unsafe in-process retry")
+    return {"task": task, "metrics": {
+                "verdict": "FAIL", "test_kind": "driven_mechanism",
+                "numerical_health": {"finite": False}, "simulator_error": reason,
+                "exploded": False, "moved_count": 0, "watched_count": 0},
+            "stability": {"verdict": "UNAVAILABLE", "exploded": False},
+            "frames_dir": None, "n_frames": 0,
+            "log": [reason]}
 
 
 def run_physics(urdf_path: str, task: str, run_dir: str, settings=None,
@@ -1008,6 +1095,18 @@ def run_physics(urdf_path: str, task: str, run_dir: str, settings=None,
     if engine == "mujoco":
         return _run_physics_mujoco(urdf_path, task, run_dir, settings,
                                    iteration=iteration, log_fn=log_fn)
+    if engine == "chrono":
+        from .chrono_backend import run_chrono_backend
+        model = _load_model(run_dir)
+        if model is None:
+            from .physics_contract import normalize_result
+            return normalize_result(
+                {"passed": None, "verdict": "UNAVAILABLE", "summary": "no model for Chrono",
+                 "metrics": {}, "tests": [], "cause": "backend", "reason": "missing model"},
+                engine="chrono", mode=getattr(settings, "chrono_mode", "ideal_dynamic"),
+                run_dir=run_dir, status="unavailable")
+        return run_chrono_backend(model, urdf_path, task, run_dir, settings,
+                                  iteration=iteration, log_fn=log_fn)
     if engine == "simscape":
         from .simscape_backend import run_simscape_backend
         model = _load_model(run_dir)
@@ -1016,6 +1115,9 @@ def run_physics(urdf_path: str, task: str, run_dir: str, settings=None,
                     "summary": "no model to export to Simscape", "metrics": {}, "tests": []}
         return run_simscape_backend(model, urdf_path, task, run_dir, settings,
                                     iteration=iteration, log_fn=log_fn)
+
+    if engine != "pybullet":
+        raise ValueError(f"unknown physics engine '{engine}'")
 
     import run_scenario_pybullet as pyb
     from diagnose import diagnose_physics, encode_mp4
@@ -1137,9 +1239,9 @@ def _run_one_test(i, test, urdf_path, task, model, run_dir, gw, log_lock):
         # stand-still test (environment_designer keeps drive=null).
         wants_drive = bool(test.get("driver") or test.get("subsystem"))
         if wants_drive:
-            spec = _design_spec(task, model, test)
+            spec = _design_spec(task, model, test, run_dir=run_dir)
         elif model is not None:
-            spec = _design_spec(task, model, test)
+            spec = _design_spec(task, model, test, run_dir=run_dir)
             spec.setdefault("drive", None)
         else:
             spec = _static_spec()

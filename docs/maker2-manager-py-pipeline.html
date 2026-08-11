@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>maker2 — hierarchy + manager_py（方案B）Full Pipeline</title>
+<style>
+:root{
+  color-scheme:light dark;--page:#f9f9f7;--surface:#fcfcfb;--surface-2:#f3f3ef;
+  --ink:#0b0b0b;--ink-2:#52514e;--muted:#77756f;--line:#dddcd5;
+  --llm:#2a78d6;--python:#1baf7a;--gate:#d6a300;--good:#008300;--fail:#d03b3b;
+  --shadow:0 10px 28px rgba(11,11,11,.07);--radius:16px;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+}
+@media(prefers-color-scheme:dark){:root{
+  --page:#0d0d0d;--surface:#1a1a19;--surface-2:#232321;--ink:#fff;--ink-2:#c3c2b7;
+  --muted:#aaa89f;--line:#30302d;--llm:#3987e5;--python:#199e70;--gate:#c98500;
+  --good:#0ca30c;--fail:#e66767;--shadow:0 10px 28px rgba(0,0,0,.28)
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{max-width:1400px;margin:auto;padding:44px 28px 18px}
+.eyebrow{font:700 12px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--llm)}
+h1{margin:.4rem 0;font-size:clamp(28px,4.5vw,54px);line-height:1.03;letter-spacing:-.04em}
+header>p{max-width:900px;color:var(--ink-2);font-size:16px}
+.invariant{max-width:900px;margin-top:20px;padding:14px 18px;border:1px solid var(--line);border-left:5px solid var(--python);background:var(--surface);border-radius:12px}
+.invariant b{color:var(--python)}
+main{max-width:1400px;margin:auto;padding:20px 28px 60px}
+.card{margin:22px 0;padding:20px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow)}
+.card h2{margin:0 0 14px;font-size:22px;letter-spacing:-.02em}
+.mermaid{overflow:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface-2);padding:14px}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin:6px 0 18px;color:var(--ink-2);font-size:13px}
+.key{display:flex;align-items:center;gap:7px}
+.swatch{width:12px;height:12px;border-radius:3px;background:var(--c);border:1px solid color-mix(in srgb,var(--c) 70%,var(--ink))}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font:700 11px var(--mono);text-transform:uppercase;color:var(--muted)}
+code{font-family:var(--mono);font-size:12px}
+.route{font-weight:750}.route.boss{color:var(--llm)}.route.sub{color:var(--python)}
+ul{padding-left:20px;color:var(--ink-2)}li{margin-bottom:7px}
+.src{font:12px var(--mono);color:var(--muted)}
+footer{max-width:1400px;margin:auto;padding:20px 28px 60px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">maker2 · 方案B</div>
+  <h1>hierarchy + manager_py<br>完整流程图</h1>
+  <p>从产品 prompt 到 evaluator，全部在一张图里。路径：<code>run.py --hierarchy --manager-py --physics</code>
+  → <code>orchestrator_boss.run_boss</code> → <code>py_manager.evaluate_manager_python</code> →
+  <code>assembler</code> → <code>precheck</code> → <code>physics</code>。每个节点标注 <b>IN → OUT</b>。</p>
+  <div class="invariant">
+    <b>方案B 核心不变量：</b>boss 只描述连接拓扑 + 一个 <code>params.py</code>（每个 frame 一个根值函数，禁裸数字）。
+    manager 用 <code>place_part(axis=params.&lt;frame&gt;_axis(), xyz=params.&lt;frame&gt;())</code> 把每个零件直接放到全局坐标。
+    worker 被吸收、cross-sub libslvs 求解被跳过、几何 compiler 被跳过——params 是唯一坐标真源。
+  </div>
+</header>
+
+<main>
+  <div class="legend">
+    <span class="key"><span class="swatch" style="--c:var(--llm)"></span>LLM agent（boss / manager / judge）</span>
+    <span class="key"><span class="swatch" style="--c:var(--gate)"></span>确定性 gate / precheck（无 LLM）</span>
+    <span class="key"><span class="swatch" style="--c:var(--python)"></span>Python 处理（求值 / 装配 / 物理）</span>
+    <span class="key"><span class="swatch" style="--c:var(--good)"></span>接受 / 完成</span>
+  </div>
+
+  <div class="card">
+    <h2>End-to-end 流程</h2>
+    <div class="mermaid">
+flowchart TD
+    ENTRY(["▼ 入口 · run.py --hierarchy --manager-py --physics"]) --> P
+    P["产品 prompt<br/>IN: NL 文本 + flags<br/>OUT: run.py 路由到 run_boss"] --> BOSS
+
+    subgraph L0["　　　　　　　　　STAGE A — BOSS　（LLM · boss.plan_machine）　　　　　　　　　"]
+      BOSS["<b>★ BOSS ★</b><br/><b>author 连接图 + PARAMS</b><br/>IN: prompt (+prior_plan 于 re-plan/refine, +feedback)<br/>OUT: SubassemblyPlan(subs, typed seams, frames+axis)<br/>+ params.py (每 frame 根值函数)<br/>→ subassembly_plan.json"]
+    end
+    BOSS --> BG{{"boss_schema_gate + boss_gate<br/>IN: plan · OUT: pass | ERR_SCHEMA/ERR_SUP_NOWELD"}}
+    BG -- pass --> SKIPC["几何 compiler 跳过<br/>(manager_py 强制 legacy — 避免第二套坐标系)"]
+
+    SKIPC --> FANOUT["FAN OUT · team_managers.run_subassembly_team<br/>IN: plan, reuse-set(未变 sub 从磁盘复用)<br/>OUT: 每个 sub 并行构建"]
+    FANOUT --> MGR
+
+    subgraph L1["STAGE B — 每个子装配 (manager_py)"]
+      MGR["MANAGER (LLM) · manager.decompose<br/>IN: sub brief + frame_contract(frames+axis) + params 名单 + feedback<br/>OUT: 一个 python 模块 build_subassembly()->cq.Assembly<br/>(import params, place_part/place_axial, 全局 Location)"]
+      MGR --> PYEVAL["py_manager.evaluate_manager_python (沙箱子进程)<br/>IN: 授权 .py + params.py + boss frames<br/>OUT: exec→cq.Assembly→每零件世界 4x4 + 导出 STL<br/>→ KinematicModel(全局 pose, mesh_pairs) · WORKER 被吸收"]
+      PYEVAL --> SUBGATE{{"per-sub gates (manager_py 子集)<br/>schema/连通/frame gate 跳过 (无 JSON 图)<br/>运行: worker_gate(ERR_MANIFOLD) + compile_gate(C5)<br/>conflict-gate + subdebugger 禁用 (pose 是 params 真值)"}}
+      SUBGATE -- pass --> SUBOK["SubResult(ok=True)<br/>OUT: kinematic_model.json + meshes/*.stl<br/>+ model.urdf + sub_frames.json"]
+    end
+
+    BOSS -. "params.py 随 plan 下传<br/>(frame_contract.params_text)" .-> MGR
+
+    SUBOK --> DISJOINT{{"disjoint-parts gate (仅 WARN, 命名空间隔离)"}}
+    DISJOINT --> ASM["STAGE C — ASSEMBLER · assembler.assemble<br/>IN: 所有 SubResult + plan(+params)<br/>OUT: 合并 KinematicModel + model.urdf/model.mjcf<br/>cross-sub libslvs 求解跳过 (pose 已全局)"]
+    ASM -- AssemblerError --> REPAIR["contract/solver 就地修复"]
+    REPAIR -- 已修复 --> ASM
+
+    ASM --> MESHG{{"mesh MODULE + mesh-DISTANCE gate<br/>IN: assembly_frames_world / 齿轮 module<br/>OUT: pass | ERR_MESH_MODULE/ERR_IFC_MESH_DIST"}}
+    MESHG --> NUDGE["auto-nudge 非缝重叠 (提示, 不触发重建)"]
+    NUDGE --> SUPG{{"assembled_gate ERR_SUP_FLOAT (焊链到 root)"}}
+    SUPG --> PRE{{"STAGE D — precheck.precheck<br/>IN: plan, subs, urdf, params_text(世界真值)<br/>OUT: violations: frame_misalign/gear_dist/aabb/support"}}
+    PRE -- pass --> KEEPB["pre-physics keep-best (assembled badness)<br/>plateau → 升级: 换一种切分方式"]
+
+    KEEPB --> JUDGEA["STAGE F — 外观 JUDGE (LLM) 装配后整机<br/>IN: 6 视图 + prompt<br/>OUT: pass | {reasons,suggestions}"]
+    JUDGEA -- pass --> PHYS["STAGE E — PHYSICS · physics.run_physics<br/>IN: 装配 urdf/mjcf + task (MuJoCo/PyBullet)<br/>OUT: {passed, transmission, blamed_kind, culprit_subs/parts}"]
+    PHYS --> SCORE["score.score → keep-best 门<br/>IN: physics + precheck + judge<br/>OUT: accept(快照最优) | reject(回退最优+换方向)"]
+    SCORE -- "score≥target & PASS / plateau" --> DONE["接受的机器<br/>result.json + (kb) 记住通过的 sub"]
+
+    %% ===== 失败回边（红色虚线）：不是数据前向流，而是失败时的重入 =====
+    REPLAN[["◀ 失败重入点"]]
+    BG -- "fail: ERR_SCHEMA" --> REPLAN
+    PYEVAL -- "PyManagerError<br/>params名错/零体积/frame漂移>2mm/轴>5°" --> REMGR
+    SUBGATE -- "ERR_MANIFOLD / ERR_COMPILE" --> REMGR
+    REPAIR -- 不可修 --> REPLAN
+    MESHG -- "fail: 模数/中心距" --> REPLAN
+    SUPG -- "fail: ERR_SUP_FLOAT" --> REPLAN
+    PRE -- "interface 故障" --> REPLAN
+    PRE -- "sub 故障" --> REMGR
+    JUDGEA -- fail --> REPLAN
+    SCORE -- "interface 归咎" --> REPLAN
+    SCORE -- "sub/part 归咎" --> REMGR
+    REMGR[["◀ manager 重跑点<br/>(仅重建被归咎的 sub, 其余复用)"]]
+    REPLAN -. "boss re-plan<br/>(带 feedback + prior_plan)" .-> BOSS
+    REMGR -. "重新 decompose 该 sub" .-> FANOUT
+
+    classDef llm fill:#e6f0ff,stroke:#3366cc,color:#000
+    classDef gate fill:#fff4cc,stroke:#d6a300,color:#000
+    classDef done fill:#ccffcc,stroke:#090,color:#000
+    classDef skip fill:#eee,stroke:#999,color:#000
+    classDef bossbig fill:#ffe9b0,stroke:#d6a300,stroke-width:4px,color:#000,font-size:20px
+    classDef entry fill:#0b0b0b,stroke:#0b0b0b,color:#fff,font-size:16px
+    classDef replan fill:#ffe0e0,stroke:#d03b3b,stroke-width:2px,color:#000
+    class MGR,JUDGEA llm
+    class BOSS bossbig
+    class ENTRY entry
+    class BG,SUBGATE,DISJOINT,MESHG,SUPG,PRE gate
+    class SKIPC skip
+    class DONE done
+    class REPLAN,REMGR replan
+    style L0 fill:#fff6df,stroke:#d6a300,stroke-width:4px
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>manager_py（方案B）相对标准 hierarchy 路径的改动</h2>
+    <ul>
+      <li><b>Worker 被吸收</b> — manager 直接写参数化 CadQuery；<code>evaluate_manager_python</code> 在解析时就构建并导出每个 STL。<span class="src">orchestrator_boss.py:650</span></li>
+      <li><b>坐标全局、来自 params</b> — boss 发一个 <code>params.py</code>（根值函数）；manager 用 <code>place_part(axis=params.&lt;frame&gt;_axis(), xyz=params.&lt;frame&gt;())</code> 让零件直接落在全局坐标。<span class="src">py_manager.py:102</span></li>
+      <li><b>Cross-sub 求解跳过</b> — assembler 不再跑 libslvs，pose 已是全局。</li>
+      <li><b>几何 compiler 跳过</b> — 强制 <code>legacy</code>，避免生成与 params 冲突的第二套坐标。<span class="src">orchestrator_boss.py:1177</span></li>
+      <li><b>被禁用的 gate</b> — 连通/frame-drift/seam-agreement gate 与 conflict-gate + subdebugger 全部关闭：它们假设 manager_py 不产出的 JSON 连接图/声明式 frame，且移动 pose 会破坏 params 骨牌真值。<span class="src">orchestrator_boss.py:516,737,1284</span></li>
+      <li><b>params 成为 precheck 真源</b> — precheck exec <code>plan.params_text</code>，直接读取 frame 世界坐标。<span class="src">precheck.py:181</span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>拒绝路由 · 谁在失败时重跑</h2>
+    <table>
+      <thead><tr><th>Gate / 阶段</th><th>触发码</th><th>路由到</th></tr></thead>
+      <tbody>
+        <tr><td>boss_gate</td><td>ERR_SCHEMA / ERR_SUP_NOWELD</td><td class="route boss">boss re-plan</td></tr>
+        <tr><td>py_manager 求值</td><td>params 名错 / 零体积 / frame 漂移&gt;2mm / 轴&gt;5°</td><td class="route sub">manager 重跑</td></tr>
+        <tr><td>worker_gate</td><td>ERR_MANIFOLD</td><td class="route sub">manager 重跑</td></tr>
+        <tr><td>compile_gate (C5)</td><td>ERR_COMPILE (MJCF 不加载)</td><td class="route sub">manager 重跑</td></tr>
+        <tr><td>assembler</td><td>AssemblerError</td><td class="route sub">就地修复 → 否则 boss re-plan</td></tr>
+        <tr><td>mesh gate</td><td>ERR_MESH_MODULE / ERR_IFC_MESH_DIST</td><td class="route boss">boss re-plan</td></tr>
+        <tr><td>assembled_gate</td><td>ERR_SUP_FLOAT</td><td class="route boss">boss re-plan</td></tr>
+        <tr><td>precheck (D)</td><td>frame_misalign / gear_dist / aabb / support</td><td>interface→<span class="route boss">boss</span> · sub→<span class="route sub">manager</span></td></tr>
+        <tr><td>外观 judge (F)</td><td>pass:false</td><td class="route boss">boss re-plan</td></tr>
+        <tr><td>physics (E) + score</td><td>不传动 / 倒塌</td><td>interface→<span class="route boss">boss</span> · sub/part→<span class="route sub">manager</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<footer>
+  两个重入点：<b>manager 重跑</b>（故障在单个 sub 内）与 <b>boss re-plan</b>（缝 / interface 故障）。
+  最便宜优先：per-part manifold 错误绝不触发 re-plan；仅当没有单个 sub 拥有该故障时才 re-plan。
+  · 生成依据：run.py / orchestrator_boss.py / py_manager.py / manager.py / precheck.py（分支 experiment/manager-py-precheck-params-truth）
+</footer>
+
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+mermaid.initialize({startOnLoad:true, theme: dark ? "dark" : "default", flowchart:{useMaxWidth:false, htmlLabels:true}});
+</script>
+</body>
+</html>

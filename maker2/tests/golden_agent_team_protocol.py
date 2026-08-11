@@ -170,12 +170,25 @@ def provider_neutral_tool_runtime():
             assert followup[-1]["content"][0]["type"] == "tool_result"
 
 
+def conversation_compaction_keeps_user_anchor():
+    conversation = Conversation()
+    conversation.add_user_message("Compile this machine.")
+    conversation.add_assistant_message("", tool_calls=[{
+        "id": "large-call", "name": "read", "arguments": {},
+    }])
+    conversation.add_tool_result("large-call", "x" * 200)
+    messages = conversation.get_messages_for_api(max_chars=100, api_style="openai")
+    assert messages[0] == {"role": "user", "content": "Compile this machine."}
+    assert messages[1]["role"] == "assistant" and messages[2]["role"] == "tool"
+
+
 def main():
     immutable_append_only()
     stale_rejection_is_atomic()
     deterministic_commits()
     stable_runner_collection()
     provider_neutral_tool_runtime()
+    conversation_compaction_keeps_user_anchor()
     print("golden agent team protocol: PASS")
     return 0
 

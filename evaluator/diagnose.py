@@ -635,17 +635,32 @@ def _measured_reason(metrics, stability=None) -> str:
     return " ".join(parts)
 
 
-def _diag(verdict, cause, reason, culprit_part="", culprit_sub="", evidence=None):
+def _diag(verdict, cause, reason, culprit_part="", culprit_sub="", evidence=None,
+          fault_domain="", fault_code="", verified=False, confidence=0.0,
+          culprit_entities=None):
     # `reason` is the ACTIONABLE part of the diagnosis — for a jammed train it carries the
     # whole "here is what to look at and what to change" instruction. A 400-char cap cut
     # that mid-word ("...exclude the coaxial con"), so the agent was handed half a sentence
     # and acted on it. These notes are machine-generated and bounded (a few hundred chars
     # per signal, a handful of signals), so the cap only ever truncated real content.
+    domain = fault_domain or ("runner_scenario" if cause in ("camera", "scenario")
+                              else "agent_geometry" if cause in ("structure", "interface")
+                              else "evaluator")
+    entities = list(culprit_entities or [])
+    if not entities and culprit_part:
+        entities = [{"kind": "part", "name": culprit_part,
+                     **({"subassembly": culprit_sub} if culprit_sub else {})}]
+    # Backward-compatible fields remain, but regeneration is authorized only after a
+    # deterministic attribution/probe marks an agent-owned fault verified.
+    allow = bool(verified and domain in ("agent_geometry", "agent_ir") and entities)
     return {"verdict": verdict, "cause": cause, "reason": str(reason)[:2000],
             "culprit_part": culprit_part or "", "culprit_sub": culprit_sub or "",
-            # What was actually checked, so the loop (and a human) can see the working
-            # rather than only the conclusion.
-            "evidence": list(evidence or [])}
+            "evidence": list(evidence or []), "fault_domain": domain,
+            "fault_code": fault_code or "unverified_legacy_diagnosis",
+            "verified": bool(verified), "confidence": float(confidence or 0.0),
+            "culprit_entities": entities,
+            "routing": {"allow_agent_refinement": allow,
+                        "action": "refine_agent" if allow else "halt_harness"}}
 
 
 # --------------------------------------------------------------------------- #
@@ -701,6 +716,19 @@ _DIAG_TOOLS = [
                                                   "description": "substring filter on the "
                                                                  "part name, or empty for all"}},
                        "required": ["pattern"]}}},
+    {"type": "function", "function": {
+        "name": "read_builder_manifest",
+        "description": "Read builder_manifest.json to verify that every authored body, joint, relation and transmission was actually compiled. Use this before blaming CAD for missing or wrong motion.",
+        "parameters": {"type": "object", "properties": {}, "additionalProperties": False}}},
+    {"type": "function", "function": {
+        "name": "read_spec",
+        "description": "Read the exact scenario spec used by the runner: driver, drive method, output, watch set, duration and thresholds. Use this to detect runner/scenario faults.",
+        "parameters": {"type": "object", "properties": {}, "additionalProperties": False}}},
+    {"type": "function", "function": {
+        "name": "read_machine_source",
+        "description": "Read matching lines from authored machine.py with line numbers. Use only after manifest/spec evidence identifies which declaration to inspect.",
+        "parameters": {"type": "object", "properties": {"regex": {"type": "string"}},
+                       "required": ["regex"], "additionalProperties": False}}},
     {"type": "function", "function": {
         "name": "read_contacts",
         "description": "The MOST RELIABLE evidence for a structure fault: the simulator's "
@@ -850,6 +878,42 @@ def _diag_executors(run_dir: str, frames_dir: str, metrics: dict):
             rows.append(f"{label}: dof={dof or '?'} mount={mount or '(none)'}")
         return "\n".join(rows[:60]) if rows else "(no labelled parts found)"
 
+    def _find_artifact(filename):
+        roots = [run_dir, os.path.dirname(run_dir),
+                 os.path.dirname(os.path.dirname(run_dir))] if run_dir else []
+        for root in roots:
+            p = os.path.join(root, filename)
+            if os.path.exists(p):
+                return p
+        return ""
+
+    def read_builder_manifest():
+        p = _find_artifact("builder_manifest.json")
+        if not p:
+            return "(no builder_manifest.json; builder fidelity is unverified)"
+        try:
+            return Path(p).read_text(encoding="utf-8")[:8000]
+        except Exception as e:
+            return f"(manifest unreadable: {e})"
+
+    def read_spec():
+        p = os.path.join(run_dir, "spec.json") if run_dir else ""
+        if not p or not os.path.exists(p):
+            return "(no spec.json)"
+        return Path(p).read_text(encoding="utf-8")[:6000]
+
+    def read_machine_source(regex):
+        p = _find_artifact("machine.py") or _find_artifact("manager_sub.py")
+        if not p:
+            return "(no authored source)"
+        try:
+            rx = re.compile(regex, re.I)
+        except re.error as e:
+            return f"(bad regex: {e})"
+        lines = Path(p).read_text(encoding="utf-8", errors="replace").splitlines()
+        return "\n".join(f"{i}: {ln}" for i, ln in enumerate(lines, 1)
+                          if rx.search(ln))[:6000] or "(no matches)"
+
     def read_contacts():
         # MuJoCo's own collision verdict, dumped by the runner at the design pose.
         mj_pairs = []
@@ -924,6 +988,8 @@ def _diag_executors(run_dir: str, frames_dir: str, metrics: dict):
     return {"read_sim_result": read_sim_result,
             "read_joint_travel": read_joint_travel,
             "read_part_mounts": read_part_mounts, "read_run_log": read_run_log,
+            "read_builder_manifest": read_builder_manifest, "read_spec": read_spec,
+            "read_machine_source": read_machine_source,
             "view_frame": view_frame, "read_contacts": read_contacts}
 
 

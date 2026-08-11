@@ -155,9 +155,18 @@ class Conversation:
             total_chars += msg_chars
             i -= 1
 
-        # Ensure the first message is a user message (API requirement)
-        while result and result[0]["role"] not in ("user",):
-            result.pop(0)
+        # API histories must start with a user message. A retained suffix may begin
+        # with an assistant tool-call group; dropping that whole group can empty the
+        # request even though it is internally complete. Anchor such a suffix to the
+        # original user instruction instead. This preserves tool-call/result pairing
+        # while giving the model the task that the retained tool calls belong to.
+        if result and result[0]["role"] != "user":
+            anchor = next((message for message in self.messages
+                           if message["role"] == "user"), None)
+            if anchor is not None:
+                result.insert(0, anchor)
+            else:
+                result = []
 
         # Replace image blocks with text descriptions if describe_fn is
         # provided, else drop them to a placeholder when strip_images is set.

@@ -17,7 +17,9 @@ ToolExecutor = Callable[..., Any]
 
 
 class ToolConversation(Protocol):
-    def get_messages_for_api(self, *, api_style: str) -> list[dict]: ...
+    def get_messages_for_api(
+        self, *, api_style: str, max_chars: int = 100000
+    ) -> list[dict]: ...
     def add_user_message(self, content: str) -> None: ...
     def add_assistant_message(
         self, content: str, tool_calls: list[dict] | None = None
@@ -128,6 +130,7 @@ def run_agent_tool_loop(
     log_fn: Callable[[str], None] | None = None,
     text_only_nudge: str | None = None,
     require_tool_call: bool = True,
+    history_max_chars: int = 100000,
 ) -> ToolLoopResult:
     """Drive a bounded provider-neutral tool loop.
 
@@ -146,7 +149,11 @@ def run_agent_tool_loop(
 
     for round_index in range(max_rounds):
         rounds += 1
-        messages = conversation.get_messages_for_api(api_style=client.api_style)
+        messages = conversation.get_messages_for_api(
+            api_style=client.api_style, max_chars=history_max_chars
+        )
+        if not messages:
+            raise ValueError("tool conversation history compacted to an empty request")
         try:
             response = client.send_with_tools(messages, system=system, tools=list(tools))
         except LLMError as error:

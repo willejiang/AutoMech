@@ -29,7 +29,7 @@ class Settings:
     provider_name: str = "local_gateway"
     base_url: str = "http://127.0.0.1:8313/v1"   # the /v1 suffix is required
     api_key: str = "sk-xxx"                       # placeholder; override via env
-    model: str = "claude-opus-4.8"
+    model: str = "gpt-5.6-sol"
     temperature: float = 0.2
     manager_max_tokens: int = 32000               # claude-opus-4.8 supports 64K
                                                    # output (per the Copilot proxy's
@@ -72,7 +72,12 @@ class Settings:
                                                    # debugger_mode from this when set.
 
     # ── Physics engine (maker2-mujoco-contact) ───────────────────
-    engine: str = "mujoco"                        # "mujoco" (default on this branch:
+    engine: str = "mujoco"                        # pybullet | mujoco | simscape | chrono
+    chrono_mode: str = "ideal_dynamic"             # ideal_dynamic | contact_dynamic
+    physics_probe_budget: int = 3                   # max no-regeneration A/B probes per failure
+    mjcf_compiler_mode: str = "agent"               # agent | legacy (explicit debug only)
+    mjcf_compiler_max_tokens: int = 32000
+    mjcf_compiler_cache_dir: str = ""              # empty -> ~/.cache/physcad/mjcf_agent
                                                    # pure contact under gravity, transmission
                                                    # by tooth contact, no motors) | "pybullet"
                                                    # (legacy joint-motor sim). The MuJoCo path

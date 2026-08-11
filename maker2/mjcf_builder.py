@@ -598,6 +598,46 @@ def _joint_name_for_link(model, link_name: str, kind: str = "spin") -> str:
     return j.name if j is not None else f"{link_name}_{kind}"
 
 
+def _existing_scalar_joint(mujoco_el, model, link_name: str) -> str | None:
+    """Return the emitted hinge/slide joint for a body; never invent a name."""
+    world = mujoco_el.find("worldbody")
+    if world is None:
+        return None
+    body = _body_index(world).get(link_name)
+    if body is None:
+        return None
+    expected = _joint_name_for_link(model, link_name)
+    for joint in body.findall("joint"):
+        if joint.get("name") == expected and joint.get("type") in ("hinge", "slide"):
+            return expected
+    return None
+
+
+def _ensure_compound_follower_joint(mujoco_el, model, follower, carrier) -> str | None:
+    """Give a rigid pressed-on accessory the scalar hinge an equality can constrain.
+
+    A ``dof=fixed`` hand/collar has no joint of its own in the hybrid emitter. A declared
+    press-fit + compound_1to1 means it rotates with a real scalar carrier, so add that hinge
+    to the already-emitted body. Other missing coordinates fail closed instead of producing
+    an MJCF equality that references a fictional ``<link>_spin`` name.
+    """
+    existing = _existing_scalar_joint(mujoco_el, model, follower.name)
+    if existing:
+        return existing
+    if getattr(follower, "dof", "fixed") != "fixed":
+        return None
+    world = mujoco_el.find("worldbody")
+    body = _body_index(world).get(follower.name) if world is not None else None
+    if body is None:
+        return None
+    axis = getattr(carrier, "spin_axis", (0.0, 0.0, 1.0))
+    name = f"{follower.name}_spin"
+    ET.SubElement(body, "joint", {
+        "name": name, "type": "hinge",
+        "axis": f"{axis[0]:.6g} {axis[1]:.6g} {axis[2]:.6g}", "pos": "0 0 0"})
+    return name
+
+
 def _emit_hybrid(world_el, model, links_by_name, piece_map, meshes_dir, mesh_names,
                  asset_el, eq_el, *, base_height: float, pin_base: bool,
                  sdf: bool = True, log_fn=print):
@@ -844,14 +884,20 @@ def _add_explicit_transmissions(mujoco_el, model, meshes_dir, links_by_name, *,
                     driving, driven = b, a
                     if ratio:
                         ratio = 1.0 / ratio
-                ET.SubElement(eq, "joint", {
-                    "joint1": _joint_name_for_link(model, driven.name),
-                    "joint2": _joint_name_for_link(model, driving.name),
-                    "polycoef": f"0 {ratio:.9g} 0 0 0"})
-                ET.SubElement(contact, "exclude", {"body1": a.name, "body2": b.name})
-                consumed.add(pair)
-                log_fn(f"[mjcf] explicit compound '{t.name}': "
-                       f"{driven.name}={ratio:g}*{driving.name}; press-fit contact excluded")
+                driving_joint = _existing_scalar_joint(mujoco_el, model, driving.name)
+                driven_joint = _ensure_compound_follower_joint(
+                    mujoco_el, model, driven, driving) if driving_joint else None
+                if not driving_joint or not driven_joint:
+                    reason = "compound_1to1 endpoint has no emitted scalar joint"
+                else:
+                    ET.SubElement(eq, "joint", {
+                        "joint1": driven_joint, "joint2": driving_joint,
+                        "polycoef": f"0 {ratio:.9g} 0 0 0"})
+                    ET.SubElement(contact, "exclude", {"body1": a.name, "body2": b.name})
+                    consumed.add(pair)
+                    log_fn(f"[mjcf] explicit compound '{t.name}': "
+                           f"{driven.name}={ratio:g}*{driving.name}; "
+                           "press-fit contact excluded")
         elif t.type in ("gear_external", "gear_internal"):
             ratio = float(t.ratio or 0.0)
             if not ratio:
@@ -1817,8 +1863,57 @@ def build_support_mjcf(model, ctx, *, metrics: dict | None = None,
     return path, ground
 
 
-def build_mjcf(model, ctx, *, settings=None, metrics: dict | None = None,
-               base_height: float = 0.0, log_fn=print) -> str:
+def _write_builder_manifest(model, ctx, mjcf_path: str, metrics: dict | None) -> str:
+    """Persist an auditable authored-IR -> MJCF lowering inventory."""
+    import hashlib
+    import json
+    root = Path(ctx.run_dir)
+    bodies = [{"source_kind": "link", "source_name": l.name, "compiled": True,
+               "mesh": l.mesh_filename, "dof": l.dof} for l in model.links]
+    constraints = []
+    motion_children = {j.child for j in (getattr(model, "motion_joints", None) or [])}
+    for j in (getattr(model, "motion_joints", None) or []):
+        constraints.append({"source_kind": "motion_joint", "source_name": j.name,
+                            "type": j.type, "parent": j.parent, "child": j.child,
+                            "compiled": True})
+    for r in (getattr(model, "relations", None) or []):
+        skipped = r.incoming_part in motion_children and r.mate_type in _PIN_MATE_TYPES
+        constraints.append({"source_kind": "relation", "source_name": r.name,
+                            "type": r.mate_type, "body_a": r.base_part,
+                            "body_b": r.incoming_part, "compiled": not skipped,
+                            "rejected": False,
+                            "reason": "represented by explicit motion joint" if skipped else ""})
+    rejected = {x.get("transmission"): x.get("reason", "")
+                for x in ((metrics or {}).get("transmission_rejections") or [])}
+    transmissions = [{"source_kind": "transmission", "source_name": t.name,
+                      "type": t.type, "driving_link": t.driving_link,
+                      "driven_link": t.driven_link, "compiled": t.name not in rejected,
+                      "rejected": t.name in rejected, "reason": rejected.get(t.name, "")}
+                     for t in (getattr(model, "transmissions", None) or [])]
+    prejected = {x.get("stage"): x.get("reason", "")
+                 for x in ((metrics or {}).get("planetary_rejections") or [])}
+    planetary = [{"source_kind": "planetary_stage", "source_name": s.name,
+                  "compiled": s.name not in prejected, "rejected": s.name in prejected,
+                  "reason": prejected.get(s.name, "")}
+                 for s in (getattr(model, "planetary_stages", None) or [])]
+    semantic = {"bodies": bodies, "constraints": constraints,
+                "transmissions": transmissions, "planetary_stages": planetary}
+    digest = hashlib.sha256(json.dumps(semantic, sort_keys=True).encode()).hexdigest()
+    manifest = {"manifest_version": 1, "engine": "mujoco",
+        "units": {"length": "m", "mass": "kg", "angle": "rad", "time": "s"},
+        **semantic, "contacts": {
+            "coaxial_excludes": (metrics or {}).get("coaxial_excludes", 0),
+            "running_fit_excludes": (metrics or {}).get("running_fit_excludes", 0),
+            "planetary_mesh_pairs": (metrics or {}).get("planetary_mesh_pairs", 0)},
+        "unsupported": [], "warnings": [], "semantic_digest": digest,
+        "backend_model": str(mjcf_path)}
+    path = root / "builder_manifest.json"
+    path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    return str(path)
+
+
+def build_mjcf_legacy(model, ctx, *, settings=None, metrics: dict | None = None,
+                      base_height: float = 0.0, log_fn=print) -> str:
     """Build an MJCF for the model and write it next to the URDF (model.mjcf).
     Returns the MJCF path. Decomposes movable/meshing parts first (cached)."""
     meshes_dir = ctx.meshes_dir
@@ -1891,6 +1986,29 @@ def build_mjcf(model, ctx, *, settings=None, metrics: dict | None = None,
     ET.indent(mujoco_el)
     Path(mjcf_path).write_text(ET.tostring(mujoco_el, encoding="unicode"),
                                encoding="utf-8")
+    manifest_path = _write_builder_manifest(model, ctx, mjcf_path, metrics)
+    if metrics is not None:
+        metrics["builder_manifest"] = manifest_path
     log_fn(f"[mjcf] wrote {mjcf_path} ({len(roots)} root body(ies), "
-           f"{len(mesh_names)} mesh geom(s))")
+           f"{len(mesh_names)} mesh geom(s)); manifest={manifest_path}")
     return mjcf_path
+
+
+def build_mjcf(model, ctx, *, settings=None, metrics: dict | None = None,
+               base_height: float = 0.0, log_fn=print) -> str:
+    """Compile one machine with case-specific topology analysis by default.
+
+    The legacy heuristic compiler remains available only through the explicit setting; agent
+    mode never silently falls back, because that would reintroduce the same hidden tree/exclude
+    decisions this boundary removes.
+    """
+    # Library/test callers that provide no Settings retain deterministic behavior; every
+    # production MuJoCo path threads Settings and therefore defaults to the agent compiler.
+    mode = getattr(settings, "mjcf_compiler_mode", "agent") if settings is not None else "legacy"
+    if mode == "legacy":
+        return build_mjcf_legacy(model, ctx, settings=settings, metrics=metrics,
+                                 base_height=base_height, log_fn=log_fn)
+    if mode != "agent":
+        raise ValueError(f"unknown mjcf_compiler_mode '{mode}'")
+    from .mjcf_agent_compiler import compile_agent_mjcf
+    return compile_agent_mjcf(model, ctx, settings=settings, metrics=metrics, log_fn=log_fn)

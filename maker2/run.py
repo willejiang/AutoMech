@@ -183,11 +183,14 @@ def run(prompt: str, out_dir: str = "output", manager_only: bool = False,
         do_judge: bool = True, do_physics: bool = False,
         max_iters: int = 0, refine_message: str | None = None,
         prior_model: str | None = None, thread: str | None = None,
-        entry: str = "rebuild", engine: str | None = None) -> dict:
+        entry: str = "rebuild", engine: str | None = None,
+        chrono_mode: str | None = None) -> dict:
     settings = Settings()
     settings.allow_partial = allow_partial
     if engine:
         settings.engine = engine
+    if chrono_mode:
+        settings.chrono_mode = chrono_mode
     if model:
         # The cadam UI passes provider-prefixed ids (e.g. "anthropic/claude-opus-4.8"),
         # but this gateway wants the bare name ("claude-opus-4.8") — strip the prefix.
@@ -195,6 +198,8 @@ def run(prompt: str, out_dir: str = "output", manager_only: bool = False,
     print(f"[run] model: {settings.model}")
     print(f"[run] prompt: {prompt}")
     print(f"[run] max_iters: {max_iters}")
+    print(f"[run] physics engine: {settings.engine}"
+          + (f" ({settings.chrono_mode})" if settings.engine == "chrono" else ""))
 
     # Multi-turn refine: load the prior turn's model JSON (a file path) once so
     # iteration 0 can start from it. A missing/unreadable file just falls back to
@@ -512,10 +517,13 @@ def main() -> int:
     ap.add_argument("--per-sub-physics", action="store_true",
                     help="(hierarchy) drive each subassembly on its own URDF before "
                          "assembly, so a drivetrain fault localizes to that sub.")
-    ap.add_argument("--engine", default=None, choices=["pybullet", "mujoco"],
-                    help="physics engine: 'pybullet' (default, legacy joint motors) or "
-                         "'mujoco' (pure contact under gravity — transmission by tooth "
-                         "contact, no motors). Requires --physics to take effect.")
+    ap.add_argument("--engine", default=None,
+                    choices=["pybullet", "mujoco", "simscape", "chrono"],
+                    help="physics engine: pybullet, mujoco, simscape, or optional PyChrono "
+                         "closed-loop/contact dynamics. Requires --physics.")
+    ap.add_argument("--chrono-mode", default=None,
+                    choices=["ideal_dynamic", "contact_dynamic"],
+                    help="Chrono only: ideal declared transmissions or literal mesh contact.")
     ap.add_argument("--deep-think", dest="deep_think", action="store_true", default=None,
                     help="deep-think ON: CadQuery worker + FULL debugger (thorough, slow).")
     ap.add_argument("--no-deep-think", dest="deep_think", action="store_false",
@@ -544,6 +552,8 @@ def main() -> int:
         settings = Settings.load()
         if a.engine:
             settings.engine = a.engine
+        if a.chrono_mode:
+            settings.chrono_mode = a.chrono_mode
         if a.model:
             settings.model = a.model.split("/", 1)[-1]
         if a.web:
@@ -552,6 +562,8 @@ def main() -> int:
             settings.enable_kb = True
         if a.deep_think is not None:
             settings.deep_think = a.deep_think
+        print(f"[run] physics engine: {settings.engine}"
+              + (f" ({settings.chrono_mode})" if settings.engine == "chrono" else ""))
         res = run_single_agent(a.prompt, a.out, settings, do_physics=a.physics,
                                max_iters=(a.max_iters or 0), image_path=a.image,
                                log_fn=print)
@@ -569,7 +581,7 @@ def main() -> int:
     if a.hierarchy:
         from maker2.orchestrator_boss import run_boss
         settings = None
-        if (a.web or a.engine or a.deep_think is not None or a.kb
+        if (a.web or a.engine or a.chrono_mode or a.deep_think is not None or a.kb
                 or a.manager_ir is not None or a.enable_solver_tool
                 or a.manager_py or a.debugger_read_tools or a.precheck_warn_only):
             from maker2.config import Settings
@@ -582,6 +594,8 @@ def main() -> int:
                 settings.enable_solver_tool = True
             if a.engine:
                 settings.engine = a.engine
+            if a.chrono_mode:
+                settings.chrono_mode = a.chrono_mode
             if a.deep_think is not None:
                 settings.deep_think = a.deep_think
             if a.manager_ir is not None:
@@ -601,7 +615,8 @@ def main() -> int:
     res = run(a.prompt, a.out, a.manager_only, a.allow_partial, a.model,
               do_judge=not a.no_judge, do_physics=a.physics, max_iters=a.max_iters,
               refine_message=a.refine_message, prior_model=a.prior_model,
-              thread=a.thread, entry=a.entry, engine=a.engine)
+              thread=a.thread, entry=a.entry, engine=a.engine,
+              chrono_mode=a.chrono_mode)
     if a.json:
         print("RESULT_JSON:" + json.dumps(res))
     return 0 if res.get("ok") else 1
