@@ -23,6 +23,14 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./styles.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three.module.js",
+          "three/addons/": "./vendor/addons/"
+        }
+      }
+    </script>
     <title>AutoMech — Verified Mechanical Design</title>
   </head>
   <body>
@@ -214,6 +222,49 @@
             </div>
             <p data-i18n="demoLead">A concise walkthrough of the motivation, architecture, design agents, simulation, and evaluation workflow.</p>
           </div>
+          <div class="model-showcase reveal">
+            <div class="model-toolbar">
+              <div>
+                <span class="model-live-dot"></span>
+                <strong data-i18n="modelTitle">Generated mechanical watch</strong>
+                <small data-i18n="modelSubtitle">Final verified assembly · Interactive GLB</small>
+              </div>
+              <div class="model-actions">
+                <button id="model-rotate" class="model-button active" type="button" aria-pressed="true">
+                  <span class="model-button-icon">↻</span>
+                  <span data-i18n="autoRotate">Auto rotate</span>
+                </button>
+                <button id="model-reset" class="model-button" type="button">
+                  <span class="model-button-icon">⌂</span>
+                  <span data-i18n="resetView">Reset view</span>
+                </button>
+              </div>
+            </div>
+            <div class="model-stage" id="model-stage">
+              <canvas id="model-canvas" aria-label="Interactive 3D model of the generated mechanical watch"></canvas>
+              <div class="model-loading" id="model-loading" role="status">
+                <span class="model-loader"></span>
+                <strong data-i18n="loadingModel">Loading verified assembly</strong>
+                <small id="model-progress">0%</small>
+              </div>
+              <div class="model-hint" id="model-hint">
+                <span>↔</span>
+                <span data-i18n="modelHint">Drag to rotate · Scroll or pinch to zoom</span>
+              </div>
+              <div class="model-axis" aria-hidden="true">
+                <span class="axis-x">X</span><span class="axis-y">Y</span><span class="axis-z">Z</span>
+              </div>
+            </div>
+            <div class="model-stats">
+              <div><span data-i18n="modelParts">Components</span><strong>20</strong></div>
+              <div><span data-i18n="modelFaces">Triangles</span><strong>24K</strong></div>
+              <div><span data-i18n="modelFormat">Web asset</span><strong>432 KB GLB</strong></div>
+              <div><span data-i18n="modelContent">Mechanism</span><strong data-i18n="modelContentValue">Gear train + hands</strong></div>
+            </div>
+          </div>
+          <div class="demo-divider reveal">
+            <span data-i18n="fullWalkthrough">Full project walkthrough</span>
+          </div>
           <div class="video-frame reveal">
             <video controls preload="metadata" poster="./assets/demo-poster.jpg">
               <source src="./assets/automech-demo.webm" type="video/webm" />
@@ -354,5 +405,6 @@
     </footer>
 
     <script src="./app.js"></script>
+    <script type="module" src="./model-viewer.js"></script>
   </body>
 </html>
