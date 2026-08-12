@@ -7,6 +7,8 @@ const canvas = document.querySelector("#model-canvas");
 const loading = document.querySelector("#model-loading");
 const progress = document.querySelector("#model-progress");
 const hint = document.querySelector("#model-hint");
+const motionButton = document.querySelector("#model-motion");
+const motionIcon = motionButton?.querySelector(".model-button-icon");
 const rotateButton = document.querySelector("#model-rotate");
 const resetButton = document.querySelector("#model-reset");
 
@@ -61,6 +63,44 @@ if (stage && canvas) {
 
     let homePosition = new THREE.Vector3(0.11, -0.12, 0.085);
     let homeTarget = new THREE.Vector3();
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let mechanismRunning = !reducedMotion;
+    let mechanismAngle = 0;
+    const motionGroups = [];
+    const motionClock = new THREE.Clock();
+    const mechanismAxis = new THREE.Vector3(0, 0, 1);
+    const mechanismRotation = new THREE.Quaternion();
+
+    function updateMotionButton() {
+      motionButton.classList.toggle("active", mechanismRunning);
+      motionButton.setAttribute("aria-pressed", String(mechanismRunning));
+      motionIcon.textContent = mechanismRunning ? "Ⅱ" : "▶";
+    }
+    updateMotionButton();
+
+    function addMotionGroup(model, names, ratio) {
+      const parts = names
+        .map((name) => model.getObjectByName(name))
+        .filter(Boolean)
+        .map((part) => ({ part, restQuaternion: part.quaternion.clone() }));
+      if (parts.length) motionGroups.push({ parts, ratio });
+    }
+
+    function configureMechanism(model) {
+      addMotionGroup(model, ["minute_arbor_visual", "minute_driver_19t_visual", "minute_hand_visual"], 1);
+      addMotionGroup(model, ["intermediate_arbor_visual", "intermediate_wheel_61t_visual", "intermediate_pinion_15t_visual"], -19 / 61);
+      addMotionGroup(model, ["hour_pipe_visual", "hour_wheel_65t_visual", "hour_hand_visual"], (19 * 15) / (61 * 65));
+    }
+
+    function updateMechanism(deltaSeconds) {
+      if (mechanismRunning) mechanismAngle = (mechanismAngle + deltaSeconds * Math.PI / 6) % (Math.PI * 2 * 3965);
+      motionGroups.forEach(({ parts, ratio }) => {
+        mechanismRotation.setFromAxisAngle(mechanismAxis, mechanismAngle * ratio);
+        parts.forEach(({ part, restQuaternion }) => {
+          part.quaternion.copy(restQuaternion).multiply(mechanismRotation);
+        });
+      });
+    }
 
     const loader = new GLTFLoader();
     loader.load(
@@ -68,6 +108,7 @@ if (stage && canvas) {
       (gltf) => {
         const model = gltf.scene;
         scene.add(model);
+        configureMechanism(model);
 
         model.traverse((object) => {
           if (!object.isMesh) return;
@@ -116,6 +157,11 @@ if (stage && canvas) {
       rotateButton.setAttribute("aria-pressed", String(controls.autoRotate));
     });
 
+    motionButton.addEventListener("click", () => {
+      mechanismRunning = !mechanismRunning;
+      updateMotionButton();
+    });
+
     resetButton.addEventListener("click", resetView);
     controls.addEventListener("start", () => hint.classList.remove("visible"));
 
@@ -129,6 +175,7 @@ if (stage && canvas) {
     resizeObserver.observe(stage);
 
     function animate() {
+      updateMechanism(Math.min(motionClock.getDelta(), 0.05));
       controls.update();
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
