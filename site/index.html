@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="AutoMech generates mechanical CAD from natural language and verifies each design through geometry checks, visual inspection, and physics simulation."
+    />
+    <meta name="theme-color" content="#07101f" />
+    <meta property="og:title" content="AutoMech — Verified Mechanical Design" />
+    <meta
+      property="og:description"
+      content="Design machines that are verified to work, not just look plausible."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="./assets/demo-poster.jpg" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22%2307101f%22/><path d=%22M15 42 28 15h8l13 27h-9l-3-7H26l-3 7zm14-14h5l-2.5-6z%22 fill=%22%236ee7ff%22/></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three.module.js",
+          "three/addons/": "./vendor/addons/"
+        }
+      }
+    </script>
+    <title>AutoMech — Verified Mechanical Design</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+
+    <header class="site-header" id="top">
+      <div class="shell header-inner">
+        <a class="brand" href="#top" aria-label="AutoMech home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 48 48" role="img">
+              <path d="M11 35.5 21.7 12h5.9L38 35.5h-7.1l-2.2-5.4h-8.6l-2.2 5.4H11Zm11.2-11h4.4l-2.2-5.7-2.2 5.7Z" />
+              <circle cx="36" cy="14" r="5" />
+            </svg>
+          </span>
+          <span>AutoMech</span>
+        </a>
+
+        <nav class="desktop-nav" aria-label="Primary navigation">
+          <a href="#method" data-i18n="navMethod">Method</a>
+          <a href="#demo" data-i18n="navDemo">Demo</a>
+          <a href="#architecture" data-i18n="navArchitecture">Architecture</a>
+          <a href="#start" data-i18n="navStart">Quick start</a>
+        </nav>
+
+        <div class="header-actions">
+          <button class="language-toggle" id="language-toggle" type="button" aria-label="切换为中文">
+            <span class="language-active">EN</span>
+            <span class="language-divider">/</span>
+            <span>中文</span>
+          </button>
+          <a class="github-button" href="https://github.com/willejiang/AutoMech" target="_blank" rel="noreferrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .7a11.5 11.5 0 0 0-3.64 22.4c.58.1.79-.25.79-.56v-2.23c-3.22.7-3.9-1.37-3.9-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.04 1.76 2.71 1.25 3.37.95.1-.75.4-1.25.73-1.54-2.57-.3-5.27-1.29-5.27-5.7 0-1.27.45-2.3 1.19-3.1-.12-.3-.52-1.47.11-3.06 0 0 .97-.31 3.16 1.18a10.9 10.9 0 0 1 5.75 0c2.2-1.49 3.16-1.18 3.16-1.18.63 1.59.23 2.77.11 3.07.74.8 1.19 1.82 1.19 3.09 0 4.43-2.71 5.4-5.29 5.69.42.36.79 1.07.79 2.16v3.2c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .7Z" /></svg>
+            <span>GitHub</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero section-grid">
+        <div class="hero-glow hero-glow-one"></div>
+        <div class="hero-glow hero-glow-two"></div>
+        <div class="shell hero-layout">
+          <div class="hero-copy reveal">
+            <div class="award-chip">
+              <span class="award-dot"></span>
+              <span data-i18n="award">Microsoft Global Intern Hackathon 2026 · 2nd Place</span>
+            </div>
+            <p class="eyebrow" data-i18n="heroEyebrow">TASK-VERIFIED GENERATIVE CAD</p>
+            <h1 data-i18n-html="heroTitle">Design machines that are<br /><span>verified to work.</span></h1>
+            <p class="hero-lead" data-i18n="heroLead">
+              AutoMech turns natural-language intent into mechanical CAD, then closes the loop with geometry checks, visual inspection, and physics simulation.
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="#demo">
+                <span data-i18n="watchDemo">Watch the demo</span>
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 4 7 6-7 6V4Z" /></svg>
+              </a>
+              <a class="button button-secondary" href="https://github.com/willejiang/AutoMech" target="_blank" rel="noreferrer">
+                <span data-i18n="viewSource">View source</span>
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 15 15 5m0 0H7m8 0v8" /></svg>
+              </a>
+            </div>
+            <div class="hero-facts" aria-label="Project facts">
+              <div><strong>CPU</strong><span data-i18n="factLocal">Local execution</span></div>
+              <div><strong>3×</strong><span data-i18n="factVerify">Verification layers</span></div>
+              <div><strong>∞</strong><span data-i18n="factLoop">Refinement loop</span></div>
+            </div>
+          </div>
+
+          <div class="hero-visual reveal reveal-delay">
+            <div class="machine-window">
+              <div class="window-bar">
+                <div class="window-dots"><i></i><i></i><i></i></div>
+                <span>automech / live-run</span>
+                <span class="live-status"><i></i><span data-i18n="running">RUNNING</span></span>
+              </div>
+              <div class="machine-canvas">
+                <div class="orbital orbital-one"></div>
+                <div class="orbital orbital-two"></div>
+                <svg class="gear gear-large" viewBox="0 0 120 120" aria-hidden="true">
+                  <path d="M53 5h14l3 12 9 4 11-6 10 10-6 11 4 9 12 3v14l-12 3-4 9 6 11-10 10-11-6-9 4-3 12H53l-3-12-9-4-11 6-10-10 6-11-4-9-12-3V48l12-3 4-9-6-11 10-10 11 6 9-4 3-12Zm7 30a25 25 0 1 0 0 50 25 25 0 0 0 0-50Zm0 13a12 12 0 1 1 0 24 12 12 0 0 1 0-24Z" />
+                </svg>
+                <svg class="gear gear-small" viewBox="0 0 120 120" aria-hidden="true">
+                  <path d="M53 5h14l3 12 9 4 11-6 10 10-6 11 4 9 12 3v14l-12 3-4 9 6 11-10 10-11-6-9 4-3 12H53l-3-12-9-4-11 6-10-10 6-11-4-9-12-3V48l12-3 4-9-6-11 10-10 11 6 9-4 3-12Zm7 30a25 25 0 1 0 0 50 25 25 0 0 0 0-50Zm0 13a12 12 0 1 1 0 24 12 12 0 0 1 0-24Z" />
+                </svg>
+                <div class="axis axis-one"></div>
+                <div class="axis axis-two"></div>
+                <div class="scan-line"></div>
+                <div class="canvas-label label-input"><span data-i18n="inputTorque">Input torque</span><strong>12.0 N·m</strong></div>
+                <div class="canvas-label label-ratio"><span data-i18n="gearRatio">Gear ratio</span><strong>20 : 1</strong></div>
+                <div class="canvas-label label-status"><span data-i18n="taskStatus">Task status</span><strong>PASS</strong></div>
+              </div>
+              <div class="pipeline-strip">
+                <span class="complete" data-i18n="stageDesign">Design</span>
+                <i></i><span class="complete" data-i18n="stageBuild">Build</span>
+                <i></i><span class="complete" data-i18n="stageInspect">Inspect</span>
+                <i></i><span class="active" data-i18n="stageSimulate">Simulate</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="problem section" id="problem">
+        <div class="shell">
+          <div class="section-heading centered reveal">
+            <p class="eyebrow" data-i18n="problemEyebrow">THE MISSING FEEDBACK LOOP</p>
+            <h2 data-i18n-html="problemTitle">A plausible shape is not<br />a working machine.</h2>
+            <p data-i18n="problemLead">Mechanical designs must assemble, move, transmit force, and survive the task they were created for.</p>
+          </div>
+          <div class="comparison reveal">
+            <article class="comparison-card muted-card">
+              <div class="card-label"><span class="status-dot gray"></span><span data-i18n="geometryOnly">Geometry-only generation</span></div>
+              <div class="comparison-visual broken-visual" aria-hidden="true">
+                <div class="broken-shaft"></div><div class="broken-gear a"></div><div class="broken-gear b"></div>
+                <span class="collision-mark">×</span>
+              </div>
+              <h3 data-i18n="looksRight">Looks right</h3>
+              <ul>
+                <li data-i18n="problemOne">Independent coordinates can disagree</li>
+                <li data-i18n="problemTwo">Parts may collide, float, or lock</li>
+                <li data-i18n="problemThree">No evidence that the task succeeds</li>
+              </ul>
+            </article>
+            <div class="comparison-arrow" aria-hidden="true"><span>→</span></div>
+            <article class="comparison-card verified-card">
+              <div class="card-label"><span class="status-dot green"></span><span data-i18n="taskVerified">Task-verified generation</span></div>
+              <div class="comparison-visual verified-visual" aria-hidden="true">
+                <div class="motion-ring"></div><div class="verified-shaft"></div><div class="verified-gear a"></div><div class="verified-gear b"></div>
+                <span class="check-mark">✓</span>
+              </div>
+              <h3 data-i18n="worksRight">Works right</h3>
+              <ul>
+                <li data-i18n="solutionOne">Mechanical intent stays explicit</li>
+                <li data-i18n="solutionTwo">Geometry and motion are inspected</li>
+                <li data-i18n="solutionThree">Failure evidence drives the next design</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="method section section-grid" id="method">
+        <div class="shell">
+          <div class="section-heading reveal">
+            <p class="eyebrow" data-i18n="methodEyebrow">VERIFICATION-GUIDED REFINEMENT</p>
+            <h2 data-i18n-html="methodTitle">Generate. Test.<br /><span>Learn from failure.</span></h2>
+            <p data-i18n="methodLead">Every failed check becomes structured evidence for the next iteration—not a dead end.</p>
+          </div>
+
+          <div class="loop-layout reveal">
+            <div class="loop-center">
+              <div class="loop-core">
+                <span class="loop-number">N+1</span>
+                <strong data-i18n="nextDesign">Next design</strong>
+                <small data-i18n="evidenceDriven">Evidence-driven</small>
+              </div>
+              <div class="loop-orbit"></div>
+            </div>
+            <div class="loop-step step-one">
+              <span class="step-index">01</span><div><strong data-i18n="loopDesign">Design</strong><small data-i18n="loopDesignText">Natural language → parametric machine</small></div>
+            </div>
+            <div class="loop-step step-two">
+              <span class="step-index">02</span><div><strong data-i18n="loopBuild">Build</strong><small data-i18n="loopBuildText">Parts, poses, joints, and meshes</small></div>
+            </div>
+            <div class="loop-step step-three">
+              <span class="step-index">03</span><div><strong data-i18n="loopCheck">Check</strong><small data-i18n="loopCheckText">Interference, support, and assembly</small></div>
+            </div>
+            <div class="loop-step step-four">
+              <span class="step-index">04</span><div><strong data-i18n="loopJudge">Judge</strong><small data-i18n="loopJudgeText">Six rendered views expose visual faults</small></div>
+            </div>
+            <div class="loop-step step-five">
+              <span class="step-index">05</span><div><strong data-i18n="loopPhysics">Simulate</strong><small data-i18n="loopPhysicsText">Drive inputs and measure task behavior</small></div>
+            </div>
+            <div class="loop-step step-six">
+              <span class="step-index">06</span><div><strong data-i18n="loopRefine">Refine</strong><small data-i18n="loopRefineText">Metrics, frames, and repair guidance</small></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="demo section" id="demo">
+        <div class="shell">
+          <div class="section-heading split-heading reveal">
+            <div>
+              <p class="eyebrow" data-i18n="demoEyebrow">PROJECT DEMO</p>
+              <h2 data-i18n-html="demoTitle">See the complete<br />research loop.</h2>
+            </div>
+            <p data-i18n="demoLead">A concise walkthrough of the motivation, architecture, design agents, simulation, and evaluation workflow.</p>
+          </div>
+          <div class="model-showcase reveal">
+            <div class="model-toolbar">
+              <div>
+                <span class="model-live-dot"></span>
+                <strong data-i18n="modelTitle">Generated mechanical watch</strong>
+                <small data-i18n="modelSubtitle">Final verified assembly · Interactive GLB</small>
+              </div>
+              <div class="model-actions">
+                <button id="model-motion" class="model-button active" type="button" aria-pressed="true">
+                  <span class="model-button-icon">▶</span>
+                  <span data-i18n="mechanismMotion">Mechanism motion</span>
+                </button>
+                <button id="model-rotate" class="model-button active" type="button" aria-pressed="true">
+                  <span class="model-button-icon">↻</span>
+                  <span data-i18n="autoRotate">Auto rotate</span>
+                </button>
+                <button id="model-reset" class="model-button" type="button">
+                  <span class="model-button-icon">⌂</span>
+                  <span data-i18n="resetView">Reset view</span>
+                </button>
+              </div>
+            </div>
+            <div class="model-stage" id="model-stage">
+              <canvas id="model-canvas" aria-label="Interactive 3D model of the generated mechanical watch"></canvas>
+              <div class="model-loading" id="model-loading" role="status">
+                <span class="model-loader"></span>
+                <strong data-i18n="loadingModel">Loading verified assembly</strong>
+                <small id="model-progress">0%</small>
+              </div>
+              <div class="model-hint" id="model-hint">
+                <span>↔</span>
+                <span data-i18n="modelHint">Drag to rotate · Scroll or pinch to zoom</span>
+              </div>
+              <div class="model-axis" aria-hidden="true">
+                <span class="axis-x">X</span><span class="axis-y">Y</span><span class="axis-z">Z</span>
+              </div>
+            </div>
+            <div class="model-stats">
+              <div><span data-i18n="modelParts">Components</span><strong>20</strong></div>
+              <div><span data-i18n="modelFaces">Triangles</span><strong>24K</strong></div>
+              <div><span data-i18n="modelFormat">Web asset</span><strong>432 KB GLB</strong></div>
+              <div><span data-i18n="modelContent">Mechanism</span><strong data-i18n="modelContentValue">Gear train + hands</strong></div>
+            </div>
+          </div>
+          <div class="demo-divider reveal">
+            <span data-i18n="fullWalkthrough">Full project walkthrough</span>
+          </div>
+          <div class="video-frame reveal">
+            <video controls preload="metadata" poster="./assets/demo-poster.jpg">
+              <source src="./assets/automech-demo.webm" type="video/webm" />
+              <source src="./assets/automech-demo.mp4" type="video/mp4" />
+              <span data-i18n="videoFallback">Your browser does not support embedded video.</span>
+            </video>
+            <div class="video-meta">
+              <div><span>00:00</span><strong data-i18n="videoProblem">Problem & vision</strong></div>
+              <div><span>01:05</span><strong data-i18n="videoArchitecture">System architecture</strong></div>
+              <div><span>02:05</span><strong data-i18n="videoEvidence">Evaluation evidence</strong></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="capabilities section" id="capabilities">
+        <div class="shell">
+          <div class="section-heading centered reveal">
+            <p class="eyebrow" data-i18n="capEyebrow">ONE SYSTEM, COMPLETE LOOP</p>
+            <h2 data-i18n="capTitle">Built for mechanical reasoning.</h2>
+          </div>
+          <div class="capability-grid">
+            <article class="capability-card reveal"><span class="cap-icon">Aa</span><h3 data-i18n="capOneTitle">Language to CAD</h3><p data-i18n="capOneText">Turn a task description into a complete multi-part parametric design.</p></article>
+            <article class="capability-card reveal"><span class="cap-icon">⌘</span><h3 data-i18n="capTwoTitle">Assembly-aware</h3><p data-i18n="capTwoText">Preserve parts, joints, connections, fits, and mechanical intent.</p></article>
+            <article class="capability-card reveal"><span class="cap-icon">◇</span><h3 data-i18n="capThreeTitle">Geometry checks</h3><p data-i18n="capThreeText">Detect rigid conflicts, unsupported parts, and invalid clearances.</p></article>
+            <article class="capability-card reveal"><span class="cap-icon">◉</span><h3 data-i18n="capFourTitle">Visual inspection</h3><p data-i18n="capFourText">Judge six rendered views and return concrete structural fixes.</p></article>
+            <article class="capability-card reveal"><span class="cap-icon">∿</span><h3 data-i18n="capFiveTitle">Physics evaluation</h3><p data-i18n="capFiveText">Drive the mechanism and measure whether its intended task succeeds.</p></article>
+            <article class="capability-card reveal"><span class="cap-icon">↻</span><h3 data-i18n="capSixTitle">Automatic refinement</h3><p data-i18n="capSixText">Route failure evidence back into the design until behavior improves.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="architecture section section-grid" id="architecture">
+        <div class="shell">
+          <div class="section-heading split-heading reveal">
+            <div>
+              <p class="eyebrow" data-i18n="architectureEyebrow">SYSTEM ARCHITECTURE</p>
+              <h2 data-i18n-html="architectureTitle">One interface.<br />Three coordinated processes.</h2>
+            </div>
+            <p data-i18n="architectureLead">The browser streams live stages from Node, while Python builds and evaluates each machine against an OpenAI-compatible model gateway.</p>
+          </div>
+
+          <div class="architecture-map reveal">
+            <div class="architecture-node browser-node">
+              <span class="node-kicker">01 · UI</span><strong data-i18n="archBrowser">Browser</strong><small data-i18n="archBrowserText">Prompt · Timeline · 3D · Video</small>
+            </div>
+            <div class="architecture-line line-one"><span>SSE</span></div>
+            <div class="architecture-node node-node">
+              <span class="node-kicker">02 · APP</span><strong>Node / TanStack</strong><small data-i18n="archNodeText">Routes · Events · Process control</small>
+            </div>
+            <div class="architecture-line line-two"><span>spawn</span></div>
+            <div class="architecture-node python-node">
+              <span class="node-kicker">03 · CORE</span><strong>Python Pipeline</strong><small>Maker · Evaluator · MuJoCo</small>
+            </div>
+            <div class="architecture-line line-three"><span>API</span></div>
+            <div class="architecture-node gateway-node">
+              <span class="node-kicker">04 · MODEL</span><strong data-i18n="archGateway">LLM Gateway</strong><small data-i18n="archGatewayText">Design · Vision · Repair</small>
+            </div>
+            <div class="artifact-node">
+              <span class="artifact-dot"></span><strong data-i18n="artifacts">Artifacts</strong><small>GLB · MJCF · URDF · JSON · MP4</small>
+            </div>
+          </div>
+          <div class="architecture-links reveal">
+            <a href="https://github.com/willejiang/AutoMech/blob/main/DESIGN_LOOP.md" target="_blank" rel="noreferrer"><span data-i18n="readLoop">Read design loop</span><b>↗</b></a>
+            <a href="https://github.com/willejiang/AutoMech/blob/main/maker2/PIPELINE.md" target="_blank" rel="noreferrer"><span data-i18n="readPipeline">Explore pipeline internals</span><b>↗</b></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="evidence section" id="evidence">
+        <div class="shell evidence-layout">
+          <div class="evidence-copy reveal">
+            <p class="eyebrow" data-i18n="evidenceEyebrow">WHY THE JUDGE MUST WATCH</p>
+            <h2 data-i18n-html="evidenceTitle">Metrics can pass.<br /><span>The machine can still fail.</span></h2>
+            <p data-i18n="evidenceLead">In an ANYmal stand-still test, a numeric pose metric reported only 2.1° of tilt—yet the rendered frames clearly showed the robot tipping onto its side.</p>
+            <blockquote data-i18n="evidenceQuote">“A design is only as good as the judge, and the judge has to watch the machine work.”</blockquote>
+          </div>
+          <div class="evidence-panel reveal">
+            <div class="evidence-row false-pass"><span data-i18n="numericMetric">Numeric pose metric</span><strong>PASS · 2.1°</strong></div>
+            <div class="evidence-sequence">
+              <div class="evidence-frame"><span>t₀</span><i class="robot upright"></i></div>
+              <div class="evidence-frame"><span>t₁</span><i class="robot tilted"></i></div>
+              <div class="evidence-frame"><span>t₂</span><i class="robot fallen"></i></div>
+            </div>
+            <div class="evidence-row true-fail"><span data-i18n="visualJudge">Visual behavior judge</span><strong data-i18n="overturned">FAIL · OVERTURNED</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="start section" id="start">
+        <div class="shell start-layout">
+          <div class="start-copy reveal">
+            <p class="eyebrow" data-i18n="startEyebrow">RUN IT LOCALLY</p>
+            <h2 data-i18n-html="startTitle">One app.<br />One command.</h2>
+            <p data-i18n="startLead">AutoMech runs on your machine. The web interface launches the Python pipeline directly and streams every stage back to the browser.</p>
+            <div class="requirements">
+              <span>Node 20+</span><span>Python 3.10+</span><span>uv</span><span data-i18n="modelGateway">Model gateway</span>
+            </div>
+          </div>
+          <div class="terminal reveal">
+            <div class="terminal-bar"><span></span><span></span><span></span><small>automech — zsh</small></div>
+            <pre><code><span class="comment"># <span data-i18n="terminalEnv">Create an isolated environment</span></span>
+<span class="prompt">$</span> uv venv --python 3.12 .venv
+<span class="prompt">$</span> uv pip install --python .venv/bin/python \
+    -r maker2/requirements.txt \
+    -r evaluator/requirements.txt
+
+<span class="comment"># <span data-i18n="terminalRun">Install and launch the interface</span></span>
+<span class="prompt">$</span> npm install
+<span class="prompt">$</span> PYTHON_BIN="$PWD/.venv/bin/python" npm run dev</code></pre>
+            <div class="terminal-footer"><span class="terminal-ready"><i></i><span data-i18n="readyAt">Ready at</span></span><strong>localhost:3000</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="final-cta section-grid">
+        <div class="shell final-cta-inner reveal">
+          <p class="eyebrow" data-i18n="ctaEyebrow">BUILD BEYOND APPEARANCE</p>
+          <h2 data-i18n-html="ctaTitle">Make the machine.<br /><span>Then make it work.</span></h2>
+          <div class="hero-actions">
+            <a class="button button-primary" href="https://github.com/willejiang/AutoMech" target="_blank" rel="noreferrer"><span data-i18n="openGithub">Open on GitHub</span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 15 15 5m0 0H7m8 0v8" /></svg></a>
+            <a class="button button-secondary" href="https://github.com/willejiang/AutoMech#setup" target="_blank" rel="noreferrer"><span data-i18n="readDocs">Read setup docs</span></a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell footer-inner">
+        <a class="brand" href="#top"><span class="brand-mark mini" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M11 35.5 21.7 12h5.9L38 35.5h-7.1l-2.2-5.4h-8.6l-2.2 5.4H11Zm11.2-11h4.4l-2.2-5.7-2.2 5.7Z" /><circle cx="36" cy="14" r="5" /></svg></span><span>AutoMech</span></a>
+        <p data-i18n="footerText">A research prototype for task-verified generative mechanical design.</p>
+        <div class="footer-links">
+          <a href="https://github.com/willejiang/AutoMech" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://github.com/willejiang/AutoMech/issues" target="_blank" rel="noreferrer">Issues</a>
+          <a href="#top" data-i18n="backTop">Back to top ↑</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="./app.js?v=20260812-2"></script>
+    <script type="module" src="./model-viewer.js?v=20260812-2"></script>
+  </body>
+</html>
