@@ -1,8 +1,7 @@
-import sys, json, math
+import sys, json, math, os
 src_path, out_json, meshes_dir = sys.argv[1], sys.argv[2], sys.argv[3]
-import os
 os.makedirs(meshes_dir, exist_ok=True)
-ns = {}
+ns = {"__file__": os.path.abspath(src_path), "__name__": "__physcad_machine__"}
 try:
     import build123d as b3d
     from build123d import (BuildPart, BuildSketch, Cylinder, Box, Circle, Polygon,

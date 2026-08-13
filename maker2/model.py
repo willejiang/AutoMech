@@ -149,7 +149,7 @@ class TransmissionSpec:
     type: str                                         # gear_external|gear_internal|compound_1to1
     driving_link: str
     driven_link: str
-    ratio: float = 0.0                                # 0 = derive from geometry
+    ratio: float                                      # explicit finite nonzero driven/driving ratio
 
 
 @dataclass

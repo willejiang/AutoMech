@@ -26,6 +26,7 @@ tool support is unverified; a single JSON object is trivial to validate + repair
 from __future__ import annotations
 
 import json
+import math
 import re
 
 from .imageutil import ImageLoadError, load_image_block
@@ -232,10 +233,16 @@ def _transmission_from_dict(d: dict, idx: int) -> TransmissionSpec:
     for k in ("name", "type", "driving_link", "driven_link"):
         if not isinstance(d.get(k), str) or not str(d.get(k)).strip():
             raise ValueError(f"transmissions[{idx}] is missing '{k}'")
+    if "ratio" not in d:
+        raise ValueError(f"transmissions[{idx}] is missing 'ratio'")
+    try:
+        ratio = float(d["ratio"])
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"transmissions[{idx}] has nonnumeric ratio {d['ratio']!r}") from exc
     return TransmissionSpec(
         name=str(d["name"]).strip(), type=str(d["type"]).strip(),
         driving_link=str(d["driving_link"]).strip(),
-        driven_link=str(d["driven_link"]).strip(), ratio=float(d.get("ratio") or 0.0))
+        driven_link=str(d["driven_link"]).strip(), ratio=ratio)
 
 
 def _planetary_stage_from_dict(d: dict, idx: int) -> PlanetaryStageSpec:
@@ -439,6 +446,16 @@ def _validate_model(model: KinematicModel) -> None:
         t.driving_link, t.driven_link = _remap(t.driving_link), _remap(t.driven_link)
         if t.driving_link not in valid_links or t.driven_link not in valid_links:
             problems.append(f"transmission '{t.name}' references an unknown link")
+        try:
+            ratio = float(t.ratio)
+        except (TypeError, ValueError):
+            ratio = float("nan")
+        if not math.isfinite(ratio) or ratio == 0.0:
+            problems.append(
+                f"transmission '{t.name}' ratio must be present, finite, and nonzero "
+                f"(got {t.ratio!r})")
+        else:
+            t.ratio = ratio
     for s in getattr(model, "planetary_stages", []) or []:
         s.sun, s.ring, s.carrier = _remap(s.sun), _remap(s.ring), _remap(s.carrier)
         s.planets = [{"gear": _remap(p.get("gear", "")), "pin": _remap(p.get("pin", ""))}
@@ -563,7 +580,7 @@ def model_to_dict(model: KinematicModel) -> dict:
     if getattr(model, "transmissions", None):
         out["transmissions"] = [
             {"name": t.name, "type": t.type, "driving_link": t.driving_link,
-             "driven_link": t.driven_link, **({"ratio": t.ratio} if t.ratio else {})}
+             "driven_link": t.driven_link, "ratio": t.ratio}
             for t in model.transmissions]
     if getattr(model, "planetary_stages", None):
         out["planetary_stages"] = [
@@ -587,7 +604,9 @@ def save_model(model: KinematicModel, path: str) -> None:
 
 def load_model(path: str) -> KinematicModel:
     with open(path, "r", encoding="utf-8") as f:
-        return parse_model(f.read())
+        model = parse_model(f.read())
+    _validate_model(model)
+    return model
 
 
 # --------------------------------------------------------------------------- #

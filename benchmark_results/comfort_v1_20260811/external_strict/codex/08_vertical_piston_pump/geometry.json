@@ -1,0 +1,202 @@
+{
+  "analyzer_version": "comfort-geometry/1.0",
+  "fail_closed": true,
+  "input_hashes": {
+    "meshes/base.stl": "043c0f0ed68ef59d94fe06fdd2fe4c381384535d2b49ae09b32050f89d2b3097",
+    "meshes/connecting_rod.stl": "e6c92a6c6b5d639e1f0815d2d1c3050931ae2a76c83d41445ccf830f7b905440",
+    "meshes/crank_web.stl": "43cca331b45df49f810704f9966e560c28a80b0bc1730318ecc3401fbb5fb7f9",
+    "meshes/crankshaft_input.stl": "38bc2868c51914c27c1b70e6392d0a38c22b82a161713fab8155ad634f759bba",
+    "meshes/eccentric_pin.stl": "cad0f5d13da48a7e84c6d6cb58cfa7ef1657c02b9923c52385c80755202061be",
+    "meshes/front_crank_bearing.stl": "dcdc8cb68c572ed9c928d4e0e0613d77f5e29216a570ece7a9bee54d77b59625",
+    "meshes/hand_crank.stl": "790f7fa431edd0c3762cdf70a4db841b6243aff8eb8c6ed0ad39e3db30645b92",
+    "meshes/left_crank_support.stl": "c0c5b667591f64c5180bf279b17070f91cc54bbb1420b79d5b772eb23def3ee1",
+    "meshes/left_vertical_guide.stl": "c69ae5ab56ba5ba85b7963ffaee1930216319ad87c4967f73e0196a675c67e30",
+    "meshes/lower_cylinder_frame.stl": "ed27339b46543c5a2acd863df9a48ee56b7ebad0fa24071e38df9ebea3e422d7",
+    "meshes/piston_output.stl": "0915710b6e972cd51d31e3dcad04c0949db92031df8ab1e7db9e4b64ad5e1bec",
+    "meshes/pump_rod.stl": "85250e1d4e9c05cf53aba4f2a77de99a1f21d3a117daedd15d1871eab41b66ab",
+    "meshes/rear_crank_bearing.stl": "dcdc8cb68c572ed9c928d4e0e0613d77f5e29216a570ece7a9bee54d77b59625",
+    "meshes/right_crank_support.stl": "c0c5b667591f64c5180bf279b17070f91cc54bbb1420b79d5b772eb23def3ee1",
+    "meshes/right_vertical_guide.stl": "c69ae5ab56ba5ba85b7963ffaee1930216319ad87c4967f73e0196a675c67e30",
+    "meshes/upper_cylinder_frame.stl": "ed27339b46543c5a2acd863df9a48ee56b7ebad0fa24071e38df9ebea3e422d7",
+    "meshes/vertical_crosshead.stl": "fc2b3a1ae747b122928971d9fca8a479b8a940205524659952906498e8fc6b04"
+  },
+  "intersections": [
+    {
+      "evidence_id": null,
+      "exemption": null,
+      "exemption_source": "",
+      "fraction_smaller": 0.250719186,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "connecting_rod",
+        "piston_output"
+      ],
+      "status": "CONFLICT",
+      "volume_mm3": 1596.416367
+    },
+    {
+      "evidence_id": null,
+      "exemption": null,
+      "exemption_source": "",
+      "fraction_smaller": 0.299691293,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "connecting_rod",
+        "pump_rod"
+      ],
+      "status": "CONFLICT",
+      "volume_mm3": 873.198046
+    },
+    {
+      "evidence_id": "relation/web_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.163165817,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "crank_web",
+        "crankshaft_input"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 904.238778
+    },
+    {
+      "evidence_id": "relation/eccentric_pin_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.200000058,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "crank_web",
+        "eccentric_pin"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 313.971902
+    },
+    {
+      "evidence_id": null,
+      "exemption": null,
+      "exemption_source": "",
+      "fraction_smaller": 0.081395346,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "crankshaft_input",
+        "left_crank_support"
+      ],
+      "status": "CONFLICT",
+      "volume_mm3": 791.208931
+    },
+    {
+      "evidence_id": null,
+      "exemption": null,
+      "exemption_source": "",
+      "fraction_smaller": 0.081395346,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "crankshaft_input",
+        "right_crank_support"
+      ],
+      "status": "CONFLICT",
+      "volume_mm3": 791.208931
+    },
+    {
+      "evidence_id": null,
+      "exemption": null,
+      "exemption_source": "",
+      "fraction_smaller": 0.036038608,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "eccentric_pin",
+        "lower_cylinder_frame"
+      ],
+      "status": "CONFLICT",
+      "volume_mm3": 56.575535
+    },
+    {
+      "evidence_id": "mount/left_crank_support/front_crank_bearing",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.36653774,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "front_crank_bearing",
+        "left_crank_support"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 1420.549815
+    },
+    {
+      "evidence_id": null,
+      "exemption": null,
+      "exemption_source": "",
+      "fraction_smaller": 0.099296024,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "left_vertical_guide",
+        "upper_cylinder_frame"
+      ],
+      "status": "CONFLICT",
+      "volume_mm3": 798.109494
+    },
+    {
+      "evidence_id": "relation/pump_rod_carries_piston",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.103448276,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "piston_output",
+        "pump_rod"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 301.412936
+    },
+    {
+      "evidence_id": "relation/crosshead_carries_pump_rod",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.206896552,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "pump_rod",
+        "vertical_crosshead"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 602.825872
+    },
+    {
+      "evidence_id": "mount/right_crank_support/rear_crank_bearing",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.36653774,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "rear_crank_bearing",
+        "right_crank_support"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 1420.549815
+    },
+    {
+      "evidence_id": null,
+      "exemption": null,
+      "exemption_source": "",
+      "fraction_smaller": 0.099296024,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "right_vertical_guide",
+        "upper_cylinder_frame"
+      ],
+      "status": "CONFLICT",
+      "volume_mm3": 798.109494
+    }
+  ],
+  "links_scanned": 17,
+  "manifest_only_exemption_count": 0,
+  "method": "final-pose watertight STL boolean intersection using manifold",
+  "non_exempt_conflict_count": 7,
+  "provenance_warnings": [],
+  "report_volume_mm3": 0.0001,
+  "scan_unavailable": [],
+  "schema": "physcad-scorer-geometry/1.0"
+}

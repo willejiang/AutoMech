@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
+import time
 from typing import Any, Protocol
 
 from .llm.client import LLMError, LLMResponse, ToolCall
@@ -88,10 +89,11 @@ def execute_tool_call(
     log_fn: Callable[[str], None] | None = None,
 ) -> ToolExecution:
     """Execute one provider-neutral ToolCall and normalize its result to text."""
+    started = time.perf_counter()
     args = tool_call.arguments if isinstance(tool_call.arguments, dict) else {}
     executor = executors.get(tool_call.name)
     if executor is None:
-        return ToolExecution(
+        execution = ToolExecution(
             round_index,
             tool_call.id,
             tool_call.name,
@@ -99,24 +101,35 @@ def execute_tool_call(
             f"(no such tool: {tool_call.name})",
             True,
         )
-    if log_fn:
-        log_fn(f"[tool] {tool_call.name}({args.get('query', args)})")
+    else:
+        if log_fn:
+            log_fn(f"[tool] {tool_call.name}({args.get('query', args)})")
+        try:
+            result = executor(**args)
+            if not isinstance(result, str):
+                result = str(result)
+            execution = ToolExecution(
+                round_index, tool_call.id, tool_call.name, args, result, False
+            )
+        except Exception as error:
+            execution = ToolExecution(
+                round_index,
+                tool_call.id,
+                tool_call.name,
+                args,
+                f"(tool {tool_call.name} error: {error})",
+                True,
+            )
     try:
-        result = executor(**args)
-        if not isinstance(result, str):
-            result = str(result)
-        return ToolExecution(
-            round_index, tool_call.id, tool_call.name, args, result, False
-        )
-    except Exception as error:
-        return ToolExecution(
-            round_index,
-            tool_call.id,
-            tool_call.name,
-            args,
-            f"(tool {tool_call.name} error: {error})",
-            True,
-        )
+        from .benchmarks.telemetry import active_recorder
+        recorder = active_recorder()
+        if recorder is not None:
+            recorder.record_tool(tool_call.name,
+                                 duration_s=time.perf_counter() - started,
+                                 error=execution.is_error)
+    except Exception:
+        pass
+    return execution
 
 
 def run_agent_tool_loop(

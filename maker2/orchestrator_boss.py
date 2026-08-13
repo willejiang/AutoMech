@@ -1141,6 +1141,10 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
             log(f"[boss] NO PROGRESS for {no_progress} iterations; giving up to avoid a "
                 "runaway loop.")
             break
+        if it > 0:
+            from .benchmarks.telemetry import record_first_attempt
+            record_first_attempt(False, stage="preterminal_refinement",
+                                 reason="iteration 0 required refinement")
         log(f"\n===== ITERATION {it} (boss{' re-plan' if feedback else ''}) =====")
         no_progress += 1                  # reset to 0 below once physics is reached
         judge_verdict = None            # set by the appearance judge below; fed to score
@@ -1847,6 +1851,9 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
 
         # 6. Physics on the ASSEMBLED machine (multi-test + aggregate from Stage E).
         if not do_physics:
+            if it == 0:
+                from .benchmarks.telemetry import record_first_attempt
+                record_first_attempt(True, stage="assembly")
             log("[boss] assembled + precheck OK (physics not requested) -> done.")
             break
         from .physics import run_physics
@@ -1881,6 +1888,14 @@ def run_boss(prompt: str, out_dir: str = "output", settings=None, *,
             "render_dir": assembly_ctx.run_dir, "passed": phys.get("passed"),
             "score": round(s_val, 4), "score_breakdown": s_break, "physics": phys}))
 
+        if it == 0:
+            from .benchmarks.telemetry import record_first_attempt
+            diagnosis = phys.get("diagnosis") or {}
+            record_first_attempt(
+                phys.get("passed") is True, stage="physics",
+                fault_domain=diagnosis.get("fault_domain"),
+                reason=diagnosis.get("reason") or phys.get("summary") or "",
+            )
         if phys.get("passed") is None:
             log("[boss] physics errored/unavailable -> stop with current assembly.")
             break

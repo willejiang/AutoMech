@@ -1139,6 +1139,11 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
             r = c.chat.completions.create(
                 model=mdl, messages=messages, tools=_DIAG_TOOLS,
                 max_completion_tokens=16000)
+            try:
+                from maker2.benchmarks.telemetry import record_openai_response
+                record_openai_response(r, model=mdl)
+            except Exception:
+                pass
             msg = r.choices[0].message
             calls = getattr(msg, "tool_calls", None) or []
             if not calls:
@@ -1164,6 +1169,11 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
                     r2 = c.chat.completions.create(
                         model=mdl, messages=ask, response_format=_DIAG_SCHEMA,
                         max_completion_tokens=16000)
+                    try:
+                        from maker2.benchmarks.telemetry import record_openai_response
+                        record_openai_response(r2, model=mdl)
+                    except Exception:
+                        pass
                     d = _parse_json(r2.choices[0].message.content)
                     # Even if that reply is also unparseable, the prose is a real finding
                     # and is worth more than the boilerplate default.
@@ -1202,6 +1212,11 @@ def diagnose_physics(task, robot_info, spec, metrics, frames_dir, *,
             r = c.chat.completions.create(model=mdl, messages=messages,
                                           response_format=_DIAG_SCHEMA,
                                           max_completion_tokens=16000)
+            try:
+                from maker2.benchmarks.telemetry import record_openai_response
+                record_openai_response(r, model=mdl)
+            except Exception:
+                pass
             d = _parse_json(r.choices[0].message.content)
     except Exception as e:
         # THE CALL DIED — fall back on what was already MEASURED, never on raw_pass alone.

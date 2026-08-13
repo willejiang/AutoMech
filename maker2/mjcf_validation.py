@@ -11,7 +11,7 @@ import tempfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-POLICY_VERSION = 4
+POLICY_VERSION = 5
 _ALLOWED_CALLS = {"range", "len", "sorted", "list", "dict", "set", "tuple", "float",
                   "int", "str", "bool", "enumerate", "zip", "min", "max", "abs", "sum"}
 _ALLOWED_OUT_METHODS = {"topology_plan", "body", "joint", "freejoint", "weld", "connect",
@@ -112,6 +112,72 @@ def _unique_named(root, tag: str) -> tuple[set[str], list[str]]:
         if name in seen: dup.append(name)
         seen.add(name)
     return seen, dup
+
+
+def _declared_exclude_exemption(facts: dict, pair: tuple[str, str]) -> str | None:
+    """Return the sole authored and measured geometry exemption for this exact pair."""
+    from .mjcf_facts import query_port_fit
+
+    relations = {}
+    for relation in facts["model"].get("relations") or []:
+        relation_pair = tuple(sorted((relation.get("base_part", ""),
+                                      relation.get("incoming_part", ""))))
+        if relation_pair == pair:
+            relations[f"relation/{relation.get('name', '')}"] = relation
+
+    for relation_id, relation in relations.items():
+        mate_type = relation.get("mate_type")
+        if mate_type not in ("press_fit", "journal_bearing", "ball_bearing"):
+            continue
+        fit = query_port_fit(facts, relation.get("base_part", ""),
+                             relation.get("base_port", ""),
+                             relation.get("incoming_part", ""),
+                             relation.get("incoming_port", ""))
+        clearance = fit.get("diametral_clearance_mm") if fit.get("ok") else None
+        if mate_type == "press_fit":
+            return relation_id
+        if mate_type in ("journal_bearing", "ball_bearing") and clearance is not None \
+                and float(clearance) >= 0.0:
+            return relation_id
+
+    declared_mesh_pairs = {tuple(sorted(x[:2])) for x in
+                           (facts["model"].get("mesh_pairs") or []) if len(x) >= 2}
+    planetary_pairs = set()
+    for stage in facts["model"].get("planetary_stages") or []:
+        for planet in stage.get("planets") or []:
+            gear = planet.get("gear", "")
+            if gear:
+                planetary_pairs.add(tuple(sorted((stage.get("sun", ""), gear))))
+                planetary_pairs.add(tuple(sorted((stage.get("ring", ""), gear))))
+    for relation_id, relation in relations.items():
+        if relation.get("mate_type") in ("gear_spur_external", "gear_spur_internal",
+                                         "gear_external", "gear_internal") and pair in (
+                                             declared_mesh_pairs | planetary_pairs):
+            return relation_id
+    return None
+
+
+def _validate_exclude_geometry(facts: dict, pair: tuple[str, str],
+                               exclude: dict) -> str | None:
+    """Reject an exclude when overlapping AABBs lack proof of solid separation."""
+    from .mjcf_facts import query_pair_geometry
+
+    exemption = _declared_exclude_exemption(facts, pair)
+    if exemption is not None:
+        if exemption not in (exclude.get("source_entity_ids") or []):
+            return f"exclude {list(pair)} does not cite its exact declared exemption '{exemption}'"
+        return None
+
+    geometry = query_pair_geometry(facts, pair[0], pair[1])
+    extents = geometry.get("aabb_overlap_extents_mm") or []
+    aabb_positive = len(extents) == 3 and all(float(x) > 0.0 for x in extents)
+    overlap = geometry.get("solid_overlap_mm3")
+    if aabb_positive and (overlap is None or float(overlap) > 0.0):
+        state = "unavailable" if overlap is None else f"positive ({float(overlap):.10g} mm^3)"
+        return (f"exclude {list(pair)} is unsupported by geometry facts: AABB overlap is "
+                f"positive on all axes and exact solid overlap is {state}; sampled positive "
+                "surface distance does not prove separation")
+    return None
 
 
 def _dynamic_transmission_probe(path: Path, topology: dict, facts: dict) -> dict:
@@ -391,13 +457,19 @@ def validate_candidate(xml_text: str, manifest: dict, facts: dict,
                               f"'{coordinate_map[link]}'")
     for exclude in manifest.get("excludes") or []:
         pair = exclude.get("pair") or []
-        if len(pair) != 2 or any(name not in bodies for name in pair):
+        valid_pair = len(pair) == 2 and not any(name not in bodies for name in pair)
+        if not valid_pair:
             errors.append(f"exclude {pair} references unknown body")
         if not exclude.get("reason") or not exclude.get("source_entity_ids") or not exclude.get("fact_ids"):
             errors.append(f"exclude {pair} lacks provenance")
         for entity_id in exclude.get("source_entity_ids") or []:
             if entity_id not in facts["entity_ids"]:
                 errors.append(f"exclude {pair} references unknown source '{entity_id}'")
+        if valid_pair:
+            geometry_error = _validate_exclude_geometry(
+                facts, tuple(sorted((str(pair[0]), str(pair[1])))), exclude)
+            if geometry_error:
+                errors.append(geometry_error)
     ground_excludes = manifest.get("ground_excludes") or []
     ground_exclude_bodies = set()
     for ground_exclude in ground_excludes:

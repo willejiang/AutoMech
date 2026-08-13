@@ -23,6 +23,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from maker2.config import Settings
+from maker2.jsonutil import strict_json_dumps
 from maker2.manager import decompose
 from maker2.orchestrator import make_run_context
 from maker2.urdf_builder import build_urdf, scaffold_meshes, validate_urdf
@@ -184,17 +185,33 @@ def run(prompt: str, out_dir: str = "output", manager_only: bool = False,
         max_iters: int = 0, refine_message: str | None = None,
         prior_model: str | None = None, thread: str | None = None,
         entry: str = "rebuild", engine: str | None = None,
-        chrono_mode: str | None = None) -> dict:
+        chrono_mode: str | None = None, benchmark_cold: bool = False) -> dict:
     settings = Settings()
     settings.allow_partial = allow_partial
     if engine:
         settings.engine = engine
     if chrono_mode:
         settings.chrono_mode = chrono_mode
+    if benchmark_cold:
+        try:
+            from maker2.benchmarks.telemetry import active_recorder
+            recorder = active_recorder()
+            if recorder is not None:
+                settings.mjcf_compiler_cache_dir = recorder.cold_cache_dir
+        except Exception:
+            pass
     if model:
         # The cadam UI passes provider-prefixed ids (e.g. "anthropic/claude-opus-4.8"),
         # but this gateway wants the bare name ("claude-opus-4.8") — strip the prefix.
         settings.model = model.split("/", 1)[-1]
+    try:
+        from maker2.benchmarks.telemetry import active_recorder
+        recorder = active_recorder()
+        if recorder is not None:
+            recorder.configure(provider=settings.provider_name, model=settings.model,
+                               engine=settings.engine, entry=entry)
+    except Exception:
+        pass
     print(f"[run] model: {settings.model}")
     print(f"[run] prompt: {prompt}")
     print(f"[run] max_iters: {max_iters}")
@@ -337,6 +354,10 @@ def run(prompt: str, out_dir: str = "output", manager_only: bool = False,
         sub_it = 0                       # reset the maker-subloop budget each main pass
         last_judge = None                # last judge verdict this subloop (for feedback)
         while True:                      # ----- MAKER SUBLOOP (capped) -----
+            if total_it > 0:
+                from maker2.benchmarks.telemetry import record_first_attempt
+                record_first_attempt(False, stage="preterminal_refinement",
+                                     reason="iteration 0 required refinement")
             patch, ctx, results, model_obj = _one_iteration(total_it, feedback)
             result.update(patch)
             result["iterations"] = total_it + 1
@@ -347,6 +368,13 @@ def run(prompt: str, out_dir: str = "output", manager_only: bool = False,
                 result["render_dir"] = ctx.run_dir
             result["hard_failed"] = not result["render_dir"]
             Path(ctx.run_dir, "result.json").write_text(json.dumps(result, indent=2))
+            if total_it == 0 and (not patch.get("ok") or manager_only
+                                  or (do_judge and (patch.get("judge") or {}).get("passed") is False)):
+                from maker2.benchmarks.telemetry import record_first_attempt
+                judge_reason = (patch.get("judge") or {}).get("reasons") or patch.get("error") or ""
+                record_first_attempt(bool(patch.get("ok") and manager_only),
+                                     stage="manager" if manager_only else "build_or_judge",
+                                     reason=judge_reason)
 
             # Tell the UI a renderable model exists NOW (regardless of judge verdict),
             # so the canvas can show THIS iteration's build immediately.
@@ -385,6 +413,9 @@ def run(prompt: str, out_dir: str = "output", manager_only: bool = False,
         # MAIN loop (which resets the maker subloop). scenario/framing were already
         # retried inside run_physics, so anything failing here is treated structural.
         if not do_physics:
+            if total_it == 0:
+                from maker2.benchmarks.telemetry import record_first_attempt
+                record_first_attempt(True, stage="build_or_judge")
             break                        # judge phase done, physics not requested
         render_urdf = os.path.join(result["render_dir"], "model.urdf")
         print("[physics] evaluating the assembled URDF ...")
@@ -400,6 +431,14 @@ def run(prompt: str, out_dir: str = "output", manager_only: bool = False,
 
         # The recording(s) exist NOW — surface them regardless of pass/fail.
         phys = result["physics"] or {}
+        if total_it == 0:
+            from maker2.benchmarks.telemetry import record_first_attempt
+            diagnosis = phys.get("diagnosis") or {}
+            record_first_attempt(
+                phys.get("passed") is True, stage="physics",
+                fault_domain=diagnosis.get("fault_domain"),
+                reason=diagnosis.get("reason") or phys.get("summary") or "",
+            )
         print("ARTIFACT_JSON:" + json.dumps({
             "kind": "physics", "iter": total_it,
             "run_dir": ctx.run_dir, "render_dir": result["render_dir"],
@@ -479,6 +518,8 @@ def main() -> int:
     ap.add_argument("--no-judge", action="store_true", help="skip the appearance judge")
     ap.add_argument("--physics", action="store_true", help="also run a PyBullet stability test")
     ap.add_argument("--json", action="store_true", help="print result.json as the LAST line")
+    ap.add_argument("--benchmark-cold", action="store_true",
+                    help="record benchmark telemetry using a fresh project-cache namespace")
     ap.add_argument("--max-iters", type=int, default=0,
                     help="MAKER-SUBLOOP cap: judge-FAIL rebuilds for appearance up to "
                          "this many attempts, then falls through to physics anyway. "
@@ -546,9 +587,15 @@ def main() -> int:
                          "WHOLE machine as one build123d script (no boss/sub/assembler), "
                          "refines against a rigid-conflict self-check, then runs physics.")
     a = ap.parse_args()
+    from maker2.benchmarks.telemetry import start_recorder, stop_recorder
+    pipeline_mode = "single_agent" if a.single_agent else ("hierarchy" if a.hierarchy else "simple")
+    benchmark_recorder = start_recorder(
+        task=a.prompt, out_dir=a.out, pipeline=pipeline_mode,
+        cold_requested=a.benchmark_cold,
+    )
     if a.single_agent:
         from maker2.config import Settings
-        from maker2.single_agent import run_single_agent
+        from maker2.single_agent import persist_single_agent_run, run_single_agent
         settings = Settings.load()
         if a.engine:
             settings.engine = a.engine
@@ -556,6 +603,12 @@ def main() -> int:
             settings.chrono_mode = a.chrono_mode
         if a.model:
             settings.model = a.model.split("/", 1)[-1]
+        if a.benchmark_cold:
+            settings.mjcf_compiler_cache_dir = benchmark_recorder.cold_cache_dir
+        benchmark_recorder.configure(
+            provider=getattr(settings, "provider_name", None), model=settings.model,
+            engine=settings.engine,
+        )
         if a.web:
             settings.enable_reference_tools = True
         if a.kb:
@@ -567,6 +620,10 @@ def main() -> int:
         res = run_single_agent(a.prompt, a.out, settings, do_physics=a.physics,
                                max_iters=(a.max_iters or 0), image_path=a.image,
                                log_fn=print)
+        res = persist_single_agent_run(
+            res, prompt=a.prompt, model=settings.model, max_iters=(a.max_iters or 0),
+            refine_message=a.refine_message, thread=a.thread,
+        )
         # Record the turn like every other entry point does. Without this a single-agent
         # run leaves no thread.json, and the sidebar — which lists conversations by
         # reading exactly that file — never shows the run at all. The replay support
@@ -575,8 +632,10 @@ def main() -> int:
         if a.thread and res.get("run_dir"):
             _append_thread(a.out, a.thread, a.refine_message or a.prompt, res,
                            settings.model)
+        benchmark_recorder.finalize(res)
+        stop_recorder(benchmark_recorder)
         if a.json:
-            print("RESULT_JSON:" + json.dumps(res))
+            print("RESULT_JSON:" + strict_json_dumps(res, separators=(",", ":")))
         return 0 if res.get("ok") else 1
     if a.hierarchy:
         from maker2.orchestrator_boss import run_boss
@@ -606,9 +665,20 @@ def main() -> int:
                 settings.debugger_read_tools = True
             if a.precheck_warn_only:
                 settings.precheck_warn_only = True
+        if settings is None:
+            from maker2.config import Settings
+            settings = Settings.load()
+        if a.benchmark_cold:
+            settings.mjcf_compiler_cache_dir = benchmark_recorder.cold_cache_dir
+        benchmark_recorder.configure(
+            provider=getattr(settings, "provider_name", None), model=settings.model,
+            engine=settings.engine,
+        )
         res = run_boss(a.prompt, a.out, settings=settings, do_physics=a.physics,
                        per_sub_physics=a.per_sub_physics, thread=a.thread,
                        refine_message=a.refine_message, log_fn=print)
+        benchmark_recorder.finalize(res)
+        stop_recorder(benchmark_recorder)
         if a.json:
             print("RESULT_JSON:" + json.dumps(res))
         return 0 if res.get("ok") else 1
@@ -616,7 +686,9 @@ def main() -> int:
               do_judge=not a.no_judge, do_physics=a.physics, max_iters=a.max_iters,
               refine_message=a.refine_message, prior_model=a.prior_model,
               thread=a.thread, entry=a.entry, engine=a.engine,
-              chrono_mode=a.chrono_mode)
+              chrono_mode=a.chrono_mode, benchmark_cold=a.benchmark_cold)
+    benchmark_recorder.finalize(res)
+    stop_recorder(benchmark_recorder)
     if a.json:
         print("RESULT_JSON:" + json.dumps(res))
     return 0 if res.get("ok") else 1

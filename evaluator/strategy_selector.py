@@ -193,11 +193,17 @@ def decide(task, robot_info, *, base_url=None, api_key=None, model=None):
            f"LINKS ({len(robot_info.get('links',[]))}): {robot_info.get('links',[])}\n"
            f"{subs_txt}\n"
            f"Decide how to evaluate this task on this robot.")
+    selected_model = model or model_id()
     r = c.chat.completions.create(
-        model=model or model_id(),
+        model=selected_model,
         messages=[{"role": "system", "content": SYSTEM},
                   {"role": "user", "content": msg}],
         response_format=SCHEMA, max_completion_tokens=4000)
+    try:
+        from maker2.benchmarks.telemetry import record_openai_response
+        record_openai_response(r, model=selected_model)
+    except Exception:
+        pass
     return _coerce_decision(r.choices[0].message.content, subsystems=subs)
 
 

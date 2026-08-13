@@ -1,0 +1,57 @@
+{
+  "arm": "independent_values",
+  "evidence": {
+    "dependencies": "dependency_metrics.json",
+    "gate": "output/representation_ablation_05_three_planet_4to1/runs/design_this_as_an_open_demonstra_20260813_153115/mjcf_gate_report.json",
+    "geometry": "geometry.json",
+    "machine_eval": "output/representation_ablation_05_three_planet_4to1/runs/design_this_as_an_open_demonstra_20260813_153115/machine_eval.json"
+  },
+  "layers": [
+    {
+      "index": 1,
+      "name": "execution",
+      "points_awarded": 10,
+      "reason": "Scorer-owned source reexecution produced 23 nonempty solids; rejected candidate MJCF compiled with finite nq=nv=5.",
+      "status": "PASS",
+      "weight": 10
+    },
+    {
+      "index": 2,
+      "name": "assembly",
+      "points_awarded": 15,
+      "reason": "Final iteration passed the connectivity gate and contains all required task-05 roles, three planet hinges, distinct input/output, and a fixed ring.",
+      "status": "PASS",
+      "weight": 15
+    },
+    {
+      "index": 3,
+      "name": "geometry",
+      "points_awarded": 0,
+      "reason": "Scorer-owned exact-solid non-exempt conflict count=17.",
+      "status": "FAIL",
+      "weight": 15
+    },
+    {
+      "index": 4,
+      "name": "physics_ready",
+      "points_awarded": 0,
+      "reason": "No MJCF compiler was accepted: contact materially stalled the closed mechanism.",
+      "status": "FAIL",
+      "weight": 20
+    },
+    {
+      "index": 5,
+      "name": "functional",
+      "points_awarded": 0,
+      "reason": "Prerequisite physics-ready layer failed; no accepted trajectory can establish input, output, ratio, orbit, spin, or fixed-ring invariants.",
+      "status": "FAIL",
+      "weight": 40
+    }
+  ],
+  "observed_mechanical_verdict": "FAIL",
+  "overall_verdict": "FAIL",
+  "raw_harness_ok": false,
+  "schema": "physcad-representation-ablation-score/1.0",
+  "task_id": "05_three_planet_4to1",
+  "total_points": 25
+}

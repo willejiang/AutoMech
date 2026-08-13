@@ -113,10 +113,17 @@ def _summary(task, per_test, passed, blamed_subs, blamed_kind, gw) -> str:
                f"BLAMED SUBSYSTEMS: {blamed_subs} (kind: {blamed_kind})\n\n"
                f"Write ONE plain-English sentence summarizing whether the machine works "
                f"and, if not, which subsystem failed and why. No preamble.")
+        selected_model = gw.get("model") or os.environ.get(
+            "AZURE_VLM_DEPLOYMENT", "claude-opus-4.8")
         r = c.chat.completions.create(
-            model=gw.get("model") or os.environ.get("AZURE_VLM_DEPLOYMENT", "claude-opus-4.8"),
+            model=selected_model,
             messages=[{"role": "user", "content": msg}],
             max_completion_tokens=160)
+        try:
+            from maker2.benchmarks.telemetry import record_openai_response
+            record_openai_response(r, model=selected_model)
+        except Exception:
+            pass
         txt = (r.choices[0].message.content or "").strip()
         return txt or fallback
     except Exception:

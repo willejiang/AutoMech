@@ -255,10 +255,16 @@ def _client(base_url=None, api_key=None):
 
 def _call(messages, base_url=None, api_key=None, model=None):
     c = _client(base_url, api_key)
+    selected_model = model or model_id()
     r = c.chat.completions.create(
-        model=model or model_id(),
+        model=selected_model,
         messages=messages, response_format=SPEC_SCHEMA,
         max_completion_tokens=16000)
+    try:
+        from maker2.benchmarks.telemetry import record_openai_response
+        record_openai_response(r, model=selected_model)
+    except Exception:
+        pass
     txt = (r.choices[0].message.content or "").strip()
     if not txt.lstrip().startswith("{"):        # gateway ignored the schema -> strip prose
         import re

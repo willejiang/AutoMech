@@ -21,6 +21,7 @@ import sys
 from itertools import combinations
 from pathlib import Path
 
+from .jsonutil import json_safe_value, strict_json_dumps
 from .model import (KinematicModel, LinkSpec, MateSpec, MotionJointSpec,
                     PlanetaryStageSpec, PortSpec, PoseSpec, TransmissionSpec)
 
@@ -309,15 +310,26 @@ def _parse_relation_sidecars(obj: dict | None, names: set[str]):
             type=str(d.get("type") or "hinge"), axis=_tuple3(d.get("axis"), (0, 0, 1)),
             pos_mm=_tuple3(d.get("pos_mm"), (0, 0, 0))))
     transmissions = []
-    for d in obj.get("transmissions") or []:
+    for index, d in enumerate(obj.get("transmissions") or []):
         if not isinstance(d, dict):
-            continue
+            raise ValueError(f"transmissions[{index}] is not an object")
         a, b = str(d.get("driving_link") or "").strip(), str(d.get("driven_link") or "").strip()
-        if a in names and b in names:
-            transmissions.append(TransmissionSpec(
-                name=str(d.get("name") or f"transmit_{a}_{b}"),
-                type=str(d.get("type") or "gear_external"), driving_link=a, driven_link=b,
-                ratio=float(d.get("ratio") or 0.0)))
+        if a not in names or b not in names:
+            raise ValueError(f"transmissions[{index}] references an unknown link")
+        if "ratio" not in d:
+            raise ValueError(f"transmissions[{index}] is missing 'ratio'")
+        try:
+            ratio = float(d["ratio"])
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                f"transmissions[{index}] has nonnumeric ratio {d['ratio']!r}") from exc
+        if not math.isfinite(ratio) or ratio == 0.0:
+            raise ValueError(
+                f"transmissions[{index}] ratio must be finite and nonzero (got {d['ratio']!r})")
+        transmissions.append(TransmissionSpec(
+            name=str(d.get("name") or f"transmit_{a}_{b}"),
+            type=str(d.get("type") or "gear_external"), driving_link=a, driven_link=b,
+            ratio=ratio))
     planetary_stages = []
     for d in obj.get("planetary_stages") or []:
         if not isinstance(d, dict):
@@ -509,9 +521,12 @@ def evaluate_machine_python(script_text: str, run_dir: str, machine_name: str,
             seen = True
 
     mesh_pairs = [tuple(v[:2]) for v in mesh_by_id.values() if len(v) >= 2]
-    (ports_by_link, relations, output_link, watch_links, motion_joints,
-     transmissions, planetary_stages) = _parse_relation_sidecars(
-        mechanism or spec.get("mechanism"), names)
+    try:
+        (ports_by_link, relations, output_link, watch_links, motion_joints,
+         transmissions, planetary_stages) = _parse_relation_sidecars(
+            mechanism or spec.get("mechanism"), names)
+    except ValueError as exc:
+        raise SingleAgentError(f"invalid MECHANISM sidecar: {exc}") from exc
 
     # Relation-authored pin/revolute semantics supersede the old fixed+mount fallback. A part
     # constrained by pin relations at its ports (the connecting rod case) is neither welded to
@@ -606,6 +621,37 @@ def _infer_driver(name: str) -> bool:
     return bool(_DRIVER_RE.search(name.lower()))
 
 
+def _artifact_json(payload: dict) -> str:
+    """Build a standards-compliant single-line frontend artifact event."""
+    return "ARTIFACT_JSON:" + strict_json_dumps(payload, separators=(",", ":"))
+
+
+def persist_single_agent_run(result: dict, *, prompt: str, model: str,
+                             max_iters: int, refine_message: str | None,
+                             thread: str | None) -> dict:
+    """Persist strict JSON sidecars while preserving the single-agent return shape."""
+    from datetime import datetime, timezone
+
+    safe_result = json_safe_value(result)
+    run_dir = safe_result.get("run_dir") if isinstance(safe_result, dict) else None
+    if run_dir:
+        root = Path(run_dir)
+        root.mkdir(parents=True, exist_ok=True)
+        (root / "result.json").write_text(
+            strict_json_dumps(safe_result, indent=2), encoding="utf-8")
+        (root / "run.json").write_text(strict_json_dumps({
+            "prompt": prompt,
+            "model": model,
+            "max_iters": max_iters,
+            "refine_message": refine_message,
+            "thread": thread,
+            "entry": "rebuild",
+            "single_agent": True,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        }, indent=2), encoding="utf-8")
+    return safe_result
+
+
 def _iter_score(phys: dict) -> float:
     """Score one physics result so iterations are comparable and we can keep the BEST
     version (and roll back to it when a later edit makes things worse).
@@ -630,16 +676,18 @@ def _iter_score(phys: dict) -> float:
     """
     if not phys:
         return -1.0
-    diagnosis = phys.get("diagnosis") or {}
-    if diagnosis and not (diagnosis.get("routing") or {}).get("allow_agent_refinement", False):
-        # Harness/compiler/numerical/evaluator failures are not comparable CAD iterations.
-        return float("-inf")
-    m = phys.get("metrics") or {}
-    st = phys.get("stability") or {}
-
-    # A working mechanism (the diagnoser passed it) is in a class of its own.
+    # A completed PASS outranks every diagnostic/routing field. Successful diagnoses use
+    # halt_harness/allow_agent_refinement=false because no repair is needed; treating that
+    # normal stop route as a harness failure produced score=-1,000,000 beside PASS.
     if phys.get("passed") is True:
         return 10000.0
+    diagnosis = phys.get("diagnosis") or {}
+    if diagnosis and not (diagnosis.get("routing") or {}).get("allow_agent_refinement", False):
+        # Non-PASS harness/compiler/numerical/evaluator failures are not comparable CAD iterations.
+        # Keep the sentinel finite because the score is included in frontend JSON events.
+        return -1_000_000.0
+    m = phys.get("metrics") or {}
+    st = phys.get("stability") or {}
 
     # Exploded/blew apart under drive is the worst outcome — hard floor, never near 'best'.
     if m.get("exploded"):
@@ -660,10 +708,13 @@ def _iter_score(phys: dict) -> float:
 
     # The driver at least breaking free of a jam is a weak-but-real signal, scaled to how
     # much of the commanded sweep it achieved (fall back to a nominal 10 rad target).
-    it = float(m.get("input_travel") or 0.0)
-    if 0.0 < it < 1000.0:
+    try:
+        it = float(m.get("input_travel") or 0.0)
+    except (TypeError, ValueError):
+        it = 0.0
+    if math.isfinite(it) and 0.0 < it < 1000.0:
         score += 800.0 * min(1.0, it / 10.0)
-    return score
+    return score if math.isfinite(score) else -1_000_000.0
 
 
 def _snapshot_iteration(run_dir: str, it: int, log_fn) -> str:
@@ -812,7 +863,6 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
     builds what it sees instead of what the prompt says. Only the first: every later message
     is feedback about the agent's own geometry, and re-sending the picture each round costs
     tokens without adding information the conversation does not already carry."""
-    import json as _json
     import os as _os
 
     from .llm.conversation import Conversation
@@ -921,6 +971,10 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
     prev_fits: set = set()
 
     for it in range(iter_cap):
+        if it > 0:
+            from .benchmarks.telemetry import record_first_attempt
+            record_first_attempt(False, stage="preterminal_refinement",
+                                 reason="iteration 0 required refinement")
         result["iterations"] = it + 1
         last_iter = (not unlimited) and it >= max_iters - 1
         log_fn(f"[single-agent] iteration {it}: authoring build_machine() ...")
@@ -970,7 +1024,7 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
         # and point the UI at the snapshot so reopening the run shows each version's own
         # geometry instead of the final one under every tab.
         snap = _snapshot_iteration(run_dir, it, log_fn)
-        log_fn("ARTIFACT_JSON:" + _json.dumps({
+        log_fn(_artifact_json({
             "kind": "assembled_model", "iter": it, "run_dir": run_dir,
             "render_dir": snap}))
 
@@ -989,7 +1043,7 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
         if gate and not last_iter:
             findings = "\n".join(f"- {x}" for x in gate.get("evidence") or [])
             log_fn(f"[single-agent] connectivity gate failed -> asking agent to fix")
-            log_fn("ARTIFACT_JSON:" + _json.dumps({
+            log_fn(_artifact_json({
                 "kind": "diagnosis", "iter": it, "single_agent": True,
                 "decision": {"root_cause": gate.get("root_cause", "connectivity gate failed"),
                              "evidence": gate.get("evidence") or []}}))
@@ -1022,7 +1076,7 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
             # It used to log conflicts[:8] — so a run's record said "63 interpenetrations"
             # and then listed 8 of them, and which 8 changed every round, which is what
             # made the loop's behaviour so hard to read from the log afterwards.
-            log_fn("ARTIFACT_JSON:" + _json.dumps({
+            log_fn(_artifact_json({
                 "kind": "diagnosis", "iter": it, "single_agent": True,
                 "decision": {"root_cause": f"{len(conflicts)} interpenetration(s)",
                              "evidence": findings.split("\n")}}))
@@ -1039,6 +1093,9 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
         if not do_physics:
             log_fn(f"[single-agent] machine accepted (no physics): {len(model.links)} parts")
             result["ok"] = True
+            if it == 0:
+                from .benchmarks.telemetry import record_first_attempt
+                record_first_attempt(True, stage="geometry")
             return result
 
         from .physics import run_physics
@@ -1063,13 +1120,20 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
             "fault_domain": "evaluator", "verified": False,
             "routing": {"allow_agent_refinement": False, "action": "halt_harness"}}
         passed = phys.get("passed")
+        if it == 0:
+            from .benchmarks.telemetry import record_first_attempt
+            record_first_attempt(
+                passed is True, stage="physics",
+                fault_domain=diagnosis.get("fault_domain"),
+                reason=diagnosis.get("reason") or phys.get("summary") or "",
+            )
 
         if passed is not True and not (diagnosis.get("routing") or {}).get(
                 "allow_agent_refinement", False):
             # Publish the completed simulation before halting. Previously this early return
             # happened before the normal physics artifact below, so the frontend kept the
             # iteration spinner active and could not show a failure/video already on disk.
-            log_fn("ARTIFACT_JSON:" + _json.dumps({
+            log_fn(_artifact_json({
                 "kind": "physics", "iter": it, "run_dir": run_dir,
                 "render_dir": run_dir, "passed": passed, "physics": phys}))
             log_fn(f"[single-agent] physics fault belongs to harness domain "
@@ -1099,7 +1163,7 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
         log_fn(f"[single-agent] iter {it} score={score:.0f} (best={best['score']:.0f}"
                f"{', REGRESSED' if regressed else ''})")
 
-        log_fn("ARTIFACT_JSON:" + _json.dumps({
+        log_fn(_artifact_json({
             "kind": "physics", "iter": it, "run_dir": run_dir, "render_dir": run_dir,
             "passed": passed, "score": score, "physics": phys}))
         result["physics"] = phys
@@ -1134,7 +1198,7 @@ def run_single_agent(product_prompt: str, out_dir: str, settings, *,
 
         summary = phys.get("summary", "the mechanism did not transmit motion")
         log_fn(f"[single-agent] physics FAIL -> diagnose + re-author: {summary[:120]}")
-        log_fn("ARTIFACT_JSON:" + _json.dumps({
+        log_fn(_artifact_json({
             "kind": "diagnosis", "iter": it, "single_agent": True,
             "decision": {"root_cause": summary,
                          "cause": diagnosis["cause"], "reason": diagnosis["reason"],

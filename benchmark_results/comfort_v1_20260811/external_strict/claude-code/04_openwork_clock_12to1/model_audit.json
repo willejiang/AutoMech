@@ -1,0 +1,140 @@
+{
+  "active_closures": [
+    {
+      "name": "stage_1_ideal_mesh",
+      "type": "joint"
+    },
+    {
+      "name": "stage_2_ideal_mesh",
+      "type": "joint"
+    }
+  ],
+  "actuator_policy_ok": true,
+  "actuators": [
+    {
+      "is_registered_input": true,
+      "joint": "minute_input_hinge",
+      "name": "minute_input_motor",
+      "type": "velocity"
+    }
+  ],
+  "analyzer_version": "external-model-audit/1.0",
+  "authored_transmissions": [
+    {
+      "driven": "intermediate_hinge",
+      "driving": "minute_input_hinge",
+      "name": "stage_1",
+      "ratio": -0.3333333333333333
+    },
+    {
+      "driven": "hour_output_hinge",
+      "driving": "intermediate_hinge",
+      "name": "stage_2",
+      "ratio": -0.25
+    }
+  ],
+  "closure_ok": true,
+  "collision_coverage": [
+    {
+      "active_collision_geoms": [
+        "base_frame_geom"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": true,
+      "link": "base_frame"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 2,
+      "covered": false,
+      "link": "minute_shaft"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": false,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "minute_pinion_15t"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "minute_hand"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 3,
+      "covered": false,
+      "link": "intermediate_shaft"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": false,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "intermediate_gear_45t"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": false,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "intermediate_pinion_12t"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 2,
+      "covered": false,
+      "link": "hour_sleeve"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": false,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "hour_gear_48t"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "hour_hand"
+    }
+  ],
+  "collision_coverage_ok": false,
+  "equality_checks": [
+    {
+      "detail": "intermediate_hinge=-0.333333333333*minute_input_hinge matches ratio -0.333333333333",
+      "driven": "intermediate_hinge",
+      "driving": "minute_input_hinge",
+      "matched": true,
+      "name": "stage_1",
+      "ratio": -0.3333333333333333
+    },
+    {
+      "detail": "hour_output_hinge=-0.25*intermediate_hinge matches ratio -0.25",
+      "driven": "hour_output_hinge",
+      "driving": "intermediate_hinge",
+      "matched": true,
+      "name": "stage_2",
+      "ratio": -0.25
+    }
+  ],
+  "errors": [
+    "one or more physical mesh links lack active collision coverage"
+  ],
+  "passed": false,
+  "registered_input_joints": [
+    "minute_input_hinge"
+  ],
+  "schema": "physcad-scorer-model-audit/1.0",
+  "task_id": "04_openwork_clock_12to1",
+  "transmission_binding_ok": true
+}

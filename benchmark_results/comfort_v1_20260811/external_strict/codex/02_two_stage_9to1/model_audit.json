@@ -1,0 +1,181 @@
+{
+  "active_closures": [
+    {
+      "name": "stage1_3to1",
+      "type": "joint"
+    },
+    {
+      "name": "stage2_3to1",
+      "type": "joint"
+    }
+  ],
+  "actuator_policy_ok": true,
+  "actuators": [
+    {
+      "is_registered_input": true,
+      "joint": "input_shaft_hinge",
+      "name": "hand_crank_velocity",
+      "type": "velocity"
+    }
+  ],
+  "analyzer_version": "external-model-audit/1.0",
+  "authored_transmissions": [
+    {
+      "driven": "compound_intermediate_shaft_hinge",
+      "driving": "input_shaft_hinge",
+      "name": "stage1_3to1",
+      "ratio": -0.3333333333333333
+    },
+    {
+      "driven": "output_shaft_hinge",
+      "driving": "compound_intermediate_shaft_hinge",
+      "name": "stage2_3to1",
+      "ratio": -0.3333333333333333
+    }
+  ],
+  "closure_ok": true,
+  "collision_coverage": [
+    {
+      "active_collision_geoms": [
+        "base_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 2,
+      "covered": true,
+      "link": "base"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "input_front_bearing"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "input_rear_bearing"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "intermediate_front_bearing"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "intermediate_rear_bearing"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "output_front_bearing"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "output_rear_bearing"
+    },
+    {
+      "active_collision_geoms": [
+        "input_shaft_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 2,
+      "covered": true,
+      "link": "input_shaft"
+    },
+    {
+      "active_collision_geoms": [
+        "midshaft_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 2,
+      "covered": true,
+      "link": "compound_intermediate_shaft"
+    },
+    {
+      "active_collision_geoms": [
+        "output_shaft_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 2,
+      "covered": true,
+      "link": "output_shaft"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "stage1_input_pinion"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "stage1_driven_gear"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "stage2_intermediate_pinion"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "stage2_output_gear"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "hand_crank"
+    }
+  ],
+  "collision_coverage_ok": false,
+  "equality_checks": [
+    {
+      "detail": "compound_intermediate_shaft_hinge=-0.333333333333*input_shaft_hinge matches ratio -0.333333333333",
+      "driven": "compound_intermediate_shaft_hinge",
+      "driving": "input_shaft_hinge",
+      "matched": true,
+      "name": "stage1_3to1",
+      "ratio": -0.3333333333333333
+    },
+    {
+      "detail": "output_shaft_hinge=-0.333333333333*compound_intermediate_shaft_hinge matches ratio -0.333333333333",
+      "driven": "output_shaft_hinge",
+      "driving": "compound_intermediate_shaft_hinge",
+      "matched": true,
+      "name": "stage2_3to1",
+      "ratio": -0.3333333333333333
+    }
+  ],
+  "errors": [
+    "one or more physical mesh links lack active collision coverage"
+  ],
+  "passed": false,
+  "registered_input_joints": [
+    "input_shaft_hinge"
+  ],
+  "schema": "physcad-scorer-model-audit/1.0",
+  "task_id": "02_two_stage_9to1",
+  "transmission_binding_ok": true
+}

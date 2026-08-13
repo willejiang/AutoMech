@@ -2,7 +2,7 @@
 
 > 状态：持续维护中
 > 起始日期：2026-08-10
-> 最后更新：2026-08-10
+> 最后更新：2026-08-12
 > 适用范围：`maker2` 的 KinematicModel → MuJoCo MJCF → support probe → scenario/evaluator 路径
 
 ## 1. 文档目的
@@ -146,9 +146,10 @@ def compile_mjcf(facts, out):
 
 Agent 需要的是可核验事实，不能让旧 builder 先给出“应该 weld/exclude”的结论，否则只是把旧启发式包装成 agent。
 
-### 已知未完成
+### 当前状态
 
-- `query_nearby_parts()` 目前仍按世界原点距离，不是表面距离；
+- `query_nearby_parts()` 已改为放置后 world-AABB 表面距离，并使用目标包围盒半对角线作为尺度相关的最小发现半径；此项历史缺口已在 prompt v5/v6 修复；
+- 当前 compiler prompt 为 v10，覆盖 dynamic contact evidence、world-frame joint、ground exclude 与 dedicated-pin policy；
 - pair query 尚需按 mesh hash + transform 做显式缓存；
 - 部分事实可继续压缩，避免 agent 对话携带不需要的矩阵。
 
@@ -976,3 +977,33 @@ py -3.14 -m maker2.tests.golden_agent_team_protocol          PASS
 - 二级 reducer、钟表、三行星、四行星、曲柄滑块、windpump 全部完成正常 physics/functional PASS；
 - 验证了普通 transmission tree、独立同轴、planet carrier forest、三/四 planet inventory、闭环 spanning tree+closure、长链 windpump；
 - 所有 harness-domain 修复均复用现有 CAD/IR，没有因 builder/runner/evaluator fault 触发 CAD 重造。
+
+### 2026-08-11：冻结复跑纠错与 benchmark telemetry
+
+- 冻结复跑证明三行星机械轨迹为 PASS，但 `evaluator/_metrics_runner.py` 将 `0.01 <= ratio <= 0.95` 取首个数字并误判为单一上限；新增显式双边区间解析，保留 ratio、单边界与非数值 expected 的旧契约；
+- 新增 `benchmark_metrics.json` sidecar，不修改 `result.json`：记录端到端 duration、Operational Pass@1、LLM usage、agent tool calls、MJCF compiler candidate/submission 与 cache hit/miss/rejected-hit；
+- `--benchmark-cold` 为本次运行创建独立 MJCF compiler cache namespace；cold qualification 使用 true/false/unknown，不从普通首次运行推断；
+- `maker2/benchmarks/aggregate_metrics.py` 跨任务汇总 final success、known-only Pass@1、cold cohort、runtime、iterations、tokens、tool/cache/compiler work，并明确历史/缺失 telemetry；
+- 成本不按记忆价格猜测：provider 不返回金额且没有固化 pricing snapshot 时，`cost_usd=null`、coverage=`unavailable`；
+- 外部 benchmark 规范 `C:/Users/t-zhijjiang/Downloads/metrics.md` 单独区分 geometry exemptions、solver excludes、idealizations 与 support patches；没有因此修改 harness 的 contact/exclude 行为；
+- 验证：`golden_metrics_runner`、`golden_benchmark_metrics`、`golden_agent_team_protocol`、`golden_fault_attribution`、`golden_builder_manifest_diff` 通过，`python -m compileall -q evaluator maker2` 通过；依赖 `build123d` 的 MJCF/Simscape goldens 在当前两个 Python 环境均因依赖缺失未运行。
+
+### 2026-08-12：修复 single-agent 前端 artifact JSON 契约
+
+- 现象：single-agent 的 harness-domain fault 可让 `_iter_score()` 返回 `-inf`；Python `json.dumps()` 会把非有限数写成 `NaN`/`Infinity`，但前端事件桥使用严格 `JSON.parse()`，导致完整 `ARTIFACT_JSON`/`RESULT_JSON` 行被降级为普通日志或报告“maker2 produced no result”；single-agent CLI 也未落盘 `result.json`/`run.json`，历史 run 无法重开；
+- 根因：内部排序哨兵直接进入跨语言 JSON 边界，且 single-agent CLI 绕过了其他入口已有的 sidecar 持久化；
+- 修改文件：`maker2/jsonutil.py`、`maker2/single_agent.py`、`maker2/run.py`、`maker2/tests/golden_single_agent_json_contract.py`；
+- 修改内容：新增严格 JSON serializer，在输出边界递归把 NaN/±Infinity 变成标准 JSON `null` 并启用 `allow_nan=False`；single-agent 全部 artifact 统一使用该 serializer；harness-domain score 改为有限低分且防御非有限 input travel；CLI 在不改变返回字段的前提下持久化清洗后的 `result.json` 与带 prompt/model/thread metadata 的 `run.json`，最终 `RESULT_JSON` 同样严格序列化；
+- 为什么这样改：前端当前 parser 已正确坚持标准 JSON，修复应落在 producer；`null` 保留“数值不可用”语义且不会把 harness fault 误当 CAD 质量分；
+- 验证：`python -m maker2.tests.golden_single_agent_json_contract` 覆盖有限 score、嵌套 NaN/Infinity、artifact/result 严格解析及双 sidecar 落盘；前端 parser 检查确认无需 TypeScript 兼容非标准 JSON；
+- 尚未解决：其他非 single-agent maker2 路径仍有普通 `json.dumps()`，不属于本次 task #114 的 single-agent 范围。
+
+### 2026-08-12：task #115 fail-closed 几何与 exclude 证据门
+
+- authoritative IR 在 `manager._validate_model()` 统一拒绝 transmission ratio 缺失、非数值、NaN/Infinity 与 0，`load_model()` 也必须经过该 validation；single-agent sidecar 解析同步执行同一边界规则，`model_to_dict()` 不再把 0 静默省略，`TransmissionSpec` 与 prompt 均改为显式 finite nonzero driven/driving ratio；
+- CAD geometry gate 的 exact solid boolean 在三轴 AABB 均正重叠时若不可用，改为 fail closed；诊断调用仍可显式使用历史 AABB fraction fallback，但 authoritative assembled precheck 与 single-agent/subassembly `sub_conflicts` 不再把“无法求交”当成通过；
+- MJCF candidate validation 对每个 `out.exclude()` 重新查询不可变 geometry facts，而不是只核对 agent 自己的 contact_decisions/manifest：三轴 AABB 正重叠且 `solid_overlap_mm3` 为 null 或正值时必须保留碰撞；唯一豁免是 exact declared `press_fit`、measured clearance 的 `journal_bearing`/`ball_bearing` running fit、或同时属于声明 gear relation 与 exact `mesh_pairs`/planetary mesh inventory 的理想齿轮对；豁免还必须在 exclude provenance 中引用该 exact relation；
+- sampled positive `surface_distance_mm` 明确不再被视为 overlapping-AABB 的分离证明；prompt v11 同步禁止 batch/default excludes，并说明 deterministic validator 会逐 pair 复核；policy version 升为 5，因此旧 compiler cache 会重新验证；
+- 新增 `maker2/tests/golden_task115_validation.py`，覆盖 ratio 四种负例、CAD boolean unavailable fail-closed、普通 overlap/null-overlap exclude 拒绝、press-fit 与 exact declared gear mesh 豁免；
+- 历史 run `output/1_12_20260812_110516` 的旧 `model.mjcf` + `builder_manifest.json` + `mjcf_facts.json` 用新 validator 重放后按预期拒绝，共 15 个 unsupported excludes，其中多项为 AABB 三轴正重叠、exact solid overlap unavailable 且旧 manifest 仅以 sampled positive surface distance 为由批量排除；
+- 验证：`py -3.14 -m maker2.tests.golden_task115_validation`、`golden_mjcf_agent_validation`、`golden_solid_overlap`、`golden_motion_forest`、`golden_explicit_transmission` PASS，相关文件 compileall PASS；历史 IR 载入报 `transmissions[0] is missing 'ratio'`，历史 run deterministic manifest revalidation `ok=False, errors=15`。

@@ -131,12 +131,18 @@ def call_vlm(messages):
         base_url=endpoint,
         api_key=os.environ["AZURE_OPENAI_API_KEY"],
     )
+    selected_model = os.environ.get("AZURE_VLM_DEPLOYMENT", "gpt-5.4")
     resp = client.chat.completions.create(
-        model=os.environ.get("AZURE_VLM_DEPLOYMENT", "gpt-5.4"),
+        model=selected_model,
         messages=messages,
         response_format=RESULT_SCHEMA,
         max_completion_tokens=2000,
     )
+    try:
+        from maker2.benchmarks.telemetry import record_openai_response
+        record_openai_response(resp, model=selected_model)
+    except Exception:
+        pass
     return json.loads(resp.choices[0].message.content)
 
 

@@ -7,6 +7,32 @@ brace-depth scanner instead of each carrying a copy.
 
 from __future__ import annotations
 
+import json
+import math
+from collections.abc import Mapping
+from typing import Any
+
+
+def json_safe_value(value: Any) -> Any:
+    """Return a JSON-compatible value with non-finite numbers represented as null.
+
+    Python's JSON encoder emits NaN and Infinity by default, even though neither token is
+    valid JSON.  CLI events cross a strict ``JSON.parse`` boundary in the frontend, so
+    normalize those values before serialization rather than producing an unreadable event.
+    """
+    if isinstance(value, float):
+        return value if math.isfinite(value) else None
+    if isinstance(value, Mapping):
+        return {str(key): json_safe_value(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [json_safe_value(item) for item in value]
+    return value
+
+
+def strict_json_dumps(value: Any, **kwargs: Any) -> str:
+    """Serialize standards-compliant JSON, replacing nested NaN/Infinity with null."""
+    return json.dumps(json_safe_value(value), allow_nan=False, **kwargs)
+
 
 def extract_json_object(text: str) -> str:
     """Pull the first balanced ``{...}`` object out of an LLM response.

@@ -1,0 +1,174 @@
+{
+  "active_closures": [
+    {
+      "name": "minute_to_intermediate_3to1",
+      "type": "joint"
+    },
+    {
+      "name": "intermediate_to_hour_4to1",
+      "type": "joint"
+    }
+  ],
+  "actuator_policy_ok": true,
+  "actuators": [
+    {
+      "is_registered_input": true,
+      "joint": "minute_input_hinge",
+      "name": "minute_input_velocity",
+      "type": "velocity"
+    }
+  ],
+  "analyzer_version": "external-model-audit/1.0",
+  "authored_transmissions": [
+    {
+      "driven": "intermediate_shaft_hinge",
+      "driving": "minute_input_hinge",
+      "name": "minute_to_intermediate_3to1",
+      "ratio": -0.3333333333333333
+    },
+    {
+      "driven": "hour_output_hinge",
+      "driving": "intermediate_shaft_hinge",
+      "name": "intermediate_to_hour_4to1",
+      "ratio": -0.25
+    }
+  ],
+  "closure_ok": true,
+  "collision_coverage": [
+    {
+      "active_collision_geoms": [
+        "base_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 2,
+      "covered": true,
+      "link": "base"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "central_front_bearing"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "central_rear_bearing"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "intermediate_front_bearing"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "intermediate_rear_bearing"
+    },
+    {
+      "active_collision_geoms": [
+        "minshaft_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 2,
+      "covered": true,
+      "link": "minute_input_shaft"
+    },
+    {
+      "active_collision_geoms": [
+        "hoursleeve_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 2,
+      "covered": true,
+      "link": "hour_output_sleeve"
+    },
+    {
+      "active_collision_geoms": [
+        "midshaft_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 2,
+      "covered": true,
+      "link": "intermediate_shaft"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "minute_input_pinion"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "stage1_intermediate_gear"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "stage2_intermediate_pinion"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "hour_output_gear"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "minute_hand"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "hour_hand"
+    }
+  ],
+  "collision_coverage_ok": false,
+  "equality_checks": [
+    {
+      "detail": "intermediate_shaft_hinge=-0.333333333333*minute_input_hinge matches ratio -0.333333333333",
+      "driven": "intermediate_shaft_hinge",
+      "driving": "minute_input_hinge",
+      "matched": true,
+      "name": "minute_to_intermediate_3to1",
+      "ratio": -0.3333333333333333
+    },
+    {
+      "detail": "hour_output_hinge=-0.25*intermediate_shaft_hinge matches ratio -0.25",
+      "driven": "hour_output_hinge",
+      "driving": "intermediate_shaft_hinge",
+      "matched": true,
+      "name": "intermediate_to_hour_4to1",
+      "ratio": -0.25
+    }
+  ],
+  "errors": [
+    "one or more physical mesh links lack active collision coverage"
+  ],
+  "passed": false,
+  "registered_input_joints": [
+    "minute_input_hinge"
+  ],
+  "schema": "physcad-scorer-model-audit/1.0",
+  "task_id": "04_openwork_clock_12to1",
+  "transmission_binding_ok": true
+}

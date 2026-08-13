@@ -93,7 +93,8 @@ MECHANISM = {{
   ],
   "transmissions": [
     {{"name": "<transmission>", "type": "gear_external|gear_internal|compound_1to1",
-      "driving_link": "<part>", "driven_link": "<part>", "ratio": <0 to derive>}}
+      "driving_link": "<part>", "driven_link": "<part>",
+      "ratio": <required explicit finite nonzero driven/driving ratio>}}
   ],
   "planetary_stages": [
     {{"name": "<stage>", "sun": "<part>", "ring": "<part>",

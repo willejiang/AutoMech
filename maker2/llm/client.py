@@ -672,9 +672,24 @@ class LLMClient:
                 pass
         return self._BASE_BACKOFF * (2 ** attempt) + random.uniform(0, 1)
 
+    def _record_benchmark_request(self, data: dict | None, started: float,
+                                  *, error: bool = False) -> None:
+        try:
+            from maker2.benchmarks.telemetry import active_recorder
+            recorder = active_recorder()
+            if recorder is not None:
+                recorder.record_llm(
+                    provider=self.provider_name, model=self.model,
+                    usage=(data or {}).get("usage"),
+                    duration_s=time.perf_counter() - started, error=error,
+                )
+        except Exception:
+            pass
+
     def _http_post(self, url: str, headers: dict, body: dict) -> dict:
         """Make an HTTP POST request with retry on 429. Returns parsed JSON."""
         self._check_ssl(url)
+        started = time.perf_counter()
         payload = json.dumps(body).encode("utf-8")
         timeout = max(self.timeout, 300) if self.provider_name == "ollama" else self.timeout
         ctx = self._ssl_ctx if url.startswith("https") else None
@@ -683,7 +698,9 @@ class LLMClient:
             req = urllib.request.Request(url, data=payload, headers=headers, method="POST")
             try:
                 with urllib.request.urlopen(req, context=ctx, timeout=timeout) as resp:
-                    return json.loads(resp.read().decode("utf-8"))
+                    data = json.loads(resp.read().decode("utf-8"))
+                    self._record_benchmark_request(data, started)
+                    return data
             except urllib.error.HTTPError as e:
                 if e.code == 429 and attempt < self._MAX_RETRIES:
                     delay = self._get_retry_delay(e, attempt)
@@ -705,6 +722,8 @@ class LLMClient:
     def _http_stream(self, url: str, headers: dict, body: dict) -> Generator[dict, None, None]:
         """Make a streaming HTTP POST with retry on 429. Yields parsed SSE data chunks."""
         self._check_ssl(url)
+        started = time.perf_counter()
+        usage_data = None
         payload = json.dumps(body).encode("utf-8")
         timeout = max(self.timeout, 300) if self.provider_name == "ollama" else self.timeout
         ctx = self._ssl_ctx if url.startswith("https") else None
@@ -756,11 +775,26 @@ class LLMClient:
                     if text_line.startswith("data: "):
                         json_str = text_line[6:]
                         try:
-                            yield json.loads(json_str)
+                            chunk = json.loads(json_str)
+                            event_usage = chunk.get("usage")
+                            if event_usage is None and chunk.get("type") in (
+                                    "message_start", "message_delta"):
+                                event_usage = (chunk.get("message") or {}).get("usage")
+                            if event_usage is not None:
+                                if not isinstance(event_usage, dict):
+                                    event_usage = dict(event_usage)
+                                merged = dict((usage_data or {}).get("usage") or {})
+                                for key, value in event_usage.items():
+                                    if value is not None:
+                                        merged[key] = value
+                                usage_data = {"usage": merged}
+                            yield chunk
                         except json.JSONDecodeError:
                             continue
         finally:
-            resp.close()
+            if resp is not None:
+                resp.close()
+            self._record_benchmark_request(usage_data, started)
 
 
 # Models that require thinking content to be stripped from conversation

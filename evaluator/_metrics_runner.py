@@ -35,6 +35,42 @@ _LOWER_BOUND_RE = re.compile(
     r"(>=|>|≥|at least|no less than|more than|minimum|min\b|over)", re.I)
 _UPPER_BOUND_RE = re.compile(
     r"(<=|<|≤|at most|no more than|less than|under|maximum|max\b|within|below)", re.I)
+_NUMBER = r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?"
+_CHAINED_RANGE_RE = re.compile(
+    rf"({_NUMBER})\s*(<=|<|≥|>=|>|≤)\s*[^<>=≤≥]+?\s*(<=|<|≥|>=|>|≤)\s*({_NUMBER})",
+    re.I,
+)
+_WORD_RANGE_RE = re.compile(
+    rf"(?:between\s+({_NUMBER})\s+and\s+({_NUMBER})|"
+    rf"from\s+({_NUMBER})\s+to\s+({_NUMBER})|"
+    rf"\b({_NUMBER})\s+to\s+({_NUMBER})\b)",
+    re.I,
+)
+
+
+def _target_range(expected):
+    """Return ``(lower, upper, lower_inclusive, upper_inclusive)`` when explicit.
+
+    This intentionally recognizes only unambiguous two-sided forms. In particular, a
+    colon ratio such as ``12:1`` remains a scalar target handled by `_target_number`.
+    """
+    if not isinstance(expected, str) or ":" in expected:
+        return None
+    match = _CHAINED_RANGE_RE.search(expected)
+    if match:
+        left, op1, op2, right = match.groups()
+        left_value, right_value = float(left), float(right)
+        if op1 in ("<", "<=", "≤") and op2 in ("<", "<=", "≤"):
+            return (left_value, right_value, op1 != "<", op2 != "<")
+        if op1 in (">", ">=", "≥") and op2 in (">", ">=", "≥"):
+            return (right_value, left_value, op2 != ">", op1 != ">")
+        return None
+    match = _WORD_RANGE_RE.search(expected)
+    if not match:
+        return None
+    values = [float(value) for value in match.groups() if value is not None]
+    lower, upper = sorted(values)
+    return (lower, upper, True, True)
 
 
 def _target_number(expected):
@@ -139,9 +175,19 @@ def main() -> int:
             # passed — 19% off, and the hands visibly never changed their angle. Whenever
             # the target is a number we can read, the tolerance is ours, not the
             # designer's. Non-numeric targets ("closes", "never decreases") stay its call.
+            target_range = _target_range(item.get("expected"))
             target = _target_number(expected)
             bound = _bound_kind(item.get("expected"))
-            if target is not None and isinstance(value, float):
+            if target_range is not None and isinstance(value, float):
+                lower, upper, lower_inclusive, upper_inclusive = target_range
+                lower_ok = value >= lower if lower_inclusive else value > lower
+                upper_ok = value <= upper if upper_inclusive else value < upper
+                within = lower_ok and upper_ok
+                if passed and not within:
+                    detail = (detail + " | REJECTED: %.4g is outside %s" % (
+                        value, expected))[:300]
+                passed = passed and within
+            elif target is not None and isinstance(value, float):
                 if bound == "lower":
                     # Satisfied by meeting or exceeding it. Only overrule a claimed pass
                     # that does not actually clear the bar.

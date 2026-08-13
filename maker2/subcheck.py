@@ -292,7 +292,8 @@ def sub_conflicts(model, urdf_path: str, log_fn=print) -> list[Conflict]:
             dofs = {dof_of.get(a), dof_of.get(b)}
             if dofs == {"spin", "fixed"} and _coaxial(a, b):
                 continue                             # tube/arbor through a bearing bore -> fit
-            frac = _solid_intersection_frac(meshes[a], meshes[b], log_fn=log_fn)
+            frac = _solid_intersection_frac(
+                meshes[a], meshes[b], log_fn=log_fn, fail_closed=True)
             if frac >= _OVERLAP_FRAC:
                 found.append(Conflict(part_a=a, part_b=b, frac=frac))
             elif frac > 0.05:

@@ -496,7 +496,7 @@ def _intersection_frac(ma, mb) -> float:
     return (vi / vs) if vs > 0 else 0.0
 
 
-def _solid_intersection_frac(ma, mb, log_fn=None) -> float:
+def _solid_intersection_frac(ma, mb, log_fn=None, *, fail_closed: bool = False) -> float:
     """REAL solid-overlap score of two WORLD meshes in [0,1]: the volume of their actual
     mesh boolean INTERSECTION as a fraction of the smaller part's solid volume.
 
@@ -511,8 +511,10 @@ def _solid_intersection_frac(ma, mb, log_fn=None) -> float:
     consistently-wound shells that trimesh does not label watertight; use its watertight
     convex hull for the boolean operand in that case. This closes tessellation seams while
     preserving holes in the other operand, unlike the old AABB fallback which made every
-    slender part inside a hollow housing look 100% embedded. AABB remains the last resort
-    when no usable solid can be formed."""
+    slender part inside a hollow housing look 100% embedded. The authoritative CAD gate calls
+    this with ``fail_closed=True``: once all AABB axes overlap positively, unavailable exact
+    solid intersection is a conflict rather than an inferred pass. Diagnostic callers may keep
+    the historical AABB-fraction fallback."""
     # Cheap AABB pre-filter: disjoint boxes -> definitely no solid overlap. Skips the
     # (relatively) expensive boolean for the common far-apart case.
     loa, hia = np.asarray(ma.bounds[0]), np.asarray(ma.bounds[1])
@@ -532,7 +534,7 @@ def _solid_intersection_frac(ma, mb, log_fn=None) -> float:
             operands.append(solid);repaired.append(True)
         except Exception:
             if log_fn:log_fn("[conflict] AABB fallback: mesh has no usable solid volume")
-            return _intersection_frac(ma,mb)
+            return 1.0 if fail_closed else _intersection_frac(ma,mb)
     try:
         import trimesh
         # A near-empty boolean result can have zero volume; trimesh's center-of-mass
@@ -544,11 +546,11 @@ def _solid_intersection_frac(ma, mb, log_fn=None) -> float:
             vi=float(inter.volume)
     except Exception as e:
         if log_fn:log_fn(f"[conflict] AABB fallback: solid boolean failed ({type(e).__name__})")
-        return _intersection_frac(ma,mb)
+        return 1.0 if fail_closed else _intersection_frac(ma,mb)
     vs=min(float(x.volume) for x in operands)
     if vs<=0:
         if log_fn:log_fn("[conflict] AABB fallback: repaired solid has zero volume")
-        return _intersection_frac(ma,mb)
+        return 1.0 if fail_closed else _intersection_frac(ma,mb)
     if repaired and log_fn:log_fn("[conflict] repaired non-watertight mesh with convex hull")
     return max(0.0,vi/vs)
 
@@ -593,7 +595,7 @@ def _part_overlaps(robot, plan, subs: dict, log) -> list:
                 a, b = names[i], names[k]
                 if frozenset((a, b)) in adj:
                     continue
-                frac = _solid_intersection_frac(meshes[a], meshes[b], log_fn=log)
+                frac = _solid_intersection_frac(meshes[a], meshes[b], log_fn=log, fail_closed=True)
                 if frac >= _OVERLAP_FRAC:
                     hits.append((frac, a, b))
                 elif frac > 0.05:
@@ -646,7 +648,7 @@ def _part_overlaps(robot, plan, subs: dict, log) -> list:
                 # the seam's own insert pair tolerates a press-fit shell; everything else must not
                 # interpenetrate at all
                 report_floor = (0.60 if (mate == "insert" and is_mate) else _NONMATE_FLOOR)
-                frac = _solid_intersection_frac(amesh, bmesh, log_fn=log)
+                frac = _solid_intersection_frac(amesh, bmesh, log_fn=log, fail_closed=True)
                 if frac >= report_floor:
                     hits.append((frac, an, bn, is_mate))
                 elif 0.0 < frac < report_floor:

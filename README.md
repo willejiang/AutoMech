@@ -23,6 +23,19 @@ https://github.com/willejiang/AutoMech/raw/main/assets/AutoMech1.mp4
   <a href="assets/AutoMech1.mp4">download AutoMech1.mp4</a>.
 </video>
 
+### Comfort v1 benchmark examples
+
+| Four-planet 4:1 reducer | Horizontal slider-crank |
+|---|---|
+| ![Four equally spaced planet gears orbiting and spinning in a fixed-ring reducer](assets/comfort-v1-06-four-planet.gif) | ![A driven crank producing stable horizontal slider reciprocation](assets/comfort-v1-07-horizontal-slider-crank.gif) |
+| Exact 4:1 reduction; all four planets are carried and spin locally. | 24.006 mm stroke with forward and return motion. |
+
+The independent cumulative audit scores AutoMech **810/1000 (6/10 strict
+mechanical successes)**. Under the same strict realization standard, Codex passes
+1/10 and Claude Code passes 0/10. See the [unified benchmark report](benchmark_results.md)
+for raw-versus-adjudicated evidence, exact-solid collision checks, and the temporary
+representation ablation.
+
 ---
 
 ## What this is
@@ -163,8 +176,9 @@ Nothing needs a database.
 | [`evaluator/`](evaluator/) | **Evaluator** — the MuJoCo/PyBullet scenario runners, `strategy_selector`/`scenario_designer`, and the VLM judge. |
 | [`maker2/PIPELINE.md`](maker2/PIPELINE.md) | Pipeline internals: agent I/O and the deterministic gates between them. |
 | [`docs/`](docs/) | Findings and plans — notably [`CONTACT_PHYSICS_FINDINGS.md`](docs/CONTACT_PHYSICS_FINDINGS.md) (what MuJoCo contact actually does at assembly scale). |
+| [`benchmark_scorer/`](benchmark_scorer/) · [`benchmark_results.md`](benchmark_results.md) | Frozen Comfort v1 tasks, strict scorer, executable goldens, and unified results. |
 | [`orchestrator/`](orchestrator/) | The older Isaac Sim loop — see the appendix. |
-| `assets/AutoMech1.mp4` | Demo recording. |
+| [`assets/`](assets/) | Demo recording and benchmark GIFs. |
 
 ---
 

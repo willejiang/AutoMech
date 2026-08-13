@@ -94,8 +94,14 @@ def compile_agent_mjcf(model, ctx, *, settings=None, metrics=None, log_fn=print,
     report_path = root/"mjcf_gate_report.json"
     source_path = root/"mjcf_compiler.py"
     trace_path = root/"mjcf_agent_trace.json"
-    if (cache/"mjcf_compiler.py").exists():
-        source = (cache/"mjcf_compiler.py").read_text(encoding="utf-8")
+    try:
+        from .benchmarks.telemetry import active_recorder
+        benchmark_recorder = active_recorder()
+    except Exception:
+        benchmark_recorder = None
+    cached_source = cache/"mjcf_compiler.py"
+    if cached_source.exists():
+        source = cached_source.read_text(encoding="utf-8")
         try:
             xml, manifest = execute_compiler(source, facts)
             report = validate_candidate(xml, manifest, facts, candidate)
@@ -105,10 +111,16 @@ def compile_agent_mjcf(model, ctx, *, settings=None, metrics=None, log_fn=print,
                 manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
                 report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
                 if metrics is not None: metrics["builder_manifest"] = str(manifest_path)
+                if benchmark_recorder is not None:
+                    benchmark_recorder.record_cache("mjcf_compiler", "hit")
                 log_fn(f"[mjcf-agent] cache hit {key[:12]}: accepted")
                 return str(accepted)
         except Exception:
             pass
+        if benchmark_recorder is not None:
+            benchmark_recorder.record_cache("mjcf_compiler", "rejected_hit")
+    elif benchmark_recorder is not None:
+        benchmark_recorder.record_cache("mjcf_compiler", "miss")
 
     state = {"revision": 0, "source": "", "report": {"ok": False,
              "errors": ["no compiler submitted"]}, "candidates": 0}
@@ -209,6 +221,8 @@ def compile_agent_mjcf(model, ctx, *, settings=None, metrics=None, log_fn=print,
         errors = validate_compiler_source(source)
         if errors: return json.dumps({"accepted": False, "errors": errors})
         state["source"] = source; state["revision"] += 1
+        if benchmark_recorder is not None:
+            benchmark_recorder.record_compiler_submission()
         source_path.write_text(source, encoding="utf-8")
         return json.dumps({"accepted": True, "revision": state["revision"]})
 
@@ -217,6 +231,8 @@ def compile_agent_mjcf(model, ctx, *, settings=None, metrics=None, log_fn=print,
         if state["candidates"] >= max_candidates:
             return json.dumps({"ok": False, "errors": ["candidate budget exhausted"]})
         state["candidates"] += 1
+        if benchmark_recorder is not None:
+            benchmark_recorder.record_compiler_candidate()
         try:
             xml, manifest = execute_compiler(state["source"], facts)
             report = validate_candidate(xml, manifest, facts, candidate)

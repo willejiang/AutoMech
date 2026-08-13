@@ -1,0 +1,65 @@
+{
+  "analyzer_version": "comfort-geometry/1.0",
+  "fail_closed": true,
+  "input_hashes": {
+    "meshes/base.stl": "16a9030e6d860c7ed165f8893767d65eb9c9216c0713dc2397cd5c5ae113e0c5",
+    "meshes/hand_crank.stl": "b15ecad68e7066873e8ead67277e1a14b2b94e742b898fc46125030ddda1939f",
+    "meshes/input_front_bearing.stl": "578b25d6c2c4ed468cda4fe53e0023ffa59a6767f1231522507696ac772d41db",
+    "meshes/input_pinion.stl": "b286e4aafc3e2e86f0029fedfbeed6ec980f29a3ba26c7d8d979b2a46dca9c62",
+    "meshes/input_rear_bearing.stl": "578b25d6c2c4ed468cda4fe53e0023ffa59a6767f1231522507696ac772d41db",
+    "meshes/input_shaft.stl": "9b2d475dfb76dcbc92cb07f4aeba282f374d291e701ee50cddccb9a795e57fb7",
+    "meshes/output_front_bearing.stl": "578b25d6c2c4ed468cda4fe53e0023ffa59a6767f1231522507696ac772d41db",
+    "meshes/output_gear.stl": "df12696fa9274d23dcd094105bd022d5c716e1f4139c81c80bdcb2ee71b79468",
+    "meshes/output_rear_bearing.stl": "578b25d6c2c4ed468cda4fe53e0023ffa59a6767f1231522507696ac772d41db",
+    "meshes/output_shaft.stl": "430ee359ce009cc925aed9098f635a9ffa96983d2a9dee7135b7ad00f5a1d000"
+  },
+  "intersections": [
+    {
+      "evidence_id": "relation/crank_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.048028861,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "hand_crank",
+        "input_shaft"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 313.971809
+    },
+    {
+      "evidence_id": "relation/pinion_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.119999999,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "input_pinion",
+        "input_shaft"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 941.915428
+    },
+    {
+      "evidence_id": "relation/gear_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.146341463,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "output_gear",
+        "output_shaft"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 941.915428
+    }
+  ],
+  "links_scanned": 10,
+  "manifest_only_exemption_count": 0,
+  "method": "final-pose watertight STL boolean intersection using manifold",
+  "non_exempt_conflict_count": 0,
+  "provenance_warnings": [],
+  "report_volume_mm3": 0.0001,
+  "scan_unavailable": [],
+  "schema": "physcad-scorer-geometry/1.0"
+}
