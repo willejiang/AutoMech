@@ -1,0 +1,628 @@
+{
+  "anchor_audit": {
+    "anchored_coverage": 1.0,
+    "floating_physical_links": []
+  },
+  "declared_realization": {
+    "conservative_10mm": {
+      "components": [
+        [
+          "base",
+          "left_support"
+        ],
+        [
+          "beam_pivot"
+        ],
+        [
+          "crank_disk"
+        ],
+        [
+          "crank_pin"
+        ],
+        [
+          "crankshaft_input"
+        ],
+        [
+          "hand_crank"
+        ],
+        [
+          "pitman_rod"
+        ],
+        [
+          "polished_rod_output"
+        ],
+        [
+          "right_support"
+        ],
+        [
+          "vertical_guide"
+        ],
+        [
+          "walking_beam"
+        ]
+      ],
+      "floating_links": [
+        "beam_pivot",
+        "crank_disk",
+        "crank_pin",
+        "crankshaft_input",
+        "hand_crank",
+        "pitman_rod",
+        "polished_rod_output",
+        "right_support",
+        "vertical_guide",
+        "walking_beam"
+      ]
+    },
+    "declared_edges": [
+      {
+        "a": "base",
+        "b": "left_support",
+        "kind": "mount",
+        "source": "link/left_support",
+        "status": "strict_realized",
+        "surface_distance_mm": 0.12138028543795087
+      },
+      {
+        "a": "base",
+        "b": "right_support",
+        "kind": "mount",
+        "source": "link/right_support",
+        "status": "geometrically_unrealized",
+        "surface_distance_mm": 32.0
+      },
+      {
+        "a": "base",
+        "b": "beam_pivot",
+        "kind": "mount",
+        "source": "link/beam_pivot",
+        "status": "geometrically_unrealized",
+        "surface_distance_mm": 201.00409816337583
+      },
+      {
+        "a": "base",
+        "b": "vertical_guide",
+        "kind": "mount",
+        "source": "link/vertical_guide",
+        "status": "geometrically_unrealized",
+        "surface_distance_mm": 81.0
+      },
+      {
+        "a": "crankshaft_input",
+        "b": "hand_crank",
+        "kind": "mount",
+        "source": "link/hand_crank",
+        "status": "geometrically_unrealized",
+        "surface_distance_mm": 111.89992971667293
+      },
+      {
+        "a": "crankshaft_input",
+        "b": "crank_disk",
+        "kind": "mount",
+        "source": "link/crank_disk",
+        "status": "geometrically_unrealized",
+        "surface_distance_mm": 80.18255322919434
+      },
+      {
+        "a": "crankshaft_input",
+        "b": "crank_pin",
+        "kind": "mount",
+        "source": "link/crank_pin",
+        "status": "geometrically_unrealized",
+        "surface_distance_mm": 152.30267472118544
+      },
+      {
+        "a": "base",
+        "b": "crankshaft_input",
+        "kind": "journal_bearing",
+        "source": "relation/base_to_crank_bearing",
+        "status": "geometrically_unrealized",
+        "surface_distance_mm": 204.00365922471687
+      },
+      {
+        "a": "crankshaft_input",
+        "b": "crank_disk",
+        "kind": "press_fit",
+        "source": "relation/disk_press_fit",
+        "status": "geometrically_unrealized",
+        "surface_distance_mm": 80.18025600152788
+      },
+      {
+        "a": "crankshaft_input",
+        "b": "hand_crank",
+        "kind": "press_fit",
+        "source": "relation/handle_press_fit",
+        "status": "geometrically_unrealized",
+        "surface_distance_mm": 111.90020929861068
+      },
+      {
+        "a": "beam_pivot",
+        "b": "walking_beam",
+        "kind": "journal_bearing",
+        "source": "relation/beam_running_bearing",
+        "status": "geometrically_unrealized",
+        "surface_distance_mm": 223.43620249008205
+      }
+    ],
+    "gears": [],
+    "physical_links": [
+      "base",
+      "beam_pivot",
+      "crank_disk",
+      "crank_pin",
+      "crankshaft_input",
+      "hand_crank",
+      "left_support",
+      "pitman_rod",
+      "polished_rod_output",
+      "right_support",
+      "vertical_guide",
+      "walking_beam"
+    ],
+    "root_link": "base",
+    "strict_1_5mm": {
+      "components": [
+        [
+          "base",
+          "left_support"
+        ],
+        [
+          "beam_pivot"
+        ],
+        [
+          "crank_disk"
+        ],
+        [
+          "crank_pin"
+        ],
+        [
+          "crankshaft_input"
+        ],
+        [
+          "hand_crank"
+        ],
+        [
+          "pitman_rod"
+        ],
+        [
+          "polished_rod_output"
+        ],
+        [
+          "right_support"
+        ],
+        [
+          "vertical_guide"
+        ],
+        [
+          "walking_beam"
+        ]
+      ],
+      "floating_links": [
+        "beam_pivot",
+        "crank_disk",
+        "crank_pin",
+        "crankshaft_input",
+        "hand_crank",
+        "pitman_rod",
+        "polished_rod_output",
+        "right_support",
+        "vertical_guide",
+        "walking_beam"
+      ]
+    },
+    "task_id": "09_open_pumpjack"
+  },
+  "derived_invariants": {
+    "beam_pivots": false,
+    "closures_below_2pct_scale": true,
+    "fixed_beam_pivot": false,
+    "fixed_crank_axis": true,
+    "lateral_drift_le_5pct_span": true
+  },
+  "geometry": {
+    "links_scanned": 12,
+    "mesh_count": 12,
+    "non_exempt_conflict_count": 2,
+    "scan_unavailable": []
+  },
+  "inputs": {
+    "anchor_audit": {
+      "kind": "anchor_audit",
+      "path": "output/external_benchmark_strict/claude-code/09_open_pumpjack/strict/anchor_audit.json",
+      "sha256": "71dc3360fe6fea682a265ac64b778722125ac8354c29583cd86d51029ee3dfd2",
+      "source": "scorer_owned"
+    },
+    "assembly": {
+      "kind": "assembly",
+      "path": "output/external_benchmark_staged/claude-code/09_open_pumpjack/assembly.json",
+      "sha256": "3c1bac5004e5c79a1246e3082d1ee5aafff2a23ee622bbccd9d6dd8400a63123",
+      "source": "normalized_submission"
+    },
+    "bindings": {
+      "kind": "bindings",
+      "path": "output/external_benchmark_staged/claude-code/09_open_pumpjack/task_bindings.json",
+      "sha256": "156155e896bd2b8794a00aee684d38c92434c14014e149619aff0da031db1d8f",
+      "source": "normalized_submission"
+    },
+    "contacts": {
+      "kind": "contacts",
+      "path": "output/external_benchmark_staged/claude-code/09_open_pumpjack/evidence/contacts.json",
+      "sha256": "ae696d6220493aad1df055eb3ef5d2f955d801dd014da1d006ee58142dbd6c8a",
+      "source": "normalized_submission"
+    },
+    "geometry": {
+      "kind": "geometry",
+      "path": "output/external_benchmark_strict/claude-code/09_open_pumpjack/strict/geometry.json",
+      "sha256": "e6b92cb2b99c4b75fa0460568d58d99ab2ac9344c63d45a9bb6c4d68b8236efe",
+      "source": "scorer_owned"
+    },
+    "model_audit": {
+      "kind": "model_audit",
+      "path": "output/external_benchmark_strict/claude-code/09_open_pumpjack/strict/model_audit.json",
+      "sha256": "1397f244c21e0d7510bc8424706fd730965c3f60c9608255b0dcdb682fb41aa1",
+      "source": "scorer_owned"
+    },
+    "realization": {
+      "kind": "realization",
+      "path": "output/external_declared_realization_audit/claude-code/09_open_pumpjack.json",
+      "sha256": "d41e3090c0ac9445d74f45dbb3e731771251c38b519ca9dfa94ca408519995d5",
+      "source": "scorer_owned"
+    },
+    "replay_status": {
+      "kind": "replay_status",
+      "path": "output/external_benchmark_work/claude-code/09_open_pumpjack/replay_status.json",
+      "sha256": "f84434e3f6a2678d12e36d93841011fcefccf372811f81802eca6e7da91f4bb1",
+      "source": "scorer_owned"
+    },
+    "source_execution": {
+      "kind": "source_execution",
+      "path": "output/external_benchmark_work/claude-code/09_open_pumpjack/source/source_execution.json",
+      "sha256": "1778350b434355f8c9773c503cbe2d123085ffbb2ef47ce11cca41ff370786a5",
+      "source": "scorer_owned"
+    },
+    "trajectory": {
+      "kind": "trajectory",
+      "path": "output/external_benchmark_work/claude-code/09_open_pumpjack/replay/trajectory.json",
+      "sha256": "790ec452de0686ed9f69eb48df15d0adfb62fb8d0a716d5abf15e8bef4225525",
+      "source": "scorer_owned"
+    }
+  },
+  "method": "claude-code",
+  "model_audit": {
+    "actuator_policy_ok": true,
+    "closure_ok": true,
+    "collision_coverage_ok": false,
+    "errors": [
+      "one or more physical mesh links lack active collision coverage"
+    ],
+    "passed": false,
+    "transmission_binding_ok": false
+  },
+  "raw_functional_checks": {
+    "input_motion": {
+      "reason": "input travel=0.00086086 rad is below minimum 6.28319",
+      "status": "FAIL"
+    },
+    "motion_propagation": {
+      "reason": "input minimum not reached",
+      "status": "FAIL"
+    },
+    "registered_invariants": {
+      "reason": "input minimum not reached",
+      "status": "FAIL"
+    },
+    "registered_output": {
+      "reason": "input minimum not reached",
+      "status": "FAIL"
+    }
+  },
+  "raw_physics_checks": {
+    "finite_health": {
+      "reason": "finite sample fraction=1",
+      "status": "PASS"
+    },
+    "sample_alignment": {
+      "reason": "all joint series align with time",
+      "status": "PASS"
+    },
+    "trajectory_shape": {
+      "reason": "trajectory has time samples and joint series",
+      "status": "PASS"
+    }
+  },
+  "replay": {
+    "metadata": {
+      "finite_health": {
+        "all_finite": true,
+        "first_failure_index": null,
+        "samples": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "hashes": {
+        "imported_model_sha256": "6131a1ea7f13e16aea329bd059fe05869d6408c56ad5fb147a46b76fc18e693c",
+        "model_assets_sha256": {},
+        "mujoco_module_sha256": "c734d493d95933f4414633325491e8e6658670455a3c94981a6c1d26600d43e1",
+        "scorer_module_sha256": "2ec813475219cd7b703893bc8c23d953662444f624063018372e5c94863a3c06",
+        "source_model_sha256": "6131a1ea7f13e16aea329bd059fe05869d6408c56ad5fb147a46b76fc18e693c",
+        "trajectory_sha256": "790ec452de0686ed9f69eb48df15d0adfb62fb8d0a716d5abf15e8bef4225525"
+      },
+      "input_joint": "crankshaft_hinge",
+      "model_complexity": {
+        "actuators": 1,
+        "bodies": 6,
+        "dofs": 4,
+        "equalities": 3,
+        "finite_step_budget": 2001,
+        "geoms": 16,
+        "joints": 4,
+        "timestep_s": 0.002
+      },
+      "output": {
+        "imported_model": "imported/model.mjcf",
+        "trajectory": "trajectory.json"
+      },
+      "profile_mode": "finite_effort_pd",
+      "sample_count": 241,
+      "schema": "physcad-scorer-replay/1.0",
+      "task_id": "09_open_pumpjack",
+      "versions": {
+        "model_format": "MJCF",
+        "mujoco": "3.10.0",
+        "scorer": "comfort-replay/1.0"
+      }
+    },
+    "ok": true
+  },
+  "schema": "physcad-external-strict-evidence-summary/1.0",
+  "source_execution": {
+    "build_ok": true,
+    "error": null,
+    "exit_code": 0,
+    "n_parts": 14,
+    "nonempty_part_set": true,
+    "schema": "physcad-scorer-source-execution/1.0"
+  },
+  "suite_id": "physcad-comfort-v1",
+  "task_id": "09_open_pumpjack"
+}

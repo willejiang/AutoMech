@@ -152,8 +152,8 @@ The frozen Comfort v1 prompts were also run independently through Claude Code an
 | Method | Independent score | Strict five-level success | Interpretation |
 |---|---:|---:|---|
 | AutoMech | **810/1000** | **6/10** | Full CAD/IR/MJCF pipeline; six tasks survive cumulative execution, assembly, geometry, physics, and functional gates |
-| Codex | diagnostic aggregate withdrawn | **1/10** | Task 01 survives; tasks 02–10 fail strict collision or geometry-realization requirements |
-| Claude Code | diagnostic aggregate withdrawn | **0/10** | No task realizes static geometry, collision semantics, active constraints, and independent replay together |
+| Codex | **390/1000 strict** | **1/10** | Task 01 survives; tasks 02–10 fail strict collision or geometry-realization requirements |
+| Claude Code | **310/1000 strict** | **0/10** | No task realizes static geometry, collision semantics, active constraints, and independent replay together |
 
 The earlier provisional external scores—Claude Code `640/1000, 4/10` and Codex `510/1000, 3/10`—are withdrawn. They were inflated by schema-normalization, zero-scan geometry, incomplete collision coverage, trust in submitted trajectories, and inactive-constraint loopholes. A task counts as a strict PASS only when the CAD geometry, collision model, active mechanism constraints, and scorer-owned replay all implement the declared semantics.
 
@@ -164,6 +164,48 @@ Three claims must remain distinct:
 3. **Strict mechanical realization:** the CAD, collision model, active constraints, and independent replay physically realize those declarations.
 
 The strict success column reports only claim 3. Direct kinematic equality success does not prove real tooth-contact load capacity.
+
+The current strict numeric aggregates are newly regenerated from hash-linked scorer-owned source execution and replay, strict exact-solid geometry, and MJCF collision/constraint audits. They are not revisions of the withdrawn provisional score files.
+
+<!-- EXTERNAL_STRICT_DETAIL_START -->
+### Detailed strict criterion scores
+
+Cells show awarded points. Maxima are `E=10`; Assembly `model/roles/I-O=5/7/3`; Geometry `mesh/conflicts=5/10`; Physics `shape/alignment/finite=5/5/10`; Functional `input/propagation/output/invariants=5/10/15/10`. `G` means the criterion had raw diagnostic evidence but received zero points because a strict prerequisite gate was closed.
+
+#### claude-code
+
+Strict aggregate: **310/1000; 0/10 PASS**.
+
+| # | Task | E | A M/R/I | G M/C | P S/A/F | F I/P/O/V | F total | Total | Strict | Blocker |
+|---:|---|---:|---:|---:|---:|---:|---:|---:|---|---|
+| 1 | 01_single_stage_4to1 | 10 | 5/7/3 | 5/0 | G/G/G | G/G/G/G | 0/40 | 30 | FAIL | Five non-exempt conflicts and most links are not connected to the base. |
+| 2 | 02_two_stage_9to1 | 10 | 5/7/3 | 5/10 | G/G/G | G/G/G/G | 0/40 | 40 | FAIL | Moving collisions disabled, fragmented gears, and eight detached links. |
+| 3 | 03_idler_reverser_1to1 | 10 | 5/7/3 | 5/0 | G/G/G | G/G/G/G | 0/40 | 30 | FAIL | Moving collisions disabled and three fragmented gear compounds. |
+| 4 | 04_openwork_clock_12to1 | 10 | 5/7/3 | 5/0 | G/G/G | G/G/G/G | 0/40 | 30 | FAIL | Two undeclared material clashes and all moving collision disabled. |
+| 5 | 05_three_planet_4to1 | 10 | 5/7/3 | 5/0 | G/G/G | G/G/G/G | 0/40 | 30 | FAIL | Six conflicts and unverified ring-tooth realization. |
+| 6 | 06_four_planet_4to1 | 10 | 5/7/3 | 5/0 | G/G/G | G/G/G/G | 0/40 | 30 | FAIL | Seventeen geometry/unavailable failures and invalid transmission lowering. |
+| 7 | 07_horizontal_slider_crank | 10 | 5/7/3 | 5/0 | G/G/G | G/G/G/G | 0/40 | 30 | FAIL | Three conflicts and five detached physical links. |
+| 8 | 08_vertical_piston_pump | 10 | 5/7/3 | 5/0 | G/G/G | G/G/G/G | 0/40 | 30 | FAIL | Two conflicts, invalid closure semantics, and fourteen detached links. |
+| 9 | 09_open_pumpjack | 10 | 5/7/3 | 5/0 | G/G/G | G/G/G/G | 0/40 | 30 | FAIL | Two conflicts and ten detached physical links. |
+| 10 | 10_wind_rotor_pump | 10 | 5/7/3 | 5/0 | G/G/G | G/G/G/G | 0/40 | 30 | FAIL | No authored transmission, inactive closure, stationary replay output, and nine detached links. |
+
+#### codex
+
+Strict aggregate: **390/1000; 1/10 PASS**.
+
+| # | Task | E | A M/R/I | G M/C | P S/A/F | F I/P/O/V | F total | Total | Strict | Blocker |
+|---:|---|---:|---:|---:|---:|---:|---:|---:|---|---|
+| 1 | 01_single_stage_4to1 | 10 | 5/7/3 | 5/10 | 5/5/10 | 5/10/15/10 | 40/40 | 100 | PASS | Source, geometry, one input actuator, ratio binding, collision proxies, and replay pass. |
+| 2 | 02_two_stage_9to1 | 10 | 5/7/3 | 5/10 | G/G/G | G/G/G/G | 0/40 | 40 | FAIL | Incomplete collision coverage and geometrically detached declared assembly. |
+| 3 | 03_idler_reverser_1to1 | 10 | 5/7/3 | 5/10 | G/G/G | G/G/G/G | 0/40 | 40 | FAIL | Incomplete gear/crank collision coverage and detached physical islands. |
+| 4 | 04_openwork_clock_12to1 | 10 | 5/7/3 | 5/0 | G/G/G | G/G/G/G | 0/40 | 30 | FAIL | Invalid bearing solids and incomplete realization/collision semantics. |
+| 5 | 05_three_planet_4to1 | 10 | 5/7/3 | 5/0 | G/G/G | G/G/G/G | 0/40 | 30 | FAIL | Non-exempt conflict, detached structure, and unverified integrated ring teeth. |
+| 6 | 06_four_planet_4to1 | 10 | 5/7/3 | 5/0 | G/G/G | G/G/G/G | 0/40 | 30 | FAIL | Non-exempt conflict, detached structure, and unverified integrated ring teeth. |
+| 7 | 07_horizontal_slider_crank | 10 | 5/7/3 | 5/0 | G/G/G | G/G/G/G | 0/40 | 30 | FAIL | Collision conflicts and a persistent geometrically detached link. |
+| 8 | 08_vertical_piston_pump | 10 | 5/7/3 | 5/0 | G/G/G | G/G/G/G | 0/40 | 30 | FAIL | Seven non-exempt conflicts and eight detached physical links. |
+| 9 | 09_open_pumpjack | 10 | 5/7/3 | 5/0 | G/G/G | G/G/G/G | 0/40 | 30 | FAIL | Eleven non-exempt conflicts and eleven detached physical links. |
+| 10 | 10_wind_rotor_pump | 10 | 5/7/3 | 5/0 | G/G/G | G/G/G/G | 0/40 | 30 | FAIL | Eight conflicts, incomplete closure/transmission semantics, and eleven detached links. |
+<!-- EXTERNAL_STRICT_DETAIL_END -->
 
 ### 6.2 Codex strict results
 
@@ -207,7 +249,8 @@ A fragmented multi-solid gear is not the same as a smooth disk. Some Claude Code
 - declared-geometry realization: `output/external_declared_realization_audit/<method>/<task>.json`
 - scorer-owned source/replay work: `output/external_benchmark_work/<method>/<task>/`
 - comparison/orbit videos: `GitHub release assets (see release notes)`
-- withdrawn provisional scores retained for provenance: `output/external_benchmark_scores/`
+- canonical detailed strict scores: `benchmark_results/comfort_v1_20260811/external_scores/<method>/`
+- withdrawn provisional scores retained for provenance only: `output/external_benchmark_scores/`
 
 ## 7. Historical adjudication details
 

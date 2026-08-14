@@ -1,0 +1,640 @@
+{
+  "anchor_audit": {
+    "anchored_coverage": 1.0,
+    "floating_physical_links": []
+  },
+  "declared_realization": {
+    "conservative_10mm": {
+      "components": [
+        [
+          "base",
+          "bearing_support_front",
+          "bearing_support_rear",
+          "crank_web",
+          "crankshaft",
+          "hand_crank"
+        ],
+        [
+          "connecting_rod",
+          "horizontal_slider",
+          "slider_pin"
+        ],
+        [
+          "crank_pin"
+        ],
+        [
+          "horizontal_guide"
+        ]
+      ],
+      "floating_links": [
+        "connecting_rod",
+        "crank_pin",
+        "horizontal_guide",
+        "horizontal_slider",
+        "slider_pin"
+      ]
+    },
+    "declared_edges": [
+      {
+        "a": "base",
+        "b": "bearing_support_front",
+        "kind": "mount",
+        "source": "link/bearing_support_front",
+        "status": "strict_realized",
+        "surface_distance_mm": 0.0
+      },
+      {
+        "a": "base",
+        "b": "bearing_support_rear",
+        "kind": "mount",
+        "source": "link/bearing_support_rear",
+        "status": "strict_realized",
+        "surface_distance_mm": 0.0
+      },
+      {
+        "a": "base",
+        "b": "horizontal_guide",
+        "kind": "mount",
+        "source": "link/horizontal_guide",
+        "status": "geometrically_unrealized",
+        "surface_distance_mm": 29.0
+      },
+      {
+        "a": "crankshaft",
+        "b": "crank_web",
+        "kind": "mount",
+        "source": "link/crank_web",
+        "status": "strict_realized",
+        "surface_distance_mm": 0.007240521512809295
+      },
+      {
+        "a": "crankshaft",
+        "b": "crank_pin",
+        "kind": "mount",
+        "source": "link/crank_pin",
+        "status": "geometrically_unrealized",
+        "surface_distance_mm": 15.001864813010606
+      },
+      {
+        "a": "crankshaft",
+        "b": "hand_crank",
+        "kind": "mount",
+        "source": "link/hand_crank",
+        "status": "conservative_realized",
+        "surface_distance_mm": 2.0
+      },
+      {
+        "a": "horizontal_slider",
+        "b": "slider_pin",
+        "kind": "mount",
+        "source": "link/slider_pin",
+        "status": "strict_realized",
+        "surface_distance_mm": 0.01115289859092626
+      },
+      {
+        "a": "base",
+        "b": "bearing_support_front",
+        "kind": "rigid_mount",
+        "source": "relation/base_support_mount",
+        "status": "strict_realized",
+        "surface_distance_mm": 0.0
+      },
+      {
+        "a": "base",
+        "b": "bearing_support_rear",
+        "kind": "rigid_mount",
+        "source": "relation/base_support_mount_rear",
+        "status": "strict_realized",
+        "surface_distance_mm": 0.0
+      },
+      {
+        "a": "base",
+        "b": "horizontal_guide",
+        "kind": "rigid_mount",
+        "source": "relation/guide_mount",
+        "status": "geometrically_unrealized",
+        "surface_distance_mm": 29.0
+      },
+      {
+        "a": "bearing_support_front",
+        "b": "crankshaft",
+        "kind": "journal_bearing",
+        "source": "relation/front_running_bearing",
+        "status": "strict_realized",
+        "surface_distance_mm": 0.4997752354451821
+      },
+      {
+        "a": "bearing_support_rear",
+        "b": "crankshaft",
+        "kind": "journal_bearing",
+        "source": "relation/rear_running_bearing",
+        "status": "conservative_realized",
+        "surface_distance_mm": 2.063294050142205
+      },
+      {
+        "a": "crankshaft",
+        "b": "crank_web",
+        "kind": "press_fit",
+        "source": "relation/web_press_fit",
+        "status": "strict_realized",
+        "surface_distance_mm": 0.00315241851754422
+      },
+      {
+        "a": "crankshaft",
+        "b": "crank_pin",
+        "kind": "press_fit",
+        "source": "relation/pin_press_fit",
+        "status": "geometrically_unrealized",
+        "surface_distance_mm": 15.001790641099229
+      },
+      {
+        "a": "crankshaft",
+        "b": "hand_crank",
+        "kind": "press_fit",
+        "source": "relation/hand_crank_press_fit",
+        "status": "conservative_realized",
+        "surface_distance_mm": 2.0
+      },
+      {
+        "a": "connecting_rod",
+        "b": "horizontal_slider",
+        "kind": "point_closure",
+        "source": "relation/rod_slider_closure",
+        "status": "strict_realized",
+        "surface_distance_mm": 0.0007497248363108611
+      }
+    ],
+    "gears": [],
+    "physical_links": [
+      "base",
+      "bearing_support_front",
+      "bearing_support_rear",
+      "connecting_rod",
+      "crank_pin",
+      "crank_web",
+      "crankshaft",
+      "hand_crank",
+      "horizontal_guide",
+      "horizontal_slider",
+      "slider_pin"
+    ],
+    "root_link": "base",
+    "strict_1_5mm": {
+      "components": [
+        [
+          "base",
+          "bearing_support_front",
+          "bearing_support_rear",
+          "crank_web",
+          "crankshaft"
+        ],
+        [
+          "connecting_rod",
+          "horizontal_slider",
+          "slider_pin"
+        ],
+        [
+          "crank_pin"
+        ],
+        [
+          "hand_crank"
+        ],
+        [
+          "horizontal_guide"
+        ]
+      ],
+      "floating_links": [
+        "connecting_rod",
+        "crank_pin",
+        "hand_crank",
+        "horizontal_guide",
+        "horizontal_slider",
+        "slider_pin"
+      ]
+    },
+    "task_id": "07_horizontal_slider_crank"
+  },
+  "derived_invariants": {
+    "closures_below_2pct_scale": true,
+    "fixed_crank_axis": true,
+    "lateral_drift_le_2pct_span": true
+  },
+  "geometry": {
+    "links_scanned": 11,
+    "mesh_count": 11,
+    "non_exempt_conflict_count": 3,
+    "scan_unavailable": []
+  },
+  "inputs": {
+    "anchor_audit": {
+      "kind": "anchor_audit",
+      "path": "output/external_benchmark_strict/claude-code/07_horizontal_slider_crank/strict/anchor_audit.json",
+      "sha256": "b2b5a57bab97f3e259acc5279b483c5461099e26ca4a4670b1da565f893cd502",
+      "source": "scorer_owned"
+    },
+    "assembly": {
+      "kind": "assembly",
+      "path": "output/external_benchmark_staged/claude-code/07_horizontal_slider_crank/assembly.json",
+      "sha256": "af3a8d2706a4a56fc1d9f085f5ef56ae75a8abe5a284f2064706bf3022439810",
+      "source": "normalized_submission"
+    },
+    "bindings": {
+      "kind": "bindings",
+      "path": "output/external_benchmark_staged/claude-code/07_horizontal_slider_crank/task_bindings.json",
+      "sha256": "41b17e651a0d4693449a4a5dc5ac9efbb6390f53ba24647f3939c1a2d9a2c1ea",
+      "source": "normalized_submission"
+    },
+    "contacts": {
+      "kind": "contacts",
+      "path": "output/external_benchmark_staged/claude-code/07_horizontal_slider_crank/evidence/contacts.json",
+      "sha256": "634594043282ccc8742285a37cd4cf08b2eb66e89894db135b65a56e8c2fe371",
+      "source": "normalized_submission"
+    },
+    "geometry": {
+      "kind": "geometry",
+      "path": "output/external_benchmark_strict/claude-code/07_horizontal_slider_crank/strict/geometry.json",
+      "sha256": "ae94db9c4235c3d3556d5630ae10936e99e296d2081afe469e1f4d0dd6eeebe3",
+      "source": "scorer_owned"
+    },
+    "model_audit": {
+      "kind": "model_audit",
+      "path": "output/external_benchmark_strict/claude-code/07_horizontal_slider_crank/strict/model_audit.json",
+      "sha256": "661b35079d7f68af48b2da80ad0ac3d9ec98213ddf92207b7b363131ed000f9f",
+      "source": "scorer_owned"
+    },
+    "realization": {
+      "kind": "realization",
+      "path": "output/external_declared_realization_audit/claude-code/07_horizontal_slider_crank.json",
+      "sha256": "b436f33cfcc1ee841b0134e6b72e3d13341858e399c84199096ca02cb3b6cb17",
+      "source": "scorer_owned"
+    },
+    "replay_status": {
+      "kind": "replay_status",
+      "path": "output/external_benchmark_work/claude-code/07_horizontal_slider_crank/replay_status.json",
+      "sha256": "2ea4dcf84ed12e423dd7c7630c00f2bccf9caaf985be48dec656add199932448",
+      "source": "scorer_owned"
+    },
+    "source_execution": {
+      "kind": "source_execution",
+      "path": "output/external_benchmark_work/claude-code/07_horizontal_slider_crank/source/source_execution.json",
+      "sha256": "c07c9185aec7cfbc96d68445b2717a97375779c8075792128be7231eb588061c",
+      "source": "scorer_owned"
+    },
+    "trajectory": {
+      "kind": "trajectory",
+      "path": "output/external_benchmark_work/claude-code/07_horizontal_slider_crank/replay/trajectory.json",
+      "sha256": "559bdf5fc4fec76cc454ef2060ca33aacaa80bc3a7aaa934c44e629978b9cafb",
+      "source": "scorer_owned"
+    }
+  },
+  "method": "claude-code",
+  "model_audit": {
+    "actuator_policy_ok": true,
+    "closure_ok": true,
+    "collision_coverage_ok": false,
+    "errors": [
+      "one or more physical mesh links lack active collision coverage"
+    ],
+    "passed": false,
+    "transmission_binding_ok": false
+  },
+  "raw_functional_checks": {
+    "input_motion": {
+      "reason": "input travel=0.778198 rad is below minimum 6.28319",
+      "status": "FAIL"
+    },
+    "motion_propagation": {
+      "reason": "input minimum not reached",
+      "status": "FAIL"
+    },
+    "registered_invariants": {
+      "reason": "input minimum not reached",
+      "status": "FAIL"
+    },
+    "registered_output": {
+      "reason": "input minimum not reached",
+      "status": "FAIL"
+    }
+  },
+  "raw_physics_checks": {
+    "finite_health": {
+      "reason": "finite sample fraction=1",
+      "status": "PASS"
+    },
+    "sample_alignment": {
+      "reason": "all joint series align with time",
+      "status": "PASS"
+    },
+    "trajectory_shape": {
+      "reason": "trajectory has time samples and joint series",
+      "status": "PASS"
+    }
+  },
+  "replay": {
+    "metadata": {
+      "finite_health": {
+        "all_finite": true,
+        "first_failure_index": null,
+        "samples": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "hashes": {
+        "imported_model_sha256": "351b49219732d93999d8c41450dc14d06d3b1db8fa34d14ed63f8f729c7911b1",
+        "model_assets_sha256": {
+          "meshes/base.stl": "fb6f801ffccadd6a52a9b9c964b934b7994c91b7dae6fbfa1834cb167e29e1c7",
+          "meshes/bearing_support_front.stl": "ea2b34c51f648f1ee69d439bb941cd43944b8d480189229488a12c06c7702596",
+          "meshes/bearing_support_rear.stl": "ea2b34c51f648f1ee69d439bb941cd43944b8d480189229488a12c06c7702596",
+          "meshes/connecting_rod.stl": "f6a406302d6b5e72e795b438fa710836fc7f489a0ce45dea6d89adebf5c22fe4",
+          "meshes/crank_pin.stl": "b9f9b0b0742889c83dbf7c3500390f0789e4d2faf53e0a2c852a06fec388e29d",
+          "meshes/crank_web.stl": "b157d8569957b735a784c907f33535901e4fc52d3e91beec8355c4e878e5a3d6",
+          "meshes/crankshaft.stl": "8b26ad8ab4d9b984aaa9392284927aef89e55280a90bcab0d93359545a9840ce",
+          "meshes/hand_crank.stl": "44fc631adddccf3744b852814d8320fcd46db3b7e560045cfd8f9e6fb2bef594",
+          "meshes/horizontal_guide.stl": "29ef2ea13df637494ecd8c7a214854ab8360f99a28b2d0f4023d4481cfe2e21d",
+          "meshes/horizontal_slider.stl": "d692f8973977578abb42131e6c0c56df9ec5618bb4ccba5360c770a051b5f92e",
+          "meshes/slider_pin.stl": "fa8cd617def0efb31e5be2d9a59039d3c37690b5117729bc474a542787730dd6"
+        },
+        "mujoco_module_sha256": "c734d493d95933f4414633325491e8e6658670455a3c94981a6c1d26600d43e1",
+        "scorer_module_sha256": "2ec813475219cd7b703893bc8c23d953662444f624063018372e5c94863a3c06",
+        "source_model_sha256": "351b49219732d93999d8c41450dc14d06d3b1db8fa34d14ed63f8f729c7911b1",
+        "trajectory_sha256": "559bdf5fc4fec76cc454ef2060ca33aacaa80bc3a7aaa934c44e629978b9cafb"
+      },
+      "input_joint": "crankshaft_hinge",
+      "model_complexity": {
+        "actuators": 1,
+        "bodies": 5,
+        "dofs": 3,
+        "equalities": 1,
+        "finite_step_budget": 2001,
+        "geoms": 17,
+        "joints": 3,
+        "timestep_s": 0.002
+      },
+      "output": {
+        "imported_model": "imported/model.mjcf",
+        "trajectory": "trajectory.json"
+      },
+      "profile_mode": "finite_effort_pd",
+      "sample_count": 241,
+      "schema": "physcad-scorer-replay/1.0",
+      "task_id": "07_horizontal_slider_crank",
+      "versions": {
+        "model_format": "MJCF",
+        "mujoco": "3.10.0",
+        "scorer": "comfort-replay/1.0"
+      }
+    },
+    "ok": true
+  },
+  "schema": "physcad-external-strict-evidence-summary/1.0",
+  "source_execution": {
+    "build_ok": true,
+    "error": null,
+    "exit_code": 0,
+    "n_parts": 15,
+    "nonempty_part_set": true,
+    "schema": "physcad-scorer-source-execution/1.0"
+  },
+  "suite_id": "physcad-comfort-v1",
+  "task_id": "07_horizontal_slider_crank"
+}
