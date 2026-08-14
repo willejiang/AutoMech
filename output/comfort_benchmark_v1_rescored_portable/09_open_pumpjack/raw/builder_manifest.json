@@ -1,0 +1,3009 @@
+{
+  "manifest_version": 3,
+  "engine": "mujoco-agent",
+  "topology_plan": {
+    "coordinate_map": {
+      "base": null,
+      "negative_shaft_pedestal": null,
+      "negative_shaft_bearing": null,
+      "positive_shaft_pedestal": null,
+      "positive_shaft_bearing": null,
+      "crankshaft": "driven_crankshaft_hinge",
+      "crank_disk": "crank_disk_hinge",
+      "crank_pin": "crank_disk_hinge",
+      "pitman": null,
+      "negative_beam_support": null,
+      "negative_pivot_bearing": null,
+      "positive_beam_support": null,
+      "positive_pivot_bearing": null,
+      "beam_pivot_pin": null,
+      "walking_beam": "walking_beam_hinge",
+      "pitman_beam_pin": "walking_beam_hinge",
+      "beam_output_pin": "walking_beam_hinge",
+      "polished_output_rod": "vertical_guided_output",
+      "output_guide_post": null,
+      "lower_output_guide": null,
+      "upper_output_guide": null,
+      "hand_crank_arm": "driven_crankshaft_hinge",
+      "handle_spindle": "driven_crankshaft_hinge",
+      "hand_grip": "driven_crankshaft_hinge"
+    },
+    "tree_edges": [
+      [
+        "base",
+        "negative_shaft_pedestal"
+      ],
+      [
+        "negative_shaft_pedestal",
+        "negative_shaft_bearing"
+      ],
+      [
+        "base",
+        "positive_shaft_pedestal"
+      ],
+      [
+        "positive_shaft_pedestal",
+        "positive_shaft_bearing"
+      ],
+      [
+        "base",
+        "crankshaft"
+      ],
+      [
+        "base",
+        "crank_disk"
+      ],
+      [
+        "crank_disk",
+        "crank_pin"
+      ],
+      [
+        "base",
+        "negative_beam_support"
+      ],
+      [
+        "negative_beam_support",
+        "negative_pivot_bearing"
+      ],
+      [
+        "base",
+        "positive_beam_support"
+      ],
+      [
+        "positive_beam_support",
+        "positive_pivot_bearing"
+      ],
+      [
+        "negative_pivot_bearing",
+        "beam_pivot_pin"
+      ],
+      [
+        "base",
+        "walking_beam"
+      ],
+      [
+        "walking_beam",
+        "pitman_beam_pin"
+      ],
+      [
+        "walking_beam",
+        "beam_output_pin"
+      ],
+      [
+        "base",
+        "polished_output_rod"
+      ],
+      [
+        "base",
+        "output_guide_post"
+      ],
+      [
+        "output_guide_post",
+        "lower_output_guide"
+      ],
+      [
+        "output_guide_post",
+        "upper_output_guide"
+      ],
+      [
+        "crankshaft",
+        "hand_crank_arm"
+      ],
+      [
+        "hand_crank_arm",
+        "handle_spindle"
+      ],
+      [
+        "handle_spindle",
+        "hand_grip"
+      ]
+    ],
+    "closure_edges": [
+      [
+        "crank_pin",
+        "pitman"
+      ],
+      [
+        "pitman_beam_pin",
+        "pitman"
+      ],
+      [
+        "beam_output_pin",
+        "polished_output_rod"
+      ]
+    ],
+    "rigid_carried": [
+      [
+        "crank_disk",
+        "crank_pin"
+      ],
+      [
+        "walking_beam",
+        "pitman_beam_pin"
+      ],
+      [
+        "walking_beam",
+        "beam_output_pin"
+      ],
+      [
+        "crankshaft",
+        "hand_crank_arm"
+      ],
+      [
+        "hand_crank_arm",
+        "handle_spindle"
+      ],
+      [
+        "handle_spindle",
+        "hand_grip"
+      ]
+    ],
+    "independent_coaxial": [],
+    "transmissions": [
+      {
+        "name": "shaft_to_crank_disk_press_drive",
+        "driving_joint": "driven_crankshaft_hinge",
+        "driven_joint": "crank_disk_hinge",
+        "ratio": 1.0
+      }
+    ],
+    "contact_decisions": [
+      {
+        "pair": [
+          "crankshaft",
+          "negative_shaft_bearing"
+        ],
+        "action": "exclude",
+        "reason": "journal running fit represented by shaft hinge",
+        "source_entity_ids": [
+          "relation/shaft_in_negative_bearing"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/negative_shaft_bearing",
+          "fit/negative_shaft_bearing/bearing_bore/crankshaft/rotation_axis"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "positive_shaft_bearing"
+        ],
+        "action": "exclude",
+        "reason": "journal running fit represented by shaft hinge",
+        "source_entity_ids": [
+          "relation/shaft_in_positive_bearing"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/positive_shaft_bearing",
+          "fit/positive_shaft_bearing/bearing_bore/crankshaft/rotation_axis"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "crank_disk"
+        ],
+        "action": "exclude",
+        "reason": "press fit represented by 1:1 equality",
+        "source_entity_ids": [
+          "relation/disk_pressed_on_shaft",
+          "transmission/shaft_to_crank_disk_press_drive"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/crankshaft",
+          "fit/crankshaft/disk_seat/crank_disk/shaft_bore"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "crank_pin"
+        ],
+        "action": "exclude",
+        "reason": "interference press fit rigidly carries pin",
+        "source_entity_ids": [
+          "relation/crank_pin_pressed_in_disk"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/crank_pin",
+          "fit/crank_disk/crank_pin_seat/crank_pin/pin_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "crank_pin",
+          "pitman"
+        ],
+        "action": "exclude",
+        "reason": "dedicated clearance pin bearing represented by closure",
+        "source_entity_ids": [
+          "relation/crank_pin_to_pitman_closure"
+        ],
+        "fact_ids": [
+          "pair/crank_pin/pitman",
+          "fit/crank_pin/pin_shaft/pitman/crank_end_bore"
+        ]
+      },
+      {
+        "pair": [
+          "pitman",
+          "pitman_beam_pin"
+        ],
+        "action": "exclude",
+        "reason": "dedicated clearance pin bearing represented by closure",
+        "source_entity_ids": [
+          "relation/pitman_to_walking_beam_closure"
+        ],
+        "fact_ids": [
+          "pair/pitman/pitman_beam_pin",
+          "fit/pitman_beam_pin/pin_shaft/pitman/beam_end_bore"
+        ]
+      },
+      {
+        "pair": [
+          "walking_beam",
+          "beam_pivot_pin"
+        ],
+        "action": "exclude",
+        "reason": "clearance pivot represented by beam hinge",
+        "source_entity_ids": [
+          "relation/walking_beam_fixed_pivot"
+        ],
+        "fact_ids": [
+          "pair/beam_pivot_pin/walking_beam",
+          "fit/beam_pivot_pin/pivot_shaft/walking_beam/pivot_bore"
+        ]
+      },
+      {
+        "pair": [
+          "walking_beam",
+          "pitman_beam_pin"
+        ],
+        "action": "exclude",
+        "reason": "interference fit rigidly carries dedicated pin",
+        "source_entity_ids": [
+          "link/walking_beam",
+          "link/pitman_beam_pin"
+        ],
+        "fact_ids": [
+          "pair/pitman_beam_pin/walking_beam",
+          "fit/pitman_beam_pin/pin_shaft/walking_beam/pitman_pin_bore"
+        ]
+      },
+      {
+        "pair": [
+          "walking_beam",
+          "beam_output_pin"
+        ],
+        "action": "exclude",
+        "reason": "interference fit rigidly carries dedicated pin",
+        "source_entity_ids": [
+          "link/walking_beam",
+          "link/beam_output_pin"
+        ],
+        "fact_ids": [
+          "pair/beam_output_pin/walking_beam",
+          "fit/beam_output_pin/pin_shaft/walking_beam/output_pin_bore"
+        ]
+      },
+      {
+        "pair": [
+          "polished_output_rod",
+          "beam_output_pin"
+        ],
+        "action": "exclude",
+        "reason": "dedicated clearance pin bearing represented by closure",
+        "source_entity_ids": [
+          "relation/beam_to_output_rod_closure"
+        ],
+        "fact_ids": [
+          "pair/beam_output_pin/polished_output_rod",
+          "fit/beam_output_pin/pin_shaft/polished_output_rod/beam_pin_bore"
+        ]
+      },
+      {
+        "pair": [
+          "polished_output_rod",
+          "lower_output_guide"
+        ],
+        "action": "exclude",
+        "reason": "running guide represented by vertical slide",
+        "source_entity_ids": [
+          "link/polished_output_rod",
+          "link/lower_output_guide"
+        ],
+        "fact_ids": [
+          "pair/lower_output_guide/polished_output_rod"
+        ]
+      },
+      {
+        "pair": [
+          "polished_output_rod",
+          "upper_output_guide"
+        ],
+        "action": "exclude",
+        "reason": "running guide represented by vertical slide",
+        "source_entity_ids": [
+          "link/polished_output_rod",
+          "link/upper_output_guide"
+        ],
+        "fact_ids": [
+          "pair/polished_output_rod/upper_output_guide"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "pitman"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/pitman"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/pitman",
+          "nearby/crankshaft/pitman"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "negative_shaft_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/negative_shaft_pedestal"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/negative_shaft_pedestal",
+          "nearby/crankshaft/negative_shaft_pedestal"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "positive_shaft_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/positive_shaft_pedestal"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/positive_shaft_pedestal",
+          "nearby/crankshaft/positive_shaft_pedestal"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "crank_pin"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/crank_pin"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/crank_pin",
+          "nearby/crankshaft/crank_pin"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "hand_grip"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/hand_grip"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/hand_grip",
+          "nearby/crankshaft/hand_grip"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "handle_spindle"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/handle_spindle"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/handle_spindle",
+          "nearby/crankshaft/handle_spindle"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "walking_beam"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/walking_beam"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/walking_beam",
+          "nearby/crankshaft/walking_beam"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "base"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/base"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/base",
+          "nearby/crankshaft/base"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "pitman_beam_pin"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/pitman_beam_pin"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/pitman_beam_pin",
+          "nearby/crankshaft/pitman_beam_pin"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "walking_beam"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/walking_beam"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/walking_beam",
+          "nearby/crank_disk/walking_beam"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "pitman"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/pitman"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/pitman",
+          "nearby/crank_disk/pitman"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "pitman_beam_pin"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/pitman_beam_pin"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/pitman_beam_pin",
+          "nearby/crank_disk/pitman_beam_pin"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "base"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/base"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/base",
+          "nearby/crank_disk/base"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "negative_shaft_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/negative_shaft_pedestal"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/negative_shaft_pedestal",
+          "nearby/crank_disk/negative_shaft_pedestal"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "positive_shaft_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/positive_shaft_pedestal"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/positive_shaft_pedestal",
+          "nearby/crank_disk/positive_shaft_pedestal"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "negative_shaft_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/negative_shaft_bearing"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/negative_shaft_bearing",
+          "nearby/crank_disk/negative_shaft_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "positive_shaft_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/positive_shaft_bearing"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/positive_shaft_bearing",
+          "nearby/crank_disk/positive_shaft_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "hand_crank_arm"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/hand_crank_arm"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/hand_crank_arm",
+          "nearby/crank_disk/hand_crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "handle_spindle"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/handle_spindle"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/handle_spindle",
+          "nearby/crank_disk/handle_spindle"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "hand_grip"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/hand_grip"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/hand_grip",
+          "nearby/crank_disk/hand_grip"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "positive_beam_support"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/positive_beam_support"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/positive_beam_support",
+          "nearby/crank_disk/positive_beam_support"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "positive_pivot_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/positive_pivot_bearing"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/positive_pivot_bearing",
+          "nearby/crank_disk/positive_pivot_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "negative_beam_support"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/negative_beam_support"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/negative_beam_support",
+          "nearby/crank_disk/negative_beam_support"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "negative_pivot_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/negative_pivot_bearing"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/negative_pivot_bearing",
+          "nearby/crank_disk/negative_pivot_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_pin",
+          "negative_shaft_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_pin",
+          "link/negative_shaft_bearing"
+        ],
+        "fact_ids": [
+          "pair/crank_pin/negative_shaft_bearing",
+          "nearby/crank_pin/negative_shaft_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "pitman",
+          "walking_beam"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/pitman",
+          "link/walking_beam"
+        ],
+        "fact_ids": [
+          "pair/pitman/walking_beam",
+          "nearby/pitman/walking_beam"
+        ]
+      },
+      {
+        "pair": [
+          "pitman",
+          "negative_shaft_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/pitman",
+          "link/negative_shaft_bearing"
+        ],
+        "fact_ids": [
+          "pair/pitman/negative_shaft_bearing",
+          "nearby/pitman/negative_shaft_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "pitman",
+          "negative_shaft_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/pitman",
+          "link/negative_shaft_pedestal"
+        ],
+        "fact_ids": [
+          "pair/pitman/negative_shaft_pedestal",
+          "nearby/pitman/negative_shaft_pedestal"
+        ]
+      },
+      {
+        "pair": [
+          "walking_beam",
+          "positive_beam_support"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/walking_beam",
+          "link/positive_beam_support"
+        ],
+        "fact_ids": [
+          "pair/walking_beam/positive_beam_support",
+          "nearby/walking_beam/positive_beam_support"
+        ]
+      },
+      {
+        "pair": [
+          "walking_beam",
+          "positive_pivot_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/walking_beam",
+          "link/positive_pivot_bearing"
+        ],
+        "fact_ids": [
+          "pair/walking_beam/positive_pivot_bearing",
+          "nearby/walking_beam/positive_pivot_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "walking_beam",
+          "negative_beam_support"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/walking_beam",
+          "link/negative_beam_support"
+        ],
+        "fact_ids": [
+          "pair/walking_beam/negative_beam_support",
+          "nearby/walking_beam/negative_beam_support"
+        ]
+      },
+      {
+        "pair": [
+          "walking_beam",
+          "negative_pivot_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/walking_beam",
+          "link/negative_pivot_bearing"
+        ],
+        "fact_ids": [
+          "pair/walking_beam/negative_pivot_bearing",
+          "nearby/walking_beam/negative_pivot_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "walking_beam",
+          "output_guide_post"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/walking_beam",
+          "link/output_guide_post"
+        ],
+        "fact_ids": [
+          "pair/walking_beam/output_guide_post",
+          "nearby/walking_beam/output_guide_post"
+        ]
+      },
+      {
+        "pair": [
+          "walking_beam",
+          "crank_pin"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/walking_beam",
+          "link/crank_pin"
+        ],
+        "fact_ids": [
+          "pair/walking_beam/crank_pin",
+          "nearby/walking_beam/crank_pin"
+        ]
+      },
+      {
+        "pair": [
+          "walking_beam",
+          "upper_output_guide"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/walking_beam",
+          "link/upper_output_guide"
+        ],
+        "fact_ids": [
+          "pair/walking_beam/upper_output_guide",
+          "nearby/walking_beam/upper_output_guide"
+        ]
+      },
+      {
+        "pair": [
+          "walking_beam",
+          "hand_crank_arm"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/walking_beam",
+          "link/hand_crank_arm"
+        ],
+        "fact_ids": [
+          "pair/walking_beam/hand_crank_arm",
+          "nearby/walking_beam/hand_crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "walking_beam",
+          "handle_spindle"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/walking_beam",
+          "link/handle_spindle"
+        ],
+        "fact_ids": [
+          "pair/walking_beam/handle_spindle",
+          "nearby/walking_beam/handle_spindle"
+        ]
+      },
+      {
+        "pair": [
+          "walking_beam",
+          "hand_grip"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/walking_beam",
+          "link/hand_grip"
+        ],
+        "fact_ids": [
+          "pair/walking_beam/hand_grip",
+          "nearby/walking_beam/hand_grip"
+        ]
+      },
+      {
+        "pair": [
+          "walking_beam",
+          "lower_output_guide"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/walking_beam",
+          "link/lower_output_guide"
+        ],
+        "fact_ids": [
+          "pair/walking_beam/lower_output_guide",
+          "nearby/walking_beam/lower_output_guide"
+        ]
+      },
+      {
+        "pair": [
+          "polished_output_rod",
+          "base"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/polished_output_rod",
+          "link/base"
+        ],
+        "fact_ids": [
+          "pair/polished_output_rod/base",
+          "nearby/polished_output_rod/base"
+        ]
+      },
+      {
+        "pair": [
+          "polished_output_rod",
+          "output_guide_post"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/polished_output_rod",
+          "link/output_guide_post"
+        ],
+        "fact_ids": [
+          "pair/polished_output_rod/output_guide_post",
+          "nearby/polished_output_rod/output_guide_post"
+        ]
+      },
+      {
+        "pair": [
+          "polished_output_rod",
+          "negative_pivot_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/polished_output_rod",
+          "link/negative_pivot_bearing"
+        ],
+        "fact_ids": [
+          "pair/polished_output_rod/negative_pivot_bearing",
+          "nearby/polished_output_rod/negative_pivot_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "polished_output_rod",
+          "positive_pivot_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/polished_output_rod",
+          "link/positive_pivot_bearing"
+        ],
+        "fact_ids": [
+          "pair/polished_output_rod/positive_pivot_bearing",
+          "nearby/polished_output_rod/positive_pivot_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "polished_output_rod",
+          "negative_beam_support"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/polished_output_rod",
+          "link/negative_beam_support"
+        ],
+        "fact_ids": [
+          "pair/polished_output_rod/negative_beam_support",
+          "nearby/polished_output_rod/negative_beam_support"
+        ]
+      },
+      {
+        "pair": [
+          "polished_output_rod",
+          "positive_beam_support"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/polished_output_rod",
+          "link/positive_beam_support"
+        ],
+        "fact_ids": [
+          "pair/polished_output_rod/positive_beam_support",
+          "nearby/polished_output_rod/positive_beam_support"
+        ]
+      },
+      {
+        "pair": [
+          "polished_output_rod",
+          "beam_pivot_pin"
+        ],
+        "action": "exclude",
+        "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/polished_output_rod",
+          "link/beam_pivot_pin"
+        ],
+        "fact_ids": [
+          "pair/polished_output_rod/beam_pivot_pin",
+          "nearby/polished_output_rod/beam_pivot_pin"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "hand_crank_arm"
+        ],
+        "action": "keep",
+        "reason": "uncertain measured overlap is retained",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/hand_crank_arm"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/hand_crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "walking_beam",
+          "polished_output_rod"
+        ],
+        "action": "keep",
+        "reason": "output solids meet and uncertain overlap is retained",
+        "source_entity_ids": [
+          "link/walking_beam",
+          "link/polished_output_rod"
+        ],
+        "fact_ids": [
+          "pair/polished_output_rod/walking_beam"
+        ]
+      }
+    ],
+    "support_ground": [
+      "base"
+    ],
+    "support_strategy": "fixed base and supports remain on global ground; no support patch required"
+  },
+  "decisions": [
+    {
+      "generated_kind": "constraint",
+      "generated_name": "shaft_to_crank_disk_press_drive",
+      "constraint_type": "joint",
+      "reason": "press-fit compound transmits angle 1:1",
+      "source_entity_ids": [
+        "relation/disk_pressed_on_shaft",
+        "transmission/shaft_to_crank_disk_press_drive"
+      ],
+      "fact_ids": [
+        "fit/crankshaft/disk_seat/crank_disk/shaft_bore",
+        "pair/crank_disk/crankshaft"
+      ]
+    },
+    {
+      "generated_kind": "constraint",
+      "generated_name": "crank_pin_to_pitman_closure",
+      "constraint_type": "connect",
+      "reason": "clearance crank-pin closure",
+      "source_entity_ids": [
+        "relation/crank_pin_to_pitman_closure"
+      ],
+      "fact_ids": [
+        "fit/crank_pin/pin_shaft/pitman/crank_end_bore",
+        "pair/crank_pin/pitman"
+      ]
+    },
+    {
+      "generated_kind": "constraint",
+      "generated_name": "pitman_to_walking_beam_closure",
+      "constraint_type": "connect",
+      "reason": "clearance beam-end closure",
+      "source_entity_ids": [
+        "relation/pitman_to_walking_beam_closure"
+      ],
+      "fact_ids": [
+        "fit/pitman_beam_pin/pin_shaft/pitman/beam_end_bore",
+        "pair/pitman/pitman_beam_pin"
+      ]
+    },
+    {
+      "generated_kind": "constraint",
+      "generated_name": "beam_to_output_rod_closure",
+      "constraint_type": "connect",
+      "reason": "clearance output closure",
+      "source_entity_ids": [
+        "relation/beam_to_output_rod_closure"
+      ],
+      "fact_ids": [
+        "fit/beam_output_pin/pin_shaft/polished_output_rod/beam_pin_bore",
+        "pair/beam_output_pin/polished_output_rod"
+      ]
+    },
+    {
+      "entity_id": "link/base",
+      "action": "emitted",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/base"
+      ]
+    },
+    {
+      "entity_id": "link/negative_shaft_pedestal",
+      "action": "emitted",
+      "generated_nodes": [
+        "negative_shaft_pedestal"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/negative_shaft_pedestal"
+      ]
+    },
+    {
+      "entity_id": "link/negative_shaft_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "negative_shaft_bearing"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/negative_shaft_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/positive_shaft_pedestal",
+      "action": "emitted",
+      "generated_nodes": [
+        "positive_shaft_pedestal"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/positive_shaft_pedestal"
+      ]
+    },
+    {
+      "entity_id": "link/positive_shaft_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "positive_shaft_bearing"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/positive_shaft_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/crankshaft",
+      "action": "emitted",
+      "generated_nodes": [
+        "crankshaft"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/crankshaft"
+      ]
+    },
+    {
+      "entity_id": "link/crank_disk",
+      "action": "emitted",
+      "generated_nodes": [
+        "crank_disk"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/crank_disk"
+      ]
+    },
+    {
+      "entity_id": "link/crank_pin",
+      "action": "emitted",
+      "generated_nodes": [
+        "crank_pin"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/crank_pin"
+      ]
+    },
+    {
+      "entity_id": "link/pitman",
+      "action": "emitted",
+      "generated_nodes": [
+        "pitman"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/pitman"
+      ]
+    },
+    {
+      "entity_id": "link/negative_beam_support",
+      "action": "emitted",
+      "generated_nodes": [
+        "negative_beam_support"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/negative_beam_support"
+      ]
+    },
+    {
+      "entity_id": "link/negative_pivot_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "negative_pivot_bearing"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/negative_pivot_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/positive_beam_support",
+      "action": "emitted",
+      "generated_nodes": [
+        "positive_beam_support"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/positive_beam_support"
+      ]
+    },
+    {
+      "entity_id": "link/positive_pivot_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "positive_pivot_bearing"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/positive_pivot_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/beam_pivot_pin",
+      "action": "emitted",
+      "generated_nodes": [
+        "beam_pivot_pin"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/beam_pivot_pin"
+      ]
+    },
+    {
+      "entity_id": "link/walking_beam",
+      "action": "emitted",
+      "generated_nodes": [
+        "walking_beam"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/walking_beam"
+      ]
+    },
+    {
+      "entity_id": "link/pitman_beam_pin",
+      "action": "emitted",
+      "generated_nodes": [
+        "pitman_beam_pin"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/pitman_beam_pin"
+      ]
+    },
+    {
+      "entity_id": "link/beam_output_pin",
+      "action": "emitted",
+      "generated_nodes": [
+        "beam_output_pin"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/beam_output_pin"
+      ]
+    },
+    {
+      "entity_id": "link/polished_output_rod",
+      "action": "emitted",
+      "generated_nodes": [
+        "polished_output_rod"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/polished_output_rod"
+      ]
+    },
+    {
+      "entity_id": "link/output_guide_post",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_guide_post"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/output_guide_post"
+      ]
+    },
+    {
+      "entity_id": "link/lower_output_guide",
+      "action": "emitted",
+      "generated_nodes": [
+        "lower_output_guide"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/lower_output_guide"
+      ]
+    },
+    {
+      "entity_id": "link/upper_output_guide",
+      "action": "emitted",
+      "generated_nodes": [
+        "upper_output_guide"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/upper_output_guide"
+      ]
+    },
+    {
+      "entity_id": "link/hand_crank_arm",
+      "action": "emitted",
+      "generated_nodes": [
+        "hand_crank_arm"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/hand_crank_arm"
+      ]
+    },
+    {
+      "entity_id": "link/handle_spindle",
+      "action": "emitted",
+      "generated_nodes": [
+        "handle_spindle"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/handle_spindle"
+      ]
+    },
+    {
+      "entity_id": "link/hand_grip",
+      "action": "emitted",
+      "generated_nodes": [
+        "hand_grip"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "link/hand_grip"
+      ]
+    },
+    {
+      "entity_id": "pose/place_base",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_base"
+      ]
+    },
+    {
+      "entity_id": "pose/place_negative_shaft_pedestal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "negative_shaft_pedestal"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_negative_shaft_pedestal"
+      ]
+    },
+    {
+      "entity_id": "pose/place_negative_shaft_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "negative_shaft_bearing"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_negative_shaft_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_positive_shaft_pedestal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "positive_shaft_pedestal"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_positive_shaft_pedestal"
+      ]
+    },
+    {
+      "entity_id": "pose/place_positive_shaft_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "positive_shaft_bearing"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_positive_shaft_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crankshaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crankshaft"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_crankshaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crank_disk",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_disk"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_crank_disk"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crank_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_pin"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_crank_pin"
+      ]
+    },
+    {
+      "entity_id": "pose/place_pitman",
+      "action": "represented_by",
+      "generated_nodes": [
+        "pitman"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_pitman"
+      ]
+    },
+    {
+      "entity_id": "pose/place_negative_beam_support",
+      "action": "represented_by",
+      "generated_nodes": [
+        "negative_beam_support"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_negative_beam_support"
+      ]
+    },
+    {
+      "entity_id": "pose/place_negative_pivot_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "negative_pivot_bearing"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_negative_pivot_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_positive_beam_support",
+      "action": "represented_by",
+      "generated_nodes": [
+        "positive_beam_support"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_positive_beam_support"
+      ]
+    },
+    {
+      "entity_id": "pose/place_positive_pivot_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "positive_pivot_bearing"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_positive_pivot_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_beam_pivot_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "beam_pivot_pin"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_beam_pivot_pin"
+      ]
+    },
+    {
+      "entity_id": "pose/place_walking_beam",
+      "action": "represented_by",
+      "generated_nodes": [
+        "walking_beam"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_walking_beam"
+      ]
+    },
+    {
+      "entity_id": "pose/place_pitman_beam_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "pitman_beam_pin"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_pitman_beam_pin"
+      ]
+    },
+    {
+      "entity_id": "pose/place_beam_output_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "beam_output_pin"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_beam_output_pin"
+      ]
+    },
+    {
+      "entity_id": "pose/place_polished_output_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "polished_output_rod"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_polished_output_rod"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_guide_post",
+      "action": "represented_by",
+      "generated_nodes": [
+        "output_guide_post"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_output_guide_post"
+      ]
+    },
+    {
+      "entity_id": "pose/place_lower_output_guide",
+      "action": "represented_by",
+      "generated_nodes": [
+        "lower_output_guide"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_lower_output_guide"
+      ]
+    },
+    {
+      "entity_id": "pose/place_upper_output_guide",
+      "action": "represented_by",
+      "generated_nodes": [
+        "upper_output_guide"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_upper_output_guide"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hand_crank_arm",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hand_crank_arm"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_hand_crank_arm"
+      ]
+    },
+    {
+      "entity_id": "pose/place_handle_spindle",
+      "action": "represented_by",
+      "generated_nodes": [
+        "handle_spindle"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_handle_spindle"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hand_grip",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hand_grip"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "pose/place_hand_grip"
+      ]
+    },
+    {
+      "entity_id": "port/crankshaft/rotation_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "port/crankshaft/rotation_axis"
+      ]
+    },
+    {
+      "entity_id": "port/crankshaft/disk_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "port/crankshaft/disk_seat"
+      ]
+    },
+    {
+      "entity_id": "port/crank_disk/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "port/crank_disk/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/crank_disk/crank_pin_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "port/crank_disk/crank_pin_seat"
+      ]
+    },
+    {
+      "entity_id": "port/crank_pin/pin_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "port/crank_pin/pin_shaft"
+      ]
+    },
+    {
+      "entity_id": "port/pitman/crank_end_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "port/pitman/crank_end_bore"
+      ]
+    },
+    {
+      "entity_id": "port/pitman/beam_end_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "port/pitman/beam_end_bore"
+      ]
+    },
+    {
+      "entity_id": "port/walking_beam/pitman_pin_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "port/walking_beam/pitman_pin_bore"
+      ]
+    },
+    {
+      "entity_id": "port/walking_beam/pivot_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "port/walking_beam/pivot_bore"
+      ]
+    },
+    {
+      "entity_id": "port/walking_beam/output_pin_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "port/walking_beam/output_pin_bore"
+      ]
+    },
+    {
+      "entity_id": "port/pitman_beam_pin/pin_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "port/pitman_beam_pin/pin_shaft"
+      ]
+    },
+    {
+      "entity_id": "port/beam_pivot_pin/pivot_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "port/beam_pivot_pin/pivot_shaft"
+      ]
+    },
+    {
+      "entity_id": "port/beam_output_pin/pin_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "port/beam_output_pin/pin_shaft"
+      ]
+    },
+    {
+      "entity_id": "port/polished_output_rod/beam_pin_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "port/polished_output_rod/beam_pin_bore"
+      ]
+    },
+    {
+      "entity_id": "port/polished_output_rod/guided_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "port/polished_output_rod/guided_axis"
+      ]
+    },
+    {
+      "entity_id": "relation/shaft_in_negative_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "relation/shaft_in_negative_bearing"
+      ]
+    },
+    {
+      "entity_id": "relation/shaft_in_positive_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "relation/shaft_in_positive_bearing"
+      ]
+    },
+    {
+      "entity_id": "relation/disk_pressed_on_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "shaft_to_crank_disk_press_drive"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "relation/disk_pressed_on_shaft"
+      ]
+    },
+    {
+      "entity_id": "relation/crank_pin_pressed_in_disk",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "relation/crank_pin_pressed_in_disk"
+      ]
+    },
+    {
+      "entity_id": "relation/crank_pin_to_pitman_closure",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_pin_to_pitman_closure"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "relation/crank_pin_to_pitman_closure"
+      ]
+    },
+    {
+      "entity_id": "relation/pitman_to_walking_beam_closure",
+      "action": "represented_by",
+      "generated_nodes": [
+        "pitman_to_walking_beam_closure"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "relation/pitman_to_walking_beam_closure"
+      ]
+    },
+    {
+      "entity_id": "relation/walking_beam_fixed_pivot",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "relation/walking_beam_fixed_pivot"
+      ]
+    },
+    {
+      "entity_id": "relation/beam_to_output_rod_closure",
+      "action": "represented_by",
+      "generated_nodes": [
+        "beam_to_output_rod_closure"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "relation/beam_to_output_rod_closure"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/driven_crankshaft_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "driven_crankshaft_hinge"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "motion_joint/driven_crankshaft_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/crank_disk_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "crank_disk_hinge"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "motion_joint/crank_disk_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/walking_beam_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "walking_beam_hinge"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "motion_joint/walking_beam_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/vertical_guided_output",
+      "action": "emitted",
+      "generated_nodes": [
+        "vertical_guided_output"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "motion_joint/vertical_guided_output"
+      ]
+    },
+    {
+      "entity_id": "transmission/shaft_to_crank_disk_press_drive",
+      "action": "represented_by",
+      "generated_nodes": [
+        "shaft_to_crank_disk_press_drive"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "transmission/shaft_to_crank_disk_press_drive"
+      ]
+    },
+    {
+      "entity_id": "role/driver/crankshaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "role/driver/crankshaft"
+      ]
+    },
+    {
+      "entity_id": "role/output/polished_output_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "role/output/polished_output_rod"
+      ]
+    },
+    {
+      "entity_id": "role/watch/crankshaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "role/watch/crankshaft"
+      ]
+    },
+    {
+      "entity_id": "role/watch/crank_disk",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "role/watch/crank_disk"
+      ]
+    },
+    {
+      "entity_id": "role/watch/crank_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "role/watch/crank_pin"
+      ]
+    },
+    {
+      "entity_id": "role/watch/pitman",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "role/watch/pitman"
+      ]
+    },
+    {
+      "entity_id": "role/watch/walking_beam",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "role/watch/walking_beam"
+      ]
+    },
+    {
+      "entity_id": "role/watch/polished_output_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology, coordinate, constraint, contact decision, or role map",
+      "fact_ids": [
+        "role/watch/polished_output_rod"
+      ]
+    }
+  ],
+  "excludes": [
+    {
+      "pair": [
+        "crankshaft",
+        "negative_shaft_bearing"
+      ],
+      "reason": "journal running fit represented by shaft hinge",
+      "source_entity_ids": [
+        "relation/shaft_in_negative_bearing"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/negative_shaft_bearing",
+        "fit/negative_shaft_bearing/bearing_bore/crankshaft/rotation_axis"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "positive_shaft_bearing"
+      ],
+      "reason": "journal running fit represented by shaft hinge",
+      "source_entity_ids": [
+        "relation/shaft_in_positive_bearing"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/positive_shaft_bearing",
+        "fit/positive_shaft_bearing/bearing_bore/crankshaft/rotation_axis"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "crankshaft"
+      ],
+      "reason": "press fit represented by 1:1 equality",
+      "source_entity_ids": [
+        "relation/disk_pressed_on_shaft",
+        "transmission/shaft_to_crank_disk_press_drive"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/crankshaft",
+        "fit/crankshaft/disk_seat/crank_disk/shaft_bore"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "crank_pin"
+      ],
+      "reason": "interference press fit rigidly carries pin",
+      "source_entity_ids": [
+        "relation/crank_pin_pressed_in_disk"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/crank_pin",
+        "fit/crank_disk/crank_pin_seat/crank_pin/pin_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "crank_pin",
+        "pitman"
+      ],
+      "reason": "dedicated clearance pin bearing represented by closure",
+      "source_entity_ids": [
+        "relation/crank_pin_to_pitman_closure"
+      ],
+      "fact_ids": [
+        "pair/crank_pin/pitman",
+        "fit/crank_pin/pin_shaft/pitman/crank_end_bore"
+      ]
+    },
+    {
+      "pair": [
+        "pitman",
+        "pitman_beam_pin"
+      ],
+      "reason": "dedicated clearance pin bearing represented by closure",
+      "source_entity_ids": [
+        "relation/pitman_to_walking_beam_closure"
+      ],
+      "fact_ids": [
+        "pair/pitman/pitman_beam_pin",
+        "fit/pitman_beam_pin/pin_shaft/pitman/beam_end_bore"
+      ]
+    },
+    {
+      "pair": [
+        "beam_pivot_pin",
+        "walking_beam"
+      ],
+      "reason": "clearance pivot represented by beam hinge",
+      "source_entity_ids": [
+        "relation/walking_beam_fixed_pivot"
+      ],
+      "fact_ids": [
+        "pair/beam_pivot_pin/walking_beam",
+        "fit/beam_pivot_pin/pivot_shaft/walking_beam/pivot_bore"
+      ]
+    },
+    {
+      "pair": [
+        "pitman_beam_pin",
+        "walking_beam"
+      ],
+      "reason": "interference fit rigidly carries dedicated pin",
+      "source_entity_ids": [
+        "link/walking_beam",
+        "link/pitman_beam_pin"
+      ],
+      "fact_ids": [
+        "pair/pitman_beam_pin/walking_beam",
+        "fit/pitman_beam_pin/pin_shaft/walking_beam/pitman_pin_bore"
+      ]
+    },
+    {
+      "pair": [
+        "beam_output_pin",
+        "walking_beam"
+      ],
+      "reason": "interference fit rigidly carries dedicated pin",
+      "source_entity_ids": [
+        "link/walking_beam",
+        "link/beam_output_pin"
+      ],
+      "fact_ids": [
+        "pair/beam_output_pin/walking_beam",
+        "fit/beam_output_pin/pin_shaft/walking_beam/output_pin_bore"
+      ]
+    },
+    {
+      "pair": [
+        "beam_output_pin",
+        "polished_output_rod"
+      ],
+      "reason": "dedicated clearance pin bearing represented by closure",
+      "source_entity_ids": [
+        "relation/beam_to_output_rod_closure"
+      ],
+      "fact_ids": [
+        "pair/beam_output_pin/polished_output_rod",
+        "fit/beam_output_pin/pin_shaft/polished_output_rod/beam_pin_bore"
+      ]
+    },
+    {
+      "pair": [
+        "lower_output_guide",
+        "polished_output_rod"
+      ],
+      "reason": "running guide represented by vertical slide",
+      "source_entity_ids": [
+        "link/polished_output_rod",
+        "link/lower_output_guide"
+      ],
+      "fact_ids": [
+        "pair/lower_output_guide/polished_output_rod"
+      ]
+    },
+    {
+      "pair": [
+        "polished_output_rod",
+        "upper_output_guide"
+      ],
+      "reason": "running guide represented by vertical slide",
+      "source_entity_ids": [
+        "link/polished_output_rod",
+        "link/upper_output_guide"
+      ],
+      "fact_ids": [
+        "pair/polished_output_rod/upper_output_guide"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "pitman"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/pitman"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/pitman",
+        "nearby/crankshaft/pitman"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "negative_shaft_pedestal"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/negative_shaft_pedestal"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/negative_shaft_pedestal",
+        "nearby/crankshaft/negative_shaft_pedestal"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "positive_shaft_pedestal"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/positive_shaft_pedestal"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/positive_shaft_pedestal",
+        "nearby/crankshaft/positive_shaft_pedestal"
+      ]
+    },
+    {
+      "pair": [
+        "crank_pin",
+        "crankshaft"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/crank_pin"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/crank_pin",
+        "nearby/crankshaft/crank_pin"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "hand_grip"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/hand_grip"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/hand_grip",
+        "nearby/crankshaft/hand_grip"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "handle_spindle"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/handle_spindle"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/handle_spindle",
+        "nearby/crankshaft/handle_spindle"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "walking_beam"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/walking_beam"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/walking_beam",
+        "nearby/crankshaft/walking_beam"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "crankshaft"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/base"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/base",
+        "nearby/crankshaft/base"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "pitman_beam_pin"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/pitman_beam_pin"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/pitman_beam_pin",
+        "nearby/crankshaft/pitman_beam_pin"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "walking_beam"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/walking_beam"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/walking_beam",
+        "nearby/crank_disk/walking_beam"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "pitman"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/pitman"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/pitman",
+        "nearby/crank_disk/pitman"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "pitman_beam_pin"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/pitman_beam_pin"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/pitman_beam_pin",
+        "nearby/crank_disk/pitman_beam_pin"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "crank_disk"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/base"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/base",
+        "nearby/crank_disk/base"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "negative_shaft_pedestal"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/negative_shaft_pedestal"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/negative_shaft_pedestal",
+        "nearby/crank_disk/negative_shaft_pedestal"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "positive_shaft_pedestal"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/positive_shaft_pedestal"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/positive_shaft_pedestal",
+        "nearby/crank_disk/positive_shaft_pedestal"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "negative_shaft_bearing"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/negative_shaft_bearing"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/negative_shaft_bearing",
+        "nearby/crank_disk/negative_shaft_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "positive_shaft_bearing"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/positive_shaft_bearing"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/positive_shaft_bearing",
+        "nearby/crank_disk/positive_shaft_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "hand_crank_arm"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/hand_crank_arm"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/hand_crank_arm",
+        "nearby/crank_disk/hand_crank_arm"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "handle_spindle"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/handle_spindle"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/handle_spindle",
+        "nearby/crank_disk/handle_spindle"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "hand_grip"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/hand_grip"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/hand_grip",
+        "nearby/crank_disk/hand_grip"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "positive_beam_support"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/positive_beam_support"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/positive_beam_support",
+        "nearby/crank_disk/positive_beam_support"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "positive_pivot_bearing"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/positive_pivot_bearing"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/positive_pivot_bearing",
+        "nearby/crank_disk/positive_pivot_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "negative_beam_support"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/negative_beam_support"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/negative_beam_support",
+        "nearby/crank_disk/negative_beam_support"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "negative_pivot_bearing"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/negative_pivot_bearing"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/negative_pivot_bearing",
+        "nearby/crank_disk/negative_pivot_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "crank_pin",
+        "negative_shaft_bearing"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_pin",
+        "link/negative_shaft_bearing"
+      ],
+      "fact_ids": [
+        "pair/crank_pin/negative_shaft_bearing",
+        "nearby/crank_pin/negative_shaft_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "pitman",
+        "walking_beam"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/pitman",
+        "link/walking_beam"
+      ],
+      "fact_ids": [
+        "pair/pitman/walking_beam",
+        "nearby/pitman/walking_beam"
+      ]
+    },
+    {
+      "pair": [
+        "negative_shaft_bearing",
+        "pitman"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/pitman",
+        "link/negative_shaft_bearing"
+      ],
+      "fact_ids": [
+        "pair/pitman/negative_shaft_bearing",
+        "nearby/pitman/negative_shaft_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "negative_shaft_pedestal",
+        "pitman"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/pitman",
+        "link/negative_shaft_pedestal"
+      ],
+      "fact_ids": [
+        "pair/pitman/negative_shaft_pedestal",
+        "nearby/pitman/negative_shaft_pedestal"
+      ]
+    },
+    {
+      "pair": [
+        "positive_beam_support",
+        "walking_beam"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/walking_beam",
+        "link/positive_beam_support"
+      ],
+      "fact_ids": [
+        "pair/walking_beam/positive_beam_support",
+        "nearby/walking_beam/positive_beam_support"
+      ]
+    },
+    {
+      "pair": [
+        "positive_pivot_bearing",
+        "walking_beam"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/walking_beam",
+        "link/positive_pivot_bearing"
+      ],
+      "fact_ids": [
+        "pair/walking_beam/positive_pivot_bearing",
+        "nearby/walking_beam/positive_pivot_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "negative_beam_support",
+        "walking_beam"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/walking_beam",
+        "link/negative_beam_support"
+      ],
+      "fact_ids": [
+        "pair/walking_beam/negative_beam_support",
+        "nearby/walking_beam/negative_beam_support"
+      ]
+    },
+    {
+      "pair": [
+        "negative_pivot_bearing",
+        "walking_beam"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/walking_beam",
+        "link/negative_pivot_bearing"
+      ],
+      "fact_ids": [
+        "pair/walking_beam/negative_pivot_bearing",
+        "nearby/walking_beam/negative_pivot_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "output_guide_post",
+        "walking_beam"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/walking_beam",
+        "link/output_guide_post"
+      ],
+      "fact_ids": [
+        "pair/walking_beam/output_guide_post",
+        "nearby/walking_beam/output_guide_post"
+      ]
+    },
+    {
+      "pair": [
+        "crank_pin",
+        "walking_beam"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/walking_beam",
+        "link/crank_pin"
+      ],
+      "fact_ids": [
+        "pair/walking_beam/crank_pin",
+        "nearby/walking_beam/crank_pin"
+      ]
+    },
+    {
+      "pair": [
+        "upper_output_guide",
+        "walking_beam"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/walking_beam",
+        "link/upper_output_guide"
+      ],
+      "fact_ids": [
+        "pair/walking_beam/upper_output_guide",
+        "nearby/walking_beam/upper_output_guide"
+      ]
+    },
+    {
+      "pair": [
+        "hand_crank_arm",
+        "walking_beam"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/walking_beam",
+        "link/hand_crank_arm"
+      ],
+      "fact_ids": [
+        "pair/walking_beam/hand_crank_arm",
+        "nearby/walking_beam/hand_crank_arm"
+      ]
+    },
+    {
+      "pair": [
+        "handle_spindle",
+        "walking_beam"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/walking_beam",
+        "link/handle_spindle"
+      ],
+      "fact_ids": [
+        "pair/walking_beam/handle_spindle",
+        "nearby/walking_beam/handle_spindle"
+      ]
+    },
+    {
+      "pair": [
+        "hand_grip",
+        "walking_beam"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/walking_beam",
+        "link/hand_grip"
+      ],
+      "fact_ids": [
+        "pair/walking_beam/hand_grip",
+        "nearby/walking_beam/hand_grip"
+      ]
+    },
+    {
+      "pair": [
+        "lower_output_guide",
+        "walking_beam"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/walking_beam",
+        "link/lower_output_guide"
+      ],
+      "fact_ids": [
+        "pair/walking_beam/lower_output_guide",
+        "nearby/walking_beam/lower_output_guide"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "polished_output_rod"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/polished_output_rod",
+        "link/base"
+      ],
+      "fact_ids": [
+        "pair/polished_output_rod/base",
+        "nearby/polished_output_rod/base"
+      ]
+    },
+    {
+      "pair": [
+        "output_guide_post",
+        "polished_output_rod"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/polished_output_rod",
+        "link/output_guide_post"
+      ],
+      "fact_ids": [
+        "pair/polished_output_rod/output_guide_post",
+        "nearby/polished_output_rod/output_guide_post"
+      ]
+    },
+    {
+      "pair": [
+        "negative_pivot_bearing",
+        "polished_output_rod"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/polished_output_rod",
+        "link/negative_pivot_bearing"
+      ],
+      "fact_ids": [
+        "pair/polished_output_rod/negative_pivot_bearing",
+        "nearby/polished_output_rod/negative_pivot_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "polished_output_rod",
+        "positive_pivot_bearing"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/polished_output_rod",
+        "link/positive_pivot_bearing"
+      ],
+      "fact_ids": [
+        "pair/polished_output_rod/positive_pivot_bearing",
+        "nearby/polished_output_rod/positive_pivot_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "negative_beam_support",
+        "polished_output_rod"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/polished_output_rod",
+        "link/negative_beam_support"
+      ],
+      "fact_ids": [
+        "pair/polished_output_rod/negative_beam_support",
+        "nearby/polished_output_rod/negative_beam_support"
+      ]
+    },
+    {
+      "pair": [
+        "polished_output_rod",
+        "positive_beam_support"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/polished_output_rod",
+        "link/positive_beam_support"
+      ],
+      "fact_ids": [
+        "pair/polished_output_rod/positive_beam_support",
+        "nearby/polished_output_rod/positive_beam_support"
+      ]
+    },
+    {
+      "pair": [
+        "beam_pivot_pin",
+        "polished_output_rod"
+      ],
+      "reason": "positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/polished_output_rod",
+        "link/beam_pivot_pin"
+      ],
+      "fact_ids": [
+        "pair/polished_output_rod/beam_pivot_pin",
+        "nearby/polished_output_rod/beam_pivot_pin"
+      ]
+    }
+  ],
+  "ground_excludes": [],
+  "support_patches": [],
+  "bodies": [
+    "base",
+    "beam_output_pin",
+    "beam_pivot_pin",
+    "crank_disk",
+    "crank_pin",
+    "crankshaft",
+    "hand_crank_arm",
+    "hand_grip",
+    "handle_spindle",
+    "lower_output_guide",
+    "negative_beam_support",
+    "negative_pivot_bearing",
+    "negative_shaft_bearing",
+    "negative_shaft_pedestal",
+    "output_guide_post",
+    "pitman",
+    "pitman_beam_pin",
+    "polished_output_rod",
+    "positive_beam_support",
+    "positive_pivot_bearing",
+    "positive_shaft_bearing",
+    "positive_shaft_pedestal",
+    "upper_output_guide",
+    "walking_beam"
+  ],
+  "joints": [
+    "crank_disk_hinge",
+    "driven_crankshaft_hinge",
+    "pitman_free",
+    "vertical_guided_output",
+    "walking_beam_hinge"
+  ],
+  "constraints": [
+    "beam_to_output_rod_closure",
+    "crank_pin_to_pitman_closure",
+    "pitman_to_walking_beam_closure",
+    "shaft_to_crank_disk_press_drive"
+  ]
+}

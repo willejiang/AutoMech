@@ -1,0 +1,129 @@
+{
+  "analyzer_version": "comfort-geometry/1.0",
+  "fail_closed": true,
+  "input_hashes": {
+    "meshes/bench_base.stl": "f63a5b39c7202d1f5e3fc86e59b6576004c1df73a3fb62f146d267300f693bc9",
+    "meshes/connecting_rod.stl": "5876643400716f1015e0dd3be4fb51f32665fbb9c078c80c5a0c749e9c5470c7",
+    "meshes/crank_pin.stl": "a15f4c992f5f3db012ed47ffa853660c737dd0d32abac3b5a90d9c1ef63cdf7a",
+    "meshes/crank_web.stl": "0911a36adeafee8bdd21d8db1a2b3184e3067efe8c1d841bbef30ed486737264",
+    "meshes/crankshaft.stl": "33232ac957ab1deeb5906bec3004e1c09444a83864ad70972377eda3bda02cfb",
+    "meshes/crosshead.stl": "30dea5a4c0ed9c74858a107bf245e6ecd3b63b5ef037896583519a575a3c0ad9",
+    "meshes/cylinder_left_post.stl": "3aeae8c37bf7ee104feeed2a708be3f8ff92aa98e2717d14ab8696a89d0b2daf",
+    "meshes/cylinder_lower_frame.stl": "48ae2126c0516980aa0e2faf5118766694fd27504374239f140108239fd3e646",
+    "meshes/cylinder_right_post.stl": "3aeae8c37bf7ee104feeed2a708be3f8ff92aa98e2717d14ab8696a89d0b2daf",
+    "meshes/cylinder_upper_frame.stl": "48ae2126c0516980aa0e2faf5118766694fd27504374239f140108239fd3e646",
+    "meshes/front_bearing.stl": "af4d0171b7934a80a307dd4548e082409522c28fafb84abd90989cb407366e38",
+    "meshes/front_pedestal.stl": "9c28d2442d7529018779fbc6d5c9ba61d066ec0ebde50bc2f412c56612bdb562",
+    "meshes/hand_crank_arm.stl": "a7d63613e27f8579b4acc6f1e38c195bfa94b4081910b95783ce367177a2dd6f",
+    "meshes/hand_grip.stl": "9abf93ba11fe6503dd0e7d5fa8c604ee39d662065d9e016890a37be4254f5167",
+    "meshes/handle_pin.stl": "93c58ee71d5895adf32c6fac5800458b927596ccf6f27b85cc619b92ff848c67",
+    "meshes/left_guide_rail.stl": "d3a6b0943d1e1000deb42729d8e6abcfcc02fffdf06812416b73c193dd30782a",
+    "meshes/pump_piston.stl": "b64385ad5f5c3de7ef27dbd42514767bde34fd3f8e32825f6fb0f5915a5842d2",
+    "meshes/pump_rod.stl": "719367bd5e6b095ee4fbd51829a2a67c3dacf88d24b9f110dd5cea804fdd9c02",
+    "meshes/rear_bearing.stl": "af4d0171b7934a80a307dd4548e082409522c28fafb84abd90989cb407366e38",
+    "meshes/rear_pedestal.stl": "9c28d2442d7529018779fbc6d5c9ba61d066ec0ebde50bc2f412c56612bdb562",
+    "meshes/right_guide_rail.stl": "d3a6b0943d1e1000deb42729d8e6abcfcc02fffdf06812416b73c193dd30782a",
+    "meshes/wrist_pin.stl": "1d6e88b074d3e961639c65093a34b8afb48fddc7b036923c97b3a70bc1a037b9"
+  },
+  "intersections": [
+    {
+      "evidence_id": "relation/web_to_eccentric_pin",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.001129823,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "crank_pin",
+        "crank_web"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.250913
+    },
+    {
+      "evidence_id": "relation/shaft_to_crank_web",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.000833558,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "crank_web",
+        "crankshaft"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.376515
+    },
+    {
+      "evidence_id": "relation/shaft_to_hand_arm",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.000632057,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "crankshaft",
+        "hand_crank_arm"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.376514
+    },
+    {
+      "evidence_id": "relation/crosshead_carries_pump_rod",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.00055079,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "crosshead",
+        "pump_rod"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.112859
+    },
+    {
+      "evidence_id": "relation/crosshead_to_wrist_pin",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.002129903,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "crosshead",
+        "wrist_pin"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.633536
+    },
+    {
+      "evidence_id": "relation/arm_to_handle_pin",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.001261054,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "hand_crank_arm",
+        "handle_pin"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.25091
+    },
+    {
+      "evidence_id": "relation/pump_rod_carries_piston",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.000458992,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "pump_piston",
+        "pump_rod"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.094049
+    }
+  ],
+  "links_scanned": 22,
+  "manifest_only_exemption_count": 0,
+  "method": "final-pose watertight STL boolean intersection using manifold",
+  "non_exempt_conflict_count": 0,
+  "provenance_warnings": [],
+  "report_volume_mm3": 0.0001,
+  "scan_unavailable": [],
+  "schema": "physcad-scorer-geometry/1.0"
+}

@@ -1,0 +1,128 @@
+{
+  "analyzer_version": "comfort-geometry/1.0",
+  "fail_closed": true,
+  "input_hashes": {
+    "meshes/base.stl": "94519cbd362b63d1b7604a225027ddf3a23faecac3761d4742e00cb0ebf7e8b2",
+    "meshes/crank_arm.stl": "c782323490fb52536ca472065028738b2e6e0697b25532a09fb3efcdd13fea6a",
+    "meshes/crank_handle.stl": "e01094675ec89abda71e5a0ef5e347e2baa36186247a27e27872a72d43ec20df",
+    "meshes/idler_front_bearing.stl": "749bee1d80c5d9fb92dc0d0e4cf6a4e55c471557c4f0fe386239baf43456ff23",
+    "meshes/idler_front_pedestal.stl": "11b94f48f63896bfbc0b79d1bcbc23ae00c56ba7c981e6a1e878b33919bdcb3a",
+    "meshes/idler_gear.stl": "c59c8808694a2a6ccae26c1de7ea379367c87b0ed4998c7d5e112205fcf943c2",
+    "meshes/idler_rear_bearing.stl": "749bee1d80c5d9fb92dc0d0e4cf6a4e55c471557c4f0fe386239baf43456ff23",
+    "meshes/idler_rear_pedestal.stl": "11b94f48f63896bfbc0b79d1bcbc23ae00c56ba7c981e6a1e878b33919bdcb3a",
+    "meshes/idler_shaft.stl": "7a3d4745566d7af5fb708db6d4dbe591d445a66b861f4e792245086ad7e746a7",
+    "meshes/input_front_bearing.stl": "749bee1d80c5d9fb92dc0d0e4cf6a4e55c471557c4f0fe386239baf43456ff23",
+    "meshes/input_front_pedestal.stl": "11b94f48f63896bfbc0b79d1bcbc23ae00c56ba7c981e6a1e878b33919bdcb3a",
+    "meshes/input_gear.stl": "c59c8808694a2a6ccae26c1de7ea379367c87b0ed4998c7d5e112205fcf943c2",
+    "meshes/input_rear_bearing.stl": "749bee1d80c5d9fb92dc0d0e4cf6a4e55c471557c4f0fe386239baf43456ff23",
+    "meshes/input_rear_pedestal.stl": "11b94f48f63896bfbc0b79d1bcbc23ae00c56ba7c981e6a1e878b33919bdcb3a",
+    "meshes/input_shaft.stl": "7a3d4745566d7af5fb708db6d4dbe591d445a66b861f4e792245086ad7e746a7",
+    "meshes/output_front_bearing.stl": "749bee1d80c5d9fb92dc0d0e4cf6a4e55c471557c4f0fe386239baf43456ff23",
+    "meshes/output_front_pedestal.stl": "11b94f48f63896bfbc0b79d1bcbc23ae00c56ba7c981e6a1e878b33919bdcb3a",
+    "meshes/output_gear.stl": "c59c8808694a2a6ccae26c1de7ea379367c87b0ed4998c7d5e112205fcf943c2",
+    "meshes/output_rear_bearing.stl": "749bee1d80c5d9fb92dc0d0e4cf6a4e55c471557c4f0fe386239baf43456ff23",
+    "meshes/output_rear_pedestal.stl": "11b94f48f63896bfbc0b79d1bcbc23ae00c56ba7c981e6a1e878b33919bdcb3a",
+    "meshes/output_shaft.stl": "7a3d4745566d7af5fb708db6d4dbe591d445a66b861f4e792245086ad7e746a7"
+  },
+  "intersections": [
+    {
+      "evidence_id": "relation/crank_handle_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.000605485,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "crank_arm",
+        "crank_handle"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.376477
+    },
+    {
+      "evidence_id": "relation/crank_arm_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.000417448,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "crank_arm",
+        "input_shaft"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.376486
+    },
+    {
+      "evidence_id": "relation/idler_gear_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.000624482,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "idler_gear",
+        "idler_shaft"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.564784
+    },
+    {
+      "evidence_id": "relation/input_idler_mesh",
+      "exemption": "ideal_gear_mesh",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 6.273e-06,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "idler_gear",
+        "input_gear"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.036169
+    },
+    {
+      "evidence_id": "relation/idler_output_mesh",
+      "exemption": "ideal_gear_mesh",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 6.273e-06,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "idler_gear",
+        "output_gear"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.036169
+    },
+    {
+      "evidence_id": "relation/input_gear_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.00062442,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "input_gear",
+        "input_shaft"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.564728
+    },
+    {
+      "evidence_id": "relation/output_gear_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.00062442,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "output_gear",
+        "output_shaft"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.564728
+    }
+  ],
+  "links_scanned": 21,
+  "manifest_only_exemption_count": 0,
+  "method": "final-pose watertight STL boolean intersection using manifold",
+  "non_exempt_conflict_count": 0,
+  "provenance_warnings": [],
+  "report_volume_mm3": 0.0001,
+  "scan_unavailable": [],
+  "schema": "physcad-scorer-geometry/1.0"
+}

@@ -10,7 +10,7 @@ from typing import Any, Mapping
 from .contract import ContractError, ResourceLimits
 from .geometry import analyze_geometry
 from .replay import replay_model
-from .tasks.comfort_v1 import get_task
+from .tasks.comfort_v1 import axis_drift_limit_mm, get_task
 
 ARCHIVE_EVIDENCE_VERSION = "comfort-archive-evidence/1.0"
 
@@ -92,15 +92,35 @@ def _derived_invariants(task_id: str, assembly: Mapping[str, Any], manifest: Map
         raw = bindings.get(name, ())
         return list(raw) if isinstance(raw, list) else ([raw] if isinstance(raw, str) else [])
 
+    def body_for_joint(joint: str) -> str | None:
+        direct = next((str(row.get("child")) for row in assembly.get("motion_joints", ())
+                       if isinstance(row, Mapping) and row.get("name") == joint), None)
+        if direct and _positions(trajectory, direct):
+            return direct
+        folded = joint.casefold()
+        for token in ("driven_", "world_", "_hinge", "_revolute", "_spin", "_joint"):
+            folded = folded.replace(token, "")
+        candidates = [str(name) for name in (trajectory.get("bodies") or {})
+                      if folded in str(name).casefold() or str(name).casefold() in folded]
+        return min(candidates, key=lambda value: (len(value), value)) if candidates else None
+
+    all_positions = [position for name in (trajectory.get("bodies") or {})
+                     for position in (_positions(trajectory, str(name)) or ())]
+    machine_diagonal = math.sqrt(sum(
+        (max(row[axis] for row in all_positions) - min(row[axis] for row in all_positions)) ** 2
+        for axis in range(3))) if all_positions else 100.0
+    fixed_axis_limit = axis_drift_limit_mm(machine_diagonal)
+
     def fixed_axes(*names: str) -> bool:
-        # A mesh/body origin may orbit its hinge when local geometry is off-center; that
-        # is not axis drift. A fixed-axis claim is supported by an authored spin link
-        # mounted to fixed structure and a distinct scalar coordinate in the topology.
         for name in names:
             link = links.get(name)
             joint = coordinate.get(name)
             if (not link or link.get("dof") != "spin" or not link.get("mount")
                     or not isinstance(joint, str) or not joint):
+                return False
+            body = body_for_joint(joint)
+            positions = _positions(trajectory, body) if body else None
+            if not positions or max(math.dist(positions[0], row) for row in positions) > fixed_axis_limit:
                 return False
         return True
 
@@ -149,7 +169,7 @@ def _derived_invariants(task_id: str, assembly: Mapping[str, Any], manifest: Map
             spacing_ok = max(abs(value - target) for value in gaps) <= math.radians(2)
         result["equally_spaced" if count == 3 else "spacing_90_deg"] = spacing_ok
     elif task_id == "07_horizontal_slider_crank":
-        result.setdefault("fixed_crank_axis", fixed_axes("crankshaft"))
+        result["fixed_crank_axis"] = fixed_axes("crankshaft")
         slider = _positions(trajectory, "slider")
         if slider:
             axial_span = max(row[0] for row in slider) - min(row[0] for row in slider)
@@ -158,7 +178,7 @@ def _derived_invariants(task_id: str, assembly: Mapping[str, Any], manifest: Map
             result["lateral_drift_le_2pct_span"] = lateral <= max(0.5, axial_span * 0.02)
         result["closures_below_2pct_scale"] = closure_ok("slider_end_pin_connect")
     elif task_id == "08_vertical_piston_pump":
-        result.setdefault("fixed_crank_axis", fixed_axes("crankshaft"))
+        result["fixed_crank_axis"] = fixed_axes("crankshaft")
         result["rod_crosshead_closure"] = closure_ok("wrist_pin_small_end_connect")
         contacts = trajectory.get("contacts")
         if isinstance(contacts, Mapping):
@@ -172,9 +192,9 @@ def _derived_invariants(task_id: str, assembly: Mapping[str, Any], manifest: Map
                         for row in sample if isinstance(row, Mapping))
                     for sample in samples if isinstance(sample, list))
     elif task_id == "09_open_pumpjack":
-        result.setdefault("fixed_crank_axis", fixed_axes("crankshaft"))
+        result["fixed_crank_axis"] = fixed_axes("crankshaft")
     elif task_id == "10_wind_rotor_pump":
-        result.setdefault("fixed_rotor_axis", fixed_axes("rotor_shaft"))
+        result["fixed_rotor_axis"] = fixed_axes("rotor_shaft")
         closure_names = [name for name in constraints if "connect" in name or "closure" in name]
         result["closures_below_2pct_scale"] = bool(closure_names) and all(
             closure_ok(name) for name in closure_names)

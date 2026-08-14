@@ -1,0 +1,3267 @@
+{
+  "manifest_version": 3,
+  "engine": "mujoco-agent",
+  "topology_plan": {
+    "coordinate_map": {
+      "base": null,
+      "minute_input_bearing": null,
+      "intermediate_bearing": null,
+      "rear_mast": null,
+      "lower_sleeve_bracket": null,
+      "upper_sleeve_bracket": null,
+      "sleeve_thrust_washer": null,
+      "lower_sleeve_bearing": null,
+      "upper_sleeve_bearing": null,
+      "minute_shaft": "minute_spin",
+      "minute_gear": "minute_spin",
+      "minute_hand": "minute_spin",
+      "intermediate_shaft": "intermediate_spin",
+      "compound_big_gear": "intermediate_spin",
+      "compound_pinion": "intermediate_spin",
+      "hour_sleeve": "hour_spin",
+      "hour_gear": "hour_spin",
+      "hour_hand": "hour_spin"
+    },
+    "tree_edges": [
+      [
+        "base",
+        ""
+      ],
+      [
+        "minute_input_bearing",
+        "base"
+      ],
+      [
+        "intermediate_bearing",
+        "base"
+      ],
+      [
+        "rear_mast",
+        "base"
+      ],
+      [
+        "lower_sleeve_bracket",
+        "rear_mast"
+      ],
+      [
+        "upper_sleeve_bracket",
+        "rear_mast"
+      ],
+      [
+        "sleeve_thrust_washer",
+        "lower_sleeve_bracket"
+      ],
+      [
+        "lower_sleeve_bearing",
+        "lower_sleeve_bracket"
+      ],
+      [
+        "upper_sleeve_bearing",
+        "upper_sleeve_bracket"
+      ],
+      [
+        "minute_shaft",
+        "minute_input_bearing"
+      ],
+      [
+        "minute_gear",
+        "minute_shaft"
+      ],
+      [
+        "minute_hand",
+        "minute_shaft"
+      ],
+      [
+        "intermediate_shaft",
+        "intermediate_bearing"
+      ],
+      [
+        "compound_big_gear",
+        "intermediate_shaft"
+      ],
+      [
+        "compound_pinion",
+        "intermediate_shaft"
+      ],
+      [
+        "hour_sleeve",
+        "lower_sleeve_bearing"
+      ],
+      [
+        "hour_gear",
+        "hour_sleeve"
+      ],
+      [
+        "hour_hand",
+        "hour_sleeve"
+      ]
+    ],
+    "closure_edges": [],
+    "rigid_carried": [
+      [
+        "minute_shaft",
+        "minute_gear"
+      ],
+      [
+        "minute_shaft",
+        "minute_hand"
+      ],
+      [
+        "intermediate_shaft",
+        "compound_big_gear"
+      ],
+      [
+        "intermediate_shaft",
+        "compound_pinion"
+      ],
+      [
+        "hour_sleeve",
+        "hour_gear"
+      ],
+      [
+        "hour_sleeve",
+        "hour_hand"
+      ]
+    ],
+    "independent_coaxial": [
+      [
+        "minute_shaft",
+        "hour_sleeve"
+      ]
+    ],
+    "transmissions": [
+      {
+        "name": "minute_to_compound_reduction",
+        "driving_joint": "minute_spin",
+        "driven_joint": "intermediate_spin",
+        "ratio": -0.3333333333333333
+      },
+      {
+        "name": "rigid_compound_pair",
+        "coordinate": "intermediate_spin",
+        "ratio": 1.0
+      },
+      {
+        "name": "compound_to_hour_reduction",
+        "driving_joint": "intermediate_spin",
+        "driven_joint": "hour_spin",
+        "ratio": -0.25
+      }
+    ],
+    "contact_decisions": [
+      {
+        "pair": [
+          "base",
+          "minute_shaft"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/base",
+          "link/minute_shaft"
+        ],
+        "fact_ids": [
+          "link/base",
+          "link/minute_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "intermediate_shaft"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/base",
+          "link/intermediate_shaft"
+        ],
+        "fact_ids": [
+          "link/base",
+          "link/intermediate_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "hour_sleeve"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/base",
+          "link/hour_sleeve"
+        ],
+        "fact_ids": [
+          "link/base",
+          "link/hour_sleeve"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "minute_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/base",
+          "link/minute_gear"
+        ],
+        "fact_ids": [
+          "link/base",
+          "link/minute_gear"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "compound_big_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/base",
+          "link/compound_big_gear"
+        ],
+        "fact_ids": [
+          "link/base",
+          "link/compound_big_gear"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "compound_pinion"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/base",
+          "link/compound_pinion"
+        ],
+        "fact_ids": [
+          "link/base",
+          "link/compound_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "hour_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/base",
+          "link/hour_gear"
+        ],
+        "fact_ids": [
+          "link/base",
+          "link/hour_gear"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "hour_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/base",
+          "link/hour_hand"
+        ],
+        "fact_ids": [
+          "link/base",
+          "link/hour_hand"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "minute_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/base",
+          "link/minute_hand"
+        ],
+        "fact_ids": [
+          "link/base",
+          "link/minute_hand"
+        ]
+      },
+      {
+        "pair": [
+          "minute_input_bearing",
+          "minute_shaft"
+        ],
+        "action": "exclude",
+        "reason": "positive-clearance running journal represented by hinge",
+        "source_entity_ids": [
+          "link/minute_input_bearing",
+          "link/minute_shaft",
+          "relation/minute_lower_journal"
+        ],
+        "fact_ids": [
+          "fit/minute_input_bearing/journal_bore/minute_shaft/lower_journal",
+          "pair/minute_input_bearing/minute_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "minute_input_bearing",
+          "intermediate_shaft"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/minute_input_bearing",
+          "link/intermediate_shaft"
+        ],
+        "fact_ids": [
+          "link/minute_input_bearing",
+          "link/intermediate_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "minute_input_bearing",
+          "hour_sleeve"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/minute_input_bearing",
+          "link/hour_sleeve"
+        ],
+        "fact_ids": [
+          "link/minute_input_bearing",
+          "link/hour_sleeve"
+        ]
+      },
+      {
+        "pair": [
+          "minute_input_bearing",
+          "minute_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/minute_input_bearing",
+          "link/minute_gear"
+        ],
+        "fact_ids": [
+          "link/minute_input_bearing",
+          "link/minute_gear"
+        ]
+      },
+      {
+        "pair": [
+          "minute_input_bearing",
+          "compound_big_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/minute_input_bearing",
+          "link/compound_big_gear"
+        ],
+        "fact_ids": [
+          "link/minute_input_bearing",
+          "link/compound_big_gear"
+        ]
+      },
+      {
+        "pair": [
+          "minute_input_bearing",
+          "compound_pinion"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/minute_input_bearing",
+          "link/compound_pinion"
+        ],
+        "fact_ids": [
+          "link/minute_input_bearing",
+          "link/compound_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "minute_input_bearing",
+          "hour_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/minute_input_bearing",
+          "link/hour_gear"
+        ],
+        "fact_ids": [
+          "link/minute_input_bearing",
+          "link/hour_gear"
+        ]
+      },
+      {
+        "pair": [
+          "minute_input_bearing",
+          "hour_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/minute_input_bearing",
+          "link/hour_hand"
+        ],
+        "fact_ids": [
+          "link/minute_input_bearing",
+          "link/hour_hand"
+        ]
+      },
+      {
+        "pair": [
+          "minute_input_bearing",
+          "minute_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/minute_input_bearing",
+          "link/minute_hand"
+        ],
+        "fact_ids": [
+          "link/minute_input_bearing",
+          "link/minute_hand"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_bearing",
+          "minute_shaft"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/intermediate_bearing",
+          "link/minute_shaft"
+        ],
+        "fact_ids": [
+          "link/intermediate_bearing",
+          "link/minute_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_bearing",
+          "intermediate_shaft"
+        ],
+        "action": "exclude",
+        "reason": "positive-clearance running journal represented by hinge",
+        "source_entity_ids": [
+          "link/intermediate_bearing",
+          "link/intermediate_shaft",
+          "relation/intermediate_lower_journal"
+        ],
+        "fact_ids": [
+          "fit/intermediate_bearing/journal_bore/intermediate_shaft/lower_journal",
+          "pair/intermediate_bearing/intermediate_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_bearing",
+          "hour_sleeve"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/intermediate_bearing",
+          "link/hour_sleeve"
+        ],
+        "fact_ids": [
+          "link/intermediate_bearing",
+          "link/hour_sleeve"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_bearing",
+          "minute_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/intermediate_bearing",
+          "link/minute_gear"
+        ],
+        "fact_ids": [
+          "link/intermediate_bearing",
+          "link/minute_gear"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_bearing",
+          "compound_big_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/intermediate_bearing",
+          "link/compound_big_gear"
+        ],
+        "fact_ids": [
+          "link/intermediate_bearing",
+          "link/compound_big_gear"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_bearing",
+          "compound_pinion"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/intermediate_bearing",
+          "link/compound_pinion"
+        ],
+        "fact_ids": [
+          "link/intermediate_bearing",
+          "link/compound_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_bearing",
+          "hour_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/intermediate_bearing",
+          "link/hour_gear"
+        ],
+        "fact_ids": [
+          "link/intermediate_bearing",
+          "link/hour_gear"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_bearing",
+          "hour_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/intermediate_bearing",
+          "link/hour_hand"
+        ],
+        "fact_ids": [
+          "link/intermediate_bearing",
+          "link/hour_hand"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_bearing",
+          "minute_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/intermediate_bearing",
+          "link/minute_hand"
+        ],
+        "fact_ids": [
+          "link/intermediate_bearing",
+          "link/minute_hand"
+        ]
+      },
+      {
+        "pair": [
+          "rear_mast",
+          "minute_shaft"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/rear_mast",
+          "link/minute_shaft"
+        ],
+        "fact_ids": [
+          "link/rear_mast",
+          "link/minute_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "rear_mast",
+          "intermediate_shaft"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/rear_mast",
+          "link/intermediate_shaft"
+        ],
+        "fact_ids": [
+          "link/rear_mast",
+          "link/intermediate_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "rear_mast",
+          "hour_sleeve"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/rear_mast",
+          "link/hour_sleeve"
+        ],
+        "fact_ids": [
+          "link/rear_mast",
+          "link/hour_sleeve"
+        ]
+      },
+      {
+        "pair": [
+          "rear_mast",
+          "minute_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/rear_mast",
+          "link/minute_gear"
+        ],
+        "fact_ids": [
+          "link/rear_mast",
+          "link/minute_gear"
+        ]
+      },
+      {
+        "pair": [
+          "rear_mast",
+          "compound_big_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/rear_mast",
+          "link/compound_big_gear"
+        ],
+        "fact_ids": [
+          "link/rear_mast",
+          "link/compound_big_gear"
+        ]
+      },
+      {
+        "pair": [
+          "rear_mast",
+          "compound_pinion"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/rear_mast",
+          "link/compound_pinion"
+        ],
+        "fact_ids": [
+          "link/rear_mast",
+          "link/compound_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "rear_mast",
+          "hour_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/rear_mast",
+          "link/hour_gear"
+        ],
+        "fact_ids": [
+          "link/rear_mast",
+          "link/hour_gear"
+        ]
+      },
+      {
+        "pair": [
+          "rear_mast",
+          "hour_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/rear_mast",
+          "link/hour_hand"
+        ],
+        "fact_ids": [
+          "link/rear_mast",
+          "link/hour_hand"
+        ]
+      },
+      {
+        "pair": [
+          "rear_mast",
+          "minute_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/rear_mast",
+          "link/minute_hand"
+        ],
+        "fact_ids": [
+          "link/rear_mast",
+          "link/minute_hand"
+        ]
+      },
+      {
+        "pair": [
+          "lower_sleeve_bracket",
+          "minute_shaft"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/lower_sleeve_bracket",
+          "link/minute_shaft"
+        ],
+        "fact_ids": [
+          "link/lower_sleeve_bracket",
+          "link/minute_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "lower_sleeve_bracket",
+          "intermediate_shaft"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/lower_sleeve_bracket",
+          "link/intermediate_shaft"
+        ],
+        "fact_ids": [
+          "link/lower_sleeve_bracket",
+          "link/intermediate_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "lower_sleeve_bracket",
+          "hour_sleeve"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/lower_sleeve_bracket",
+          "link/hour_sleeve"
+        ],
+        "fact_ids": [
+          "link/lower_sleeve_bracket",
+          "link/hour_sleeve"
+        ]
+      },
+      {
+        "pair": [
+          "lower_sleeve_bracket",
+          "minute_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/lower_sleeve_bracket",
+          "link/minute_gear"
+        ],
+        "fact_ids": [
+          "link/lower_sleeve_bracket",
+          "link/minute_gear"
+        ]
+      },
+      {
+        "pair": [
+          "lower_sleeve_bracket",
+          "compound_big_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/lower_sleeve_bracket",
+          "link/compound_big_gear"
+        ],
+        "fact_ids": [
+          "link/lower_sleeve_bracket",
+          "link/compound_big_gear"
+        ]
+      },
+      {
+        "pair": [
+          "lower_sleeve_bracket",
+          "compound_pinion"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/lower_sleeve_bracket",
+          "link/compound_pinion"
+        ],
+        "fact_ids": [
+          "link/lower_sleeve_bracket",
+          "link/compound_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "lower_sleeve_bracket",
+          "hour_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/lower_sleeve_bracket",
+          "link/hour_gear"
+        ],
+        "fact_ids": [
+          "link/lower_sleeve_bracket",
+          "link/hour_gear"
+        ]
+      },
+      {
+        "pair": [
+          "lower_sleeve_bracket",
+          "hour_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/lower_sleeve_bracket",
+          "link/hour_hand"
+        ],
+        "fact_ids": [
+          "link/lower_sleeve_bracket",
+          "link/hour_hand"
+        ]
+      },
+      {
+        "pair": [
+          "lower_sleeve_bracket",
+          "minute_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/lower_sleeve_bracket",
+          "link/minute_hand"
+        ],
+        "fact_ids": [
+          "link/lower_sleeve_bracket",
+          "link/minute_hand"
+        ]
+      },
+      {
+        "pair": [
+          "upper_sleeve_bracket",
+          "minute_shaft"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/upper_sleeve_bracket",
+          "link/minute_shaft"
+        ],
+        "fact_ids": [
+          "link/upper_sleeve_bracket",
+          "link/minute_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "upper_sleeve_bracket",
+          "intermediate_shaft"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/upper_sleeve_bracket",
+          "link/intermediate_shaft"
+        ],
+        "fact_ids": [
+          "link/upper_sleeve_bracket",
+          "link/intermediate_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "upper_sleeve_bracket",
+          "hour_sleeve"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/upper_sleeve_bracket",
+          "link/hour_sleeve"
+        ],
+        "fact_ids": [
+          "link/upper_sleeve_bracket",
+          "link/hour_sleeve"
+        ]
+      },
+      {
+        "pair": [
+          "upper_sleeve_bracket",
+          "minute_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/upper_sleeve_bracket",
+          "link/minute_gear"
+        ],
+        "fact_ids": [
+          "link/upper_sleeve_bracket",
+          "link/minute_gear"
+        ]
+      },
+      {
+        "pair": [
+          "upper_sleeve_bracket",
+          "compound_big_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/upper_sleeve_bracket",
+          "link/compound_big_gear"
+        ],
+        "fact_ids": [
+          "link/upper_sleeve_bracket",
+          "link/compound_big_gear"
+        ]
+      },
+      {
+        "pair": [
+          "upper_sleeve_bracket",
+          "compound_pinion"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/upper_sleeve_bracket",
+          "link/compound_pinion"
+        ],
+        "fact_ids": [
+          "link/upper_sleeve_bracket",
+          "link/compound_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "upper_sleeve_bracket",
+          "hour_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/upper_sleeve_bracket",
+          "link/hour_gear"
+        ],
+        "fact_ids": [
+          "link/upper_sleeve_bracket",
+          "link/hour_gear"
+        ]
+      },
+      {
+        "pair": [
+          "upper_sleeve_bracket",
+          "hour_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/upper_sleeve_bracket",
+          "link/hour_hand"
+        ],
+        "fact_ids": [
+          "link/upper_sleeve_bracket",
+          "link/hour_hand"
+        ]
+      },
+      {
+        "pair": [
+          "upper_sleeve_bracket",
+          "minute_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/upper_sleeve_bracket",
+          "link/minute_hand"
+        ],
+        "fact_ids": [
+          "link/upper_sleeve_bracket",
+          "link/minute_hand"
+        ]
+      },
+      {
+        "pair": [
+          "sleeve_thrust_washer",
+          "minute_shaft"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/sleeve_thrust_washer",
+          "link/minute_shaft"
+        ],
+        "fact_ids": [
+          "link/sleeve_thrust_washer",
+          "link/minute_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "sleeve_thrust_washer",
+          "intermediate_shaft"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/sleeve_thrust_washer",
+          "link/intermediate_shaft"
+        ],
+        "fact_ids": [
+          "link/sleeve_thrust_washer",
+          "link/intermediate_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "sleeve_thrust_washer",
+          "hour_sleeve"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/sleeve_thrust_washer",
+          "link/hour_sleeve"
+        ],
+        "fact_ids": [
+          "link/sleeve_thrust_washer",
+          "link/hour_sleeve"
+        ]
+      },
+      {
+        "pair": [
+          "sleeve_thrust_washer",
+          "minute_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/sleeve_thrust_washer",
+          "link/minute_gear"
+        ],
+        "fact_ids": [
+          "link/sleeve_thrust_washer",
+          "link/minute_gear"
+        ]
+      },
+      {
+        "pair": [
+          "sleeve_thrust_washer",
+          "compound_big_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/sleeve_thrust_washer",
+          "link/compound_big_gear"
+        ],
+        "fact_ids": [
+          "link/sleeve_thrust_washer",
+          "link/compound_big_gear"
+        ]
+      },
+      {
+        "pair": [
+          "sleeve_thrust_washer",
+          "compound_pinion"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/sleeve_thrust_washer",
+          "link/compound_pinion"
+        ],
+        "fact_ids": [
+          "link/sleeve_thrust_washer",
+          "link/compound_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "sleeve_thrust_washer",
+          "hour_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/sleeve_thrust_washer",
+          "link/hour_gear"
+        ],
+        "fact_ids": [
+          "link/sleeve_thrust_washer",
+          "link/hour_gear"
+        ]
+      },
+      {
+        "pair": [
+          "sleeve_thrust_washer",
+          "hour_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/sleeve_thrust_washer",
+          "link/hour_hand"
+        ],
+        "fact_ids": [
+          "link/sleeve_thrust_washer",
+          "link/hour_hand"
+        ]
+      },
+      {
+        "pair": [
+          "sleeve_thrust_washer",
+          "minute_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/sleeve_thrust_washer",
+          "link/minute_hand"
+        ],
+        "fact_ids": [
+          "link/sleeve_thrust_washer",
+          "link/minute_hand"
+        ]
+      },
+      {
+        "pair": [
+          "lower_sleeve_bearing",
+          "minute_shaft"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/lower_sleeve_bearing",
+          "link/minute_shaft"
+        ],
+        "fact_ids": [
+          "link/lower_sleeve_bearing",
+          "link/minute_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "lower_sleeve_bearing",
+          "intermediate_shaft"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/lower_sleeve_bearing",
+          "link/intermediate_shaft"
+        ],
+        "fact_ids": [
+          "link/lower_sleeve_bearing",
+          "link/intermediate_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "lower_sleeve_bearing",
+          "hour_sleeve"
+        ],
+        "action": "exclude",
+        "reason": "positive-clearance running journal represented by hinge",
+        "source_entity_ids": [
+          "link/lower_sleeve_bearing",
+          "link/hour_sleeve",
+          "relation/hour_sleeve_lower_journal"
+        ],
+        "fact_ids": [
+          "fit/lower_sleeve_bearing/journal_bore/hour_sleeve/lower_outer_journal",
+          "pair/hour_sleeve/lower_sleeve_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "lower_sleeve_bearing",
+          "minute_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/lower_sleeve_bearing",
+          "link/minute_gear"
+        ],
+        "fact_ids": [
+          "link/lower_sleeve_bearing",
+          "link/minute_gear"
+        ]
+      },
+      {
+        "pair": [
+          "lower_sleeve_bearing",
+          "compound_big_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/lower_sleeve_bearing",
+          "link/compound_big_gear"
+        ],
+        "fact_ids": [
+          "link/lower_sleeve_bearing",
+          "link/compound_big_gear"
+        ]
+      },
+      {
+        "pair": [
+          "lower_sleeve_bearing",
+          "compound_pinion"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/lower_sleeve_bearing",
+          "link/compound_pinion"
+        ],
+        "fact_ids": [
+          "link/lower_sleeve_bearing",
+          "link/compound_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "lower_sleeve_bearing",
+          "hour_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/lower_sleeve_bearing",
+          "link/hour_gear"
+        ],
+        "fact_ids": [
+          "link/lower_sleeve_bearing",
+          "link/hour_gear"
+        ]
+      },
+      {
+        "pair": [
+          "lower_sleeve_bearing",
+          "hour_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/lower_sleeve_bearing",
+          "link/hour_hand"
+        ],
+        "fact_ids": [
+          "link/lower_sleeve_bearing",
+          "link/hour_hand"
+        ]
+      },
+      {
+        "pair": [
+          "lower_sleeve_bearing",
+          "minute_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/lower_sleeve_bearing",
+          "link/minute_hand"
+        ],
+        "fact_ids": [
+          "link/lower_sleeve_bearing",
+          "link/minute_hand"
+        ]
+      },
+      {
+        "pair": [
+          "upper_sleeve_bearing",
+          "minute_shaft"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/upper_sleeve_bearing",
+          "link/minute_shaft"
+        ],
+        "fact_ids": [
+          "link/upper_sleeve_bearing",
+          "link/minute_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "upper_sleeve_bearing",
+          "intermediate_shaft"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/upper_sleeve_bearing",
+          "link/intermediate_shaft"
+        ],
+        "fact_ids": [
+          "link/upper_sleeve_bearing",
+          "link/intermediate_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "upper_sleeve_bearing",
+          "hour_sleeve"
+        ],
+        "action": "exclude",
+        "reason": "positive-clearance running journal represented by hinge",
+        "source_entity_ids": [
+          "link/upper_sleeve_bearing",
+          "link/hour_sleeve",
+          "relation/hour_sleeve_upper_journal"
+        ],
+        "fact_ids": [
+          "fit/upper_sleeve_bearing/journal_bore/hour_sleeve/upper_outer_journal",
+          "pair/hour_sleeve/upper_sleeve_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "upper_sleeve_bearing",
+          "minute_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/upper_sleeve_bearing",
+          "link/minute_gear"
+        ],
+        "fact_ids": [
+          "link/upper_sleeve_bearing",
+          "link/minute_gear"
+        ]
+      },
+      {
+        "pair": [
+          "upper_sleeve_bearing",
+          "compound_big_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/upper_sleeve_bearing",
+          "link/compound_big_gear"
+        ],
+        "fact_ids": [
+          "link/upper_sleeve_bearing",
+          "link/compound_big_gear"
+        ]
+      },
+      {
+        "pair": [
+          "upper_sleeve_bearing",
+          "compound_pinion"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/upper_sleeve_bearing",
+          "link/compound_pinion"
+        ],
+        "fact_ids": [
+          "link/upper_sleeve_bearing",
+          "link/compound_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "upper_sleeve_bearing",
+          "hour_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/upper_sleeve_bearing",
+          "link/hour_gear"
+        ],
+        "fact_ids": [
+          "link/upper_sleeve_bearing",
+          "link/hour_gear"
+        ]
+      },
+      {
+        "pair": [
+          "upper_sleeve_bearing",
+          "hour_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/upper_sleeve_bearing",
+          "link/hour_hand"
+        ],
+        "fact_ids": [
+          "link/upper_sleeve_bearing",
+          "link/hour_hand"
+        ]
+      },
+      {
+        "pair": [
+          "upper_sleeve_bearing",
+          "minute_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/upper_sleeve_bearing",
+          "link/minute_hand"
+        ],
+        "fact_ids": [
+          "link/upper_sleeve_bearing",
+          "link/minute_hand"
+        ]
+      },
+      {
+        "pair": [
+          "minute_shaft",
+          "intermediate_shaft"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/minute_shaft",
+          "link/intermediate_shaft"
+        ],
+        "fact_ids": [
+          "link/minute_shaft",
+          "link/intermediate_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "minute_shaft",
+          "hour_sleeve"
+        ],
+        "action": "exclude",
+        "reason": "positive-clearance independent coaxial journal",
+        "source_entity_ids": [
+          "link/minute_shaft",
+          "link/hour_sleeve",
+          "relation/independent_coaxial_handshaft_journal"
+        ],
+        "fact_ids": [
+          "fit/hour_sleeve/inner_journal/minute_shaft/sleeve_journal",
+          "pair/hour_sleeve/minute_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "minute_shaft",
+          "minute_gear"
+        ],
+        "action": "exclude",
+        "reason": "measured interference press fit rigidly carried",
+        "source_entity_ids": [
+          "link/minute_shaft",
+          "link/minute_gear",
+          "relation/minute_gear_press_fit"
+        ],
+        "fact_ids": [
+          "fit/minute_shaft/minute_gear_seat/minute_gear/shaft_bore",
+          "pair/minute_gear/minute_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "minute_shaft",
+          "compound_big_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/minute_shaft",
+          "link/compound_big_gear"
+        ],
+        "fact_ids": [
+          "link/minute_shaft",
+          "link/compound_big_gear"
+        ]
+      },
+      {
+        "pair": [
+          "minute_shaft",
+          "compound_pinion"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/minute_shaft",
+          "link/compound_pinion"
+        ],
+        "fact_ids": [
+          "link/minute_shaft",
+          "link/compound_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "minute_shaft",
+          "hour_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/minute_shaft",
+          "link/hour_gear"
+        ],
+        "fact_ids": [
+          "link/minute_shaft",
+          "link/hour_gear"
+        ]
+      },
+      {
+        "pair": [
+          "minute_shaft",
+          "hour_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/minute_shaft",
+          "link/hour_hand"
+        ],
+        "fact_ids": [
+          "link/minute_shaft",
+          "link/hour_hand"
+        ]
+      },
+      {
+        "pair": [
+          "minute_shaft",
+          "minute_hand"
+        ],
+        "action": "exclude",
+        "reason": "measured interference press fit rigidly carried",
+        "source_entity_ids": [
+          "link/minute_shaft",
+          "link/minute_hand",
+          "relation/minute_hand_press_fit"
+        ],
+        "fact_ids": [
+          "fit/minute_shaft/minute_hand_seat/minute_hand/hub_bore",
+          "pair/minute_hand/minute_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_shaft",
+          "hour_sleeve"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/intermediate_shaft",
+          "link/hour_sleeve"
+        ],
+        "fact_ids": [
+          "link/intermediate_shaft",
+          "link/hour_sleeve"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_shaft",
+          "minute_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/intermediate_shaft",
+          "link/minute_gear"
+        ],
+        "fact_ids": [
+          "link/intermediate_shaft",
+          "link/minute_gear"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_shaft",
+          "compound_big_gear"
+        ],
+        "action": "exclude",
+        "reason": "measured interference press fit rigidly carried",
+        "source_entity_ids": [
+          "link/intermediate_shaft",
+          "link/compound_big_gear",
+          "relation/compound_big_press_fit"
+        ],
+        "fact_ids": [
+          "fit/intermediate_shaft/big_gear_seat/compound_big_gear/shaft_bore",
+          "pair/compound_big_gear/intermediate_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_shaft",
+          "compound_pinion"
+        ],
+        "action": "exclude",
+        "reason": "measured interference press fit rigidly carried",
+        "source_entity_ids": [
+          "link/intermediate_shaft",
+          "link/compound_pinion",
+          "relation/compound_pinion_press_fit"
+        ],
+        "fact_ids": [
+          "fit/intermediate_shaft/pinion_seat/compound_pinion/shaft_bore",
+          "pair/compound_pinion/intermediate_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_shaft",
+          "hour_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/intermediate_shaft",
+          "link/hour_gear"
+        ],
+        "fact_ids": [
+          "link/intermediate_shaft",
+          "link/hour_gear"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_shaft",
+          "hour_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/intermediate_shaft",
+          "link/hour_hand"
+        ],
+        "fact_ids": [
+          "link/intermediate_shaft",
+          "link/hour_hand"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_shaft",
+          "minute_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/intermediate_shaft",
+          "link/minute_hand"
+        ],
+        "fact_ids": [
+          "link/intermediate_shaft",
+          "link/minute_hand"
+        ]
+      },
+      {
+        "pair": [
+          "hour_sleeve",
+          "minute_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/hour_sleeve",
+          "link/minute_gear"
+        ],
+        "fact_ids": [
+          "link/hour_sleeve",
+          "link/minute_gear"
+        ]
+      },
+      {
+        "pair": [
+          "hour_sleeve",
+          "compound_big_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/hour_sleeve",
+          "link/compound_big_gear"
+        ],
+        "fact_ids": [
+          "link/hour_sleeve",
+          "link/compound_big_gear"
+        ]
+      },
+      {
+        "pair": [
+          "hour_sleeve",
+          "compound_pinion"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/hour_sleeve",
+          "link/compound_pinion"
+        ],
+        "fact_ids": [
+          "link/hour_sleeve",
+          "link/compound_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "hour_sleeve",
+          "hour_gear"
+        ],
+        "action": "exclude",
+        "reason": "measured interference press fit rigidly carried",
+        "source_entity_ids": [
+          "link/hour_sleeve",
+          "link/hour_gear",
+          "relation/hour_gear_press_fit"
+        ],
+        "fact_ids": [
+          "fit/hour_sleeve/hour_gear_seat/hour_gear/sleeve_bore",
+          "pair/hour_gear/hour_sleeve"
+        ]
+      },
+      {
+        "pair": [
+          "hour_sleeve",
+          "hour_hand"
+        ],
+        "action": "exclude",
+        "reason": "measured interference press fit rigidly carried",
+        "source_entity_ids": [
+          "link/hour_sleeve",
+          "link/hour_hand",
+          "relation/hour_hand_press_fit"
+        ],
+        "fact_ids": [
+          "fit/hour_sleeve/hour_hand_seat/hour_hand/hub_bore",
+          "pair/hour_hand/hour_sleeve"
+        ]
+      },
+      {
+        "pair": [
+          "hour_sleeve",
+          "minute_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/hour_sleeve",
+          "link/minute_hand"
+        ],
+        "fact_ids": [
+          "link/hour_sleeve",
+          "link/minute_hand"
+        ]
+      },
+      {
+        "pair": [
+          "minute_gear",
+          "compound_big_gear"
+        ],
+        "action": "exclude",
+        "reason": "ideal external gear mesh replaced by equality",
+        "source_entity_ids": [
+          "link/minute_gear",
+          "link/compound_big_gear",
+          "relation/stage1_tooth_contact"
+        ],
+        "fact_ids": [
+          "fit/minute_gear/stage1_mesh/compound_big_gear/stage1_mesh",
+          "pair/compound_big_gear/minute_gear"
+        ]
+      },
+      {
+        "pair": [
+          "minute_gear",
+          "compound_pinion"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/minute_gear",
+          "link/compound_pinion"
+        ],
+        "fact_ids": [
+          "link/minute_gear",
+          "link/compound_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "minute_gear",
+          "hour_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/minute_gear",
+          "link/hour_gear"
+        ],
+        "fact_ids": [
+          "link/minute_gear",
+          "link/hour_gear"
+        ]
+      },
+      {
+        "pair": [
+          "minute_gear",
+          "hour_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/minute_gear",
+          "link/hour_hand"
+        ],
+        "fact_ids": [
+          "link/minute_gear",
+          "link/hour_hand"
+        ]
+      },
+      {
+        "pair": [
+          "minute_gear",
+          "minute_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/minute_gear",
+          "link/minute_hand"
+        ],
+        "fact_ids": [
+          "link/minute_gear",
+          "link/minute_hand"
+        ]
+      },
+      {
+        "pair": [
+          "compound_big_gear",
+          "compound_pinion"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/compound_big_gear",
+          "link/compound_pinion"
+        ],
+        "fact_ids": [
+          "link/compound_big_gear",
+          "link/compound_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "compound_big_gear",
+          "hour_gear"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/compound_big_gear",
+          "link/hour_gear"
+        ],
+        "fact_ids": [
+          "link/compound_big_gear",
+          "link/hour_gear"
+        ]
+      },
+      {
+        "pair": [
+          "compound_big_gear",
+          "hour_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/compound_big_gear",
+          "link/hour_hand"
+        ],
+        "fact_ids": [
+          "link/compound_big_gear",
+          "link/hour_hand"
+        ]
+      },
+      {
+        "pair": [
+          "compound_big_gear",
+          "minute_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/compound_big_gear",
+          "link/minute_hand"
+        ],
+        "fact_ids": [
+          "link/compound_big_gear",
+          "link/minute_hand"
+        ]
+      },
+      {
+        "pair": [
+          "compound_pinion",
+          "hour_gear"
+        ],
+        "action": "exclude",
+        "reason": "ideal external gear mesh replaced by equality",
+        "source_entity_ids": [
+          "link/compound_pinion",
+          "link/hour_gear",
+          "relation/stage2_tooth_contact"
+        ],
+        "fact_ids": [
+          "fit/hour_gear/stage2_mesh/compound_pinion/stage2_mesh",
+          "pair/compound_pinion/hour_gear"
+        ]
+      },
+      {
+        "pair": [
+          "compound_pinion",
+          "hour_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/compound_pinion",
+          "link/hour_hand"
+        ],
+        "fact_ids": [
+          "link/compound_pinion",
+          "link/hour_hand"
+        ]
+      },
+      {
+        "pair": [
+          "compound_pinion",
+          "minute_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/compound_pinion",
+          "link/minute_hand"
+        ],
+        "fact_ids": [
+          "link/compound_pinion",
+          "link/minute_hand"
+        ]
+      },
+      {
+        "pair": [
+          "hour_gear",
+          "hour_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/hour_gear",
+          "link/hour_hand"
+        ],
+        "fact_ids": [
+          "link/hour_gear",
+          "link/hour_hand"
+        ]
+      },
+      {
+        "pair": [
+          "hour_gear",
+          "minute_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/hour_gear",
+          "link/minute_hand"
+        ],
+        "fact_ids": [
+          "link/hour_gear",
+          "link/minute_hand"
+        ]
+      },
+      {
+        "pair": [
+          "hour_hand",
+          "minute_hand"
+        ],
+        "action": "keep",
+        "reason": "no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept",
+        "source_entity_ids": [
+          "link/hour_hand",
+          "link/minute_hand"
+        ],
+        "fact_ids": [
+          "link/hour_hand",
+          "link/minute_hand"
+        ]
+      }
+    ],
+    "support_ground": [
+      "base"
+    ],
+    "support_strategy": "fixed authored base and support frame carry three bearing-supported hinge coordinates; no support-probe alteration required"
+  },
+  "decisions": [
+    {
+      "generated_kind": "constraint",
+      "generated_name": "minute_to_compound_reduction",
+      "constraint_type": "joint",
+      "reason": "6 mm driving and 18 mm driven external pitch radii",
+      "source_entity_ids": [
+        "transmission/minute_to_compound_reduction",
+        "relation/stage1_tooth_contact"
+      ],
+      "fact_ids": [
+        "fit/minute_gear/stage1_mesh/compound_big_gear/stage1_mesh"
+      ]
+    },
+    {
+      "generated_kind": "constraint",
+      "generated_name": "compound_to_hour_reduction",
+      "constraint_type": "joint",
+      "reason": "4.8 mm driving and 19.2 mm driven external pitch radii",
+      "source_entity_ids": [
+        "transmission/compound_to_hour_reduction",
+        "relation/stage2_tooth_contact"
+      ],
+      "fact_ids": [
+        "fit/hour_gear/stage2_mesh/compound_pinion/stage2_mesh"
+      ]
+    },
+    {
+      "entity_id": "link/base",
+      "action": "emitted",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "link/base"
+      ]
+    },
+    {
+      "entity_id": "link/minute_input_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "minute_input_bearing"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "link/minute_input_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/intermediate_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "intermediate_bearing"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "link/intermediate_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/rear_mast",
+      "action": "emitted",
+      "generated_nodes": [
+        "rear_mast"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "link/rear_mast"
+      ]
+    },
+    {
+      "entity_id": "link/lower_sleeve_bracket",
+      "action": "emitted",
+      "generated_nodes": [
+        "lower_sleeve_bracket"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "link/lower_sleeve_bracket"
+      ]
+    },
+    {
+      "entity_id": "link/upper_sleeve_bracket",
+      "action": "emitted",
+      "generated_nodes": [
+        "upper_sleeve_bracket"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "link/upper_sleeve_bracket"
+      ]
+    },
+    {
+      "entity_id": "link/sleeve_thrust_washer",
+      "action": "emitted",
+      "generated_nodes": [
+        "sleeve_thrust_washer"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "link/sleeve_thrust_washer"
+      ]
+    },
+    {
+      "entity_id": "link/lower_sleeve_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "lower_sleeve_bearing"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "link/lower_sleeve_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/upper_sleeve_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "upper_sleeve_bearing"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "link/upper_sleeve_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/minute_shaft",
+      "action": "emitted",
+      "generated_nodes": [
+        "minute_shaft",
+        "minute_spin"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "link/minute_shaft"
+      ]
+    },
+    {
+      "entity_id": "link/intermediate_shaft",
+      "action": "emitted",
+      "generated_nodes": [
+        "intermediate_shaft",
+        "intermediate_spin"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "link/intermediate_shaft"
+      ]
+    },
+    {
+      "entity_id": "link/hour_sleeve",
+      "action": "emitted",
+      "generated_nodes": [
+        "hour_sleeve",
+        "hour_spin"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "link/hour_sleeve"
+      ]
+    },
+    {
+      "entity_id": "link/minute_gear",
+      "action": "emitted",
+      "generated_nodes": [
+        "minute_gear",
+        "minute_spin"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "link/minute_gear"
+      ]
+    },
+    {
+      "entity_id": "link/compound_big_gear",
+      "action": "emitted",
+      "generated_nodes": [
+        "compound_big_gear",
+        "intermediate_spin"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "link/compound_big_gear"
+      ]
+    },
+    {
+      "entity_id": "link/compound_pinion",
+      "action": "emitted",
+      "generated_nodes": [
+        "compound_pinion",
+        "intermediate_spin"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "link/compound_pinion"
+      ]
+    },
+    {
+      "entity_id": "link/hour_gear",
+      "action": "emitted",
+      "generated_nodes": [
+        "hour_gear",
+        "hour_spin"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "link/hour_gear"
+      ]
+    },
+    {
+      "entity_id": "link/hour_hand",
+      "action": "emitted",
+      "generated_nodes": [
+        "hour_hand",
+        "hour_spin"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "link/hour_hand"
+      ]
+    },
+    {
+      "entity_id": "link/minute_hand",
+      "action": "emitted",
+      "generated_nodes": [
+        "minute_hand",
+        "minute_spin"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "link/minute_hand"
+      ]
+    },
+    {
+      "entity_id": "pose/place_base",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "pose/place_base"
+      ]
+    },
+    {
+      "entity_id": "pose/place_minute_input_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "pose/place_minute_input_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_intermediate_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "pose/place_intermediate_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_rear_mast",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "pose/place_rear_mast"
+      ]
+    },
+    {
+      "entity_id": "pose/place_lower_sleeve_bracket",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "pose/place_lower_sleeve_bracket"
+      ]
+    },
+    {
+      "entity_id": "pose/place_upper_sleeve_bracket",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "pose/place_upper_sleeve_bracket"
+      ]
+    },
+    {
+      "entity_id": "pose/place_sleeve_thrust_washer",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "pose/place_sleeve_thrust_washer"
+      ]
+    },
+    {
+      "entity_id": "pose/place_lower_sleeve_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "pose/place_lower_sleeve_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_upper_sleeve_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "pose/place_upper_sleeve_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_minute_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "pose/place_minute_shaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_intermediate_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "pose/place_intermediate_shaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hour_sleeve",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "pose/place_hour_sleeve"
+      ]
+    },
+    {
+      "entity_id": "pose/place_minute_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "pose/place_minute_gear"
+      ]
+    },
+    {
+      "entity_id": "pose/place_compound_big_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "pose/place_compound_big_gear"
+      ]
+    },
+    {
+      "entity_id": "pose/place_compound_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "pose/place_compound_pinion"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hour_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "pose/place_hour_gear"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hour_hand",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "pose/place_hour_hand"
+      ]
+    },
+    {
+      "entity_id": "pose/place_minute_hand",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "pose/place_minute_hand"
+      ]
+    },
+    {
+      "entity_id": "port/minute_gear/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/minute_gear/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/minute_gear/stage1_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/minute_gear/stage1_mesh"
+      ]
+    },
+    {
+      "entity_id": "port/compound_big_gear/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/compound_big_gear/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/compound_big_gear/stage1_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/compound_big_gear/stage1_mesh"
+      ]
+    },
+    {
+      "entity_id": "port/compound_pinion/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/compound_pinion/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/compound_pinion/stage2_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/compound_pinion/stage2_mesh"
+      ]
+    },
+    {
+      "entity_id": "port/hour_gear/sleeve_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/hour_gear/sleeve_bore"
+      ]
+    },
+    {
+      "entity_id": "port/hour_gear/stage2_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/hour_gear/stage2_mesh"
+      ]
+    },
+    {
+      "entity_id": "port/minute_shaft/minute_gear_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/minute_shaft/minute_gear_seat"
+      ]
+    },
+    {
+      "entity_id": "port/minute_shaft/lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/minute_shaft/lower_journal"
+      ]
+    },
+    {
+      "entity_id": "port/minute_shaft/sleeve_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/minute_shaft/sleeve_journal"
+      ]
+    },
+    {
+      "entity_id": "port/minute_shaft/minute_hand_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/minute_shaft/minute_hand_seat"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_shaft/big_gear_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/intermediate_shaft/big_gear_seat"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_shaft/pinion_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/intermediate_shaft/pinion_seat"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_shaft/lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/intermediate_shaft/lower_journal"
+      ]
+    },
+    {
+      "entity_id": "port/hour_sleeve/inner_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/hour_sleeve/inner_journal"
+      ]
+    },
+    {
+      "entity_id": "port/hour_sleeve/lower_outer_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/hour_sleeve/lower_outer_journal"
+      ]
+    },
+    {
+      "entity_id": "port/hour_sleeve/upper_outer_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/hour_sleeve/upper_outer_journal"
+      ]
+    },
+    {
+      "entity_id": "port/hour_sleeve/hour_gear_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/hour_sleeve/hour_gear_seat"
+      ]
+    },
+    {
+      "entity_id": "port/hour_sleeve/hour_hand_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/hour_sleeve/hour_hand_seat"
+      ]
+    },
+    {
+      "entity_id": "port/minute_input_bearing/journal_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/minute_input_bearing/journal_bore"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_bearing/journal_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/intermediate_bearing/journal_bore"
+      ]
+    },
+    {
+      "entity_id": "port/lower_sleeve_bearing/journal_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/lower_sleeve_bearing/journal_bore"
+      ]
+    },
+    {
+      "entity_id": "port/upper_sleeve_bearing/journal_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/upper_sleeve_bearing/journal_bore"
+      ]
+    },
+    {
+      "entity_id": "port/minute_hand/hub_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/minute_hand/hub_bore"
+      ]
+    },
+    {
+      "entity_id": "port/hour_hand/hub_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "port/hour_hand/hub_bore"
+      ]
+    },
+    {
+      "entity_id": "relation/stage1_tooth_contact",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "relation/stage1_tooth_contact"
+      ]
+    },
+    {
+      "entity_id": "relation/stage2_tooth_contact",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "relation/stage2_tooth_contact"
+      ]
+    },
+    {
+      "entity_id": "relation/minute_gear_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "relation/minute_gear_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/compound_big_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "relation/compound_big_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/compound_pinion_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "relation/compound_pinion_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/hour_gear_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "relation/hour_gear_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/minute_hand_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "relation/minute_hand_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/hour_hand_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "relation/hour_hand_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/minute_lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "relation/minute_lower_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/intermediate_lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "relation/intermediate_lower_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/hour_sleeve_lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "relation/hour_sleeve_lower_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/hour_sleeve_upper_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "relation/hour_sleeve_upper_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/independent_coaxial_handshaft_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "relation/independent_coaxial_handshaft_journal"
+      ]
+    },
+    {
+      "entity_id": "transmission/minute_to_compound_reduction",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_to_compound_reduction"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "transmission/minute_to_compound_reduction"
+      ]
+    },
+    {
+      "entity_id": "transmission/rigid_compound_pair",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_spin"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "transmission/rigid_compound_pair"
+      ]
+    },
+    {
+      "entity_id": "transmission/compound_to_hour_reduction",
+      "action": "represented_by",
+      "generated_nodes": [
+        "compound_to_hour_reduction"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "transmission/compound_to_hour_reduction"
+      ]
+    },
+    {
+      "entity_id": "role/driver/minute_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_spin"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "role/driver/minute_gear"
+      ]
+    },
+    {
+      "entity_id": "role/output/hour_hand",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_spin"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "role/output/hour_hand"
+      ]
+    },
+    {
+      "entity_id": "role/watch/minute_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "role/watch/minute_gear"
+      ]
+    },
+    {
+      "entity_id": "role/watch/compound_big_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "role/watch/compound_big_gear"
+      ]
+    },
+    {
+      "entity_id": "role/watch/compound_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "role/watch/compound_pinion"
+      ]
+    },
+    {
+      "entity_id": "role/watch/hour_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "role/watch/hour_gear"
+      ]
+    },
+    {
+      "entity_id": "role/watch/minute_hand",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "role/watch/minute_hand"
+      ]
+    },
+    {
+      "entity_id": "role/watch/hour_hand",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body",
+      "fact_ids": [
+        "role/watch/hour_hand"
+      ]
+    }
+  ],
+  "excludes": [
+    {
+      "pair": [
+        "minute_input_bearing",
+        "minute_shaft"
+      ],
+      "reason": "positive-clearance running journal represented by hinge",
+      "source_entity_ids": [
+        "link/minute_input_bearing",
+        "link/minute_shaft",
+        "relation/minute_lower_journal"
+      ],
+      "fact_ids": [
+        "fit/minute_input_bearing/journal_bore/minute_shaft/lower_journal",
+        "pair/minute_input_bearing/minute_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_bearing",
+        "intermediate_shaft"
+      ],
+      "reason": "positive-clearance running journal represented by hinge",
+      "source_entity_ids": [
+        "link/intermediate_bearing",
+        "link/intermediate_shaft",
+        "relation/intermediate_lower_journal"
+      ],
+      "fact_ids": [
+        "fit/intermediate_bearing/journal_bore/intermediate_shaft/lower_journal",
+        "pair/intermediate_bearing/intermediate_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "hour_sleeve",
+        "lower_sleeve_bearing"
+      ],
+      "reason": "positive-clearance running journal represented by hinge",
+      "source_entity_ids": [
+        "link/lower_sleeve_bearing",
+        "link/hour_sleeve",
+        "relation/hour_sleeve_lower_journal"
+      ],
+      "fact_ids": [
+        "fit/lower_sleeve_bearing/journal_bore/hour_sleeve/lower_outer_journal",
+        "pair/hour_sleeve/lower_sleeve_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "hour_sleeve",
+        "upper_sleeve_bearing"
+      ],
+      "reason": "positive-clearance running journal represented by hinge",
+      "source_entity_ids": [
+        "link/upper_sleeve_bearing",
+        "link/hour_sleeve",
+        "relation/hour_sleeve_upper_journal"
+      ],
+      "fact_ids": [
+        "fit/upper_sleeve_bearing/journal_bore/hour_sleeve/upper_outer_journal",
+        "pair/hour_sleeve/upper_sleeve_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "hour_sleeve",
+        "minute_shaft"
+      ],
+      "reason": "positive-clearance independent coaxial journal",
+      "source_entity_ids": [
+        "link/minute_shaft",
+        "link/hour_sleeve",
+        "relation/independent_coaxial_handshaft_journal"
+      ],
+      "fact_ids": [
+        "fit/hour_sleeve/inner_journal/minute_shaft/sleeve_journal",
+        "pair/hour_sleeve/minute_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "minute_gear",
+        "minute_shaft"
+      ],
+      "reason": "measured interference press fit rigidly carried",
+      "source_entity_ids": [
+        "link/minute_shaft",
+        "link/minute_gear",
+        "relation/minute_gear_press_fit"
+      ],
+      "fact_ids": [
+        "fit/minute_shaft/minute_gear_seat/minute_gear/shaft_bore",
+        "pair/minute_gear/minute_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "minute_hand",
+        "minute_shaft"
+      ],
+      "reason": "measured interference press fit rigidly carried",
+      "source_entity_ids": [
+        "link/minute_shaft",
+        "link/minute_hand",
+        "relation/minute_hand_press_fit"
+      ],
+      "fact_ids": [
+        "fit/minute_shaft/minute_hand_seat/minute_hand/hub_bore",
+        "pair/minute_hand/minute_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "compound_big_gear",
+        "intermediate_shaft"
+      ],
+      "reason": "measured interference press fit rigidly carried",
+      "source_entity_ids": [
+        "link/intermediate_shaft",
+        "link/compound_big_gear",
+        "relation/compound_big_press_fit"
+      ],
+      "fact_ids": [
+        "fit/intermediate_shaft/big_gear_seat/compound_big_gear/shaft_bore",
+        "pair/compound_big_gear/intermediate_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "compound_pinion",
+        "intermediate_shaft"
+      ],
+      "reason": "measured interference press fit rigidly carried",
+      "source_entity_ids": [
+        "link/intermediate_shaft",
+        "link/compound_pinion",
+        "relation/compound_pinion_press_fit"
+      ],
+      "fact_ids": [
+        "fit/intermediate_shaft/pinion_seat/compound_pinion/shaft_bore",
+        "pair/compound_pinion/intermediate_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "hour_gear",
+        "hour_sleeve"
+      ],
+      "reason": "measured interference press fit rigidly carried",
+      "source_entity_ids": [
+        "link/hour_sleeve",
+        "link/hour_gear",
+        "relation/hour_gear_press_fit"
+      ],
+      "fact_ids": [
+        "fit/hour_sleeve/hour_gear_seat/hour_gear/sleeve_bore",
+        "pair/hour_gear/hour_sleeve"
+      ]
+    },
+    {
+      "pair": [
+        "hour_hand",
+        "hour_sleeve"
+      ],
+      "reason": "measured interference press fit rigidly carried",
+      "source_entity_ids": [
+        "link/hour_sleeve",
+        "link/hour_hand",
+        "relation/hour_hand_press_fit"
+      ],
+      "fact_ids": [
+        "fit/hour_sleeve/hour_hand_seat/hour_hand/hub_bore",
+        "pair/hour_hand/hour_sleeve"
+      ]
+    },
+    {
+      "pair": [
+        "compound_big_gear",
+        "minute_gear"
+      ],
+      "reason": "ideal external gear mesh replaced by equality",
+      "source_entity_ids": [
+        "link/minute_gear",
+        "link/compound_big_gear",
+        "relation/stage1_tooth_contact"
+      ],
+      "fact_ids": [
+        "fit/minute_gear/stage1_mesh/compound_big_gear/stage1_mesh",
+        "pair/compound_big_gear/minute_gear"
+      ]
+    },
+    {
+      "pair": [
+        "compound_pinion",
+        "hour_gear"
+      ],
+      "reason": "ideal external gear mesh replaced by equality",
+      "source_entity_ids": [
+        "link/compound_pinion",
+        "link/hour_gear",
+        "relation/stage2_tooth_contact"
+      ],
+      "fact_ids": [
+        "fit/hour_gear/stage2_mesh/compound_pinion/stage2_mesh",
+        "pair/compound_pinion/hour_gear"
+      ]
+    }
+  ],
+  "ground_excludes": [],
+  "support_patches": [],
+  "bodies": [
+    "base",
+    "compound_big_gear",
+    "compound_pinion",
+    "hour_gear",
+    "hour_hand",
+    "hour_sleeve",
+    "intermediate_bearing",
+    "intermediate_shaft",
+    "lower_sleeve_bearing",
+    "lower_sleeve_bracket",
+    "minute_gear",
+    "minute_hand",
+    "minute_input_bearing",
+    "minute_shaft",
+    "rear_mast",
+    "sleeve_thrust_washer",
+    "upper_sleeve_bearing",
+    "upper_sleeve_bracket"
+  ],
+  "joints": [
+    "hour_spin",
+    "intermediate_spin",
+    "minute_spin"
+  ],
+  "constraints": [
+    "compound_to_hour_reduction",
+    "minute_to_compound_reduction"
+  ]
+}

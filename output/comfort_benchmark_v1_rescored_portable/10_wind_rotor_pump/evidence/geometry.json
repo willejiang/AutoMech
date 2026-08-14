@@ -1,0 +1,114 @@
+{
+  "analyzer_version": "comfort-geometry/1.0",
+  "fail_closed": true,
+  "input_hashes": {
+    "meshes/base.stl": "59cb2169a5b9bba2d27c2c3e775c3e257cd3e97685b797273d166a70e89038fb",
+    "meshes/connecting_rod.stl": "90ba0b57d2916e8511e5ba70595a11437a0cbdbcf95776fbed28b0bf0f784c35",
+    "meshes/crank_disk.stl": "05eb25061b31204adcbdedc3a79eec890a63f02f3c47fd80acc92b36c350a9e8",
+    "meshes/crank_pin.stl": "79c752294b9e41f13a099fb5b3463d3fee42206c0943b57a0a4a93e25b0f8771",
+    "meshes/crosshead.stl": "370a66d12f50471fbe96a10e07eca9b11901c1e37d04f6ef1f8325668162c6df",
+    "meshes/front_bearing.stl": "af737b8f786da4915f573d223add0c962901b074c2e6acbd75d931b11ca745ec",
+    "meshes/front_bearing_post.stl": "41d82423b59793ce8f3d0c9743e0e9bcd8be362f45942bdd3e4be1e0e3935b4f",
+    "meshes/left_guide.stl": "87d0f91ca0159293f4bb790e14c9c53b47f763fca1a3f7a7d5f1100579796e2b",
+    "meshes/left_guide_arm.stl": "565361dfd57319931942745ad089d8a0ea0c843a6086e25fae46da62976c99e7",
+    "meshes/left_guide_column.stl": "b3046d20b08b687120c069e90540b0f067900b0014321987a267fd5d34a04251",
+    "meshes/pump_piston.stl": "9af3e1d41f718f52baf8ef094e0060c7f6fbda0fdc1bf5e31930f2944a5a4962",
+    "meshes/pump_rod.stl": "678120a52155b456a3ae140683c02cd39549da64b8d1a80e044d5580b8d58f49",
+    "meshes/rear_bearing.stl": "af737b8f786da4915f573d223add0c962901b074c2e6acbd75d931b11ca745ec",
+    "meshes/rear_bearing_post.stl": "41d82423b59793ce8f3d0c9743e0e9bcd8be362f45942bdd3e4be1e0e3935b4f",
+    "meshes/right_guide.stl": "87d0f91ca0159293f4bb790e14c9c53b47f763fca1a3f7a7d5f1100579796e2b",
+    "meshes/right_guide_arm.stl": "565361dfd57319931942745ad089d8a0ea0c843a6086e25fae46da62976c99e7",
+    "meshes/right_guide_column.stl": "b3046d20b08b687120c069e90540b0f067900b0014321987a267fd5d34a04251",
+    "meshes/rotor_shaft.stl": "893d393d5818de28854df22e7952f2a0572eb41f3067c68ba219bc47d1831bd0",
+    "meshes/wind_rotor.stl": "6b41d5b8f16e8ac48b9d93e64c824a51255f49fe42c5440f9ffc69c7be2fc5e0",
+    "meshes/wrist_pin.stl": "0a7653ae2bc63d185d45f3244b69163ad5218d243e014fd31a0bb4fae2aad697"
+  },
+  "intersections": [
+    {
+      "evidence_id": null,
+      "exemption": null,
+      "exemption_source": "",
+      "fraction_smaller": 0.084601653,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "base",
+        "connecting_rod"
+      ],
+      "status": "CONFLICT",
+      "volume_mm3": 169.689671
+    },
+    {
+      "evidence_id": "relation/crank_big_end_pin",
+      "exemption": "authored_pin_or_revolute",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.277777818,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "connecting_rod",
+        "crank_pin"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 49.067051
+    },
+    {
+      "evidence_id": "relation/rod_small_end_closure",
+      "exemption": "authored_pin_or_revolute",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.192307715,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "connecting_rod",
+        "wrist_pin"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 49.067049
+    },
+    {
+      "evidence_id": "relation/crank_carries_eccentric_pin",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.000444003,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "crank_disk",
+        "crank_pin"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.078429
+    },
+    {
+      "evidence_id": "relation/shaft_carries_crank",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.00035683,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "crank_disk",
+        "rotor_shaft"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.564756
+    },
+    {
+      "evidence_id": "relation/shaft_carries_wind_rotor",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.000237886,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "rotor_shaft",
+        "wind_rotor"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.376504
+    }
+  ],
+  "links_scanned": 20,
+  "manifest_only_exemption_count": 0,
+  "method": "final-pose watertight STL boolean intersection using manifold",
+  "non_exempt_conflict_count": 1,
+  "provenance_warnings": [],
+  "report_volume_mm3": 0.0001,
+  "scan_unavailable": [],
+  "schema": "physcad-scorer-geometry/1.0"
+}

@@ -1,0 +1,157 @@
+{
+  "analyzer_version": "comfort-geometry/1.0",
+  "fail_closed": true,
+  "input_hashes": {
+    "meshes/base.stl": "4da2bdd4779b576ba7ae231db40f389f166ffec0f7880a237e175371c5cf60a0",
+    "meshes/beam_output_pin.stl": "dffbd1f09e33c79d1f9e8a8274054d2c1bff0b459aea1a65ae2659b882816325",
+    "meshes/beam_pivot_pin.stl": "304c9b1f910c53457b0e3f8d75f33ff96a77e1766a4604d4b961622fd9134946",
+    "meshes/crank_disk.stl": "939080305a00a71affccbad90dfa96da3bb0e79ab5e2541e6f68f0780ba561a1",
+    "meshes/crank_pin.stl": "dffbd1f09e33c79d1f9e8a8274054d2c1bff0b459aea1a65ae2659b882816325",
+    "meshes/crankshaft.stl": "9fcc08f989ce94e58f47fee3dea7eaf0d5f3e20fd37f6208f161f63f3f9ca34d",
+    "meshes/hand_crank_arm.stl": "5656433a29ca6d17b1f6a2eed499595adfee346e0be63814421b631363268d09",
+    "meshes/hand_grip.stl": "432b866e67692d74fc959737fe081b8ef9982d980b6d242a1358195b0aad823b",
+    "meshes/handle_spindle.stl": "e5e92f8b9a953005ecb40e523f4275582cc518a79004d00a361ac806300d39fc",
+    "meshes/lower_output_guide.stl": "d05529b1805d444c3f1fb7535587519ee2ff320a2c1fae1f35be28bea1959ceb",
+    "meshes/negative_beam_support.stl": "91602bd00670fd2cc5b8ae752c046a3fb3cd9977dc05aa801012c0c7a9b5f453",
+    "meshes/negative_pivot_bearing.stl": "fd6c0ada44fe6bf2d0387ce09370649f8f2d9a0ec6beebcb6ecef95870230dc8",
+    "meshes/negative_shaft_bearing.stl": "dcba362d0868b0ea0071ea36f51099514cb58d0a389f66a91db12a438cb2d6a1",
+    "meshes/negative_shaft_pedestal.stl": "29f3b60498f225573ab6da84fcec1b4aa506f9e98ff79edef9d0c960b390b265",
+    "meshes/output_guide_post.stl": "4e51d4929fc5061ab9e3e3951ab31dadeef31cd0c4416bdc8f403b593f4101cc",
+    "meshes/pitman.stl": "2c0ec520c9dcd4bdce47756ff3530ffd7e42150ff7ce010c1c06040f40671fc0",
+    "meshes/pitman_beam_pin.stl": "dffbd1f09e33c79d1f9e8a8274054d2c1bff0b459aea1a65ae2659b882816325",
+    "meshes/polished_output_rod.stl": "b15ee59858c3efffe5478b25cbe2e7e0db65d1052319a70993ee37ec16a4443b",
+    "meshes/positive_beam_support.stl": "91602bd00670fd2cc5b8ae752c046a3fb3cd9977dc05aa801012c0c7a9b5f453",
+    "meshes/positive_pivot_bearing.stl": "fd6c0ada44fe6bf2d0387ce09370649f8f2d9a0ec6beebcb6ecef95870230dc8",
+    "meshes/positive_shaft_bearing.stl": "dcba362d0868b0ea0071ea36f51099514cb58d0a389f66a91db12a438cb2d6a1",
+    "meshes/positive_shaft_pedestal.stl": "29f3b60498f225573ab6da84fcec1b4aa506f9e98ff79edef9d0c960b390b265",
+    "meshes/upper_output_guide.stl": "d05529b1805d444c3f1fb7535587519ee2ff320a2c1fae1f35be28bea1959ceb",
+    "meshes/walking_beam.stl": "e33ca84c574381dd4fa8ca38d752845fb9134eabdca3d18def18aa4dbde39900"
+  },
+  "intersections": [
+    {
+      "evidence_id": "mount/walking_beam/beam_output_pin",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.001453109,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "beam_output_pin",
+        "walking_beam"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.313719
+    },
+    {
+      "evidence_id": "relation/crank_pin_pressed_in_disk",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.00036328,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "crank_disk",
+        "crank_pin"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.07843
+    },
+    {
+      "evidence_id": "relation/disk_pressed_on_shaft",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.000347023,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "crank_disk",
+        "crankshaft"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 1.255396
+    },
+    {
+      "evidence_id": "mount/crankshaft/hand_crank_arm",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.000393032,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "crankshaft",
+        "hand_crank_arm"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.502144
+    },
+    {
+      "evidence_id": "mount/hand_crank_arm/handle_spindle",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.000624202,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "hand_crank_arm",
+        "handle_spindle"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.125451
+    },
+    {
+      "evidence_id": "mount/handle_spindle/hand_grip",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.003433836,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "hand_grip",
+        "handle_spindle"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.690128
+    },
+    {
+      "evidence_id": "mount/output_guide_post/lower_output_guide",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.112982707,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "lower_output_guide",
+        "output_guide_post"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 400.0
+    },
+    {
+      "evidence_id": "mount/output_guide_post/upper_output_guide",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.112982707,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "output_guide_post",
+        "upper_output_guide"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 400.0
+    },
+    {
+      "evidence_id": "mount/walking_beam/pitman_beam_pin",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.001453186,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "pitman_beam_pin",
+        "walking_beam"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.313736
+    }
+  ],
+  "links_scanned": 24,
+  "manifest_only_exemption_count": 0,
+  "method": "final-pose watertight STL boolean intersection using manifold",
+  "non_exempt_conflict_count": 0,
+  "provenance_warnings": [],
+  "report_volume_mm3": 0.0001,
+  "scan_unavailable": [],
+  "schema": "physcad-scorer-geometry/1.0"
+}

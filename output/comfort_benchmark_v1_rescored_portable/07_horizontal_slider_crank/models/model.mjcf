@@ -1,0 +1,101 @@
+<mujoco model="design_this_as_an_open_demonstra">
+  <compiler angle="radian" coordinate="local" />
+  <option gravity="0 0 -9.81" timestep="0.0002" solver="Newton" iterations="100" cone="elliptic" />
+  <size memory="256M" />
+  <asset>
+    <mesh name="mesh_base" file="meshes/base.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_lower_bearing" file="meshes/lower_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_upper_bearing" file="meshes/upper_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_left_guide_rail" file="meshes/left_guide_rail.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_right_guide_rail" file="meshes/right_guide_rail.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_crankshaft" file="meshes/crankshaft.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_crank_disk" file="meshes/crank_disk.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_crank_pin" file="meshes/crank_pin.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_connecting_rod" file="meshes/connecting_rod.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_slider" file="meshes/slider.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_wrist_pin" file="meshes/wrist_pin.stl" scale=".001 .001 .001" />
+  </asset>
+  <worldbody>
+    <light pos="0 0 3" dir="0 0 -1" />
+    <geom name="ground" type="plane" size="5 5 .1" friction="1 .05 .005" contype="1" conaffinity="0" />
+    <body name="base" pos="0.02825 0 0" quat="1 0 0 0">
+      <inertial pos="0 0 0.002" mass="0.156215" fullinertia="3.275307833e-05 0.0001290889161 0.0001614254211 -0 -0 -0" />
+      <geom name="geom_base" type="sdf" mesh="mesh_base" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      <body name="lower_bearing" pos="-0.02825 0 0.004" quat="1 0 0 0">
+        <inertial pos="4.769088439e-20 2.350937049e-19 0.0015" mass="0.00243659443" fullinertia="3.321756701e-08 3.32175673e-08 6.278024266e-08 -4.155431554e-25 1.743050149e-25 1.19735017e-24" />
+        <geom name="geom_lower_bearing" type="sdf" mesh="mesh_lower_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="crankshaft" pos="0 0 0" quat="1 0 0 0">
+          <inertial pos="2.464777181e-20 7.248908085e-20 0.005099999905" mass="0.002262987713" fullinertia="2.470971525e-08 2.470971531e-08 1.017922509e-08 -7.437013968e-27 2.844657789e-25 -2.98213654e-25" />
+          <geom name="geom_crankshaft" type="sdf" mesh="mesh_crankshaft" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          <joint name="input_crankshaft_hinge" type="hinge" axis="0 0 1" pos="0 0 -0.004" />
+          <body name="crank_disk" pos="0 0 0.0063" quat="1 0 0 0">
+            <inertial pos="-0.0001333888667 -9.339988955e-05 0.00175" mass="0.02530576991" fullinertia="2.029447537e-06 2.012305548e-06 3.990087138e-06 2.354861404e-08 4.10523171e-23 1.338662514e-23" />
+            <geom name="geom_crank_disk" type="sdf" mesh="mesh_crank_disk" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+            <body name="crank_pin" pos="0.009829824531 0.006882917236 0" quat="1 0 0 0">
+              <inertial pos="-5.966944604e-21 1.892640242e-20 0.003950000048" mass="0.00077898054" fullinertia="4.830005817e-09 4.830005811e-09 1.557315515e-09 -4.64813373e-28 -3.323415639e-26 1.063623796e-26" />
+              <geom name="geom_crank_pin" type="sdf" mesh="mesh_crank_pin" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+              <body name="connecting_rod" pos="0 0 0.0039" quat="0.9976171041 0 0 -0.06899357688">
+                <inertial pos="0.02499999999 -8.433425889e-20 0.001799999952" mass="0.01058219623" fullinertia="5.930574943e-08 3.294444817e-06 3.330893024e-06 -1.088778844e-23 -2.284650691e-22 6.395832438e-25" />
+                <geom name="geom_connecting_rod" type="sdf" mesh="mesh_connecting_rod" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+                <joint name="crank_end_pin_hinge" type="hinge" axis="0 0 1" pos="0 6.505213035e-19 0.0018" />
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="upper_bearing" pos="-0.02825 0 0.007" quat="1 0 0 0">
+        <inertial pos="4.769088439e-20 2.350937049e-19 0.0015" mass="0.00243659443" fullinertia="3.321756701e-08 3.32175673e-08 6.278024266e-08 -4.155431554e-25 1.743050149e-25 1.19735017e-24" />
+        <geom name="geom_upper_bearing" type="sdf" mesh="mesh_upper_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="left_guide_rail" pos="0.02175 0.00955 0.004" quat="1 0 0 0">
+        <inertial pos="0 0 0.0025" mass="0.0054165" fullinertia="1.534675e-08 9.66393875e-07 9.59171875e-07 -0 -0 -0" />
+        <geom name="geom_left_guide_rail" type="sdf" mesh="mesh_left_guide_rail" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="right_guide_rail" pos="0.02175 -0.00955 0.004" quat="1 0 0 0">
+        <inertial pos="0 0 0.0025" mass="0.0054165" fullinertia="1.534675e-08 9.66393875e-07 9.59171875e-07 -0 -0 -0" />
+        <geom name="geom_right_guide_rail" type="sdf" mesh="mesh_right_guide_rail" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="slider" pos="0.03110381317 0 0.004" quat="1 0 0 0">
+        <inertial pos="0.0002350008411 -9.598110235e-21 0.005765200781" mass="0.02324524449" fullinertia="8.372026644e-07 1.000811357e-06 1.127762498e-06 -1.524959902e-24 -4.161757065e-08 -2.952167491e-24" />
+        <geom name="geom_slider" type="sdf" mesh="mesh_slider" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <joint name="horizontal_slider_joint" type="slide" axis="1 0 0" pos="-0.05935381317 0 -0.004" />
+        <body name="wrist_pin" pos="0 0 0.007" quat="1 0 0 0">
+          <inertial pos="1.457903006e-20 -1.182410592e-20 0.004849999905" mass="0.0009564697466" fullinertia="8.455593e-09 8.455592991e-09 1.912146838e-09 -2.324066865e-27 1.56874512e-25 -1.378851384e-25" />
+          <geom name="geom_wrist_pin" type="sdf" mesh="mesh_wrist_pin" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <equality>
+    <connect name="slider_end_pin_connect" body1="connecting_rod" body2="wrist_pin" anchor="0.05935381317 0 0.016" />
+  </equality>
+  <contact>
+    <exclude body1="base" body2="crankshaft" />
+    <exclude body1="lower_bearing" body2="crankshaft" />
+    <exclude body1="upper_bearing" body2="crankshaft" />
+    <exclude body1="crank_disk" body2="crankshaft" />
+    <exclude body1="connecting_rod" body2="crankshaft" />
+    <exclude body1="crank_pin" body2="crankshaft" />
+    <exclude body1="crank_disk" body2="crank_pin" />
+    <exclude body1="crank_disk" body2="upper_bearing" />
+    <exclude body1="connecting_rod" body2="crank_disk" />
+    <exclude body1="crank_disk" body2="lower_bearing" />
+    <exclude body1="base" body2="crank_disk" />
+    <exclude body1="crank_disk" body2="left_guide_rail" />
+    <exclude body1="crank_disk" body2="right_guide_rail" />
+    <exclude body1="connecting_rod" body2="crank_pin" />
+    <exclude body1="crank_pin" body2="upper_bearing" />
+    <exclude body1="crank_pin" body2="lower_bearing" />
+    <exclude body1="base" body2="slider" />
+    <exclude body1="slider" body2="wrist_pin" />
+    <exclude body1="connecting_rod" body2="slider" />
+    <exclude body1="left_guide_rail" body2="slider" />
+    <exclude body1="right_guide_rail" body2="slider" />
+    <exclude body1="connecting_rod" body2="wrist_pin" />
+    <exclude body1="connecting_rod" body2="upper_bearing" />
+    <exclude body1="connecting_rod" body2="left_guide_rail" />
+    <exclude body1="connecting_rod" body2="right_guide_rail" />
+    <exclude body1="connecting_rod" body2="lower_bearing" />
+    <exclude body1="base" body2="connecting_rod" />
+  </contact>
+</mujoco>

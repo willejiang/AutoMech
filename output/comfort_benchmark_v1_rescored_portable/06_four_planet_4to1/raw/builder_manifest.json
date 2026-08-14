@@ -1,0 +1,5116 @@
+{
+  "manifest_version": 3,
+  "engine": "mujoco-agent",
+  "topology_plan": {
+    "coordinate_map": {
+      "base": null,
+      "input_bearing": null,
+      "output_bearing": null,
+      "output_sleeve": "output_sleeve_hinge",
+      "input_shaft": "input_shaft_hinge",
+      "carrier": "output_sleeve_hinge",
+      "planet_pin_1": "output_sleeve_hinge",
+      "planet_pin_2": "output_sleeve_hinge",
+      "planet_pin_3": "output_sleeve_hinge",
+      "planet_pin_4": "output_sleeve_hinge",
+      "ring_post_1": null,
+      "ring_post_2": null,
+      "ring_post_3": null,
+      "ring_post_4": null,
+      "fixed_ring_gear": null,
+      "sun_gear": "input_shaft_hinge",
+      "planet_1": "planet_1_carrier_hinge",
+      "planet_2": "planet_2_carrier_hinge",
+      "planet_3": "planet_3_carrier_hinge",
+      "planet_4": "planet_4_carrier_hinge",
+      "crank_arm": "input_shaft_hinge",
+      "crank_handle": "input_shaft_hinge"
+    },
+    "tree_edges": [
+      [
+        "base",
+        "input_bearing"
+      ],
+      [
+        "base",
+        "output_bearing"
+      ],
+      [
+        "input_bearing",
+        "input_shaft"
+      ],
+      [
+        "output_bearing",
+        "output_sleeve"
+      ],
+      [
+        "output_sleeve",
+        "carrier"
+      ],
+      [
+        "carrier",
+        "planet pins"
+      ],
+      [
+        "planet pins",
+        "planets"
+      ]
+    ],
+    "closure_edges": [
+      [
+        "input_shaft_hinge",
+        "output_sleeve_hinge"
+      ],
+      [
+        "input_shaft_hinge",
+        "planet hinges"
+      ]
+    ],
+    "rigid_carried": [
+      "sun by input",
+      "carrier by sleeve",
+      "pins by carrier",
+      "crank by input"
+    ],
+    "independent_coaxial": [
+      "input and output before planetary equality",
+      "planet spin relative to carrier"
+    ],
+    "transmissions": [
+      {
+        "driving": "input_shaft_hinge",
+        "driven": "output_sleeve_hinge",
+        "ratio": 0.25
+      },
+      {
+        "driving": "input_shaft_hinge",
+        "driven": "planet hinges",
+        "ratio": -0.75
+      }
+    ],
+    "contact_decisions": [
+      {
+        "pair": [
+          "base",
+          "input_bearing"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/base",
+          "link/input_bearing"
+        ],
+        "fact_ids": [
+          "pair/base/input_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "output_bearing"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/base",
+          "link/output_bearing"
+        ],
+        "fact_ids": [
+          "pair/base/output_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "output_sleeve"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/base",
+          "link/output_sleeve"
+        ],
+        "fact_ids": [
+          "pair/base/output_sleeve"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "input_shaft"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/base",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/base/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "carrier"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/base",
+          "link/carrier"
+        ],
+        "fact_ids": [
+          "pair/base/carrier"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "planet_pin_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/base",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "pair/base/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "planet_pin_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/base",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "pair/base/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "planet_pin_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/base",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/base/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/base",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/base/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "ring_post_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/base",
+          "link/ring_post_1"
+        ],
+        "fact_ids": [
+          "pair/base/ring_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "ring_post_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/base",
+          "link/ring_post_2"
+        ],
+        "fact_ids": [
+          "pair/base/ring_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "ring_post_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/base",
+          "link/ring_post_3"
+        ],
+        "fact_ids": [
+          "pair/base/ring_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "ring_post_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/base",
+          "link/ring_post_4"
+        ],
+        "fact_ids": [
+          "pair/base/ring_post_4"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "fixed_ring_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/base",
+          "link/fixed_ring_gear"
+        ],
+        "fact_ids": [
+          "pair/base/fixed_ring_gear"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/base",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/base/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "planet_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/base",
+          "link/planet_1"
+        ],
+        "fact_ids": [
+          "pair/base/planet_1"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "planet_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/base",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "pair/base/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "planet_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/base",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "pair/base/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "planet_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/base",
+          "link/planet_4"
+        ],
+        "fact_ids": [
+          "pair/base/planet_4"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "crank_arm"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/base",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/base/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "crank_handle"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/base",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/base/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "input_bearing",
+          "output_bearing"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_bearing",
+          "link/output_bearing"
+        ],
+        "fact_ids": [
+          "pair/input_bearing/output_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "input_bearing",
+          "output_sleeve"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_bearing",
+          "link/output_sleeve"
+        ],
+        "fact_ids": [
+          "pair/input_bearing/output_sleeve"
+        ]
+      },
+      {
+        "pair": [
+          "input_bearing",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "running journal represented by hinge",
+        "source_entity_ids": [
+          "relation/input_shaft_in_input_bearing"
+        ],
+        "fact_ids": [
+          "fit/input_bearing/input_bore/input_shaft/shaft_axis",
+          "pair/input_bearing/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_bearing",
+          "carrier"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_bearing",
+          "link/carrier"
+        ],
+        "fact_ids": [
+          "pair/input_bearing/carrier"
+        ]
+      },
+      {
+        "pair": [
+          "input_bearing",
+          "planet_pin_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_bearing",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "pair/input_bearing/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "input_bearing",
+          "planet_pin_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_bearing",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "pair/input_bearing/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "input_bearing",
+          "planet_pin_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_bearing",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/input_bearing/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "input_bearing",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_bearing",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/input_bearing/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "input_bearing",
+          "ring_post_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_bearing",
+          "link/ring_post_1"
+        ],
+        "fact_ids": [
+          "pair/input_bearing/ring_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "input_bearing",
+          "ring_post_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_bearing",
+          "link/ring_post_2"
+        ],
+        "fact_ids": [
+          "pair/input_bearing/ring_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "input_bearing",
+          "ring_post_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_bearing",
+          "link/ring_post_3"
+        ],
+        "fact_ids": [
+          "pair/input_bearing/ring_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "input_bearing",
+          "ring_post_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_bearing",
+          "link/ring_post_4"
+        ],
+        "fact_ids": [
+          "pair/input_bearing/ring_post_4"
+        ]
+      },
+      {
+        "pair": [
+          "input_bearing",
+          "fixed_ring_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_bearing",
+          "link/fixed_ring_gear"
+        ],
+        "fact_ids": [
+          "pair/input_bearing/fixed_ring_gear"
+        ]
+      },
+      {
+        "pair": [
+          "input_bearing",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_bearing",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/input_bearing/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "input_bearing",
+          "planet_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_bearing",
+          "link/planet_1"
+        ],
+        "fact_ids": [
+          "pair/input_bearing/planet_1"
+        ]
+      },
+      {
+        "pair": [
+          "input_bearing",
+          "planet_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_bearing",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "pair/input_bearing/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "input_bearing",
+          "planet_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_bearing",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "pair/input_bearing/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "input_bearing",
+          "planet_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_bearing",
+          "link/planet_4"
+        ],
+        "fact_ids": [
+          "pair/input_bearing/planet_4"
+        ]
+      },
+      {
+        "pair": [
+          "input_bearing",
+          "crank_arm"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_bearing",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/input_bearing/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "input_bearing",
+          "crank_handle"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_bearing",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/input_bearing/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "output_sleeve"
+        ],
+        "action": "exclude",
+        "reason": "running journal represented by hinge",
+        "source_entity_ids": [
+          "relation/output_sleeve_in_output_bearing"
+        ],
+        "fact_ids": [
+          "fit/output_bearing/output_bore/output_sleeve/outer_journal",
+          "pair/output_bearing/output_sleeve"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "input_shaft"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "carrier"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/carrier"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/carrier"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "planet_pin_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "planet_pin_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "planet_pin_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "ring_post_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/ring_post_1"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/ring_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "ring_post_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/ring_post_2"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/ring_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "ring_post_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/ring_post_3"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/ring_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "ring_post_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/ring_post_4"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/ring_post_4"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "fixed_ring_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/fixed_ring_gear"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/fixed_ring_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "planet_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/planet_1"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/planet_1"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "planet_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "planet_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "planet_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/planet_4"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/planet_4"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "crank_arm"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "crank_handle"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "output_sleeve",
+          "input_shaft"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_sleeve",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/output_sleeve/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "output_sleeve",
+          "carrier"
+        ],
+        "action": "exclude",
+        "reason": "declared press fit rigidly carried",
+        "source_entity_ids": [
+          "relation/carrier_output_press_fit",
+          "transmission/carrier_to_output_sleeve"
+        ],
+        "fact_ids": [
+          "fit/output_sleeve/carrier_seat/carrier/output_bore",
+          "pair/carrier/output_sleeve"
+        ]
+      },
+      {
+        "pair": [
+          "output_sleeve",
+          "planet_pin_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_sleeve",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "pair/output_sleeve/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "output_sleeve",
+          "planet_pin_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_sleeve",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "pair/output_sleeve/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "output_sleeve",
+          "planet_pin_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_sleeve",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/output_sleeve/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "output_sleeve",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_sleeve",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/output_sleeve/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "output_sleeve",
+          "ring_post_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_sleeve",
+          "link/ring_post_1"
+        ],
+        "fact_ids": [
+          "pair/output_sleeve/ring_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "output_sleeve",
+          "ring_post_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_sleeve",
+          "link/ring_post_2"
+        ],
+        "fact_ids": [
+          "pair/output_sleeve/ring_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "output_sleeve",
+          "ring_post_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_sleeve",
+          "link/ring_post_3"
+        ],
+        "fact_ids": [
+          "pair/output_sleeve/ring_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "output_sleeve",
+          "ring_post_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_sleeve",
+          "link/ring_post_4"
+        ],
+        "fact_ids": [
+          "pair/output_sleeve/ring_post_4"
+        ]
+      },
+      {
+        "pair": [
+          "output_sleeve",
+          "fixed_ring_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_sleeve",
+          "link/fixed_ring_gear"
+        ],
+        "fact_ids": [
+          "pair/output_sleeve/fixed_ring_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_sleeve",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_sleeve",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/output_sleeve/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_sleeve",
+          "planet_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_sleeve",
+          "link/planet_1"
+        ],
+        "fact_ids": [
+          "pair/output_sleeve/planet_1"
+        ]
+      },
+      {
+        "pair": [
+          "output_sleeve",
+          "planet_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_sleeve",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "pair/output_sleeve/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "output_sleeve",
+          "planet_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_sleeve",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "pair/output_sleeve/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "output_sleeve",
+          "planet_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_sleeve",
+          "link/planet_4"
+        ],
+        "fact_ids": [
+          "pair/output_sleeve/planet_4"
+        ]
+      },
+      {
+        "pair": [
+          "output_sleeve",
+          "crank_arm"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_sleeve",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/output_sleeve/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "output_sleeve",
+          "crank_handle"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/output_sleeve",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/output_sleeve/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "carrier"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/carrier"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/carrier"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_pin_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_pin_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_pin_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "ring_post_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/ring_post_1"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/ring_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "ring_post_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/ring_post_2"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/ring_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "ring_post_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/ring_post_3"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/ring_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "ring_post_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/ring_post_4"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/ring_post_4"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "fixed_ring_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/fixed_ring_gear"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/fixed_ring_gear"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "sun_gear"
+        ],
+        "action": "exclude",
+        "reason": "declared press fit rigidly carried",
+        "source_entity_ids": [
+          "relation/sun_press_fit",
+          "transmission/input_shaft_to_sun"
+        ],
+        "fact_ids": [
+          "fit/input_shaft/sun_seat/sun_gear/shaft_bore",
+          "pair/input_shaft/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_1"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/planet_1"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_4"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/planet_4"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "crank_arm"
+        ],
+        "action": "exclude",
+        "reason": "fixed aligned crank seat rigidly carried",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "fit/input_shaft/crank_seat/crank_arm/drive_bore",
+          "pair/crank_arm/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "crank_handle"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "planet_pin_1"
+        ],
+        "action": "exclude",
+        "reason": "measured interference pin seat rigidly carried",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "fit/carrier/pin_seat_1/planet_pin_1/pin_shaft",
+          "pair/carrier/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "planet_pin_2"
+        ],
+        "action": "exclude",
+        "reason": "measured interference pin seat rigidly carried",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "fit/carrier/pin_seat_2/planet_pin_2/pin_shaft",
+          "pair/carrier/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "planet_pin_3"
+        ],
+        "action": "exclude",
+        "reason": "measured interference pin seat rigidly carried",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "fit/carrier/pin_seat_3/planet_pin_3/pin_shaft",
+          "pair/carrier/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "planet_pin_4"
+        ],
+        "action": "exclude",
+        "reason": "measured interference pin seat rigidly carried",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "fit/carrier/pin_seat_4/planet_pin_4/pin_shaft",
+          "pair/carrier/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "ring_post_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/ring_post_1"
+        ],
+        "fact_ids": [
+          "pair/carrier/ring_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "ring_post_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/ring_post_2"
+        ],
+        "fact_ids": [
+          "pair/carrier/ring_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "ring_post_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/ring_post_3"
+        ],
+        "fact_ids": [
+          "pair/carrier/ring_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "ring_post_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/ring_post_4"
+        ],
+        "fact_ids": [
+          "pair/carrier/ring_post_4"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "fixed_ring_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/fixed_ring_gear"
+        ],
+        "fact_ids": [
+          "pair/carrier/fixed_ring_gear"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/carrier/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "planet_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/planet_1"
+        ],
+        "fact_ids": [
+          "pair/carrier/planet_1"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "planet_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "pair/carrier/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "planet_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "pair/carrier/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "planet_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/planet_4"
+        ],
+        "fact_ids": [
+          "pair/carrier/planet_4"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "crank_arm"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/carrier/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "crank_handle"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/carrier/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "planet_pin_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "planet_pin_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "ring_post_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/ring_post_1"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/ring_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "ring_post_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/ring_post_2"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/ring_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "ring_post_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/ring_post_3"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/ring_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "ring_post_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/ring_post_4"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/ring_post_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "fixed_ring_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/fixed_ring_gear"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/fixed_ring_gear"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "planet_1"
+        ],
+        "action": "exclude",
+        "reason": "running journal represented by planet hinge",
+        "source_entity_ids": [
+          "relation/planet_1_journal"
+        ],
+        "fact_ids": [
+          "fit/planet_pin_1/pin_shaft/planet_1/pin_bore",
+          "pair/planet_1/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "planet_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "planet_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "planet_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/planet_4"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/planet_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "crank_arm"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "crank_handle"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "planet_pin_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "ring_post_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/ring_post_1"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/ring_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "ring_post_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/ring_post_2"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/ring_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "ring_post_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/ring_post_3"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/ring_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "ring_post_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/ring_post_4"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/ring_post_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "fixed_ring_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/fixed_ring_gear"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/fixed_ring_gear"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "planet_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/planet_1"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/planet_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "planet_2"
+        ],
+        "action": "exclude",
+        "reason": "running journal represented by planet hinge",
+        "source_entity_ids": [
+          "relation/planet_2_journal"
+        ],
+        "fact_ids": [
+          "fit/planet_pin_2/pin_shaft/planet_2/pin_bore",
+          "pair/planet_2/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "planet_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "planet_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/planet_4"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/planet_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "crank_arm"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "crank_handle"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_3",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_3/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "ring_post_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_3",
+          "link/ring_post_1"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_3/ring_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "ring_post_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_3",
+          "link/ring_post_2"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_3/ring_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "ring_post_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_3",
+          "link/ring_post_3"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_3/ring_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "ring_post_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_3",
+          "link/ring_post_4"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_3/ring_post_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "fixed_ring_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_3",
+          "link/fixed_ring_gear"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_3/fixed_ring_gear"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_3",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_3/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "planet_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_3",
+          "link/planet_1"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_3/planet_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "planet_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_3",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_3/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "planet_3"
+        ],
+        "action": "exclude",
+        "reason": "running journal represented by planet hinge",
+        "source_entity_ids": [
+          "relation/planet_3_journal"
+        ],
+        "fact_ids": [
+          "fit/planet_pin_3/pin_shaft/planet_3/pin_bore",
+          "pair/planet_3/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "planet_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_3",
+          "link/planet_4"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_3/planet_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "crank_arm"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_3",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_3/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "crank_handle"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_3",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_3/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_4",
+          "ring_post_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_4",
+          "link/ring_post_1"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_4/ring_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_4",
+          "ring_post_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_4",
+          "link/ring_post_2"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_4/ring_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_4",
+          "ring_post_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_4",
+          "link/ring_post_3"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_4/ring_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_4",
+          "ring_post_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_4",
+          "link/ring_post_4"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_4/ring_post_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_4",
+          "fixed_ring_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_4",
+          "link/fixed_ring_gear"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_4/fixed_ring_gear"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_4",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_4",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_4/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_4",
+          "planet_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_4",
+          "link/planet_1"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_4/planet_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_4",
+          "planet_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_4",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_4/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_4",
+          "planet_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_4",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_4/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_4",
+          "planet_4"
+        ],
+        "action": "exclude",
+        "reason": "running journal represented by planet hinge",
+        "source_entity_ids": [
+          "relation/planet_4_journal"
+        ],
+        "fact_ids": [
+          "fit/planet_pin_4/pin_shaft/planet_4/pin_bore",
+          "pair/planet_4/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_4",
+          "crank_arm"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_4",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_4/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_4",
+          "crank_handle"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_pin_4",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_4/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_1",
+          "ring_post_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_1",
+          "link/ring_post_2"
+        ],
+        "fact_ids": [
+          "pair/ring_post_1/ring_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_1",
+          "ring_post_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_1",
+          "link/ring_post_3"
+        ],
+        "fact_ids": [
+          "pair/ring_post_1/ring_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_1",
+          "ring_post_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_1",
+          "link/ring_post_4"
+        ],
+        "fact_ids": [
+          "pair/ring_post_1/ring_post_4"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_1",
+          "fixed_ring_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_1",
+          "link/fixed_ring_gear"
+        ],
+        "fact_ids": [
+          "pair/ring_post_1/fixed_ring_gear"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_1",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_1",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/ring_post_1/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_1",
+          "planet_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_1",
+          "link/planet_1"
+        ],
+        "fact_ids": [
+          "pair/ring_post_1/planet_1"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_1",
+          "planet_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_1",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "pair/ring_post_1/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_1",
+          "planet_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_1",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "pair/ring_post_1/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_1",
+          "planet_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_1",
+          "link/planet_4"
+        ],
+        "fact_ids": [
+          "pair/ring_post_1/planet_4"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_1",
+          "crank_arm"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_1",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/ring_post_1/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_1",
+          "crank_handle"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_1",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/ring_post_1/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_2",
+          "ring_post_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_2",
+          "link/ring_post_3"
+        ],
+        "fact_ids": [
+          "pair/ring_post_2/ring_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_2",
+          "ring_post_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_2",
+          "link/ring_post_4"
+        ],
+        "fact_ids": [
+          "pair/ring_post_2/ring_post_4"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_2",
+          "fixed_ring_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_2",
+          "link/fixed_ring_gear"
+        ],
+        "fact_ids": [
+          "pair/ring_post_2/fixed_ring_gear"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_2",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_2",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/ring_post_2/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_2",
+          "planet_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_2",
+          "link/planet_1"
+        ],
+        "fact_ids": [
+          "pair/ring_post_2/planet_1"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_2",
+          "planet_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_2",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "pair/ring_post_2/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_2",
+          "planet_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_2",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "pair/ring_post_2/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_2",
+          "planet_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_2",
+          "link/planet_4"
+        ],
+        "fact_ids": [
+          "pair/ring_post_2/planet_4"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_2",
+          "crank_arm"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_2",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/ring_post_2/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_2",
+          "crank_handle"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_2",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/ring_post_2/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_3",
+          "ring_post_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_3",
+          "link/ring_post_4"
+        ],
+        "fact_ids": [
+          "pair/ring_post_3/ring_post_4"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_3",
+          "fixed_ring_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_3",
+          "link/fixed_ring_gear"
+        ],
+        "fact_ids": [
+          "pair/ring_post_3/fixed_ring_gear"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_3",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_3",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/ring_post_3/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_3",
+          "planet_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_3",
+          "link/planet_1"
+        ],
+        "fact_ids": [
+          "pair/ring_post_3/planet_1"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_3",
+          "planet_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_3",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "pair/ring_post_3/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_3",
+          "planet_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_3",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "pair/ring_post_3/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_3",
+          "planet_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_3",
+          "link/planet_4"
+        ],
+        "fact_ids": [
+          "pair/ring_post_3/planet_4"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_3",
+          "crank_arm"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_3",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/ring_post_3/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_3",
+          "crank_handle"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_3",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/ring_post_3/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_4",
+          "fixed_ring_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_4",
+          "link/fixed_ring_gear"
+        ],
+        "fact_ids": [
+          "pair/ring_post_4/fixed_ring_gear"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_4",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_4",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/ring_post_4/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_4",
+          "planet_1"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_4",
+          "link/planet_1"
+        ],
+        "fact_ids": [
+          "pair/ring_post_4/planet_1"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_4",
+          "planet_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_4",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "pair/ring_post_4/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_4",
+          "planet_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_4",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "pair/ring_post_4/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_4",
+          "planet_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_4",
+          "link/planet_4"
+        ],
+        "fact_ids": [
+          "pair/ring_post_4/planet_4"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_4",
+          "crank_arm"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_4",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/ring_post_4/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "ring_post_4",
+          "crank_handle"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/ring_post_4",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/ring_post_4/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring_gear",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/fixed_ring_gear",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/fixed_ring_gear/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring_gear",
+          "planet_1"
+        ],
+        "action": "exclude",
+        "reason": "ideal internal tooth mesh replaces contact",
+        "source_entity_ids": [
+          "planetary_stage/four_planet_4to1_stage"
+        ],
+        "fact_ids": [
+          "fit/fixed_ring_gear/ring_pitch_axis/planet_1/pitch_axis",
+          "pair/fixed_ring_gear/planet_1"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring_gear",
+          "planet_2"
+        ],
+        "action": "exclude",
+        "reason": "ideal internal tooth mesh replaces contact",
+        "source_entity_ids": [
+          "planetary_stage/four_planet_4to1_stage"
+        ],
+        "fact_ids": [
+          "fit/fixed_ring_gear/ring_pitch_axis/planet_2/pitch_axis",
+          "pair/fixed_ring_gear/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring_gear",
+          "planet_3"
+        ],
+        "action": "exclude",
+        "reason": "ideal internal tooth mesh replaces contact",
+        "source_entity_ids": [
+          "planetary_stage/four_planet_4to1_stage"
+        ],
+        "fact_ids": [
+          "fit/fixed_ring_gear/ring_pitch_axis/planet_3/pitch_axis",
+          "pair/fixed_ring_gear/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring_gear",
+          "planet_4"
+        ],
+        "action": "exclude",
+        "reason": "ideal internal tooth mesh replaces contact",
+        "source_entity_ids": [
+          "planetary_stage/four_planet_4to1_stage"
+        ],
+        "fact_ids": [
+          "fit/fixed_ring_gear/ring_pitch_axis/planet_4/pitch_axis",
+          "pair/fixed_ring_gear/planet_4"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring_gear",
+          "crank_arm"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/fixed_ring_gear",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/fixed_ring_gear/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring_gear",
+          "crank_handle"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/fixed_ring_gear",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/fixed_ring_gear/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "sun_gear",
+          "planet_1"
+        ],
+        "action": "exclude",
+        "reason": "ideal external tooth mesh replaces contact",
+        "source_entity_ids": [
+          "planetary_stage/four_planet_4to1_stage"
+        ],
+        "fact_ids": [
+          "fit/sun_gear/pitch_axis/planet_1/pitch_axis",
+          "pair/planet_1/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "sun_gear",
+          "planet_2"
+        ],
+        "action": "exclude",
+        "reason": "ideal external tooth mesh replaces contact",
+        "source_entity_ids": [
+          "planetary_stage/four_planet_4to1_stage"
+        ],
+        "fact_ids": [
+          "fit/sun_gear/pitch_axis/planet_2/pitch_axis",
+          "pair/planet_2/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "sun_gear",
+          "planet_3"
+        ],
+        "action": "exclude",
+        "reason": "ideal external tooth mesh replaces contact",
+        "source_entity_ids": [
+          "planetary_stage/four_planet_4to1_stage"
+        ],
+        "fact_ids": [
+          "fit/sun_gear/pitch_axis/planet_3/pitch_axis",
+          "pair/planet_3/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "sun_gear",
+          "planet_4"
+        ],
+        "action": "exclude",
+        "reason": "ideal external tooth mesh replaces contact",
+        "source_entity_ids": [
+          "planetary_stage/four_planet_4to1_stage"
+        ],
+        "fact_ids": [
+          "fit/sun_gear/pitch_axis/planet_4/pitch_axis",
+          "pair/planet_4/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "sun_gear",
+          "crank_arm"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/sun_gear",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/sun_gear/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "sun_gear",
+          "crank_handle"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/sun_gear",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/sun_gear/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "planet_1",
+          "planet_2"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_1",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "pair/planet_1/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_1",
+          "planet_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_1",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "pair/planet_1/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_1",
+          "planet_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_1",
+          "link/planet_4"
+        ],
+        "fact_ids": [
+          "pair/planet_1/planet_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_1",
+          "crank_arm"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_1",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/planet_1/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "planet_1",
+          "crank_handle"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_1",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/planet_1/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "planet_2",
+          "planet_3"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_2",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "pair/planet_2/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_2",
+          "planet_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_2",
+          "link/planet_4"
+        ],
+        "fact_ids": [
+          "pair/planet_2/planet_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_2",
+          "crank_arm"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_2",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/planet_2/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "planet_2",
+          "crank_handle"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_2",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/planet_2/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "planet_3",
+          "planet_4"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_3",
+          "link/planet_4"
+        ],
+        "fact_ids": [
+          "pair/planet_3/planet_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_3",
+          "crank_arm"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_3",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/planet_3/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "planet_3",
+          "crank_handle"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_3",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/planet_3/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "planet_4",
+          "crank_arm"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_4",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/planet_4/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "planet_4",
+          "crank_handle"
+        ],
+        "action": "keep",
+        "reason": "contact retained because solid intersection is unavailable or this pair may require ordinary collision response",
+        "source_entity_ids": [
+          "link/planet_4",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/planet_4/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "crank_handle"
+        ],
+        "action": "exclude",
+        "reason": "fixed accessory rigidly carried",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/crank_handle"
+        ]
+      }
+    ],
+    "support_ground": {
+      "body": "base",
+      "ground_contact": "keep"
+    },
+    "support_strategy": {
+      "normal": "fixed base",
+      "patches": []
+    }
+  },
+  "decisions": [
+    {
+      "generated_kind": "constraint",
+      "generated_name": "planetary_carrier_ratio",
+      "constraint_type": "joint",
+      "reason": "fixed 48 tooth ring and 16 tooth sun",
+      "source_entity_ids": [
+        "planetary_stage/four_planet_4to1_stage"
+      ],
+      "fact_ids": [
+        "planetary_stage/four_planet_4to1_stage"
+      ]
+    },
+    {
+      "generated_kind": "constraint",
+      "generated_name": "planet_1_mesh",
+      "constraint_type": "joint",
+      "reason": "sun and fixed ring planetary mesh kinematics",
+      "source_entity_ids": [
+        "planetary_stage/four_planet_4to1_stage"
+      ],
+      "fact_ids": [
+        "planetary_stage/four_planet_4to1_stage"
+      ]
+    },
+    {
+      "generated_kind": "constraint",
+      "generated_name": "planet_2_mesh",
+      "constraint_type": "joint",
+      "reason": "sun and fixed ring planetary mesh kinematics",
+      "source_entity_ids": [
+        "planetary_stage/four_planet_4to1_stage"
+      ],
+      "fact_ids": [
+        "planetary_stage/four_planet_4to1_stage"
+      ]
+    },
+    {
+      "generated_kind": "constraint",
+      "generated_name": "planet_3_mesh",
+      "constraint_type": "joint",
+      "reason": "sun and fixed ring planetary mesh kinematics",
+      "source_entity_ids": [
+        "planetary_stage/four_planet_4to1_stage"
+      ],
+      "fact_ids": [
+        "planetary_stage/four_planet_4to1_stage"
+      ]
+    },
+    {
+      "generated_kind": "constraint",
+      "generated_name": "planet_4_mesh",
+      "constraint_type": "joint",
+      "reason": "sun and fixed ring planetary mesh kinematics",
+      "source_entity_ids": [
+        "planetary_stage/four_planet_4to1_stage"
+      ],
+      "fact_ids": [
+        "planetary_stage/four_planet_4to1_stage"
+      ]
+    },
+    {
+      "entity_id": "link/base",
+      "action": "emitted",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/base"
+      ]
+    },
+    {
+      "entity_id": "link/input_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_bearing"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/input_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/output_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_bearing"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/output_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/output_sleeve",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_sleeve"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/output_sleeve"
+      ]
+    },
+    {
+      "entity_id": "link/input_shaft",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_shaft"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "link/carrier",
+      "action": "emitted",
+      "generated_nodes": [
+        "carrier"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/carrier"
+      ]
+    },
+    {
+      "entity_id": "link/planet_pin_1",
+      "action": "emitted",
+      "generated_nodes": [
+        "planet_pin_1"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/planet_pin_1"
+      ]
+    },
+    {
+      "entity_id": "link/planet_pin_2",
+      "action": "emitted",
+      "generated_nodes": [
+        "planet_pin_2"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/planet_pin_2"
+      ]
+    },
+    {
+      "entity_id": "link/planet_pin_3",
+      "action": "emitted",
+      "generated_nodes": [
+        "planet_pin_3"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/planet_pin_3"
+      ]
+    },
+    {
+      "entity_id": "link/planet_pin_4",
+      "action": "emitted",
+      "generated_nodes": [
+        "planet_pin_4"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/planet_pin_4"
+      ]
+    },
+    {
+      "entity_id": "link/ring_post_1",
+      "action": "emitted",
+      "generated_nodes": [
+        "ring_post_1"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/ring_post_1"
+      ]
+    },
+    {
+      "entity_id": "link/ring_post_2",
+      "action": "emitted",
+      "generated_nodes": [
+        "ring_post_2"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/ring_post_2"
+      ]
+    },
+    {
+      "entity_id": "link/ring_post_3",
+      "action": "emitted",
+      "generated_nodes": [
+        "ring_post_3"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/ring_post_3"
+      ]
+    },
+    {
+      "entity_id": "link/ring_post_4",
+      "action": "emitted",
+      "generated_nodes": [
+        "ring_post_4"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/ring_post_4"
+      ]
+    },
+    {
+      "entity_id": "link/fixed_ring_gear",
+      "action": "emitted",
+      "generated_nodes": [
+        "fixed_ring_gear"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/fixed_ring_gear"
+      ]
+    },
+    {
+      "entity_id": "link/sun_gear",
+      "action": "emitted",
+      "generated_nodes": [
+        "sun_gear"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/sun_gear"
+      ]
+    },
+    {
+      "entity_id": "link/planet_1",
+      "action": "emitted",
+      "generated_nodes": [
+        "planet_1"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/planet_1"
+      ]
+    },
+    {
+      "entity_id": "link/planet_2",
+      "action": "emitted",
+      "generated_nodes": [
+        "planet_2"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/planet_2"
+      ]
+    },
+    {
+      "entity_id": "link/planet_3",
+      "action": "emitted",
+      "generated_nodes": [
+        "planet_3"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/planet_3"
+      ]
+    },
+    {
+      "entity_id": "link/planet_4",
+      "action": "emitted",
+      "generated_nodes": [
+        "planet_4"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/planet_4"
+      ]
+    },
+    {
+      "entity_id": "link/crank_arm",
+      "action": "emitted",
+      "generated_nodes": [
+        "crank_arm"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/crank_arm"
+      ]
+    },
+    {
+      "entity_id": "link/crank_handle",
+      "action": "emitted",
+      "generated_nodes": [
+        "crank_handle"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "link/crank_handle"
+      ]
+    },
+    {
+      "entity_id": "pose/place_base",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_base"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_input_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_output_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_sleeve",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_output_sleeve"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_input_shaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_carrier",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_carrier"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_pin_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_planet_pin_1"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_pin_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_planet_pin_2"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_pin_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_planet_pin_3"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_pin_4",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_planet_pin_4"
+      ]
+    },
+    {
+      "entity_id": "pose/place_ring_post_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_ring_post_1"
+      ]
+    },
+    {
+      "entity_id": "pose/place_ring_post_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_ring_post_2"
+      ]
+    },
+    {
+      "entity_id": "pose/place_ring_post_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_ring_post_3"
+      ]
+    },
+    {
+      "entity_id": "pose/place_ring_post_4",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_ring_post_4"
+      ]
+    },
+    {
+      "entity_id": "pose/place_fixed_ring_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_fixed_ring_gear"
+      ]
+    },
+    {
+      "entity_id": "pose/place_sun_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_sun_gear"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_planet_1"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_planet_2"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_planet_3"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_4",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_planet_4"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crank_arm",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_crank_arm"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crank_handle",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_crank_handle"
+      ]
+    },
+    {
+      "entity_id": "port/base/top_center",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/base/top_center"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/shaft_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/input_shaft/shaft_axis"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/sun_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/input_shaft/sun_seat"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/crank_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/input_shaft/crank_seat"
+      ]
+    },
+    {
+      "entity_id": "port/sun_gear/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/sun_gear/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/sun_gear/pitch_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/sun_gear/pitch_axis"
+      ]
+    },
+    {
+      "entity_id": "port/fixed_ring_gear/ring_pitch_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/fixed_ring_gear/ring_pitch_axis"
+      ]
+    },
+    {
+      "entity_id": "port/carrier/output_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/carrier/output_bore"
+      ]
+    },
+    {
+      "entity_id": "port/carrier/pin_seat_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/carrier/pin_seat_1"
+      ]
+    },
+    {
+      "entity_id": "port/carrier/pin_seat_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/carrier/pin_seat_2"
+      ]
+    },
+    {
+      "entity_id": "port/carrier/pin_seat_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/carrier/pin_seat_3"
+      ]
+    },
+    {
+      "entity_id": "port/carrier/pin_seat_4",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/carrier/pin_seat_4"
+      ]
+    },
+    {
+      "entity_id": "port/output_sleeve/outer_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/output_sleeve/outer_journal"
+      ]
+    },
+    {
+      "entity_id": "port/output_sleeve/carrier_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/output_sleeve/carrier_seat"
+      ]
+    },
+    {
+      "entity_id": "port/input_bearing/input_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/input_bearing/input_bore"
+      ]
+    },
+    {
+      "entity_id": "port/output_bearing/output_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/output_bearing/output_bore"
+      ]
+    },
+    {
+      "entity_id": "port/crank_arm/drive_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/crank_arm/drive_bore"
+      ]
+    },
+    {
+      "entity_id": "port/planet_1/pin_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/planet_1/pin_bore"
+      ]
+    },
+    {
+      "entity_id": "port/planet_1/pitch_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/planet_1/pitch_axis"
+      ]
+    },
+    {
+      "entity_id": "port/planet_2/pin_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/planet_2/pin_bore"
+      ]
+    },
+    {
+      "entity_id": "port/planet_2/pitch_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/planet_2/pitch_axis"
+      ]
+    },
+    {
+      "entity_id": "port/planet_3/pin_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/planet_3/pin_bore"
+      ]
+    },
+    {
+      "entity_id": "port/planet_3/pitch_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/planet_3/pitch_axis"
+      ]
+    },
+    {
+      "entity_id": "port/planet_4/pin_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/planet_4/pin_bore"
+      ]
+    },
+    {
+      "entity_id": "port/planet_4/pitch_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/planet_4/pitch_axis"
+      ]
+    },
+    {
+      "entity_id": "port/planet_pin_1/pin_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/planet_pin_1/pin_shaft"
+      ]
+    },
+    {
+      "entity_id": "port/planet_pin_2/pin_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/planet_pin_2/pin_shaft"
+      ]
+    },
+    {
+      "entity_id": "port/planet_pin_3/pin_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/planet_pin_3/pin_shaft"
+      ]
+    },
+    {
+      "entity_id": "port/planet_pin_4/pin_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "port/planet_pin_4/pin_shaft"
+      ]
+    },
+    {
+      "entity_id": "relation/input_shaft_in_input_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "relation/input_shaft_in_input_bearing"
+      ]
+    },
+    {
+      "entity_id": "relation/output_sleeve_in_output_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "relation/output_sleeve_in_output_bearing"
+      ]
+    },
+    {
+      "entity_id": "relation/sun_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "relation/sun_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/carrier_output_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "relation/carrier_output_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/planet_1_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "relation/planet_1_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/planet_2_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "relation/planet_2_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/planet_3_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "relation/planet_3_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/planet_4_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "relation/planet_4_journal"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/input_shaft_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_shaft_hinge"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "motion_joint/input_shaft_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/sun_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_shaft_hinge"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "motion_joint/sun_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/carrier_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_sleeve_hinge"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "motion_joint/carrier_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/output_sleeve_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_sleeve_hinge"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "motion_joint/output_sleeve_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/planet_1_carrier_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "planet_1_carrier_hinge"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "motion_joint/planet_1_carrier_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/planet_2_carrier_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "planet_2_carrier_hinge"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "motion_joint/planet_2_carrier_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/planet_3_carrier_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "planet_3_carrier_hinge"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "motion_joint/planet_3_carrier_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/planet_4_carrier_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "planet_4_carrier_hinge"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "motion_joint/planet_4_carrier_hinge"
+      ]
+    },
+    {
+      "entity_id": "transmission/input_shaft_to_sun",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_shaft_hinge"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "transmission/input_shaft_to_sun"
+      ]
+    },
+    {
+      "entity_id": "transmission/carrier_to_output_sleeve",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_sleeve_hinge"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "transmission/carrier_to_output_sleeve"
+      ]
+    },
+    {
+      "entity_id": "planetary_stage/four_planet_4to1_stage",
+      "action": "emitted",
+      "generated_nodes": [
+        "planetary_carrier_ratio"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "planetary_stage/four_planet_4to1_stage"
+      ]
+    },
+    {
+      "entity_id": "role/driver/input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "role/driver/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/output/carrier",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "role/output/carrier"
+      ]
+    },
+    {
+      "entity_id": "role/watch/input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "role/watch/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/watch/sun_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "role/watch/sun_gear"
+      ]
+    },
+    {
+      "entity_id": "role/watch/carrier",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "role/watch/carrier"
+      ]
+    },
+    {
+      "entity_id": "role/watch/output_sleeve",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "role/watch/output_sleeve"
+      ]
+    },
+    {
+      "entity_id": "role/watch/planet_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "role/watch/planet_1"
+      ]
+    },
+    {
+      "entity_id": "role/watch/planet_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "role/watch/planet_2"
+      ]
+    },
+    {
+      "entity_id": "role/watch/planet_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "role/watch/planet_3"
+      ]
+    },
+    {
+      "entity_id": "role/watch/planet_4",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted topology node",
+      "fact_ids": [
+        "role/watch/planet_4"
+      ]
+    }
+  ],
+  "excludes": [
+    {
+      "pair": [
+        "input_bearing",
+        "input_shaft"
+      ],
+      "reason": "running journal represented by hinge",
+      "source_entity_ids": [
+        "relation/input_shaft_in_input_bearing"
+      ],
+      "fact_ids": [
+        "fit/input_bearing/input_bore/input_shaft/shaft_axis",
+        "pair/input_bearing/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "output_bearing",
+        "output_sleeve"
+      ],
+      "reason": "running journal represented by hinge",
+      "source_entity_ids": [
+        "relation/output_sleeve_in_output_bearing"
+      ],
+      "fact_ids": [
+        "fit/output_bearing/output_bore/output_sleeve/outer_journal",
+        "pair/output_bearing/output_sleeve"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "sun_gear"
+      ],
+      "reason": "declared press fit rigidly carried",
+      "source_entity_ids": [
+        "relation/sun_press_fit",
+        "transmission/input_shaft_to_sun"
+      ],
+      "fact_ids": [
+        "fit/input_shaft/sun_seat/sun_gear/shaft_bore",
+        "pair/input_shaft/sun_gear"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "output_sleeve"
+      ],
+      "reason": "declared press fit rigidly carried",
+      "source_entity_ids": [
+        "relation/carrier_output_press_fit",
+        "transmission/carrier_to_output_sleeve"
+      ],
+      "fact_ids": [
+        "fit/output_sleeve/carrier_seat/carrier/output_bore",
+        "pair/carrier/output_sleeve"
+      ]
+    },
+    {
+      "pair": [
+        "crank_arm",
+        "input_shaft"
+      ],
+      "reason": "fixed aligned crank seat rigidly carried",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/crank_arm"
+      ],
+      "fact_ids": [
+        "fit/input_shaft/crank_seat/crank_arm/drive_bore",
+        "pair/crank_arm/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "crank_arm",
+        "crank_handle"
+      ],
+      "reason": "fixed accessory rigidly carried",
+      "source_entity_ids": [
+        "link/crank_arm",
+        "link/crank_handle"
+      ],
+      "fact_ids": [
+        "pair/crank_arm/crank_handle"
+      ]
+    },
+    {
+      "pair": [
+        "planet_1",
+        "planet_pin_1"
+      ],
+      "reason": "running journal represented by planet hinge",
+      "source_entity_ids": [
+        "relation/planet_1_journal"
+      ],
+      "fact_ids": [
+        "fit/planet_pin_1/pin_shaft/planet_1/pin_bore",
+        "pair/planet_1/planet_pin_1"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "planet_pin_1"
+      ],
+      "reason": "measured interference pin seat rigidly carried",
+      "source_entity_ids": [
+        "link/carrier",
+        "link/planet_pin_1"
+      ],
+      "fact_ids": [
+        "fit/carrier/pin_seat_1/planet_pin_1/pin_shaft",
+        "pair/carrier/planet_pin_1"
+      ]
+    },
+    {
+      "pair": [
+        "planet_1",
+        "sun_gear"
+      ],
+      "reason": "ideal external tooth mesh replaces contact",
+      "source_entity_ids": [
+        "planetary_stage/four_planet_4to1_stage"
+      ],
+      "fact_ids": [
+        "fit/sun_gear/pitch_axis/planet_1/pitch_axis",
+        "pair/planet_1/sun_gear"
+      ]
+    },
+    {
+      "pair": [
+        "fixed_ring_gear",
+        "planet_1"
+      ],
+      "reason": "ideal internal tooth mesh replaces contact",
+      "source_entity_ids": [
+        "planetary_stage/four_planet_4to1_stage"
+      ],
+      "fact_ids": [
+        "fit/fixed_ring_gear/ring_pitch_axis/planet_1/pitch_axis",
+        "pair/fixed_ring_gear/planet_1"
+      ]
+    },
+    {
+      "pair": [
+        "planet_2",
+        "planet_pin_2"
+      ],
+      "reason": "running journal represented by planet hinge",
+      "source_entity_ids": [
+        "relation/planet_2_journal"
+      ],
+      "fact_ids": [
+        "fit/planet_pin_2/pin_shaft/planet_2/pin_bore",
+        "pair/planet_2/planet_pin_2"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "planet_pin_2"
+      ],
+      "reason": "measured interference pin seat rigidly carried",
+      "source_entity_ids": [
+        "link/carrier",
+        "link/planet_pin_2"
+      ],
+      "fact_ids": [
+        "fit/carrier/pin_seat_2/planet_pin_2/pin_shaft",
+        "pair/carrier/planet_pin_2"
+      ]
+    },
+    {
+      "pair": [
+        "planet_2",
+        "sun_gear"
+      ],
+      "reason": "ideal external tooth mesh replaces contact",
+      "source_entity_ids": [
+        "planetary_stage/four_planet_4to1_stage"
+      ],
+      "fact_ids": [
+        "fit/sun_gear/pitch_axis/planet_2/pitch_axis",
+        "pair/planet_2/sun_gear"
+      ]
+    },
+    {
+      "pair": [
+        "fixed_ring_gear",
+        "planet_2"
+      ],
+      "reason": "ideal internal tooth mesh replaces contact",
+      "source_entity_ids": [
+        "planetary_stage/four_planet_4to1_stage"
+      ],
+      "fact_ids": [
+        "fit/fixed_ring_gear/ring_pitch_axis/planet_2/pitch_axis",
+        "pair/fixed_ring_gear/planet_2"
+      ]
+    },
+    {
+      "pair": [
+        "planet_3",
+        "planet_pin_3"
+      ],
+      "reason": "running journal represented by planet hinge",
+      "source_entity_ids": [
+        "relation/planet_3_journal"
+      ],
+      "fact_ids": [
+        "fit/planet_pin_3/pin_shaft/planet_3/pin_bore",
+        "pair/planet_3/planet_pin_3"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "planet_pin_3"
+      ],
+      "reason": "measured interference pin seat rigidly carried",
+      "source_entity_ids": [
+        "link/carrier",
+        "link/planet_pin_3"
+      ],
+      "fact_ids": [
+        "fit/carrier/pin_seat_3/planet_pin_3/pin_shaft",
+        "pair/carrier/planet_pin_3"
+      ]
+    },
+    {
+      "pair": [
+        "planet_3",
+        "sun_gear"
+      ],
+      "reason": "ideal external tooth mesh replaces contact",
+      "source_entity_ids": [
+        "planetary_stage/four_planet_4to1_stage"
+      ],
+      "fact_ids": [
+        "fit/sun_gear/pitch_axis/planet_3/pitch_axis",
+        "pair/planet_3/sun_gear"
+      ]
+    },
+    {
+      "pair": [
+        "fixed_ring_gear",
+        "planet_3"
+      ],
+      "reason": "ideal internal tooth mesh replaces contact",
+      "source_entity_ids": [
+        "planetary_stage/four_planet_4to1_stage"
+      ],
+      "fact_ids": [
+        "fit/fixed_ring_gear/ring_pitch_axis/planet_3/pitch_axis",
+        "pair/fixed_ring_gear/planet_3"
+      ]
+    },
+    {
+      "pair": [
+        "planet_4",
+        "planet_pin_4"
+      ],
+      "reason": "running journal represented by planet hinge",
+      "source_entity_ids": [
+        "relation/planet_4_journal"
+      ],
+      "fact_ids": [
+        "fit/planet_pin_4/pin_shaft/planet_4/pin_bore",
+        "pair/planet_4/planet_pin_4"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "planet_pin_4"
+      ],
+      "reason": "measured interference pin seat rigidly carried",
+      "source_entity_ids": [
+        "link/carrier",
+        "link/planet_pin_4"
+      ],
+      "fact_ids": [
+        "fit/carrier/pin_seat_4/planet_pin_4/pin_shaft",
+        "pair/carrier/planet_pin_4"
+      ]
+    },
+    {
+      "pair": [
+        "planet_4",
+        "sun_gear"
+      ],
+      "reason": "ideal external tooth mesh replaces contact",
+      "source_entity_ids": [
+        "planetary_stage/four_planet_4to1_stage"
+      ],
+      "fact_ids": [
+        "fit/sun_gear/pitch_axis/planet_4/pitch_axis",
+        "pair/planet_4/sun_gear"
+      ]
+    },
+    {
+      "pair": [
+        "fixed_ring_gear",
+        "planet_4"
+      ],
+      "reason": "ideal internal tooth mesh replaces contact",
+      "source_entity_ids": [
+        "planetary_stage/four_planet_4to1_stage"
+      ],
+      "fact_ids": [
+        "fit/fixed_ring_gear/ring_pitch_axis/planet_4/pitch_axis",
+        "pair/fixed_ring_gear/planet_4"
+      ]
+    }
+  ],
+  "ground_excludes": [],
+  "support_patches": [],
+  "bodies": [
+    "base",
+    "carrier",
+    "crank_arm",
+    "crank_handle",
+    "fixed_ring_gear",
+    "input_bearing",
+    "input_shaft",
+    "output_bearing",
+    "output_sleeve",
+    "planet_1",
+    "planet_2",
+    "planet_3",
+    "planet_4",
+    "planet_pin_1",
+    "planet_pin_2",
+    "planet_pin_3",
+    "planet_pin_4",
+    "ring_post_1",
+    "ring_post_2",
+    "ring_post_3",
+    "ring_post_4",
+    "sun_gear"
+  ],
+  "joints": [
+    "input_shaft_hinge",
+    "output_sleeve_hinge",
+    "planet_1_carrier_hinge",
+    "planet_2_carrier_hinge",
+    "planet_3_carrier_hinge",
+    "planet_4_carrier_hinge"
+  ],
+  "constraints": [
+    "planet_1_mesh",
+    "planet_2_mesh",
+    "planet_3_mesh",
+    "planet_4_mesh",
+    "planetary_carrier_ratio"
+  ]
+}

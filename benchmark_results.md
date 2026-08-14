@@ -19,8 +19,8 @@
 |---|---:|
 | Raw Harness Final Success@3 | 6/10 (60%) |
 | Historical manual adjudication (superseded) | 8/10 (80%) |
-| Independent cumulative five-level success | 6/10 (60%) |
-| Independent suite score | 810/1000 (mean 81/100) |
+| Reviewed cumulative five-level success | 5/10 (50%) |
+| Reviewed suite score | 860/1000 (mean 86/100) |
 | Independent UNKNOWN checks | 0 |
 | Raw Operational Pass@1 | 0/10 |
 | Mean CAD iterations | 1.3 |
@@ -40,7 +40,7 @@
 
 `Pass@1=0/10` uses the strict operational definition: the first CAD candidate and the first MJCF compiler source/candidate must pass without replacement or refinement. Several tasks produced correct CAD on iteration 0 but needed MJCF compiler repair, so they are Final@3 PASS but not operational Pass@1.
 
-The independent result is a 2026-08-12 offline rescore of the archived final folders. It reexecuted every saved `machine.py`, required a nonempty part set, replayed every saved MJCF with scorer-owned controls, ran exact final-pose Manifold solid intersections, and recomputed named invariants from topology and trajectories. No generation model was called and no manual/corrected physics attempt replaced the designated archived trajectory. Its five levels are cumulative: a geometry failure blocks physics and function credit. This independent result supersedes the earlier 8/10 manual-adjudication headline for terminal benchmark reporting.
+The independent result is a 2026-08-12 offline rescore of the archived final folders. It reexecuted every saved `machine.py`, required a nonempty part set, replayed every saved MJCF with scorer-owned controls, ran exact final-pose Manifold solid intersections, and recomputed named invariants from topology and trajectories. No generation model was called. Reviewed corrections remain separate and hash-linked: Task 1 uses the designated selected trajectory to reject a fixed-axis false pass, while Task 2 reports its corrected direct-qpos trajectory only as kinematic evidence and retains the designated finite-effort failure. Its five levels are cumulative: a geometry failure blocks physics and function credit. This independent result supersedes the earlier 8/10 manual-adjudication headline for terminal benchmark reporting.
 
 The telemetry field `cold_run.qualified=false` for all runs is too strict for comparison: it currently treats any provider prompt-cache read as disqualifying. The project-controlled artifact/MJCF cache was cold (`0` hits). For cross-harness comparison, report this suite as **project-cold with provider cache usage disclosed**, not as warm artifact reuse.
 
@@ -48,8 +48,8 @@ The telemetry field `cold_run.qualified=false` for all runs is too strict for co
 
 | # | Task | Iterations | Runtime | Raw | Adjudicated mechanical | Key evidence | LLM requests / tokens | Tool calls / MJCF candidates |
 |---:|---|---:|---:|---|---|---|---:|---:|
-| 1 | Single-stage 4:1 reducer | 1 | 10.8 min | PASS | PASS | input 12.0 rad; output 3.0 rad; 4.0:1; 4/4 downstream | 17 / 439,532 | 84 / 2 |
-| 2 | Two-stage 9:1 reducer | 2 | 11.7 min | FAIL | PASS | corrected evaluator-only direct-qpos retest: input 12.0 rad; output 1.3331 rad; 9.0015:1; 6/6 | 21 / 557,729 | 103 / 2 |
+| 1 | Single-stage 4:1 reducer | 1 | 10.8 min | PASS | FAIL | equality reports 4:1, but shaft axes orbit by 45.00/44.86 mm around an erroneous world-origin hinge | 17 / 439,532 | 84 / 2 |
+| 2 | Two-stage 9:1 reducer | 2 | 11.7 min | FAIL | FAIL | structure and corrected 9:1 kinematics pass; designated finite-effort servo moves only 0.0036 rad input / 0.0002 rad output | 21 / 557,729 | 103 / 2 |
 | 3 | 1:1 idler reverser | 2 | 8.5 min | PASS | PASS | input/output same direction; ratio 1.0002; 5/5 | 15 / 426,740 | 109 / 1 |
 | 4 | Openwork 12:1 clock | 1 | 11.2 min | PASS | PASS | minute 12.0 rad; hour 1.0 rad; independent coaxial hands; 5/5 | 18 / 605,694 | 120 / 2 |
 | 5 | Three-planet 4:1 reducer | 1 | 12.2 min | PASS | PASS | carrier gain 0.25; all 3 planets carried and locally spinning; 6/6 | 24 / 1,255,551 | 156 / 4 |
@@ -63,8 +63,8 @@ The telemetry field `cold_run.qualified=false` for all runs is too strict for co
 
 | # | Task | Score | Exec. | Asm. | Geo. | Phys. | Func. | Independent verdict |
 |---:|---|---:|---|---|---|---|---|---|
-| 1 | Single-stage 4:1 reducer | 100 | PASS | PASS | PASS | PASS | PASS | PASS |
-| 2 | Two-stage 9:1 reducer | 30 | PASS | PASS | FAIL | blocked | blocked | FAIL |
+| 1 | Single-stage 4:1 reducer | 90 | PASS | PASS | PASS | PASS | FAIL | FAIL |
+| 2 | Two-stage 9:1 reducer | 90 | PASS | PASS | PASS | PASS | FAIL | FAIL |
 | 3 | 1:1 idler reverser | 100 | PASS | PASS | PASS | PASS | PASS | PASS |
 | 4 | Openwork 12:1 clock | 100 | PASS | PASS | PASS | PASS | PASS | PASS |
 | 5 | Three-planet 4:1 reducer | 100 | PASS | PASS | PASS | PASS | PASS | PASS |
@@ -85,6 +85,8 @@ Direct authored rigid mounts, press fits, running bearings, pins, and declared i
 
 Functional failures with clear geometry:
 
+- Task 1 is FAIL despite its exact 4:1 equality: selected body trajectories show the input/output shaft centers orbiting approximately $45.00/44.86\,\mathrm{mm}$ because both hinge axes were lowered at the world origin. Numeric ratio agreement cannot override this visible fixed-axis failure.
+- Task 2 is structurally valid and the corrected direct-qpos replay measures 9.0015:1, but its designated finite-effort servo run moves only $0.0036\,\mathrm{rad}$ at the input and $0.0002\,\mathrm{rad}$ at the output. It receives 90/100; idealized kinematics do not restore the failed physical invariant.
 - Task 7 is PASS after replaying the selected final trajectory through its own MJCF: stable `slider_end_pin_connect` residual is at most $0.0124\,\mathrm{mm}$, below $2\%$ of the approximately $4\,\mathrm{mm}$ wrist-pin diameter ($0.08\,\mathrm{mm}$). The earlier $4.1395\,\mathrm{mm}$ value came from a different scorer replay and is withdrawn.
 - Task 8 has correct visible periodic motion and output span, but the selected final trajectory gives a persistent `wrist_pin_small_end_connect` residual of approximately $0.46$--$0.51\,\mathrm{mm}$. That exceeds both $2\%$ of the $4\,\mathrm{mm}$ wrist-pin diameter ($0.08\,\mathrm{mm}$) and the authored $0.1\,\mathrm{mm}$ diametral running clearance. Its only failed criterion is strict closure precision; no visible detachment or output-motion failure is claimed.
 - Task 9: designated input travel is only $1.04353\,\mathrm{rad}<2\pi$, so cumulative functional checks fail rather than remaining unknown.
@@ -125,7 +127,7 @@ $$
 
 The three failed evaluated dependencies were: no explicit ring–planet mesh relations (`0/3`), an authored input-bearing press fit realized as `+0.2 mm` diametral clearance, and loss of mobility with physical contact enabled. Five trajectory-dependent checks were explicitly `UNAVAILABLE` and excluded from the denominator because no MJCF compiler was accepted. Thus the relatively high static $Q_{\mathrm{dep}}$ does not imply a functional mechanism: independently repeated literals preserved much of the tooth arithmetic and center placement while failing physical realization.
 
-This pilot is reported separately and does **not** alter the frozen ten-task aggregate (`810/1000`, `6/10`). It is one stochastic case-study result, not a population estimate or a statistically significant ablation. No additional favorable-attempt rerun was performed. Both the baseline and pilot observed provider/project prompt-cache activity, so neither is claimed as a strict cold-provider run.
+This pilot is reported separately and does **not** alter the reviewed ten-task aggregate (`860/1000`, `5/10`). It is one stochastic case-study result, not a population estimate or a statistically significant ablation. No additional favorable-attempt rerun was performed. Both the baseline and pilot observed provider/project prompt-cache activity, so neither is claimed as a strict cold-provider run.
 
 Isolation verification:
 
@@ -151,7 +153,7 @@ The frozen Comfort v1 prompts were also run independently through Claude Code an
 
 | Method | Independent score | Strict five-level success | Interpretation |
 |---|---:|---:|---|
-| AutoMech | **810/1000** | **6/10** | Full CAD/IR/MJCF pipeline; six tasks survive cumulative execution, assembly, geometry, physics, and functional gates |
+| AutoMech | **860/1000** | **5/10** | Full CAD/IR/MJCF pipeline; five tasks survive cumulative execution, assembly, geometry, physics, and functional gates |
 | Codex | **390/1000 strict** | **1/10** | Task 01 survives; tasks 02–10 fail strict collision or geometry-realization requirements |
 | Claude Code | **310/1000 strict** | **0/10** | No task realizes static geometry, collision semantics, active constraints, and independent replay together |
 
@@ -254,7 +256,7 @@ A fragmented multi-solid gear is not the same as a smooth disk. Some Claude Code
 
 ## 7. Historical adjudication details
 
-### Task 2: raw evaluator FAIL, unchanged mechanism PASS under the correct fixture
+### Task 2: structure and kinematics pass; finite-effort physics fails
 
 The accepted MJCF contains exact two-stage gear equalities. The original scenario selected finite-effort `servo`, while the corresponding successful single-stage reducer selected `direct_qpos`. The raw test moved only `0.0036 rad` and therefore could not measure the ratio.
 
@@ -274,7 +276,7 @@ Artifacts:
 - corrected result: `02_two_stage_9to1/.../physics/mujoco_corrected_direct_qpos/sim_result.json`
 - corrected video: `02_two_stage_9to1/.../physics/mujoco_corrected_direct_qpos/model.mp4`
 
-Raw harness result remains FAIL; adjudicated mechanical result is PASS. Fault domain: scenario/evaluator test-mode selection.
+Raw harness and reviewed mechanical verdict both remain FAIL. The corrected direct-qpos result proves the authored 9:1 kinematic transmission, but cannot replace the designated finite-effort physical test; Task 2 therefore receives 90/100 with the strict physical invariant failed.
 
 ### Task 8: periodic output falsely rejected by endpoint displacement
 

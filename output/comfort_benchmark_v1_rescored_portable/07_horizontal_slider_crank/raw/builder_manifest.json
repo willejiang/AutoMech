@@ -1,0 +1,1651 @@
+{
+  "manifest_version": 3,
+  "engine": "mujoco-agent",
+  "topology_plan": {
+    "coordinate_map": {
+      "base": null,
+      "lower_bearing": null,
+      "upper_bearing": null,
+      "crankshaft": "input_crankshaft_hinge",
+      "crank_disk": "input_crankshaft_hinge",
+      "crank_pin": "input_crankshaft_hinge",
+      "left_guide_rail": null,
+      "right_guide_rail": null,
+      "slider": "horizontal_slider_joint",
+      "wrist_pin": "horizontal_slider_joint",
+      "connecting_rod": "crank_end_pin_hinge"
+    },
+    "tree_edges": [
+      [
+        "base",
+        "lower_bearing"
+      ],
+      [
+        "base",
+        "upper_bearing"
+      ],
+      [
+        "base",
+        "left_guide_rail"
+      ],
+      [
+        "base",
+        "right_guide_rail"
+      ],
+      [
+        "lower_bearing",
+        "crankshaft"
+      ],
+      [
+        "crankshaft",
+        "crank_disk"
+      ],
+      [
+        "crank_disk",
+        "crank_pin"
+      ],
+      [
+        "crank_pin",
+        "connecting_rod"
+      ],
+      [
+        "base",
+        "slider"
+      ],
+      [
+        "slider",
+        "wrist_pin"
+      ]
+    ],
+    "closure_edges": [
+      {
+        "name": "slider_end_pin_connect",
+        "between": [
+          "connecting_rod",
+          "wrist_pin"
+        ]
+      }
+    ],
+    "rigid_carried": [
+      [
+        "crankshaft",
+        "crank_disk"
+      ],
+      [
+        "crank_disk",
+        "crank_pin"
+      ],
+      [
+        "slider",
+        "wrist_pin"
+      ]
+    ],
+    "independent_coaxial": [
+      [
+        "crankshaft",
+        "lower_bearing"
+      ],
+      [
+        "crankshaft",
+        "upper_bearing"
+      ],
+      [
+        "connecting_rod",
+        "crank_pin"
+      ],
+      [
+        "connecting_rod",
+        "wrist_pin"
+      ]
+    ],
+    "transmissions": [
+      {
+        "name": "crankshaft_to_disk_rigid_drive",
+        "ratio": 1.0,
+        "representation": "rigid_carried"
+      }
+    ],
+    "contact_decisions": [
+      {
+        "pair": [
+          "base",
+          "crankshaft"
+        ],
+        "action": "exclude",
+        "reason": "proxy risk: zero axial AABB overlap",
+        "source_entity_ids": [
+          "link/base",
+          "link/crankshaft"
+        ],
+        "fact_ids": [
+          "pair/base/crankshaft",
+          "nearby/base/crankshaft"
+        ]
+      },
+      {
+        "pair": [
+          "lower_bearing",
+          "crankshaft"
+        ],
+        "action": "exclude",
+        "reason": "clearance running journal represented by hinge",
+        "source_entity_ids": [
+          "link/lower_bearing",
+          "link/crankshaft",
+          "relation/crankshaft_lower_revolute"
+        ],
+        "fact_ids": [
+          "fit/lower_bearing/shaft_journal/crankshaft/lower_journal",
+          "pair/crankshaft/lower_bearing",
+          "nearby/crankshaft/lower_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "upper_bearing",
+          "crankshaft"
+        ],
+        "action": "exclude",
+        "reason": "clearance running journal represented by hinge",
+        "source_entity_ids": [
+          "link/upper_bearing",
+          "link/crankshaft",
+          "relation/crankshaft_upper_journal"
+        ],
+        "fact_ids": [
+          "fit/upper_bearing/shaft_journal/crankshaft/upper_journal",
+          "pair/crankshaft/upper_bearing",
+          "nearby/crankshaft/upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "crankshaft"
+        ],
+        "action": "exclude",
+        "reason": "interference press fit rigidly carried",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/crankshaft",
+          "relation/disk_to_crankshaft_press_fit"
+        ],
+        "fact_ids": [
+          "fit/crankshaft/disk_seat/crank_disk/shaft_bore",
+          "pair/crank_disk/crankshaft",
+          "nearby/crank_disk/crankshaft"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "crankshaft"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extent",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/crankshaft"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/crankshaft",
+          "nearby/connecting_rod/crankshaft"
+        ]
+      },
+      {
+        "pair": [
+          "crank_pin",
+          "crankshaft"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extents",
+        "source_entity_ids": [
+          "link/crank_pin",
+          "link/crankshaft"
+        ],
+        "fact_ids": [
+          "pair/crank_pin/crankshaft",
+          "nearby/crank_pin/crankshaft"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "crank_pin"
+        ],
+        "action": "exclude",
+        "reason": "interference press fit rigidly carried",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/crank_pin",
+          "relation/eccentric_pin_to_disk_press_fit"
+        ],
+        "fact_ids": [
+          "fit/crank_disk/eccentric_pin_bore/crank_pin/disk_press_seat",
+          "pair/crank_disk/crank_pin",
+          "nearby/crank_disk/crank_pin"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint axial AABB extent",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/upper_bearing"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/upper_bearing",
+          "nearby/crank_disk/upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "crank_disk"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint axial AABB extent",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/crank_disk"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/crank_disk",
+          "nearby/connecting_rod/crank_disk"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "lower_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint axial AABB extent",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/lower_bearing"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/lower_bearing",
+          "nearby/crank_disk/lower_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "crank_disk"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint axial AABB extent",
+        "source_entity_ids": [
+          "link/base",
+          "link/crank_disk"
+        ],
+        "fact_ids": [
+          "pair/base/crank_disk",
+          "nearby/base/crank_disk"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "left_guide_rail"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extents",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/left_guide_rail"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/left_guide_rail",
+          "nearby/crank_disk/left_guide_rail"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "right_guide_rail"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extents",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/right_guide_rail"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/right_guide_rail",
+          "nearby/crank_disk/right_guide_rail"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "crank_pin"
+        ],
+        "action": "exclude",
+        "reason": "dedicated pin clearance journal represented by hinge",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/crank_pin",
+          "relation/crank_end_pin_closure"
+        ],
+        "fact_ids": [
+          "fit/crank_pin/rod_journal/connecting_rod/big_end_bore",
+          "pair/connecting_rod/crank_pin",
+          "nearby/connecting_rod/crank_pin"
+        ]
+      },
+      {
+        "pair": [
+          "crank_pin",
+          "upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extents",
+        "source_entity_ids": [
+          "link/crank_pin",
+          "link/upper_bearing"
+        ],
+        "fact_ids": [
+          "pair/crank_pin/upper_bearing",
+          "nearby/crank_pin/upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_pin",
+          "lower_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extents",
+        "source_entity_ids": [
+          "link/crank_pin",
+          "link/lower_bearing"
+        ],
+        "fact_ids": [
+          "pair/crank_pin/lower_bearing",
+          "nearby/crank_pin/lower_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "slider"
+        ],
+        "action": "exclude",
+        "reason": "zero axial AABB overlap; ideal slide supplies guidance",
+        "source_entity_ids": [
+          "link/base",
+          "link/slider"
+        ],
+        "fact_ids": [
+          "pair/base/slider",
+          "nearby/base/slider"
+        ]
+      },
+      {
+        "pair": [
+          "slider",
+          "wrist_pin"
+        ],
+        "action": "exclude",
+        "reason": "interference press fits rigidly carry wrist pin",
+        "source_entity_ids": [
+          "link/slider",
+          "link/wrist_pin",
+          "relation/lower_wrist_pin_press_fit",
+          "relation/upper_wrist_pin_press_fit"
+        ],
+        "fact_ids": [
+          "fit/slider/lower_wrist_bore/wrist_pin/lower_press_seat",
+          "fit/slider/upper_wrist_bore/wrist_pin/upper_press_seat",
+          "pair/slider/wrist_pin",
+          "nearby/slider/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "slider"
+        ],
+        "action": "exclude",
+        "reason": "positive separation; wrist-center closure replaces contact",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/slider"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/slider",
+          "nearby/connecting_rod/slider"
+        ]
+      },
+      {
+        "pair": [
+          "left_guide_rail",
+          "slider"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint lateral AABB extent",
+        "source_entity_ids": [
+          "link/left_guide_rail",
+          "link/slider"
+        ],
+        "fact_ids": [
+          "pair/left_guide_rail/slider",
+          "nearby/left_guide_rail/slider"
+        ]
+      },
+      {
+        "pair": [
+          "right_guide_rail",
+          "slider"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint lateral AABB extent",
+        "source_entity_ids": [
+          "link/right_guide_rail",
+          "link/slider"
+        ],
+        "fact_ids": [
+          "pair/right_guide_rail/slider",
+          "nearby/right_guide_rail/slider"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "wrist_pin"
+        ],
+        "action": "exclude",
+        "reason": "dedicated pin clearance journal represented by closure",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/wrist_pin",
+          "relation/slider_end_pin_closure"
+        ],
+        "fact_ids": [
+          "fit/wrist_pin/rod_journal/connecting_rod/small_end_bore",
+          "pair/connecting_rod/wrist_pin",
+          "nearby/connecting_rod/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint axial AABB extent",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/upper_bearing"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/upper_bearing",
+          "nearby/connecting_rod/upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "left_guide_rail"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint axial AABB extent",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/left_guide_rail"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/left_guide_rail",
+          "nearby/connecting_rod/left_guide_rail"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "right_guide_rail"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extents",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/right_guide_rail"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/right_guide_rail",
+          "nearby/connecting_rod/right_guide_rail"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "lower_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint axial AABB extent",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/lower_bearing"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/lower_bearing",
+          "nearby/connecting_rod/lower_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "connecting_rod"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint axial AABB extent",
+        "source_entity_ids": [
+          "link/base",
+          "link/connecting_rod"
+        ],
+        "fact_ids": [
+          "pair/base/connecting_rod",
+          "nearby/base/connecting_rod"
+        ]
+      }
+    ],
+    "support_ground": [
+      "base"
+    ],
+    "support_strategy": "fixed base supports normal mechanism; no support patch"
+  },
+  "decisions": [
+    {
+      "generated_kind": "constraint",
+      "generated_name": "slider_end_pin_connect",
+      "constraint_type": "connect",
+      "reason": "measured small-end journal closure",
+      "source_entity_ids": [
+        "relation/slider_end_pin_closure"
+      ],
+      "fact_ids": [
+        "fit/wrist_pin/rod_journal/connecting_rod/small_end_bore",
+        "pair/connecting_rod/wrist_pin"
+      ]
+    },
+    {
+      "entity_id": "link/base",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "link/base"
+      ]
+    },
+    {
+      "entity_id": "link/lower_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "lower_bearing"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "link/lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/upper_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "upper_bearing"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "link/upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/crankshaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crankshaft"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "link/crankshaft"
+      ]
+    },
+    {
+      "entity_id": "link/crank_disk",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_disk"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "link/crank_disk"
+      ]
+    },
+    {
+      "entity_id": "link/crank_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_pin"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "link/crank_pin"
+      ]
+    },
+    {
+      "entity_id": "link/left_guide_rail",
+      "action": "represented_by",
+      "generated_nodes": [
+        "left_guide_rail"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "link/left_guide_rail"
+      ]
+    },
+    {
+      "entity_id": "link/right_guide_rail",
+      "action": "represented_by",
+      "generated_nodes": [
+        "right_guide_rail"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "link/right_guide_rail"
+      ]
+    },
+    {
+      "entity_id": "link/slider",
+      "action": "represented_by",
+      "generated_nodes": [
+        "slider"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "link/slider"
+      ]
+    },
+    {
+      "entity_id": "link/wrist_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "wrist_pin"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "link/wrist_pin"
+      ]
+    },
+    {
+      "entity_id": "link/connecting_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "connecting_rod"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "link/connecting_rod"
+      ]
+    },
+    {
+      "entity_id": "pose/place_base",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_base"
+      ]
+    },
+    {
+      "entity_id": "pose/place_lower_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "lower_bearing"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_upper_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "upper_bearing"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crankshaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crankshaft"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_crankshaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crank_disk",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_disk"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_crank_disk"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crank_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_pin"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_crank_pin"
+      ]
+    },
+    {
+      "entity_id": "pose/place_left_guide_rail",
+      "action": "represented_by",
+      "generated_nodes": [
+        "left_guide_rail"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_left_guide_rail"
+      ]
+    },
+    {
+      "entity_id": "pose/place_right_guide_rail",
+      "action": "represented_by",
+      "generated_nodes": [
+        "right_guide_rail"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_right_guide_rail"
+      ]
+    },
+    {
+      "entity_id": "pose/place_slider",
+      "action": "represented_by",
+      "generated_nodes": [
+        "slider"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_slider"
+      ]
+    },
+    {
+      "entity_id": "pose/place_wrist_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "wrist_pin"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_wrist_pin"
+      ]
+    },
+    {
+      "entity_id": "pose/place_connecting_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "connecting_rod"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "pose/place_connecting_rod"
+      ]
+    },
+    {
+      "entity_id": "port/base/lower_bearing_mount",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "port/base/lower_bearing_mount"
+      ]
+    },
+    {
+      "entity_id": "port/lower_bearing/shaft_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "lower_bearing"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "port/lower_bearing/shaft_journal"
+      ]
+    },
+    {
+      "entity_id": "port/upper_bearing/shaft_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "upper_bearing"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "port/upper_bearing/shaft_journal"
+      ]
+    },
+    {
+      "entity_id": "port/crankshaft/lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crankshaft"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "port/crankshaft/lower_journal"
+      ]
+    },
+    {
+      "entity_id": "port/crankshaft/upper_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crankshaft"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "port/crankshaft/upper_journal"
+      ]
+    },
+    {
+      "entity_id": "port/crankshaft/disk_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crankshaft"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "port/crankshaft/disk_seat"
+      ]
+    },
+    {
+      "entity_id": "port/crank_disk/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_disk"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "port/crank_disk/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/crank_disk/eccentric_pin_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_disk"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "port/crank_disk/eccentric_pin_bore"
+      ]
+    },
+    {
+      "entity_id": "port/crank_pin/disk_press_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_pin"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "port/crank_pin/disk_press_seat"
+      ]
+    },
+    {
+      "entity_id": "port/crank_pin/rod_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_pin"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "port/crank_pin/rod_journal"
+      ]
+    },
+    {
+      "entity_id": "port/connecting_rod/big_end_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "connecting_rod"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "port/connecting_rod/big_end_bore"
+      ]
+    },
+    {
+      "entity_id": "port/connecting_rod/small_end_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "connecting_rod"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "port/connecting_rod/small_end_bore"
+      ]
+    },
+    {
+      "entity_id": "port/slider/slide_reference",
+      "action": "represented_by",
+      "generated_nodes": [
+        "slider"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "port/slider/slide_reference"
+      ]
+    },
+    {
+      "entity_id": "port/slider/lower_wrist_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "slider"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "port/slider/lower_wrist_bore"
+      ]
+    },
+    {
+      "entity_id": "port/slider/upper_wrist_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "slider"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "port/slider/upper_wrist_bore"
+      ]
+    },
+    {
+      "entity_id": "port/wrist_pin/lower_press_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "wrist_pin"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "port/wrist_pin/lower_press_seat"
+      ]
+    },
+    {
+      "entity_id": "port/wrist_pin/rod_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "wrist_pin"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "port/wrist_pin/rod_journal"
+      ]
+    },
+    {
+      "entity_id": "port/wrist_pin/upper_press_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "wrist_pin"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "port/wrist_pin/upper_press_seat"
+      ]
+    },
+    {
+      "entity_id": "relation/crankshaft_lower_revolute",
+      "action": "represented_by",
+      "generated_nodes": [
+        "input_crankshaft_hinge"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "relation/crankshaft_lower_revolute"
+      ]
+    },
+    {
+      "entity_id": "relation/crankshaft_upper_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "input_crankshaft_hinge"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "relation/crankshaft_upper_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/disk_to_crankshaft_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_disk"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "relation/disk_to_crankshaft_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/eccentric_pin_to_disk_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_pin"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "relation/eccentric_pin_to_disk_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/crank_end_pin_closure",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_end_pin_hinge"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "relation/crank_end_pin_closure"
+      ]
+    },
+    {
+      "entity_id": "relation/lower_wrist_pin_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "wrist_pin"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "relation/lower_wrist_pin_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/upper_wrist_pin_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "wrist_pin"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "relation/upper_wrist_pin_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/slider_end_pin_closure",
+      "action": "represented_by",
+      "generated_nodes": [
+        "slider_end_pin_connect"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "relation/slider_end_pin_closure"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/input_crankshaft_hinge",
+      "action": "represented_by",
+      "generated_nodes": [
+        "input_crankshaft_hinge"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "motion_joint/input_crankshaft_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/horizontal_slider_joint",
+      "action": "represented_by",
+      "generated_nodes": [
+        "horizontal_slider_joint"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "motion_joint/horizontal_slider_joint"
+      ]
+    },
+    {
+      "entity_id": "transmission/crankshaft_to_disk_rigid_drive",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_disk"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "transmission/crankshaft_to_disk_rigid_drive"
+      ]
+    },
+    {
+      "entity_id": "role/driver/crankshaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "input_crankshaft_hinge"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "role/driver/crankshaft"
+      ]
+    },
+    {
+      "entity_id": "role/output/slider",
+      "action": "represented_by",
+      "generated_nodes": [
+        "horizontal_slider_joint"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "role/output/slider"
+      ]
+    },
+    {
+      "entity_id": "role/watch/crankshaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "input_crankshaft_hinge"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "role/watch/crankshaft"
+      ]
+    },
+    {
+      "entity_id": "role/watch/crank_disk",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_disk"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "role/watch/crank_disk"
+      ]
+    },
+    {
+      "entity_id": "role/watch/connecting_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_end_pin_hinge"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "role/watch/connecting_rod"
+      ]
+    },
+    {
+      "entity_id": "role/watch/slider",
+      "action": "represented_by",
+      "generated_nodes": [
+        "horizontal_slider_joint"
+      ],
+      "reason": "authored entity represented by emitted topology node",
+      "fact_ids": [
+        "role/watch/slider"
+      ]
+    }
+  ],
+  "excludes": [
+    {
+      "pair": [
+        "base",
+        "crankshaft"
+      ],
+      "reason": "proxy risk: zero axial AABB overlap",
+      "source_entity_ids": [
+        "link/base",
+        "link/crankshaft"
+      ],
+      "fact_ids": [
+        "pair/base/crankshaft",
+        "nearby/base/crankshaft"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "lower_bearing"
+      ],
+      "reason": "clearance running journal represented by hinge",
+      "source_entity_ids": [
+        "link/lower_bearing",
+        "link/crankshaft",
+        "relation/crankshaft_lower_revolute"
+      ],
+      "fact_ids": [
+        "fit/lower_bearing/shaft_journal/crankshaft/lower_journal",
+        "pair/crankshaft/lower_bearing",
+        "nearby/crankshaft/lower_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "upper_bearing"
+      ],
+      "reason": "clearance running journal represented by hinge",
+      "source_entity_ids": [
+        "link/upper_bearing",
+        "link/crankshaft",
+        "relation/crankshaft_upper_journal"
+      ],
+      "fact_ids": [
+        "fit/upper_bearing/shaft_journal/crankshaft/upper_journal",
+        "pair/crankshaft/upper_bearing",
+        "nearby/crankshaft/upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "crankshaft"
+      ],
+      "reason": "interference press fit rigidly carried",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/crankshaft",
+        "relation/disk_to_crankshaft_press_fit"
+      ],
+      "fact_ids": [
+        "fit/crankshaft/disk_seat/crank_disk/shaft_bore",
+        "pair/crank_disk/crankshaft",
+        "nearby/crank_disk/crankshaft"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "crankshaft"
+      ],
+      "reason": "positive separation and disjoint AABB extent",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/crankshaft"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/crankshaft",
+        "nearby/connecting_rod/crankshaft"
+      ]
+    },
+    {
+      "pair": [
+        "crank_pin",
+        "crankshaft"
+      ],
+      "reason": "positive separation and disjoint AABB extents",
+      "source_entity_ids": [
+        "link/crank_pin",
+        "link/crankshaft"
+      ],
+      "fact_ids": [
+        "pair/crank_pin/crankshaft",
+        "nearby/crank_pin/crankshaft"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "crank_pin"
+      ],
+      "reason": "interference press fit rigidly carried",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/crank_pin",
+        "relation/eccentric_pin_to_disk_press_fit"
+      ],
+      "fact_ids": [
+        "fit/crank_disk/eccentric_pin_bore/crank_pin/disk_press_seat",
+        "pair/crank_disk/crank_pin",
+        "nearby/crank_disk/crank_pin"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "upper_bearing"
+      ],
+      "reason": "positive separation and disjoint axial AABB extent",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/upper_bearing"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/upper_bearing",
+        "nearby/crank_disk/upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "crank_disk"
+      ],
+      "reason": "positive separation and disjoint axial AABB extent",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/crank_disk"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/crank_disk",
+        "nearby/connecting_rod/crank_disk"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "lower_bearing"
+      ],
+      "reason": "positive separation and disjoint axial AABB extent",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/lower_bearing"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/lower_bearing",
+        "nearby/crank_disk/lower_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "crank_disk"
+      ],
+      "reason": "positive separation and disjoint axial AABB extent",
+      "source_entity_ids": [
+        "link/base",
+        "link/crank_disk"
+      ],
+      "fact_ids": [
+        "pair/base/crank_disk",
+        "nearby/base/crank_disk"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "left_guide_rail"
+      ],
+      "reason": "positive separation and disjoint AABB extents",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/left_guide_rail"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/left_guide_rail",
+        "nearby/crank_disk/left_guide_rail"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "right_guide_rail"
+      ],
+      "reason": "positive separation and disjoint AABB extents",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/right_guide_rail"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/right_guide_rail",
+        "nearby/crank_disk/right_guide_rail"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "crank_pin"
+      ],
+      "reason": "dedicated pin clearance journal represented by hinge",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/crank_pin",
+        "relation/crank_end_pin_closure"
+      ],
+      "fact_ids": [
+        "fit/crank_pin/rod_journal/connecting_rod/big_end_bore",
+        "pair/connecting_rod/crank_pin",
+        "nearby/connecting_rod/crank_pin"
+      ]
+    },
+    {
+      "pair": [
+        "crank_pin",
+        "upper_bearing"
+      ],
+      "reason": "positive separation and disjoint AABB extents",
+      "source_entity_ids": [
+        "link/crank_pin",
+        "link/upper_bearing"
+      ],
+      "fact_ids": [
+        "pair/crank_pin/upper_bearing",
+        "nearby/crank_pin/upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "crank_pin",
+        "lower_bearing"
+      ],
+      "reason": "positive separation and disjoint AABB extents",
+      "source_entity_ids": [
+        "link/crank_pin",
+        "link/lower_bearing"
+      ],
+      "fact_ids": [
+        "pair/crank_pin/lower_bearing",
+        "nearby/crank_pin/lower_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "slider"
+      ],
+      "reason": "zero axial AABB overlap; ideal slide supplies guidance",
+      "source_entity_ids": [
+        "link/base",
+        "link/slider"
+      ],
+      "fact_ids": [
+        "pair/base/slider",
+        "nearby/base/slider"
+      ]
+    },
+    {
+      "pair": [
+        "slider",
+        "wrist_pin"
+      ],
+      "reason": "interference press fits rigidly carry wrist pin",
+      "source_entity_ids": [
+        "link/slider",
+        "link/wrist_pin",
+        "relation/lower_wrist_pin_press_fit",
+        "relation/upper_wrist_pin_press_fit"
+      ],
+      "fact_ids": [
+        "fit/slider/lower_wrist_bore/wrist_pin/lower_press_seat",
+        "fit/slider/upper_wrist_bore/wrist_pin/upper_press_seat",
+        "pair/slider/wrist_pin",
+        "nearby/slider/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "slider"
+      ],
+      "reason": "positive separation; wrist-center closure replaces contact",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/slider"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/slider",
+        "nearby/connecting_rod/slider"
+      ]
+    },
+    {
+      "pair": [
+        "left_guide_rail",
+        "slider"
+      ],
+      "reason": "positive separation and disjoint lateral AABB extent",
+      "source_entity_ids": [
+        "link/left_guide_rail",
+        "link/slider"
+      ],
+      "fact_ids": [
+        "pair/left_guide_rail/slider",
+        "nearby/left_guide_rail/slider"
+      ]
+    },
+    {
+      "pair": [
+        "right_guide_rail",
+        "slider"
+      ],
+      "reason": "positive separation and disjoint lateral AABB extent",
+      "source_entity_ids": [
+        "link/right_guide_rail",
+        "link/slider"
+      ],
+      "fact_ids": [
+        "pair/right_guide_rail/slider",
+        "nearby/right_guide_rail/slider"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "wrist_pin"
+      ],
+      "reason": "dedicated pin clearance journal represented by closure",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/wrist_pin",
+        "relation/slider_end_pin_closure"
+      ],
+      "fact_ids": [
+        "fit/wrist_pin/rod_journal/connecting_rod/small_end_bore",
+        "pair/connecting_rod/wrist_pin",
+        "nearby/connecting_rod/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "upper_bearing"
+      ],
+      "reason": "positive separation and disjoint axial AABB extent",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/upper_bearing"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/upper_bearing",
+        "nearby/connecting_rod/upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "left_guide_rail"
+      ],
+      "reason": "positive separation and disjoint axial AABB extent",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/left_guide_rail"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/left_guide_rail",
+        "nearby/connecting_rod/left_guide_rail"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "right_guide_rail"
+      ],
+      "reason": "positive separation and disjoint AABB extents",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/right_guide_rail"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/right_guide_rail",
+        "nearby/connecting_rod/right_guide_rail"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "lower_bearing"
+      ],
+      "reason": "positive separation and disjoint axial AABB extent",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/lower_bearing"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/lower_bearing",
+        "nearby/connecting_rod/lower_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "connecting_rod"
+      ],
+      "reason": "positive separation and disjoint axial AABB extent",
+      "source_entity_ids": [
+        "link/base",
+        "link/connecting_rod"
+      ],
+      "fact_ids": [
+        "pair/base/connecting_rod",
+        "nearby/base/connecting_rod"
+      ]
+    }
+  ],
+  "ground_excludes": [],
+  "support_patches": [],
+  "bodies": [
+    "base",
+    "connecting_rod",
+    "crank_disk",
+    "crank_pin",
+    "crankshaft",
+    "left_guide_rail",
+    "lower_bearing",
+    "right_guide_rail",
+    "slider",
+    "upper_bearing",
+    "wrist_pin"
+  ],
+  "joints": [
+    "crank_end_pin_hinge",
+    "horizontal_slider_joint",
+    "input_crankshaft_hinge"
+  ],
+  "constraints": [
+    "slider_end_pin_connect"
+  ]
+}

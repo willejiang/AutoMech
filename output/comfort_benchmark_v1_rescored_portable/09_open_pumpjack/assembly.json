@@ -1,0 +1,1340 @@
+{
+  "name": "design_this_as_an_open_demonstra",
+  "root_link": "base",
+  "links": [
+    {
+      "name": "base",
+      "description": "base",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/base.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": ""
+    },
+    {
+      "name": "negative_shaft_pedestal",
+      "description": "negative_shaft_pedestal",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/negative_shaft_pedestal.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "base"
+    },
+    {
+      "name": "positive_shaft_pedestal",
+      "description": "positive_shaft_pedestal",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/positive_shaft_pedestal.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "base"
+    },
+    {
+      "name": "negative_shaft_bearing",
+      "description": "negative_shaft_bearing",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/negative_shaft_bearing.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "negative_shaft_pedestal"
+    },
+    {
+      "name": "positive_shaft_bearing",
+      "description": "positive_shaft_bearing",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/positive_shaft_bearing.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "positive_shaft_pedestal"
+    },
+    {
+      "name": "crankshaft",
+      "description": "crankshaft",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/crankshaft.stl",
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": true,
+      "material": "steel",
+      "mount": "negative_shaft_bearing",
+      "extra_mounts": [
+        "positive_shaft_bearing"
+      ]
+    },
+    {
+      "name": "crank_disk",
+      "description": "crank_disk",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/crank_disk.stl",
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "crankshaft"
+    },
+    {
+      "name": "crank_pin",
+      "description": "crank_pin",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/crank_pin.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "crank_disk"
+    },
+    {
+      "name": "pitman",
+      "description": "pitman",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/pitman.stl",
+      "dof": "free",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": ""
+    },
+    {
+      "name": "negative_beam_support",
+      "description": "negative_beam_support",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/negative_beam_support.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "base"
+    },
+    {
+      "name": "positive_beam_support",
+      "description": "positive_beam_support",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/positive_beam_support.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "base"
+    },
+    {
+      "name": "negative_pivot_bearing",
+      "description": "negative_pivot_bearing",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/negative_pivot_bearing.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "negative_beam_support"
+    },
+    {
+      "name": "positive_pivot_bearing",
+      "description": "positive_pivot_bearing",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/positive_pivot_bearing.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "positive_beam_support"
+    },
+    {
+      "name": "beam_pivot_pin",
+      "description": "beam_pivot_pin",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/beam_pivot_pin.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "negative_pivot_bearing",
+      "extra_mounts": [
+        "positive_pivot_bearing"
+      ]
+    },
+    {
+      "name": "walking_beam",
+      "description": "walking_beam",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/walking_beam.stl",
+      "dof": "free",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "beam_pivot_pin"
+    },
+    {
+      "name": "pitman_beam_pin",
+      "description": "pitman_beam_pin",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/pitman_beam_pin.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "walking_beam"
+    },
+    {
+      "name": "beam_output_pin",
+      "description": "beam_output_pin",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/beam_output_pin.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "walking_beam"
+    },
+    {
+      "name": "polished_output_rod",
+      "description": "polished_output_rod",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/polished_output_rod.stl",
+      "dof": "free",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "lower_output_guide",
+      "extra_mounts": [
+        "upper_output_guide",
+        "beam_output_pin"
+      ]
+    },
+    {
+      "name": "output_guide_post",
+      "description": "output_guide_post",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/output_guide_post.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "base"
+    },
+    {
+      "name": "lower_output_guide",
+      "description": "lower_output_guide",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/lower_output_guide.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "output_guide_post"
+    },
+    {
+      "name": "upper_output_guide",
+      "description": "upper_output_guide",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/upper_output_guide.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "output_guide_post"
+    },
+    {
+      "name": "hand_crank_arm",
+      "description": "hand_crank_arm",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/hand_crank_arm.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "crankshaft"
+    },
+    {
+      "name": "handle_spindle",
+      "description": "handle_spindle",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/handle_spindle.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "hand_crank_arm"
+    },
+    {
+      "name": "hand_grip",
+      "description": "hand_grip",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/hand_grip.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "handle_spindle"
+    }
+  ],
+  "poses": [
+    {
+      "name": "place_base",
+      "parent": "",
+      "child": "base",
+      "xyz_m": [
+        0.01,
+        0.0,
+        0.0
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_negative_shaft_pedestal",
+      "parent": "base",
+      "child": "negative_shaft_pedestal",
+      "xyz_m": [
+        -0.055,
+        -0.023,
+        0.008
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_positive_shaft_pedestal",
+      "parent": "base",
+      "child": "positive_shaft_pedestal",
+      "xyz_m": [
+        -0.055,
+        0.023,
+        0.008
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_negative_shaft_bearing",
+      "parent": "negative_shaft_pedestal",
+      "child": "negative_shaft_bearing",
+      "xyz_m": [
+        0.0,
+        0.0,
+        0.037
+      ],
+      "rpy_rad": [
+        1.5707963267948966,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_positive_shaft_bearing",
+      "parent": "positive_shaft_pedestal",
+      "child": "positive_shaft_bearing",
+      "xyz_m": [
+        0.0,
+        0.0,
+        0.037
+      ],
+      "rpy_rad": [
+        1.5707963267948966,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_crankshaft",
+      "parent": "negative_shaft_bearing",
+      "child": "crankshaft",
+      "xyz_m": [
+        0.0,
+        0.0,
+        -0.023
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_crank_disk",
+      "parent": "crankshaft",
+      "child": "crank_disk",
+      "xyz_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_crank_pin",
+      "parent": "crank_disk",
+      "child": "crank_pin",
+      "xyz_m": [
+        0.014744736797201853,
+        0.010324375854318831,
+        0.0095
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_pitman",
+      "parent": "crank_pin",
+      "child": "pitman",
+      "xyz_m": [
+        0.00284660005471374,
+        0.014206417301239114,
+        0.0025
+      ],
+      "rpy_rad": [
+        -1.5707963267948966,
+        -0.0,
+        1.373040947727596
+      ]
+    },
+    {
+      "name": "place_negative_beam_support",
+      "parent": "base",
+      "child": "negative_beam_support",
+      "xyz_m": [
+        0.01,
+        -0.018,
+        0.008
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_positive_beam_support",
+      "parent": "base",
+      "child": "positive_beam_support",
+      "xyz_m": [
+        0.01,
+        0.004,
+        0.008
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_negative_pivot_bearing",
+      "parent": "negative_beam_support",
+      "child": "negative_pivot_bearing",
+      "xyz_m": [
+        0.0,
+        0.0,
+        0.082
+      ],
+      "rpy_rad": [
+        1.5707963267948966,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_positive_pivot_bearing",
+      "parent": "positive_beam_support",
+      "child": "positive_pivot_bearing",
+      "xyz_m": [
+        0.0,
+        0.0,
+        0.082
+      ],
+      "rpy_rad": [
+        1.5707963267948966,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_beam_pivot_pin",
+      "parent": "negative_pivot_bearing",
+      "child": "beam_pivot_pin",
+      "xyz_m": [
+        0.0,
+        0.0,
+        -0.011
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_walking_beam",
+      "parent": "beam_pivot_pin",
+      "child": "walking_beam",
+      "xyz_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rpy_rad": [
+        -1.5707963267948966,
+        -0.0,
+        0.1396263401595464
+      ]
+    },
+    {
+      "name": "place_pitman_beam_pin",
+      "parent": "walking_beam",
+      "child": "pitman_beam_pin",
+      "xyz_m": [
+        -0.045,
+        -0.0025,
+        -3.996802888650563e-18
+      ],
+      "rpy_rad": [
+        1.5707963267948966,
+        0.1396263401595464,
+        0.0
+      ]
+    },
+    {
+      "name": "place_beam_output_pin",
+      "parent": "walking_beam",
+      "child": "beam_output_pin",
+      "xyz_m": [
+        0.05499999999999999,
+        -0.0025,
+        7.105427357601002e-18
+      ],
+      "rpy_rad": [
+        1.5707963267948966,
+        0.1396263401595464,
+        0.0
+      ]
+    },
+    {
+      "name": "place_polished_output_rod",
+      "parent": "lower_output_guide",
+      "child": "polished_output_rod",
+      "xyz_m": [
+        0.0,
+        0.0,
+        -0.024
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_output_guide_post",
+      "parent": "base",
+      "child": "output_guide_post",
+      "xyz_m": [
+        0.06446474378078636,
+        0.01,
+        0.008
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_lower_output_guide",
+      "parent": "output_guide_post",
+      "child": "lower_output_guide",
+      "xyz_m": [
+        0.0,
+        -0.022,
+        0.016
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_upper_output_guide",
+      "parent": "output_guide_post",
+      "child": "upper_output_guide",
+      "xyz_m": [
+        0.0,
+        -0.022,
+        0.042
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_hand_crank_arm",
+      "parent": "crankshaft",
+      "child": "hand_crank_arm",
+      "xyz_m": [
+        0.0,
+        0.012,
+        -0.031
+      ],
+      "rpy_rad": [
+        -1.5707963267948966,
+        -0.0,
+        1.5707963267948966
+      ]
+    },
+    {
+      "name": "place_handle_spindle",
+      "parent": "hand_crank_arm",
+      "child": "handle_spindle",
+      "xyz_m": [
+        0.012,
+        0.008,
+        0.0
+      ],
+      "rpy_rad": [
+        1.5707963267948966,
+        1.5707963267948966,
+        0.0
+      ]
+    },
+    {
+      "name": "place_hand_grip",
+      "parent": "handle_spindle",
+      "child": "hand_grip",
+      "xyz_m": [
+        0.0,
+        0.0,
+        -0.0025
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    }
+  ],
+  "mesh_pairs": [],
+  "ports_by_link": {
+    "crankshaft": [
+      {
+        "name": "rotation_axis",
+        "type": "shaft",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 8.0,
+        "depth_mm": 72.0
+      },
+      {
+        "name": "disk_seat",
+        "type": "cylindrical",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 8.0,
+        "depth_mm": 10.0
+      }
+    ],
+    "crank_disk": [
+      {
+        "name": "shaft_bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 7.99,
+        "depth_mm": 10.0
+      },
+      {
+        "name": "crank_pin_seat",
+        "type": "bore",
+        "xyz_mm": [
+          14.744736797201853,
+          10.324375854318829,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 4.99,
+        "depth_mm": 10.0
+      }
+    ],
+    "crank_pin": [
+      {
+        "name": "pin_shaft",
+        "type": "shaft",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 5.0,
+        "depth_mm": 11.0
+      }
+    ],
+    "pitman": [
+      {
+        "name": "crank_end_bore",
+        "type": "bore",
+        "xyz_mm": [
+          -14.488803415342563,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "diameter_mm": 5.1,
+        "depth_mm": 4.0
+      },
+      {
+        "name": "beam_end_bore",
+        "type": "bore",
+        "xyz_mm": [
+          14.488803415342563,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "diameter_mm": 5.1,
+        "depth_mm": 4.0
+      }
+    ],
+    "walking_beam": [
+      {
+        "name": "pitman_pin_bore",
+        "type": "bore",
+        "xyz_mm": [
+          -45.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "diameter_mm": 4.99,
+        "depth_mm": 4.0
+      },
+      {
+        "name": "pivot_bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "diameter_mm": 6.1,
+        "depth_mm": 4.0
+      },
+      {
+        "name": "output_pin_bore",
+        "type": "bore",
+        "xyz_mm": [
+          55.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "diameter_mm": 4.99,
+        "depth_mm": 4.0
+      }
+    ],
+    "pitman_beam_pin": [
+      {
+        "name": "pin_shaft",
+        "type": "shaft",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 5.0,
+        "depth_mm": 11.0
+      }
+    ],
+    "beam_pivot_pin": [
+      {
+        "name": "pivot_shaft",
+        "type": "shaft",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 6.0,
+        "depth_mm": 28.0
+      }
+    ],
+    "beam_output_pin": [
+      {
+        "name": "pin_shaft",
+        "type": "shaft",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 5.0,
+        "depth_mm": 11.0
+      }
+    ],
+    "polished_output_rod": [
+      {
+        "name": "beam_pin_bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          97.6545205528036
+        ],
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "diameter_mm": 5.1,
+        "depth_mm": 4.0
+      },
+      {
+        "name": "guided_axis",
+        "type": "flat_face",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          32.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "depth_mm": 85.6545205528036
+      }
+    ]
+  },
+  "relations": [
+    {
+      "name": "shaft_in_negative_bearing",
+      "mate_type": "journal_bearing",
+      "base_part": "negative_shaft_bearing",
+      "base_port": "bearing_bore",
+      "incoming_part": "crankshaft",
+      "incoming_port": "rotation_axis"
+    },
+    {
+      "name": "shaft_in_positive_bearing",
+      "mate_type": "journal_bearing",
+      "base_part": "positive_shaft_bearing",
+      "base_port": "bearing_bore",
+      "incoming_part": "crankshaft",
+      "incoming_port": "rotation_axis"
+    },
+    {
+      "name": "disk_pressed_on_shaft",
+      "mate_type": "press_fit",
+      "base_part": "crankshaft",
+      "base_port": "disk_seat",
+      "incoming_part": "crank_disk",
+      "incoming_port": "shaft_bore"
+    },
+    {
+      "name": "crank_pin_pressed_in_disk",
+      "mate_type": "press_fit",
+      "base_part": "crank_disk",
+      "base_port": "crank_pin_seat",
+      "incoming_part": "crank_pin",
+      "incoming_port": "pin_shaft"
+    },
+    {
+      "name": "crank_pin_to_pitman_closure",
+      "mate_type": "revolute",
+      "base_part": "crank_pin",
+      "base_port": "pin_shaft",
+      "incoming_part": "pitman",
+      "incoming_port": "crank_end_bore"
+    },
+    {
+      "name": "pitman_to_walking_beam_closure",
+      "mate_type": "revolute",
+      "base_part": "pitman_beam_pin",
+      "base_port": "pin_shaft",
+      "incoming_part": "pitman",
+      "incoming_port": "beam_end_bore"
+    },
+    {
+      "name": "walking_beam_fixed_pivot",
+      "mate_type": "revolute",
+      "base_part": "beam_pivot_pin",
+      "base_port": "pivot_shaft",
+      "incoming_part": "walking_beam",
+      "incoming_port": "pivot_bore"
+    },
+    {
+      "name": "beam_to_output_rod_closure",
+      "mate_type": "revolute",
+      "base_part": "beam_output_pin",
+      "base_port": "pin_shaft",
+      "incoming_part": "polished_output_rod",
+      "incoming_port": "beam_pin_bore"
+    }
+  ],
+  "motion_joints": [
+    {
+      "name": "driven_crankshaft_hinge",
+      "parent": "",
+      "child": "crankshaft",
+      "type": "hinge",
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "pos_mm": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "crank_disk_hinge",
+      "parent": "",
+      "child": "crank_disk",
+      "type": "hinge",
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "pos_mm": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "walking_beam_hinge",
+      "parent": "",
+      "child": "walking_beam",
+      "type": "hinge",
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "pos_mm": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "vertical_guided_output",
+      "parent": "",
+      "child": "polished_output_rod",
+      "type": "slide",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "pos_mm": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "transmissions": [
+    {
+      "name": "shaft_to_crank_disk_press_drive",
+      "type": "compound_1to1",
+      "driving_link": "crankshaft",
+      "driven_link": "crank_disk",
+      "ratio": 1.0
+    }
+  ],
+  "output_link": "polished_output_rod",
+  "watch_links": [
+    "crankshaft",
+    "crank_disk",
+    "crank_pin",
+    "pitman",
+    "walking_beam",
+    "polished_output_rod"
+  ]
+}

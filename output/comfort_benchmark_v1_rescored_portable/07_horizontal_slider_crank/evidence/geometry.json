@@ -1,0 +1,66 @@
+{
+  "analyzer_version": "comfort-geometry/1.0",
+  "fail_closed": true,
+  "input_hashes": {
+    "meshes/base.stl": "75aa1c142cffe5c442b6d20794cc8869a5a3dbd0d132e2ff4b2382267da75fd5",
+    "meshes/connecting_rod.stl": "4aef14532f99d371608c94960cad31e70d7a61e9263fb4c0e2c59c9e546a19d0",
+    "meshes/crank_disk.stl": "76cd044fd055559bce34f3ee1fdbf6e44d971f1ce5f4ca6ab7a6dc1f7cc67afa",
+    "meshes/crank_pin.stl": "61abd4bfb1853971f6762120eecb3118a6dc27d11f876d67b9e9de3aa1358a08",
+    "meshes/crankshaft.stl": "1bb8f9e030321d4f1d9bf3c6c374cb50aa9f817cab91dc6addd1c62d20163387",
+    "meshes/left_guide_rail.stl": "22c30413ad9c6445886d2f8fc69c9aae1125b5f17f246d0aaccf8e24f9ab1416",
+    "meshes/lower_bearing.stl": "496168529bbfe7f9a7b9be343ececf853497306ebb0118f7ab4b02c59edf7fa8",
+    "meshes/right_guide_rail.stl": "22c30413ad9c6445886d2f8fc69c9aae1125b5f17f246d0aaccf8e24f9ab1416",
+    "meshes/slider.stl": "60d7ce809e9495eb58b8b73762f12e2851d27285a978add8b8990f94f91ad017",
+    "meshes/upper_bearing.stl": "496168529bbfe7f9a7b9be343ececf853497306ebb0118f7ab4b02c59edf7fa8",
+    "meshes/wrist_pin.stl": "e33d7a34edf44a186a6870970fc66bf011515a32ff744335f4fad4e00d8fccab"
+  },
+  "intersections": [
+    {
+      "evidence_id": "relation/eccentric_pin_to_disk_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.002212416,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "crank_disk",
+        "crank_pin"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.219545
+    },
+    {
+      "evidence_id": "relation/disk_to_crankshaft_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.00114284,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "crank_disk",
+        "crankshaft"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.329456
+    },
+    {
+      "evidence_id": "relation/upper_wrist_pin_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.002728612,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "slider",
+        "wrist_pin"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.332463
+    }
+  ],
+  "links_scanned": 11,
+  "manifest_only_exemption_count": 0,
+  "method": "final-pose watertight STL boolean intersection using manifold",
+  "non_exempt_conflict_count": 0,
+  "provenance_warnings": [],
+  "report_volume_mm3": 0.0001,
+  "scan_unavailable": [],
+  "schema": "physcad-scorer-geometry/1.0"
+}

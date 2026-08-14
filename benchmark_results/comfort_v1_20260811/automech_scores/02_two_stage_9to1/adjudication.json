@@ -1,0 +1,39 @@
+{
+  "decisions": [
+    {
+      "check": "registered_invariants",
+      "evidence": [
+        {
+          "path": "raw/sim_result.json",
+          "sha256": "e1d9d3f0766a64829770bfdcc7b8a13f0bbd409761b41aacba3ac53ac0b61349",
+          "source": "raw_finite_effort_run"
+        },
+        {
+          "path": "evidence/trajectory.json",
+          "sha256": "fd70d94b109a4c32192fbcd95cee1d2984d6acc424f815e38d1fba79670dc52d",
+          "source": "corrected_kinematic_replay"
+        },
+        {
+          "path": "evidence/geometry.json",
+          "sha256": "999879d361187287e8e8a1b8a98f6e79b1e425abf53d7452eff5cf108301ec9a",
+          "source": "scorer_owned_geometry"
+        },
+        {
+          "path": "benchmark_results/comfort_v1_20260811/automech_scores/02_two_stage_9to1/score.pre_adjudication.json",
+          "sha256": "31936a75635de67eb2a71d2421abf6c3b7b9f014a58c2f4f4b99ca546a329b6c",
+          "source": "pre_adjudication_score"
+        }
+      ],
+      "points_awarded": 0,
+      "reason": "finite-effort behavior failed: the designated servo run moved the input only 0.0036 rad and output 0.0002 rad; corrected direct-qpos replay proves 9:1 kinematics but not finite-effort physical operation",
+      "status": "FAIL"
+    }
+  ],
+  "pre_adjudication_score_sha256": "31936a75635de67eb2a71d2421abf6c3b7b9f014a58c2f4f4b99ca546a329b6c",
+  "result": {
+    "overall_verdict": "FAIL",
+    "total_points": 90.0
+  },
+  "schema": "physcad-automech-adjudication/1.0",
+  "task_id": "02_two_stage_9to1"
+}

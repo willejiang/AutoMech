@@ -1,0 +1,188 @@
+<mujoco model="design_this_as_an_open_demonstra">
+  <compiler angle="radian" coordinate="local" />
+  <option gravity="0 0 -9.81" timestep="0.0002" solver="Newton" iterations="100" cone="elliptic" />
+  <size memory="256M" />
+  <asset>
+    <mesh name="mesh_base" file="meshes/base.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_front_pedestal" file="meshes/input_front_pedestal.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_front_bearing" file="meshes/input_front_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_rear_pedestal" file="meshes/input_rear_pedestal.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_rear_bearing" file="meshes/input_rear_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_idler_front_pedestal" file="meshes/idler_front_pedestal.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_idler_front_bearing" file="meshes/idler_front_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_idler_rear_pedestal" file="meshes/idler_rear_pedestal.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_idler_rear_bearing" file="meshes/idler_rear_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_front_pedestal" file="meshes/output_front_pedestal.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_front_bearing" file="meshes/output_front_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_rear_pedestal" file="meshes/output_rear_pedestal.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_rear_bearing" file="meshes/output_rear_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_shaft" file="meshes/input_shaft.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_gear" file="meshes/input_gear.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_crank_arm" file="meshes/crank_arm.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_crank_handle" file="meshes/crank_handle.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_idler_shaft" file="meshes/idler_shaft.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_idler_gear" file="meshes/idler_gear.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_shaft" file="meshes/output_shaft.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_gear" file="meshes/output_gear.stl" scale=".001 .001 .001" />
+  </asset>
+  <worldbody>
+    <light pos="0 0 3" dir="0 0 -1" />
+    <geom name="ground" type="plane" size="5 5 .1" friction="1 .05 .005" contype="1" conaffinity="0" />
+    <body name="base" pos="0 0 0" quat="1 0 0 0">
+      <inertial pos="0 0 0.003" mass="0.5676492" fullinertia="0.00040208485 0.0008134886077 0.001212167563 -0 -0 -0" />
+      <geom name="geom_base" type="sdf" mesh="mesh_base" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      <body name="input_front_pedestal" pos="-0.036 -0.0075 0.006" quat="1 0 0 0">
+        <inertial pos="0 0 0.0075" mass="0.0058875" fullinertia="1.2265625e-07 1.59453125e-07 6.1328125e-08 -0 -0 -0" />
+        <geom name="geom_input_front_pedestal" type="sdf" mesh="mesh_input_front_pedestal" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="input_front_bearing" pos="0 -0.0025 0.022" quat="0.7071067812 -0.7071067812 -0 -0">
+          <inertial pos="-7.599690718e-20 2.43190103e-19 0.0025" mass="0.004892971466" fullinertia="8.148225508e-08 8.14822567e-08 1.425771307e-07 1.487402794e-25 -4.737377897e-24 -5.949611174e-25" />
+          <geom name="geom_input_front_bearing" type="sdf" mesh="mesh_input_front_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          <body name="input_shaft" pos="0 0 -0.008" quat="1 0 0 0">
+            <inertial pos="1.047530282e-20 -5.243022051e-20 0.016" mass="0.007099569428" fullinertia="6.217973366e-07 6.217973368e-07 3.193482441e-08 -1.041181955e-25 -6.425580068e-24 -2.855819174e-23" />
+            <geom name="geom_input_shaft" type="sdf" mesh="mesh_input_shaft" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+            <body name="input_gear" pos="0 0 0.015" quat="1 0 0 0">
+              <inertial pos="-4.206480303e-19 -8.626570934e-20 0.003" mass="0.04526053704" fullinertia="3.916275692e-06 3.916275692e-06 7.560988162e-06 -4.759688939e-25 -6.473176957e-23 -1.920980708e-23" />
+              <geom name="geom_input_gear" type="sdf" mesh="mesh_input_gear" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+            </body>
+            <body name="crank_arm" pos="0 0 0" quat="1 0 0 0">
+              <inertial pos="-5.777573369e-20 -0.008999999917 0.002" mass="0.007079715689" fullinertia="5.085475228e-07 7.973884227e-08 5.694071232e-07 3.68132188e-24 1.338662514e-25 7.139533409e-23" />
+              <geom name="geom_crank_arm" type="sdf" mesh="mesh_crank_arm" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+              <body name="crank_handle" pos="0 -0.018 -0.018" quat="1 0 0 0">
+                <inertial pos="2.285520616e-20 1.613516548e-20 0.011" mass="0.004880953982" fullinertia="2.078427397e-07 2.078427399e-07 2.195519178e-08 -1.041181955e-25 5.034858456e-24 3.688768006e-24" />
+                <geom name="geom_crank_handle" type="sdf" mesh="mesh_crank_handle" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+              </body>
+            </body>
+            <joint name="input_shaft_hinge" type="hinge" axis="0 6.123233996e-17 1" pos="0 -3.469446952e-18 0.016" />
+          </body>
+        </body>
+      </body>
+      <body name="input_rear_pedestal" pos="-0.036 0.0075 0.006" quat="1 0 0 0">
+        <inertial pos="0 0 0.0075" mass="0.0058875" fullinertia="1.2265625e-07 1.59453125e-07 6.1328125e-08 -0 -0 -0" />
+        <geom name="geom_input_rear_pedestal" type="sdf" mesh="mesh_input_rear_pedestal" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="input_rear_bearing" pos="0 -0.0025 0.022" quat="0.7071067812 -0.7071067812 -0 -0">
+          <inertial pos="-7.599690718e-20 2.43190103e-19 0.0025" mass="0.004892971466" fullinertia="8.148225508e-08 8.14822567e-08 1.425771307e-07 1.487402794e-25 -4.737377897e-24 -5.949611174e-25" />
+          <geom name="geom_input_rear_bearing" type="sdf" mesh="mesh_input_rear_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        </body>
+      </body>
+      <body name="idler_front_pedestal" pos="0 -0.0075 0.006" quat="1 0 0 0">
+        <inertial pos="0 0 0.0075" mass="0.0058875" fullinertia="1.2265625e-07 1.59453125e-07 6.1328125e-08 -0 -0 -0" />
+        <geom name="geom_idler_front_pedestal" type="sdf" mesh="mesh_idler_front_pedestal" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="idler_front_bearing" pos="0 -0.0025 0.022" quat="0.7071067812 -0.7071067812 -0 -0">
+          <inertial pos="-7.599690718e-20 2.43190103e-19 0.0025" mass="0.004892971466" fullinertia="8.148225508e-08 8.14822567e-08 1.425771307e-07 1.487402794e-25 -4.737377897e-24 -5.949611174e-25" />
+          <geom name="geom_idler_front_bearing" type="sdf" mesh="mesh_idler_front_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          <body name="idler_shaft" pos="0 0 -0.008" quat="1 0 0 0">
+            <inertial pos="1.047530282e-20 -5.243022051e-20 0.016" mass="0.007099569428" fullinertia="6.217973366e-07 6.217973368e-07 3.193482441e-08 -1.041181955e-25 -6.425580068e-24 -2.855819174e-23" />
+            <geom name="geom_idler_shaft" type="sdf" mesh="mesh_idler_shaft" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+            <body name="idler_gear" pos="0 0 0.015" quat="0.9978589232 -0 1.110223025e-16 0.06540312923">
+              <inertial pos="-4.206480303e-19 -8.626570934e-20 0.003" mass="0.04526053704" fullinertia="3.916275692e-06 3.916275692e-06 7.560988162e-06 -4.759688939e-25 -6.473176957e-23 -1.920980708e-23" />
+              <geom name="geom_idler_gear" type="sdf" mesh="mesh_idler_gear" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+            </body>
+            <joint name="idler_shaft_hinge" type="hinge" axis="0 6.123233996e-17 1" pos="0 -3.469446952e-18 0.016" />
+          </body>
+        </body>
+      </body>
+      <body name="idler_rear_pedestal" pos="0 0.0075 0.006" quat="1 0 0 0">
+        <inertial pos="0 0 0.0075" mass="0.0058875" fullinertia="1.2265625e-07 1.59453125e-07 6.1328125e-08 -0 -0 -0" />
+        <geom name="geom_idler_rear_pedestal" type="sdf" mesh="mesh_idler_rear_pedestal" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="idler_rear_bearing" pos="0 -0.0025 0.022" quat="0.7071067812 -0.7071067812 -0 -0">
+          <inertial pos="-7.599690718e-20 2.43190103e-19 0.0025" mass="0.004892971466" fullinertia="8.148225508e-08 8.14822567e-08 1.425771307e-07 1.487402794e-25 -4.737377897e-24 -5.949611174e-25" />
+          <geom name="geom_idler_rear_bearing" type="sdf" mesh="mesh_idler_rear_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        </body>
+      </body>
+      <body name="output_front_pedestal" pos="0.036 -0.0075 0.006" quat="1 0 0 0">
+        <inertial pos="0 0 0.0075" mass="0.0058875" fullinertia="1.2265625e-07 1.59453125e-07 6.1328125e-08 -0 -0 -0" />
+        <geom name="geom_output_front_pedestal" type="sdf" mesh="mesh_output_front_pedestal" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="output_front_bearing" pos="0 -0.0025 0.022" quat="0.7071067812 -0.7071067812 -0 -0">
+          <inertial pos="-7.599690718e-20 2.43190103e-19 0.0025" mass="0.004892971466" fullinertia="8.148225508e-08 8.14822567e-08 1.425771307e-07 1.487402794e-25 -4.737377897e-24 -5.949611174e-25" />
+          <geom name="geom_output_front_bearing" type="sdf" mesh="mesh_output_front_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          <body name="output_shaft" pos="0 0 -0.008" quat="1 0 0 0">
+            <inertial pos="1.047530282e-20 -5.243022051e-20 0.016" mass="0.007099569428" fullinertia="6.217973366e-07 6.217973368e-07 3.193482441e-08 -1.041181955e-25 -6.425580068e-24 -2.855819174e-23" />
+            <geom name="geom_output_shaft" type="sdf" mesh="mesh_output_shaft" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+            <body name="output_gear" pos="0 0 0.015" quat="1 0 0 0">
+              <inertial pos="-4.206480303e-19 -8.626570934e-20 0.003" mass="0.04526053704" fullinertia="3.916275692e-06 3.916275692e-06 7.560988162e-06 -4.759688939e-25 -6.473176957e-23 -1.920980708e-23" />
+              <geom name="geom_output_gear" type="sdf" mesh="mesh_output_gear" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+            </body>
+            <joint name="output_shaft_hinge" type="hinge" axis="0 6.123233996e-17 1" pos="0 -3.469446952e-18 0.016" />
+          </body>
+        </body>
+      </body>
+      <body name="output_rear_pedestal" pos="0.036 0.0075 0.006" quat="1 0 0 0">
+        <inertial pos="0 0 0.0075" mass="0.0058875" fullinertia="1.2265625e-07 1.59453125e-07 6.1328125e-08 -0 -0 -0" />
+        <geom name="geom_output_rear_pedestal" type="sdf" mesh="mesh_output_rear_pedestal" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="output_rear_bearing" pos="0 -0.0025 0.022" quat="0.7071067812 -0.7071067812 -0 -0">
+          <inertial pos="-7.599690718e-20 2.43190103e-19 0.0025" mass="0.004892971466" fullinertia="8.148225508e-08 8.14822567e-08 1.425771307e-07 1.487402794e-25 -4.737377897e-24 -5.949611174e-25" />
+          <geom name="geom_output_rear_bearing" type="sdf" mesh="mesh_output_rear_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <equality>
+    <joint name="input_to_idler" joint1="idler_shaft_hinge" joint2="input_shaft_hinge" polycoef="0 -1 0 0 0" />
+    <joint name="idler_to_output" joint1="output_shaft_hinge" joint2="idler_shaft_hinge" polycoef="0 -1 0 0 0" />
+  </equality>
+  <contact>
+    <exclude body1="input_front_bearing" body2="input_shaft" />
+    <exclude body1="input_rear_bearing" body2="input_shaft" />
+    <exclude body1="idler_front_bearing" body2="idler_shaft" />
+    <exclude body1="idler_rear_bearing" body2="idler_shaft" />
+    <exclude body1="output_front_bearing" body2="output_shaft" />
+    <exclude body1="output_rear_bearing" body2="output_shaft" />
+    <exclude body1="input_gear" body2="input_shaft" />
+    <exclude body1="idler_gear" body2="idler_shaft" />
+    <exclude body1="output_gear" body2="output_shaft" />
+    <exclude body1="idler_gear" body2="input_gear" />
+    <exclude body1="idler_gear" body2="output_gear" />
+    <exclude body1="crank_arm" body2="input_shaft" />
+    <exclude body1="crank_arm" body2="crank_handle" />
+    <exclude body1="input_front_pedestal" body2="input_shaft" />
+    <exclude body1="input_rear_pedestal" body2="input_shaft" />
+    <exclude body1="idler_gear" body2="input_shaft" />
+    <exclude body1="crank_handle" body2="input_shaft" />
+    <exclude body1="idler_front_pedestal" body2="idler_shaft" />
+    <exclude body1="idler_rear_pedestal" body2="idler_shaft" />
+    <exclude body1="idler_shaft" body2="input_gear" />
+    <exclude body1="idler_shaft" body2="output_gear" />
+    <exclude body1="output_front_pedestal" body2="output_shaft" />
+    <exclude body1="output_rear_pedestal" body2="output_shaft" />
+    <exclude body1="idler_gear" body2="output_shaft" />
+    <exclude body1="input_front_pedestal" body2="input_gear" />
+    <exclude body1="input_front_bearing" body2="input_gear" />
+    <exclude body1="input_gear" body2="input_rear_bearing" />
+    <exclude body1="input_gear" body2="input_rear_pedestal" />
+    <exclude body1="base" body2="input_gear" />
+    <exclude body1="idler_front_bearing" body2="input_gear" />
+    <exclude body1="idler_rear_bearing" body2="input_gear" />
+    <exclude body1="crank_arm" body2="input_gear" />
+    <exclude body1="crank_handle" body2="input_gear" />
+    <exclude body1="idler_front_pedestal" body2="input_gear" />
+    <exclude body1="idler_rear_pedestal" body2="input_gear" />
+    <exclude body1="base" body2="idler_gear" />
+    <exclude body1="idler_front_pedestal" body2="idler_gear" />
+    <exclude body1="idler_front_bearing" body2="idler_gear" />
+    <exclude body1="idler_gear" body2="idler_rear_bearing" />
+    <exclude body1="idler_gear" body2="idler_rear_pedestal" />
+    <exclude body1="idler_gear" body2="input_front_bearing" />
+    <exclude body1="idler_gear" body2="output_front_bearing" />
+    <exclude body1="idler_gear" body2="input_rear_bearing" />
+    <exclude body1="idler_gear" body2="output_rear_bearing" />
+    <exclude body1="idler_gear" body2="input_front_pedestal" />
+    <exclude body1="idler_gear" body2="output_front_pedestal" />
+    <exclude body1="idler_gear" body2="input_rear_pedestal" />
+    <exclude body1="idler_gear" body2="output_rear_pedestal" />
+    <exclude body1="crank_arm" body2="idler_gear" />
+    <exclude body1="crank_handle" body2="idler_gear" />
+    <exclude body1="output_front_pedestal" body2="output_gear" />
+    <exclude body1="output_front_bearing" body2="output_gear" />
+    <exclude body1="output_gear" body2="output_rear_bearing" />
+    <exclude body1="output_gear" body2="output_rear_pedestal" />
+    <exclude body1="base" body2="output_gear" />
+    <exclude body1="idler_front_bearing" body2="output_gear" />
+    <exclude body1="idler_rear_bearing" body2="output_gear" />
+    <exclude body1="idler_front_pedestal" body2="output_gear" />
+    <exclude body1="idler_rear_pedestal" body2="output_gear" />
+    <exclude body1="crank_arm" body2="input_front_bearing" />
+    <exclude body1="crank_arm" body2="input_front_pedestal" />
+    <exclude body1="base" body2="crank_arm" />
+    <exclude body1="crank_handle" body2="input_front_bearing" />
+  </contact>
+</mujoco>
