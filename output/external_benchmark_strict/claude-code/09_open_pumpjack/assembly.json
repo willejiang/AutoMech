@@ -1,0 +1,582 @@
+{
+  "links": [
+    {
+      "axes": [],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/base.stl",
+      "mesh_filename": "meshes/base.stl",
+      "mount": "True",
+      "name": "base",
+      "rigid_mount": true,
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axes": [],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/left_support.stl",
+      "mesh_filename": "meshes/left_support.stl",
+      "mount": "base",
+      "name": "left_support",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axes": [],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/right_support.stl",
+      "mesh_filename": "meshes/right_support.stl",
+      "mount": "base",
+      "name": "right_support",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axes": [
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/beam_pivot.stl",
+      "mesh_filename": "meshes/beam_pivot.stl",
+      "mount": "base",
+      "name": "beam_pivot",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axes": [
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/vertical_guide.stl",
+      "mesh_filename": "meshes/vertical_guide.stl",
+      "mount": "base",
+      "name": "vertical_guide",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0,
+        0,
+        1
+      ],
+      "spin_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "axes": [
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "dof": "spin",
+      "driver": true,
+      "mesh": "meshes/crankshaft_input.stl",
+      "mesh_filename": "meshes/crankshaft_input.stl",
+      "mount": "",
+      "name": "crankshaft_input",
+      "rigid_mount": null,
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axes": [],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/hand_crank.stl",
+      "mesh_filename": "meshes/hand_crank.stl",
+      "mount": "crankshaft_input",
+      "name": "hand_crank",
+      "rigid_mount": "crankshaft_input",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axes": [],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/crank_disk.stl",
+      "mesh_filename": "meshes/crank_disk.stl",
+      "mount": "crankshaft_input",
+      "name": "crank_disk",
+      "rigid_mount": "crankshaft_input",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axes": [],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/crank_pin.stl",
+      "mesh_filename": "meshes/crank_pin.stl",
+      "mount": "crankshaft_input",
+      "name": "crank_pin",
+      "rigid_mount": "crankshaft_input",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axes": [
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "dof": "closure_link",
+      "driver": false,
+      "mesh": "meshes/pitman_rod.stl",
+      "mesh_filename": "meshes/pitman_rod.stl",
+      "mount": "",
+      "name": "pitman_rod",
+      "rigid_mount": null,
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axes": [
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "dof": "spin",
+      "driver": false,
+      "mesh": "meshes/walking_beam.stl",
+      "mesh_filename": "meshes/walking_beam.stl",
+      "mount": "",
+      "name": "walking_beam",
+      "rigid_mount": null,
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axes": [
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "dof": "slide",
+      "driver": false,
+      "mesh": "meshes/polished_rod_output.stl",
+      "mesh_filename": "meshes/polished_rod_output.stl",
+      "mount": "",
+      "name": "polished_rod_output",
+      "rigid_mount": null,
+      "slide_axis": [
+        0,
+        0,
+        1
+      ],
+      "spin_axis": [
+        0,
+        0,
+        1
+      ]
+    }
+  ],
+  "mesh_pairs": [],
+  "motion_joints": [
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "child": "crankshaft_input",
+      "kind": "hinge",
+      "name": "crankshaft_hinge",
+      "parent": "base",
+      "pos_mm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "type": "hinge"
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "child": "pitman_rod",
+      "kind": "hinge",
+      "name": "pitman_lower_pin",
+      "parent": "crank_pin",
+      "pos_mm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "type": "hinge"
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "child": "walking_beam",
+      "kind": "hinge",
+      "name": "walking_beam_hinge",
+      "parent": "base",
+      "pos_mm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "type": "hinge"
+    },
+    {
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "child": "polished_rod_output",
+      "kind": "slide",
+      "name": "polished_rod_slide",
+      "parent": "base",
+      "pos_mm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "type": "slide"
+    }
+  ],
+  "name": "open_hand_cranked_pumpjack",
+  "output_link": "polished_rod_output",
+  "planetary_stages": [],
+  "ports_by_link": {
+    "crank_pin": {
+      "center": {
+        "position_m": [
+          -0.05,
+          -0.026,
+          0.11
+        ]
+      }
+    },
+    "crankshaft_input": {
+      "axis": {
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "position_m": [
+          -0.09,
+          0,
+          0.11
+        ]
+      }
+    },
+    "pitman_rod": {
+      "lower": {
+        "position_m": [
+          -0.05,
+          0,
+          0.11
+        ]
+      },
+      "upper": {
+        "position_m": [
+          -0.00237158,
+          0,
+          0.24164928
+        ]
+      }
+    },
+    "polished_rod_output": {
+      "top": {
+        "position_m": [
+          -0.275731158,
+          0,
+          0.181031292
+        ]
+      }
+    },
+    "vertical_guide": {
+      "axis": {
+        "axis": [
+          0,
+          0,
+          1
+        ]
+      }
+    },
+    "walking_beam": {
+      "left_pin": {
+        "position_m": [
+          -0.00237158,
+          0,
+          0.24164928
+        ]
+      },
+      "pivot": {
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "position_m": [
+          -0.1,
+          0,
+          0.22
+        ]
+      },
+      "right_pin": {
+        "position_m": [
+          -0.275731158,
+          0,
+          0.181031292
+        ]
+      }
+    }
+  },
+  "poses": [
+    {
+      "child": "base",
+      "name": "place_base",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "crankshaft_input",
+      "name": "place_crankshaft_input",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        -0.09,
+        0,
+        0.11
+      ]
+    },
+    {
+      "child": "pitman_rod",
+      "name": "place_pitman_rod",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0.347132773,
+        0
+      ],
+      "xyz_m": [
+        -0.05,
+        0,
+        0.11
+      ]
+    },
+    {
+      "child": "walking_beam",
+      "name": "place_walking_beam",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0.218220657,
+        0
+      ],
+      "xyz_m": [
+        -0.1,
+        0,
+        0.22
+      ]
+    },
+    {
+      "child": "polished_rod_output",
+      "name": "place_polished_rod_output",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        -0.275731158,
+        0,
+        0.181031292
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "base_part": "base",
+      "incoming_part": "crankshaft_input",
+      "mate_type": "journal_bearing",
+      "name": "base_to_crank_bearing"
+    },
+    {
+      "base_part": "crankshaft_input",
+      "incoming_part": "crank_disk",
+      "mate_type": "press_fit",
+      "name": "disk_press_fit"
+    },
+    {
+      "base_part": "crankshaft_input",
+      "incoming_part": "hand_crank",
+      "mate_type": "press_fit",
+      "name": "handle_press_fit"
+    },
+    {
+      "base_part": "crank_disk",
+      "incoming_part": "crank_pin",
+      "mate_type": "pin_fit",
+      "name": "dedicated_crank_pin_fit"
+    },
+    {
+      "base_part": "crank_pin",
+      "incoming_part": "pitman_rod",
+      "mate_type": "pin_closure",
+      "name": "lower_pin_closure"
+    },
+    {
+      "base_part": "pitman_rod",
+      "incoming_part": "walking_beam",
+      "mate_type": "pin_closure",
+      "name": "upper_pin_closure"
+    },
+    {
+      "base_part": "beam_pivot",
+      "incoming_part": "walking_beam",
+      "mate_type": "journal_bearing",
+      "name": "beam_running_bearing"
+    },
+    {
+      "base_part": "walking_beam",
+      "incoming_part": "polished_rod_output",
+      "mate_type": "pin_closure",
+      "name": "output_pin_closure"
+    },
+    {
+      "base_part": "vertical_guide",
+      "incoming_part": "polished_rod_output",
+      "mate_type": "linear_guide",
+      "name": "vertical_guided_output"
+    }
+  ],
+  "root_link": "base",
+  "transmissions": [],
+  "watch_links": [
+    "crank_pin",
+    "pitman_rod",
+    "walking_beam",
+    "polished_rod_output"
+  ]
+}

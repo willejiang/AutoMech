@@ -1,0 +1,260 @@
+{
+  "conservative_10mm": {
+    "components": [
+      [
+        "base",
+        "front_bearing",
+        "rear_bearing"
+      ],
+      [
+        "pump_rod",
+        "vertical_crosshead"
+      ],
+      [
+        "connecting_rod"
+      ],
+      [
+        "crank_disk"
+      ],
+      [
+        "crank_pin"
+      ],
+      [
+        "piston_output"
+      ],
+      [
+        "rotor_shaft"
+      ],
+      [
+        "vertical_guide"
+      ],
+      [
+        "wind_rotor"
+      ]
+    ],
+    "floating_links": [
+      "connecting_rod",
+      "crank_disk",
+      "crank_pin",
+      "piston_output",
+      "pump_rod",
+      "rotor_shaft",
+      "vertical_crosshead",
+      "vertical_guide",
+      "wind_rotor"
+    ]
+  },
+  "declared_edges": [
+    {
+      "a": "base",
+      "b": "front_bearing",
+      "kind": "mount",
+      "source": "link/front_bearing",
+      "status": "strict_realized",
+      "surface_distance_mm": 1.0
+    },
+    {
+      "a": "base",
+      "b": "rear_bearing",
+      "kind": "mount",
+      "source": "link/rear_bearing",
+      "status": "conservative_realized",
+      "surface_distance_mm": 5.0
+    },
+    {
+      "a": "base",
+      "b": "vertical_guide",
+      "kind": "mount",
+      "source": "link/vertical_guide",
+      "status": "geometrically_unrealized",
+      "surface_distance_mm": 40.0
+    },
+    {
+      "a": "rotor_shaft",
+      "b": "wind_rotor",
+      "kind": "mount",
+      "source": "link/wind_rotor",
+      "status": "geometrically_unrealized",
+      "surface_distance_mm": 73.83313646278616
+    },
+    {
+      "a": "rotor_shaft",
+      "b": "crank_disk",
+      "kind": "mount",
+      "source": "link/crank_disk",
+      "status": "geometrically_unrealized",
+      "surface_distance_mm": 114.49162461698485
+    },
+    {
+      "a": "crank_disk",
+      "b": "crank_pin",
+      "kind": "mount",
+      "source": "link/crank_pin",
+      "status": "geometrically_unrealized",
+      "surface_distance_mm": 127.65349301055981
+    },
+    {
+      "a": "vertical_crosshead",
+      "b": "pump_rod",
+      "kind": "mount",
+      "source": "link/pump_rod",
+      "status": "conservative_realized",
+      "surface_distance_mm": 6.999998092651367
+    },
+    {
+      "a": "pump_rod",
+      "b": "piston_output",
+      "kind": "mount",
+      "source": "link/piston_output",
+      "status": "geometrically_unrealized",
+      "surface_distance_mm": 37.00000023841858
+    },
+    {
+      "a": "front_bearing",
+      "b": "rotor_shaft",
+      "kind": "journal_bearing",
+      "source": "relation/front_running_bearing",
+      "status": "geometrically_unrealized",
+      "surface_distance_mm": 129.00694425435373
+    },
+    {
+      "a": "rear_bearing",
+      "b": "rotor_shaft",
+      "kind": "journal_bearing",
+      "source": "relation/rear_running_bearing",
+      "status": "geometrically_unrealized",
+      "surface_distance_mm": 129.19768870687298
+    },
+    {
+      "a": "wind_rotor",
+      "b": "rotor_shaft",
+      "kind": "press_fit",
+      "source": "relation/rotor_press_fit",
+      "status": "geometrically_unrealized",
+      "surface_distance_mm": 73.86907656206435
+    },
+    {
+      "a": "crank_disk",
+      "b": "rotor_shaft",
+      "kind": "press_fit",
+      "source": "relation/disk_press_fit",
+      "status": "geometrically_unrealized",
+      "surface_distance_mm": 114.26230265275666
+    },
+    {
+      "a": "crank_pin",
+      "b": "crank_disk",
+      "kind": "press_fit",
+      "source": "relation/pin_press_fit",
+      "status": "geometrically_unrealized",
+      "surface_distance_mm": 127.66032681272507
+    },
+    {
+      "a": "connecting_rod",
+      "b": "crank_pin",
+      "kind": "pin_hinge",
+      "source": "relation/big_end_pin_hinge",
+      "status": "geometrically_unrealized",
+      "surface_distance_mm": 101.0715258828384
+    },
+    {
+      "a": "connecting_rod",
+      "b": "vertical_crosshead",
+      "kind": "point_closure",
+      "source": "relation/small_end_closure",
+      "status": "geometrically_unrealized",
+      "surface_distance_mm": 43.22449416439567
+    },
+    {
+      "a": "vertical_crosshead",
+      "b": "vertical_guide",
+      "kind": "running_guide",
+      "source": "relation/crosshead_running_slide",
+      "status": "geometrically_unrealized",
+      "surface_distance_mm": 41.27902783594702
+    },
+    {
+      "a": "vertical_crosshead",
+      "b": "pump_rod",
+      "kind": "rigid_carrying",
+      "source": "relation/crosshead_carries_rod",
+      "status": "conservative_realized",
+      "surface_distance_mm": 6.999998092651367
+    },
+    {
+      "a": "pump_rod",
+      "b": "piston_output",
+      "kind": "rigid_carrying",
+      "source": "relation/rod_carries_piston",
+      "status": "geometrically_unrealized",
+      "surface_distance_mm": 37.00000023841858
+    }
+  ],
+  "gears": [],
+  "physical_links": [
+    "base",
+    "connecting_rod",
+    "crank_disk",
+    "crank_pin",
+    "front_bearing",
+    "piston_output",
+    "pump_rod",
+    "rear_bearing",
+    "rotor_shaft",
+    "vertical_crosshead",
+    "vertical_guide",
+    "wind_rotor"
+  ],
+  "root_link": "base",
+  "strict_1_5mm": {
+    "components": [
+      [
+        "base",
+        "front_bearing"
+      ],
+      [
+        "connecting_rod"
+      ],
+      [
+        "crank_disk"
+      ],
+      [
+        "crank_pin"
+      ],
+      [
+        "piston_output"
+      ],
+      [
+        "pump_rod"
+      ],
+      [
+        "rear_bearing"
+      ],
+      [
+        "rotor_shaft"
+      ],
+      [
+        "vertical_crosshead"
+      ],
+      [
+        "vertical_guide"
+      ],
+      [
+        "wind_rotor"
+      ]
+    ],
+    "floating_links": [
+      "connecting_rod",
+      "crank_disk",
+      "crank_pin",
+      "piston_output",
+      "pump_rod",
+      "rear_bearing",
+      "rotor_shaft",
+      "vertical_crosshead",
+      "vertical_guide",
+      "wind_rotor"
+    ]
+  },
+  "task_id": "10_wind_rotor_pump"
+}

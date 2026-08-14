@@ -1,0 +1,523 @@
+{
+  "links": [
+    {
+      "axis": null,
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/base.stl",
+      "mesh_filename": "meshes/base.stl",
+      "mount": "",
+      "name": "base",
+      "rigid_mount": "world",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axis": null,
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/input_front_bearing.stl",
+      "mesh_filename": "meshes/input_front_bearing.stl",
+      "mount": "base",
+      "name": "input_front_bearing",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axis": null,
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/input_rear_bearing.stl",
+      "mesh_filename": "meshes/input_rear_bearing.stl",
+      "mount": "base",
+      "name": "input_rear_bearing",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axis": null,
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/output_front_bearing.stl",
+      "mesh_filename": "meshes/output_front_bearing.stl",
+      "mount": "base",
+      "name": "output_front_bearing",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axis": null,
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/output_rear_bearing.stl",
+      "mesh_filename": "meshes/output_rear_bearing.stl",
+      "mount": "base",
+      "name": "output_rear_bearing",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "dof": "spin",
+      "driver": true,
+      "mesh": "meshes/input_shaft.stl",
+      "mesh_filename": "meshes/input_shaft.stl",
+      "mount": "",
+      "name": "input_shaft",
+      "rigid_mount": null,
+      "slide_axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "spin_axis": [
+        0.0,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/input_pinion.stl",
+      "mesh_filename": "meshes/input_pinion.stl",
+      "mount": "input_shaft",
+      "name": "input_pinion",
+      "rigid_mount": "input_shaft",
+      "slide_axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "spin_axis": [
+        0.0,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/hand_crank.stl",
+      "mesh_filename": "meshes/hand_crank.stl",
+      "mount": "input_shaft",
+      "name": "hand_crank",
+      "rigid_mount": "input_shaft",
+      "slide_axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "spin_axis": [
+        0.0,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "dof": "spin",
+      "driver": false,
+      "mesh": "meshes/output_shaft.stl",
+      "mesh_filename": "meshes/output_shaft.stl",
+      "mount": "",
+      "name": "output_shaft",
+      "rigid_mount": null,
+      "slide_axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "spin_axis": [
+        0.0,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/output_gear.stl",
+      "mesh_filename": "meshes/output_gear.stl",
+      "mount": "output_shaft",
+      "name": "output_gear",
+      "rigid_mount": "output_shaft",
+      "slide_axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "spin_axis": [
+        0.0,
+        1.0,
+        0.0
+      ]
+    }
+  ],
+  "mesh_pairs": [
+    [
+      "input_pinion",
+      "output_gear"
+    ]
+  ],
+  "motion_joints": [
+    {
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "child": "input_shaft",
+      "driver": true,
+      "kind": "spin",
+      "name": "input_shaft_hinge",
+      "origin_m": [
+        -0.045,
+        0.0,
+        0.09
+      ],
+      "parent": "base",
+      "pos_mm": [
+        -45.0,
+        0.0,
+        90.0
+      ],
+      "type": "spin"
+    },
+    {
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "child": "output_shaft",
+      "driver": false,
+      "kind": "spin",
+      "name": "output_shaft_hinge",
+      "origin_m": [
+        0.045,
+        0.0,
+        0.09
+      ],
+      "parent": "base",
+      "pos_mm": [
+        45.0,
+        0.0,
+        90.0
+      ],
+      "type": "spin"
+    }
+  ],
+  "name": "open_frame_single_stage_4to1",
+  "output_link": "output_shaft",
+  "planetary_stages": [],
+  "ports_by_link": {
+    "base": [
+      "input_axis_support",
+      "output_axis_support"
+    ],
+    "input_pinion": [
+      "input_mesh_pitch_surface"
+    ],
+    "input_shaft": [
+      "input_shaft_axis",
+      "input_pinion_press_fit",
+      "hand_crank_press_fit"
+    ],
+    "output_gear": [
+      "output_mesh_pitch_surface"
+    ],
+    "output_shaft": [
+      "output_shaft_axis",
+      "output_gear_press_fit"
+    ]
+  },
+  "poses": [
+    {
+      "child": "base",
+      "name": "place_base",
+      "parent": "",
+      "rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "xyz_m": [
+        0.02,
+        0.0,
+        0.004
+      ]
+    },
+    {
+      "child": "input_front_bearing",
+      "name": "place_input_front_bearing",
+      "parent": "",
+      "rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "xyz_m": [
+        -0.045,
+        -0.028,
+        0.09
+      ]
+    },
+    {
+      "child": "input_rear_bearing",
+      "name": "place_input_rear_bearing",
+      "parent": "",
+      "rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "xyz_m": [
+        -0.045,
+        0.028,
+        0.09
+      ]
+    },
+    {
+      "child": "output_front_bearing",
+      "name": "place_output_front_bearing",
+      "parent": "",
+      "rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "xyz_m": [
+        0.045,
+        -0.028,
+        0.09
+      ]
+    },
+    {
+      "child": "output_rear_bearing",
+      "name": "place_output_rear_bearing",
+      "parent": "",
+      "rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "xyz_m": [
+        0.045,
+        0.028,
+        0.09
+      ]
+    },
+    {
+      "child": "input_shaft",
+      "name": "place_input_shaft",
+      "parent": "",
+      "rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "xyz_m": [
+        -0.045,
+        0.0,
+        0.09
+      ]
+    },
+    {
+      "child": "input_pinion",
+      "name": "place_input_pinion",
+      "parent": "",
+      "rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "xyz_m": [
+        -0.045,
+        0.0,
+        0.09
+      ]
+    },
+    {
+      "child": "hand_crank",
+      "name": "place_hand_crank",
+      "parent": "",
+      "rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "xyz_m": [
+        -0.045,
+        0.0,
+        0.09
+      ]
+    },
+    {
+      "child": "output_shaft",
+      "name": "place_output_shaft",
+      "parent": "",
+      "rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "xyz_m": [
+        0.045,
+        0.0,
+        0.09
+      ]
+    },
+    {
+      "child": "output_gear",
+      "name": "place_output_gear",
+      "parent": "",
+      "rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "xyz_m": [
+        0.045,
+        0.0,
+        0.09
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "base_part": "input_front_bearing",
+      "incoming_part": "input_shaft",
+      "mate_type": "journal_bearing",
+      "name": "input_front_running_fit"
+    },
+    {
+      "base_part": "input_rear_bearing",
+      "incoming_part": "input_shaft",
+      "mate_type": "journal_bearing",
+      "name": "input_rear_running_fit"
+    },
+    {
+      "base_part": "output_front_bearing",
+      "incoming_part": "output_shaft",
+      "mate_type": "journal_bearing",
+      "name": "output_front_running_fit"
+    },
+    {
+      "base_part": "output_rear_bearing",
+      "incoming_part": "output_shaft",
+      "mate_type": "journal_bearing",
+      "name": "output_rear_running_fit"
+    },
+    {
+      "base_part": "input_shaft",
+      "incoming_part": "input_pinion",
+      "mate_type": "press_fit",
+      "name": "pinion_press_fit"
+    },
+    {
+      "base_part": "input_shaft",
+      "incoming_part": "hand_crank",
+      "mate_type": "press_fit",
+      "name": "crank_press_fit"
+    },
+    {
+      "base_part": "output_shaft",
+      "incoming_part": "output_gear",
+      "mate_type": "press_fit",
+      "name": "gear_press_fit"
+    },
+    {
+      "base_part": "input_pinion",
+      "incoming_part": "output_gear",
+      "mate_type": "gear_spur_external",
+      "name": "live_spur_mesh"
+    }
+  ],
+  "root_link": "base",
+  "transmissions": [
+    {
+      "driven_joint": "output_shaft_hinge",
+      "driven_link": "output_shaft_hinge",
+      "driving_joint": "input_shaft_hinge",
+      "driving_link": "input_shaft_hinge",
+      "name": "spur_mesh_12t_to_48t",
+      "ratio": -0.25,
+      "ratio_convention": "driven_over_driving",
+      "type": "ideal_external_gear"
+    }
+  ],
+  "watch_links": [
+    "hand_crank",
+    "input_pinion",
+    "output_gear",
+    "output_shaft"
+  ]
+}

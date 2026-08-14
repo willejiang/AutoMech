@@ -1,0 +1,259 @@
+<mujoco model="an_openwork_mechanical_watch_mov">
+  <compiler angle="radian" coordinate="local" />
+  <option gravity="0 0 -9.81" timestep="0.0002" solver="Newton" iterations="100" cone="elliptic" />
+  <size memory="256M" />
+  <asset>
+    <mesh name="mesh_baseplate" file="meshes/baseplate.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_pillar_01" file="meshes/pillar_01.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_pillar_02" file="meshes/pillar_02.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_pillar_03" file="meshes/pillar_03.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_pillar_04" file="meshes/pillar_04.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_central_lower_bearing" file="meshes/central_lower_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_intermediate_lower_bearing" file="meshes/intermediate_lower_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_upper_bridge" file="meshes/upper_bridge.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_central_upper_bearing" file="meshes/central_upper_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_intermediate_upper_bearing" file="meshes/intermediate_upper_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_dial_marker_01" file="meshes/dial_marker_01.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_dial_marker_02" file="meshes/dial_marker_02.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_dial_marker_03" file="meshes/dial_marker_03.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_dial_marker_04" file="meshes/dial_marker_04.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_dial_marker_05" file="meshes/dial_marker_05.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_dial_marker_06" file="meshes/dial_marker_06.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_dial_marker_07" file="meshes/dial_marker_07.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_dial_marker_08" file="meshes/dial_marker_08.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_dial_marker_09" file="meshes/dial_marker_09.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_dial_marker_10" file="meshes/dial_marker_10.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_dial_marker_11" file="meshes/dial_marker_11.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_dial_marker_12" file="meshes/dial_marker_12.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_minute_pipe" file="meshes/minute_pipe.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_minute_pinion" file="meshes/minute_pinion.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_minute_hand" file="meshes/minute_hand.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_intermediate_arbor" file="meshes/intermediate_arbor.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_intermediate_wheel" file="meshes/intermediate_wheel.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_intermediate_pinion" file="meshes/intermediate_pinion.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hour_pipe" file="meshes/hour_pipe.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hour_wheel" file="meshes/hour_wheel.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hour_hand" file="meshes/hour_hand.stl" scale=".001 .001 .001" />
+  </asset>
+  <worldbody>
+    <light pos="0 0 3" dir="0 0 -1" />
+    <geom name="ground" type="plane" size="5 5 .1" friction="1 .05 .005" />
+    <body name="baseplate" pos="0 0 0" quat="1 0 0 0">
+      <inertial pos="-0.0002426209856 -5.231173041e-18 0.001" mass="0.0109184435" fullinertia="2.471183814e-06 3.151057274e-06 5.614962126e-06 -6.229741797e-23 -3.435900453e-23 -8.757827648e-23" />
+      <geom name="geom_baseplate" type="sdf" mesh="mesh_baseplate" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+      <body name="pillar_01" pos="-0.02 -0.012 0.002" quat="1 0 0 0">
+        <inertial pos="-3.548544386e-21 -4.174910985e-21 0.004099999905" mass="0.0001637338168" fullinertia="9.505974698e-10 9.505974701e-10 6.62847189e-11 7.262708953e-29 -9.586775762e-27 1.25920196e-26" />
+        <geom name="geom_pillar_01" type="sdf" mesh="mesh_pillar_01" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+        <body name="upper_bridge" pos="0.02 0.012 0.0082" quat="1 0 0 0">
+          <inertial pos="-0.0002426209856 2.324965796e-18 0.00075" mass="0.008188832623" fullinertia="1.852193656e-06 2.362098751e-06 4.211221594e-06 -4.650446435e-23 -2.454214609e-24 -9.519377879e-25" />
+          <geom name="geom_upper_bridge" type="sdf" mesh="mesh_upper_bridge" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          <body name="central_upper_bearing" pos="0 0 0" quat="1 0 0 0">
+            <inertial pos="-3.427624971e-20 6.930828227e-20 0.00075" mass="8.051725103e-05" fullinertia="1.322513445e-10 1.322513429e-10 2.343087183e-10 -9.29626746e-28 1.648634932e-27 3.602211438e-27" />
+            <geom name="geom_central_upper_bearing" type="sdf" mesh="mesh_central_upper_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+            <body name="hour_pipe" pos="0 0 -0.0024" quat="1 0 0 0">
+              <inertial pos="-1.476159928e-20 -1.053940708e-19 0.004199999809" mass="0.000196800057" fullinertia="1.276671055e-09 1.276671052e-09 2.389736462e-10 -5.991734886e-28 1.754670538e-26 -1.236087491e-25" />
+              <geom name="geom_hour_pipe" type="sdf" mesh="mesh_hour_pipe" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+              <joint name="hour_rotation" type="hinge" axis="0 0 1" pos="0 0 0" />
+              <body name="hour_wheel" pos="0 0 0.0011" quat="0.999390827 0 0 0.0348994967">
+                <inertial pos="-4.817550342e-09 9.083155117e-19 0.0008999999762" mass="0.004399608861" fullinertia="1.149006376e-07 1.149007769e-07 2.274256258e-07 1.223369546e-24 6.455719856e-25 -8.318998296e-25" />
+                <geom name="geom_hour_wheel" type="sdf" mesh="mesh_hour_wheel" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+              </body>
+              <body name="hour_hand" pos="0 0 0.0079" quat="1 0 0 0">
+                <inertial pos="0.005544683166 -3.785412712e-20 0.00025" mass="8.765248483e-05" fullinertia="4.954205063e-11 2.122047197e-09 2.167937061e-09 -1.311005266e-26 -0 -8.715463518e-28" />
+                <geom name="geom_hour_hand" type="sdf" mesh="mesh_hour_hand" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+              </body>
+            </body>
+          </body>
+          <body name="intermediate_upper_bearing" pos="0.0135 0 0" quat="1 0 0 0">
+            <inertial pos="-1.870589795e-20 2.621040644e-20 0.00075" mass="0.0001242424647" fullinertia="1.673570027e-10 1.673570015e-10 2.881230799e-10 -4.085273786e-28 -1.743050149e-27 1.85916129e-27" />
+            <geom name="geom_intermediate_upper_bearing" type="sdf" mesh="mesh_intermediate_upper_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+          <body name="dial_marker_01" pos="0 0.0225 0.0015" quat="1 0 0 0">
+            <inertial pos="0 0 0.000224999994" mass="6.888374565e-06" fullinertia="3.996692035e-12 4.391338724e-13 4.203343278e-12 -0 -0 -0" />
+            <geom name="geom_dial_marker_01" type="sdf" mesh="mesh_dial_marker_01" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+          <body name="dial_marker_02" pos="0.01125 0.01948557159 0.0015" quat="0.9659258263 0 0 -0.2588190451">
+            <inertial pos="0 0 0.000224999994" mass="3.002625005e-06" fullinertia="7.738015235e-13 1.132239819e-13 7.856869168e-13 -0 -0 -0" />
+            <geom name="geom_dial_marker_02" type="sdf" mesh="mesh_dial_marker_02" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+          <body name="dial_marker_03" pos="0.01948557159 0.01125 0.0015" quat="0.8660254038 0 0 -0.5">
+            <inertial pos="0 0 0.000224999994" mass="3.002625005e-06" fullinertia="7.738015235e-13 1.132239819e-13 7.856869168e-13 -0 -0 -0" />
+            <geom name="geom_dial_marker_03" type="sdf" mesh="mesh_dial_marker_03" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+          <body name="dial_marker_04" pos="0.0225 1.377727649e-18 0.0015" quat="0.7071067812 0 0 -0.7071067812">
+            <inertial pos="0 0 0.000224999994" mass="6.888374565e-06" fullinertia="3.996692035e-12 4.391338724e-13 4.203343278e-12 -0 -0 -0" />
+            <geom name="geom_dial_marker_04" type="sdf" mesh="mesh_dial_marker_04" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+          <body name="dial_marker_05" pos="0.01948557159 -0.01125 0.0015" quat="0.5 0 0 -0.8660254038">
+            <inertial pos="0 0 0.000224999994" mass="3.002625005e-06" fullinertia="7.738015235e-13 1.132239819e-13 7.856869168e-13 -0 -0 -0" />
+            <geom name="geom_dial_marker_05" type="sdf" mesh="mesh_dial_marker_05" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+          <body name="dial_marker_06" pos="0.01125 -0.01948557159 0.0015" quat="0.2588190451 0 0 -0.9659258263">
+            <inertial pos="0 0 0.000224999994" mass="3.002625005e-06" fullinertia="7.738015235e-13 1.132239819e-13 7.856869168e-13 -0 -0 -0" />
+            <geom name="geom_dial_marker_06" type="sdf" mesh="mesh_dial_marker_06" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+          <body name="dial_marker_07" pos="2.755455298e-18 -0.0225 0.0015" quat="6.123233996e-17 0 0 -1">
+            <inertial pos="0 0 0.000224999994" mass="6.888374565e-06" fullinertia="3.996692035e-12 4.391338724e-13 4.203343278e-12 -0 -0 -0" />
+            <geom name="geom_dial_marker_07" type="sdf" mesh="mesh_dial_marker_07" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+          <body name="dial_marker_08" pos="-0.01125 -0.01948557159 0.0015" quat="0.2588190451 0 0 0.9659258263">
+            <inertial pos="0 0 0.000224999994" mass="3.002625005e-06" fullinertia="7.738015235e-13 1.132239819e-13 7.856869168e-13 -0 -0 -0" />
+            <geom name="geom_dial_marker_08" type="sdf" mesh="mesh_dial_marker_08" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+          <body name="dial_marker_09" pos="-0.01948557159 -0.01125 0.0015" quat="0.5 0 0 0.8660254038">
+            <inertial pos="0 0 0.000224999994" mass="3.002625005e-06" fullinertia="7.738015235e-13 1.132239819e-13 7.856869168e-13 -0 -0 -0" />
+            <geom name="geom_dial_marker_09" type="sdf" mesh="mesh_dial_marker_09" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+          <body name="dial_marker_10" pos="-0.0225 -4.133182947e-18 0.0015" quat="0.7071067812 0 0 0.7071067812">
+            <inertial pos="0 0 0.000224999994" mass="6.888374565e-06" fullinertia="3.996692035e-12 4.391338724e-13 4.203343278e-12 -0 -0 -0" />
+            <geom name="geom_dial_marker_10" type="sdf" mesh="mesh_dial_marker_10" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+          <body name="dial_marker_11" pos="-0.01948557159 0.01125 0.0015" quat="0.8660254038 0 0 0.5">
+            <inertial pos="0 0 0.000224999994" mass="3.002625005e-06" fullinertia="7.738015235e-13 1.132239819e-13 7.856869168e-13 -0 -0 -0" />
+            <geom name="geom_dial_marker_11" type="sdf" mesh="mesh_dial_marker_11" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+          <body name="dial_marker_12" pos="-0.01125 0.01948557159 0.0015" quat="0.9659258263 0 0 0.2588190451">
+            <inertial pos="0 0 0.000224999994" mass="3.002625005e-06" fullinertia="7.738015235e-13 1.132239819e-13 7.856869168e-13 -0 -0 -0" />
+            <geom name="geom_dial_marker_12" type="sdf" mesh="mesh_dial_marker_12" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+        </body>
+      </body>
+      <body name="pillar_02" pos="-0.02 0.012 0.002" quat="1 0 0 0">
+        <inertial pos="-3.548544386e-21 -4.174910985e-21 0.004099999905" mass="0.0001637338168" fullinertia="9.505974698e-10 9.505974701e-10 6.62847189e-11 7.262708953e-29 -9.586775762e-27 1.25920196e-26" />
+        <geom name="geom_pillar_02" type="sdf" mesh="mesh_pillar_02" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+      </body>
+      <body name="pillar_03" pos="0.02 -0.012 0.002" quat="1 0 0 0">
+        <inertial pos="-3.548544386e-21 -4.174910985e-21 0.004099999905" mass="0.0001637338168" fullinertia="9.505974698e-10 9.505974701e-10 6.62847189e-11 7.262708953e-29 -9.586775762e-27 1.25920196e-26" />
+        <geom name="geom_pillar_03" type="sdf" mesh="mesh_pillar_03" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+      </body>
+      <body name="pillar_04" pos="0.02 0.012 0.002" quat="1 0 0 0">
+        <inertial pos="-3.548544386e-21 -4.174910985e-21 0.004099999905" mass="0.0001637338168" fullinertia="9.505974698e-10 9.505974701e-10 6.62847189e-11 7.262708953e-29 -9.586775762e-27 1.25920196e-26" />
+        <geom name="geom_pillar_04" type="sdf" mesh="mesh_pillar_04" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+      </body>
+      <body name="central_lower_bearing" pos="0 0 0" quat="1 0 0 0">
+        <inertial pos="1.236001796e-20 1.444928236e-20 0.002400000095" mass="0.0003878139923" fullinertia="1.2022761e-09 1.202276096e-09 9.153463463e-10 -4.935010733e-27 1.150413144e-26 2.347307587e-26" />
+        <geom name="geom_central_lower_bearing" type="sdf" mesh="mesh_central_lower_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+        <body name="minute_pipe" pos="0 0 0.002" quat="1 0 0 0">
+          <inertial pos="-4.845689158e-21 1.537583545e-20 0.007599999905" mass="0.0002398076712" fullinertia="4.655450243e-09 4.655450242e-09 7.670665608e-11 -4.357625372e-29 2.324066976e-27 8.752097608e-26" />
+          <geom name="geom_minute_pipe" type="sdf" mesh="mesh_minute_pipe" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          <joint name="minute_rotation" type="hinge" axis="0 0 1" pos="0 0 0" />
+          <body name="minute_pinion" pos="0 0 0.0044" quat="1 0 0 0">
+            <inertial pos="-6.59675964e-20 -3.710677298e-20 0.0008999999762" mass="0.0002818434494" fullinertia="6.806233465e-10 6.806233464e-10 1.209051238e-09 -5.112947103e-27 -2.417029495e-26 -2.033558482e-26" />
+            <geom name="geom_minute_pinion" type="sdf" mesh="mesh_minute_pinion" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+          <body name="minute_hand" pos="0 0 0.0144" quat="0.7071067812 0 0 0.7071067812">
+            <inertial pos="0.009022300242 -7.298997186e-21 0.00025" mass="8.508755409e-05" fullinertia="1.819314939e-11 4.136926303e-09 4.151574138e-09 -7.351831191e-27 2.788880238e-26 3.631372208e-28" />
+            <geom name="geom_minute_hand" type="sdf" mesh="mesh_minute_hand" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+        </body>
+      </body>
+      <body name="intermediate_lower_bearing" pos="0.0135 0 0" quat="1 0 0 0">
+        <inertial pos="1.13258362e-20 1.409450079e-20 0.002400000095" mass="0.0003975759028" fullinertia="1.224342742e-09 1.224342738e-09 9.219938922e-10 -4.909591252e-27 1.080691135e-26 2.347307587e-26" />
+        <geom name="geom_intermediate_lower_bearing" type="sdf" mesh="mesh_intermediate_lower_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+        <body name="intermediate_arbor" pos="0 0 0.002" quat="1 0 0 0">
+          <inertial pos="6.479568885e-21 7.85268065e-21 0.004849999905" mass="0.0001345035588" fullinertia="1.073526671e-09 1.073526671e-09 3.781345102e-11 5.083896267e-29 -7.85825117e-27 -1.077429976e-26" />
+          <geom name="geom_intermediate_arbor" type="sdf" mesh="mesh_intermediate_arbor" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          <joint name="intermediate_rotation" type="hinge" axis="0 0 1" pos="0 0 0" />
+          <body name="intermediate_wheel" pos="0 0 0.0044" quat="0.9994645875 0 0 0.03271908282">
+            <inertial pos="-2.640024864e-19 6.244850482e-21 0.0008999999762" mass="0.005070643585" fullinertia="1.487312355e-07 1.487312355e-07 2.947243235e-07 -6.061166384e-25 1.45765477e-24 -7.00415659e-26" />
+            <geom name="geom_intermediate_wheel" type="sdf" mesh="mesh_intermediate_wheel" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+          <body name="intermediate_pinion" pos="0 0 0.0069" quat="1 0 0 0">
+            <inertial pos="-6.341899683e-12 -2.769191598e-20 0.0008999999762" mass="0.0004615920317" fullinertia="1.560753865e-09 1.560753852e-09 2.872248034e-09 1.533884139e-26 -3.24649943e-26 -1.499023097e-26" />
+            <geom name="geom_intermediate_pinion" type="sdf" mesh="mesh_intermediate_pinion" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <equality>
+    <joint name="stage_1_external_mesh" joint1="intermediate_rotation" joint2="minute_rotation" polycoef="0 -0.25 0 0 0" />
+    <joint name="stage_2_external_mesh" joint1="hour_rotation" joint2="intermediate_rotation" polycoef="0 -0.3333333333 0 0 0" />
+  </equality>
+  <contact>
+    <exclude body1="baseplate" body2="minute_pipe" />
+    <exclude body1="central_lower_bearing" body2="minute_pipe" />
+    <exclude body1="hour_pipe" body2="minute_pipe" />
+    <exclude body1="minute_pinion" body2="minute_pipe" />
+    <exclude body1="minute_hand" body2="minute_pipe" />
+    <exclude body1="intermediate_wheel" body2="minute_pipe" />
+    <exclude body1="baseplate" body2="intermediate_arbor" />
+    <exclude body1="intermediate_arbor" body2="intermediate_lower_bearing" />
+    <exclude body1="intermediate_arbor" body2="intermediate_upper_bearing" />
+    <exclude body1="intermediate_arbor" body2="intermediate_wheel" />
+    <exclude body1="intermediate_arbor" body2="intermediate_pinion" />
+    <exclude body1="hour_wheel" body2="intermediate_arbor" />
+    <exclude body1="hour_hand" body2="intermediate_arbor" />
+    <exclude body1="central_upper_bearing" body2="hour_pipe" />
+    <exclude body1="hour_pipe" body2="hour_wheel" />
+    <exclude body1="hour_hand" body2="hour_pipe" />
+    <exclude body1="hour_pipe" body2="minute_hand" />
+    <exclude body1="hour_pipe" body2="intermediate_wheel" />
+    <exclude body1="central_lower_bearing" body2="hour_pipe" />
+    <exclude body1="intermediate_wheel" body2="minute_pinion" />
+    <exclude body1="hour_wheel" body2="minute_pinion" />
+    <exclude body1="central_lower_bearing" body2="minute_pinion" />
+    <exclude body1="minute_pinion" body2="upper_bridge" />
+    <exclude body1="central_upper_bearing" body2="minute_pinion" />
+    <exclude body1="baseplate" body2="minute_pinion" />
+    <exclude body1="hour_wheel" body2="intermediate_wheel" />
+    <exclude body1="intermediate_pinion" body2="intermediate_wheel" />
+    <exclude body1="central_lower_bearing" body2="intermediate_wheel" />
+    <exclude body1="intermediate_lower_bearing" body2="intermediate_wheel" />
+    <exclude body1="intermediate_wheel" body2="upper_bridge" />
+    <exclude body1="central_upper_bearing" body2="intermediate_wheel" />
+    <exclude body1="intermediate_upper_bearing" body2="intermediate_wheel" />
+    <exclude body1="dial_marker_03" body2="intermediate_wheel" />
+    <exclude body1="dial_marker_04" body2="intermediate_wheel" />
+    <exclude body1="dial_marker_05" body2="intermediate_wheel" />
+    <exclude body1="baseplate" body2="intermediate_wheel" />
+    <exclude body1="hour_hand" body2="intermediate_wheel" />
+    <exclude body1="dial_marker_02" body2="intermediate_wheel" />
+    <exclude body1="dial_marker_06" body2="intermediate_wheel" />
+    <exclude body1="intermediate_wheel" body2="minute_hand" />
+    <exclude body1="dial_marker_07" body2="intermediate_wheel" />
+    <exclude body1="dial_marker_01" body2="intermediate_wheel" />
+    <exclude body1="dial_marker_08" body2="intermediate_wheel" />
+    <exclude body1="dial_marker_12" body2="intermediate_wheel" />
+    <exclude body1="hour_wheel" body2="intermediate_pinion" />
+    <exclude body1="dial_marker_04" body2="intermediate_pinion" />
+    <exclude body1="intermediate_lower_bearing" body2="intermediate_pinion" />
+    <exclude body1="hour_hand" body2="intermediate_pinion" />
+    <exclude body1="hour_wheel" body2="intermediate_upper_bearing" />
+    <exclude body1="central_lower_bearing" body2="hour_wheel" />
+    <exclude body1="hour_wheel" body2="intermediate_lower_bearing" />
+    <exclude body1="hour_hand" body2="hour_wheel" />
+    <exclude body1="hour_wheel" body2="minute_hand" />
+    <exclude body1="baseplate" body2="hour_wheel" />
+    <exclude body1="dial_marker_12" body2="hour_wheel" />
+    <exclude body1="dial_marker_02" body2="hour_wheel" />
+    <exclude body1="dial_marker_06" body2="hour_wheel" />
+    <exclude body1="dial_marker_08" body2="hour_wheel" />
+    <exclude body1="dial_marker_03" body2="hour_wheel" />
+    <exclude body1="dial_marker_05" body2="hour_wheel" />
+    <exclude body1="dial_marker_09" body2="hour_wheel" />
+    <exclude body1="dial_marker_11" body2="hour_wheel" />
+    <exclude body1="hour_wheel" body2="pillar_03" />
+    <exclude body1="hour_wheel" body2="pillar_04" />
+    <exclude body1="hour_wheel" body2="pillar_01" />
+    <exclude body1="hour_wheel" body2="pillar_02" />
+    <exclude body1="dial_marker_01" body2="hour_wheel" />
+    <exclude body1="dial_marker_07" body2="hour_wheel" />
+    <exclude body1="dial_marker_04" body2="hour_wheel" />
+    <exclude body1="dial_marker_10" body2="hour_wheel" />
+    <exclude body1="hour_hand" body2="minute_hand" />
+    <exclude body1="hour_hand" body2="upper_bridge" />
+    <exclude body1="central_upper_bearing" body2="hour_hand" />
+    <exclude body1="hour_hand" body2="intermediate_upper_bearing" />
+    <exclude body1="hour_hand" body2="minute_pinion" />
+    <exclude body1="dial_marker_04" body2="hour_hand" />
+    <exclude body1="dial_marker_01" body2="minute_hand" />
+    <exclude body1="minute_hand" body2="upper_bridge" />
+    <exclude body1="central_upper_bearing" body2="minute_hand" />
+    <exclude body1="minute_hand" body2="minute_pinion" />
+    <exclude body1="intermediate_pinion" body2="minute_hand" />
+    <exclude body1="dial_marker_02" body2="minute_hand" />
+    <exclude body1="dial_marker_12" body2="minute_hand" />
+    <exclude body1="intermediate_upper_bearing" body2="minute_hand" />
+  </contact>
+</mujoco>

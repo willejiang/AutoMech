@@ -1,0 +1,363 @@
+{
+  "first_blocker": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+  "layer_weights": [
+    10,
+    15,
+    15,
+    20,
+    40
+  ],
+  "layers": [
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "source_execution",
+              "path": "output/external_benchmark_work/claude-code/08_vertical_piston_pump/source/source_execution.json",
+              "sha256": "c07c9185aec7cfbc96d68445b2717a97375779c8075792128be7231eb588061c",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "scorer_owned_execution",
+          "points_awarded": 10,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "scorer-owned source build produced a nonempty part set; MJCF replay compiled, initialized, and stayed finite",
+          "status": "PASS"
+        }
+      ],
+      "index": 1,
+      "name": "execution",
+      "points_awarded": 10,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 10
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/claude-code/08_vertical_piston_pump/assembly.json",
+              "sha256": "97be90d9fc9a7a1d77e2922dbec61914d50f4c763aa99e6231b3ccbd33dd41f1",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "assembly_model",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "assembly/simulation model is available",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/claude-code/08_vertical_piston_pump/assembly.json",
+              "sha256": "97be90d9fc9a7a1d77e2922dbec61914d50f4c763aa99e6231b3ccbd33dd41f1",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "required_role_cardinalities",
+          "points_awarded": 7,
+          "points_possible": 7,
+          "raw_status": "PASS",
+          "reason": "all required roles are bound",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/claude-code/08_vertical_piston_pump/assembly.json",
+              "sha256": "97be90d9fc9a7a1d77e2922dbec61914d50f4c763aa99e6231b3ccbd33dd41f1",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "input_output_independence",
+          "points_awarded": 3,
+          "points_possible": 3,
+          "raw_status": "PASS",
+          "reason": "input and output are distinct",
+          "status": "PASS"
+        }
+      ],
+      "index": 2,
+      "name": "assembly",
+      "points_awarded": 15,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "geometry",
+              "path": "output/external_benchmark_strict/claude-code/08_vertical_piston_pump/strict/geometry.json",
+              "sha256": "dd043ed32bf17ea7cf6278719a49173a59433c1703d32ed92b11981aa8be0349",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "mesh_inventory",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "strict geometry hashes every scanned usable mesh",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "geometry",
+              "path": "output/external_benchmark_strict/claude-code/08_vertical_piston_pump/strict/geometry.json",
+              "sha256": "dd043ed32bf17ea7cf6278719a49173a59433c1703d32ed92b11981aa8be0349",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "non_exempt_conflicts",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "FAIL",
+          "reason": "strict non-exempt conflicts=2; unavailable=0",
+          "status": "FAIL"
+        }
+      ],
+      "index": 3,
+      "name": "geometry",
+      "points_awarded": 5,
+      "status": "FAIL",
+      "strict_gate": null,
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/08_vertical_piston_pump/replay/trajectory.json",
+              "sha256": "104072ac6c6d3b37ef27f3be83fae9446ebf8ebfb16836966bd232cda674fe3c",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+          "name": "trajectory_shape",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "trajectory has time samples and joint series",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/08_vertical_piston_pump/replay/trajectory.json",
+              "sha256": "104072ac6c6d3b37ef27f3be83fae9446ebf8ebfb16836966bd232cda674fe3c",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+          "name": "sample_alignment",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "all joint series align with time",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/08_vertical_piston_pump/replay/trajectory.json",
+              "sha256": "104072ac6c6d3b37ef27f3be83fae9446ebf8ebfb16836966bd232cda674fe3c",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+          "name": "finite_health",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "finite sample fraction=1",
+          "status": "GATED"
+        }
+      ],
+      "index": 4,
+      "name": "physics_ready",
+      "points_awarded": 0,
+      "status": "GATED",
+      "strict_gate": {
+        "passed": false,
+        "reason": "collision_coverage_ok, closure_ok, transmission_binding_ok, one or more physical mesh links lack active collision coverage, authored transmission/closure is not represented by a valid active constraint"
+      },
+      "weight": 20
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/08_vertical_piston_pump/replay/trajectory.json",
+              "sha256": "104072ac6c6d3b37ef27f3be83fae9446ebf8ebfb16836966bd232cda674fe3c",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+          "name": "input_motion",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "input travel=6.85025 rad reaches minimum 6.28319",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/08_vertical_piston_pump/replay/trajectory.json",
+              "sha256": "104072ac6c6d3b37ef27f3be83fae9446ebf8ebfb16836966bd232cda674fe3c",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+          "name": "motion_propagation",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "registered output exhibits motion",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/08_vertical_piston_pump/replay/trajectory.json",
+              "sha256": "104072ac6c6d3b37ef27f3be83fae9446ebf8ebfb16836966bd232cda674fe3c",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+          "name": "registered_output",
+          "points_awarded": 0,
+          "points_possible": 15,
+          "raw_status": "FAIL",
+          "reason": "output span=0.0468522 mm, reversals=1",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/08_vertical_piston_pump/replay/trajectory.json",
+              "sha256": "104072ac6c6d3b37ef27f3be83fae9446ebf8ebfb16836966bd232cda674fe3c",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+          "name": "registered_invariants",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "all registered invariants have passing named evidence",
+          "status": "GATED"
+        }
+      ],
+      "index": 5,
+      "name": "functional",
+      "points_awarded": 0,
+      "status": "GATED",
+      "strict_gate": null,
+      "weight": 40
+    }
+  ],
+  "method": "claude-code",
+  "points_possible": 100,
+  "provenance": {
+    "anchor_audit": {
+      "kind": "anchor_audit",
+      "path": "output/external_benchmark_strict/claude-code/08_vertical_piston_pump/strict/anchor_audit.json",
+      "sha256": "10c081ec097da1a1fda833df57e5cc56778fa6624f97351ed07afcb0a582dbd5",
+      "source": "scorer_owned"
+    },
+    "assembly": {
+      "kind": "assembly",
+      "path": "output/external_benchmark_staged/claude-code/08_vertical_piston_pump/assembly.json",
+      "sha256": "97be90d9fc9a7a1d77e2922dbec61914d50f4c763aa99e6231b3ccbd33dd41f1",
+      "source": "scorer_owned"
+    },
+    "bindings": {
+      "kind": "bindings",
+      "path": "output/external_benchmark_staged/claude-code/08_vertical_piston_pump/task_bindings.json",
+      "sha256": "fa6bcbdcf61a50d91fd18826e95e327cd17c9ec3912c120c1be71cc6eda22da7",
+      "source": "scorer_owned"
+    },
+    "contacts": {
+      "kind": "contacts",
+      "path": "output/external_benchmark_staged/claude-code/08_vertical_piston_pump/evidence/contacts.json",
+      "sha256": "65041245195211dbe2b45eb451f58e50d08147f80c27441deebc8d9a7687a2c0",
+      "source": "scorer_owned"
+    },
+    "geometry": {
+      "kind": "geometry",
+      "path": "output/external_benchmark_strict/claude-code/08_vertical_piston_pump/strict/geometry.json",
+      "sha256": "dd043ed32bf17ea7cf6278719a49173a59433c1703d32ed92b11981aa8be0349",
+      "source": "scorer_owned"
+    },
+    "model_audit": {
+      "kind": "model_audit",
+      "path": "output/external_benchmark_strict/claude-code/08_vertical_piston_pump/strict/model_audit.json",
+      "sha256": "b80613f923dd25bc24b5b89ea10f3d728bcf909e52e9ef0f9d7c55d67ea063b8",
+      "source": "scorer_owned"
+    },
+    "realization": {
+      "kind": "realization",
+      "path": "output/external_declared_realization_audit/claude-code/08_vertical_piston_pump.json",
+      "sha256": "025c04a5f41464850d9a761ad9796c0db4db1f2e93868f399e20c279da8b2b97",
+      "source": "scorer_owned"
+    },
+    "replay_status": {
+      "kind": "replay_status",
+      "path": "output/external_benchmark_work/claude-code/08_vertical_piston_pump/replay_status.json",
+      "sha256": "6a5646a4ca168c619f2d82123bfa6005c25c198fdaf713a16c0bbdf6bb1929b9",
+      "source": "scorer_owned"
+    },
+    "source_execution": {
+      "kind": "source_execution",
+      "path": "output/external_benchmark_work/claude-code/08_vertical_piston_pump/source/source_execution.json",
+      "sha256": "c07c9185aec7cfbc96d68445b2717a97375779c8075792128be7231eb588061c",
+      "source": "scorer_owned"
+    },
+    "strict_evidence_summary": {
+      "kind": "strict_evidence_summary",
+      "path": "output/external_benchmark_strict_scores_v1/claude-code/08_vertical_piston_pump/evidence.json",
+      "sha256": "e603c99a2f7ac38d8888471f956e680a82f63c84d07d666cba469e28555751f9",
+      "source": "scorer_owned"
+    },
+    "trajectory": {
+      "kind": "trajectory",
+      "path": "output/external_benchmark_work/claude-code/08_vertical_piston_pump/replay/trajectory.json",
+      "sha256": "104072ac6c6d3b37ef27f3be83fae9446ebf8ebfb16836966bd232cda674fe3c",
+      "source": "scorer_owned"
+    }
+  },
+  "schema": "physcad-external-strict-score/1.0",
+  "scorer_version": "physcad-external-strict-scorer/1.0",
+  "strict_verdict": "FAIL",
+  "suite_id": "physcad-comfort-v1",
+  "summary_reason": "Two conflicts, invalid closure semantics, and fourteen detached links.",
+  "task_id": "08_vertical_piston_pump",
+  "total_points": 30
+}

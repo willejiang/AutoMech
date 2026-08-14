@@ -1,0 +1,90 @@
+{
+  "task": "Corrected evaluator-only exact-kinematic retest of the unchanged two-stage 9:1 reducer",
+  "spec": {
+    "duration_s": 3.0,
+    "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\02_two_stage_9to1\\design_this_as_an_open_demonstra_20260811_163253",
+    "drive": {
+      "torque": 0.5,
+      "mode": "velocity",
+      "drive_method": "direct_qpos",
+      "target_velocity": 4.0,
+      "output_link": "output_shaft"
+    },
+    "design": {
+      "input_joint": "input_spin",
+      "output_joint": "output_spin",
+      "watch_joints": [
+        "input_spin",
+        "intermediate_spin",
+        "output_spin"
+      ],
+      "propagation_path": [
+        "input_spin",
+        "intermediate_spin",
+        "output_spin"
+      ],
+      "pass_criteria": "Input travels at least 9 rad; output follows at the exact same-direction 9:1 reduction through two external gear equalities.",
+      "environment": "Evaluator-only exact-kinematic retest of the unchanged accepted MJCF. The base is fixed and all three exposed shafts and both gear meshes remain visible.",
+      "camera": {
+        "target_link": "base",
+        "azimuth_deg": 45.0,
+        "elevation_deg": -30.0,
+        "distance_scale": 2.5,
+        "locked": true
+      }
+    }
+  },
+  "metrics": {
+    "verdict": "PASS",
+    "test_kind": "driven_mechanism",
+    "survive_s": 3.0,
+    "input_joint": "input_spin",
+    "input_part": "input_shaft",
+    "input_travel": 12.0,
+    "input_unit": "rad",
+    "moved_count": 6,
+    "watched_count": 6,
+    "output_reached": true,
+    "exploded": false,
+    "output_travel": 1.3331,
+    "output_unit": "rad",
+    "ratio_in_out": 9.0015,
+    "displaced_parts": [
+      {
+        "part": "crank_grip",
+        "disp_mm": 42.4
+      },
+      {
+        "part": "crank_handle_spindle",
+        "disp_mm": 32.0
+      }
+    ],
+    "end_z": 0.0,
+    "max_tilt_deg": 0.0,
+    "max_drift": 0.0424
+  },
+  "stability": {
+    "verdict": "PASS",
+    "exploded": false,
+    "max_disp_m": 0.0201,
+    "end_z": 0.0,
+    "displaced_parts": [
+      {
+        "part": "crank_grip",
+        "disp_mm": 20.11
+      },
+      {
+        "part": "crank_handle_spindle",
+        "disp_mm": 15.18
+      }
+    ]
+  },
+  "frames_dir": "output\\comfort_benchmark_v1_20260811\\02_two_stage_9to1\\design_this_as_an_open_demonstra_20260811_163253\\physics\\mujoco_corrected_direct_qpos\\frames",
+  "n_frames": 40,
+  "log": [
+    "initial contacts: 0 interpenetrating pair(s)",
+    "stability(settle): PASS max_disp=0.020m exploded=False",
+    "camera: az=45.0 el=-30.0 dist=0.156 (designer)",
+    "drive: method=direct_qpos mode=velocity rate=4"
+  ]
+}

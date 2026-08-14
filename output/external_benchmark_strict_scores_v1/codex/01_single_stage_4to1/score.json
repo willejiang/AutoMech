@@ -1,0 +1,363 @@
+{
+  "first_blocker": null,
+  "layer_weights": [
+    10,
+    15,
+    15,
+    20,
+    40
+  ],
+  "layers": [
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "source_execution",
+              "path": "output/external_benchmark_work/codex/01_single_stage_4to1/source/source_execution.json",
+              "sha256": "713499ad832448fb19df3ada5d00e1f33f6d938f18fb428f3ef90e12004141bd",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "scorer_owned_execution",
+          "points_awarded": 10,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "scorer-owned source build produced a nonempty part set; MJCF replay compiled, initialized, and stayed finite",
+          "status": "PASS"
+        }
+      ],
+      "index": 1,
+      "name": "execution",
+      "points_awarded": 10,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 10
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/codex/01_single_stage_4to1/assembly.json",
+              "sha256": "682a12d8f98d198264c5f5bd4152d938229ee12b8d0692ed711ac8bd3a315d02",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "assembly_model",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "assembly/simulation model is available",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/codex/01_single_stage_4to1/assembly.json",
+              "sha256": "682a12d8f98d198264c5f5bd4152d938229ee12b8d0692ed711ac8bd3a315d02",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "required_role_cardinalities",
+          "points_awarded": 7,
+          "points_possible": 7,
+          "raw_status": "PASS",
+          "reason": "all required roles are bound",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/codex/01_single_stage_4to1/assembly.json",
+              "sha256": "682a12d8f98d198264c5f5bd4152d938229ee12b8d0692ed711ac8bd3a315d02",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "input_output_independence",
+          "points_awarded": 3,
+          "points_possible": 3,
+          "raw_status": "PASS",
+          "reason": "input and output are distinct",
+          "status": "PASS"
+        }
+      ],
+      "index": 2,
+      "name": "assembly",
+      "points_awarded": 15,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "geometry",
+              "path": "output/external_benchmark_strict/codex/01_single_stage_4to1/strict/geometry.json",
+              "sha256": "21414f55135e3815c34eb093558452499bdd1caaa0c56745aea82f8297dfaf31",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "mesh_inventory",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "strict geometry hashes every scanned usable mesh",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "geometry",
+              "path": "output/external_benchmark_strict/codex/01_single_stage_4to1/strict/geometry.json",
+              "sha256": "21414f55135e3815c34eb093558452499bdd1caaa0c56745aea82f8297dfaf31",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "non_exempt_conflicts",
+          "points_awarded": 10,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "strict non-exempt conflicts=0; unavailable=0",
+          "status": "PASS"
+        }
+      ],
+      "index": 3,
+      "name": "geometry",
+      "points_awarded": 15,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/01_single_stage_4to1/replay/trajectory.json",
+              "sha256": "8712c84cd5c9499169196ffee9156ed044241978499e304b2c06ab450b4ffea7",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "trajectory_shape",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "trajectory has time samples and joint series",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/01_single_stage_4to1/replay/trajectory.json",
+              "sha256": "8712c84cd5c9499169196ffee9156ed044241978499e304b2c06ab450b4ffea7",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "sample_alignment",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "all joint series align with time",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/01_single_stage_4to1/replay/trajectory.json",
+              "sha256": "8712c84cd5c9499169196ffee9156ed044241978499e304b2c06ab450b4ffea7",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "finite_health",
+          "points_awarded": 10,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "finite sample fraction=1",
+          "status": "PASS"
+        }
+      ],
+      "index": 4,
+      "name": "physics_ready",
+      "points_awarded": 20,
+      "status": "PASS",
+      "strict_gate": {
+        "passed": true,
+        "reason": "strict model audit passed"
+      },
+      "weight": 20
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/01_single_stage_4to1/replay/trajectory.json",
+              "sha256": "8712c84cd5c9499169196ffee9156ed044241978499e304b2c06ab450b4ffea7",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "input_motion",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "input travel=8 rad reaches minimum 6",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/01_single_stage_4to1/replay/trajectory.json",
+              "sha256": "8712c84cd5c9499169196ffee9156ed044241978499e304b2c06ab450b4ffea7",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "motion_propagation",
+          "points_awarded": 10,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "registered output exhibits motion",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/01_single_stage_4to1/replay/trajectory.json",
+              "sha256": "8712c84cd5c9499169196ffee9156ed044241978499e304b2c06ab450b4ffea7",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "registered_output",
+          "points_awarded": 15,
+          "points_possible": 15,
+          "raw_status": "PASS",
+          "reason": "measured declared ratio=4, slope=-4, R^2=1",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/01_single_stage_4to1/replay/trajectory.json",
+              "sha256": "8712c84cd5c9499169196ffee9156ed044241978499e304b2c06ab450b4ffea7",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "registered_invariants",
+          "points_awarded": 10,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "all registered invariants have passing named evidence",
+          "status": "PASS"
+        }
+      ],
+      "index": 5,
+      "name": "functional",
+      "points_awarded": 40,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 40
+    }
+  ],
+  "method": "codex",
+  "points_possible": 100,
+  "provenance": {
+    "anchor_audit": {
+      "kind": "anchor_audit",
+      "path": "output/external_benchmark_strict/codex/01_single_stage_4to1/strict/anchor_audit.json",
+      "sha256": "51ba9c6b90ecbaa21d68536873a71a2b41bf0a862ea64e0215e455663e13bee3",
+      "source": "scorer_owned"
+    },
+    "assembly": {
+      "kind": "assembly",
+      "path": "output/external_benchmark_staged/codex/01_single_stage_4to1/assembly.json",
+      "sha256": "682a12d8f98d198264c5f5bd4152d938229ee12b8d0692ed711ac8bd3a315d02",
+      "source": "scorer_owned"
+    },
+    "bindings": {
+      "kind": "bindings",
+      "path": "output/external_benchmark_staged/codex/01_single_stage_4to1/task_bindings.json",
+      "sha256": "3ad968b27e1c7505a999f3f8ba8d00e5cee7b6f8afbf1fa13c7aaa3e01eb9a30",
+      "source": "scorer_owned"
+    },
+    "contacts": {
+      "kind": "contacts",
+      "path": "output/external_benchmark_staged/codex/01_single_stage_4to1/evidence/contacts.json",
+      "sha256": "d2e362585337e803d91a5acae6a472049dd389ab839850bbdcc7f0618cd37a21",
+      "source": "scorer_owned"
+    },
+    "geometry": {
+      "kind": "geometry",
+      "path": "output/external_benchmark_strict/codex/01_single_stage_4to1/strict/geometry.json",
+      "sha256": "21414f55135e3815c34eb093558452499bdd1caaa0c56745aea82f8297dfaf31",
+      "source": "scorer_owned"
+    },
+    "model_audit": {
+      "kind": "model_audit",
+      "path": "output/external_benchmark_strict/codex/01_single_stage_4to1/strict/model_audit.json",
+      "sha256": "b7f752f3f8935e5ca6f1655952f22e8589783db3f754a9927525cdf8f76787e3",
+      "source": "scorer_owned"
+    },
+    "realization": {
+      "kind": "realization",
+      "path": "output/external_declared_realization_audit/codex/01_single_stage_4to1.json",
+      "sha256": "a9cdeab7412599a27d200c0abcd10b004bfc9eaad167ed1fb0bb9099e803c63a",
+      "source": "scorer_owned"
+    },
+    "replay_status": {
+      "kind": "replay_status",
+      "path": "output/external_benchmark_work/codex/01_single_stage_4to1/replay_status.json",
+      "sha256": "266933bec4891c2541ecaaf2930372a4f5db990d5b2cd9b89e341d07bb388bdd",
+      "source": "scorer_owned"
+    },
+    "source_execution": {
+      "kind": "source_execution",
+      "path": "output/external_benchmark_work/codex/01_single_stage_4to1/source/source_execution.json",
+      "sha256": "713499ad832448fb19df3ada5d00e1f33f6d938f18fb428f3ef90e12004141bd",
+      "source": "scorer_owned"
+    },
+    "strict_evidence_summary": {
+      "kind": "strict_evidence_summary",
+      "path": "output/external_benchmark_strict_scores_v1/codex/01_single_stage_4to1/evidence.json",
+      "sha256": "9f737a6d116bfe466c1bb0b57929d716760a869069512359da42eff3fe4400a6",
+      "source": "scorer_owned"
+    },
+    "trajectory": {
+      "kind": "trajectory",
+      "path": "output/external_benchmark_work/codex/01_single_stage_4to1/replay/trajectory.json",
+      "sha256": "8712c84cd5c9499169196ffee9156ed044241978499e304b2c06ab450b4ffea7",
+      "source": "scorer_owned"
+    }
+  },
+  "schema": "physcad-external-strict-score/1.0",
+  "scorer_version": "physcad-external-strict-scorer/1.0",
+  "strict_verdict": "PASS",
+  "suite_id": "physcad-comfort-v1",
+  "summary_reason": "Source, geometry, one input actuator, ratio binding, collision proxies, and replay pass.",
+  "task_id": "01_single_stage_4to1",
+  "total_points": 100
+}

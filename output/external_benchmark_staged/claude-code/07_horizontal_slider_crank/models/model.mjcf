@@ -1,0 +1,70 @@
+<mujoco model="open_horizontal_slider_crank">
+  <compiler angle="radian" meshdir="meshes" balanceinertia="true" />
+  <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast" cone="elliptic" iterations="80" />
+  <size njmax="2000" nconmax="400" />
+  <default>
+    <joint damping="0.08" armature="0.002" />
+    <geom type="mesh" density="700" friction="0.7 0.03 0.002" solref="0.006 1" solimp="0.95 0.99 0.001" />
+  </default>
+  <asset>
+    <mesh name="base_mesh" file="base.stl" scale="0.001 0.001 0.001" />
+    <mesh name="bearing_support_front_mesh" file="bearing_support_front.stl" scale="0.001 0.001 0.001" />
+    <mesh name="bearing_support_rear_mesh" file="bearing_support_rear.stl" scale="0.001 0.001 0.001" />
+    <mesh name="horizontal_guide_mesh" file="horizontal_guide.stl" scale="0.001 0.001 0.001" />
+    <mesh name="crankshaft_mesh" file="crankshaft.stl" scale="0.001 0.001 0.001" />
+    <mesh name="crank_web_mesh" file="crank_web.stl" scale="0.001 0.001 0.001" />
+    <mesh name="crank_pin_mesh" file="crank_pin.stl" scale="0.001 0.001 0.001" />
+    <mesh name="hand_crank_mesh" file="hand_crank.stl" scale="0.001 0.001 0.001" />
+    <mesh name="connecting_rod_mesh" file="connecting_rod.stl" scale="0.001 0.001 0.001" />
+    <mesh name="horizontal_slider_mesh" file="horizontal_slider.stl" scale="0.001 0.001 0.001" />
+    <mesh name="slider_pin_mesh" file="slider_pin.stl" scale="0.001 0.001 0.001" />
+  </asset>
+  <worldbody>
+    <light pos="0 -0.5 0.5" dir="0 1 -0.5" />
+    <geom name="ground" type="plane" size="0.4 0.3 0.01" rgba="0.25 0.25 0.25 1" contype="1" conaffinity="1" />
+    <body name="base" pos="0.055 0 0.005">
+      <geom name="base_geom" mesh="base_mesh" rgba="0.25 0.3 0.35 1" />
+      <geom name="support_front_visual" mesh="bearing_support_front_mesh" pos="-0.055 0.012 0.04" rgba="0.3 0.35 0.4 1" contype="0" conaffinity="0" />
+      <geom name="support_rear_visual" mesh="bearing_support_rear_mesh" pos="-0.055 0.032 0.04" rgba="0.3 0.35 0.4 1" contype="0" conaffinity="0" />
+      <geom name="support_front_collision" type="box" size="0.011 0.005 0.032" pos="-0.055 0.012 0.032" rgba="0 0 0 0" />
+      <geom name="support_rear_collision" type="box" size="0.011 0.005 0.032" pos="-0.055 0.032 0.032" rgba="0 0 0 0" />
+      <geom name="horizontal_guide_visual" mesh="horizontal_guide_mesh" pos="0.05 -0.018 0.065" rgba="0.3 0.35 0.42 1" contype="0" conaffinity="0" />
+      <geom name="guide_lower_collision" type="box" size="0.060 0.017 0.004" pos="0.05 -0.018 0.038" rgba="0 0 0 0" />
+      <geom name="guide_side_near_collision" type="box" size="0.060 0.0025 0.004" pos="0.05 -0.0325 0.088" rgba="0 0 0 0" />
+      <geom name="guide_side_far_collision" type="box" size="0.060 0.0025 0.004" pos="0.05 -0.0035 0.088" rgba="0 0 0 0" />
+    </body>
+    <body name="crankshaft" pos="0 0 0.070">
+      <joint name="crankshaft_hinge" type="hinge" axis="0 1 0" limited="false" damping="0.04" armature="0.002" />
+      <geom name="crankshaft_geom" mesh="crankshaft_mesh" rgba="0.7 0.72 0.75 1" contype="0" conaffinity="0" />
+      <geom name="crank_web_geom" mesh="crank_web_mesh" rgba="0.78 0.28 0.12 1" contype="0" conaffinity="0" />
+      <geom name="crank_pin_geom" mesh="crank_pin_mesh" pos="0.025 -0.012 0" rgba="0.9 0.75 0.18 1" contype="0" conaffinity="0" />
+      <geom name="hand_crank_geom" mesh="hand_crank_mesh" rgba="0.18 0.45 0.78 1" contype="0" conaffinity="0" />
+      <site name="crank_pin_site" pos="0.025 -0.018 0" size="0.003" rgba="1 1 0 1" />
+      <body name="connecting_rod" pos="0.025 -0.018 0">
+        <joint name="rod_big_end_hinge" type="hinge" axis="0 1 0" limited="false" damping="0.03" armature="0.001" />
+        <geom name="connecting_rod_geom" mesh="connecting_rod_mesh" rgba="0.15 0.68 0.35 1" contype="1" conaffinity="1" />
+        <site name="rod_small_end_site" pos="0.105 0 0" size="0.003" rgba="0 1 1 1" />
+      </body>
+    </body>
+    <body name="horizontal_slider" pos="0.130 -0.018 0.070">
+      <joint name="slider_slide" type="slide" axis="1 0 0" range="-0.060 0.010" limited="true" damping="0.8" armature="0.01" />
+      <geom name="horizontal_slider_geom" mesh="horizontal_slider_mesh" rgba="0.55 0.22 0.7 1" contype="0" conaffinity="0" />
+      <geom name="slider_pin_geom" mesh="slider_pin_mesh" rgba="0.9 0.75 0.18 1" contype="0" conaffinity="0" />
+      <site name="slider_pin_site" size="0.003" rgba="1 0 1 1" />
+    </body>
+  </worldbody>
+  <equality>
+    <connect name="rod_slider_closure" body1="connecting_rod" body2="horizontal_slider" anchor="0.130 -0.018 0.070" solref="0.001 1" solimp="0.9999 0.99999 0.00001" />
+  </equality>
+  <actuator>
+    <motor name="hand_crank_motor" joint="crankshaft_hinge" gear="1" ctrllimited="true" ctrlrange="-1.2 1.2" />
+  </actuator>
+  <sensor>
+    <jointpos name="crank_angle" joint="crankshaft_hinge" />
+    <jointpos name="rod_angle" joint="rod_big_end_hinge" />
+    <jointpos name="slider_position" joint="slider_slide" />
+    <framepos name="crank_pin_position" objtype="site" objname="crank_pin_site" />
+    <framepos name="rod_small_end_position" objtype="site" objname="rod_small_end_site" />
+    <framepos name="slider_pin_position" objtype="site" objname="slider_pin_site" />
+  </sensor>
+</mujoco>

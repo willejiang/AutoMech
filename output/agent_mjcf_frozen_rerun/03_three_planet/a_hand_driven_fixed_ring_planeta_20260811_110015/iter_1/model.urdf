@@ -1,0 +1,604 @@
+<?xml version='1.0' encoding='ASCII'?>
+<robot name="a_hand_driven_fixed_ring_planeta">
+  <link name="world"/>
+  <link name="baseplate">
+    <visual name="baseplate_visual">
+      <geometry>
+        <mesh filename="meshes/baseplate.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="baseplate_mat">
+        <color rgba="0.82 0.27 0.24 1.0"/>
+      </material>
+    </visual>
+    <collision name="baseplate_collision">
+      <geometry>
+        <mesh filename="meshes/baseplate.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="output_pedestal">
+    <visual name="output_pedestal_visual">
+      <geometry>
+        <mesh filename="meshes/output_pedestal.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="output_pedestal_mat">
+        <color rgba="0.27 0.51 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="output_pedestal_collision">
+      <geometry>
+        <mesh filename="meshes/output_pedestal.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="lower_output_bearing">
+    <visual name="lower_output_bearing_visual">
+      <geometry>
+        <mesh filename="meshes/lower_output_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="lower_output_bearing_mat">
+        <color rgba="0.35 0.71 0.35 1.0"/>
+      </material>
+    </visual>
+    <collision name="lower_output_bearing_collision">
+      <geometry>
+        <mesh filename="meshes/lower_output_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="upper_output_bearing">
+    <visual name="upper_output_bearing_visual">
+      <geometry>
+        <mesh filename="meshes/upper_output_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="upper_output_bearing_mat">
+        <color rgba="0.9 0.67 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision name="upper_output_bearing_collision">
+      <geometry>
+        <mesh filename="meshes/upper_output_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="ring_post_1">
+    <visual name="ring_post_1_visual">
+      <geometry>
+        <mesh filename="meshes/ring_post_1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="ring_post_1_mat">
+        <color rgba="0.59 0.39 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="ring_post_1_collision">
+      <geometry>
+        <mesh filename="meshes/ring_post_1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="ring_post_2">
+    <visual name="ring_post_2_visual">
+      <geometry>
+        <mesh filename="meshes/ring_post_2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="ring_post_2_mat">
+        <color rgba="0.24 0.75 0.75 1.0"/>
+      </material>
+    </visual>
+    <collision name="ring_post_2_collision">
+      <geometry>
+        <mesh filename="meshes/ring_post_2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="ring_post_3">
+    <visual name="ring_post_3_visual">
+      <geometry>
+        <mesh filename="meshes/ring_post_3.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="ring_post_3_mat">
+        <color rgba="0.86 0.47 0.67 1.0"/>
+      </material>
+    </visual>
+    <collision name="ring_post_3_collision">
+      <geometry>
+        <mesh filename="meshes/ring_post_3.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="lower_stanchion_1">
+    <visual name="lower_stanchion_1_visual">
+      <geometry>
+        <mesh filename="meshes/lower_stanchion_1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="lower_stanchion_1_mat">
+        <color rgba="0.63 0.63 0.31 1.0"/>
+      </material>
+    </visual>
+    <collision name="lower_stanchion_1_collision">
+      <geometry>
+        <mesh filename="meshes/lower_stanchion_1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="lower_stanchion_2">
+    <visual name="lower_stanchion_2_visual">
+      <geometry>
+        <mesh filename="meshes/lower_stanchion_2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="lower_stanchion_2_mat">
+        <color rgba="0.47 0.43 0.39 1.0"/>
+      </material>
+    </visual>
+    <collision name="lower_stanchion_2_collision">
+      <geometry>
+        <mesh filename="meshes/lower_stanchion_2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="lower_stanchion_3">
+    <visual name="lower_stanchion_3_visual">
+      <geometry>
+        <mesh filename="meshes/lower_stanchion_3.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="lower_stanchion_3_mat">
+        <color rgba="0.78 0.78 0.82 1.0"/>
+      </material>
+    </visual>
+    <collision name="lower_stanchion_3_collision">
+      <geometry>
+        <mesh filename="meshes/lower_stanchion_3.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="lower_bridge">
+    <visual name="lower_bridge_visual">
+      <geometry>
+        <mesh filename="meshes/lower_bridge.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="lower_bridge_mat">
+        <color rgba="0.71 0.35 0.24 1.0"/>
+      </material>
+    </visual>
+    <collision name="lower_bridge_collision">
+      <geometry>
+        <mesh filename="meshes/lower_bridge.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="mid_stanchion_1">
+    <visual name="mid_stanchion_1_visual">
+      <geometry>
+        <mesh filename="meshes/mid_stanchion_1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="mid_stanchion_1_mat">
+        <color rgba="0.31 0.59 0.47 1.0"/>
+      </material>
+    </visual>
+    <collision name="mid_stanchion_1_collision">
+      <geometry>
+        <mesh filename="meshes/mid_stanchion_1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="mid_stanchion_2">
+    <visual name="mid_stanchion_2_visual">
+      <geometry>
+        <mesh filename="meshes/mid_stanchion_2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="mid_stanchion_2_mat">
+        <color rgba="0.82 0.27 0.24 1.0"/>
+      </material>
+    </visual>
+    <collision name="mid_stanchion_2_collision">
+      <geometry>
+        <mesh filename="meshes/mid_stanchion_2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="mid_stanchion_3">
+    <visual name="mid_stanchion_3_visual">
+      <geometry>
+        <mesh filename="meshes/mid_stanchion_3.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="mid_stanchion_3_mat">
+        <color rgba="0.27 0.51 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="mid_stanchion_3_collision">
+      <geometry>
+        <mesh filename="meshes/mid_stanchion_3.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="upper_bridge">
+    <visual name="upper_bridge_visual">
+      <geometry>
+        <mesh filename="meshes/upper_bridge.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="upper_bridge_mat">
+        <color rgba="0.35 0.71 0.35 1.0"/>
+      </material>
+    </visual>
+    <collision name="upper_bridge_collision">
+      <geometry>
+        <mesh filename="meshes/upper_bridge.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="lower_input_bearing">
+    <visual name="lower_input_bearing_visual">
+      <geometry>
+        <mesh filename="meshes/lower_input_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="lower_input_bearing_mat">
+        <color rgba="0.9 0.67 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision name="lower_input_bearing_collision">
+      <geometry>
+        <mesh filename="meshes/lower_input_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="upper_input_bearing">
+    <visual name="upper_input_bearing_visual">
+      <geometry>
+        <mesh filename="meshes/upper_input_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="upper_input_bearing_mat">
+        <color rgba="0.59 0.39 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="upper_input_bearing_collision">
+      <geometry>
+        <mesh filename="meshes/upper_input_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="ring_gear">
+    <visual name="ring_gear_visual">
+      <geometry>
+        <mesh filename="meshes/ring_gear.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="ring_gear_mat">
+        <color rgba="0.24 0.75 0.75 1.0"/>
+      </material>
+    </visual>
+    <collision name="ring_gear_collision">
+      <geometry>
+        <mesh filename="meshes/ring_gear.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="output_shaft">
+    <visual name="output_shaft_visual">
+      <geometry>
+        <mesh filename="meshes/output_shaft.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="output_shaft_mat">
+        <color rgba="0.86 0.47 0.67 1.0"/>
+      </material>
+    </visual>
+    <collision name="output_shaft_collision">
+      <geometry>
+        <mesh filename="meshes/output_shaft.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="carrier">
+    <visual name="carrier_visual">
+      <geometry>
+        <mesh filename="meshes/carrier.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="carrier_mat">
+        <color rgba="0.63 0.63 0.31 1.0"/>
+      </material>
+    </visual>
+    <collision name="carrier_collision">
+      <geometry>
+        <mesh filename="meshes/carrier.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="planet_pin_1">
+    <visual name="planet_pin_1_visual">
+      <geometry>
+        <mesh filename="meshes/planet_pin_1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="planet_pin_1_mat">
+        <color rgba="0.47 0.43 0.39 1.0"/>
+      </material>
+    </visual>
+    <collision name="planet_pin_1_collision">
+      <geometry>
+        <mesh filename="meshes/planet_pin_1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="planet_pin_2">
+    <visual name="planet_pin_2_visual">
+      <geometry>
+        <mesh filename="meshes/planet_pin_2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="planet_pin_2_mat">
+        <color rgba="0.78 0.78 0.82 1.0"/>
+      </material>
+    </visual>
+    <collision name="planet_pin_2_collision">
+      <geometry>
+        <mesh filename="meshes/planet_pin_2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="planet_pin_3">
+    <visual name="planet_pin_3_visual">
+      <geometry>
+        <mesh filename="meshes/planet_pin_3.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="planet_pin_3_mat">
+        <color rgba="0.71 0.35 0.24 1.0"/>
+      </material>
+    </visual>
+    <collision name="planet_pin_3_collision">
+      <geometry>
+        <mesh filename="meshes/planet_pin_3.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="input_shaft">
+    <visual name="input_shaft_visual">
+      <geometry>
+        <mesh filename="meshes/input_shaft.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="input_shaft_mat">
+        <color rgba="0.31 0.59 0.47 1.0"/>
+      </material>
+    </visual>
+    <collision name="input_shaft_collision">
+      <geometry>
+        <mesh filename="meshes/input_shaft.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="sun_gear">
+    <visual name="sun_gear_visual">
+      <geometry>
+        <mesh filename="meshes/sun_gear.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="sun_gear_mat">
+        <color rgba="0.82 0.27 0.24 1.0"/>
+      </material>
+    </visual>
+    <collision name="sun_gear_collision">
+      <geometry>
+        <mesh filename="meshes/sun_gear.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="planet_1">
+    <visual name="planet_1_visual">
+      <geometry>
+        <mesh filename="meshes/planet_1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="planet_1_mat">
+        <color rgba="0.27 0.51 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="planet_1_collision">
+      <geometry>
+        <mesh filename="meshes/planet_1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="planet_2">
+    <visual name="planet_2_visual">
+      <geometry>
+        <mesh filename="meshes/planet_2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="planet_2_mat">
+        <color rgba="0.35 0.71 0.35 1.0"/>
+      </material>
+    </visual>
+    <collision name="planet_2_collision">
+      <geometry>
+        <mesh filename="meshes/planet_2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="planet_3">
+    <visual name="planet_3_visual">
+      <geometry>
+        <mesh filename="meshes/planet_3.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="planet_3_mat">
+        <color rgba="0.9 0.67 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision name="planet_3_collision">
+      <geometry>
+        <mesh filename="meshes/planet_3.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="crank_arm">
+    <visual name="crank_arm_visual">
+      <geometry>
+        <mesh filename="meshes/crank_arm.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="crank_arm_mat">
+        <color rgba="0.59 0.39 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="crank_arm_collision">
+      <geometry>
+        <mesh filename="meshes/crank_arm.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="hand_grip">
+    <visual name="hand_grip_visual">
+      <geometry>
+        <mesh filename="meshes/hand_grip.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="hand_grip_mat">
+        <color rgba="0.24 0.75 0.75 1.0"/>
+      </material>
+    </visual>
+    <collision name="hand_grip_collision">
+      <geometry>
+        <mesh filename="meshes/hand_grip.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="place_output_pedestal" type="fixed">
+    <parent link="baseplate"/>
+    <child link="output_pedestal"/>
+    <origin xyz="0.0 0.0 0.004" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_lower_output_bearing" type="fixed">
+    <parent link="output_pedestal"/>
+    <child link="lower_output_bearing"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_upper_output_bearing" type="fixed">
+    <parent link="output_pedestal"/>
+    <child link="upper_output_bearing"/>
+    <origin xyz="0.0 0.0 0.004" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_ring_post_1" type="fixed">
+    <parent link="baseplate"/>
+    <child link="ring_post_1"/>
+    <origin xyz="0.0446875 0.0 0.004" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_ring_post_2" type="fixed">
+    <parent link="baseplate"/>
+    <child link="ring_post_2"/>
+    <origin xyz="-0.02234374999999999 0.0387005102316171 0.004" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_ring_post_3" type="fixed">
+    <parent link="baseplate"/>
+    <child link="ring_post_3"/>
+    <origin xyz="-0.02234375000000002 -0.038700510231617094 0.004" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_lower_stanchion_1" type="fixed">
+    <parent link="baseplate"/>
+    <child link="lower_stanchion_1"/>
+    <origin xyz="0.026000000000000006 0.045033320996790804 0.004" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_lower_stanchion_2" type="fixed">
+    <parent link="baseplate"/>
+    <child link="lower_stanchion_2"/>
+    <origin xyz="-0.052 6.3681633555662364e-18 0.004" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_lower_stanchion_3" type="fixed">
+    <parent link="baseplate"/>
+    <child link="lower_stanchion_3"/>
+    <origin xyz="0.026000000000000006 -0.045033320996790804 0.004" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_lower_bridge" type="fixed">
+    <parent link="lower_stanchion_1"/>
+    <child link="lower_bridge"/>
+    <origin xyz="-0.026000000000000006 -0.045033320996790804 0.025" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_mid_stanchion_1" type="fixed">
+    <parent link="lower_bridge"/>
+    <child link="mid_stanchion_1"/>
+    <origin xyz="0.026000000000000006 0.045033320996790804 0.003" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_mid_stanchion_2" type="fixed">
+    <parent link="lower_bridge"/>
+    <child link="mid_stanchion_2"/>
+    <origin xyz="-0.052 6.3681633555662364e-18 0.003" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_mid_stanchion_3" type="fixed">
+    <parent link="lower_bridge"/>
+    <child link="mid_stanchion_3"/>
+    <origin xyz="0.026000000000000006 -0.045033320996790804 0.003" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_upper_bridge" type="fixed">
+    <parent link="mid_stanchion_1"/>
+    <child link="upper_bridge"/>
+    <origin xyz="-0.026000000000000006 -0.045033320996790804 0.01" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_lower_input_bearing" type="fixed">
+    <parent link="lower_bridge"/>
+    <child link="lower_input_bearing"/>
+    <origin xyz="0.0 0.0 -0.001" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_upper_input_bearing" type="fixed">
+    <parent link="upper_bridge"/>
+    <child link="upper_input_bearing"/>
+    <origin xyz="0.0 0.0 -0.001" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_ring_gear" type="fixed">
+    <parent link="ring_post_1"/>
+    <child link="ring_gear"/>
+    <origin xyz="-0.0446875 0.0 0.022" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_output_shaft" type="fixed">
+    <parent link="lower_output_bearing"/>
+    <child link="output_shaft"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_carrier" type="fixed">
+    <parent link="output_shaft"/>
+    <child link="carrier"/>
+    <origin xyz="0.0 0.0 0.008" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_planet_pin_1" type="fixed">
+    <parent link="carrier"/>
+    <child link="planet_pin_1"/>
+    <origin xyz="0.027 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_planet_pin_2" type="fixed">
+    <parent link="carrier"/>
+    <child link="planet_pin_2"/>
+    <origin xyz="-0.013499999999999995 0.023382685902179845 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_planet_pin_3" type="fixed">
+    <parent link="carrier"/>
+    <child link="planet_pin_3"/>
+    <origin xyz="-0.013500000000000012 -0.02338268590217984 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_input_shaft" type="fixed">
+    <parent link="lower_input_bearing"/>
+    <child link="input_shaft"/>
+    <origin xyz="0.0 0.0 -0.011800000000000001" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_sun_gear" type="fixed">
+    <parent link="input_shaft"/>
+    <child link="sun_gear"/>
+    <origin xyz="0.0 0.0 0.0018000000000000008" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_planet_1" type="fixed">
+    <parent link="planet_pin_1"/>
+    <child link="planet_1"/>
+    <origin xyz="0.0 0.0 0.006" rpy="0.0 -0.0 0.17453292519943295"/>
+  </joint>
+  <joint name="place_planet_2" type="fixed">
+    <parent link="planet_pin_2"/>
+    <child link="planet_2"/>
+    <origin xyz="0.0 0.0 0.006" rpy="0.0 -0.0 0.17453292519943295"/>
+  </joint>
+  <joint name="place_planet_3" type="fixed">
+    <parent link="planet_pin_3"/>
+    <child link="planet_3"/>
+    <origin xyz="0.0 0.0 0.006" rpy="0.0 -0.0 0.17453292519943295"/>
+  </joint>
+  <joint name="place_crank_arm" type="fixed">
+    <parent link="input_shaft"/>
+    <child link="crank_arm"/>
+    <origin xyz="0.0 0.0 0.0318" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_hand_grip" type="fixed">
+    <parent link="crank_arm"/>
+    <child link="hand_grip"/>
+    <origin xyz="0.025 0.0 0.003" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="world_to_baseplate" type="fixed">
+    <parent link="world"/>
+    <child link="baseplate"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+</robot>

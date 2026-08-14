@@ -1,0 +1,116 @@
+{
+  "ok": true,
+  "errors": [],
+  "policy_version": 2,
+  "bodies": [
+    "baseplate",
+    "central_lower_bearing",
+    "central_upper_bearing",
+    "dial_marker_01",
+    "dial_marker_02",
+    "dial_marker_03",
+    "dial_marker_04",
+    "dial_marker_05",
+    "dial_marker_06",
+    "dial_marker_07",
+    "dial_marker_08",
+    "dial_marker_09",
+    "dial_marker_10",
+    "dial_marker_11",
+    "dial_marker_12",
+    "hour_hand",
+    "hour_pipe",
+    "hour_wheel",
+    "intermediate_arbor",
+    "intermediate_lower_bearing",
+    "intermediate_pinion",
+    "intermediate_upper_bearing",
+    "intermediate_wheel",
+    "minute_hand",
+    "minute_pinion",
+    "minute_pipe",
+    "pillar_01",
+    "pillar_02",
+    "pillar_03",
+    "pillar_04",
+    "upper_bridge"
+  ],
+  "joints": [
+    "hour_rotation",
+    "intermediate_rotation",
+    "minute_rotation",
+    "stage_1_external_mesh",
+    "stage_2_external_mesh"
+  ],
+  "nq": 3,
+  "nv": 3,
+  "finite": true,
+  "dynamic_transmission_probe": {
+    "ran": true,
+    "ok": true,
+    "errors": [],
+    "warnings": [
+      "no-contact short-probe residual for 'stage_1_external_mesh' is 0.289; not used as contact attribution"
+    ],
+    "contact_on": {
+      "ok": true,
+      "driver_travel": 21.87260738683502,
+      "joint_deltas": {
+        "hour_rotation": -1.3047125625456986,
+        "minute_rotation": -21.87260738683502,
+        "intermediate_rotation": 3.8870706195269555
+      },
+      "transmission_residuals": [
+        {
+          "name": "stage_1_external_mesh",
+          "driving_joint": "minute_rotation",
+          "driven_joint": "intermediate_rotation",
+          "ratio": -0.25,
+          "driving_delta": -21.87260738683502,
+          "driven_delta": 3.8870706195269555,
+          "normalized_residual": 0.28914362137427513
+        },
+        {
+          "name": "stage_2_external_mesh",
+          "driving_joint": "intermediate_rotation",
+          "driven_joint": "hour_rotation",
+          "ratio": -0.3333333333333333,
+          "driving_delta": 3.8870706195269555,
+          "driven_delta": -1.3047125625456986,
+          "normalized_residual": 0.006963358981482711
+        }
+      ],
+      "active_contacts": []
+    },
+    "contact_off": {
+      "ok": true,
+      "driver_travel": 21.87260738683502,
+      "joint_deltas": {
+        "hour_rotation": -1.3047125625456986,
+        "minute_rotation": -21.87260738683502,
+        "intermediate_rotation": 3.8870706195269555
+      },
+      "transmission_residuals": [
+        {
+          "name": "stage_1_external_mesh",
+          "driving_joint": "minute_rotation",
+          "driven_joint": "intermediate_rotation",
+          "ratio": -0.25,
+          "driving_delta": -21.87260738683502,
+          "driven_delta": 3.8870706195269555,
+          "normalized_residual": 0.28914362137427513
+        },
+        {
+          "name": "stage_2_external_mesh",
+          "driving_joint": "intermediate_rotation",
+          "driven_joint": "hour_rotation",
+          "ratio": -0.3333333333333333,
+          "driving_delta": 3.8870706195269555,
+          "driven_delta": -1.3047125625456986,
+          "normalized_residual": 0.006963358981482711
+        }
+      ],
+      "active_contacts": []
+    }
+  }
+}

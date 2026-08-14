@@ -1,0 +1,102 @@
+{
+  "task_id": "01_single_stage_4to1",
+  "iteration": 0,
+  "checks": {
+    "source_execution": {
+      "passed": true,
+      "returncode": 0,
+      "stdout": "{\n  \"assembly\": \"open_single_stage_4to1\",\n  \"parts\": [\n    \"base\",\n    \"hand_crank_arm\",\n    \"hand_crank_handle\",\n    \"input_bearing_front\",\n    \"input_bearing_rear\",\n    \"input_pinion\",\n    \"input_shaft\",\n    \"input_support_front\",\n    \"input_support_rear\",\n    \"output_bearing_front\",\n    \"output_bearing_rear\",\n    \"output_gear\",\n    \"output_shaft\",\n    \"output_support_front\",\n    \"output_support_rear\"\n  ],\n  \"part_count\": 15\n}\n",
+      "stderr": ""
+    },
+    "part_inventory": {
+      "passed": true,
+      "count": 15,
+      "names": [
+        "base",
+        "hand_crank_arm",
+        "hand_crank_handle",
+        "input_bearing_front",
+        "input_bearing_rear",
+        "input_pinion",
+        "input_shaft",
+        "input_support_front",
+        "input_support_rear",
+        "output_bearing_front",
+        "output_bearing_rear",
+        "output_gear",
+        "output_shaft",
+        "output_support_front",
+        "output_support_rear"
+      ]
+    },
+    "references": {
+      "passed": true,
+      "unresolved": []
+    },
+    "relations": {
+      "passed": true,
+      "motion_joint_count": 2,
+      "transmission_count": 1,
+      "mesh_pair_count": 1
+    },
+    "geometry_intersections": {
+      "passed": true,
+      "method": "analytic authored-envelope check plus STEP visual review; no general exact-solid intersection engine used",
+      "authored_exempt_pairs": [
+        [
+          "input_shaft",
+          "input_pinion"
+        ],
+        [
+          "output_shaft",
+          "output_gear"
+        ],
+        [
+          "input_shaft",
+          "input_bearing_front"
+        ],
+        [
+          "input_shaft",
+          "input_bearing_rear"
+        ],
+        [
+          "output_shaft",
+          "output_bearing_front"
+        ],
+        [
+          "output_shaft",
+          "output_bearing_rear"
+        ]
+      ],
+      "non_exempt_positive_overlaps_found": []
+    },
+    "mjcf_load_initialization": {
+      "passed": true,
+      "nq": 2,
+      "nv": 2,
+      "nu": 1,
+      "neq": 1
+    },
+    "physics": {
+      "passed": true,
+      "finite": true,
+      "input_net_rad": 7.84756392648729,
+      "output_net_rad": -1.9616013988125804,
+      "stable_slope_output_over_input": -0.24995055099735253,
+      "ratio_abs_input_over_output": 4.000791340566367,
+      "opposite_direction": true,
+      "max_equality_residual_rad": 0.01078343378779697,
+      "max_axis_drift_mm": 0.0,
+      "pinion_carry_residual_mm": 0.0,
+      "gear_carry_residual_mm": 0.0,
+      "sample_count": 1001
+    }
+  },
+  "ideal_gear_equality_disclosed": true,
+  "ideal_mesh_pair": [
+    "input_pinion",
+    "output_gear"
+  ],
+  "collision_exclusions": [],
+  "final_pass": true
+}

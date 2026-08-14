@@ -1,0 +1,83 @@
+{
+  "ok": true,
+  "errors": [],
+  "policy_version": 4,
+  "bodies": [
+    "base",
+    "bench_bolt_1",
+    "bench_bolt_2",
+    "bench_bolt_3",
+    "bench_bolt_4",
+    "crank_grip",
+    "hand_crank",
+    "input_bearing_pedestal",
+    "input_lower_bearing",
+    "input_pinion",
+    "input_shaft",
+    "input_thrust_washer",
+    "input_upper_bearing",
+    "output_bearing_pedestal",
+    "output_gear",
+    "output_lower_bearing",
+    "output_shaft",
+    "output_thrust_washer",
+    "output_upper_bearing"
+  ],
+  "joints": [
+    "crank_grip_hinge",
+    "input_shaft_hinge",
+    "output_shaft_hinge",
+    "spur_reduction_eq"
+  ],
+  "nq": 3,
+  "nv": 3,
+  "finite": true,
+  "dynamic_transmission_probe": {
+    "ran": true,
+    "ok": true,
+    "errors": [],
+    "warnings": [],
+    "contact_on": {
+      "ok": true,
+      "driver_travel": 1.0149771679796287,
+      "commanded_travel": 1.0494,
+      "joint_deltas": {
+        "input_shaft_hinge": 1.0149771679796287,
+        "output_shaft_hinge": -0.2528034119555846
+      },
+      "transmission_residuals": [
+        {
+          "name": "spur_reduction_stage",
+          "driving_joint": "input_shaft_hinge",
+          "driven_joint": "output_shaft_hinge",
+          "ratio": -0.25,
+          "driving_delta": 1.0149771679796287,
+          "driven_delta": -0.2528034119555846,
+          "normalized_residual": 0.0037079850424436827
+        }
+      ],
+      "active_contacts": []
+    },
+    "contact_off": {
+      "ok": true,
+      "driver_travel": 1.0149771679796287,
+      "commanded_travel": 1.0494,
+      "joint_deltas": {
+        "input_shaft_hinge": 1.0149771679796287,
+        "output_shaft_hinge": -0.2528034119555846
+      },
+      "transmission_residuals": [
+        {
+          "name": "spur_reduction_stage",
+          "driving_joint": "input_shaft_hinge",
+          "driven_joint": "output_shaft_hinge",
+          "ratio": -0.25,
+          "driving_delta": 1.0149771679796287,
+          "driven_delta": -0.2528034119555846,
+          "normalized_residual": 0.0037079850424436827
+        }
+      ],
+      "active_contacts": []
+    }
+  }
+}

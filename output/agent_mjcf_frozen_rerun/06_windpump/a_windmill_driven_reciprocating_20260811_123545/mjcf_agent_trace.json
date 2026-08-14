@@ -1,0 +1,1383 @@
+{
+  "rounds": 15,
+  "executions": [
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "model",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"model\",\n  \"offset\": 0,\n  \"returned\": 5,\n  \"total\": 5,\n  \"next_offset\": null,\n  \"items\": {\n    \"name\": \"a_windmill_driven_reciprocating\",\n    \"root_link\": \"baseplate\",\n    \"mesh_pairs\": [],\n    \"output_link\": \"piston_slider\",\n    \"watch_links\": [\n      \"wind_rotor\",\n      \"rotor_shaft\",\n      \"crank_disk\",\n      \"connecting_rod\",\n      \"piston_slider\",\n      \"pump_rod\",\n      \"pump_piston\"\n    ]\n  }\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "links",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"links\",\n  \"offset\": 0,\n  \"returned\": 24,\n  \"total\": 24,\n  \"next_offset\": null,\n  \"items\": {\n    \"baseplate\": {\n      \"entity_id\": \"link/baseplate\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.34540000000000004,\n      \"world_xyz_m\": [\n        0.0,\n        0.0,\n        0.0\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"front_pedestal\": {\n      \"entity_id\": \"link/front_pedestal\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"baseplate\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.07724400000000001,\n      \"world_xyz_m\": [\n        0.0,\n        -0.023,\n        0.004\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"rear_pedestal\": {\n      \"entity_id\": \"link/rear_pedestal\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"baseplate\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.07724400000000001,\n      \"world_xyz_m\": [\n        0.0,\n        0.007,\n        0.004\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"front_bearing\": {\n      \"entity_id\": \"link/front_bearing\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"front_pedestal\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.017674353602688653,\n      \"world_xyz_m\": [\n        0.0,\n        -0.028,\n        0.095\n      ],\n      \"world_quat_wxyz\": [\n        0.7071067811865475,\n        -0.7071067811865475,\n        -0.0,\n        -0.0\n      ]\n    },\n    \"rear_bearing\": {\n      \"entity_id\": \"link/rear_bearing\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"rear_pedestal\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.017674353602688653,\n      \"world_xyz_m\": [\n        0.0,\n        0.002,\n        0.095\n      ],\n      \"world_quat_wxyz\": [\n        0.7071067811865475,\n        -0.7071067811865475,\n        -0.0,\n        -0.0\n      ]\n    },\n    \"rotor_shaft\": {\n      \"entity_id\": \"link/rotor_shaft\",\n      \"dof\": \"spin\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"front_bearing\",\n      \"extra_mounts\": [\n        \"rear_bearing\"\n      ],\n      \"mass_kg\": 0.01686147739067558,\n      \"world_xyz_m\": [\n        0.0,\n        -0.046,\n        0.095\n      ],\n      \"world_quat_wxyz\": [\n        0.7071067811865475,\n        -0.7071067811865475,\n        -0.0,\n        -0.0\n      ]\n    },\n    \"wind_rotor\": {\n      \"entity_id\": \"link/wind_rotor\",\n      \"dof\": \"spin\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": true,\n      \"mount\": \"rotor_shaft\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.1363765154093007,\n      \"world_xyz_m\": [\n        0.0,\n        -0.044,\n        0.095\n      ],\n      \"world_quat_wxyz\": [\n        0.7071067811865475,\n        -0.7071067811865475,\n        -0.0,\n        -0.0\n      ]\n    },\n    \"crank_disk\": {\n      \"entity_id\": \"link/crank_disk\",\n      \"dof\": \"spin\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n  "
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "ports",
+        "offset": 0,
+        "limit": 300
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"ports\",\n  \"offset\": 0,\n  \"returned\": 12,\n  \"total\": 12,\n  \"next_offset\": null,\n  \"items\": {\n    \"wind_rotor\": {\n      \"shaft_bore\": {\n        \"entity_id\": \"port/wind_rotor/shaft_bore\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 5.99,\n        \"depth_mm\": 6.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0,\n          -0.040999999999999995,\n          0.095\n        ]\n      }\n    },\n    \"rotor_shaft\": {\n      \"rotor_seat\": {\n        \"entity_id\": \"port/rotor_shaft/rotor_seat\",\n        \"type\": \"shaft\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 6.0,\n        \"depth_mm\": 6.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0,\n          -0.041,\n          0.095\n        ]\n      },\n      \"front_journal\": {\n        \"entity_id\": \"port/rotor_shaft/front_journal\",\n        \"type\": \"shaft\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 6.0,\n        \"depth_mm\": 10.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0,\n          -0.023,\n          0.095\n        ]\n      },\n      \"rear_journal\": {\n        \"entity_id\": \"port/rotor_shaft/rear_journal\",\n        \"type\": \"shaft\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 6.0,\n        \"depth_mm\": 10.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0,\n          0.006999999999999999,\n          0.095\n        ]\n      },\n      \"crank_seat\": {\n        \"entity_id\": \"port/rotor_shaft/crank_seat\",\n        \"type\": \"shaft\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 6.0,\n        \"depth_mm\": 8.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0,\n          0.024000000000000007,\n          0.095\n        ]\n      }\n    },\n    \"front_bearing\": {\n      \"journal_bore\": {\n        \"entity_id\": \"port/front_bearing/journal_bore\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 6.1,\n        \"depth_mm\": 10.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0,\n          -0.023,\n          0.095\n        ]\n      }\n    },\n    \"rear_bearing\": {\n      \"journal_bore\": {\n        \"entity_id\": \"port/rear_bearing/journal_bore\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 6.1,\n        \"depth_mm\": 10.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0,\n          0.007,\n          0.095\n        ]\n      }\n    },\n    \"crank_disk\": {\n      \"shaft_bore\": {\n        \"entity_id\": \"port/crank_disk/shaft_bore\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 5.99,\n        \"depth_mm\": 8.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0,\n          0.024000000000000004,\n          0.095\n        ]\n      },\n      \"eccentric_pin_bore\": {\n        \"entity_id\": \"port/crank_disk/eccentric_pin_bore\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 5.99,\n        \"depth_mm\": 2.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0,\n          0.027000000000000003,\n          0.081\n        ]\n      }\n    },\n    \"crank_pin\": {\n      \"disk_press_seat\": {\n        \"entity_id\": \"port/crank_pin/disk_press_seat\",\n        \"type\": \"shaft\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 6.0,\n        \"depth_mm\": 2"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "entity_ids",
+        "offset": 0,
+        "limit": 300
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"entity_ids\",\n  \"offset\": 0,\n  \"returned\": 25,\n  \"total\": 100,\n  \"next_offset\": 25,\n  \"items\": [\n    \"link/baseplate\",\n    \"link/front_pedestal\",\n    \"link/rear_pedestal\",\n    \"link/front_bearing\",\n    \"link/rear_bearing\",\n    \"link/rotor_shaft\",\n    \"link/wind_rotor\",\n    \"link/crank_disk\",\n    \"link/crank_pin\",\n    \"link/connecting_rod\",\n    \"link/piston_slider\",\n    \"link/wrist_pin\",\n    \"link/left_guide\",\n    \"link/right_guide\",\n    \"link/front_guide\",\n    \"link/rear_guide\",\n    \"link/pump_rod\",\n    \"link/pump_piston\",\n    \"link/pump_cylinder\",\n    \"link/cylinder_foot\",\n    \"link/inlet_pipe\",\n    \"link/outlet_pipe\",\n    \"link/left_guide_cap\",\n    \"link/right_guide_cap\",\n    \"pose/place_baseplate\"\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "simulation",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"simulation\",\n  \"offset\": 0,\n  \"returned\": 5,\n  \"total\": 5,\n  \"next_offset\": null,\n  \"items\": {\n    \"gravity\": [\n      0.0,\n      0.0,\n      -9.81\n    ],\n    \"timestep\": 0.0002,\n    \"solver\": \"Newton\",\n    \"iterations\": 100,\n    \"base_rests_on_plane\": true\n  }\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "relations",
+        "offset": 0,
+        "limit": 300
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"relations\",\n  \"offset\": 0,\n  \"returned\": 11,\n  \"total\": 11,\n  \"next_offset\": null,\n  \"items\": [\n    {\n      \"name\": \"rotor_to_shaft_press_fit\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"rotor_shaft\",\n      \"base_port\": \"rotor_seat\",\n      \"incoming_part\": \"wind_rotor\",\n      \"incoming_port\": \"shaft_bore\"\n    },\n    {\n      \"name\": \"front_shaft_journal\",\n      \"mate_type\": \"journal_bearing\",\n      \"base_part\": \"front_bearing\",\n      \"base_port\": \"journal_bore\",\n      \"incoming_part\": \"rotor_shaft\",\n      \"incoming_port\": \"front_journal\"\n    },\n    {\n      \"name\": \"rear_shaft_journal\",\n      \"mate_type\": \"journal_bearing\",\n      \"base_part\": \"rear_bearing\",\n      \"base_port\": \"journal_bore\",\n      \"incoming_part\": \"rotor_shaft\",\n      \"incoming_port\": \"rear_journal\"\n    },\n    {\n      \"name\": \"shaft_to_crank_press_fit\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"rotor_shaft\",\n      \"base_port\": \"crank_seat\",\n      \"incoming_part\": \"crank_disk\",\n      \"incoming_port\": \"shaft_bore\"\n    },\n    {\n      \"name\": \"eccentric_pin_press_fit\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"crank_disk\",\n      \"base_port\": \"eccentric_pin_bore\",\n      \"incoming_part\": \"crank_pin\",\n      \"incoming_port\": \"disk_press_seat\"\n    },\n    {\n      \"name\": \"crank_rod_revolute\",\n      \"mate_type\": \"revolute\",\n      \"base_part\": \"crank_pin\",\n      \"base_port\": \"rod_journal\",\n      \"incoming_part\": \"connecting_rod\",\n      \"incoming_port\": \"crank_eye\"\n    },\n    {\n      \"name\": \"wrist_rod_revolute\",\n      \"mate_type\": \"revolute\",\n      \"base_part\": \"wrist_pin\",\n      \"base_port\": \"rod_journal\",\n      \"incoming_part\": \"connecting_rod\",\n      \"incoming_port\": \"wrist_eye\"\n    },\n    {\n      \"name\": \"wrist_pin_to_slider\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"piston_slider\",\n      \"base_port\": \"wrist_pin_bore\",\n      \"incoming_part\": \"wrist_pin\",\n      \"incoming_port\": \"slider_press_seat\"\n    },\n    {\n      \"name\": \"slider_to_pump_rod\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"piston_slider\",\n      \"base_port\": \"pump_rod_bore\",\n      \"incoming_part\": \"pump_rod\",\n      \"incoming_port\": \"slider_seat\"\n    },\n    {\n      \"name\": \"pump_rod_to_piston\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"pump_rod\",\n      \"base_port\": \"piston_seat\",\n      \"incoming_part\": \"pump_piston\",\n      \"incoming_port\": \"rod_bore\"\n    },\n    {\n      \"name\": \"piston_in_barrel\",\n      \"mate_type\": \"cylindrical\",\n      \"base_part\": \"pump_cylinder\",\n      \"base_port\": \"piston_bore\",\n      \"incoming_part\": \"pump_piston\",\n      \"incoming_port\": \"barrel_running_surface\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "motion_joints",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"motion_joints\",\n  \"offset\": 0,\n  \"returned\": 6,\n  \"total\": 6,\n  \"next_offset\": null,\n  \"items\": [\n    {\n      \"name\": \"rotor_input_hinge\",\n      \"parent\": \"\",\n      \"child\": \"wind_rotor\",\n      \"type\": \"hinge\",\n      \"axis\": [\n        0.0,\n        1.0,\n        0.0\n      ],\n      \"pos_mm\": [\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"shaft_hinge\",\n      \"parent\": \"\",\n      \"child\": \"rotor_shaft\",\n      \"type\": \"hinge\",\n      \"axis\": [\n        0.0,\n        1.0,\n        0.0\n      ],\n      \"pos_mm\": [\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"crank_hinge\",\n      \"parent\": \"\",\n      \"child\": \"crank_disk\",\n      \"type\": \"hinge\",\n      \"axis\": [\n        0.0,\n        1.0,\n        0.0\n      ],\n      \"pos_mm\": [\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"crosshead_vertical_slide\",\n      \"parent\": \"\",\n      \"child\": \"piston_slider\",\n      \"type\": \"slide\",\n      \"axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"pos_mm\": [\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"pump_rod_vertical_slide\",\n      \"parent\": \"\",\n      \"child\": \"pump_rod\",\n      \"type\": \"slide\",\n      \"axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"pos_mm\": [\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"piston_vertical_slide\",\n      \"parent\": \"\",\n      \"child\": \"pump_piston\",\n      \"type\": \"slide\",\n      \"axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"pos_mm\": [\n        0.0,\n        0.0,\n        0.0\n      ]\n    }\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "transmissions",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"transmissions\",\n  \"offset\": 0,\n  \"returned\": 4,\n  \"total\": 4,\n  \"next_offset\": null,\n  \"items\": [\n    {\n      \"name\": \"rotor_shaft_lock\",\n      \"type\": \"compound_1to1\",\n      \"driving_link\": \"wind_rotor\",\n      \"driven_link\": \"rotor_shaft\",\n      \"ratio\": 1.0\n    },\n    {\n      \"name\": \"shaft_crank_lock\",\n      \"type\": \"compound_1to1\",\n      \"driving_link\": \"rotor_shaft\",\n      \"driven_link\": \"crank_disk\",\n      \"ratio\": 1.0\n    },\n    {\n      \"name\": \"crosshead_pump_rod_lock\",\n      \"type\": \"compound_1to1\",\n      \"driving_link\": \"piston_slider\",\n      \"driven_link\": \"pump_rod\",\n      \"ratio\": 1.0\n    },\n    {\n      \"name\": \"pump_rod_piston_lock\",\n      \"type\": \"compound_1to1\",\n      \"driving_link\": \"pump_rod\",\n      \"driven_link\": \"pump_piston\",\n      \"ratio\": 1.0\n    }\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "poses",
+        "offset": 0,
+        "limit": 300
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"poses\",\n  \"offset\": 0,\n  \"returned\": 24,\n  \"total\": 24,\n  \"next_offset\": null,\n  \"items\": [\n    {\n      \"name\": \"place_baseplate\",\n      \"parent\": \"\",\n      \"child\": \"baseplate\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.0\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_front_pedestal\",\n      \"parent\": \"baseplate\",\n      \"child\": \"front_pedestal\",\n      \"xyz_m\": [\n        0.0,\n        -0.023,\n        0.004\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_rear_pedestal\",\n      \"parent\": \"baseplate\",\n      \"child\": \"rear_pedestal\",\n      \"xyz_m\": [\n        0.0,\n        0.007,\n        0.004\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_front_bearing\",\n      \"parent\": \"front_pedestal\",\n      \"child\": \"front_bearing\",\n      \"xyz_m\": [\n        0.0,\n        -0.005,\n        0.091\n      ],\n      \"rpy_rad\": [\n        -1.5707963267948966,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_rear_bearing\",\n      \"parent\": \"rear_pedestal\",\n      \"child\": \"rear_bearing\",\n      \"xyz_m\": [\n        0.0,\n        -0.005,\n        0.091\n      ],\n      \"rpy_rad\": [\n        -1.5707963267948966,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_rotor_shaft\",\n      \"parent\": \"front_bearing\",\n      \"child\": \"rotor_shaft\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        -0.018\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_wind_rotor\",\n      \"parent\": \"rotor_shaft\",\n      \"child\": \"wind_rotor\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.002\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_crank_disk\",\n      \"parent\": \"rotor_shaft\",\n      \"child\": \"crank_disk\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.066\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_crank_pin\",\n      \"parent\": \"crank_disk\",\n      \"child\": \"crank_pin\",\n      \"xyz_m\": [\n        0.0,\n        0.014,\n        0.006\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_connecting_rod\",\n      \"parent\": \"crank_pin\",\n      \"child\": \"connecting_rod\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.004\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_piston_slider\",\n      \"parent\": \"left_guide\",\n      \"child\": \"piston_slider\",\n      \"xyz_m\": [\n        0.016050000000000002,\n        0.0,\n        0.031\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_wrist_pin\",\n      \"parent\": \"piston_slider\",\n      \"child\": \"wrist_pin\",\n      \"xyz_m\": [\n        0.0,\n        -0.009,\n        0.013\n      ],\n      \"rpy_rad\": [\n        -1.5707963267948966,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_left_guide\",\n      \"parent\": \"baseplate\",\n      \"child\": \"left_guide\",\n      \"xyz_m\": [\n        -0.016050000000000002,\n        0.033,\n        0.004\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_right_guide\",\n      \"parent\": \"baseplate\",\n      \"child\": \"right_guide\",\n      \"xyz_m\": [\n        0.01205,\n        0.033,\n        0.004\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_front_guide\",\n      \"parent\": \"baseplate\",\n      \"child\": \"front_guide\",\n      \"xyz_m\": [\n        0.0,\n        0.01995,\n        0.004\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_rear_guide\",\n      \"parent\": \"baseplate\",\n      \"child\": \"rear_guide\",\n      \"xyz_m\": [\n        0.0,\n        0.04205,\n        0.004\n      ],\n      \""
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "index",
+        "offset": 0,
+        "limit": 300
+      },
+      "is_error": false,
+      "result": "{\n  \"sections\": {\n    \"model\": 5,\n    \"links\": 24,\n    \"ports\": 12,\n    \"poses\": 24,\n    \"relations\": 11,\n    \"motion_joints\": 6,\n    \"transmissions\": 4,\n    \"planetary_stages\": 0,\n    \"entity_ids\": 100,\n    \"simulation\": 5\n  }\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "entity_ids",
+        "offset": 25,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"entity_ids\",\n  \"offset\": 25,\n  \"returned\": 25,\n  \"total\": 100,\n  \"next_offset\": 50,\n  \"items\": [\n    \"pose/place_front_pedestal\",\n    \"pose/place_rear_pedestal\",\n    \"pose/place_front_bearing\",\n    \"pose/place_rear_bearing\",\n    \"pose/place_rotor_shaft\",\n    \"pose/place_wind_rotor\",\n    \"pose/place_crank_disk\",\n    \"pose/place_crank_pin\",\n    \"pose/place_connecting_rod\",\n    \"pose/place_piston_slider\",\n    \"pose/place_wrist_pin\",\n    \"pose/place_left_guide\",\n    \"pose/place_right_guide\",\n    \"pose/place_front_guide\",\n    \"pose/place_rear_guide\",\n    \"pose/place_pump_rod\",\n    \"pose/place_pump_piston\",\n    \"pose/place_pump_cylinder\",\n    \"pose/place_cylinder_foot\",\n    \"pose/place_inlet_pipe\",\n    \"pose/place_outlet_pipe\",\n    \"pose/place_left_guide_cap\",\n    \"pose/place_right_guide_cap\",\n    \"port/wind_rotor/shaft_bore\",\n    \"port/rotor_shaft/rotor_seat\"\n  ]\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "rotor_shaft",
+        "port_a": "rotor_seat",
+        "b": "wind_rotor",
+        "port_b": "shaft_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/rotor_shaft/rotor_seat/wind_rotor/shaft_bore\",\n  \"radial_offset_mm\": 4.248847104521535e-31,\n  \"axial_offset_mm\": 6.938893903907228e-15,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": -0.009999999999999787,\n  \"fit_sign\": \"interference\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "front_bearing",
+        "port_a": "journal_bore",
+        "b": "rotor_shaft",
+        "port_b": "front_journal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/front_bearing/journal_bore/rotor_shaft/front_journal\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.09999999999999964,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "rear_bearing",
+        "port_a": "journal_bore",
+        "b": "rotor_shaft",
+        "port_b": "rear_journal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/rear_bearing/journal_bore/rotor_shaft/rear_journal\",\n  \"radial_offset_mm\": 5.311058880651918e-32,\n  \"axial_offset_mm\": 8.673617379884035e-16,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.09999999999999964,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "rotor_shaft",
+        "port_a": "crank_seat",
+        "b": "crank_disk",
+        "port_b": "shaft_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/rotor_shaft/crank_seat/crank_disk/shaft_bore\",\n  \"radial_offset_mm\": 2.1244235522607673e-31,\n  \"axial_offset_mm\": 3.469446951953614e-15,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": -0.009999999999999787,\n  \"fit_sign\": \"interference\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "crank_disk",
+        "port_a": "eccentric_pin_bore",
+        "b": "crank_pin",
+        "port_b": "disk_press_seat"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/crank_disk/eccentric_pin_bore/crank_pin/disk_press_seat\",\n  \"radial_offset_mm\": 2.1244235522607673e-31,\n  \"axial_offset_mm\": 3.469446951953614e-15,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": -0.009999999999999787,\n  \"fit_sign\": \"interference\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "crank_pin",
+        "port_a": "rod_journal",
+        "b": "connecting_rod",
+        "port_b": "crank_eye"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/crank_pin/rod_journal/connecting_rod/crank_eye\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.09999999999999964,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "wrist_pin",
+        "port_a": "rod_journal",
+        "b": "connecting_rod",
+        "port_b": "wrist_eye"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/wrist_pin/rod_journal/connecting_rod/wrist_eye\",\n  \"radial_offset_mm\": 4.248847104521535e-31,\n  \"axial_offset_mm\": 6.938893903907228e-15,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.09999999999999964,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "piston_slider",
+        "port_a": "wrist_pin_bore",
+        "b": "wrist_pin",
+        "port_b": "slider_press_seat"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/piston_slider/wrist_pin_bore/wrist_pin/slider_press_seat\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": -0.009999999999999787,\n  \"fit_sign\": \"interference\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "piston_slider",
+        "port_a": "pump_rod_bore",
+        "b": "pump_rod",
+        "port_b": "slider_seat"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/piston_slider/pump_rod_bore/pump_rod/slider_seat\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": -0.009999999999999787,\n  \"fit_sign\": \"interference\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "pump_rod",
+        "port_a": "piston_seat",
+        "b": "pump_piston",
+        "port_b": "rod_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/pump_rod/piston_seat/pump_piston/rod_bore\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 1.734723475976807e-15,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": -0.009999999999999787,\n  \"fit_sign\": \"interference\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "pump_cylinder",
+        "port_a": "piston_bore",
+        "b": "pump_piston",
+        "port_b": "barrel_running_surface"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/pump_cylinder/piston_bore/pump_piston/barrel_running_surface\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 2.999999999999999,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": null,\n  \"fit_sign\": \"not_shaft_bore\"\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "wind_rotor",
+        "target": "rotor_shaft"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"wind_rotor\",\n    \"rotor_shaft\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "rotor_shaft",
+        "target": "crank_disk"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"rotor_shaft\",\n    \"crank_disk\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "crank_pin",
+        "target": "connecting_rod"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"crank_pin\",\n    \"connecting_rod\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "connecting_rod",
+        "target": "wrist_pin"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"connecting_rod\",\n    \"wrist_pin\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "piston_slider",
+        "target": "pump_rod"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"piston_slider\",\n    \"pump_rod\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "pump_rod",
+        "target": "pump_piston"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"pump_rod\",\n    \"pump_piston\"\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "wind_rotor",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"wind_rotor\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 68.0,\n  \"items\": [\n    {\n      \"part\": \"rotor_shaft\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/rotor_shaft/wind_rotor\"\n    },\n    {\n      \"part\": \"front_pedestal\",\n      \"aabb_surface_distance_mm\": 8.0,\n      \"fact_id\": \"nearby/front_pedestal/wind_rotor\"\n    },\n    {\n      \"part\": \"front_bearing\",\n      \"aabb_surface_distance_mm\": 8.0,\n      \"fact_id\": \"nearby/front_bearing/wind_rotor\"\n    },\n    {\n      \"part\": \"rear_pedestal\",\n      \"aabb_surface_distance_mm\": 38.0,\n      \"fact_id\": \"nearby/rear_pedestal/wind_rotor\"\n    },\n    {\n      \"part\": \"rear_bearing\",\n      \"aabb_surface_distance_mm\": 38.0,\n      \"fact_id\": \"nearby/rear_bearing/wind_rotor\"\n    },\n    {\n      \"part\": \"baseplate\",\n      \"aabb_surface_distance_mm\": 43.0,\n      \"fact_id\": \"nearby/baseplate/wind_rotor\"\n    },\n    {\n      \"part\": \"left_guide_cap\",\n      \"aabb_surface_distance_mm\": 55.94999980926514,\n      \"fact_id\": \"nearby/left_guide_cap/wind_rotor\"\n    },\n    {\n      \"part\": \"right_guide_cap\",\n      \"aabb_surface_distance_mm\": 55.94999980926514,\n      \"fact_id\": \"nearby/right_guide_cap/wind_rotor\"\n    },\n    {\n      \"part\": \"front_guide\",\n      \"aabb_surface_distance_mm\": 55.95,\n      \"fact_id\": \"nearby/front_guide/wind_rotor\"\n    },\n    {\n      \"part\": \"crank_disk\",\n      \"aabb_surface_distance_mm\": 56.0,\n      \"fact_id\": \"nearby/crank_disk/wind_rotor\"\n    },\n    {\n      \"part\": \"pump_cylinder\",\n      \"aabb_surface_distance_mm\": 59.28128708088591,\n      \"fact_id\": \"nearby/pump_cylinder/wind_rotor\"\n    },\n    {\n      \"part\": \"piston_slider\",\n      \"aabb_surface_distance_mm\": 60.0,\n      \"fact_id\": \"nearby/piston_slider/wind_rotor\"\n    },\n    {\n      \"part\": \"wrist_pin\",\n      \"aabb_surface_distance_mm\": 60.0,\n      \"fact_id\": \"nearby/wind_rotor/wrist_pin\"\n    },\n    {\n      \"part\": \"left_guide\",\n      \"aabb_surface_distance_mm\": 60.0,\n      \"fact_id\": \"nearby/left_guide/wind_rotor\"\n    },\n    {\n      \"part\": \"right_guide\",\n      \"aabb_surface_distance_mm\": 60.0,\n      \"fact_id\": \"nearby/right_guide/wind_rotor\"\n    },\n    {\n      \"part\": \"crank_pin\",\n      \"aabb_surface_distance_mm\": 62.00000000000001,\n      \"fact_id\": \"nearby/crank_pin/wind_rotor\"\n    },\n    {\n      \"part\": \"connecting_rod\",\n      \"aabb_surface_distance_mm\": 66.0,\n      \"fact_id\": \"nearby/connecting_rod/wind_rotor\"\n    },\n    {\n      \"part\": \"pump_rod\",\n      \"aabb_surface_distance_mm\": 66.48400623411446,\n      \"fact_id\": \"nearby/pump_rod/wind_rotor\"\n    },\n    {\n      \"part\": \"cylinder_foot\",\n      \"aabb_surface_distance_mm\": 66.52402716285013,\n      \"fact_id\": \"nearby/cylinder_foot/wind_rotor\"\n    },\n    {\n      \"part\": \"pump_piston\",\n      \"aabb_surface_distance_mm\": 66.91672107224983,\n      \"fact_id\": \"nearby/pump_piston/wind_rotor\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "rotor_shaft",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"rotor_shaft\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 38.23603543960978,\n  \"items\": [\n    {\n      \"part\": \"front_bearing\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/front_bearing/rotor_shaft\"\n    },\n    {\n      \"part\": \"rear_bearing\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/rear_bearing/rotor_shaft\"\n    },\n    {\n      \"part\": \"wind_rotor\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/rotor_shaft/wind_rotor\"\n    },\n    {\n      \"part\": \"crank_disk\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/crank_disk/rotor_shaft\"\n    },\n    {\n      \"part\": \"connecting_rod\",\n      \"aabb_surface_distance_mm\": 4.502960443496704,\n      \"fact_id\": \"nearby/connecting_rod/rotor_shaft\"\n    },\n    {\n      \"part\": \"front_pedestal\",\n      \"aabb_surface_distance_mm\": 6.000932455062866,\n      \"fact_id\": \"nearby/front_pedestal/rotor_shaft\"\n    },\n    {\n      \"part\": \"rear_pedestal\",\n      \"aabb_surface_distance_mm\": 6.000932455062866,\n      \"fact_id\": \"nearby/rear_pedestal/rotor_shaft\"\n    },\n    {\n      \"part\": \"crank_pin\",\n      \"aabb_surface_distance_mm\": 8.001864910125732,\n      \"fact_id\": \"nearby/crank_pin/rotor_shaft\"\n    },\n    {\n      \"part\": \"left_guide_cap\",\n      \"aabb_surface_distance_mm\": 27.670432838010814,\n      \"fact_id\": \"nearby/left_guide_cap/rotor_shaft\"\n    },\n    {\n      \"part\": \"right_guide_cap\",\n      \"aabb_surface_distance_mm\": 27.670432838010814,\n      \"fact_id\": \"nearby/right_guide_cap/rotor_shaft\"\n    },\n    {\n      \"part\": \"front_guide\",\n      \"aabb_surface_distance_mm\": 31.000932455062866,\n      \"fact_id\": \"nearby/front_guide/rotor_shaft\"\n    },\n    {\n      \"part\": \"left_guide\",\n      \"aabb_surface_distance_mm\": 32.29489608410855,\n      \"fact_id\": \"nearby/left_guide/rotor_shaft\"\n    },\n    {\n      \"part\": \"right_guide\",\n      \"aabb_surface_distance_mm\": 32.29489608410855,\n      \"fact_id\": \"nearby/right_guide/rotor_shaft\"\n    },\n    {\n      \"part\": \"rear_guide\",\n      \"aabb_surface_distance_mm\": 33.260491774526876,\n      \"fact_id\": \"nearby/rear_guide/rotor_shaft\"\n    },\n    {\n      \"part\": \"piston_slider\",\n      \"aabb_surface_distance_mm\": 36.000932455062866,\n      \"fact_id\": \"nearby/piston_slider/rotor_shaft\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "crank_disk",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"crank_disk\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 24.368430269912942,\n  \"items\": [\n    {\n      \"part\": \"rotor_shaft\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/crank_disk/rotor_shaft\"\n    },\n    {\n      \"part\": \"crank_pin\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/crank_disk/crank_pin\"\n    },\n    {\n      \"part\": \"connecting_rod\",\n      \"aabb_surface_distance_mm\": 2.0,\n      \"fact_id\": \"nearby/connecting_rod/crank_disk\"\n    },\n    {\n      \"part\": \"rear_pedestal\",\n      \"aabb_surface_distance_mm\": 8.000000000000004,\n      \"fact_id\": \"nearby/crank_disk/rear_pedestal\"\n    },\n    {\n      \"part\": \"rear_bearing\",\n      \"aabb_surface_distance_mm\": 8.000000000000004,\n      \"fact_id\": \"nearby/crank_disk/rear_bearing\"\n    },\n    {\n      \"part\": \"left_guide_cap\",\n      \"aabb_surface_distance_mm\": 13.00528335571289,\n      \"fact_id\": \"nearby/crank_disk/left_guide_cap\"\n    },\n    {\n      \"part\": \"right_guide_cap\",\n      \"aabb_surface_distance_mm\": 13.00528335571289,\n      \"fact_id\": \"nearby/crank_disk/right_guide_cap\"\n    },\n    {\n      \"part\": \"left_guide\",\n      \"aabb_surface_distance_mm\": 17.00528335571289,\n      \"fact_id\": \"nearby/crank_disk/left_guide\"\n    },\n    {\n      \"part\": \"right_guide\",\n      \"aabb_surface_distance_mm\": 17.00528335571289,\n      \"fact_id\": \"nearby/crank_disk/right_guide\"\n    },\n    {\n      \"part\": \"front_guide\",\n      \"aabb_surface_distance_mm\": 17.00528335571289,\n      \"fact_id\": \"nearby/crank_disk/front_guide\"\n    },\n    {\n      \"part\": \"piston_slider\",\n      \"aabb_surface_distance_mm\": 22.00528335571289,\n      \"fact_id\": \"nearby/crank_disk/piston_slider\"\n    },\n    {\n      \"part\": \"rear_guide\",\n      \"aabb_surface_distance_mm\": 22.0586074358307,\n      \"fact_id\": \"nearby/crank_disk/rear_guide\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "crank_pin",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"crank_pin\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 8.18501106530072,\n  \"items\": [\n    {\n      \"part\": \"crank_disk\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/crank_disk/crank_pin\"\n    },\n    {\n      \"part\": \"connecting_rod\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/connecting_rod/crank_pin\"\n    },\n    {\n      \"part\": \"rotor_shaft\",\n      \"aabb_surface_distance_mm\": 8.001864910125732,\n      \"fact_id\": \"nearby/crank_pin/rotor_shaft\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "connecting_rod",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"connecting_rod\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 24.086434186357955,\n  \"items\": [\n    {\n      \"part\": \"crank_pin\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/connecting_rod/crank_pin\"\n    },\n    {\n      \"part\": \"piston_slider\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/connecting_rod/piston_slider\"\n    },\n    {\n      \"part\": \"wrist_pin\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/connecting_rod/wrist_pin\"\n    },\n    {\n      \"part\": \"crank_disk\",\n      \"aabb_surface_distance_mm\": 2.0,\n      \"fact_id\": \"nearby/connecting_rod/crank_disk\"\n    },\n    {\n      \"part\": \"pump_rod\",\n      \"aabb_surface_distance_mm\": 2.5020294189453125,\n      \"fact_id\": \"nearby/connecting_rod/pump_rod\"\n    },\n    {\n      \"part\": \"right_guide_cap\",\n      \"aabb_surface_distance_mm\": 2.550028610229493,\n      \"fact_id\": \"nearby/connecting_rod/right_guide_cap\"\n    },\n    {\n      \"part\": \"left_guide_cap\",\n      \"aabb_surface_distance_mm\": 2.5500286102294947,\n      \"fact_id\": \"nearby/connecting_rod/left_guide_cap\"\n    },\n    {\n      \"part\": \"rotor_shaft\",\n      \"aabb_surface_distance_mm\": 4.502960443496704,\n      \"fact_id\": \"nearby/connecting_rod/rotor_shaft\"\n    },\n    {\n      \"part\": \"left_guide\",\n      \"aabb_surface_distance_mm\": 5.550028610229493,\n      \"fact_id\": \"nearby/connecting_rod/left_guide\"\n    },\n    {\n      \"part\": \"right_guide\",\n      \"aabb_surface_distance_mm\": 5.550028610229493,\n      \"fact_id\": \"nearby/connecting_rod/right_guide\"\n    },\n    {\n      \"part\": \"rear_guide\",\n      \"aabb_surface_distance_mm\": 6.04999999999999,\n      \"fact_id\": \"nearby/connecting_rod/rear_guide\"\n    },\n    {\n      \"part\": \"front_guide\",\n      \"aabb_surface_distance_mm\": 6.050000000000008,\n      \"fact_id\": \"nearby/connecting_rod/front_guide\"\n    },\n    {\n      \"part\": \"pump_cylinder\",\n      \"aabb_surface_distance_mm\": 13.502029418945312,\n      \"fact_id\": \"nearby/connecting_rod/pump_cylinder\"\n    },\n    {\n      \"part\": \"outlet_pipe\",\n      \"aabb_surface_distance_mm\": 17.681624311540773,\n      \"fact_id\": \"nearby/connecting_rod/outlet_pipe\"\n    },\n    {\n      \"part\": \"rear_pedestal\",\n      \"aabb_surface_distance_mm\": 18.000000000000007,\n      \"fact_id\": \"nearby/connecting_rod/rear_pedestal\"\n    },\n    {\n      \"part\": \"rear_bearing\",\n      \"aabb_surface_distance_mm\": 18.000000000000007,\n      \"fact_id\": \"nearby/connecting_rod/rear_bearing\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "piston_slider",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"piston_slider\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 18.309833423600555,\n  \"items\": [\n    {\n      \"part\": \"connecting_rod\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/connecting_rod/piston_slider\"\n    },\n    {\n      \"part\": \"wrist_pin\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/piston_slider/wrist_pin\"\n    },\n    {\n      \"part\": \"pump_rod\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/piston_slider/pump_rod\"\n    },\n    {\n      \"part\": \"rear_guide\",\n      \"aabb_surface_distance_mm\": 0.04999999999999716,\n      \"fact_id\": \"nearby/piston_slider/rear_guide\"\n    },\n    {\n      \"part\": \"left_guide\",\n      \"aabb_surface_distance_mm\": 0.05000000000000071,\n      \"fact_id\": \"nearby/left_guide/piston_slider\"\n    },\n    {\n      \"part\": \"right_guide\",\n      \"aabb_surface_distance_mm\": 0.05000000000000071,\n      \"fact_id\": \"nearby/piston_slider/right_guide\"\n    },\n    {\n      \"part\": \"front_guide\",\n      \"aabb_surface_distance_mm\": 0.05000000000000071,\n      \"fact_id\": \"nearby/front_guide/piston_slider\"\n    },\n    {\n      \"part\": \"left_guide_cap\",\n      \"aabb_surface_distance_mm\": 5.0,\n      \"fact_id\": \"nearby/left_guide_cap/piston_slider\"\n    },\n    {\n      \"part\": \"right_guide_cap\",\n      \"aabb_surface_distance_mm\": 5.0,\n      \"fact_id\": \"nearby/piston_slider/right_guide_cap\"\n    },\n    {\n      \"part\": \"pump_cylinder\",\n      \"aabb_surface_distance_mm\": 7.0,\n      \"fact_id\": \"nearby/piston_slider/pump_cylinder\"\n    },\n    {\n      \"part\": \"outlet_pipe\",\n      \"aabb_surface_distance_mm\": 10.036059983878136,\n      \"fact_id\": \"nearby/outlet_pipe/piston_slider\"\n    },\n    {\n      \"part\": \"rear_pedestal\",\n      \"aabb_surface_distance_mm\": 12.0,\n      \"fact_id\": \"nearby/piston_slider/rear_pedestal\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "wrist_pin",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"wrist_pin\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 9.949593265008135,\n  \"items\": [\n    {\n      \"part\": \"connecting_rod\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/connecting_rod/wrist_pin\"\n    },\n    {\n      \"part\": \"piston_slider\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/piston_slider/wrist_pin\"\n    },\n    {\n      \"part\": \"rear_guide\",\n      \"aabb_surface_distance_mm\": 0.04999999999999716,\n      \"fact_id\": \"nearby/rear_guide/wrist_pin\"\n    },\n    {\n      \"part\": \"front_guide\",\n      \"aabb_surface_distance_mm\": 0.05000000000000071,\n      \"fact_id\": \"nearby/front_guide/wrist_pin\"\n    },\n    {\n      \"part\": \"pump_rod\",\n      \"aabb_surface_distance_mm\": 6.000932455062866,\n      \"fact_id\": \"nearby/pump_rod/wrist_pin\"\n    },\n    {\n      \"part\": \"left_guide\",\n      \"aabb_surface_distance_mm\": 9.05,\n      \"fact_id\": \"nearby/left_guide/wrist_pin\"\n    },\n    {\n      \"part\": \"right_guide\",\n      \"aabb_surface_distance_mm\": 9.05,\n      \"fact_id\": \"nearby/right_guide/wrist_pin\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "pump_rod",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"pump_rod\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 14.628547642848734,\n  \"items\": [\n    {\n      \"part\": \"piston_slider\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/piston_slider/pump_rod\"\n    },\n    {\n      \"part\": \"pump_piston\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/pump_piston/pump_rod\"\n    },\n    {\n      \"part\": \"pump_cylinder\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/pump_cylinder/pump_rod\"\n    },\n    {\n      \"part\": \"connecting_rod\",\n      \"aabb_surface_distance_mm\": 2.5020294189453125,\n      \"fact_id\": \"nearby/connecting_rod/pump_rod\"\n    },\n    {\n      \"part\": \"wrist_pin\",\n      \"aabb_surface_distance_mm\": 6.000932455062866,\n      \"fact_id\": \"nearby/pump_rod/wrist_pin\"\n    },\n    {\n      \"part\": \"rear_guide\",\n      \"aabb_surface_distance_mm\": 6.050932455062863,\n      \"fact_id\": \"nearby/pump_rod/rear_guide\"\n    },\n    {\n      \"part\": \"front_guide\",\n      \"aabb_surface_distance_mm\": 6.050932455062867,\n      \"fact_id\": \"nearby/front_guide/pump_rod\"\n    },\n    {\n      \"part\": \"baseplate\",\n      \"aabb_surface_distance_mm\": 7.0000000000000036,\n      \"fact_id\": \"nearby/baseplate/pump_rod\"\n    },\n    {\n      \"part\": \"cylinder_foot\",\n      \"aabb_surface_distance_mm\": 7.932370719156753,\n      \"fact_id\": \"nearby/cylinder_foot/pump_rod\"\n    },\n    {\n      \"part\": \"left_guide\",\n      \"aabb_surface_distance_mm\": 9.05,\n      \"fact_id\": \"nearby/left_guide/pump_rod\"\n    },\n    {\n      \"part\": \"right_guide\",\n      \"aabb_surface_distance_mm\": 9.05,\n      \"fact_id\": \"nearby/pump_rod/right_guide\"\n    },\n    {\n      \"part\": \"outlet_pipe\",\n      \"aabb_surface_distance_mm\": 9.85,\n      \"fact_id\": \"nearby/outlet_pipe/pump_rod\"\n    },\n    {\n      \"part\": \"inlet_pipe\",\n      \"aabb_surface_distance_mm\": 9.850000381469727,\n      \"fact_id\": \"nearby/inlet_pipe/pump_rod\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "pump_piston",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"pump_piston\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 14.039997120251195,\n  \"items\": [\n    {\n      \"part\": \"front_guide\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/front_guide/pump_piston\"\n    },\n    {\n      \"part\": \"rear_guide\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/pump_piston/rear_guide\"\n    },\n    {\n      \"part\": \"pump_rod\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/pump_piston/pump_rod\"\n    },\n    {\n      \"part\": \"pump_cylinder\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/pump_cylinder/pump_piston\"\n    },\n    {\n      \"part\": \"left_guide\",\n      \"aabb_surface_distance_mm\": 2.350000190734864,\n      \"fact_id\": \"nearby/left_guide/pump_piston\"\n    },\n    {\n      \"part\": \"right_guide\",\n      \"aabb_surface_distance_mm\": 2.350000190734864,\n      \"fact_id\": \"nearby/pump_piston/right_guide\"\n    },\n    {\n      \"part\": \"cylinder_foot\",\n      \"aabb_surface_distance_mm\": 3.0037476877497076,\n      \"fact_id\": \"nearby/cylinder_foot/pump_piston\"\n    },\n    {\n      \"part\": \"inlet_pipe\",\n      \"aabb_surface_distance_mm\": 3.15000057220459,\n      \"fact_id\": \"nearby/inlet_pipe/pump_piston\"\n    },\n    {\n      \"part\": \"outlet_pipe\",\n      \"aabb_surface_distance_mm\": 4.350000138118351,\n      \"fact_id\": \"nearby/outlet_pipe/pump_piston\"\n    },\n    {\n      \"part\": \"baseplate\",\n      \"aabb_surface_distance_mm\": 6.000000000000002,\n      \"fact_id\": \"nearby/baseplate/pump_piston\"\n    },\n    {\n      \"part\": \"rear_pedestal\",\n      \"aabb_surface_distance_mm\": 11.303014755249023,\n      \"fact_id\": \"nearby/pump_piston/rear_pedestal\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "entity_ids",
+        "offset": 50,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"entity_ids\",\n  \"offset\": 50,\n  \"returned\": 25,\n  \"total\": 100,\n  \"next_offset\": 75,\n  \"items\": [\n    \"port/rotor_shaft/front_journal\",\n    \"port/rotor_shaft/rear_journal\",\n    \"port/rotor_shaft/crank_seat\",\n    \"port/front_bearing/journal_bore\",\n    \"port/rear_bearing/journal_bore\",\n    \"port/crank_disk/shaft_bore\",\n    \"port/crank_disk/eccentric_pin_bore\",\n    \"port/crank_pin/disk_press_seat\",\n    \"port/crank_pin/rod_journal\",\n    \"port/connecting_rod/crank_eye\",\n    \"port/connecting_rod/wrist_eye\",\n    \"port/wrist_pin/slider_press_seat\",\n    \"port/wrist_pin/rod_journal\",\n    \"port/piston_slider/wrist_pin_bore\",\n    \"port/piston_slider/pump_rod_bore\",\n    \"port/pump_rod/slider_seat\",\n    \"port/pump_rod/piston_seat\",\n    \"port/pump_piston/rod_bore\",\n    \"port/pump_piston/barrel_running_surface\",\n    \"port/pump_cylinder/piston_bore\",\n    \"relation/rotor_to_shaft_press_fit\",\n    \"relation/front_shaft_journal\",\n    \"relation/rear_shaft_journal\",\n    \"relation/shaft_to_crank_press_fit\",\n    \"relation/eccentric_pin_press_fit\"\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wind_rotor",
+        "b": "rotor_shaft"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/rotor_shaft/wind_rotor\",\n  \"origin_distance_mm\": 2.0000000000000018,\n  \"surface_distance_mm\": 0.0049982781515187195,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    8.0,\n    5.998135089874268\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0020000000000000018\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    96.0,\n    96.0,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    76.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wind_rotor",
+        "b": "front_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/front_pedestal/wind_rotor\",\n  \"origin_distance_mm\": 93.39164844888434,\n  \"surface_distance_mm\": 10.0,\n  \"aabb_overlap_extents_mm\": [\n    12.0,\n    0.0,\n    39.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.091\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.02099999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    96.0,\n    96.0,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    12.0,\n    10.0,\n    82.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wind_rotor",
+        "b": "front_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/front_bearing/wind_rotor\",\n  \"origin_distance_mm\": 15.999999999999996,\n  \"surface_distance_mm\": 8.000188941423476,\n  \"aabb_overlap_extents_mm\": [\n    18.0,\n    0.0,\n    17.99440574645996\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.015999999999999997\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    96.0,\n    96.0,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    18.0,\n    17.99440574645996,\n    10.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wind_rotor",
+        "b": "rear_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/rear_pedestal/wind_rotor\",\n  \"origin_distance_mm\": 104.31682510506154,\n  \"surface_distance_mm\": 38.471693567900886,\n  \"aabb_overlap_extents_mm\": [\n    12.0,\n    0.0,\n    39.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.091\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.05099999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    96.0,\n    96.0,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    12.0,\n    10.0,\n    82.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wind_rotor",
+        "b": "rear_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/rear_bearing/wind_rotor\",\n  \"origin_distance_mm\": 46.0,\n  \"surface_distance_mm\": 38.000039777590686,\n  \"aabb_overlap_extents_mm\": [\n    18.0,\n    0.0,\n    17.99440574645996\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.046\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    96.0,\n    96.0,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    18.0,\n    17.99440574645996,\n    10.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wind_rotor",
+        "b": "baseplate"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/baseplate/wind_rotor\",\n  \"origin_distance_mm\": 104.69479452198185,\n  \"surface_distance_mm\": 43.0,\n  \"aabb_overlap_extents_mm\": [\n    96.0,\n    8.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.095\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.04399999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    96.0,\n    96.0,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    100.0,\n    110.0,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wind_rotor",
+        "b": "left_guide_cap"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/left_guide_cap/wind_rotor\",\n  \"origin_distance_mm\": 85.33699373659702,\n  \"surface_distance_mm\": 58.03380575007608,\n  \"aabb_overlap_extents_mm\": [\n    10.000000000000002,\n    0.0,\n    4.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.014050000000000002\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.034\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.077\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    96.0,\n    96.0,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    26.100000381469727,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wind_rotor",
+        "b": "right_guide_cap"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/right_guide_cap/wind_rotor\",\n  \"origin_distance_mm\": 85.33699373659702,\n  \"surface_distance_mm\": 57.97677948397806,\n  \"aabb_overlap_extents_mm\": [\n    10.0,\n    0.0,\n    4.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.01405\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.034\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.077\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    96.0,\n    96.0,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    26.100000381469727,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wind_rotor",
+        "b": "front_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/front_guide/wind_rotor\",\n  \"origin_distance_mm\": 111.2232102575717,\n  \"surface_distance_mm\": 57.95,\n  \"aabb_overlap_extents_mm\": [\n    24.0,\n    0.0,\n    14.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.091\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.06394999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    96.0,\n    96.0,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    24.0,\n    4.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wind_rotor",
+        "b": "crank_disk"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/wind_rotor\",\n  \"origin_distance_mm\": 64.0,\n  \"surface_distance_mm\": 56.0,\n  \"aabb_overlap_extents_mm\": [\n    34.0,\n    0.0,\n    33.98943328857422\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.064\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    96.0,\n    96.0,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    34.0,\n    33.98943328857422,\n    8.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wind_rotor",
+        "b": "pump_cylinder"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/pump_cylinder/wind_rotor\",\n  \"origin_distance_mm\": 119.20570456148481,\n  \"surface_distance_mm\": 61.179138375696986,\n  \"aabb_overlap_extents_mm\": [\n    25.700000762939453,\n    0.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.091\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.07699999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    96.0,\n    96.0,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    25.700000762939453,\n    25.692012786865234,\n    24.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wind_rotor",
+        "b": "piston_slider"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/piston_slider/wind_rotor\",\n  \"origin_distance_mm\": 97.6165969494942,\n  \"surface_distance_mm\": 62.0,\n  \"aabb_overlap_extents_mm\": [\n    24.0,\n    0.0,\n    9.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.06\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.07699999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    96.0,\n    96.0,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    24.0,\n    18.0,\n    21.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wind_rotor",
+        "b": "wrist_pin"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/wind_rotor/wrist_pin\",\n  \"origin_distance_mm\": 82.66196223173027,\n  \"surface_distance_mm\": 62.0,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    0.0,\n    3.999067544937134\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.047\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.06799999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    96.0,\n    96.0,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    18.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wind_rotor",
+        "b": "left_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/left_guide/wind_rotor\",\n  \"origin_distance_mm\": 120.28134726548419,\n  \"surface_distance_mm\": 62.30022766297584,\n  \"aabb_overlap_extents_mm\": [\n    4.0,\n    0.0,\n    14.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.016050000000000002\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.091\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.07699999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    96.0,\n    96.0,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    4.0,\n    18.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wind_rotor",
+        "b": "right_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/right_guide/wind_rotor\",\n  \"origin_distance_mm\": 119.81319835477225,\n  \"surface_distance_mm\": 62.354855278001864,\n  \"aabb_overlap_extents_mm\": [\n    4.0,\n    0.0,\n    14.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.01205\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.091\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.07699999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    96.0,\n    96.0,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    4.0,\n    18.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wind_rotor",
+        "b": "crank_pin"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_pin/wind_rotor\",\n  \"origin_distance_mm\": 71.386273190299,\n  \"surface_distance_mm\": 62.514877115738116,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    0.0,\n    5.998135089874268\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.013999999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.07\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    96.0,\n    96.0,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    14.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wind_rotor",
+        "b": "connecting_rod"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/connecting_rod/wind_rotor\",\n  \"origin_distance_mm\": 75.31268153505093,\n  \"surface_distance_mm\": 66.1537730847227,\n  \"aabb_overlap_extents_mm\": [\n    12.999942779541016,\n    0.0,\n    40.49797201156616\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.013999999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.074\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    96.0,\n    96.0,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    12.999942779541016,\n    45.99594259262085,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wind_rotor",
+        "b": "pump_rod"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/pump_rod/wind_rotor\",\n  \"origin_distance_mm\": 113.95174417269794,\n  \"surface_distance_mm\": 68.46989714289063,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    0.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.084\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.07699999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    96.0,\n    96.0,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    28.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wind_rotor",
+        "b": "cylinder_foot"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/cylinder_foot/wind_rotor\",\n  \"origin_distance_mm\": 104.69479452198185,\n  \"surface_distance_mm\": 71.28209157143195,\n  \"aabb_overlap_extents_mm\": [\n    31.69999885559082,\n    0.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.095\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.04399999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    96.0,\n    96.0,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    31.69999885559082,\n    31.690147399902344,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wind_rotor",
+        "b": "pump_piston"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/pump_piston/wind_rotor\",\n  \"origin_distance_mm\": 114.69088891450794,\n  \"surface_distance_mm\": 68.69541191435043,\n  \"aabb_overlap_extents_mm\": [\n    19.399999618530273,\n    0.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.085\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.07699999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    96.0,\n    96.0,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    19.399999618530273,\n    19.393970489501953,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "rotor_shaft",
+        "b": "front_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/front_bearing/rotor_shaft\",\n  \"origin_distance_mm\": 18.0,\n  \"surface_distance_mm\": 0.04999978864447265,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    10.0,\n    5.998135089874268\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.018\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    76.0\n  ],\n  \"b_extents_mm\": [\n    18.0,\n    17.99440574645996,\n    10.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "rotor_shaft",
+        "b": "rear_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/rear_bearing/rotor_shaft\",\n  \"origin_distance_mm\": 48.0,\n  \"surface_distance_mm\": 0.04999978864447265,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    10.0,\n    5.998135089874268\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.048\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    76.0\n  ],\n  \"b_extents_mm\": [\n    18.0,\n    17.99440574645996,\n    10.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "rotor_shaft",
+        "b": "crank_disk"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/rotor_shaft\",\n  \"origin_distance_mm\": 66.0,\n  \"surface_distance_mm\": 0.004998284569394118,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    8.000000000000004,\n    5.998135089874268\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.066\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    76.0\n  ],\n  \"b_extents_mm\": [\n    34.0,\n    33.98943328857422,\n    8.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "rotor_shaft",
+        "b": "connecting_rod"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/connecting_rod/rotor_shaft\",\n  \"origin_distance_mm\": 77.27871634544664,\n  \"surface_distance_mm\": 4.502960443496704,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    0.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.013999999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.076\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    76.0\n  ],\n  \"b_extents_mm\": [\n    12.999942779541016,\n    45.99594259262085,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "rotor_shaft",
+        "b": "front_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/front_pedestal/rotor_shaft\",\n  \"origin_distance_mm\": 93.86160024205851,\n  \"surface_distance_mm\": 7.817092506829616,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    10.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.091\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.022999999999999993\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    76.0\n  ],\n  \"b_extents_mm\": [\n    12.0,\n    10.0,\n    82.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "rotor_shaft",
+        "b": "rear_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/rear_pedestal/rotor_shaft\",\n  \"origin_distance_mm\": 105.30906893520614,\n  \"surface_distance_mm\": 7.817092506829616,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    10.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.091\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.05299999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    76.0\n  ],\n  \"b_extents_mm\": [\n    12.0,\n    10.0,\n    82.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "rotor_shaft",
+        "b": "crank_pin"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_pin/rotor_shaft\",\n  \"origin_distance_mm\": 73.348483283569,\n  \"surface_distance_mm\": 8.001864910125732,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    3.999999999999993,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.013999999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.07200000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    76.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    14.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "rotor_shaft",
+        "b": "left_guide_cap"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/left_guide_cap/rotor_shaft\",\n  \"origin_distance_mm\": 87.1458690931475,\n  \"surface_distance_mm\": 28.335904797090596,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    10.050000190734863,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.014050000000000002\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.034\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.079\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    76.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    26.100000381469727,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "rotor_shaft",
+        "b": "right_guide_cap"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/right_guide_cap/rotor_shaft\",\n  \"origin_distance_mm\": 87.1458690931475,\n  \"surface_distance_mm\": 28.335904797090596,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    10.050000190734863,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.01405\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.034\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.079\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    76.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    26.100000381469727,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "rotor_shaft",
+        "b": "front_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/front_guide/rotor_shaft\",\n  \"origin_distance_mm\": 112.38506350934718,\n  \"surface_distance_mm\": 31.585761239573916,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    4.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.091\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.06595\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    76.0\n  ],\n  \"b_extents_mm\": [\n    24.0,\n    4.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "rotor_shaft",
+        "b": "left_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/left_guide/rotor_shaft\",\n  \"origin_distance_mm\": 121.5713884925232,\n  \"surface_distance_mm\": 33.0726282923961,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    6.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.016050000000000002\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.091\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.07899999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    76.0\n  ],\n  \"b_extents_mm\": [\n    4.0,\n    18.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "rotor_shaft",
+        "b": "right_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/right_guide/rotor_shaft\",\n  \"origin_distance_mm\": 121.10822639275996,\n  \"surface_distance_mm\": 33.0726282923961,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    6.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.01205\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.091\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.07899999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    76.0\n  ],\n  \"b_extents_mm\": [\n    4.0,\n    18.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "rotor_shaft",
+        "b": "rear_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/rear_guide/rotor_shaft\",\n  \"origin_distance_mm\": 126.62465202321388,\n  \"surface_distance_mm\": 33.260491774526876,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    0.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.091\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.08804999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    76.0\n  ],\n  \"b_extents_mm\": [\n    24.0,\n    4.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "rotor_shaft",
+        "b": "piston_slider"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/piston_slider/rotor_shaft\",\n  \"origin_distance_mm\": 99.20181449953424,\n  \"surface_distance_mm\": 36.01481830627497,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    6.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.06\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.07899999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    76.0\n  ],\n  \"b_extents_mm\": [\n    24.0,\n    18.0,\n    21.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "crank_pin"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/crank_pin\",\n  \"origin_distance_mm\": 15.231546211727816,\n  \"surface_distance_mm\": 0.00310516357421875,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    2.0,\n    5.993784189224243\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.013999999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.005999999999999998\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    34.0,\n    33.98943328857422,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    14.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "connecting_rod"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/connecting_rod/crank_disk\",\n  \"origin_distance_mm\": 17.204650534085253,\n  \"surface_distance_mm\": 2.0,\n  \"aabb_overlap_extents_mm\": [\n    12.999942779541016,\n    0.0,\n    9.492688655853271\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.013999999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.009999999999999998\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    34.0,\n    33.98943328857422,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    12.999942779541016,\n    45.99594259262085,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "rear_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/rear_pedestal\",\n  \"origin_distance_mm\": 91.92388155425118,\n  \"surface_distance_mm\": 8.000000000000004,\n  \"aabb_overlap_extents_mm\": [\n    12.0,\n    0.0,\n    7.994716644287109\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.091\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      -0.013000000000000012\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    34.0,\n    33.98943328857422,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    12.0,\n    10.0,\n    82.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "rear_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/rear_bearing\",\n  \"origin_distance_mm\": 18.000000000000004,\n  \"surface_distance_mm\": 8.000000000000004,\n  \"aabb_overlap_extents_mm\": [\n    18.0,\n    0.0,\n    17.99440574645996\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.018000000000000006\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    34.0,\n    33.98943328857422,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    18.0,\n    17.99440574645996,\n    10.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "left_guide_cap"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/left_guide_cap\",\n  \"origin_distance_mm\": 39.01797662616554,\n  \"surface_distance_mm\": 14.340089191135277,\n  \"aabb_overlap_extents_mm\": [\n    7.9499999999999975,\n    8.000000000000004,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.014050000000000002\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.034\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.012999999999999998\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    34.0,\n    33.98943328857422,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    26.100000381469727,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "right_guide_cap"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/right_guide_cap\",\n  \"origin_distance_mm\": 39.01797662616554,\n  \"surface_distance_mm\": 14.340089191135277,\n  \"aabb_overlap_extents_mm\": [\n    7.949999999999999,\n    8.000000000000004,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.01405\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.034\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.012999999999999998\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    34.0,\n    33.98943328857422,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    26.100000381469727,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "left_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/left_guide\",\n  \"origin_distance_mm\": 93.31453530935038,\n  \"surface_distance_mm\": 19.07617543301535,\n  \"aabb_overlap_extents_mm\": [\n    4.0,\n    4.000000000000007,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.016050000000000002\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.091\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.01299999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    34.0,\n    33.98943328857422,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    4.0,\n    18.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "right_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/right_guide\",\n  \"origin_distance_mm\": 92.71031496009492,\n  \"surface_distance_mm\": 19.07617543301535,\n  \"aabb_overlap_extents_mm\": [\n    4.0,\n    4.000000000000007,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.01205\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.091\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.01299999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    34.0,\n    33.98943328857422,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    4.0,\n    18.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "front_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/front_guide\",\n  \"origin_distance_mm\": 91.0000137362627,\n  \"surface_distance_mm\": 17.00528335571289,\n  \"aabb_overlap_extents_mm\": [\n    24.0,\n    3.9499999999999957,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.091\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      -5.000000000001184e-05\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    34.0,\n    33.98943328857422,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    24.0,\n    4.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "piston_slider"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/piston_slider\",\n  \"origin_distance_mm\": 61.392181912683306,\n  \"surface_distance_mm\": 22.00528335571289,\n  \"aabb_overlap_extents_mm\": [\n    24.0,\n    4.000000000000007,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.06\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.01299999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    34.0,\n    33.98943328857422,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    24.0,\n    18.0,\n    21.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "rear_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/rear_guide\",\n  \"origin_distance_mm\": 93.63334074997005,\n  \"surface_distance_mm\": 22.0586074358307,\n  \"aabb_overlap_extents_mm\": [\n    24.0,\n    0.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.091\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.022049999999999986\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    34.0,\n    33.98943328857422,\n    8.0\n  ],\n  \"b_extents_mm\": [\n    24.0,\n    4.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_pin",
+        "b": "connecting_rod"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/connecting_rod/crank_pin\",\n  \"origin_distance_mm\": 4.0,\n  \"surface_distance_mm\": 0.04999978864447265,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    6.0,\n    5.998135089874268\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.004\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    14.0\n  ],\n  \"b_extents_mm\": [\n    12.999942779541016,\n    45.99594259262085,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "connecting_rod",
+        "b": "piston_slider"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/connecting_rod/piston_slider\",\n  \"origin_distance_mm\": 46.09772228646444,\n  \"surface_distance_mm\": 0.9999999999999929,\n  \"aabb_overlap_extents_mm\": [\n    12.999942779541016,\n    6.0,\n    14.497970581054688\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.046\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.0029999999999999923\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    12.999942779541016,\n    45.99594259262085,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    24.0,\n    18.0,\n    21.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "connecting_rod",
+        "b": "wrist_pin"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/connecting_rod/wrist_pin\",\n  \"origin_distance_mm\": 33.54101966249685,\n  \"surface_distance_mm\": 0.04999855848612163,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    6.0,\n    5.998135089874268\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.033\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.006000000000000005\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    12.999942779541016,\n    45.99594259262085,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    18.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "connecting_rod",
+        "b": "pump_rod"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/connecting_rod/pump_rod\",\n  \"origin_distance_mm\": 70.06425622241343,\n  \"surface_distance_mm\": 2.5020294189453125,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.07\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.0029999999999999923\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    12.999942779541016,\n    45.99594259262085,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    28.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "connecting_rod",
+        "b": "right_guide_cap"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/connecting_rod/right_guide_cap\",\n  \"origin_distance_mm\": 24.625241115570834,\n  \"surface_distance_mm\": 9.340502046329084,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    6.0,\n    4.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.01405\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.020000000000000004\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.002999999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    12.999942779541016,\n    45.99594259262085,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    26.100000381469727,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "connecting_rod",
+        "b": "left_guide_cap"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/connecting_rod/left_guide_cap\",\n  \"origin_distance_mm\": 24.625241115570834,\n  \"surface_distance_mm\": 9.34850922786581,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    6.0,\n    4.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.014050000000000002\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.020000000000000004\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.002999999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    12.999942779541016,\n    45.99594259262085,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    26.100000381469727,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "connecting_rod",
+        "b": "left_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/connecting_rod/left_guide\",\n  \"origin_distance_mm\": 78.71214963396693,\n  \"surface_distance_mm\": 5.550028610229493,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    6.0,\n    19.497970581054688\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.016050000000000002\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.077\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.0029999999999999923\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    12.999942779541016,\n    45.99594259262085,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    4.0,\n    18.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "connecting_rod",
+        "b": "right_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/connecting_rod/right_guide\",\n  \"origin_distance_mm\": 77.99488765297377,\n  \"surface_distance_mm\": 5.557175445556641,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    6.0,\n    19.497970581054688\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.01205\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.077\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.0029999999999999923\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    12.999942779541016,\n    45.99594259262085,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    4.0,\n    18.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "connecting_rod",
+        "b": "rear_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/connecting_rod/rear_guide\",\n  \"origin_distance_mm\": 77.93717020780264,\n  \"surface_distance_mm\": 6.04999999999999,\n  \"aabb_overlap_extents_mm\": [\n    12.999942779541016,\n    0.0,\n    19.497970581054688\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.077\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.012049999999999988\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    12.999942779541016,\n    45.99594259262085,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    24.0,\n    4.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "connecting_rod",
+        "b": "front_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/connecting_rod/front_guide\",\n  \"origin_distance_mm\": 77.65309073050473,\n  \"surface_distance_mm\": 6.050000000000008,\n  \"aabb_overlap_extents_mm\": [\n    12.999942779541016,\n    0.0,\n    19.497970581054688\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.077\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      -0.01005000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    12.999942779541016,\n    45.99594259262085,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    24.0,\n    4.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "connecting_rod",
+        "b": "pump_cylinder"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/connecting_rod/pump_cylinder\",\n  \"origin_distance_mm\": 77.05841939723395,\n  \"surface_distance_mm\": 15.13407573108773,\n  \"aabb_overlap_extents_mm\": [\n    12.999942779541016,\n    6.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.077\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.0029999999999999923\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    12.999942779541016,\n    45.99594259262085,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    25.700000762939453,\n    25.692012786865234,\n    24.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "connecting_rod",
+        "b": "outlet_pipe"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/connecting_rod/outlet_pipe\",\n  \"origin_distance_mm\": 60.457609115809404,\n  \"surface_distance_mm\": 20.057177148871325,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    5.998135089874268,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      6.123233995736766e-17,\n      0.0,\n      1.0,\n      0.01285\n    ],\n    [\n      1.0,\n      6.123233995736766e-17,\n      -6.123233995736766e-17,\n      0.05900000000000001\n    ],\n    [\n      -6.123233995736766e-17,\n      1.0,\n      3.749399456654644e-33,\n      0.0029999999999999923\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    12.999942779541016,\n    45.99594259262085,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    13.149999618530273\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "connecting_rod",
+        "b": "rear_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/connecting_rod/rear_pedestal\",\n  \"origin_distance_mm\": 80.36168241145776,\n  \"surface_distance_mm\": 18.000000000000007,\n  \"aabb_overlap_extents_mm\": [\n    12.0,\n    0.0,\n    44.49797058105469\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.077\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      -0.02300000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    12.999942779541016,\n    45.99594259262085,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    12.0,\n    10.0,\n    82.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "connecting_rod",
+        "b": "rear_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/connecting_rod/rear_bearing\",\n  \"origin_distance_mm\": 31.304951684997057,\n  \"surface_distance_mm\": 18.000000000000007,\n  \"aabb_overlap_extents_mm\": [\n    12.999942779541016,\n    0.0,\n    1.4951748847961426\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.013999999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.028000000000000004\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    12.999942779541016,\n    45.99594259262085,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    18.0,\n    17.99440574645996,\n    10.0\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "entity_ids",
+        "offset": 75,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"entity_ids\",\n  \"offset\": 75,\n  \"returned\": 25,\n  \"total\": 100,\n  \"next_offset\": null,\n  \"items\": [\n    \"relation/crank_rod_revolute\",\n    \"relation/wrist_rod_revolute\",\n    \"relation/wrist_pin_to_slider\",\n    \"relation/slider_to_pump_rod\",\n    \"relation/pump_rod_to_piston\",\n    \"relation/piston_in_barrel\",\n    \"motion_joint/rotor_input_hinge\",\n    \"motion_joint/shaft_hinge\",\n    \"motion_joint/crank_hinge\",\n    \"motion_joint/crosshead_vertical_slide\",\n    \"motion_joint/pump_rod_vertical_slide\",\n    \"motion_joint/piston_vertical_slide\",\n    \"transmission/rotor_shaft_lock\",\n    \"transmission/shaft_crank_lock\",\n    \"transmission/crosshead_pump_rod_lock\",\n    \"transmission/pump_rod_piston_lock\",\n    \"role/driver/wind_rotor\",\n    \"role/output/piston_slider\",\n    \"role/watch/wind_rotor\",\n    \"role/watch/rotor_shaft\",\n    \"role/watch/crank_disk\",\n    \"role/watch/connecting_rod\",\n    \"role/watch/piston_slider\",\n    \"role/watch/pump_rod\",\n    \"role/watch/pump_piston\"\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "piston_slider",
+        "b": "wrist_pin"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/piston_slider/wrist_pin\",\n  \"origin_distance_mm\": 15.811388300841896,\n  \"surface_distance_mm\": 0.0,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    18.0,\n    5.998135089874268\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      1.0,\n      -0.009000000000000001\n    ],\n    [\n      0.0,\n      -1.0,\n      6.123233995736766e-17,\n      0.012999999999999998\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    24.0,\n    18.0,\n    21.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    18.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "piston_slider",
+        "b": "pump_rod"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/piston_slider/pump_rod\",\n  \"origin_distance_mm\": 24.0,\n  \"surface_distance_mm\": 0.00499833389273811,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    4.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.024\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    24.0,\n    18.0,\n    21.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    28.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "piston_slider",
+        "b": "rear_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/piston_slider/rear_guide\",\n  \"origin_distance_mm\": 32.29400099089612,\n  \"surface_distance_mm\": 0.04999999999999716,\n  \"aabb_overlap_extents_mm\": [\n    24.0,\n    0.0,\n    21.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.009049999999999996\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.031000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    24.0,\n    18.0,\n    21.0\n  ],\n  \"b_extents_mm\": [\n    24.0,\n    4.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "piston_slider",
+        "b": "left_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/left_guide/piston_slider\",\n  \"origin_distance_mm\": 34.90848750662222,\n  \"surface_distance_mm\": 0.05000000000000071,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    18.0,\n    21.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.016050000000000002\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.031000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    24.0,\n    18.0,\n    21.0\n  ],\n  \"b_extents_mm\": [\n    4.0,\n    18.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "piston_slider",
+        "b": "right_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/piston_slider/right_guide\",\n  \"origin_distance_mm\": 33.259622667733325,\n  \"surface_distance_mm\": 0.05000000000000071,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    18.0,\n    21.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.01205\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.031000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    24.0,\n    18.0,\n    21.0\n  ],\n  \"b_extents_mm\": [\n    4.0,\n    18.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "piston_slider",
+        "b": "front_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/front_guide/piston_slider\",\n  \"origin_distance_mm\": 33.634840567483,\n  \"surface_distance_mm\": 0.05000000000000071,\n  \"aabb_overlap_extents_mm\": [\n    24.0,\n    0.0,\n    21.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.013050000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.031000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    24.0,\n    18.0,\n    21.0\n  ],\n  \"b_extents_mm\": [\n    24.0,\n    4.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "piston_slider",
+        "b": "left_guide_cap"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/left_guide_cap/piston_slider\",\n  \"origin_distance_mm\": 29.553383901001926,\n  \"surface_distance_mm\": 5.0,\n  \"aabb_overlap_extents_mm\": [\n    2.9499999999999975,\n    18.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.014050000000000002\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.025999999999999995\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    24.0,\n    18.0,\n    21.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    26.100000381469727,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "piston_slider",
+        "b": "right_guide_cap"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/piston_slider/right_guide_cap\",\n  \"origin_distance_mm\": 29.553383901001926,\n  \"surface_distance_mm\": 5.0,\n  \"aabb_overlap_extents_mm\": [\n    2.9499999999999993,\n    18.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.01405\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.025999999999999995\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    24.0,\n    18.0,\n    21.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    26.100000381469727,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "piston_slider",
+        "b": "pump_cylinder"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/piston_slider/pump_cylinder\",\n  \"origin_distance_mm\": 31.000000000000004,\n  \"surface_distance_mm\": 7.0,\n  \"aabb_overlap_extents_mm\": [\n    24.0,\n    18.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.031000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    24.0,\n    18.0,\n    21.0\n  ],\n  \"b_extents_mm\": [\n    25.700000762939453,\n    25.692012786865234,\n    24.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "piston_slider",
+        "b": "outlet_pipe"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/outlet_pipe/piston_slider\",\n  \"origin_distance_mm\": 18.279018026141344,\n  \"surface_distance_mm\": 10.938365616014048,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    5.998135089874268,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      6.123233995736766e-17,\n      0.0,\n      1.0,\n      0.01285\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      -1.0,\n      0.0,\n      6.123233995736766e-17,\n      -0.013000000000000005\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    24.0,\n    18.0,\n    21.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    13.149999618530273\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "piston_slider",
+        "b": "rear_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/piston_slider/rear_pedestal\",\n  \"origin_distance_mm\": 40.45985664828782,\n  \"surface_distance_mm\": 12.0,\n  \"aabb_overlap_extents_mm\": [\n    12.0,\n    0.0,\n    21.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.026000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.031000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    24.0,\n    18.0,\n    21.0\n  ],\n  \"b_extents_mm\": [\n    12.0,\n    10.0,\n    82.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wrist_pin",
+        "b": "rear_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/rear_guide/wrist_pin\",\n  \"origin_distance_mm\": 47.55841145370606,\n  \"surface_distance_mm\": 0.04999999999999716,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    0.0,\n    5.998135089874268\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.044000000000000004\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.018049999999999993\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    18.0\n  ],\n  \"b_extents_mm\": [\n    24.0,\n    4.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wrist_pin",
+        "b": "front_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/front_guide/wrist_pin\",\n  \"origin_distance_mm\": 44.18599891368305,\n  \"surface_distance_mm\": 0.05000000000000071,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    0.0,\n    5.998135089874268\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.044000000000000004\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      -0.004050000000000005\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    18.0\n  ],\n  \"b_extents_mm\": [\n    24.0,\n    4.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wrist_pin",
+        "b": "pump_rod"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/pump_rod/wrist_pin\",\n  \"origin_distance_mm\": 38.07886552931954,\n  \"surface_distance_mm\": 6.000932455062866,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.037\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.008999999999999998\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    18.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    28.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wrist_pin",
+        "b": "left_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/left_guide/wrist_pin\",\n  \"origin_distance_mm\": 47.69279295658831,\n  \"surface_distance_mm\": 9.05,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    18.0,\n    5.998135089874268\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.016050000000000002\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.044000000000000004\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.008999999999999998\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    18.0\n  ],\n  \"b_extents_mm\": [\n    4.0,\n    18.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "wrist_pin",
+        "b": "right_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/right_guide/wrist_pin\",\n  \"origin_distance_mm\": 46.49948924450676,\n  \"surface_distance_mm\": 9.05,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    18.0,\n    5.998135089874268\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.01205\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.044000000000000004\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.008999999999999998\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    18.0\n  ],\n  \"b_extents_mm\": [\n    4.0,\n    18.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pump_rod",
+        "b": "pump_piston"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/pump_piston/pump_rod\",\n  \"origin_distance_mm\": 1.0000000000000009,\n  \"surface_distance_mm\": 0.0049982781515194915,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    4.9999999999999964\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0010000000000000009\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    28.0\n  ],\n  \"b_extents_mm\": [\n    19.399999618530273,\n    19.393970489501953,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pump_rod",
+        "b": "pump_cylinder"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/pump_cylinder/pump_rod\",\n  \"origin_distance_mm\": 7.000000000000003,\n  \"surface_distance_mm\": 6.847870346494669,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    16.999999999999996\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.007000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    28.0\n  ],\n  \"b_extents_mm\": [\n    25.700000762939453,\n    25.692012786865234,\n    24.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pump_rod",
+        "b": "rear_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/pump_rod/rear_guide\",\n  \"origin_distance_mm\": 11.44126304216453,\n  \"surface_distance_mm\": 6.050932455062863,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    0.0,\n    27.999999999999996\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.009049999999999996\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.007000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    28.0\n  ],\n  \"b_extents_mm\": [\n    24.0,\n    4.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pump_rod",
+        "b": "front_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/front_guide/pump_rod\",\n  \"origin_distance_mm\": 14.8088655878835,\n  \"surface_distance_mm\": 6.050932455062867,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    0.0,\n    27.999999999999996\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.013050000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.007000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    28.0\n  ],\n  \"b_extents_mm\": [\n    24.0,\n    4.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pump_rod",
+        "b": "baseplate"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/baseplate/pump_rod\",\n  \"origin_distance_mm\": 34.785054261852174,\n  \"surface_distance_mm\": 7.0000000000000036,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.033\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.011000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    28.0\n  ],\n  \"b_extents_mm\": [\n    100.0,\n    110.0,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pump_rod",
+        "b": "cylinder_foot"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/cylinder_foot/pump_rod\",\n  \"origin_distance_mm\": 34.785054261852174,\n  \"surface_distance_mm\": 7.932370719156753,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    5.998135089874268,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.033\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.011000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    28.0\n  ],\n  \"b_extents_mm\": [\n    31.69999885559082,\n    31.690147399902344,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pump_rod",
+        "b": "left_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/left_guide/pump_rod\",\n  \"origin_distance_mm\": 17.510068532133165,\n  \"surface_distance_mm\": 9.05,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    5.998135089874268,\n    27.999999999999996\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.016050000000000002\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.007000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    28.0\n  ],\n  \"b_extents_mm\": [\n    4.0,\n    18.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pump_rod",
+        "b": "right_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/pump_rod/right_guide\",\n  \"origin_distance_mm\": 13.935655707572574,\n  \"surface_distance_mm\": 9.05,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    5.998135089874268,\n    27.999999999999996\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.01205\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.007000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    28.0\n  ],\n  \"b_extents_mm\": [\n    4.0,\n    18.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pump_rod",
+        "b": "outlet_pipe"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/outlet_pipe/pump_rod\",\n  \"origin_distance_mm\": 16.915155925973604,\n  \"surface_distance_mm\": 9.85,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    5.998135089874268,\n    6.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      6.123233995736766e-17,\n      0.0,\n      1.0,\n      0.01285\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      -1.0,\n      0.0,\n      6.123233995736766e-17,\n      0.010999999999999996\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    28.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    13.149999618530273\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pump_rod",
+        "b": "inlet_pipe"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/inlet_pipe/pump_rod\",\n  \"origin_distance_mm\": 26.019223662515373,\n  \"surface_distance_mm\": 9.850000381469727,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    5.998135089874268,\n    1.9999999999999964\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      6.123233995736766e-17,\n      0.0,\n      1.0,\n      -0.026\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      -1.0,\n      0.0,\n      6.123233995736766e-17,\n      -0.0010000000000000026\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    28.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    13.149999618530273\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pump_piston",
+        "b": "front_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/front_guide/pump_piston\",\n  \"origin_distance_mm\": 14.363234315431887,\n  \"surface_distance_mm\": 0.020524787902832742,\n  \"aabb_overlap_extents_mm\": [\n    19.399999618530273,\n    0.6469852447509759,\n    5.999999999999998\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.013050000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.006000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.399999618530273,\n    19.393970489501953,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    24.0,\n    4.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pump_piston",
+        "b": "rear_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/pump_piston/rear_guide\",\n  \"origin_distance_mm\": 10.858291762519551,\n  \"surface_distance_mm\": 0.02052478790282919,\n  \"aabb_overlap_extents_mm\": [\n    19.399999618530273,\n    0.6469852447509794,\n    5.999999999999998\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.009049999999999996\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.006000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.399999618530273,\n    19.393970489501953,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    24.0,\n    4.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pump_piston",
+        "b": "pump_cylinder"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/pump_cylinder/pump_piston\",\n  \"origin_distance_mm\": 6.000000000000002,\n  \"surface_distance_mm\": 0.14995254148303339,\n  \"aabb_overlap_extents_mm\": [\n    19.399999618530273,\n    19.393970489501953,\n    5.999999999999998\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.006000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.399999618530273,\n    19.393970489501953,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    25.700000762939453,\n    25.692012786865234,\n    24.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pump_piston",
+        "b": "left_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/left_guide/pump_piston\",\n  \"origin_distance_mm\": 17.13483294345177,\n  \"surface_distance_mm\": 2.362057495117188,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    18.0,\n    5.999999999999998\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.016050000000000002\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.006000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.399999618530273,\n    19.393970489501953,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    4.0,\n    18.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pump_piston",
+        "b": "right_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/pump_piston/right_guide\",\n  \"origin_distance_mm\": 13.46114779652909,\n  \"surface_distance_mm\": 2.350000190734864,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    18.0,\n    5.999999999999998\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.01205\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.006000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.399999618530273,\n    19.393970489501953,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    4.0,\n    18.0,\n    57.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pump_piston",
+        "b": "cylinder_foot"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/cylinder_foot/pump_piston\",\n  \"origin_distance_mm\": 34.48187929913334,\n  \"surface_distance_mm\": 3.005045301908493,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    19.393970489501953,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.033\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.010000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.399999618530273,\n    19.393970489501953,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    31.69999885559082,\n    31.690147399902344,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pump_piston",
+        "b": "inlet_pipe"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/inlet_pipe/pump_piston\",\n  \"origin_distance_mm\": 26.0,\n  \"surface_distance_mm\": 3.15000057220459,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    5.998135089874268,\n    2.9999999999999982\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      6.123233995736766e-17,\n      0.0,\n      1.0,\n      -0.026\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      -1.0,\n      0.0,\n      6.123233995736766e-17,\n      -1.734723475976807e-18\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.399999618530273,\n    19.393970489501953,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    13.149999618530273\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pump_piston",
+        "b": "outlet_pipe"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/outlet_pipe/pump_piston\",\n  \"origin_distance_mm\": 17.58187987673673,\n  \"surface_distance_mm\": 4.350000138118351,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    5.998135089874268,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      6.123233995736766e-17,\n      0.0,\n      1.0,\n      0.01285\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      -1.0,\n      0.0,\n      6.123233995736766e-17,\n      0.011999999999999997\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.399999618530273,\n    19.393970489501953,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    13.149999618530273\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pump_piston",
+        "b": "baseplate"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/baseplate/pump_piston\",\n  \"origin_distance_mm\": 34.48187929913334,\n  \"surface_distance_mm\": 6.000000000000002,\n  \"aabb_overlap_extents_mm\": [\n    19.399999618530273,\n    19.393970489501953,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.033\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.010000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.399999618530273,\n    19.393970489501953,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    100.0,\n    110.0,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pump_piston",
+        "b": "rear_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/pump_piston/rear_pedestal\",\n  \"origin_distance_mm\": 26.683328128252672,\n  \"surface_distance_mm\": 11.303014755249023,\n  \"aabb_overlap_extents_mm\": [\n    12.0,\n    0.0,\n    5.999999999999998\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.026000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.006000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.399999618530273,\n    19.393970489501953,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    12.0,\n    10.0,\n    82.0\n  ]\n}"
+    },
+    {
+      "name": "read_current_compiler",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\"revision\": 0, \"source\": \"\"}"
+    },
+    {
+      "name": "submit_compiler_source",
+      "arguments": {
+        "source": "def compile_mjcf(facts, out):\n    links=['baseplate','front_pedestal','rear_pedestal','front_bearing','rear_bearing','left_guide','right_guide','front_guide','rear_guide','pump_cylinder','cylinder_foot','inlet_pipe','outlet_pipe','left_guide_cap','right_guide_cap','rotor_shaft','wind_rotor','crank_disk','crank_pin','connecting_rod','piston_slider','wrist_pin','pump_rod','pump_piston']\n    parents={'baseplate':'','front_pedestal':'baseplate','rear_pedestal':'baseplate','front_bearing':'front_pedestal','rear_bearing':'rear_pedestal','left_guide':'baseplate','right_guide':'baseplate','front_guide':'baseplate','rear_guide':'baseplate','pump_cylinder':'baseplate','cylinder_foot':'baseplate','inlet_pipe':'pump_cylinder','outlet_pipe':'pump_cylinder','left_guide_cap':'left_guide','right_guide_cap':'right_guide','rotor_shaft':'baseplate','wind_rotor':'rotor_shaft','crank_disk':'rotor_shaft','crank_pin':'crank_disk','connecting_rod':'crank_pin','piston_slider':'baseplate','wrist_pin':'piston_slider','pump_rod':'piston_slider','pump_piston':'pump_rod'}\n    for b in links: out.body(b,parents[b])\n    out.joint('rotor_shaft','shaft_hinge','hinge',(0.0,1.0,0.0),(0.0,0.0,0.0),'world')\n    out.joint('connecting_rod','crank_rod_hinge','hinge',(0.0,1.0,0.0),(0.0,33.0,81.0),'world')\n    out.joint('piston_slider','crosshead_vertical_slide','slide',(0.0,0.0,1.0),(0.0,0.0,0.0),'world')\n    out.connect('wrist_rod_closure','connecting_rod','wrist_pin',(0.0,0.033,0.048),'authored wrist revolute closes the slider-crank without forcing the edge into the body tree',['relation/wrist_rod_revolute'],['fit/wrist_pin/rod_journal/connecting_rod/wrist_eye','pair/connecting_rod/wrist_pin'])\n    relation_pairs={\n      ('rotor_shaft','wind_rotor'):'relation/rotor_to_shaft_press_fit',('front_bearing','rotor_shaft'):'relation/front_shaft_journal',('rear_bearing','rotor_shaft'):'relation/rear_shaft_journal',('crank_disk','rotor_shaft'):'relation/shaft_to_crank_press_fit',('crank_disk','crank_pin'):'relation/eccentric_pin_press_fit',('connecting_rod','crank_pin'):'relation/crank_rod_revolute',('connecting_rod','wrist_pin'):'relation/wrist_rod_revolute',('piston_slider','wrist_pin'):'relation/wrist_pin_to_slider',('piston_slider','pump_rod'):'relation/slider_to_pump_rod',('pump_piston','pump_rod'):'relation/pump_rod_to_piston',('pump_cylinder','pump_piston'):'relation/piston_in_barrel'}\n    pairs=[\n    ('wind_rotor','rotor_shaft'),('wind_rotor','front_pedestal'),('wind_rotor','front_bearing'),('wind_rotor','rear_pedestal'),('wind_rotor','rear_bearing'),('wind_rotor','baseplate'),('wind_rotor','left_guide_cap'),('wind_rotor','right_guide_cap'),('wind_rotor','front_guide'),('wind_rotor','crank_disk'),('wind_rotor','pump_cylinder'),('wind_rotor','piston_slider'),('wind_rotor','wrist_pin'),('wind_rotor','left_guide'),('wind_rotor','right_guide'),('wind_rotor','crank_pin'),('wind_rotor','connecting_rod'),('wind_rotor','pump_rod'),('wind_rotor','cylinder_foot'),('wind_rotor','pump_piston'),\n    ('rotor_shaft','front_bearing'),('rotor_shaft','rear_bearing'),('rotor_shaft','crank_disk'),('rotor_shaft','connecting_rod'),('rotor_shaft','front_pedestal'),('rotor_shaft','rear_pedestal'),('rotor_shaft','crank_pin'),('rotor_shaft','left_guide_cap'),('rotor_shaft','right_guide_cap'),('rotor_shaft','front_guide'),('rotor_shaft','left_guide'),('rotor_shaft','right_guide'),('rotor_shaft','rear_guide'),('rotor_shaft','piston_slider'),\n    ('crank_disk','crank_pin'),('crank_disk','connecting_rod'),('crank_disk','rear_pedestal'),('crank_disk','rear_bearing'),('crank_disk','left_guide_cap'),('crank_disk','right_guide_cap'),('crank_disk','left_guide'),('crank_disk','right_guide'),('crank_disk','front_guide'),('crank_disk','piston_slider'),('crank_disk','rear_guide'),\n    ('crank_pin','connecting_rod'),('connecting_rod','piston_slider'),('connecting_rod','wrist_pin'),('connecting_rod','pump_rod'),('connecting_rod','right_guide_cap'),('connecting_rod','left_guide_cap'),('connecting_rod','left_guide'),('connecting_rod','right_guide'),('connecting_rod','rear_guide'),('connecting_rod','front_guide'),('connecting_rod','pump_cylinder'),('connecting_rod','outlet_pipe'),('connecting_rod','rear_pedestal'),('connecting_rod','rear_bearing'),\n    ('piston_slider','wrist_pin'),('piston_slider','pump_rod'),('piston_slider','rear_guide'),('piston_slider','left_guide'),('piston_slider','right_guide'),('piston_slider','front_guide'),('piston_slider','left_guide_cap'),('piston_slider','right_guide_cap'),('piston_slider','pump_cylinder'),('piston_slider','outlet_pipe'),('piston_slider','rear_pedestal'),\n    ('wrist_pin','rear_guide'),('wrist_pin','front_guide'),('wrist_pin','pump_rod'),('wrist_pin','left_guide'),('wrist_pin','right_guide'),\n    ('pump_rod','pump_piston'),('pump_rod','pump_cylinder'),('pump_rod','rear_guide'),('pump_rod','front_guide'),('pump_rod','baseplate'),('pump_rod','cylinder_foot'),('pump_rod','left_guide'),('pump_rod','right_guide'),('pump_rod','outlet_pipe'),('pump_rod','inlet_pipe'),\n    ('pump_piston','front_guide'),('pump_piston','rear_guide'),('pump_piston','pump_cylinder'),('pump_piston','left_guide'),('pump_piston','right_guide'),('pump_piston','cylinder_foot'),('pump_piston','inlet_pipe'),('pump_piston','outlet_pipe'),('pump_piston','baseplate'),('pump_piston','rear_pedestal')]\n    keep=[('rotor_shaft','connecting_rod'),('crank_disk','connecting_rod'),('connecting_rod','piston_slider'),('connecting_rod','left_guide'),('connecting_rod','right_guide'),('connecting_rod','rear_guide'),('connecting_rod','front_guide'),('piston_slider','rear_guide'),('piston_slider','left_guide'),('piston_slider','right_guide'),('piston_slider','front_guide'),('wrist_pin','rear_guide'),('wrist_pin','front_guide'),('pump_piston','front_guide'),('pump_piston','rear_guide')]\n    seen=[]; decisions=[]\n    for p0 in pairs:\n        p=tuple(sorted(p0))\n        if p in seen: continue\n        seen.append(p)\n        pf='pair/'+p[0]+'/'+p[1]\n        rel=relation_pairs.get(p)\n        action='keep' if p0 in keep or (p0[1],p0[0]) in keep else 'exclude'\n        if rel: action='exclude'\n        if action=='keep': reason='retain real collision function or uncertain positive-overlap geometry; no ideal constraint replaces this whole-body contact'\n        elif rel: reason='exact authored fit/bearing interface is represented by rigid carrying, hinge, slide, or closure and must not fight that ideal topology'\n        else: reason='measured positive surface separation or disjoint AABB makes this nearby pair a collision-proxy false-contact risk with no contact-dependent function'\n        src=['link/'+p[0],'link/'+p[1]]+([rel] if rel else [])\n        decisions.append({'pair':[p[0],p[1]],'action':action,'reason':reason,'source_entity_ids':src,'fact_ids':[pf]})\n        if action=='exclude': out.exclude(p[0],p[1],reason,src,[pf])\n    cmap={'wind_rotor':'shaft_hinge','rotor_shaft':'shaft_hinge','crank_disk':'shaft_hinge','crank_pin':'shaft_hinge','connecting_rod':'crank_rod_hinge','piston_slider':'crosshead_vertical_slide','wrist_pin':'crosshead_vertical_slide','pump_rod':'crosshead_vertical_slide','pump_piston':'crosshead_vertical_slide'}\n    for b in links:\n        if b not in cmap: cmap[b]=None\n    plan={'coordinate_map':cmap,'tree_edges':[[parents[b],b] for b in links if parents[b]],'closure_edges':[{'name':'wrist_rod_closure','pair':['connecting_rod','wrist_pin']}],'rigid_carried':[['rotor_shaft','wind_rotor'],['rotor_shaft','crank_disk'],['crank_disk','crank_pin'],['piston_slider','wrist_pin'],['piston_slider','pump_rod'],['pump_rod','pump_piston']],'independent_coaxial':[],'transmissions':[{'name':'rotor_shaft_lock','implementation':'rigid_carried','ratio':1.0},{'name':'shaft_crank_lock','implementation':'rigid_carried','ratio':1.0},{'name':'crosshead_pump_rod_lock','implementation':'rigid_carried','ratio':1.0},{'name':'pump_rod_piston_lock','implementation':'rigid_carried','ratio':1.0}],'contact_decisions':decisions,'support_ground':['baseplate','cylinder_foot'],'support_strategy':'fixed baseplate is the normal structural support; gravity probe needs no topology alteration'}\n    out.topology_plan(plan)\n    pose_children=['baseplate','front_pedestal','rear_pedestal','front_bearing','rear_bearing','rotor_shaft','wind_rotor','crank_disk','crank_pin','connecting_rod','piston_slider','wrist_pin','left_guide','right_guide','front_guide','rear_guide','pump_rod','pump_piston','pump_cylinder','cylinder_foot','inlet_pipe','outlet_pipe','left_guide_cap','right_guide_cap']\n    pose_map={}\n    for b in pose_children: pose_map['pose/place_'+b]=b\n    special={'relation/crank_rod_revolute':'crank_rod_hinge','relation/wrist_rod_revolute':'wrist_rod_closure','motion_joint/shaft_hinge':'shaft_hinge','motion_joint/rotor_input_hinge':'shaft_hinge','motion_joint/crank_hinge':'shaft_hinge','motion_joint/crosshead_vertical_slide':'crosshead_vertical_slide','motion_joint/pump_rod_vertical_slide':'crosshead_vertical_slide','motion_joint/piston_vertical_slide':'crosshead_vertical_slide','transmission/rotor_shaft_lock':'shaft_hinge','transmission/shaft_crank_lock':'shaft_hinge','transmission/crosshead_pump_rod_lock':'crosshead_vertical_slide','transmission/pump_rod_piston_lock':'crosshead_vertical_slide'}\n    for eid in facts['entity_ids']:\n        if eid[:5]=='link/': out.decision(eid,'emitted',[eid[5:]],'immutable link emitted exactly once',[eid])\n        elif eid[:5]=='port/': out.decision(eid,'represented_by',[eid.split('/')[1]],'port geometry supports its authored fit or closure',[eid])\n        elif eid in pose_map: out.decision(eid,'represented_by',[pose_map[eid]],'authored placement retained by emitted body',[eid])\n        elif eid in special: out.decision(eid,'represented_by',[special[eid]],'authored motion or relation represented by selected spanning-tree topology',[eid])\n        elif eid[:9]=='relation/': out.decision(eid,'represented_by',[eid[9:]+'__exclude'],'authored interface represented by rigid carrying/slide and exact-pair exclusion',[eid])\n        elif eid[:5]=='role/':\n            b=eid.split('/')[-1]; out.decision(eid,'represented_by',[cmap[b]],'role observes the mapped physical coordinate',[eid])\n        else: out.decision(eid,'represented_by',[],'authored entity consumed by topology plan',[eid])\n",
+        "expected_revision": 0
+      },
+      "is_error": false,
+      "result": "{\"accepted\": false, \"errors\": [\"forbidden method call: split\"]}"
+    },
+    {
+      "name": "submit_compiler_source",
+      "arguments": {
+        "source": "def compile_mjcf(facts, out):\n    links=['baseplate','front_pedestal','rear_pedestal','front_bearing','rear_bearing','left_guide','right_guide','front_guide','rear_guide','pump_cylinder','cylinder_foot','inlet_pipe','outlet_pipe','left_guide_cap','right_guide_cap','rotor_shaft','wind_rotor','crank_disk','crank_pin','connecting_rod','piston_slider','wrist_pin','pump_rod','pump_piston']\n    parents={'baseplate':'','front_pedestal':'baseplate','rear_pedestal':'baseplate','front_bearing':'front_pedestal','rear_bearing':'rear_pedestal','left_guide':'baseplate','right_guide':'baseplate','front_guide':'baseplate','rear_guide':'baseplate','pump_cylinder':'baseplate','cylinder_foot':'baseplate','inlet_pipe':'pump_cylinder','outlet_pipe':'pump_cylinder','left_guide_cap':'left_guide','right_guide_cap':'right_guide','rotor_shaft':'baseplate','wind_rotor':'rotor_shaft','crank_disk':'rotor_shaft','crank_pin':'crank_disk','connecting_rod':'crank_pin','piston_slider':'baseplate','wrist_pin':'piston_slider','pump_rod':'piston_slider','pump_piston':'pump_rod'}\n    for b in links: out.body(b,parents[b])\n    out.joint('rotor_shaft','shaft_hinge','hinge',(0.0,1.0,0.0),(0.0,0.0,0.0),'world')\n    out.joint('connecting_rod','crank_rod_hinge','hinge',(0.0,1.0,0.0),(0.0,33.0,81.0),'world')\n    out.joint('piston_slider','crosshead_vertical_slide','slide',(0.0,0.0,1.0),(0.0,0.0,0.0),'world')\n    out.connect('wrist_rod_closure','connecting_rod','wrist_pin',(0.0,0.033,0.048),'authored wrist revolute closes the slider-crank without forcing the edge into the body tree',['relation/wrist_rod_revolute'],['fit/wrist_pin/rod_journal/connecting_rod/wrist_eye','pair/connecting_rod/wrist_pin'])\n    relation_pairs={('rotor_shaft','wind_rotor'):'relation/rotor_to_shaft_press_fit',('front_bearing','rotor_shaft'):'relation/front_shaft_journal',('rear_bearing','rotor_shaft'):'relation/rear_shaft_journal',('crank_disk','rotor_shaft'):'relation/shaft_to_crank_press_fit',('crank_disk','crank_pin'):'relation/eccentric_pin_press_fit',('connecting_rod','crank_pin'):'relation/crank_rod_revolute',('connecting_rod','wrist_pin'):'relation/wrist_rod_revolute',('piston_slider','wrist_pin'):'relation/wrist_pin_to_slider',('piston_slider','pump_rod'):'relation/slider_to_pump_rod',('pump_piston','pump_rod'):'relation/pump_rod_to_piston',('pump_cylinder','pump_piston'):'relation/piston_in_barrel'}\n    pairs=[('wind_rotor','rotor_shaft'),('wind_rotor','front_pedestal'),('wind_rotor','front_bearing'),('wind_rotor','rear_pedestal'),('wind_rotor','rear_bearing'),('wind_rotor','baseplate'),('wind_rotor','left_guide_cap'),('wind_rotor','right_guide_cap'),('wind_rotor','front_guide'),('wind_rotor','crank_disk'),('wind_rotor','pump_cylinder'),('wind_rotor','piston_slider'),('wind_rotor','wrist_pin'),('wind_rotor','left_guide'),('wind_rotor','right_guide'),('wind_rotor','crank_pin'),('wind_rotor','connecting_rod'),('wind_rotor','pump_rod'),('wind_rotor','cylinder_foot'),('wind_rotor','pump_piston'),('rotor_shaft','front_bearing'),('rotor_shaft','rear_bearing'),('rotor_shaft','crank_disk'),('rotor_shaft','connecting_rod'),('rotor_shaft','front_pedestal'),('rotor_shaft','rear_pedestal'),('rotor_shaft','crank_pin'),('rotor_shaft','left_guide_cap'),('rotor_shaft','right_guide_cap'),('rotor_shaft','front_guide'),('rotor_shaft','left_guide'),('rotor_shaft','right_guide'),('rotor_shaft','rear_guide'),('rotor_shaft','piston_slider'),('crank_disk','crank_pin'),('crank_disk','connecting_rod'),('crank_disk','rear_pedestal'),('crank_disk','rear_bearing'),('crank_disk','left_guide_cap'),('crank_disk','right_guide_cap'),('crank_disk','left_guide'),('crank_disk','right_guide'),('crank_disk','front_guide'),('crank_disk','piston_slider'),('crank_disk','rear_guide'),('crank_pin','connecting_rod'),('connecting_rod','piston_slider'),('connecting_rod','wrist_pin'),('connecting_rod','pump_rod'),('connecting_rod','right_guide_cap'),('connecting_rod','left_guide_cap'),('connecting_rod','left_guide'),('connecting_rod','right_guide'),('connecting_rod','rear_guide'),('connecting_rod','front_guide'),('connecting_rod','pump_cylinder'),('connecting_rod','outlet_pipe'),('connecting_rod','rear_pedestal'),('connecting_rod','rear_bearing'),('piston_slider','wrist_pin'),('piston_slider','pump_rod'),('piston_slider','rear_guide'),('piston_slider','left_guide'),('piston_slider','right_guide'),('piston_slider','front_guide'),('piston_slider','left_guide_cap'),('piston_slider','right_guide_cap'),('piston_slider','pump_cylinder'),('piston_slider','outlet_pipe'),('piston_slider','rear_pedestal'),('wrist_pin','rear_guide'),('wrist_pin','front_guide'),('wrist_pin','pump_rod'),('wrist_pin','left_guide'),('wrist_pin','right_guide'),('pump_rod','pump_piston'),('pump_rod','pump_cylinder'),('pump_rod','rear_guide'),('pump_rod','front_guide'),('pump_rod','baseplate'),('pump_rod','cylinder_foot'),('pump_rod','left_guide'),('pump_rod','right_guide'),('pump_rod','outlet_pipe'),('pump_rod','inlet_pipe'),('pump_piston','front_guide'),('pump_piston','rear_guide'),('pump_piston','pump_cylinder'),('pump_piston','left_guide'),('pump_piston','right_guide'),('pump_piston','cylinder_foot'),('pump_piston','inlet_pipe'),('pump_piston','outlet_pipe'),('pump_piston','baseplate'),('pump_piston','rear_pedestal')]\n    keep=[('rotor_shaft','connecting_rod'),('crank_disk','connecting_rod'),('connecting_rod','piston_slider'),('connecting_rod','left_guide'),('connecting_rod','right_guide'),('connecting_rod','rear_guide'),('connecting_rod','front_guide'),('piston_slider','rear_guide'),('piston_slider','left_guide'),('piston_slider','right_guide'),('piston_slider','front_guide'),('wrist_pin','rear_guide'),('wrist_pin','front_guide'),('pump_piston','front_guide'),('pump_piston','rear_guide')]\n    seen=[]; decisions=[]\n    for p0 in pairs:\n        p=tuple(sorted(p0))\n        if p in seen: continue\n        seen.append(p); pf='pair/'+p[0]+'/'+p[1]; rel=relation_pairs.get(p)\n        action='keep' if p0 in keep or (p0[1],p0[0]) in keep else 'exclude'\n        if rel: action='exclude'\n        if action=='keep': reason='retain real collision function or uncertain positive-overlap geometry; no ideal constraint replaces this whole-body contact'\n        elif rel: reason='exact authored fit/bearing interface is represented by rigid carrying, hinge, slide, or closure and must not fight that ideal topology'\n        else: reason='measured positive surface separation or disjoint AABB makes this nearby pair a collision-proxy false-contact risk with no contact-dependent function'\n        src=['link/'+p[0],'link/'+p[1]]+([rel] if rel else [])\n        decisions.append({'pair':[p[0],p[1]],'action':action,'reason':reason,'source_entity_ids':src,'fact_ids':[pf]})\n        if action=='exclude': out.exclude(p[0],p[1],reason,src,[pf])\n    cmap={'wind_rotor':'shaft_hinge','rotor_shaft':'shaft_hinge','crank_disk':'shaft_hinge','crank_pin':'shaft_hinge','connecting_rod':'crank_rod_hinge','piston_slider':'crosshead_vertical_slide','wrist_pin':'crosshead_vertical_slide','pump_rod':'crosshead_vertical_slide','pump_piston':'crosshead_vertical_slide'}\n    for b in links:\n        if b not in cmap: cmap[b]=None\n    plan={'coordinate_map':cmap,'tree_edges':[[parents[b],b] for b in links if parents[b]],'closure_edges':[{'name':'wrist_rod_closure','pair':['connecting_rod','wrist_pin']}],'rigid_carried':[['rotor_shaft','wind_rotor'],['rotor_shaft','crank_disk'],['crank_disk','crank_pin'],['piston_slider','wrist_pin'],['piston_slider','pump_rod'],['pump_rod','pump_piston']],'independent_coaxial':[],'transmissions':[{'name':'rotor_shaft_lock','implementation':'rigid_carried','ratio':1.0},{'name':'shaft_crank_lock','implementation':'rigid_carried','ratio':1.0},{'name':'crosshead_pump_rod_lock','implementation':'rigid_carried','ratio':1.0},{'name':'pump_rod_piston_lock','implementation':'rigid_carried','ratio':1.0}],'contact_decisions':decisions,'support_ground':['baseplate','cylinder_foot'],'support_strategy':'fixed baseplate is the normal structural support; gravity probe needs no topology alteration'}\n    out.topology_plan(plan)\n    pose_children=['baseplate','front_pedestal','rear_pedestal','front_bearing','rear_bearing','rotor_shaft','wind_rotor','crank_disk','crank_pin','connecting_rod','piston_slider','wrist_pin','left_guide','right_guide','front_guide','rear_guide','pump_rod','pump_piston','pump_cylinder','cylinder_foot','inlet_pipe','outlet_pipe','left_guide_cap','right_guide_cap']\n    pose_map={}\n    for b in pose_children: pose_map['pose/place_'+b]=b\n    special={'relation/crank_rod_revolute':'crank_rod_hinge','relation/wrist_rod_revolute':'wrist_rod_closure','motion_joint/shaft_hinge':'shaft_hinge','motion_joint/rotor_input_hinge':'shaft_hinge','motion_joint/crank_hinge':'shaft_hinge','motion_joint/crosshead_vertical_slide':'crosshead_vertical_slide','motion_joint/pump_rod_vertical_slide':'crosshead_vertical_slide','motion_joint/piston_vertical_slide':'crosshead_vertical_slide','transmission/rotor_shaft_lock':'shaft_hinge','transmission/shaft_crank_lock':'shaft_hinge','transmission/crosshead_pump_rod_lock':'crosshead_vertical_slide','transmission/pump_rod_piston_lock':'crosshead_vertical_slide'}\n    role_nodes={'role/driver/wind_rotor':'shaft_hinge','role/output/piston_slider':'crosshead_vertical_slide','role/watch/wind_rotor':'shaft_hinge','role/watch/rotor_shaft':'shaft_hinge','role/watch/crank_disk':'shaft_hinge','role/watch/connecting_rod':'crank_rod_hinge','role/watch/piston_slider':'crosshead_vertical_slide','role/watch/pump_rod':'crosshead_vertical_slide','role/watch/pump_piston':'crosshead_vertical_slide'}\n    for eid in facts['entity_ids']:\n        if eid[:5]=='link/': out.decision(eid,'emitted',[eid[5:]],'immutable link emitted exactly once',[eid])\n        elif eid[:5]=='port/': out.decision(eid,'represented_by',[],'port geometry supports its authored fit or closure',[eid])\n        elif eid in pose_map: out.decision(eid,'represented_by',[pose_map[eid]],'authored placement retained by emitted body',[eid])\n        elif eid in special: out.decision(eid,'represented_by',[special[eid]],'authored motion or relation represented by selected spanning-tree topology',[eid])\n        elif eid[:9]=='relation/': out.decision(eid,'represented_by',[],'authored interface represented by rigid carrying/slide and exact-pair exclusion',[eid])\n        elif eid in role_nodes: out.decision(eid,'represented_by',[role_nodes[eid]],'role observes the mapped physical coordinate',[eid])\n        else: out.decision(eid,'represented_by',[],'authored entity consumed by topology plan',[eid])\n",
+        "expected_revision": 0
+      },
+      "is_error": false,
+      "result": "{\"accepted\": true, \"revision\": 1}"
+    },
+    {
+      "name": "run_mjcf_gate",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\n  \"ok\": false,\n  \"errors\": [\n    \"decision 'port/wind_rotor/shaft_bore' does not resolve to a generated node\",\n    \"decision 'port/rotor_shaft/rotor_seat' does not resolve to a generated node\",\n    \"decision 'port/rotor_shaft/front_journal' does not resolve to a generated node\",\n    \"decision 'port/rotor_shaft/rear_journal' does not resolve to a generated node\",\n    \"decision 'port/rotor_shaft/crank_seat' does not resolve to a generated node\",\n    \"decision 'port/front_bearing/journal_bore' does not resolve to a generated node\",\n    \"decision 'port/rear_bearing/journal_bore' does not resolve to a generated node\",\n    \"decision 'port/crank_disk/shaft_bore' does not resolve to a generated node\",\n    \"decision 'port/crank_disk/eccentric_pin_bore' does not resolve to a generated node\",\n    \"decision 'port/crank_pin/disk_press_seat' does not resolve to a generated node\",\n    \"decision 'port/crank_pin/rod_journal' does not resolve to a generated node\",\n    \"decision 'port/connecting_rod/crank_eye' does not resolve to a generated node\",\n    \"decision 'port/connecting_rod/wrist_eye' does not resolve to a generated node\",\n    \"decision 'port/wrist_pin/slider_press_seat' does not resolve to a generated node\",\n    \"decision 'port/wrist_pin/rod_journal' does not resolve to a generated node\",\n    \"decision 'port/piston_slider/wrist_pin_bore' does not resolve to a generated node\",\n    \"decision 'port/piston_slider/pump_rod_bore' does not resolve to a generated node\",\n    \"decision 'port/pump_rod/slider_seat' does not resolve to a generated node\",\n    \"decision 'port/pump_rod/piston_seat' does not resolve to a generated node\",\n    \"decision 'port/pump_piston/rod_bore' does not resolve to a generated node\",\n    \"decision 'port/pump_piston/barrel_running_surface' does not resolve to a generated node\",\n    \"decision 'port/pump_cylinder/piston_bore' does not resolve to a generated node\",\n    \"decision 'relation/rotor_to_shaft_press_fit' does not resolve to a generated node\",\n    \"decision 'relation/front_shaft_journal' does not resolve to a generated node\",\n    \"decision 'relation/rear_shaft_journal' does not resolve to a generated node\",\n    \"decision 'relation/shaft_to_crank_press_fit' does not resolve to a generated node\",\n    \"decision 'relation/eccentric_pin_press_fit' does not resolve to a generated node\",\n    \"decision 'relation/wrist_pin_to_slider' does not resolve to a generated node\",\n    \"decision 'relation/slider_to_pump_rod' does not resolve to a generated node\",\n    \"decision 'relation/pump_rod_to_piston' does not resolve to a generated node\",\n    \"decision 'relation/piston_in_barrel' does not resolve to a generated node\"\n  ],\n  \"policy_version\": 4,\n  \"bodies\": [\n    \"baseplate\",\n    \"connecting_rod\",\n    \"crank_disk\",\n    \"crank_pin\",\n    \"cylinder_foot\",\n    \"front_bearing\",\n    \"front_guide\",\n    \"front_pedestal\",\n    \"inlet_pipe\",\n    \"left_guide\",\n    \"left_guide_cap\",\n    \"outlet_pipe\",\n    \"piston_slider\",\n    \"pump_cylinder\",\n    \"pump_piston\",\n    \"pump_rod\",\n    \"rear_bearing\",\n    \"rear_guide\",\n    \"rear_pedestal\",\n    \"right_guide\",\n    \"right_guide_cap\",\n    \"rotor_shaft\",\n    \"wind_rotor\",\n    \"wrist_pin\"\n  ],\n  \"joints\": [\n    \"crank_rod_hinge\",\n    \"crosshead_vertical_slide\",\n    \"shaft_hinge\"\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_gate_report",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\n  \"ok\": false,\n  \"errors\": [\n    \"decision 'port/wind_rotor/shaft_bore' does not resolve to a generated node\",\n    \"decision 'port/rotor_shaft/rotor_seat' does not resolve to a generated node\",\n    \"decision 'port/rotor_shaft/front_journal' does not resolve to a generated node\",\n    \"decision 'port/rotor_shaft/rear_journal' does not resolve to a generated node\",\n    \"decision 'port/rotor_shaft/crank_seat' does not resolve to a generated node\",\n    \"decision 'port/front_bearing/journal_bore' does not resolve to a generated node\",\n    \"decision 'port/rear_bearing/journal_bore' does not resolve to a generated node\",\n    \"decision 'port/crank_disk/shaft_bore' does not resolve to a generated node\",\n    \"decision 'port/crank_disk/eccentric_pin_bore' does not resolve to a generated node\",\n    \"decision 'port/crank_pin/disk_press_seat' does not resolve to a generated node\",\n    \"decision 'port/crank_pin/rod_journal' does not resolve to a generated node\",\n    \"decision 'port/connecting_rod/crank_eye' does not resolve to a generated node\",\n    \"decision 'port/connecting_rod/wrist_eye' does not resolve to a generated node\",\n    \"decision 'port/wrist_pin/slider_press_seat' does not resolve to a generated node\",\n    \"decision 'port/wrist_pin/rod_journal' does not resolve to a generated node\",\n    \"decision 'port/piston_slider/wrist_pin_bore' does not resolve to a generated node\",\n    \"decision 'port/piston_slider/pump_rod_bore' does not resolve to a generated node\",\n    \"decision 'port/pump_rod/slider_seat' does not resolve to a generated node\",\n    \"decision 'port/pump_rod/piston_seat' does not resolve to a generated node\",\n    \"decision 'port/pump_piston/rod_bore' does not resolve to a generated node\",\n    \"decision 'port/pump_piston/barrel_running_surface' does not resolve to a generated node\",\n    \"decision 'port/pump_cylinder/piston_bore' does not resolve to a generated node\",\n    \"decision 'relation/rotor_to_shaft_press_fit' does not resolve to a generated node\",\n    \"decision 'relation/front_shaft_journal' does not resolve to a generated node\",\n    \"decision 'relation/rear_shaft_journal' does not resolve to a generated node\",\n    \"decision 'relation/shaft_to_crank_press_fit' does not resolve to a generated node\",\n    \"decision 'relation/eccentric_pin_press_fit' does not resolve to a generated node\",\n    \"decision 'relation/wrist_pin_to_slider' does not resolve to a generated node\",\n    \"decision 'relation/slider_to_pump_rod' does not resolve to a generated node\",\n    \"decision 'relation/pump_rod_to_piston' does not resolve to a generated node\",\n    \"decision 'relation/piston_in_barrel' does not resolve to a generated node\"\n  ],\n  \"policy_version\": 4,\n  \"bodies\": [\n    \"baseplate\",\n    \"connecting_rod\",\n    \"crank_disk\",\n    \"crank_pin\",\n    \"cylinder_foot\",\n    \"front_bearing\",\n    \"front_guide\",\n    \"front_pedestal\",\n    \"inlet_pipe\",\n    \"left_guide\",\n    \"left_guide_cap\",\n    \"outlet_pipe\",\n    \"piston_slider\",\n    \"pump_cylinder\",\n    \"pump_piston\",\n    \"pump_rod\",\n    \"rear_bearing\",\n    \"rear_guide\",\n    \"rear_pedestal\",\n    \"right_guide\",\n    \"right_guide_cap\",\n    \"rotor_shaft\",\n    \"wind_rotor\",\n    \"wrist_pin\"\n  ],\n  \"joints\": [\n    \"crank_rod_hinge\",\n    \"crosshead_vertical_slide\",\n    \"shaft_hinge\"\n  ]\n}"
+    },
+    {
+      "name": "read_current_compiler",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\"revision\": 1, \"source\": \"def compile_mjcf(facts, out):\\n    links=['baseplate','front_pedestal','rear_pedestal','front_bearing','rear_bearing','left_guide','right_guide','front_guide','rear_guide','pump_cylinder','cylinder_foot','inlet_pipe','outlet_pipe','left_guide_cap','right_guide_cap','rotor_shaft','wind_rotor','crank_disk','crank_pin','connecting_rod','piston_slider','wrist_pin','pump_rod','pump_piston']\\n    parents={'baseplate':'','front_pedestal':'baseplate','rear_pedestal':'baseplate','front_bearing':'front_pedestal','rear_bearing':'rear_pedestal','left_guide':'baseplate','right_guide':'baseplate','front_guide':'baseplate','rear_guide':'baseplate','pump_cylinder':'baseplate','cylinder_foot':'baseplate','inlet_pipe':'pump_cylinder','outlet_pipe':'pump_cylinder','left_guide_cap':'left_guide','right_guide_cap':'right_guide','rotor_shaft':'baseplate','wind_rotor':'rotor_shaft','crank_disk':'rotor_shaft','crank_pin':'crank_disk','connecting_rod':'crank_pin','piston_slider':'baseplate','wrist_pin':'piston_slider','pump_rod':'piston_slider','pump_piston':'pump_rod'}\\n    for b in links: out.body(b,parents[b])\\n    out.joint('rotor_shaft','shaft_hinge','hinge',(0.0,1.0,0.0),(0.0,0.0,0.0),'world')\\n    out.joint('connecting_rod','crank_rod_hinge','hinge',(0.0,1.0,0.0),(0.0,33.0,81.0),'world')\\n    out.joint('piston_slider','crosshead_vertical_slide','slide',(0.0,0.0,1.0),(0.0,0.0,0.0),'world')\\n    out.connect('wrist_rod_closure','connecting_rod','wrist_pin',(0.0,0.033,0.048),'authored wrist revolute closes the slider-crank without forcing the edge into the body tree',['relation/wrist_rod_revolute'],['fit/wrist_pin/rod_journal/connecting_rod/wrist_eye','pair/connecting_rod/wrist_pin'])\\n    relation_pairs={('rotor_shaft','wind_rotor'):'relation/rotor_to_shaft_press_fit',('front_bearing','rotor_shaft'):'relation/front_shaft_journal',('rear_bearing','rotor_shaft'):'relation/rear_shaft_journal',('crank_disk','rotor_shaft'):'relation/shaft_to_crank_press_fit',('crank_disk','crank_pin'):'relation/eccentric_pin_press_fit',('connecting_rod','crank_pin'):'relation/crank_rod_revolute',('connecting_rod','wrist_pin'):'relation/wrist_rod_revolute',('piston_slider','wrist_pin'):'relation/wrist_pin_to_slider',('piston_slider','pump_rod'):'relation/slider_to_pump_rod',('pump_piston','pump_rod'):'relation/pump_rod_to_piston',('pump_cylinder','pump_piston'):'relation/piston_in_barrel'}\\n    pairs=[('wind_rotor','rotor_shaft'),('wind_rotor','front_pedestal'),('wind_rotor','front_bearing'),('wind_rotor','rear_pedestal'),('wind_rotor','rear_bearing'),('wind_rotor','baseplate'),('wind_rotor','left_guide_cap'),('wind_rotor','right_guide_cap'),('wind_rotor','front_guide'),('wind_rotor','crank_disk'),('wind_rotor','pump_cylinder'),('wind_rotor','piston_slider'),('wind_rotor','wrist_pin'),('wind_rotor','left_guide'),('wind_rotor','right_guide'),('wind_rotor','crank_pin'),('wind_rotor','connecting_rod'),('wind_rotor','pump_rod'),('wind_rotor','cylinder_foot'),('wind_rotor','pump_piston'),('rotor_shaft','front_bearing'),('rotor_shaft','rear_bearing'),('rotor_shaft','crank_disk'),('rotor_shaft','connecting_rod'),('rotor_shaft','front_pedestal'),('rotor_shaft','rear_pedestal'),('rotor_shaft','crank_pin'),('rotor_shaft','left_guide_cap'),('rotor_shaft','right_guide_cap'),('rotor_shaft','front_guide'),('rotor_shaft','left_guide'),('rotor_shaft','right_guide'),('rotor_shaft','rear_guide'),('rotor_shaft','piston_slider'),('crank_disk','crank_pin'),('crank_disk','connecting_rod'),('crank_disk','rear_pedestal'),('crank_disk','rear_bearing'),('crank_disk','left_guide_cap'),('crank_disk','right_guide_cap'),('crank_disk','left_guide'),('crank_disk','right_guide'),('crank_disk','front_guide'),('crank_disk','piston_slider'),('crank_disk','rear_guide'),('crank_pin','connecting_rod'),('connecting_rod','piston_slider'),('connecting_rod','wrist_pin'),('connecting_rod','pump_rod'),('connecting_rod','right_guide_cap'),('connecting_rod','left_guide_cap'),('connecting_ro"
+    },
+    {
+      "name": "submit_compiler_source",
+      "arguments": {
+        "source": "def compile_mjcf(facts,out):\n L=['baseplate','front_pedestal','rear_pedestal','front_bearing','rear_bearing','left_guide','right_guide','front_guide','rear_guide','pump_cylinder','cylinder_foot','inlet_pipe','outlet_pipe','left_guide_cap','right_guide_cap','rotor_shaft','wind_rotor','crank_disk','crank_pin','connecting_rod','piston_slider','wrist_pin','pump_rod','pump_piston']\n P={'baseplate':'','front_pedestal':'baseplate','rear_pedestal':'baseplate','front_bearing':'front_pedestal','rear_bearing':'rear_pedestal','left_guide':'baseplate','right_guide':'baseplate','front_guide':'baseplate','rear_guide':'baseplate','pump_cylinder':'baseplate','cylinder_foot':'baseplate','inlet_pipe':'pump_cylinder','outlet_pipe':'pump_cylinder','left_guide_cap':'left_guide','right_guide_cap':'right_guide','rotor_shaft':'baseplate','wind_rotor':'rotor_shaft','crank_disk':'rotor_shaft','crank_pin':'crank_disk','connecting_rod':'crank_pin','piston_slider':'baseplate','wrist_pin':'piston_slider','pump_rod':'piston_slider','pump_piston':'pump_rod'}\n for b in L: out.body(b,P[b])\n out.joint('rotor_shaft','shaft_hinge','hinge',(0,1,0),(0,0,0),'world')\n out.joint('connecting_rod','crank_rod_hinge','hinge',(0,1,0),(0,33,81),'world')\n out.joint('piston_slider','crosshead_vertical_slide','slide',(0,0,1),(0,0,0),'world')\n out.connect('wrist_rod_closure','connecting_rod','wrist_pin',(0,0.033,0.048),'authored wrist revolute closes the slider-crank',['relation/wrist_rod_revolute'],['fit/wrist_pin/rod_journal/connecting_rod/wrist_eye','pair/connecting_rod/wrist_pin'])\n N={'wind_rotor':['rotor_shaft','front_pedestal','front_bearing','rear_pedestal','rear_bearing','baseplate','left_guide_cap','right_guide_cap','front_guide','crank_disk','pump_cylinder','piston_slider','wrist_pin','left_guide','right_guide','crank_pin','connecting_rod','pump_rod','cylinder_foot','pump_piston'],'rotor_shaft':['front_bearing','rear_bearing','wind_rotor','crank_disk','connecting_rod','front_pedestal','rear_pedestal','crank_pin','left_guide_cap','right_guide_cap','front_guide','left_guide','right_guide','rear_guide','piston_slider'],'crank_disk':['rotor_shaft','crank_pin','connecting_rod','rear_pedestal','rear_bearing','left_guide_cap','right_guide_cap','left_guide','right_guide','front_guide','piston_slider','rear_guide'],'crank_pin':['crank_disk','connecting_rod','rotor_shaft'],'connecting_rod':['crank_pin','piston_slider','wrist_pin','crank_disk','pump_rod','right_guide_cap','left_guide_cap','rotor_shaft','left_guide','right_guide','rear_guide','front_guide','pump_cylinder','outlet_pipe','rear_pedestal','rear_bearing'],'piston_slider':['connecting_rod','wrist_pin','pump_rod','rear_guide','left_guide','right_guide','front_guide','left_guide_cap','right_guide_cap','pump_cylinder','outlet_pipe','rear_pedestal'],'wrist_pin':['connecting_rod','piston_slider','rear_guide','front_guide','pump_rod','left_guide','right_guide'],'pump_rod':['piston_slider','pump_piston','pump_cylinder','connecting_rod','wrist_pin','rear_guide','front_guide','baseplate','cylinder_foot','left_guide','right_guide','outlet_pipe','inlet_pipe'],'pump_piston':['front_guide','rear_guide','pump_rod','pump_cylinder','left_guide','right_guide','cylinder_foot','inlet_pipe','outlet_pipe','baseplate','rear_pedestal']}\n R={('rotor_shaft','wind_rotor'):'relation/rotor_to_shaft_press_fit',('front_bearing','rotor_shaft'):'relation/front_shaft_journal',('rear_bearing','rotor_shaft'):'relation/rear_shaft_journal',('crank_disk','rotor_shaft'):'relation/shaft_to_crank_press_fit',('crank_disk','crank_pin'):'relation/eccentric_pin_press_fit',('connecting_rod','crank_pin'):'relation/crank_rod_revolute',('connecting_rod','wrist_pin'):'relation/wrist_rod_revolute',('piston_slider','wrist_pin'):'relation/wrist_pin_to_slider',('piston_slider','pump_rod'):'relation/slider_to_pump_rod',('pump_piston','pump_rod'):'relation/pump_rod_to_piston',('pump_cylinder','pump_piston'):'relation/piston_in_barrel'}\n K=[tuple(sorted(x)) for x in [('rotor_shaft','connecting_rod'),('crank_disk','connecting_rod'),('connecting_rod','piston_slider'),('connecting_rod','left_guide'),('connecting_rod','right_guide'),('connecting_rod','rear_guide'),('connecting_rod','front_guide'),('piston_slider','rear_guide'),('piston_slider','left_guide'),('piston_slider','right_guide'),('piston_slider','front_guide'),('wrist_pin','rear_guide'),('wrist_pin','front_guide'),('pump_piston','front_guide'),('pump_piston','rear_guide')]]\n seen=[]; D=[]\n for a in N:\n  for b in N[a]:\n   p=tuple(sorted((a,b)))\n   if p in seen: continue\n   seen.append(p); r=R.get(p); act='keep' if p in K else 'exclude'\n   if r: act='exclude'\n   why='retain real collision function or uncertain close geometry' if act=='keep' else ('exact authored fit or bearing is replaced by ideal coordinate topology' if r else 'positive surface separation or disjoint AABB is a collision-proxy false-contact risk')\n   ids=['pair/'+p[0]+'/'+p[1]]; src=['link/'+p[0],'link/'+p[1]]+([r] if r else [])\n   D.append({'pair':[p[0],p[1]],'action':act,'reason':why,'source_entity_ids':src,'fact_ids':ids})\n   if act=='exclude': out.exclude(p[0],p[1],why,src,ids)\n C={'wind_rotor':'shaft_hinge','rotor_shaft':'shaft_hinge','crank_disk':'shaft_hinge','crank_pin':'shaft_hinge','connecting_rod':'crank_rod_hinge','piston_slider':'crosshead_vertical_slide','wrist_pin':'crosshead_vertical_slide','pump_rod':'crosshead_vertical_slide','pump_piston':'crosshead_vertical_slide'}\n for b in L:\n  if b not in C:C[b]=None\n out.topology_plan({'coordinate_map':C,'tree_edges':[[P[b],b] for b in L if P[b]],'closure_edges':[{'name':'wrist_rod_closure','pair':['connecting_rod','wrist_pin']}],'rigid_carried':[['rotor_shaft','wind_rotor'],['rotor_shaft','crank_disk'],['crank_disk','crank_pin'],['piston_slider','wrist_pin'],['piston_slider','pump_rod'],['pump_rod','pump_piston']],'independent_coaxial':[],'transmissions':[{'name':'rotor_shaft_lock','ratio':1},{'name':'shaft_crank_lock','ratio':1},{'name':'crosshead_pump_rod_lock','ratio':1},{'name':'pump_rod_piston_lock','ratio':1}],'contact_decisions':D,'support_ground':['baseplate','cylinder_foot'],'support_strategy':'fixed baseplate supports normal and gravity probes'})\n M={'motion_joint/shaft_hinge':'shaft_hinge','motion_joint/rotor_input_hinge':'shaft_hinge','motion_joint/crank_hinge':'shaft_hinge','motion_joint/crosshead_vertical_slide':'crosshead_vertical_slide','motion_joint/pump_rod_vertical_slide':'crosshead_vertical_slide','motion_joint/piston_vertical_slide':'crosshead_vertical_slide','relation/crank_rod_revolute':'crank_rod_hinge','relation/wrist_rod_revolute':'wrist_rod_closure','transmission/rotor_shaft_lock':'shaft_hinge','transmission/shaft_crank_lock':'shaft_hinge','transmission/crosshead_pump_rod_lock':'crosshead_vertical_slide','transmission/pump_rod_piston_lock':'crosshead_vertical_slide','role/driver/wind_rotor':'shaft_hinge','role/output/piston_slider':'crosshead_vertical_slide','role/watch/wind_rotor':'shaft_hinge','role/watch/rotor_shaft':'shaft_hinge','role/watch/crank_disk':'shaft_hinge','role/watch/connecting_rod':'crank_rod_hinge','role/watch/piston_slider':'crosshead_vertical_slide','role/watch/pump_rod':'crosshead_vertical_slide','role/watch/pump_piston':'crosshead_vertical_slide'}\n for e in facts['entity_ids']:\n  if e[:5]=='link/': out.decision(e,'emitted',[e[5:]],'link emitted once',[e])\n  elif e in M: out.decision(e,'represented_by',[M[e]],'represented by selected physical coordinate or closure',[e])\n  else: out.decision(e,'represented_by',['baseplate'],'consumed by emitted placement, fit topology, or exact-pair contact decision',[e])\n",
+        "expected_revision": 1
+      },
+      "is_error": false,
+      "result": "{\"accepted\": true, \"revision\": 2}"
+    },
+    {
+      "name": "run_mjcf_gate",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\n  \"ok\": false,\n  \"errors\": [\n    \"dynamic transmission probe: closed mechanism stalls even with contact disabled; check body tree, closure anchor, and world/local joint frame conversion\",\n    \"dynamic transmission probe: contact materially stalls the closed mechanism relative to the no-contact control; inspect active body/world pairs\"\n  ],\n  \"policy_version\": 4,\n  \"bodies\": [\n    \"baseplate\",\n    \"connecting_rod\",\n    \"crank_disk\",\n    \"crank_pin\",\n    \"cylinder_foot\",\n    \"front_bearing\",\n    \"front_guide\",\n    \"front_pedestal\",\n    \"inlet_pipe\",\n    \"left_guide\",\n    \"left_guide_cap\",\n    \"outlet_pipe\",\n    \"piston_slider\",\n    \"pump_cylinder\",\n    \"pump_piston\",\n    \"pump_rod\",\n    \"rear_bearing\",\n    \"rear_guide\",\n    \"rear_pedestal\",\n    \"right_guide\",\n    \"right_guide_cap\",\n    \"rotor_shaft\",\n    \"wind_rotor\",\n    \"wrist_pin\"\n  ],\n  \"joints\": [\n    \"crank_rod_hinge\",\n    \"crosshead_vertical_slide\",\n    \"shaft_hinge\"\n  ],\n  \"nq\": 3,\n  \"nv\": 3,\n  \"finite\": true,\n  \"dynamic_transmission_probe\": {\n    \"ran\": true,\n    \"ok\": false,\n    \"errors\": [\n      \"closed mechanism stalls even with contact disabled; check body tree, closure anchor, and world/local joint frame conversion\",\n      \"contact materially stalls the closed mechanism relative to the no-contact control; inspect active body/world pairs\"\n    ],\n    \"warnings\": [],\n    \"contact_on\": {\n      \"ok\": true,\n      \"driver_travel\": 0.2655339175179764,\n      \"commanded_travel\": 1.0494,\n      \"joint_deltas\": {\n        \"shaft_hinge\": 0.2655339175179764\n      },\n      \"transmission_residuals\": [],\n      \"active_contacts\": [\n        {\n          \"pair\": [\n            \"front_guide\",\n            \"pump_piston\"\n          ],\n          \"count\": 33231,\n          \"max_penetration_mm\": 0.302122707875321,\n          \"max_force_n\": 584.4766331550854,\n          \"impulse_ns\": 2051.7912799445753\n        },\n        {\n          \"pair\": [\n            \"pump_piston\",\n            \"rear_guide\"\n          ],\n          \"count\": 24486,\n          \"max_penetration_mm\": 0.302337615706423,\n          \"max_force_n\": 584.7985429202711,\n          \"impulse_ns\": 1653.6582521270166\n        },\n        {\n          \"pair\": [\n            \"connecting_rod\",\n            \"right_guide\"\n          ],\n          \"count\": 221,\n          \"max_penetration_mm\": 0.030537509382656702,\n          \"max_force_n\": 115.17412545510885,\n          \"impulse_ns\": 3.1181346781799375\n        }\n      ]\n    },\n    \"contact_off\": {\n      \"ok\": true,\n      \"driver_travel\": 0.4331089351110112,\n      \"commanded_travel\": 1.0494,\n      \"joint_deltas\": {\n        \"shaft_hinge\": 0.4331089351110112\n      },\n      \"transmission_residuals\": [],\n      \"active_contacts\": []\n    }\n  }\n}"
+    },
+    {
+      "name": "submit_compiler_source",
+      "arguments": {
+        "source": "def compile_mjcf(facts,out):\n L=['baseplate','front_pedestal','rear_pedestal','front_bearing','rear_bearing','left_guide','right_guide','front_guide','rear_guide','pump_cylinder','cylinder_foot','inlet_pipe','outlet_pipe','left_guide_cap','right_guide_cap','rotor_shaft','wind_rotor','crank_disk','crank_pin','connecting_rod','piston_slider','wrist_pin','pump_rod','pump_piston']\n P={'baseplate':'','front_pedestal':'baseplate','rear_pedestal':'baseplate','front_bearing':'front_pedestal','rear_bearing':'rear_pedestal','left_guide':'baseplate','right_guide':'baseplate','front_guide':'baseplate','rear_guide':'baseplate','pump_cylinder':'baseplate','cylinder_foot':'baseplate','inlet_pipe':'pump_cylinder','outlet_pipe':'pump_cylinder','left_guide_cap':'left_guide','right_guide_cap':'right_guide','rotor_shaft':'baseplate','wind_rotor':'rotor_shaft','crank_disk':'rotor_shaft','crank_pin':'crank_disk','connecting_rod':'crank_pin','piston_slider':'baseplate','wrist_pin':'piston_slider','pump_rod':'piston_slider','pump_piston':'pump_rod'}\n for b in L: out.body(b,P[b])\n out.joint('rotor_shaft','shaft_hinge','hinge',(0,1,0),(0,-23,95),'world')\n out.joint('connecting_rod','crank_rod_hinge','hinge',(0,1,0),(0,33,81),'world')\n out.joint('piston_slider','crosshead_vertical_slide','slide',(0,0,1),(0,0,0),'world')\n out.connect('wrist_rod_closure','connecting_rod','wrist_pin',(0,0.033,0.048),'authored wrist revolute closes the slider-crank',['relation/wrist_rod_revolute'],['fit/wrist_pin/rod_journal/connecting_rod/wrist_eye','pair/connecting_rod/wrist_pin'])\n N={'wind_rotor':['rotor_shaft','front_pedestal','front_bearing','rear_pedestal','rear_bearing','baseplate','left_guide_cap','right_guide_cap','front_guide','crank_disk','pump_cylinder','piston_slider','wrist_pin','left_guide','right_guide','crank_pin','connecting_rod','pump_rod','cylinder_foot','pump_piston'],'rotor_shaft':['front_bearing','rear_bearing','wind_rotor','crank_disk','connecting_rod','front_pedestal','rear_pedestal','crank_pin','left_guide_cap','right_guide_cap','front_guide','left_guide','right_guide','rear_guide','piston_slider'],'crank_disk':['rotor_shaft','crank_pin','connecting_rod','rear_pedestal','rear_bearing','left_guide_cap','right_guide_cap','left_guide','right_guide','front_guide','piston_slider','rear_guide'],'crank_pin':['crank_disk','connecting_rod','rotor_shaft'],'connecting_rod':['crank_pin','piston_slider','wrist_pin','crank_disk','pump_rod','right_guide_cap','left_guide_cap','rotor_shaft','left_guide','right_guide','rear_guide','front_guide','pump_cylinder','outlet_pipe','rear_pedestal','rear_bearing'],'piston_slider':['connecting_rod','wrist_pin','pump_rod','rear_guide','left_guide','right_guide','front_guide','left_guide_cap','right_guide_cap','pump_cylinder','outlet_pipe','rear_pedestal'],'wrist_pin':['connecting_rod','piston_slider','rear_guide','front_guide','pump_rod','left_guide','right_guide'],'pump_rod':['piston_slider','pump_piston','pump_cylinder','connecting_rod','wrist_pin','rear_guide','front_guide','baseplate','cylinder_foot','left_guide','right_guide','outlet_pipe','inlet_pipe'],'pump_piston':['front_guide','rear_guide','pump_rod','pump_cylinder','left_guide','right_guide','cylinder_foot','inlet_pipe','outlet_pipe','baseplate','rear_pedestal']}\n R={('rotor_shaft','wind_rotor'):'relation/rotor_to_shaft_press_fit',('front_bearing','rotor_shaft'):'relation/front_shaft_journal',('rear_bearing','rotor_shaft'):'relation/rear_shaft_journal',('crank_disk','rotor_shaft'):'relation/shaft_to_crank_press_fit',('crank_disk','crank_pin'):'relation/eccentric_pin_press_fit',('connecting_rod','crank_pin'):'relation/crank_rod_revolute',('connecting_rod','wrist_pin'):'relation/wrist_rod_revolute',('piston_slider','wrist_pin'):'relation/wrist_pin_to_slider',('piston_slider','pump_rod'):'relation/slider_to_pump_rod',('pump_piston','pump_rod'):'relation/pump_rod_to_piston',('pump_cylinder','pump_piston'):'relation/piston_in_barrel'}\n K=[tuple(sorted(x)) for x in [('rotor_shaft','connecting_rod'),('crank_disk','connecting_rod'),('connecting_rod','piston_slider'),('connecting_rod','left_guide'),('connecting_rod','rear_guide'),('connecting_rod','front_guide'),('piston_slider','rear_guide'),('piston_slider','left_guide'),('piston_slider','right_guide'),('piston_slider','front_guide'),('wrist_pin','rear_guide'),('wrist_pin','front_guide')]]\n seen=[]; D=[]\n for a in N:\n  for b in N[a]:\n   p=tuple(sorted((a,b)))\n   if p in seen: continue\n   seen.append(p); r=R.get(p); act='keep' if p in K else 'exclude'\n   if r: act='exclude'\n   why='retain real collision function or uncertain close geometry' if act=='keep' else ('exact authored fit or bearing is replaced by ideal coordinate topology' if r else 'measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk')\n   ids=['pair/'+p[0]+'/'+p[1]]; src=['link/'+p[0],'link/'+p[1]]+([r] if r else [])\n   D.append({'pair':[p[0],p[1]],'action':act,'reason':why,'source_entity_ids':src,'fact_ids':ids})\n   if act=='exclude': out.exclude(p[0],p[1],why,src,ids)\n C={'wind_rotor':'shaft_hinge','rotor_shaft':'shaft_hinge','crank_disk':'shaft_hinge','crank_pin':'shaft_hinge','connecting_rod':'crank_rod_hinge','piston_slider':'crosshead_vertical_slide','wrist_pin':'crosshead_vertical_slide','pump_rod':'crosshead_vertical_slide','pump_piston':'crosshead_vertical_slide'}\n for b in L:\n  if b not in C:C[b]=None\n out.topology_plan({'coordinate_map':C,'tree_edges':[[P[b],b] for b in L if P[b]],'closure_edges':[{'name':'wrist_rod_closure','pair':['connecting_rod','wrist_pin']}],'rigid_carried':[['rotor_shaft','wind_rotor'],['rotor_shaft','crank_disk'],['crank_disk','crank_pin'],['piston_slider','wrist_pin'],['piston_slider','pump_rod'],['pump_rod','pump_piston']],'independent_coaxial':[],'transmissions':[{'name':'rotor_shaft_lock','ratio':1},{'name':'shaft_crank_lock','ratio':1},{'name':'crosshead_pump_rod_lock','ratio':1},{'name':'pump_rod_piston_lock','ratio':1}],'contact_decisions':D,'support_ground':['baseplate','cylinder_foot'],'support_strategy':'fixed baseplate supports normal and gravity probes'})\n M={'motion_joint/shaft_hinge':'shaft_hinge','motion_joint/rotor_input_hinge':'shaft_hinge','motion_joint/crank_hinge':'shaft_hinge','motion_joint/crosshead_vertical_slide':'crosshead_vertical_slide','motion_joint/pump_rod_vertical_slide':'crosshead_vertical_slide','motion_joint/piston_vertical_slide':'crosshead_vertical_slide','relation/crank_rod_revolute':'crank_rod_hinge','relation/wrist_rod_revolute':'wrist_rod_closure','transmission/rotor_shaft_lock':'shaft_hinge','transmission/shaft_crank_lock':'shaft_hinge','transmission/crosshead_pump_rod_lock':'crosshead_vertical_slide','transmission/pump_rod_piston_lock':'crosshead_vertical_slide','role/driver/wind_rotor':'shaft_hinge','role/output/piston_slider':'crosshead_vertical_slide','role/watch/wind_rotor':'shaft_hinge','role/watch/rotor_shaft':'shaft_hinge','role/watch/crank_disk':'shaft_hinge','role/watch/connecting_rod':'crank_rod_hinge','role/watch/piston_slider':'crosshead_vertical_slide','role/watch/pump_rod':'crosshead_vertical_slide','role/watch/pump_piston':'crosshead_vertical_slide'}\n for e in facts['entity_ids']:\n  if e[:5]=='link/': out.decision(e,'emitted',[e[5:]],'link emitted once',[e])\n  elif e in M: out.decision(e,'represented_by',[M[e]],'represented by selected physical coordinate or closure',[e])\n  else: out.decision(e,'represented_by',['baseplate'],'consumed by emitted placement, fit topology, or exact-pair contact decision',[e])\n",
+        "expected_revision": 2
+      },
+      "is_error": false,
+      "result": "{\"accepted\": true, \"revision\": 3}"
+    },
+    {
+      "name": "run_mjcf_gate",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"errors\": [],\n  \"policy_version\": 4,\n  \"bodies\": [\n    \"baseplate\",\n    \"connecting_rod\",\n    \"crank_disk\",\n    \"crank_pin\",\n    \"cylinder_foot\",\n    \"front_bearing\",\n    \"front_guide\",\n    \"front_pedestal\",\n    \"inlet_pipe\",\n    \"left_guide\",\n    \"left_guide_cap\",\n    \"outlet_pipe\",\n    \"piston_slider\",\n    \"pump_cylinder\",\n    \"pump_piston\",\n    \"pump_rod\",\n    \"rear_bearing\",\n    \"rear_guide\",\n    \"rear_pedestal\",\n    \"right_guide\",\n    \"right_guide_cap\",\n    \"rotor_shaft\",\n    \"wind_rotor\",\n    \"wrist_pin\"\n  ],\n  \"joints\": [\n    \"crank_rod_hinge\",\n    \"crosshead_vertical_slide\",\n    \"shaft_hinge\"\n  ],\n  \"nq\": 3,\n  \"nv\": 3,\n  \"finite\": true,\n  \"dynamic_transmission_probe\": {\n    \"ran\": true,\n    \"ok\": true,\n    \"errors\": [],\n    \"warnings\": [],\n    \"contact_on\": {\n      \"ok\": true,\n      \"driver_travel\": 1.0495426736848006,\n      \"commanded_travel\": 1.0494,\n      \"joint_deltas\": {\n        \"shaft_hinge\": 1.0495426736848006\n      },\n      \"transmission_residuals\": [],\n      \"active_contacts\": []\n    },\n    \"contact_off\": {\n      \"ok\": true,\n      \"driver_travel\": 1.0495426736848006,\n      \"commanded_travel\": 1.0494,\n      \"joint_deltas\": {\n        \"shaft_hinge\": 1.0495426736848006\n      },\n      \"transmission_residuals\": [],\n      \"active_contacts\": []\n    }\n  }\n}"
+    }
+  ],
+  "report": {
+    "ok": true,
+    "errors": [],
+    "policy_version": 4,
+    "bodies": [
+      "baseplate",
+      "connecting_rod",
+      "crank_disk",
+      "crank_pin",
+      "cylinder_foot",
+      "front_bearing",
+      "front_guide",
+      "front_pedestal",
+      "inlet_pipe",
+      "left_guide",
+      "left_guide_cap",
+      "outlet_pipe",
+      "piston_slider",
+      "pump_cylinder",
+      "pump_piston",
+      "pump_rod",
+      "rear_bearing",
+      "rear_guide",
+      "rear_pedestal",
+      "right_guide",
+      "right_guide_cap",
+      "rotor_shaft",
+      "wind_rotor",
+      "wrist_pin"
+    ],
+    "joints": [
+      "crank_rod_hinge",
+      "crosshead_vertical_slide",
+      "shaft_hinge"
+    ],
+    "nq": 3,
+    "nv": 3,
+    "finite": true,
+    "dynamic_transmission_probe": {
+      "ran": true,
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "contact_on": {
+        "ok": true,
+        "driver_travel": 1.0495426736848006,
+        "commanded_travel": 1.0494,
+        "joint_deltas": {
+          "shaft_hinge": 1.0495426736848006
+        },
+        "transmission_residuals": [],
+        "active_contacts": []
+      },
+      "contact_off": {
+        "ok": true,
+        "driver_travel": 1.0495426736848006,
+        "commanded_travel": 1.0494,
+        "joint_deltas": {
+          "shaft_hinge": 1.0495426736848006
+        },
+        "transmission_residuals": [],
+        "active_contacts": []
+      }
+    }
+  }
+}

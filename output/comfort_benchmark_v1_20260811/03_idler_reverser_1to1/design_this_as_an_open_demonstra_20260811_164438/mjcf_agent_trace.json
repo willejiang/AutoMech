@@ -1,0 +1,1126 @@
+{
+  "rounds": 11,
+  "executions": [
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "index",
+        "offset": 0,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"sections\": {\n    \"model\": 5,\n    \"links\": 21,\n    \"ports\": 14,\n    \"poses\": 21,\n    \"relations\": 13,\n    \"motion_joints\": 3,\n    \"transmissions\": 5,\n    \"planetary_stages\": 0,\n    \"entity_ids\": 97,\n    \"simulation\": 5\n  }\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "model",
+        "offset": 0,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"model\",\n  \"offset\": 0,\n  \"returned\": 5,\n  \"total\": 5,\n  \"next_offset\": null,\n  \"items\": {\n    \"name\": \"design_this_as_an_open_demonstra\",\n    \"root_link\": \"base\",\n    \"mesh_pairs\": [],\n    \"output_link\": \"output_gear\",\n    \"watch_links\": [\n      \"input_shaft\",\n      \"input_gear\",\n      \"idler_shaft\",\n      \"idler_gear\",\n      \"output_shaft\",\n      \"output_gear\"\n    ]\n  }\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "links",
+        "offset": 0,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"links\",\n  \"offset\": 0,\n  \"returned\": 21,\n  \"total\": 21,\n  \"next_offset\": null,\n  \"items\": {\n    \"base\": {\n      \"entity_id\": \"link/base\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.5676492000000001,\n      \"world_xyz_m\": [\n        0.0,\n        0.0,\n        0.0\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"input_front_pedestal\": {\n      \"entity_id\": \"link/input_front_pedestal\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"base\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.0058875,\n      \"world_xyz_m\": [\n        -0.036,\n        -0.0075,\n        0.006\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"input_front_bearing\": {\n      \"entity_id\": \"link/input_front_bearing\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"input_front_pedestal\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.004892971466440155,\n      \"world_xyz_m\": [\n        -0.036,\n        -0.01,\n        0.027999999999999997\n      ],\n      \"world_quat_wxyz\": [\n        0.7071067811865475,\n        -0.7071067811865475,\n        -0.0,\n        -0.0\n      ]\n    },\n    \"input_rear_pedestal\": {\n      \"entity_id\": \"link/input_rear_pedestal\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"base\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.0058875,\n      \"world_xyz_m\": [\n        -0.036,\n        0.0075,\n        0.006\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"input_rear_bearing\": {\n      \"entity_id\": \"link/input_rear_bearing\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"input_rear_pedestal\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.004892971466440155,\n      \"world_xyz_m\": [\n        -0.036,\n        0.004999999999999999,\n        0.027999999999999997\n      ],\n      \"world_quat_wxyz\": [\n        0.7071067811865475,\n        -0.7071067811865475,\n        -0.0,\n        -0.0\n      ]\n    },\n    \"idler_front_pedestal\": {\n      \"entity_id\": \"link/idler_front_pedestal\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"base\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.0058875,\n      \"world_xyz_m\": [\n        0.0,\n        -0.0075,\n        0.006\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"idler_front_bearing\": {\n      \"entity_id\": \"link/idler_front_bearing\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"idler_front_pedestal\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.004892971466440155,\n      \"world_xyz_m\": [\n        0.0,\n        -0.01,\n        0.027999999999999997\n      ],\n      \"world_quat_wxyz\": [\n        0.7071067811865475,\n        -0.7071067811865475,\n        -0.0,\n        -0.0\n      ]\n    },\n    \"idler_rear_pedestal\": {\n      \"entity_id\": \"link/idler_rear_pedestal\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n    "
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "ports",
+        "offset": 0,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"ports\",\n  \"offset\": 0,\n  \"returned\": 14,\n  \"total\": 14,\n  \"next_offset\": null,\n  \"items\": {\n    \"input_front_bearing\": {\n      \"journal\": {\n        \"entity_id\": \"port/input_front_bearing/journal\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          1.0,\n          0.0\n        ],\n        \"diameter_mm\": 6.1,\n        \"depth_mm\": 5.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          -0.072,\n          0.018000000000000002,\n          0.0355\n        ]\n      }\n    },\n    \"input_rear_bearing\": {\n      \"journal\": {\n        \"entity_id\": \"port/input_rear_bearing/journal\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          1.0,\n          0.0\n        ],\n        \"diameter_mm\": 6.1,\n        \"depth_mm\": 5.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          -0.072,\n          0.033,\n          0.020499999999999997\n        ]\n      }\n    },\n    \"idler_front_bearing\": {\n      \"journal\": {\n        \"entity_id\": \"port/idler_front_bearing/journal\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          1.0,\n          0.0\n        ],\n        \"diameter_mm\": 6.1,\n        \"depth_mm\": 5.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0,\n          0.018000000000000002,\n          0.0355\n        ]\n      }\n    },\n    \"idler_rear_bearing\": {\n      \"journal\": {\n        \"entity_id\": \"port/idler_rear_bearing/journal\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          1.0,\n          0.0\n        ],\n        \"diameter_mm\": 6.1,\n        \"depth_mm\": 5.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0,\n          0.033,\n          0.020499999999999997\n        ]\n      }\n    },\n    \"output_front_bearing\": {\n      \"journal\": {\n        \"entity_id\": \"port/output_front_bearing/journal\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          1.0,\n          0.0\n        ],\n        \"diameter_mm\": 6.1,\n        \"depth_mm\": 5.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.072,\n          0.018000000000000002,\n          0.0355\n        ]\n      }\n    },\n    \"output_rear_bearing\": {\n      \"journal\": {\n        \"entity_id\": \"port/output_rear_bearing/journal\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          1.0,\n          0.0\n        ],\n        \"diameter_mm\": 6.1,\n        \"depth_mm\": 5.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.072,\n          0.033,\n          0.020499999999999997\n        ]\n      }\n    },\n    \"input_shaft\": {\n      \"front_journal\": {\n        \"entity_id\": \"port/input_shaft/front_journal\",\n        \"type\": \"shaft\",\n        \"axis\": [\n          0.0,\n          1.0,\n          0.0\n        ],\n        \"diameter_mm\": 6.0,\n        \"depth_mm\": 5.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          -0.072,\n          0.009999999999999998,\n          0.0355\n        ]\n      },\n      \"rear_journal\": {\n        \"entity_id\": \"port/input_shaft/rear_journal\",\n        \"type\": \"shaft\",\n        \"axis\": [\n          0.0,\n          1.0,\n          0.0\n        ],\n        \"diameter_mm\": 6.0,\n        \"depth_mm\": 5.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          -0.072,\n          0.009999999999999998,\n          0.020499999999999997\n        ]\n      },\n      \"gear_seat\": {\n        \"entity_id\": \"port/input_shaft/gear_seat\",\n        \"type\": \"shaft\",\n        \"axis\": [\n          0.0,\n          1.0,\n          0.0\n        ],\n        \"diameter_mm\": 6.0,\n        \"depth_mm\": 6.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          -0.072,\n          0.009999999999999998,\n          0.027999999999999997\n        ]\n      },\n      \"crank_seat\": {\n        \"entity_id\": \"port/input_shaft/crank_s"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "entity_ids",
+        "offset": 0,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"entity_ids\",\n  \"offset\": 0,\n  \"returned\": 25,\n  \"total\": 97,\n  \"next_offset\": 25,\n  \"items\": [\n    \"link/base\",\n    \"link/input_front_pedestal\",\n    \"link/input_front_bearing\",\n    \"link/input_rear_pedestal\",\n    \"link/input_rear_bearing\",\n    \"link/idler_front_pedestal\",\n    \"link/idler_front_bearing\",\n    \"link/idler_rear_pedestal\",\n    \"link/idler_rear_bearing\",\n    \"link/output_front_pedestal\",\n    \"link/output_front_bearing\",\n    \"link/output_rear_pedestal\",\n    \"link/output_rear_bearing\",\n    \"link/input_shaft\",\n    \"link/idler_shaft\",\n    \"link/output_shaft\",\n    \"link/input_gear\",\n    \"link/idler_gear\",\n    \"link/output_gear\",\n    \"link/crank_arm\",\n    \"link/crank_handle\",\n    \"pose/place_base\",\n    \"pose/place_input_front_pedestal\",\n    \"pose/place_input_front_bearing\",\n    \"pose/place_input_rear_pedestal\"\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "simulation",
+        "offset": 0,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"simulation\",\n  \"offset\": 0,\n  \"returned\": 5,\n  \"total\": 5,\n  \"next_offset\": null,\n  \"items\": {\n    \"gravity\": [\n      0.0,\n      0.0,\n      -9.81\n    ],\n    \"timestep\": 0.0002,\n    \"solver\": \"Newton\",\n    \"iterations\": 100,\n    \"base_rests_on_plane\": true\n  }\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "relations",
+        "offset": 0,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"relations\",\n  \"offset\": 0,\n  \"returned\": 13,\n  \"total\": 13,\n  \"next_offset\": null,\n  \"items\": [\n    {\n      \"name\": \"input_front_journal\",\n      \"mate_type\": \"journal_bearing\",\n      \"base_part\": \"input_front_bearing\",\n      \"base_port\": \"journal\",\n      \"incoming_part\": \"input_shaft\",\n      \"incoming_port\": \"front_journal\"\n    },\n    {\n      \"name\": \"input_rear_journal\",\n      \"mate_type\": \"journal_bearing\",\n      \"base_part\": \"input_rear_bearing\",\n      \"base_port\": \"journal\",\n      \"incoming_part\": \"input_shaft\",\n      \"incoming_port\": \"rear_journal\"\n    },\n    {\n      \"name\": \"idler_front_journal\",\n      \"mate_type\": \"journal_bearing\",\n      \"base_part\": \"idler_front_bearing\",\n      \"base_port\": \"journal\",\n      \"incoming_part\": \"idler_shaft\",\n      \"incoming_port\": \"front_journal\"\n    },\n    {\n      \"name\": \"idler_rear_journal\",\n      \"mate_type\": \"journal_bearing\",\n      \"base_part\": \"idler_rear_bearing\",\n      \"base_port\": \"journal\",\n      \"incoming_part\": \"idler_shaft\",\n      \"incoming_port\": \"rear_journal\"\n    },\n    {\n      \"name\": \"output_front_journal\",\n      \"mate_type\": \"journal_bearing\",\n      \"base_part\": \"output_front_bearing\",\n      \"base_port\": \"journal\",\n      \"incoming_part\": \"output_shaft\",\n      \"incoming_port\": \"front_journal\"\n    },\n    {\n      \"name\": \"output_rear_journal\",\n      \"mate_type\": \"journal_bearing\",\n      \"base_part\": \"output_rear_bearing\",\n      \"base_port\": \"journal\",\n      \"incoming_part\": \"output_shaft\",\n      \"incoming_port\": \"rear_journal\"\n    },\n    {\n      \"name\": \"input_gear_press_fit\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"input_shaft\",\n      \"base_port\": \"gear_seat\",\n      \"incoming_part\": \"input_gear\",\n      \"incoming_port\": \"shaft_bore\"\n    },\n    {\n      \"name\": \"idler_gear_press_fit\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"idler_shaft\",\n      \"base_port\": \"gear_seat\",\n      \"incoming_part\": \"idler_gear\",\n      \"incoming_port\": \"shaft_bore\"\n    },\n    {\n      \"name\": \"output_gear_press_fit\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"output_shaft\",\n      \"base_port\": \"gear_seat\",\n      \"incoming_part\": \"output_gear\",\n      \"incoming_port\": \"shaft_bore\"\n    },\n    {\n      \"name\": \"input_idler_mesh\",\n      \"mate_type\": \"gear_spur_external\",\n      \"base_part\": \"input_gear\",\n      \"base_port\": \"mesh_to_idler\",\n      \"incoming_part\": \"idler_gear\",\n      \"incoming_port\": \"mesh_to_input\",\n      \"separation_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"idler_output_mesh\",\n      \"mate_type\": \"gear_spur_external\",\n      \"base_part\": \"idler_gear\",\n      \"base_port\": \"mesh_to_output\",\n      \"incoming_part\": \"output_gear\",\n      \"incoming_port\": \"mesh_to_idler\",\n      \"separation_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"crank_arm_press_fit\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"input_shaft\",\n      \"base_port\": \"crank_seat\",\n      \"incoming_part\": \"crank_arm\",\n      \"incoming_port\": \"shaft_bore\"\n    },\n    {\n      \"name\": \"crank_handle_press_fit\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"crank_arm\",\n      \"base_port\": \"handle_bore\",\n      \"incoming_part\": \"crank_handle\",\n      \"incoming_port\": \"handle_shaft\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "motion_joints",
+        "offset": 0,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"motion_joints\",\n  \"offset\": 0,\n  \"returned\": 3,\n  \"total\": 3,\n  \"next_offset\": null,\n  \"items\": [\n    {\n      \"name\": \"input_shaft_hinge\",\n      \"parent\": \"\",\n      \"child\": \"input_shaft\",\n      \"type\": \"hinge\",\n      \"axis\": [\n        0.0,\n        1.0,\n        0.0\n      ],\n      \"pos_mm\": [\n        -36.0,\n        -2.0,\n        28.0\n      ]\n    },\n    {\n      \"name\": \"idler_shaft_hinge\",\n      \"parent\": \"\",\n      \"child\": \"idler_shaft\",\n      \"type\": \"hinge\",\n      \"axis\": [\n        0.0,\n        1.0,\n        0.0\n      ],\n      \"pos_mm\": [\n        0.0,\n        -2.0,\n        28.0\n      ]\n    },\n    {\n      \"name\": \"output_shaft_hinge\",\n      \"parent\": \"\",\n      \"child\": \"output_shaft\",\n      \"type\": \"hinge\",\n      \"axis\": [\n        0.0,\n        1.0,\n        0.0\n      ],\n      \"pos_mm\": [\n        36.0,\n        -2.0,\n        28.0\n      ]\n    }\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "transmissions",
+        "offset": 0,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"transmissions\",\n  \"offset\": 0,\n  \"returned\": 5,\n  \"total\": 5,\n  \"next_offset\": null,\n  \"items\": [\n    {\n      \"name\": \"input_shaft_to_input_gear\",\n      \"type\": \"compound_1to1\",\n      \"driving_link\": \"input_shaft\",\n      \"driven_link\": \"input_gear\",\n      \"ratio\": 1.0\n    },\n    {\n      \"name\": \"input_to_idler\",\n      \"type\": \"gear_external\",\n      \"driving_link\": \"input_gear\",\n      \"driven_link\": \"idler_gear\"\n    },\n    {\n      \"name\": \"idler_shaft_lock\",\n      \"type\": \"compound_1to1\",\n      \"driving_link\": \"idler_gear\",\n      \"driven_link\": \"idler_shaft\",\n      \"ratio\": 1.0\n    },\n    {\n      \"name\": \"idler_to_output\",\n      \"type\": \"gear_external\",\n      \"driving_link\": \"idler_gear\",\n      \"driven_link\": \"output_gear\"\n    },\n    {\n      \"name\": \"output_gear_to_output_shaft\",\n      \"type\": \"compound_1to1\",\n      \"driving_link\": \"output_gear\",\n      \"driven_link\": \"output_shaft\",\n      \"ratio\": 1.0\n    }\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "planetary_stages",
+        "offset": 0,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"planetary_stages\",\n  \"offset\": 0,\n  \"returned\": 0,\n  \"total\": 0,\n  \"next_offset\": null,\n  \"items\": []\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "entity_ids",
+        "offset": 25,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"entity_ids\",\n  \"offset\": 25,\n  \"returned\": 25,\n  \"total\": 97,\n  \"next_offset\": 50,\n  \"items\": [\n    \"pose/place_input_rear_bearing\",\n    \"pose/place_idler_front_pedestal\",\n    \"pose/place_idler_front_bearing\",\n    \"pose/place_idler_rear_pedestal\",\n    \"pose/place_idler_rear_bearing\",\n    \"pose/place_output_front_pedestal\",\n    \"pose/place_output_front_bearing\",\n    \"pose/place_output_rear_pedestal\",\n    \"pose/place_output_rear_bearing\",\n    \"pose/place_input_shaft\",\n    \"pose/place_idler_shaft\",\n    \"pose/place_output_shaft\",\n    \"pose/place_input_gear\",\n    \"pose/place_idler_gear\",\n    \"pose/place_output_gear\",\n    \"pose/place_crank_arm\",\n    \"pose/place_crank_handle\",\n    \"port/input_front_bearing/journal\",\n    \"port/input_rear_bearing/journal\",\n    \"port/idler_front_bearing/journal\",\n    \"port/idler_rear_bearing/journal\",\n    \"port/output_front_bearing/journal\",\n    \"port/output_rear_bearing/journal\",\n    \"port/input_shaft/front_journal\",\n    \"port/input_shaft/rear_journal\"\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "poses",
+        "offset": 0,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"poses\",\n  \"offset\": 0,\n  \"returned\": 21,\n  \"total\": 21,\n  \"next_offset\": null,\n  \"items\": [\n    {\n      \"name\": \"place_base\",\n      \"parent\": \"\",\n      \"child\": \"base\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.0\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_input_front_pedestal\",\n      \"parent\": \"base\",\n      \"child\": \"input_front_pedestal\",\n      \"xyz_m\": [\n        -0.036,\n        -0.0075,\n        0.006\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_input_front_bearing\",\n      \"parent\": \"input_front_pedestal\",\n      \"child\": \"input_front_bearing\",\n      \"xyz_m\": [\n        0.0,\n        -0.0025,\n        0.022\n      ],\n      \"rpy_rad\": [\n        -1.5707963267948966,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_input_rear_pedestal\",\n      \"parent\": \"base\",\n      \"child\": \"input_rear_pedestal\",\n      \"xyz_m\": [\n        -0.036,\n        0.0075,\n        0.006\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_input_rear_bearing\",\n      \"parent\": \"input_rear_pedestal\",\n      \"child\": \"input_rear_bearing\",\n      \"xyz_m\": [\n        0.0,\n        -0.0025,\n        0.022\n      ],\n      \"rpy_rad\": [\n        -1.5707963267948966,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_idler_front_pedestal\",\n      \"parent\": \"base\",\n      \"child\": \"idler_front_pedestal\",\n      \"xyz_m\": [\n        0.0,\n        -0.0075,\n        0.006\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_idler_front_bearing\",\n      \"parent\": \"idler_front_pedestal\",\n      \"child\": \"idler_front_bearing\",\n      \"xyz_m\": [\n        0.0,\n        -0.0025,\n        0.022\n      ],\n      \"rpy_rad\": [\n        -1.5707963267948966,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_idler_rear_pedestal\",\n      \"parent\": \"base\",\n      \"child\": \"idler_rear_pedestal\",\n      \"xyz_m\": [\n        0.0,\n        0.0075,\n        0.006\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_idler_rear_bearing\",\n      \"parent\": \"idler_rear_pedestal\",\n      \"child\": \"idler_rear_bearing\",\n      \"xyz_m\": [\n        0.0,\n        -0.0025,\n        0.022\n      ],\n      \"rpy_rad\": [\n        -1.5707963267948966,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_output_front_pedestal\",\n      \"parent\": \"base\",\n      \"child\": \"output_front_pedestal\",\n      \"xyz_m\": [\n        0.036,\n        -0.0075,\n        0.006\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_output_front_bearing\",\n      \"parent\": \"output_front_pedestal\",\n      \"child\": \"output_front_bearing\",\n      \"xyz_m\": [\n        0.0,\n        -0.0025,\n        0.022\n      ],\n      \"rpy_rad\": [\n        -1.5707963267948966,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_output_rear_pedestal\",\n      \"parent\": \"base\",\n      \"child\": \"output_rear_pedestal\",\n      \"xyz_m\": [\n        0.036,\n        0.0075,\n        0.006\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_output_rear_bearing\",\n      \"parent\": \"output_rear_pedestal\",\n      \"child\": \"output_rear_bearing\",\n      \"xyz_m\": [\n        0.0,\n        -0.0025,\n        0.022\n      ],\n      \"rpy_rad\": [\n        -1.5707963267948966,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_input_shaft\",\n      \"parent\": \"input_front_bearing\",\n      \"child\": \"input_shaft\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        -0.008\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_idler_shaft\",\n      \"parent\": \"idler_front_bearing\",\n      \"child\": \"idler_shaft\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        -0.008\n      "
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "input_front_bearing",
+        "port_a": "journal",
+        "b": "input_shaft",
+        "port_b": "front_journal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/input_front_bearing/journal/input_shaft/front_journal\",\n  \"radial_offset_mm\": 8.000000000000004,\n  \"axial_offset_mm\": 4.898587196589416e-16,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.09999999999999964,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "input_rear_bearing",
+        "port_a": "journal",
+        "b": "input_shaft",
+        "port_b": "rear_journal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/input_rear_bearing/journal/input_shaft/rear_journal\",\n  \"radial_offset_mm\": 23.000000000000004,\n  \"axial_offset_mm\": 1.4083438190194564e-15,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.09999999999999964,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "idler_front_bearing",
+        "port_a": "journal",
+        "b": "idler_shaft",
+        "port_b": "front_journal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/idler_front_bearing/journal/idler_shaft/front_journal\",\n  \"radial_offset_mm\": 8.000000000000004,\n  \"axial_offset_mm\": 4.898587196589416e-16,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.09999999999999964,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "idler_rear_bearing",
+        "port_a": "journal",
+        "b": "idler_shaft",
+        "port_b": "rear_journal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/idler_rear_bearing/journal/idler_shaft/rear_journal\",\n  \"radial_offset_mm\": 23.000000000000004,\n  \"axial_offset_mm\": 1.4083438190194564e-15,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.09999999999999964,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "output_front_bearing",
+        "port_a": "journal",
+        "b": "output_shaft",
+        "port_b": "front_journal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/output_front_bearing/journal/output_shaft/front_journal\",\n  \"radial_offset_mm\": 8.000000000000004,\n  \"axial_offset_mm\": 4.898587196589416e-16,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.09999999999999964,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "output_rear_bearing",
+        "port_a": "journal",
+        "b": "output_shaft",
+        "port_b": "rear_journal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/output_rear_bearing/journal/output_shaft/rear_journal\",\n  \"radial_offset_mm\": 23.000000000000004,\n  \"axial_offset_mm\": 1.4083438190194564e-15,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.09999999999999964,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "input_shaft",
+        "port_a": "gear_seat",
+        "b": "input_gear",
+        "port_b": "shaft_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/input_shaft/gear_seat/input_gear/shaft_bore\",\n  \"radial_offset_mm\": 15.0,\n  \"axial_offset_mm\": 9.184850993605148e-16,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": -0.009999999999999787,\n  \"fit_sign\": \"interference\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "idler_shaft",
+        "port_a": "gear_seat",
+        "b": "idler_gear",
+        "port_b": "shaft_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/idler_shaft/gear_seat/idler_gear/shaft_bore\",\n  \"radial_offset_mm\": 15.0,\n  \"axial_offset_mm\": 9.184850993605148e-16,\n  \"axis_cos\": 0.9914448613738104,\n  \"diametral_clearance_mm\": -0.009999999999999787,\n  \"fit_sign\": \"interference\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "output_shaft",
+        "port_a": "gear_seat",
+        "b": "output_gear",
+        "port_b": "shaft_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/output_shaft/gear_seat/output_gear/shaft_bore\",\n  \"radial_offset_mm\": 15.0,\n  \"axial_offset_mm\": 9.184850993605148e-16,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": -0.009999999999999787,\n  \"fit_sign\": \"interference\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "input_gear",
+        "port_a": "mesh_to_idler",
+        "b": "idler_gear",
+        "port_b": "mesh_to_input"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/input_gear/mesh_to_idler/idler_gear/mesh_to_input\",\n  \"radial_offset_mm\": 72.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 0.9914448613738104,\n  \"diametral_clearance_mm\": null,\n  \"fit_sign\": \"not_shaft_bore\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "idler_gear",
+        "port_a": "mesh_to_output",
+        "b": "output_gear",
+        "port_b": "mesh_to_idler"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/idler_gear/mesh_to_output/output_gear/mesh_to_idler\",\n  \"radial_offset_mm\": 71.38403001891434,\n  \"axial_offset_mm\": 9.397885839843715,\n  \"axis_cos\": 0.9914448613738104,\n  \"diametral_clearance_mm\": null,\n  \"fit_sign\": \"not_shaft_bore\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "input_shaft",
+        "port_a": "crank_seat",
+        "b": "crank_arm",
+        "port_b": "shaft_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/input_shaft/crank_seat/crank_arm/shaft_bore\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": -0.009999999999999787,\n  \"fit_sign\": \"interference\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "crank_arm",
+        "port_a": "handle_bore",
+        "b": "crank_handle",
+        "port_b": "handle_shaft"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/crank_arm/handle_bore/crank_handle/handle_shaft\",\n  \"radial_offset_mm\": 18.000000000000004,\n  \"axial_offset_mm\": 18.000000000000004,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": -0.009999999999999787,\n  \"fit_sign\": \"interference\"\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "entity_ids",
+        "offset": 50,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"entity_ids\",\n  \"offset\": 50,\n  \"returned\": 25,\n  \"total\": 97,\n  \"next_offset\": 75,\n  \"items\": [\n    \"port/input_shaft/gear_seat\",\n    \"port/input_shaft/crank_seat\",\n    \"port/idler_shaft/front_journal\",\n    \"port/idler_shaft/rear_journal\",\n    \"port/idler_shaft/gear_seat\",\n    \"port/output_shaft/front_journal\",\n    \"port/output_shaft/rear_journal\",\n    \"port/output_shaft/gear_seat\",\n    \"port/input_gear/shaft_bore\",\n    \"port/input_gear/mesh_to_idler\",\n    \"port/idler_gear/shaft_bore\",\n    \"port/idler_gear/mesh_to_input\",\n    \"port/idler_gear/mesh_to_output\",\n    \"port/output_gear/shaft_bore\",\n    \"port/output_gear/mesh_to_idler\",\n    \"port/crank_arm/shaft_bore\",\n    \"port/crank_arm/handle_bore\",\n    \"port/crank_handle/handle_shaft\",\n    \"relation/input_front_journal\",\n    \"relation/input_rear_journal\",\n    \"relation/idler_front_journal\",\n    \"relation/idler_rear_journal\",\n    \"relation/output_front_journal\",\n    \"relation/output_rear_journal\",\n    \"relation/input_gear_press_fit\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "input_shaft",
+        "target": "input_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"input_shaft\",\n    \"input_gear\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "input_gear",
+        "target": "idler_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"input_gear\",\n    \"idler_gear\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "idler_gear",
+        "target": "idler_shaft"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"idler_gear\",\n    \"idler_shaft\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "idler_gear",
+        "target": "output_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"idler_gear\",\n    \"output_gear\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "output_gear",
+        "target": "output_shaft"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"output_gear\",\n    \"output_shaft\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "input_shaft",
+        "target": "crank_arm"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"input_shaft\",\n    \"crank_arm\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "crank_arm",
+        "target": "crank_handle"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"crank_arm\",\n    \"crank_handle\"\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "input_shaft",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"input_shaft\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 16.552776387636463,\n  \"items\": [\n    {\n      \"part\": \"input_front_bearing\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/input_front_bearing/input_shaft\"\n    },\n    {\n      \"part\": \"input_rear_bearing\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/input_rear_bearing/input_shaft\"\n    },\n    {\n      \"part\": \"input_gear\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/input_gear/input_shaft\"\n    },\n    {\n      \"part\": \"crank_arm\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/crank_arm/input_shaft\"\n    },\n    {\n      \"part\": \"input_front_pedestal\",\n      \"aabb_surface_distance_mm\": 4.000932455062863,\n      \"fact_id\": \"nearby/input_front_pedestal/input_shaft\"\n    },\n    {\n      \"part\": \"input_rear_pedestal\",\n      \"aabb_surface_distance_mm\": 4.000932455062863,\n      \"fact_id\": \"nearby/input_rear_pedestal/input_shaft\"\n    },\n    {\n      \"part\": \"idler_gear\",\n      \"aabb_surface_distance_mm\": 11.141359362004621,\n      \"fact_id\": \"nearby/idler_gear/input_shaft\"\n    },\n    {\n      \"part\": \"crank_handle\",\n      \"aabb_surface_distance_mm\": 12.001864910125732,\n      \"fact_id\": \"nearby/crank_handle/input_shaft\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "idler_shaft",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"idler_shaft\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 16.552776387636463,\n  \"items\": [\n    {\n      \"part\": \"idler_front_bearing\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/idler_front_bearing/idler_shaft\"\n    },\n    {\n      \"part\": \"idler_rear_bearing\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/idler_rear_bearing/idler_shaft\"\n    },\n    {\n      \"part\": \"idler_gear\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/idler_gear/idler_shaft\"\n    },\n    {\n      \"part\": \"idler_front_pedestal\",\n      \"aabb_surface_distance_mm\": 4.000932455062863,\n      \"fact_id\": \"nearby/idler_front_pedestal/idler_shaft\"\n    },\n    {\n      \"part\": \"idler_rear_pedestal\",\n      \"aabb_surface_distance_mm\": 4.000932455062863,\n      \"fact_id\": \"nearby/idler_rear_pedestal/idler_shaft\"\n    },\n    {\n      \"part\": \"input_gear\",\n      \"aabb_surface_distance_mm\": 13.517642974853516,\n      \"fact_id\": \"nearby/idler_shaft/input_gear\"\n    },\n    {\n      \"part\": \"output_gear\",\n      \"aabb_surface_distance_mm\": 13.517642974853516,\n      \"fact_id\": \"nearby/idler_shaft/output_gear\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "output_shaft",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"output_shaft\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 16.552776387636463,\n  \"items\": [\n    {\n      \"part\": \"output_front_bearing\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/output_front_bearing/output_shaft\"\n    },\n    {\n      \"part\": \"output_rear_bearing\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/output_rear_bearing/output_shaft\"\n    },\n    {\n      \"part\": \"output_gear\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/output_gear/output_shaft\"\n    },\n    {\n      \"part\": \"output_front_pedestal\",\n      \"aabb_surface_distance_mm\": 4.000932455062863,\n      \"fact_id\": \"nearby/output_front_pedestal/output_shaft\"\n    },\n    {\n      \"part\": \"output_rear_pedestal\",\n      \"aabb_surface_distance_mm\": 4.000932455062863,\n      \"fact_id\": \"nearby/output_rear_pedestal/output_shaft\"\n    },\n    {\n      \"part\": \"idler_gear\",\n      \"aabb_surface_distance_mm\": 11.141359362004621,\n      \"fact_id\": \"nearby/idler_gear/output_shaft\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "input_gear",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"input_gear\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 27.71505855145446,\n  \"items\": [\n    {\n      \"part\": \"input_shaft\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/input_gear/input_shaft\"\n    },\n    {\n      \"part\": \"idler_gear\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/idler_gear/input_gear\"\n    },\n    {\n      \"part\": \"input_front_pedestal\",\n      \"aabb_surface_distance_mm\": 1.999999999999996,\n      \"fact_id\": \"nearby/input_front_pedestal/input_gear\"\n    },\n    {\n      \"part\": \"input_front_bearing\",\n      \"aabb_surface_distance_mm\": 1.999999999999996,\n      \"fact_id\": \"nearby/input_front_bearing/input_gear\"\n    },\n    {\n      \"part\": \"input_rear_bearing\",\n      \"aabb_surface_distance_mm\": 2.000000000000001,\n      \"fact_id\": \"nearby/input_gear/input_rear_bearing\"\n    },\n    {\n      \"part\": \"input_rear_pedestal\",\n      \"aabb_surface_distance_mm\": 2.0000000000000018,\n      \"fact_id\": \"nearby/input_gear/input_rear_pedestal\"\n    },\n    {\n      \"part\": \"base\",\n      \"aabb_surface_distance_mm\": 2.517642974853512,\n      \"fact_id\": \"nearby/base/input_gear\"\n    },\n    {\n      \"part\": \"idler_front_bearing\",\n      \"aabb_surface_distance_mm\": 9.725509127895489,\n      \"fact_id\": \"nearby/idler_front_bearing/input_gear\"\n    },\n    {\n      \"part\": \"idler_rear_bearing\",\n      \"aabb_surface_distance_mm\": 9.725509127895489,\n      \"fact_id\": \"nearby/idler_rear_bearing/input_gear\"\n    },\n    {\n      \"part\": \"crank_arm\",\n      \"aabb_surface_distance_mm\": 11.0,\n      \"fact_id\": \"nearby/crank_arm/input_gear\"\n    },\n    {\n      \"part\": \"crank_handle\",\n      \"aabb_surface_distance_mm\": 11.000000000000004,\n      \"fact_id\": \"nearby/crank_handle/input_gear\"\n    },\n    {\n      \"part\": \"idler_front_pedestal\",\n      \"aabb_surface_distance_mm\": 11.689999987005669,\n      \"fact_id\": \"nearby/idler_front_pedestal/input_gear\"\n    },\n    {\n      \"part\": \"idler_rear_pedestal\",\n      \"aabb_surface_distance_mm\": 11.689999987005669,\n      \"fact_id\": \"nearby/idler_rear_pedestal/input_gear\"\n    },\n    {\n      \"part\": \"idler_shaft\",\n      \"aabb_surface_distance_mm\": 13.517642974853516,\n      \"fact_id\": \"nearby/idler_shaft/input_gear\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "idler_gear",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"idler_gear\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 27.71505855145446,\n  \"items\": [\n    {\n      \"part\": \"idler_shaft\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/idler_gear/idler_shaft\"\n    },\n    {\n      \"part\": \"input_gear\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/idler_gear/input_gear\"\n    },\n    {\n      \"part\": \"output_gear\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/idler_gear/output_gear\"\n    },\n    {\n      \"part\": \"base\",\n      \"aabb_surface_distance_mm\": 0.14135936200461785,\n      \"fact_id\": \"nearby/base/idler_gear\"\n    },\n    {\n      \"part\": \"idler_front_pedestal\",\n      \"aabb_surface_distance_mm\": 1.999999999999996,\n      \"fact_id\": \"nearby/idler_front_pedestal/idler_gear\"\n    },\n    {\n      \"part\": \"idler_front_bearing\",\n      \"aabb_surface_distance_mm\": 1.999999999999996,\n      \"fact_id\": \"nearby/idler_front_bearing/idler_gear\"\n    },\n    {\n      \"part\": \"idler_rear_bearing\",\n      \"aabb_surface_distance_mm\": 2.0,\n      \"fact_id\": \"nearby/idler_gear/idler_rear_bearing\"\n    },\n    {\n      \"part\": \"idler_rear_pedestal\",\n      \"aabb_surface_distance_mm\": 2.000000000000001,\n      \"fact_id\": \"nearby/idler_gear/idler_rear_pedestal\"\n    },\n    {\n      \"part\": \"input_front_bearing\",\n      \"aabb_surface_distance_mm\": 7.4161319794951766,\n      \"fact_id\": \"nearby/idler_gear/input_front_bearing\"\n    },\n    {\n      \"part\": \"output_front_bearing\",\n      \"aabb_surface_distance_mm\": 7.4161319794951766,\n      \"fact_id\": \"nearby/idler_gear/output_front_bearing\"\n    },\n    {\n      \"part\": \"input_rear_bearing\",\n      \"aabb_surface_distance_mm\": 7.416131979495177,\n      \"fact_id\": \"nearby/idler_gear/input_rear_bearing\"\n    },\n    {\n      \"part\": \"output_rear_bearing\",\n      \"aabb_surface_distance_mm\": 7.416131979495177,\n      \"fact_id\": \"nearby/idler_gear/output_rear_bearing\"\n    },\n    {\n      \"part\": \"input_front_pedestal\",\n      \"aabb_surface_distance_mm\": 9.357587882852584,\n      \"fact_id\": \"nearby/idler_gear/input_front_pedestal\"\n    },\n    {\n      \"part\": \"output_front_pedestal\",\n      \"aabb_surface_distance_mm\": 9.357587882852584,\n      \"fact_id\": \"nearby/idler_gear/output_front_pedestal\"\n    },\n    {\n      \"part\": \"input_rear_pedestal\",\n      \"aabb_surface_distance_mm\": 9.357587882852586,\n      \"fact_id\": \"nearby/idler_gear/input_rear_pedestal\"\n    },\n    {\n      \"part\": \"output_rear_pedestal\",\n      \"aabb_surface_distance_mm\": 9.357587882852586,\n      \"fact_id\": \"nearby/idler_gear/output_rear_pedestal\"\n    },\n    {\n      \"part\": \"input_shaft\",\n      \"aabb_surface_distance_mm\": 11.141359362004621,\n      \"fact_id\": \"nearby/idler_gear/input_shaft\"\n    },\n    {\n      \"part\": \"output_shaft\",\n      \"aabb_surface_distance_mm\": 11.141359362004621,\n      \"fact_id\": \"nearby/idler_gear/output_shaft\"\n    },\n    {\n      \"part\": \"crank_arm\",\n      \"aabb_surface_distance_mm\": 13.685125079468383,\n      \"fact_id\": \"nearby/crank_arm/idler_gear\"\n    },\n    {\n      \"part\": \"crank_handle\",\n      \"aabb_surface_distance_mm\": 15.656624426527198,\n      \"fact_id\": \"nearby/crank_handle/idler_gear\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "output_gear",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"output_gear\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 27.71505855145446,\n  \"items\": [\n    {\n      \"part\": \"output_shaft\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/output_gear/output_shaft\"\n    },\n    {\n      \"part\": \"idler_gear\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/idler_gear/output_gear\"\n    },\n    {\n      \"part\": \"output_front_pedestal\",\n      \"aabb_surface_distance_mm\": 1.999999999999996,\n      \"fact_id\": \"nearby/output_front_pedestal/output_gear\"\n    },\n    {\n      \"part\": \"output_front_bearing\",\n      \"aabb_surface_distance_mm\": 1.999999999999996,\n      \"fact_id\": \"nearby/output_front_bearing/output_gear\"\n    },\n    {\n      \"part\": \"output_rear_bearing\",\n      \"aabb_surface_distance_mm\": 2.000000000000001,\n      \"fact_id\": \"nearby/output_gear/output_rear_bearing\"\n    },\n    {\n      \"part\": \"output_rear_pedestal\",\n      \"aabb_surface_distance_mm\": 2.0000000000000018,\n      \"fact_id\": \"nearby/output_gear/output_rear_pedestal\"\n    },\n    {\n      \"part\": \"base\",\n      \"aabb_surface_distance_mm\": 2.517642974853512,\n      \"fact_id\": \"nearby/base/output_gear\"\n    },\n    {\n      \"part\": \"idler_front_bearing\",\n      \"aabb_surface_distance_mm\": 9.725509127895489,\n      \"fact_id\": \"nearby/idler_front_bearing/output_gear\"\n    },\n    {\n      \"part\": \"idler_rear_bearing\",\n      \"aabb_surface_distance_mm\": 9.725509127895489,\n      \"fact_id\": \"nearby/idler_rear_bearing/output_gear\"\n    },\n    {\n      \"part\": \"idler_front_pedestal\",\n      \"aabb_surface_distance_mm\": 11.689999987005669,\n      \"fact_id\": \"nearby/idler_front_pedestal/output_gear\"\n    },\n    {\n      \"part\": \"idler_rear_pedestal\",\n      \"aabb_surface_distance_mm\": 11.689999987005669,\n      \"fact_id\": \"nearby/idler_rear_pedestal/output_gear\"\n    },\n    {\n      \"part\": \"idler_shaft\",\n      \"aabb_surface_distance_mm\": 13.517642974853516,\n      \"fact_id\": \"nearby/idler_shaft/output_gear\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "crank_arm",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"crank_arm\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 16.277091349533183,\n  \"items\": [\n    {\n      \"part\": \"input_shaft\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/crank_arm/input_shaft\"\n    },\n    {\n      \"part\": \"crank_handle\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/crank_arm/crank_handle\"\n    },\n    {\n      \"part\": \"input_front_bearing\",\n      \"aabb_surface_distance_mm\": 4.0000000000000036,\n      \"fact_id\": \"nearby/crank_arm/input_front_bearing\"\n    },\n    {\n      \"part\": \"input_front_pedestal\",\n      \"aabb_surface_distance_mm\": 4.1235557809115395,\n      \"fact_id\": \"nearby/crank_arm/input_front_pedestal\"\n    },\n    {\n      \"part\": \"input_gear\",\n      \"aabb_surface_distance_mm\": 11.0,\n      \"fact_id\": \"nearby/crank_arm/input_gear\"\n    },\n    {\n      \"part\": \"idler_gear\",\n      \"aabb_surface_distance_mm\": 13.685125079468383,\n      \"fact_id\": \"nearby/crank_arm/idler_gear\"\n    },\n    {\n      \"part\": \"base\",\n      \"aabb_surface_distance_mm\": 16.00185441970825,\n      \"fact_id\": \"nearby/base/crank_arm\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "crank_handle",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"crank_handle\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 11.789588887620095,\n  \"items\": [\n    {\n      \"part\": \"crank_arm\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/crank_arm/crank_handle\"\n    },\n    {\n      \"part\": \"input_front_bearing\",\n      \"aabb_surface_distance_mm\": 8.947052132940268,\n      \"fact_id\": \"nearby/crank_handle/input_front_bearing\"\n    },\n    {\n      \"part\": \"input_gear\",\n      \"aabb_surface_distance_mm\": 11.000000000000004,\n      \"fact_id\": \"nearby/crank_handle/input_gear\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "entity_ids",
+        "offset": 75,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"entity_ids\",\n  \"offset\": 75,\n  \"returned\": 22,\n  \"total\": 97,\n  \"next_offset\": null,\n  \"items\": [\n    \"relation/idler_gear_press_fit\",\n    \"relation/output_gear_press_fit\",\n    \"relation/input_idler_mesh\",\n    \"relation/idler_output_mesh\",\n    \"relation/crank_arm_press_fit\",\n    \"relation/crank_handle_press_fit\",\n    \"motion_joint/input_shaft_hinge\",\n    \"motion_joint/idler_shaft_hinge\",\n    \"motion_joint/output_shaft_hinge\",\n    \"transmission/input_shaft_to_input_gear\",\n    \"transmission/input_to_idler\",\n    \"transmission/idler_shaft_lock\",\n    \"transmission/idler_to_output\",\n    \"transmission/output_gear_to_output_shaft\",\n    \"role/driver/input_shaft\",\n    \"role/output/output_gear\",\n    \"role/watch/input_shaft\",\n    \"role/watch/input_gear\",\n    \"role/watch/idler_shaft\",\n    \"role/watch/idler_gear\",\n    \"role/watch/output_shaft\",\n    \"role/watch/output_gear\"\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "input_shaft",
+        "b": "input_front_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/input_front_bearing/input_shaft\",\n  \"origin_distance_mm\": 8.000000000000002,\n  \"surface_distance_mm\": 0.04999978864447265,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.0,\n    5.998135089874271\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.008000000000000004\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    32.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "input_shaft",
+        "b": "input_rear_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/input_rear_bearing/input_shaft\",\n  \"origin_distance_mm\": 23.0,\n  \"surface_distance_mm\": 0.04999978864447144,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.000000000000001,\n    5.998135089874271\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.023000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    32.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "input_shaft",
+        "b": "input_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/input_gear/input_shaft\",\n  \"origin_distance_mm\": 15.0,\n  \"surface_distance_mm\": 0.004998278151515622,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    6.000000000000002,\n    5.998135089874271\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.015000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    32.0\n  ],\n  \"b_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "input_shaft",
+        "b": "crank_arm"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_arm/input_shaft\",\n  \"origin_distance_mm\": 0.0,\n  \"surface_distance_mm\": 0.0,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    4.0,\n    5.998135089874271\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    32.0\n  ],\n  \"b_extents_mm\": [\n    11.999887466430664,\n    29.996291637420654,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "input_shaft",
+        "b": "input_front_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/input_front_pedestal/input_shaft\",\n  \"origin_distance_mm\": 24.37724348649781,\n  \"surface_distance_mm\": 5.6023472092548126,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.021999999999999995\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.010500000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    32.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    5.0,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "input_shaft",
+        "b": "input_rear_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/input_rear_pedestal/input_shaft\",\n  \"origin_distance_mm\": 33.67862823809782,\n  \"surface_distance_mm\": 5.602347209254816,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.022\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.025500000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    32.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    5.0,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "input_shaft",
+        "b": "idler_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_gear/input_shaft\",\n  \"origin_distance_mm\": 39.0,\n  \"surface_distance_mm\": 13.665166545355794,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    6.000000000000002,\n    5.998135089874271\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9914448613738104,\n      -0.1305261922200516,\n      0.0,\n      0.036\n    ],\n    [\n      0.1305261922200516,\n      0.9914448613738104,\n      0.0,\n      0.0\n    ],\n    [\n      4.566014156957511e-34,\n      7.725817426051015e-34,\n      1.0,\n      0.015000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    32.0\n  ],\n  \"b_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "input_shaft",
+        "b": "crank_handle"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_handle/input_shaft\",\n  \"origin_distance_mm\": 25.455844122715714,\n  \"surface_distance_mm\": 12.001864910125736,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    3.9999999999999964,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.018000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.018000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    32.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    22.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_shaft",
+        "b": "idler_front_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_front_bearing/idler_shaft\",\n  \"origin_distance_mm\": 8.000000000000002,\n  \"surface_distance_mm\": 0.04999978864447265,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.0,\n    5.998135089874271\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.008000000000000004\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    32.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_shaft",
+        "b": "idler_rear_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_rear_bearing/idler_shaft\",\n  \"origin_distance_mm\": 23.0,\n  \"surface_distance_mm\": 0.04999978864447144,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.000000000000001,\n    5.998135089874271\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.023000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    32.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_shaft",
+        "b": "idler_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_gear/idler_shaft\",\n  \"origin_distance_mm\": 15.0,\n  \"surface_distance_mm\": 0.0041255412212536325,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    6.000000000000002,\n    5.998135089874271\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9914448613738104,\n      -0.1305261922200516,\n      0.0,\n      0.0\n    ],\n    [\n      0.1305261922200516,\n      0.9914448613738104,\n      0.0,\n      0.0\n    ],\n    [\n      4.566014156957511e-34,\n      7.725817426051015e-34,\n      1.0,\n      0.015000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    32.0\n  ],\n  \"b_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_shaft",
+        "b": "idler_front_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_front_pedestal/idler_shaft\",\n  \"origin_distance_mm\": 24.37724348649781,\n  \"surface_distance_mm\": 5.6023472092548126,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.021999999999999995\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.010500000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    32.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    5.0,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_shaft",
+        "b": "idler_rear_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_rear_pedestal/idler_shaft\",\n  \"origin_distance_mm\": 33.67862823809782,\n  \"surface_distance_mm\": 5.602347209254816,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.022\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.025500000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    32.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    5.0,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_shaft",
+        "b": "input_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_shaft/input_gear\",\n  \"origin_distance_mm\": 39.0,\n  \"surface_distance_mm\": 13.538449776148946,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    6.000000000000002,\n    5.998135089874271\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.036\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.015000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    32.0\n  ],\n  \"b_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_shaft",
+        "b": "output_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_shaft/output_gear\",\n  \"origin_distance_mm\": 39.0,\n  \"surface_distance_mm\": 13.538449776148946,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    6.000000000000002,\n    5.998135089874271\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.036\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.015000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    32.0\n  ],\n  \"b_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "output_shaft",
+        "b": "output_front_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/output_front_bearing/output_shaft\",\n  \"origin_distance_mm\": 8.000000000000002,\n  \"surface_distance_mm\": 0.04999978864447265,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.0,\n    5.998135089874271\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.008000000000000004\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    32.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "output_shaft",
+        "b": "output_rear_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/output_rear_bearing/output_shaft\",\n  \"origin_distance_mm\": 23.0,\n  \"surface_distance_mm\": 0.04999978864447144,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.000000000000001,\n    5.998135089874271\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.023000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    32.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "output_shaft",
+        "b": "output_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/output_gear/output_shaft\",\n  \"origin_distance_mm\": 15.0,\n  \"surface_distance_mm\": 0.004998278151515622,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    6.000000000000002,\n    5.998135089874271\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.015000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    32.0\n  ],\n  \"b_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "output_shaft",
+        "b": "output_front_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/output_front_pedestal/output_shaft\",\n  \"origin_distance_mm\": 24.37724348649781,\n  \"surface_distance_mm\": 5.6023472092548126,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.021999999999999995\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.010500000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    32.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    5.0,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "output_shaft",
+        "b": "output_rear_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/output_rear_pedestal/output_shaft\",\n  \"origin_distance_mm\": 33.67862823809782,\n  \"surface_distance_mm\": 5.602347209254816,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.022\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.025500000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    32.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    5.0,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "output_shaft",
+        "b": "idler_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_gear/output_shaft\",\n  \"origin_distance_mm\": 39.0,\n  \"surface_distance_mm\": 13.665166545355794,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    6.000000000000002,\n    5.998135089874271\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9914448613738104,\n      -0.1305261922200516,\n      0.0,\n      -0.036\n    ],\n    [\n      0.1305261922200516,\n      0.9914448613738104,\n      0.0,\n      0.0\n    ],\n    [\n      4.566014156957511e-34,\n      7.725817426051015e-34,\n      1.0,\n      0.015000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    32.0\n  ],\n  \"b_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "input_gear",
+        "b": "idler_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_gear/input_gear\",\n  \"origin_distance_mm\": 36.0,\n  \"surface_distance_mm\": 0.0,\n  \"aabb_overlap_extents_mm\": [\n    2.906288624471376,\n    6.000000000000002,\n    38.84786319864979\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9914448613738104,\n      -0.1305261922200516,\n      0.0,\n      0.036\n    ],\n    [\n      0.1305261922200516,\n      0.9914448613738104,\n      0.0,\n      0.0\n    ],\n    [\n      4.566014156957511e-34,\n      7.725817426051015e-34,\n      1.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_gear",
+        "b": "output_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_gear/output_gear\",\n  \"origin_distance_mm\": 36.0,\n  \"surface_distance_mm\": 0.0,\n  \"aabb_overlap_extents_mm\": [\n    2.906288624471376,\n    6.000000000000002,\n    38.84786319864979\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9914448613738105,\n      0.13052619222005163,\n      -1.2429374261128627e-33,\n      0.035692015009457165\n    ],\n    [\n      -0.13052619222005163,\n      0.9914448613738105,\n      -6.025573624629354e-33,\n      -0.0046989429199218585\n    ],\n    [\n      3.0814879110195774e-33,\n      -1.232595164407831e-32,\n      1.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "input_gear",
+        "b": "input_front_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/input_front_pedestal/input_gear\",\n  \"origin_distance_mm\": 22.45551157288562,\n  \"surface_distance_mm\": 1.9999999999999978,\n  \"aabb_overlap_extents_mm\": [\n    10.0,\n    0.0,\n    12.482357025146488\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.021999999999999995\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      -0.004499999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    5.0,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "input_gear",
+        "b": "input_front_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/input_front_bearing/input_gear\",\n  \"origin_distance_mm\": 6.999999999999997,\n  \"surface_distance_mm\": 1.9999999999999973,\n  \"aabb_overlap_extents_mm\": [\n    14.0,\n    0.0,\n    13.995648384094242\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0069999999999999975\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "input_gear",
+        "b": "input_rear_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/input_gear/input_rear_bearing\",\n  \"origin_distance_mm\": 8.000000000000002,\n  \"surface_distance_mm\": 2.0000000000000013,\n  \"aabb_overlap_extents_mm\": [\n    14.0,\n    0.0,\n    13.995648384094242\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.008000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "input_gear",
+        "b": "input_rear_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/input_gear/input_rear_pedestal\",\n  \"origin_distance_mm\": 24.37724348649781,\n  \"surface_distance_mm\": 2.0000000000000018,\n  \"aabb_overlap_extents_mm\": [\n    10.0,\n    0.0,\n    12.482357025146488\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.022\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.0105\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    5.0,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "input_gear",
+        "b": "base"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/base/input_gear\",\n  \"origin_distance_mm\": 45.70557952810575,\n  \"surface_distance_mm\": 2.517642974853512,\n  \"aabb_overlap_extents_mm\": [\n    38.96471405029297,\n    6.000000000000002,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.036\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.027999999999999997\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.003000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    131.0,\n    92.0,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "input_gear",
+        "b": "idler_front_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_front_bearing/input_gear\",\n  \"origin_distance_mm\": 36.6742416417845,\n  \"surface_distance_mm\": 9.745872204142488,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    13.995648384094242\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.036\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0069999999999999975\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "input_gear",
+        "b": "idler_rear_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_rear_bearing/input_gear\",\n  \"origin_distance_mm\": 36.87817782917155,\n  \"surface_distance_mm\": 9.725509127895489,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    13.995648384094242\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.036\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.008000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "input_gear",
+        "b": "crank_arm"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_arm/input_gear\",\n  \"origin_distance_mm\": 15.0,\n  \"surface_distance_mm\": 11.0,\n  \"aabb_overlap_extents_mm\": [\n    11.999887466430664,\n    0.0,\n    25.480502605438236\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.015000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    11.999887466430664,\n    29.996291637420654,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "input_gear",
+        "b": "crank_handle"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_handle/input_gear\",\n  \"origin_distance_mm\": 37.589892258425,\n  \"surface_distance_mm\": 11.000000000000004,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    0.0,\n    4.481424570083618\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.018000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.033\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    22.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "input_gear",
+        "b": "idler_front_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_front_pedestal/input_gear\",\n  \"origin_distance_mm\": 42.42935304715357,\n  \"surface_distance_mm\": 12.442489524585557,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    12.482357025146488\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.036\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.021999999999999995\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      -0.004499999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    5.0,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "input_gear",
+        "b": "idler_rear_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_rear_pedestal/input_gear\",\n  \"origin_distance_mm\": 43.477005416656745,\n  \"surface_distance_mm\": 12.442489524585557,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    12.482357025146488\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.036\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.022\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.0105\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    5.0,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_gear",
+        "b": "base"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/base/idler_gear\",\n  \"origin_distance_mm\": 28.160255680657446,\n  \"surface_distance_mm\": 2.5760684006751013,\n  \"aabb_overlap_extents_mm\": [\n    38.84786319864978,\n    6.000000000000002,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9914448613738105,\n      7.992424175358918e-18,\n      -0.13052619222005163,\n      0.003654733382161445\n    ],\n    [\n      -0.13052619222005163,\n      6.070848880062641e-17,\n      -0.9914448613738105,\n      0.02776045611846669\n    ],\n    [\n      3.0814879110195774e-33,\n      1.0,\n      6.123233995736767e-17,\n      0.003000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    131.0,\n    92.0,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_gear",
+        "b": "idler_front_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_front_pedestal/idler_gear\",\n  \"origin_distance_mm\": 22.45551157288562,\n  \"surface_distance_mm\": 1.9999999999999978,\n  \"aabb_overlap_extents_mm\": [\n    10.0,\n    0.0,\n    12.423931599324899\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9914448613738105,\n      7.992424175358918e-18,\n      -0.13052619222005163,\n      0.002871576228841135\n    ],\n    [\n      -0.13052619222005163,\n      6.070848880062641e-17,\n      -0.9914448613738105,\n      0.021811786950223826\n    ],\n    [\n      3.0814879110195774e-33,\n      1.0,\n      6.123233995736767e-17,\n      -0.004499999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    5.0,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_gear",
+        "b": "idler_front_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_front_bearing/idler_gear\",\n  \"origin_distance_mm\": 6.999999999999997,\n  \"surface_distance_mm\": 1.999999999999997,\n  \"aabb_overlap_extents_mm\": [\n    14.0,\n    0.0,\n    13.995648384094242\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9914448613738105,\n      0.13052619222005163,\n      -1.2429374261128627e-33,\n      0.0\n    ],\n    [\n      -0.13052619222005163,\n      0.9914448613738105,\n      -6.025573624629354e-33,\n      0.0\n    ],\n    [\n      3.0814879110195774e-33,\n      -1.232595164407831e-32,\n      1.0,\n      -0.0069999999999999975\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_gear",
+        "b": "idler_rear_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_gear/idler_rear_bearing\",\n  \"origin_distance_mm\": 8.000000000000002,\n  \"surface_distance_mm\": 2.0000000000000013,\n  \"aabb_overlap_extents_mm\": [\n    14.0,\n    0.0,\n    13.995648384094242\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9914448613738105,\n      0.13052619222005163,\n      -1.2429374261128627e-33,\n      0.0\n    ],\n    [\n      -0.13052619222005163,\n      0.9914448613738105,\n      -6.025573624629354e-33,\n      0.0\n    ],\n    [\n      3.0814879110195774e-33,\n      -1.232595164407831e-32,\n      1.0,\n      0.008000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_gear",
+        "b": "idler_rear_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_gear/idler_rear_pedestal\",\n  \"origin_distance_mm\": 24.37724348649781,\n  \"surface_distance_mm\": 2.0000000000000018,\n  \"aabb_overlap_extents_mm\": [\n    10.0,\n    0.0,\n    12.423931599324899\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9914448613738105,\n      7.992424175358918e-18,\n      -0.13052619222005163,\n      0.0028715762288411355\n    ],\n    [\n      -0.13052619222005163,\n      6.070848880062641e-17,\n      -0.9914448613738105,\n      0.02181178695022383\n    ],\n    [\n      3.0814879110195774e-33,\n      1.0,\n      6.123233995736767e-17,\n      0.0105\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    5.0,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_gear",
+        "b": "input_front_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_gear/input_front_bearing\",\n  \"origin_distance_mm\": 36.6742416417845,\n  \"surface_distance_mm\": 9.86998308062785,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    13.995648384094242\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9914448613738105,\n      0.13052619222005163,\n      -1.2429374261128627e-33,\n      -0.03569201500945718\n    ],\n    [\n      -0.13052619222005163,\n      0.9914448613738105,\n      -6.025573624629354e-33,\n      0.0046989429199218585\n    ],\n    [\n      3.0814879110195774e-33,\n      -1.232595164407831e-32,\n      1.0,\n      -0.0069999999999999975\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_gear",
+        "b": "output_front_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_gear/output_front_bearing\",\n  \"origin_distance_mm\": 36.6742416417845,\n  \"surface_distance_mm\": 10.322064735216141,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    13.995648384094242\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9914448613738105,\n      0.13052619222005163,\n      -1.2429374261128627e-33,\n      0.035692015009457165\n    ],\n    [\n      -0.13052619222005163,\n      0.9914448613738105,\n      -6.025573624629354e-33,\n      -0.0046989429199218585\n    ],\n    [\n      3.0814879110195774e-33,\n      -1.232595164407831e-32,\n      1.0,\n      -0.0069999999999999975\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_gear",
+        "b": "input_rear_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_gear/input_rear_bearing\",\n  \"origin_distance_mm\": 36.87817782917155,\n  \"surface_distance_mm\": 9.869983057606666,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    13.995648384094242\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9914448613738105,\n      0.13052619222005163,\n      -1.2429374261128627e-33,\n      -0.03569201500945718\n    ],\n    [\n      -0.13052619222005163,\n      0.9914448613738105,\n      -6.025573624629354e-33,\n      0.0046989429199218585\n    ],\n    [\n      3.0814879110195774e-33,\n      -1.232595164407831e-32,\n      1.0,\n      0.008000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_gear",
+        "b": "output_rear_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_gear/output_rear_bearing\",\n  \"origin_distance_mm\": 36.87817782917155,\n  \"surface_distance_mm\": 9.869983057606666,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    13.995648384094242\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9914448613738105,\n      0.13052619222005163,\n      -1.2429374261128627e-33,\n      0.035692015009457165\n    ],\n    [\n      -0.13052619222005163,\n      0.9914448613738105,\n      -6.025573624629354e-33,\n      -0.0046989429199218585\n    ],\n    [\n      3.0814879110195774e-33,\n      -1.232595164407831e-32,\n      1.0,\n      0.008000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_gear",
+        "b": "input_front_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_gear/input_front_pedestal\",\n  \"origin_distance_mm\": 42.42935304715357,\n  \"surface_distance_mm\": 12.501058218868149,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    12.423931599324899\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9914448613738105,\n      7.992424175358918e-18,\n      -0.13052619222005163,\n      -0.03282043878061604\n    ],\n    [\n      -0.13052619222005163,\n      6.070848880062641e-17,\n      -0.9914448613738105,\n      0.026510729870145685\n    ],\n    [\n      3.0814879110195774e-33,\n      1.0,\n      6.123233995736767e-17,\n      -0.004499999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    5.0,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_gear",
+        "b": "output_front_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_gear/output_front_pedestal\",\n  \"origin_distance_mm\": 42.42935304715357,\n  \"surface_distance_mm\": 12.501058455592268,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    12.423931599324899\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9914448613738105,\n      7.992424175358918e-18,\n      -0.13052619222005163,\n      0.038563591238298306\n    ],\n    [\n      -0.13052619222005163,\n      6.070848880062641e-17,\n      -0.9914448613738105,\n      0.017112844030301968\n    ],\n    [\n      3.0814879110195774e-33,\n      1.0,\n      6.123233995736767e-17,\n      -0.004499999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    5.0,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_gear",
+        "b": "input_rear_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_gear/input_rear_pedestal\",\n  \"origin_distance_mm\": 43.477005416656745,\n  \"surface_distance_mm\": 12.501058218868149,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    12.423931599324899\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9914448613738105,\n      7.992424175358918e-18,\n      -0.13052619222005163,\n      -0.03282043878061604\n    ],\n    [\n      -0.13052619222005163,\n      6.070848880062641e-17,\n      -0.9914448613738105,\n      0.02651072987014569\n    ],\n    [\n      3.0814879110195774e-33,\n      1.0,\n      6.123233995736767e-17,\n      0.0105\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    5.0,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_gear",
+        "b": "output_rear_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_gear/output_rear_pedestal\",\n  \"origin_distance_mm\": 43.477005416656745,\n  \"surface_distance_mm\": 12.501058455592268,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    12.423931599324899\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9914448613738105,\n      7.992424175358918e-18,\n      -0.13052619222005163,\n      0.038563591238298306\n    ],\n    [\n      -0.13052619222005163,\n      6.070848880062641e-17,\n      -0.9914448613738105,\n      0.01711284403030197\n    ],\n    [\n      3.0814879110195774e-33,\n      1.0,\n      6.123233995736767e-17,\n      0.0105\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    5.0,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_gear",
+        "b": "crank_arm"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_arm/idler_gear\",\n  \"origin_distance_mm\": 39.0,\n  \"surface_distance_mm\": 15.321398499003786,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    25.42207717961664\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9914448613738105,\n      0.13052619222005163,\n      -1.2429374261128627e-33,\n      -0.03569201500945718\n    ],\n    [\n      -0.13052619222005163,\n      0.9914448613738105,\n      -6.025573624629354e-33,\n      0.0046989429199218585\n    ],\n    [\n      3.0814879110195774e-33,\n      -1.232595164407831e-32,\n      1.0,\n      -0.015000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    11.999887466430664,\n    29.996291637420654,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "idler_gear",
+        "b": "crank_handle"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_handle/idler_gear\",\n  \"origin_distance_mm\": 52.04805471869241,\n  \"surface_distance_mm\": 20.894520526525234,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    4.422999144262022\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9914448613738105,\n      0.13052619222005163,\n      -1.2429374261128627e-33,\n      -0.0380414864694181\n    ],\n    [\n      -0.13052619222005163,\n      0.9914448613738105,\n      -6.025573624629354e-33,\n      -0.013147064584806738\n    ],\n    [\n      3.0814879110195774e-33,\n      -1.232595164407831e-32,\n      1.0,\n      -0.033\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    22.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "output_gear",
+        "b": "output_front_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/output_front_pedestal/output_gear\",\n  \"origin_distance_mm\": 22.45551157288562,\n  \"surface_distance_mm\": 1.9999999999999978,\n  \"aabb_overlap_extents_mm\": [\n    10.0,\n    0.0,\n    12.482357025146488\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.021999999999999995\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      -0.004499999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    5.0,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "output_gear",
+        "b": "output_front_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/output_front_bearing/output_gear\",\n  \"origin_distance_mm\": 6.999999999999997,\n  \"surface_distance_mm\": 1.9999999999999973,\n  \"aabb_overlap_extents_mm\": [\n    14.0,\n    0.0,\n    13.995648384094242\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0069999999999999975\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "output_gear",
+        "b": "output_rear_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/output_gear/output_rear_bearing\",\n  \"origin_distance_mm\": 8.000000000000002,\n  \"surface_distance_mm\": 2.0000000000000013,\n  \"aabb_overlap_extents_mm\": [\n    14.0,\n    0.0,\n    13.995648384094242\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.008000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "output_gear",
+        "b": "output_rear_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/output_gear/output_rear_pedestal\",\n  \"origin_distance_mm\": 24.37724348649781,\n  \"surface_distance_mm\": 2.0000000000000018,\n  \"aabb_overlap_extents_mm\": [\n    10.0,\n    0.0,\n    12.482357025146488\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.022\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.0105\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    5.0,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "output_gear",
+        "b": "base"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/base/output_gear\",\n  \"origin_distance_mm\": 45.70557952810575,\n  \"surface_distance_mm\": 2.517642974853512,\n  \"aabb_overlap_extents_mm\": [\n    38.96471405029297,\n    6.000000000000002,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.036\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.027999999999999997\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.003000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    131.0,\n    92.0,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "output_gear",
+        "b": "idler_front_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_front_bearing/output_gear\",\n  \"origin_distance_mm\": 36.6742416417845,\n  \"surface_distance_mm\": 9.725509127895489,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    13.995648384094242\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.036\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0069999999999999975\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "output_gear",
+        "b": "idler_rear_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_rear_bearing/output_gear\",\n  \"origin_distance_mm\": 36.87817782917155,\n  \"surface_distance_mm\": 9.725509127895489,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    13.995648384094242\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.036\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.008000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "output_gear",
+        "b": "idler_front_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_front_pedestal/output_gear\",\n  \"origin_distance_mm\": 42.42935304715357,\n  \"surface_distance_mm\": 12.442489524585557,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    12.482357025146488\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.036\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.021999999999999995\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      -0.004499999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    5.0,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "output_gear",
+        "b": "idler_rear_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/idler_rear_pedestal/output_gear\",\n  \"origin_distance_mm\": 43.477005416656745,\n  \"surface_distance_mm\": 12.442489524585557,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    12.482357025146488\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.036\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.022\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.0105\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    38.96471405029297,\n    38.96471405029297,\n    6.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    5.0,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_arm",
+        "b": "crank_handle"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_arm/crank_handle\",\n  \"origin_distance_mm\": 25.455844122715714,\n  \"surface_distance_mm\": 1.7763568394002505e-15,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    3.9999999999999964,\n    5.998135089874268\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.018000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.018000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    11.999887466430664,\n    29.996291637420654,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    22.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_arm",
+        "b": "input_front_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_arm/input_front_bearing\",\n  \"origin_distance_mm\": 8.000000000000002,\n  \"surface_distance_mm\": 4.0000000000000036,\n  \"aabb_overlap_extents_mm\": [\n    11.999887466430664,\n    0.0,\n    12.99596977233887\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.008000000000000004\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    11.999887466430664,\n    29.996291637420654,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_arm",
+        "b": "input_front_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_arm/input_front_pedestal\",\n  \"origin_distance_mm\": 24.37724348649781,\n  \"surface_distance_mm\": 4.1235557809115395,\n  \"aabb_overlap_extents_mm\": [\n    10.0,\n    0.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.021999999999999995\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.010500000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    11.999887466430664,\n    29.996291637420654,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    5.0,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_arm",
+        "b": "base"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/base/crank_arm\",\n  \"origin_distance_mm\": 49.03060268852505,\n  \"surface_distance_mm\": 16.00185441970825,\n  \"aabb_overlap_extents_mm\": [\n    11.999887466430664,\n    4.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.036\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.027999999999999997\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.018000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    11.999887466430664,\n    29.996291637420654,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    131.0,\n    92.0,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_handle",
+        "b": "input_front_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_handle/input_front_bearing\",\n  \"origin_distance_mm\": 31.6227766016838,\n  \"surface_distance_mm\": 8.947052132940268,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    0.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.018000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.026000000000000006\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    22.0\n  ],\n  \"b_extents_mm\": [\n    14.0,\n    13.995648384094238,\n    5.0\n  ]\n}"
+    },
+    {
+      "name": "read_current_compiler",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\"revision\": 0, \"source\": \"\"}"
+    },
+    {
+      "name": "submit_compiler_source",
+      "arguments": {
+        "source": "def compile_mjcf(facts, out):\n    cm = {'input_shaft':'input_shaft_hinge','input_gear':'input_shaft_hinge','idler_shaft':'idler_shaft_hinge','idler_gear':'idler_shaft_hinge','output_shaft':'output_shaft_hinge','output_gear':'output_shaft_hinge','crank_arm':'input_shaft_hinge','crank_handle':'input_shaft_hinge'}\n    fixed = ['base','input_front_pedestal','input_front_bearing','input_rear_pedestal','input_rear_bearing','idler_front_pedestal','idler_front_bearing','idler_rear_pedestal','idler_rear_bearing','output_front_pedestal','output_front_bearing','output_rear_pedestal','output_rear_bearing']\n    for x in fixed:\n        cm[x] = None\n    rel = {\n      ('input_front_bearing','input_shaft'):('running journal fit (positive diametral clearance) is represented by the input hinge',['relation/input_front_journal'],['fit/input_front_bearing/journal/input_shaft/front_journal','pair/input_front_bearing/input_shaft','nearby/input_front_bearing/input_shaft']),\n      ('input_rear_bearing','input_shaft'):('running rear journal fit is represented by the same supported input hinge',['relation/input_rear_journal'],['fit/input_rear_bearing/journal/input_shaft/rear_journal','pair/input_rear_bearing/input_shaft','nearby/input_rear_bearing/input_shaft']),\n      ('idler_front_bearing','idler_shaft'):('running journal fit (positive diametral clearance) is represented by the idler hinge',['relation/idler_front_journal'],['fit/idler_front_bearing/journal/idler_shaft/front_journal','pair/idler_front_bearing/idler_shaft','nearby/idler_front_bearing/idler_shaft']),\n      ('idler_rear_bearing','idler_shaft'):('running rear journal fit is represented by the same supported idler hinge',['relation/idler_rear_journal'],['fit/idler_rear_bearing/journal/idler_shaft/rear_journal','pair/idler_rear_bearing/idler_shaft','nearby/idler_rear_bearing/idler_shaft']),\n      ('output_front_bearing','output_shaft'):('running journal fit (positive diametral clearance) is represented by the output hinge',['relation/output_front_journal'],['fit/output_front_bearing/journal/output_shaft/front_journal','pair/output_front_bearing/output_shaft','nearby/output_front_bearing/output_shaft']),\n      ('output_rear_bearing','output_shaft'):('running rear journal fit is represented by the same supported output hinge',['relation/output_rear_journal'],['fit/output_rear_bearing/journal/output_shaft/rear_journal','pair/output_rear_bearing/output_shaft','nearby/output_rear_bearing/output_shaft']),\n      ('input_gear','input_shaft'):('measured interference press fit is rigidly carried',['relation/input_gear_press_fit'],['fit/input_shaft/gear_seat/input_gear/shaft_bore','pair/input_gear/input_shaft','nearby/input_gear/input_shaft']),\n      ('idler_gear','idler_shaft'):('measured interference press fit is rigidly carried',['relation/idler_gear_press_fit'],['fit/idler_shaft/gear_seat/idler_gear/shaft_bore','pair/idler_gear/idler_shaft','nearby/idler_gear/idler_shaft']),\n      ('output_gear','output_shaft'):('measured interference press fit is rigidly carried',['relation/output_gear_press_fit'],['fit/output_shaft/gear_seat/output_gear/shaft_bore','pair/output_gear/output_shaft','nearby/output_gear/output_shaft']),\n      ('idler_gear','input_gear'):('ideal external gear equality replaces tooth contact',['relation/input_idler_mesh'],['fit/input_gear/mesh_to_idler/idler_gear/mesh_to_input','pair/idler_gear/input_gear','nearby/idler_gear/input_gear']),\n      ('idler_gear','output_gear'):('ideal external gear equality replaces tooth contact',['relation/idler_output_mesh'],['fit/idler_gear/mesh_to_output/output_gear/mesh_to_idler','pair/idler_gear/output_gear','nearby/idler_gear/output_gear']),\n      ('crank_arm','input_shaft'):('measured interference press fit is rigidly carried',['relation/crank_arm_press_fit'],['fit/input_shaft/crank_seat/crank_arm/shaft_bore','pair/crank_arm/input_shaft','nearby/crank_arm/input_shaft']),\n      ('crank_arm','crank_handle'):('measured interference press fit is rigidly carried',['relation/crank_handle_press_fit'],['fit/crank_arm/handle_bore/crank_handle/handle_shaft','pair/crank_arm/crank_handle','nearby/crank_arm/crank_handle'])}\n    false_pairs = [\n      ('input_front_pedestal','input_shaft'),('input_rear_pedestal','input_shaft'),('idler_gear','input_shaft'),('crank_handle','input_shaft'),\n      ('idler_front_pedestal','idler_shaft'),('idler_rear_pedestal','idler_shaft'),('idler_shaft','input_gear'),('idler_shaft','output_gear'),\n      ('output_front_pedestal','output_shaft'),('output_rear_pedestal','output_shaft'),('idler_gear','output_shaft'),\n      ('input_front_pedestal','input_gear'),('input_front_bearing','input_gear'),('input_gear','input_rear_bearing'),('input_gear','input_rear_pedestal'),('base','input_gear'),('idler_front_bearing','input_gear'),('idler_rear_bearing','input_gear'),('crank_arm','input_gear'),('crank_handle','input_gear'),('idler_front_pedestal','input_gear'),('idler_rear_pedestal','input_gear'),\n      ('base','idler_gear'),('idler_front_pedestal','idler_gear'),('idler_front_bearing','idler_gear'),('idler_gear','idler_rear_bearing'),('idler_gear','idler_rear_pedestal'),('idler_gear','input_front_bearing'),('idler_gear','output_front_bearing'),('idler_gear','input_rear_bearing'),('idler_gear','output_rear_bearing'),('idler_gear','input_front_pedestal'),('idler_gear','output_front_pedestal'),('idler_gear','input_rear_pedestal'),('idler_gear','output_rear_pedestal'),('crank_arm','idler_gear'),('crank_handle','idler_gear'),\n      ('output_front_pedestal','output_gear'),('output_front_bearing','output_gear'),('output_gear','output_rear_bearing'),('output_gear','output_rear_pedestal'),('base','output_gear'),('idler_front_bearing','output_gear'),('idler_rear_bearing','output_gear'),('idler_front_pedestal','output_gear'),('idler_rear_pedestal','output_gear'),('crank_arm','input_front_bearing'),('crank_arm','input_front_pedestal'),('base','crank_arm'),('crank_handle','input_front_bearing')]\n    for a,b in false_pairs:\n        p = tuple(sorted((a,b)))\n        if p not in rel:\n            rel[p] = ('placed real meshes have positive surface separation or disjoint AABB extent; exclude collision-proxy false contact',['link/'+a,'link/'+b],['pair/'+p[0]+'/'+p[1],'nearby/'+p[0]+'/'+p[1]])\n    contacts=[]\n    for p,v in rel.items():\n        contacts.append({'pair':[p[0],p[1]],'action':'exclude','reason':v[0],'source_entity_ids':v[1],'fact_ids':v[2]})\n    plan={'coordinate_map':cm,'tree_edges':[['base',x] for x in ['input_front_pedestal','input_rear_pedestal','idler_front_pedestal','idler_rear_pedestal','output_front_pedestal','output_rear_pedestal']]+[['input_front_pedestal','input_front_bearing'],['input_rear_pedestal','input_rear_bearing'],['idler_front_pedestal','idler_front_bearing'],['idler_rear_pedestal','idler_rear_bearing'],['output_front_pedestal','output_front_bearing'],['output_rear_pedestal','output_rear_bearing'],['input_front_bearing','input_shaft'],['idler_front_bearing','idler_shaft'],['output_front_bearing','output_shaft'],['input_shaft','input_gear'],['input_shaft','crank_arm'],['crank_arm','crank_handle'],['idler_shaft','idler_gear'],['output_shaft','output_gear']], 'closure_edges':[], 'rigid_carried':[['input_shaft','input_gear'],['idler_shaft','idler_gear'],['output_shaft','output_gear'],['input_shaft','crank_arm'],['crank_arm','crank_handle']], 'independent_coaxial':[], 'transmissions':[{'driving_joint':'input_shaft_hinge','driven_joint':'idler_shaft_hinge','ratio':-1.0},{'driving_joint':'idler_shaft_hinge','driven_joint':'output_shaft_hinge','ratio':-1.0}], 'contact_decisions':contacts, 'support_ground':'base rests on global ground plane', 'support_strategy':'fixed base and pedestal/bearing structure; support probe needs no topology alteration'}\n    out.topology_plan(plan)\n    parents={'base':'','input_front_pedestal':'base','input_front_bearing':'input_front_pedestal','input_rear_pedestal':'base','input_rear_bearing':'input_rear_pedestal','idler_front_pedestal':'base','idler_front_bearing':'idler_front_pedestal','idler_rear_pedestal':'base','idler_rear_bearing':'idler_rear_pedestal','output_front_pedestal':'base','output_front_bearing':'output_front_pedestal','output_rear_pedestal':'base','output_rear_bearing':'output_rear_pedestal','input_shaft':'input_front_bearing','input_gear':'input_shaft','crank_arm':'input_shaft','crank_handle':'crank_arm','idler_shaft':'idler_front_bearing','idler_gear':'idler_shaft','output_shaft':'output_front_bearing','output_gear':'output_shaft'}\n    order=['base','input_front_pedestal','input_front_bearing','input_rear_pedestal','input_rear_bearing','idler_front_pedestal','idler_front_bearing','idler_rear_pedestal','idler_rear_bearing','output_front_pedestal','output_front_bearing','output_rear_pedestal','output_rear_bearing','input_shaft','input_gear','crank_arm','crank_handle','idler_shaft','idler_gear','output_shaft','output_gear']\n    for x in order: out.body(x,parents[x])\n    for b,n,x in [('input_shaft','input_shaft_hinge',-36.0),('idler_shaft','idler_shaft_hinge',0.0),('output_shaft','output_shaft_hinge',36.0)]:\n        out.joint(b,n,'hinge',(0.0,1.0,0.0),(x,-2.0,28.0),'world')\n    out.joint_equality('input_to_idler','input_shaft_hinge','idler_shaft_hinge',-1.0,0.0,'equal pitch radii external mesh',['relation/input_idler_mesh','transmission/input_to_idler'],['fit/input_gear/mesh_to_idler/idler_gear/mesh_to_input'])\n    out.joint_equality('idler_to_output','idler_shaft_hinge','output_shaft_hinge',-1.0,0.0,'equal pitch radii external mesh',['relation/idler_output_mesh','transmission/idler_to_output'],['fit/idler_gear/mesh_to_output/output_gear/mesh_to_idler'])\n    for p,v in rel.items(): out.exclude(p[0],p[1],v[0],v[1],v[2])\n    nodes={'relation/input_idler_mesh':['input_to_idler'],'relation/idler_output_mesh':['idler_to_output'],'transmission/input_to_idler':['input_to_idler'],'transmission/idler_to_output':['idler_to_output']}\n    for eid in facts['entity_ids']:\n        if eid.startswith('link/'):\n            out.decision(eid,'emitted',[eid[5:]],'mesh emitted exactly once',[eid])\n        elif eid.startswith('motion_joint/'):\n            out.decision(eid,'emitted',[eid[13:]],'authored world-frame joint emitted',[eid])\n        else:\n            out.decision(eid,'represented_by',nodes.get(eid,[cm.get(eid.split('/')[-1]) or 'base']),'represented in body carrying, topology, contact policy, or transmission equality',[eid])\n",
+        "expected_revision": 0
+      },
+      "is_error": false,
+      "result": "{\"accepted\": false, \"errors\": [\"forbidden method call: split\"]}"
+    },
+    {
+      "name": "submit_compiler_source",
+      "arguments": {
+        "source": "def compile_mjcf(facts, out):\n    cm = {'input_shaft':'input_shaft_hinge','input_gear':'input_shaft_hinge','idler_shaft':'idler_shaft_hinge','idler_gear':'idler_shaft_hinge','output_shaft':'output_shaft_hinge','output_gear':'output_shaft_hinge','crank_arm':'input_shaft_hinge','crank_handle':'input_shaft_hinge'}\n    fixed = ['base','input_front_pedestal','input_front_bearing','input_rear_pedestal','input_rear_bearing','idler_front_pedestal','idler_front_bearing','idler_rear_pedestal','idler_rear_bearing','output_front_pedestal','output_front_bearing','output_rear_pedestal','output_rear_bearing']\n    for x in fixed: cm[x] = None\n    rel = {\n      ('input_front_bearing','input_shaft'):('running journal fit with positive diametral clearance is represented by the input hinge',['relation/input_front_journal'],['fit/input_front_bearing/journal/input_shaft/front_journal','pair/input_front_bearing/input_shaft','nearby/input_front_bearing/input_shaft']),\n      ('input_rear_bearing','input_shaft'):('running rear journal fit is represented by the same supported input hinge',['relation/input_rear_journal'],['fit/input_rear_bearing/journal/input_shaft/rear_journal','pair/input_rear_bearing/input_shaft','nearby/input_rear_bearing/input_shaft']),\n      ('idler_front_bearing','idler_shaft'):('running journal fit with positive diametral clearance is represented by the idler hinge',['relation/idler_front_journal'],['fit/idler_front_bearing/journal/idler_shaft/front_journal','pair/idler_front_bearing/idler_shaft','nearby/idler_front_bearing/idler_shaft']),\n      ('idler_rear_bearing','idler_shaft'):('running rear journal fit is represented by the same supported idler hinge',['relation/idler_rear_journal'],['fit/idler_rear_bearing/journal/idler_shaft/rear_journal','pair/idler_rear_bearing/idler_shaft','nearby/idler_rear_bearing/idler_shaft']),\n      ('output_front_bearing','output_shaft'):('running journal fit with positive diametral clearance is represented by the output hinge',['relation/output_front_journal'],['fit/output_front_bearing/journal/output_shaft/front_journal','pair/output_front_bearing/output_shaft','nearby/output_front_bearing/output_shaft']),\n      ('output_rear_bearing','output_shaft'):('running rear journal fit is represented by the same supported output hinge',['relation/output_rear_journal'],['fit/output_rear_bearing/journal/output_shaft/rear_journal','pair/output_rear_bearing/output_shaft','nearby/output_rear_bearing/output_shaft']),\n      ('input_gear','input_shaft'):('measured interference press fit is rigidly carried',['relation/input_gear_press_fit'],['fit/input_shaft/gear_seat/input_gear/shaft_bore','pair/input_gear/input_shaft','nearby/input_gear/input_shaft']),\n      ('idler_gear','idler_shaft'):('measured interference press fit is rigidly carried',['relation/idler_gear_press_fit'],['fit/idler_shaft/gear_seat/idler_gear/shaft_bore','pair/idler_gear/idler_shaft','nearby/idler_gear/idler_shaft']),\n      ('output_gear','output_shaft'):('measured interference press fit is rigidly carried',['relation/output_gear_press_fit'],['fit/output_shaft/gear_seat/output_gear/shaft_bore','pair/output_gear/output_shaft','nearby/output_gear/output_shaft']),\n      ('idler_gear','input_gear'):('ideal external gear equality replaces tooth contact',['relation/input_idler_mesh'],['fit/input_gear/mesh_to_idler/idler_gear/mesh_to_input','pair/idler_gear/input_gear','nearby/idler_gear/input_gear']),\n      ('idler_gear','output_gear'):('ideal external gear equality replaces tooth contact',['relation/idler_output_mesh'],['fit/idler_gear/mesh_to_output/output_gear/mesh_to_idler','pair/idler_gear/output_gear','nearby/idler_gear/output_gear']),\n      ('crank_arm','input_shaft'):('measured interference press fit is rigidly carried',['relation/crank_arm_press_fit'],['fit/input_shaft/crank_seat/crank_arm/shaft_bore','pair/crank_arm/input_shaft','nearby/crank_arm/input_shaft']),\n      ('crank_arm','crank_handle'):('measured interference press fit is rigidly carried',['relation/crank_handle_press_fit'],['fit/crank_arm/handle_bore/crank_handle/handle_shaft','pair/crank_arm/crank_handle','nearby/crank_arm/crank_handle'])}\n    false_pairs = [('input_front_pedestal','input_shaft'),('input_rear_pedestal','input_shaft'),('idler_gear','input_shaft'),('crank_handle','input_shaft'),('idler_front_pedestal','idler_shaft'),('idler_rear_pedestal','idler_shaft'),('idler_shaft','input_gear'),('idler_shaft','output_gear'),('output_front_pedestal','output_shaft'),('output_rear_pedestal','output_shaft'),('idler_gear','output_shaft'),('input_front_pedestal','input_gear'),('input_front_bearing','input_gear'),('input_gear','input_rear_bearing'),('input_gear','input_rear_pedestal'),('base','input_gear'),('idler_front_bearing','input_gear'),('idler_rear_bearing','input_gear'),('crank_arm','input_gear'),('crank_handle','input_gear'),('idler_front_pedestal','input_gear'),('idler_rear_pedestal','input_gear'),('base','idler_gear'),('idler_front_pedestal','idler_gear'),('idler_front_bearing','idler_gear'),('idler_gear','idler_rear_bearing'),('idler_gear','idler_rear_pedestal'),('idler_gear','input_front_bearing'),('idler_gear','output_front_bearing'),('idler_gear','input_rear_bearing'),('idler_gear','output_rear_bearing'),('idler_gear','input_front_pedestal'),('idler_gear','output_front_pedestal'),('idler_gear','input_rear_pedestal'),('idler_gear','output_rear_pedestal'),('crank_arm','idler_gear'),('crank_handle','idler_gear'),('output_front_pedestal','output_gear'),('output_front_bearing','output_gear'),('output_gear','output_rear_bearing'),('output_gear','output_rear_pedestal'),('base','output_gear'),('idler_front_bearing','output_gear'),('idler_rear_bearing','output_gear'),('idler_front_pedestal','output_gear'),('idler_rear_pedestal','output_gear'),('crank_arm','input_front_bearing'),('crank_arm','input_front_pedestal'),('base','crank_arm'),('crank_handle','input_front_bearing')]\n    for a,b in false_pairs:\n        p = tuple(sorted((a,b)))\n        if p not in rel: rel[p] = ('placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact',['link/'+a,'link/'+b],['pair/'+p[0]+'/'+p[1],'nearby/'+p[0]+'/'+p[1]])\n    contacts=[]\n    for p,v in rel.items(): contacts.append({'pair':[p[0],p[1]],'action':'exclude','reason':v[0],'source_entity_ids':v[1],'fact_ids':v[2]})\n    tree=[['base',x] for x in ['input_front_pedestal','input_rear_pedestal','idler_front_pedestal','idler_rear_pedestal','output_front_pedestal','output_rear_pedestal']]+[['input_front_pedestal','input_front_bearing'],['input_rear_pedestal','input_rear_bearing'],['idler_front_pedestal','idler_front_bearing'],['idler_rear_pedestal','idler_rear_bearing'],['output_front_pedestal','output_front_bearing'],['output_rear_pedestal','output_rear_bearing'],['input_front_bearing','input_shaft'],['idler_front_bearing','idler_shaft'],['output_front_bearing','output_shaft'],['input_shaft','input_gear'],['input_shaft','crank_arm'],['crank_arm','crank_handle'],['idler_shaft','idler_gear'],['output_shaft','output_gear']]\n    out.topology_plan({'coordinate_map':cm,'tree_edges':tree,'closure_edges':[],'rigid_carried':[['input_shaft','input_gear'],['idler_shaft','idler_gear'],['output_shaft','output_gear'],['input_shaft','crank_arm'],['crank_arm','crank_handle']],'independent_coaxial':[],'transmissions':[{'driving_joint':'input_shaft_hinge','driven_joint':'idler_shaft_hinge','ratio':-1.0},{'driving_joint':'idler_shaft_hinge','driven_joint':'output_shaft_hinge','ratio':-1.0}],'contact_decisions':contacts,'support_ground':'base rests on global ground plane','support_strategy':'fixed base and pedestal-bearing structure; no support patch required'})\n    parents={'base':'','input_front_pedestal':'base','input_front_bearing':'input_front_pedestal','input_rear_pedestal':'base','input_rear_bearing':'input_rear_pedestal','idler_front_pedestal':'base','idler_front_bearing':'idler_front_pedestal','idler_rear_pedestal':'base','idler_rear_bearing':'idler_rear_pedestal','output_front_pedestal':'base','output_front_bearing':'output_front_pedestal','output_rear_pedestal':'base','output_rear_bearing':'output_rear_pedestal','input_shaft':'input_front_bearing','input_gear':'input_shaft','crank_arm':'input_shaft','crank_handle':'crank_arm','idler_shaft':'idler_front_bearing','idler_gear':'idler_shaft','output_shaft':'output_front_bearing','output_gear':'output_shaft'}\n    order=['base','input_front_pedestal','input_front_bearing','input_rear_pedestal','input_rear_bearing','idler_front_pedestal','idler_front_bearing','idler_rear_pedestal','idler_rear_bearing','output_front_pedestal','output_front_bearing','output_rear_pedestal','output_rear_bearing','input_shaft','input_gear','crank_arm','crank_handle','idler_shaft','idler_gear','output_shaft','output_gear']\n    for x in order: out.body(x,parents[x])\n    for b,n,x in [('input_shaft','input_shaft_hinge',-36.0),('idler_shaft','idler_shaft_hinge',0.0),('output_shaft','output_shaft_hinge',36.0)]: out.joint(b,n,'hinge',(0.0,1.0,0.0),(x,-2.0,28.0),'world')\n    out.joint_equality('input_to_idler','input_shaft_hinge','idler_shaft_hinge',-1.0,0.0,'equal pitch radii external mesh',['relation/input_idler_mesh','transmission/input_to_idler'],['fit/input_gear/mesh_to_idler/idler_gear/mesh_to_input'])\n    out.joint_equality('idler_to_output','idler_shaft_hinge','output_shaft_hinge',-1.0,0.0,'equal pitch radii external mesh',['relation/idler_output_mesh','transmission/idler_to_output'],['fit/idler_gear/mesh_to_output/output_gear/mesh_to_idler'])\n    for p,v in rel.items(): out.exclude(p[0],p[1],v[0],v[1],v[2])\n    nodes={'relation/input_idler_mesh':['input_to_idler'],'relation/idler_output_mesh':['idler_to_output'],'transmission/input_to_idler':['input_to_idler'],'transmission/idler_to_output':['idler_to_output'],'motion_joint/input_shaft_hinge':['input_shaft_hinge'],'motion_joint/idler_shaft_hinge':['idler_shaft_hinge'],'motion_joint/output_shaft_hinge':['output_shaft_hinge']}\n    for eid in facts['entity_ids']:\n        if eid in nodes: out.decision(eid,'emitted',nodes[eid],'authored joint or equality emitted',[eid])\n        else: out.decision(eid,'represented_by',['base'],'represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality',[eid])\n",
+        "expected_revision": 0
+      },
+      "is_error": false,
+      "result": "{\"accepted\": true, \"revision\": 1}"
+    },
+    {
+      "name": "run_mjcf_gate",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"errors\": [],\n  \"policy_version\": 4,\n  \"bodies\": [\n    \"base\",\n    \"crank_arm\",\n    \"crank_handle\",\n    \"idler_front_bearing\",\n    \"idler_front_pedestal\",\n    \"idler_gear\",\n    \"idler_rear_bearing\",\n    \"idler_rear_pedestal\",\n    \"idler_shaft\",\n    \"input_front_bearing\",\n    \"input_front_pedestal\",\n    \"input_gear\",\n    \"input_rear_bearing\",\n    \"input_rear_pedestal\",\n    \"input_shaft\",\n    \"output_front_bearing\",\n    \"output_front_pedestal\",\n    \"output_gear\",\n    \"output_rear_bearing\",\n    \"output_rear_pedestal\",\n    \"output_shaft\"\n  ],\n  \"joints\": [\n    \"idler_shaft_hinge\",\n    \"idler_to_output\",\n    \"input_shaft_hinge\",\n    \"input_to_idler\",\n    \"output_shaft_hinge\"\n  ],\n  \"nq\": 3,\n  \"nv\": 3,\n  \"finite\": true,\n  \"dynamic_transmission_probe\": {\n    \"ran\": true,\n    \"ok\": true,\n    \"errors\": [],\n    \"warnings\": [],\n    \"contact_on\": {\n      \"ok\": true,\n      \"driver_travel\": 1.1161123112124816,\n      \"commanded_travel\": 1.0494,\n      \"joint_deltas\": {\n        \"idler_shaft_hinge\": -1.1150726842336747,\n        \"output_shaft_hinge\": 1.114066700507863,\n        \"input_shaft_hinge\": 1.1161123112124816\n      },\n      \"transmission_residuals\": [\n        {\n          \"name\": \"input_shaft_hinge->idler_shaft_hinge\",\n          \"driving_joint\": \"input_shaft_hinge\",\n          \"driven_joint\": \"idler_shaft_hinge\",\n          \"ratio\": -1.0,\n          \"driving_delta\": 1.1161123112124816,\n          \"driven_delta\": -1.1150726842336747,\n          \"normalized_residual\": 0.0009314716524159584\n        },\n        {\n          \"name\": \"idler_shaft_hinge->output_shaft_hinge\",\n          \"driving_joint\": \"idler_shaft_hinge\",\n          \"driven_joint\": \"output_shaft_hinge\",\n          \"ratio\": -1.0,\n          \"driving_delta\": -1.1150726842336747,\n          \"driven_delta\": 1.114066700507863,\n          \"normalized_residual\": 0.0009021687465180585\n        }\n      ],\n      \"active_contacts\": []\n    },\n    \"contact_off\": {\n      \"ok\": true,\n      \"driver_travel\": 1.1161123112124816,\n      \"commanded_travel\": 1.0494,\n      \"joint_deltas\": {\n        \"idler_shaft_hinge\": -1.1150726842336747,\n        \"output_shaft_hinge\": 1.114066700507863,\n        \"input_shaft_hinge\": 1.1161123112124816\n      },\n      \"transmission_residuals\": [\n        {\n          \"name\": \"input_shaft_hinge->idler_shaft_hinge\",\n          \"driving_joint\": \"input_shaft_hinge\",\n          \"driven_joint\": \"idler_shaft_hinge\",\n          \"ratio\": -1.0,\n          \"driving_delta\": 1.1161123112124816,\n          \"driven_delta\": -1.1150726842336747,\n          \"normalized_residual\": 0.0009314716524159584\n        },\n        {\n          \"name\": \"idler_shaft_hinge->output_shaft_hinge\",\n          \"driving_joint\": \"idler_shaft_hinge\",\n          \"driven_joint\": \"output_shaft_hinge\",\n          \"ratio\": -1.0,\n          \"driving_delta\": -1.1150726842336747,\n          \"driven_delta\": 1.114066700507863,\n          \"normalized_residual\": 0.0009021687465180585\n        }\n      ],\n      \"active_contacts\": []\n    }\n  }\n}"
+    }
+  ],
+  "report": {
+    "ok": true,
+    "errors": [],
+    "policy_version": 4,
+    "bodies": [
+      "base",
+      "crank_arm",
+      "crank_handle",
+      "idler_front_bearing",
+      "idler_front_pedestal",
+      "idler_gear",
+      "idler_rear_bearing",
+      "idler_rear_pedestal",
+      "idler_shaft",
+      "input_front_bearing",
+      "input_front_pedestal",
+      "input_gear",
+      "input_rear_bearing",
+      "input_rear_pedestal",
+      "input_shaft",
+      "output_front_bearing",
+      "output_front_pedestal",
+      "output_gear",
+      "output_rear_bearing",
+      "output_rear_pedestal",
+      "output_shaft"
+    ],
+    "joints": [
+      "idler_shaft_hinge",
+      "idler_to_output",
+      "input_shaft_hinge",
+      "input_to_idler",
+      "output_shaft_hinge"
+    ],
+    "nq": 3,
+    "nv": 3,
+    "finite": true,
+    "dynamic_transmission_probe": {
+      "ran": true,
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "contact_on": {
+        "ok": true,
+        "driver_travel": 1.1161123112124816,
+        "commanded_travel": 1.0494,
+        "joint_deltas": {
+          "idler_shaft_hinge": -1.1150726842336747,
+          "output_shaft_hinge": 1.114066700507863,
+          "input_shaft_hinge": 1.1161123112124816
+        },
+        "transmission_residuals": [
+          {
+            "name": "input_shaft_hinge->idler_shaft_hinge",
+            "driving_joint": "input_shaft_hinge",
+            "driven_joint": "idler_shaft_hinge",
+            "ratio": -1.0,
+            "driving_delta": 1.1161123112124816,
+            "driven_delta": -1.1150726842336747,
+            "normalized_residual": 0.0009314716524159584
+          },
+          {
+            "name": "idler_shaft_hinge->output_shaft_hinge",
+            "driving_joint": "idler_shaft_hinge",
+            "driven_joint": "output_shaft_hinge",
+            "ratio": -1.0,
+            "driving_delta": -1.1150726842336747,
+            "driven_delta": 1.114066700507863,
+            "normalized_residual": 0.0009021687465180585
+          }
+        ],
+        "active_contacts": []
+      },
+      "contact_off": {
+        "ok": true,
+        "driver_travel": 1.1161123112124816,
+        "commanded_travel": 1.0494,
+        "joint_deltas": {
+          "idler_shaft_hinge": -1.1150726842336747,
+          "output_shaft_hinge": 1.114066700507863,
+          "input_shaft_hinge": 1.1161123112124816
+        },
+        "transmission_residuals": [
+          {
+            "name": "input_shaft_hinge->idler_shaft_hinge",
+            "driving_joint": "input_shaft_hinge",
+            "driven_joint": "idler_shaft_hinge",
+            "ratio": -1.0,
+            "driving_delta": 1.1161123112124816,
+            "driven_delta": -1.1150726842336747,
+            "normalized_residual": 0.0009314716524159584
+          },
+          {
+            "name": "idler_shaft_hinge->output_shaft_hinge",
+            "driving_joint": "idler_shaft_hinge",
+            "driven_joint": "output_shaft_hinge",
+            "ratio": -1.0,
+            "driving_delta": -1.1150726842336747,
+            "driven_delta": 1.114066700507863,
+            "normalized_residual": 0.0009021687465180585
+          }
+        ],
+        "active_contacts": []
+      }
+    }
+  }
+}

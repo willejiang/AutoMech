@@ -1,0 +1,212 @@
+{
+  "analyzer_version": "comfort-geometry/1.0",
+  "fail_closed": true,
+  "input_hashes": {
+    "meshes/base.stl": "79c955d9e523b3904c075877ccfcdaa33ff8e2e9ae5e6b039208278816ebf64e",
+    "meshes/carrier_output.stl": "b7f9ef98653c2d62867cf61351160807a3f8c10c0b172dfb7be011d40e38cba6",
+    "meshes/fixed_ring.stl": "804304c27b8766d20a4b513c90873e47bd39fa228f3d8d2173d599f6128d7442",
+    "meshes/hand_crank.stl": "a447ec093f52195ce939e590f4e1375c58ea750dfa08287cd391e8d6c0ff6100",
+    "meshes/input_shaft.stl": "9b2d475dfb76dcbc92cb07f4aeba282f374d291e701ee50cddccb9a795e57fb7",
+    "meshes/left_support.stl": "44534ea2799d5ed3b6309ce6f1f7208bbe73bdf0dab1ae107978a6911b2453e9",
+    "meshes/planet_1.stl": "d237527cb78c3490e69d24427364ed2f8f40ef8cf37d548ce391f5378128f35a",
+    "meshes/planet_2.stl": "31b7189349c83432065157ffb72ce79c429b11250d422e406c0d022b6a2660c4",
+    "meshes/planet_3.stl": "0497f2f8bb82c1e818f23263b24c30a63e6690c7233497d3df2b35677b5f2857",
+    "meshes/planet_pin_1.stl": "7907f81a153aefe5ade2831e482e4df54d194d451ee67c983c2afcbebeab0b8d",
+    "meshes/planet_pin_2.stl": "7907f81a153aefe5ade2831e482e4df54d194d451ee67c983c2afcbebeab0b8d",
+    "meshes/planet_pin_3.stl": "7907f81a153aefe5ade2831e482e4df54d194d451ee67c983c2afcbebeab0b8d",
+    "meshes/right_support.stl": "44534ea2799d5ed3b6309ce6f1f7208bbe73bdf0dab1ae107978a6911b2453e9",
+    "meshes/sun_input.stl": "fa0712fbc19dd65310bba311890c38fb0fd74259619ec150141464c6472b23ae"
+  },
+  "intersections": [
+    {
+      "evidence_id": "mount/base/left_support",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.042857143,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "base",
+        "left_support"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 3780.0
+    },
+    {
+      "evidence_id": "mount/base/right_support",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.042857143,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "base",
+        "right_support"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 3780.0
+    },
+    {
+      "evidence_id": null,
+      "exemption": null,
+      "exemption_source": "",
+      "fraction_smaller": 0.057056305,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "carrier_output",
+        "input_shaft"
+      ],
+      "status": "CONFLICT",
+      "volume_mm3": 313.971814
+    },
+    {
+      "evidence_id": "mount/carrier_output/planet_pin_1",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.076923097,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "carrier_output",
+        "planet_pin_1"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 100.471005
+    },
+    {
+      "evidence_id": "mount/carrier_output/planet_pin_2",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.076927706,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "carrier_output",
+        "planet_pin_2"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 100.477025
+    },
+    {
+      "evidence_id": "mount/carrier_output/planet_pin_3",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.076927704,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "carrier_output",
+        "planet_pin_3"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 100.477022
+    },
+    {
+      "evidence_id": "relation/mesh_3",
+      "exemption": "ideal_gear_mesh",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 1.21e-07,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "fixed_ring",
+        "planet_1"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.001905
+    },
+    {
+      "evidence_id": "relation/mesh_4",
+      "exemption": "ideal_gear_mesh",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 4.575e-06,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "fixed_ring",
+        "planet_2"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.07198
+    },
+    {
+      "evidence_id": "relation/mesh_5",
+      "exemption": "ideal_gear_mesh",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 3.1483e-05,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "fixed_ring",
+        "planet_3"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 0.49538
+    },
+    {
+      "evidence_id": "relation/crank_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.025995618,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "hand_crank",
+        "input_shaft"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 156.985907
+    },
+    {
+      "evidence_id": "relation/sun_shaft_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.100000001,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "input_shaft",
+        "sun_input"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 784.929534
+    },
+    {
+      "evidence_id": "relation/mesh_0",
+      "exemption": "ideal_gear_mesh",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.000166499,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "planet_1",
+        "sun_input"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 2.619812
+    },
+    {
+      "evidence_id": "relation/mesh_1",
+      "exemption": "ideal_gear_mesh",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.000166647,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "planet_2",
+        "sun_input"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 2.622132
+    },
+    {
+      "evidence_id": "relation/mesh_2",
+      "exemption": "ideal_gear_mesh",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.009669897,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "planet_3",
+        "sun_input"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 152.152652
+    }
+  ],
+  "links_scanned": 14,
+  "manifest_only_exemption_count": 0,
+  "method": "final-pose watertight STL boolean intersection using manifold",
+  "non_exempt_conflict_count": 1,
+  "provenance_warnings": [],
+  "report_volume_mm3": 0.0001,
+  "scan_unavailable": [],
+  "schema": "physcad-scorer-geometry/1.0"
+}

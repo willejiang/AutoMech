@@ -1,0 +1,318 @@
+<mujoco model="a_hand_driven_fixed_ring_planeta">
+  <compiler angle="radian" coordinate="local" />
+  <option gravity="0 0 -9.81" timestep="0.0002" solver="Newton" iterations="100" cone="elliptic" />
+  <size memory="256M" />
+  <asset>
+    <mesh name="mesh_baseplate" file="meshes/baseplate.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_lower_input_bearing" file="meshes/lower_input_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_shaft" file="meshes/input_shaft.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_sun_gear" file="meshes/sun_gear.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_crank_arm" file="meshes/crank_arm.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hand_handle" file="meshes/hand_handle.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_bearing_pedestal" file="meshes/output_bearing_pedestal.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_bearing" file="meshes/output_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_shaft" file="meshes/output_shaft.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_dial" file="meshes/output_dial.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_carrier" file="meshes/carrier.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_planet_pin_1" file="meshes/planet_pin_1.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_planet_1" file="meshes/planet_1.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_planet_pin_2" file="meshes/planet_pin_2.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_planet_2" file="meshes/planet_2.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_planet_pin_3" file="meshes/planet_pin_3.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_planet_3" file="meshes/planet_3.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_planet_pin_4" file="meshes/planet_pin_4.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_planet_4" file="meshes/planet_4.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_ring_post_1" file="meshes/ring_post_1.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_ring_post_2" file="meshes/ring_post_2.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_ring_post_3" file="meshes/ring_post_3.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_ring_post_4" file="meshes/ring_post_4.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_ring_support_shelf" file="meshes/ring_support_shelf.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_fixed_ring" file="meshes/fixed_ring.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_upper_bridge_column_left" file="meshes/upper_bridge_column_left.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_upper_bridge_column_right" file="meshes/upper_bridge_column_right.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_upper_bridge" file="meshes/upper_bridge.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_upper_input_bearing" file="meshes/upper_input_bearing.stl" scale=".001 .001 .001" />
+  </asset>
+  <worldbody>
+    <light pos="0 0 3" dir="0 0 -1" />
+    <geom name="ground" type="plane" size="5 5 .1" friction="1 .05 .005" />
+    <body name="baseplate" pos="0 0 0" quat="1 0 0 0">
+      <inertial pos="0 0 0.002" mass="0.231732" fullinertia="0.00013015614 0.000156728076 0.000286266264 -0 -0 -0" />
+      <geom name="geom_baseplate" type="sdf" mesh="mesh_baseplate" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+      <body name="lower_input_bearing" pos="0 0 0.004" quat="1 0 0 0">
+        <inertial pos="2.001968995e-20 7.823319462e-20 0.0015" mass="0.001160890539" fullinertia="1.082190504e-08 1.08219043e-08 1.990247353e-08 -5.112947103e-26 3.486100297e-26 6.321425559e-25" />
+        <geom name="geom_lower_input_bearing" type="sdf" mesh="mesh_lower_input_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+        <body name="input_shaft" pos="0 0 0" quat="1 0 0 0">
+          <inertial pos="1.862276058e-20 4.999411018e-20 0.018" mass="0.007987015606" fullinertia="8.805610241e-07 8.805610243e-07 3.592667747e-08 -1.487402794e-25 -4.938177275e-24 -1.118544331e-23" />
+          <geom name="geom_input_shaft" type="sdf" mesh="mesh_input_shaft" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          <body name="sun_gear" pos="0 0 0.015" quat="1 0 0 0">
+            <inertial pos="-1.527040458e-19 1.312300393e-20 0.003" mass="0.00779234256" fullinertia="1.709399934e-07 1.709399935e-07 2.951259316e-07 -1.72538724e-24 -4.521704492e-24 -7.994790015e-26" />
+            <geom name="geom_sun_gear" type="sdf" mesh="mesh_sun_gear" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+          <body name="crank_arm" pos="0 0 0.027" quat="1 0 0 0">
+            <inertial pos="0.01334570116 1.434416973e-19 0.001" mass="0.002073877849" fullinertia="6.915129083e-09 8.54790935e-08 9.101163735e-08 4.240143207e-24 1.070930011e-23 2.974805587e-25" />
+            <geom name="geom_crank_arm" type="sdf" mesh="mesh_crank_arm" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+            <body name="hand_handle" pos="0.022 0 0.002" quat="1 0 0 0">
+              <inertial pos="0 1.151746247e-19 0.004" mass="0.001774892357" fullinertia="1.34579456e-08 1.345794565e-08 7.983706104e-09 -1.115552095e-26 -4.759688939e-25 3.569730391e-25" />
+              <geom name="geom_hand_handle" type="sdf" mesh="mesh_hand_handle" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+            </body>
+          </body>
+          <joint name="input_shaft_hinge" type="hinge" axis="0 0 1" pos="0 0 0" />
+        </body>
+      </body>
+      <body name="output_bearing_pedestal" pos="0 0 0.004" quat="1 0 0 0">
+        <inertial pos="6.394806812e-20 -1.286633703e-19 0.002" mass="0.008140839794" fullinertia="3.352138771e-07 3.352138706e-07 6.487188416e-07 -1.855534985e-24 -2.766569196e-24 -7.615444201e-24" />
+        <geom name="geom_output_bearing_pedestal" type="sdf" mesh="mesh_output_bearing_pedestal" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+        <body name="output_bearing" pos="0 0 0.004" quat="1 0 0 0">
+          <inertial pos="5.096380151e-20 2.983837676e-19 0.002" mass="0.004377821363" fullinertia="1.344944471e-07 1.344944473e-07 2.573147041e-07 1.859253492e-25 2.350096414e-24 5.235715935e-24" />
+          <geom name="geom_output_bearing" type="sdf" mesh="mesh_output_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          <body name="output_shaft" pos="0 0 -0.001" quat="1 0 0 0">
+            <inertial pos="-9.746475168e-20 -1.865977679e-19 0.005" mass="0.006581276243" fullinertia="1.293501496e-07 1.293501504e-07 1.490123626e-07 -9.29626746e-27 -3.207212274e-24 -7.139489833e-24" />
+            <geom name="geom_output_shaft" type="sdf" mesh="mesh_output_shaft" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+            <body name="output_dial" pos="0 0 0.005" quat="1 0 0 0">
+              <inertial pos="0.00100578536 -7.91979293e-20 0.001" mass="0.003756165866" fullinertia="1.093042183e-07 1.409787861e-07 2.477788938e-07 -2.992015907e-25 -1.784883352e-24 -2.915309475e-24" />
+              <geom name="geom_output_dial" type="sdf" mesh="mesh_output_dial" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+            </body>
+            <body name="carrier" pos="0 0 0.007" quat="1 0 0 0">
+              <inertial pos="-2.978677193e-19 -6.329689035e-19 0.0015" mass="0.03195840725" fullinertia="4.177464039e-06 4.177463949e-06 8.306990377e-06 1.216100524e-22 1.618294239e-23 -3.510270593e-23" />
+              <geom name="geom_carrier" type="sdf" mesh="mesh_carrier" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+              <body name="planet_pin_1" pos="0.016 0 0" quat="1 0 0 0">
+                <inertial pos="2.571210706e-20 2.201787488e-20 0.0055" mass="0.001084656435" fullinertia="1.202115938e-08 1.202115937e-08 2.168413982e-09 4.183320357e-27 1.533884131e-25 2.4541817e-25" />
+                <geom name="geom_planet_pin_1" type="sdf" mesh="mesh_planet_pin_1" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+                <body name="planet_1" pos="0 0 0.005" quat="0.9951847267 0 0 0.09801714033">
+                  <inertial pos="-1.400321e-19 2.953802108e-20 0.003" mass="0.008497496183" fullinertia="1.753766556e-07 1.753766556e-07 2.99768334e-07 -1.249418347e-24 -5.47364228e-24 3.662729379e-25" />
+                  <geom name="geom_planet_1" type="sdf" mesh="mesh_planet_1" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+                  <joint name="planet_1_carrier_hinge" type="hinge" axis="0 0 1" pos="0 0 0" />
+                </body>
+              </body>
+              <body name="planet_pin_2" pos="9.797174393e-19 0.016 0" quat="1 0 0 0">
+                <inertial pos="2.571210706e-20 2.201787488e-20 0.0055" mass="0.001084656435" fullinertia="1.202115938e-08 1.202115937e-08 2.168413982e-09 4.183320357e-27 1.533884131e-25 2.4541817e-25" />
+                <geom name="geom_planet_pin_2" type="sdf" mesh="mesh_planet_pin_2" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+                <body name="planet_2" pos="0 0 0.005" quat="0.7730104534 0 0 -0.6343932842">
+                  <inertial pos="-1.400321e-19 2.953802108e-20 0.003" mass="0.008497496183" fullinertia="1.753766556e-07 1.753766556e-07 2.99768334e-07 -1.249418347e-24 -5.47364228e-24 3.662729379e-25" />
+                  <geom name="geom_planet_2" type="sdf" mesh="mesh_planet_2" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+                  <joint name="planet_2_carrier_hinge" type="hinge" axis="0 0 1" pos="0 0 0" />
+                </body>
+              </body>
+              <body name="planet_pin_3" pos="-0.016 1.959434879e-18 0" quat="1 0 0 0">
+                <inertial pos="2.571210706e-20 2.201787488e-20 0.0055" mass="0.001084656435" fullinertia="1.202115938e-08 1.202115937e-08 2.168413982e-09 4.183320357e-27 1.533884131e-25 2.4541817e-25" />
+                <geom name="geom_planet_pin_3" type="sdf" mesh="mesh_planet_pin_3" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+                <body name="planet_3" pos="0 0 0.005" quat="0.09801714033 0 0 -0.9951847267">
+                  <inertial pos="-1.400321e-19 2.953802108e-20 0.003" mass="0.008497496183" fullinertia="1.753766556e-07 1.753766556e-07 2.99768334e-07 -1.249418347e-24 -5.47364228e-24 3.662729379e-25" />
+                  <geom name="geom_planet_3" type="sdf" mesh="mesh_planet_3" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+                  <joint name="planet_3_carrier_hinge" type="hinge" axis="0 0 1" pos="0 0 0" />
+                </body>
+              </body>
+              <body name="planet_pin_4" pos="-2.939152318e-18 -0.016 0" quat="1 0 0 0">
+                <inertial pos="2.571210706e-20 2.201787488e-20 0.0055" mass="0.001084656435" fullinertia="1.202115938e-08 1.202115937e-08 2.168413982e-09 4.183320357e-27 1.533884131e-25 2.4541817e-25" />
+                <geom name="geom_planet_pin_4" type="sdf" mesh="mesh_planet_pin_4" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+                <body name="planet_4" pos="0 0 0.005" quat="0.6343932842 0 0 0.7730104534">
+                  <inertial pos="-1.400321e-19 2.953802108e-20 0.003" mass="0.008497496183" fullinertia="1.753766556e-07 1.753766556e-07 2.99768334e-07 -1.249418347e-24 -5.47364228e-24 3.662729379e-25" />
+                  <geom name="geom_planet_4" type="sdf" mesh="mesh_planet_4" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+                  <joint name="planet_4_carrier_hinge" type="hinge" axis="0 0 1" pos="0 0 0" />
+                </body>
+              </body>
+            </body>
+            <joint name="output_shaft_hinge" type="hinge" axis="0 0 1" pos="0 0 0" />
+          </body>
+        </body>
+      </body>
+      <body name="ring_post_1" pos="0.027775 0 0.004" quat="1 0 0 0">
+        <inertial pos="1.856545981e-20 1.35410916e-21 0.0065" mass="0.002002916718" fullinertia="3.133600448e-08 3.133600429e-08 6.256521202e-09 -3.718506984e-27 2.417029539e-25 -5.950087789e-26" />
+        <geom name="geom_ring_post_1" type="sdf" mesh="mesh_ring_post_1" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+        <body name="ring_support_shelf" pos="-0.027775 0 0.013" quat="1 0 0 0">
+          <inertial pos="1.319924682e-18 4.054514735e-18 0.001" mass="0.01081809213" fullinertia="4.195778832e-06 4.195778872e-06 8.384345643e-06 -1.808681797e-23 2.189456912e-23 6.092262398e-23" />
+          <geom name="geom_ring_support_shelf" type="sdf" mesh="mesh_ring_support_shelf" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          <body name="fixed_ring" pos="0 0 0.005" quat="1 0 0 0">
+            <inertial pos="0.0005645323456 4.530114048e-18 0.002865833051" mass="0.03690504747" fullinertia="1.275701264e-05 1.309590443e-05 2.561300967e-05 8.254690385e-22 5.970703235e-08 3.80120115e-22" />
+            <geom name="geom_fixed_ring" type="sdf" mesh="mesh_fixed_ring" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+        </body>
+      </body>
+      <body name="ring_post_2" pos="1.700728242e-18 0.027775 0.004" quat="1 0 0 0">
+        <inertial pos="1.856545981e-20 1.35410916e-21 0.0065" mass="0.002002916718" fullinertia="3.133600448e-08 3.133600429e-08 6.256521202e-09 -3.718506984e-27 2.417029539e-25 -5.950087789e-26" />
+        <geom name="geom_ring_post_2" type="sdf" mesh="mesh_ring_post_2" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+      </body>
+      <body name="ring_post_3" pos="-0.027775 3.401456485e-18 0.004" quat="1 0 0 0">
+        <inertial pos="1.856545981e-20 1.35410916e-21 0.0065" mass="0.002002916718" fullinertia="3.133600448e-08 3.133600429e-08 6.256521202e-09 -3.718506984e-27 2.417029539e-25 -5.950087789e-26" />
+        <geom name="geom_ring_post_3" type="sdf" mesh="mesh_ring_post_3" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+      </body>
+      <body name="ring_post_4" pos="-5.102184727e-18 -0.027775 0.004" quat="1 0 0 0">
+        <inertial pos="1.856545981e-20 1.35410916e-21 0.0065" mass="0.002002916718" fullinertia="3.133600448e-08 3.133600429e-08 6.256521202e-09 -3.718506984e-27 2.417029539e-25 -5.950087789e-26" />
+        <geom name="geom_ring_post_4" type="sdf" mesh="mesh_ring_post_4" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+      </body>
+      <body name="upper_bridge_column_left" pos="-0.034 0 0.004" quat="1 0 0 0">
+        <inertial pos="0 0 0.011" mass="0.0055264" fullinertia="2.523722667e-07 2.302666667e-07 3.684266667e-08 -0 -0 -0" />
+        <geom name="geom_upper_bridge_column_left" type="sdf" mesh="mesh_upper_bridge_column_left" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+        <body name="upper_bridge" pos="0.034 0 0.022" quat="1 0 0 0">
+          <inertial pos="0 4.339283924e-21 0.0005" mass="0.004284701173" fullinertia="2.390334482e-08 1.953119345e-06 1.976308573e-06 -2.749835915e-24 -3.272286146e-25 9.29626746e-27" />
+          <geom name="geom_upper_bridge" type="sdf" mesh="mesh_upper_bridge" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          <body name="upper_input_bearing" pos="0 0 0.001" quat="1 0 0 0">
+            <inertial pos="2.001968995e-20 7.823319462e-20 0.0015" mass="0.001160890539" fullinertia="1.082190504e-08 1.08219043e-08 1.990247353e-08 -5.112947103e-26 3.486100297e-26 6.321425559e-25" />
+            <geom name="geom_upper_input_bearing" type="sdf" mesh="mesh_upper_input_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+        </body>
+      </body>
+      <body name="upper_bridge_column_right" pos="0.034 0 0.004" quat="1 0 0 0">
+        <inertial pos="0 0 0.011" mass="0.0055264" fullinertia="2.523722667e-07 2.302666667e-07 3.684266667e-08 -0 -0 -0" />
+        <geom name="geom_upper_bridge_column_right" type="sdf" mesh="mesh_upper_bridge_column_right" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+      </body>
+    </body>
+  </worldbody>
+  <equality>
+    <joint name="planetary_carrier_ratio" joint1="output_shaft_hinge" joint2="input_shaft_hinge" polycoef="0 0.25 0 0 0" />
+    <joint name="planet_1_mesh" joint1="planet_1_carrier_hinge" joint2="input_shaft_hinge" polycoef="0 -0.75 0 0 0" />
+    <joint name="planet_2_mesh" joint1="planet_2_carrier_hinge" joint2="input_shaft_hinge" polycoef="0 -0.75 0 0 0" />
+    <joint name="planet_3_mesh" joint1="planet_3_carrier_hinge" joint2="input_shaft_hinge" polycoef="0 -0.75 0 0 0" />
+    <joint name="planet_4_mesh" joint1="planet_4_carrier_hinge" joint2="input_shaft_hinge" polycoef="0 -0.75 0 0 0" />
+  </equality>
+  <contact>
+    <exclude body1="baseplate" body2="carrier" />
+    <exclude body1="baseplate" body2="input_shaft" />
+    <exclude body1="baseplate" body2="output_shaft" />
+    <exclude body1="carrier" body2="crank_arm" />
+    <exclude body1="carrier" body2="fixed_ring" />
+    <exclude body1="carrier" body2="hand_handle" />
+    <exclude body1="carrier" body2="input_shaft" />
+    <exclude body1="carrier" body2="lower_input_bearing" />
+    <exclude body1="carrier" body2="output_bearing" />
+    <exclude body1="carrier" body2="output_bearing_pedestal" />
+    <exclude body1="carrier" body2="output_dial" />
+    <exclude body1="carrier" body2="output_shaft" />
+    <exclude body1="carrier" body2="planet_1" />
+    <exclude body1="carrier" body2="planet_2" />
+    <exclude body1="carrier" body2="planet_3" />
+    <exclude body1="carrier" body2="planet_4" />
+    <exclude body1="carrier" body2="planet_pin_1" />
+    <exclude body1="carrier" body2="planet_pin_2" />
+    <exclude body1="carrier" body2="planet_pin_3" />
+    <exclude body1="carrier" body2="planet_pin_4" />
+    <exclude body1="carrier" body2="ring_post_1" />
+    <exclude body1="carrier" body2="ring_post_2" />
+    <exclude body1="carrier" body2="ring_post_3" />
+    <exclude body1="carrier" body2="ring_post_4" />
+    <exclude body1="carrier" body2="ring_support_shelf" />
+    <exclude body1="carrier" body2="sun_gear" />
+    <exclude body1="carrier" body2="upper_bridge" />
+    <exclude body1="carrier" body2="upper_bridge_column_left" />
+    <exclude body1="carrier" body2="upper_bridge_column_right" />
+    <exclude body1="carrier" body2="upper_input_bearing" />
+    <exclude body1="crank_arm" body2="input_shaft" />
+    <exclude body1="crank_arm" body2="planet_1" />
+    <exclude body1="crank_arm" body2="planet_2" />
+    <exclude body1="crank_arm" body2="planet_3" />
+    <exclude body1="crank_arm" body2="planet_4" />
+    <exclude body1="crank_arm" body2="sun_gear" />
+    <exclude body1="fixed_ring" body2="input_shaft" />
+    <exclude body1="fixed_ring" body2="output_shaft" />
+    <exclude body1="fixed_ring" body2="planet_1" />
+    <exclude body1="fixed_ring" body2="planet_2" />
+    <exclude body1="fixed_ring" body2="planet_3" />
+    <exclude body1="fixed_ring" body2="planet_4" />
+    <exclude body1="fixed_ring" body2="sun_gear" />
+    <exclude body1="hand_handle" body2="input_shaft" />
+    <exclude body1="hand_handle" body2="planet_1" />
+    <exclude body1="hand_handle" body2="planet_2" />
+    <exclude body1="hand_handle" body2="planet_4" />
+    <exclude body1="hand_handle" body2="sun_gear" />
+    <exclude body1="input_shaft" body2="lower_input_bearing" />
+    <exclude body1="input_shaft" body2="output_bearing" />
+    <exclude body1="input_shaft" body2="output_bearing_pedestal" />
+    <exclude body1="input_shaft" body2="output_dial" />
+    <exclude body1="input_shaft" body2="output_shaft" />
+    <exclude body1="input_shaft" body2="planet_1" />
+    <exclude body1="input_shaft" body2="planet_2" />
+    <exclude body1="input_shaft" body2="planet_3" />
+    <exclude body1="input_shaft" body2="planet_4" />
+    <exclude body1="input_shaft" body2="planet_pin_1" />
+    <exclude body1="input_shaft" body2="planet_pin_2" />
+    <exclude body1="input_shaft" body2="planet_pin_3" />
+    <exclude body1="input_shaft" body2="planet_pin_4" />
+    <exclude body1="input_shaft" body2="ring_support_shelf" />
+    <exclude body1="input_shaft" body2="sun_gear" />
+    <exclude body1="input_shaft" body2="upper_bridge" />
+    <exclude body1="input_shaft" body2="upper_input_bearing" />
+    <exclude body1="lower_input_bearing" body2="output_shaft" />
+    <exclude body1="lower_input_bearing" body2="planet_1" />
+    <exclude body1="lower_input_bearing" body2="planet_2" />
+    <exclude body1="lower_input_bearing" body2="planet_3" />
+    <exclude body1="lower_input_bearing" body2="planet_4" />
+    <exclude body1="lower_input_bearing" body2="sun_gear" />
+    <exclude body1="output_bearing_pedestal" body2="output_shaft" />
+    <exclude body1="output_bearing_pedestal" body2="planet_1" />
+    <exclude body1="output_bearing_pedestal" body2="planet_2" />
+    <exclude body1="output_bearing_pedestal" body2="planet_3" />
+    <exclude body1="output_bearing_pedestal" body2="planet_4" />
+    <exclude body1="output_bearing_pedestal" body2="sun_gear" />
+    <exclude body1="output_bearing" body2="output_shaft" />
+    <exclude body1="output_bearing" body2="planet_1" />
+    <exclude body1="output_bearing" body2="planet_2" />
+    <exclude body1="output_bearing" body2="planet_3" />
+    <exclude body1="output_bearing" body2="planet_4" />
+    <exclude body1="output_bearing" body2="sun_gear" />
+    <exclude body1="output_dial" body2="output_shaft" />
+    <exclude body1="output_dial" body2="planet_1" />
+    <exclude body1="output_dial" body2="planet_2" />
+    <exclude body1="output_dial" body2="planet_3" />
+    <exclude body1="output_dial" body2="planet_4" />
+    <exclude body1="output_dial" body2="sun_gear" />
+    <exclude body1="output_shaft" body2="planet_1" />
+    <exclude body1="output_shaft" body2="planet_2" />
+    <exclude body1="output_shaft" body2="planet_3" />
+    <exclude body1="output_shaft" body2="planet_4" />
+    <exclude body1="output_shaft" body2="planet_pin_1" />
+    <exclude body1="output_shaft" body2="planet_pin_2" />
+    <exclude body1="output_shaft" body2="planet_pin_3" />
+    <exclude body1="output_shaft" body2="planet_pin_4" />
+    <exclude body1="output_shaft" body2="ring_support_shelf" />
+    <exclude body1="output_shaft" body2="sun_gear" />
+    <exclude body1="output_shaft" body2="upper_bridge" />
+    <exclude body1="planet_1" body2="planet_2" />
+    <exclude body1="planet_1" body2="planet_3" />
+    <exclude body1="planet_1" body2="planet_4" />
+    <exclude body1="planet_1" body2="planet_pin_1" />
+    <exclude body1="planet_1" body2="planet_pin_2" />
+    <exclude body1="planet_1" body2="planet_pin_4" />
+    <exclude body1="planet_1" body2="ring_post_1" />
+    <exclude body1="planet_1" body2="ring_support_shelf" />
+    <exclude body1="planet_1" body2="sun_gear" />
+    <exclude body1="planet_1" body2="upper_bridge" />
+    <exclude body1="planet_1" body2="upper_bridge_column_right" />
+    <exclude body1="planet_1" body2="upper_input_bearing" />
+    <exclude body1="planet_2" body2="planet_3" />
+    <exclude body1="planet_2" body2="planet_4" />
+    <exclude body1="planet_2" body2="planet_pin_1" />
+    <exclude body1="planet_2" body2="planet_pin_2" />
+    <exclude body1="planet_2" body2="planet_pin_3" />
+    <exclude body1="planet_2" body2="ring_post_2" />
+    <exclude body1="planet_2" body2="ring_support_shelf" />
+    <exclude body1="planet_2" body2="sun_gear" />
+    <exclude body1="planet_2" body2="upper_bridge" />
+    <exclude body1="planet_2" body2="upper_input_bearing" />
+    <exclude body1="planet_3" body2="planet_4" />
+    <exclude body1="planet_3" body2="planet_pin_2" />
+    <exclude body1="planet_3" body2="planet_pin_3" />
+    <exclude body1="planet_3" body2="planet_pin_4" />
+    <exclude body1="planet_3" body2="ring_post_3" />
+    <exclude body1="planet_3" body2="ring_support_shelf" />
+    <exclude body1="planet_3" body2="sun_gear" />
+    <exclude body1="planet_3" body2="upper_bridge" />
+    <exclude body1="planet_3" body2="upper_bridge_column_left" />
+    <exclude body1="planet_3" body2="upper_input_bearing" />
+    <exclude body1="planet_4" body2="planet_pin_1" />
+    <exclude body1="planet_4" body2="planet_pin_3" />
+    <exclude body1="planet_4" body2="planet_pin_4" />
+    <exclude body1="planet_4" body2="ring_post_4" />
+    <exclude body1="planet_4" body2="ring_support_shelf" />
+    <exclude body1="planet_4" body2="sun_gear" />
+    <exclude body1="planet_4" body2="upper_bridge" />
+    <exclude body1="planet_4" body2="upper_input_bearing" />
+    <exclude body1="planet_pin_1" body2="sun_gear" />
+    <exclude body1="planet_pin_2" body2="sun_gear" />
+    <exclude body1="planet_pin_3" body2="sun_gear" />
+    <exclude body1="planet_pin_4" body2="sun_gear" />
+    <exclude body1="ring_support_shelf" body2="sun_gear" />
+    <exclude body1="sun_gear" body2="upper_bridge" />
+    <exclude body1="sun_gear" body2="upper_input_bearing" />
+  </contact>
+</mujoco>

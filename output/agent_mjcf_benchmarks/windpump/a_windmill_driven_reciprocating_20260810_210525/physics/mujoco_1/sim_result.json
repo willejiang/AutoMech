@@ -1,0 +1,109 @@
+{
+  "task": "a windmill-driven reciprocating piston water pump with closed-loop crank and guided pump rod output",
+  "spec": {
+    "duration_s": 3.0,
+    "run_dir": "output\\agent_mjcf_benchmarks\\windpump\\a_windmill_driven_reciprocating_20260810_210525",
+    "drive": {
+      "torque": 0.5,
+      "mode": "velocity",
+      "drive_method": "servo",
+      "target_velocity": 4.0,
+      "output_link": "piston_slider"
+    },
+    "design": {
+      "input_joint": "wind_rotor",
+      "output_joint": "place_pump_rod",
+      "watch_joints": [
+        "place_crankshaft",
+        "place_connecting_rod",
+        "place_piston_slider",
+        "place_pump_rod"
+      ],
+      "propagation_path": [
+        "place_wind_rotor",
+        "place_crankshaft",
+        "place_connecting_rod",
+        "place_piston_slider",
+        "place_pump_rod"
+      ],
+      "pass_criteria": {
+        "input_must_move": true,
+        "output_must_move": true,
+        "output_must_reverse_direction": true,
+        "base_must_remain_fixed": true
+      },
+      "environment": "Bench-mounted and driven: the base is rigidly fixed while the wind rotor is turned at a steady rate. The connecting rod, guided slider, pump rod, and pump piston remain visible so transmission into repeated vertical pumping strokes can be observed.",
+      "camera": {
+        "target_link": "guide_frame",
+        "azimuth": 45.0,
+        "elevation": -25.0,
+        "distance_scale": 2.5
+      }
+    }
+  },
+  "metrics": {
+    "verdict": "PASS",
+    "test_kind": "driven_mechanism",
+    "survive_s": 3.0,
+    "input_joint": "supported_crankshaft_rotation",
+    "input_part": "wind_rotor",
+    "input_travel": 0.5619,
+    "input_unit": "rad",
+    "moved_count": 2,
+    "watched_count": 5,
+    "output_reached": false,
+    "exploded": false,
+    "output_travel": 0.0004,
+    "output_unit": "m",
+    "ratio_in_out": null,
+    "displaced_parts": [
+      {
+        "part": "connecting_rod",
+        "disp_mm": 10.14
+      },
+      {
+        "part": "wrist_pin",
+        "disp_mm": 9.91
+      }
+    ],
+    "end_z": -0.0002,
+    "max_tilt_deg": 0.0,
+    "max_drift": 0.0101
+  },
+  "stability": {
+    "verdict": "PASS",
+    "exploded": false,
+    "max_disp_m": 0.0048,
+    "end_z": 0.0,
+    "displaced_parts": [
+      {
+        "part": "wrist_pin",
+        "disp_mm": 4.82
+      },
+      {
+        "part": "connecting_rod",
+        "disp_mm": 4.73
+      },
+      {
+        "part": "piston_slider",
+        "disp_mm": 4.4
+      },
+      {
+        "part": "pump_rod",
+        "disp_mm": 4.4
+      },
+      {
+        "part": "pump_piston",
+        "disp_mm": 4.4
+      }
+    ]
+  },
+  "frames_dir": "output\\agent_mjcf_benchmarks\\windpump\\a_windmill_driven_reciprocating_20260810_210525\\physics\\mujoco_1\\frames",
+  "n_frames": 40,
+  "log": [
+    "initial contacts: 0 interpenetrating pair(s)",
+    "stability(settle): PASS max_disp=0.005m exploded=False",
+    "camera: az=45.0 el=-25.0 dist=0.391 (designer)",
+    "drive: method=servo mode=velocity rate=4"
+  ]
+}

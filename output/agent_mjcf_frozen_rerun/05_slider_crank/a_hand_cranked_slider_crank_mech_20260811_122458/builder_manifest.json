@@ -1,0 +1,2275 @@
+{
+  "manifest_version": 3,
+  "engine": "mujoco-agent",
+  "topology_plan": {
+    "coordinate_map": {
+      "baseplate": null,
+      "lower_bushing": null,
+      "upper_bearing_bracket": null,
+      "upper_bushing": null,
+      "crankshaft": "crankshaft_world_hinge",
+      "crank_pin": "crankshaft_world_hinge",
+      "connecting_rod": "big_end_hinge",
+      "guide_bed": null,
+      "piston_slider": "slider_world_prismatic",
+      "wrist_pin": "slider_world_prismatic",
+      "guide_rail_left": null,
+      "guide_rail_right": null,
+      "guide_keeper_left": null,
+      "guide_keeper_right": null,
+      "hand_crank_arm": "crankshaft_world_hinge",
+      "hand_grip": "crankshaft_world_hinge"
+    },
+    "tree_edges": [
+      [
+        "baseplate",
+        "lower_bushing"
+      ],
+      [
+        "baseplate",
+        "upper_bearing_bracket"
+      ],
+      [
+        "upper_bearing_bracket",
+        "upper_bushing"
+      ],
+      [
+        "__world__",
+        "crankshaft"
+      ],
+      [
+        "crankshaft",
+        "crank_pin"
+      ],
+      [
+        "crank_pin",
+        "connecting_rod"
+      ],
+      [
+        "baseplate",
+        "guide_bed"
+      ],
+      [
+        "__world__",
+        "piston_slider"
+      ],
+      [
+        "piston_slider",
+        "wrist_pin"
+      ],
+      [
+        "guide_bed",
+        "guide_rail_left"
+      ],
+      [
+        "guide_bed",
+        "guide_rail_right"
+      ],
+      [
+        "guide_rail_left",
+        "guide_keeper_left"
+      ],
+      [
+        "guide_rail_right",
+        "guide_keeper_right"
+      ],
+      [
+        "crankshaft",
+        "hand_crank_arm"
+      ],
+      [
+        "hand_crank_arm",
+        "hand_grip"
+      ]
+    ],
+    "closure_edges": [
+      {
+        "name": "small_end_closure",
+        "body1": "connecting_rod",
+        "body2": "wrist_pin",
+        "anchor_m": [
+          0.025943895816079872,
+          0,
+          0.028
+        ]
+      }
+    ],
+    "rigid_carried": [
+      [
+        "crankshaft",
+        "crank_pin"
+      ],
+      [
+        "piston_slider",
+        "wrist_pin"
+      ],
+      [
+        "crankshaft",
+        "hand_crank_arm"
+      ],
+      [
+        "hand_crank_arm",
+        "hand_grip"
+      ]
+    ],
+    "independent_coaxial": [
+      [
+        "crankshaft",
+        "lower_bushing"
+      ],
+      [
+        "crankshaft",
+        "upper_bushing"
+      ],
+      [
+        "connecting_rod",
+        "crank_pin"
+      ],
+      [
+        "connecting_rod",
+        "wrist_pin"
+      ]
+    ],
+    "transmissions": [],
+    "contact_decisions": [
+      {
+        "pair": [
+          "crankshaft",
+          "lower_bushing"
+        ],
+        "action": "exclude",
+        "reason": "clearance journal represented by hinge",
+        "source_entity_ids": [
+          "relation/lower_main_journal"
+        ],
+        "fact_ids": [
+          "fit/lower_bushing/journal/crankshaft/main_journal",
+          "pair/crankshaft/lower_bushing",
+          "nearby/crankshaft/lower_bushing"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "upper_bushing"
+        ],
+        "action": "exclude",
+        "reason": "clearance journal represented by hinge",
+        "source_entity_ids": [
+          "relation/upper_main_journal"
+        ],
+        "fact_ids": [
+          "fit/upper_bushing/journal/crankshaft/main_journal",
+          "pair/crankshaft/upper_bushing",
+          "nearby/crankshaft/upper_bushing"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "crank_pin"
+        ],
+        "action": "exclude",
+        "reason": "interference press fit rigidly carried",
+        "source_entity_ids": [
+          "relation/crank_pin_press"
+        ],
+        "fact_ids": [
+          "fit/crankshaft/crank_pin_seat/crank_pin/press_seat",
+          "pair/crank_pin/crankshaft",
+          "nearby/crank_pin/crankshaft"
+        ]
+      },
+      {
+        "pair": [
+          "crank_pin",
+          "connecting_rod"
+        ],
+        "action": "exclude",
+        "reason": "dedicated running pin represented by hinge",
+        "source_entity_ids": [
+          "relation/big_end_revolute"
+        ],
+        "fact_ids": [
+          "fit/crank_pin/rod_journal/connecting_rod/big_end_bore",
+          "pair/connecting_rod/crank_pin",
+          "nearby/connecting_rod/crank_pin"
+        ]
+      },
+      {
+        "pair": [
+          "wrist_pin",
+          "connecting_rod"
+        ],
+        "action": "exclude",
+        "reason": "dedicated running pin represented by closure",
+        "source_entity_ids": [
+          "relation/small_end_revolute"
+        ],
+        "fact_ids": [
+          "fit/wrist_pin/rod_journal/connecting_rod/small_end_bore",
+          "pair/connecting_rod/wrist_pin",
+          "nearby/connecting_rod/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "piston_slider",
+          "wrist_pin"
+        ],
+        "action": "exclude",
+        "reason": "interference press fit rigidly carried",
+        "source_entity_ids": [
+          "relation/wrist_pin_press"
+        ],
+        "fact_ids": [
+          "fit/piston_slider/wrist_bore/wrist_pin/slider_press",
+          "pair/piston_slider/wrist_pin",
+          "nearby/piston_slider/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "guide_bed",
+          "piston_slider"
+        ],
+        "action": "keep",
+        "reason": "authored support face requires contact",
+        "source_entity_ids": [
+          "relation/slider_on_bed"
+        ],
+        "fact_ids": [
+          "fit/guide_bed/slide_surface/piston_slider/guide_bottom",
+          "pair/guide_bed/piston_slider",
+          "nearby/guide_bed/piston_slider"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "hand_crank_arm"
+        ],
+        "action": "exclude",
+        "reason": "interference press fit rigidly carried",
+        "source_entity_ids": [
+          "relation/hand_arm_press"
+        ],
+        "fact_ids": [
+          "fit/crankshaft/hand_seat/hand_crank_arm/shaft_bore",
+          "pair/crankshaft/hand_crank_arm",
+          "nearby/crankshaft/hand_crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "hand_crank_arm",
+          "hand_grip"
+        ],
+        "action": "exclude",
+        "reason": "fixed authored grip mount rigidly carried",
+        "source_entity_ids": [
+          "relation/hand_grip_mount"
+        ],
+        "fact_ids": [
+          "fit/hand_crank_arm/grip_mount/hand_grip/arm_mount",
+          "pair/hand_crank_arm/hand_grip",
+          "nearby/hand_crank_arm/hand_grip"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "connecting_rod"
+        ],
+        "action": "keep",
+        "reason": "explicit guide contact or compound-web collision remains active",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/connecting_rod"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/crankshaft",
+          "nearby/connecting_rod/crankshaft"
+        ]
+      },
+      {
+        "pair": [
+          "piston_slider",
+          "guide_rail_left"
+        ],
+        "action": "keep",
+        "reason": "explicit guide contact or compound-web collision remains active",
+        "source_entity_ids": [
+          "link/piston_slider",
+          "link/guide_rail_left"
+        ],
+        "fact_ids": [
+          "pair/guide_rail_left/piston_slider",
+          "nearby/guide_rail_left/piston_slider"
+        ]
+      },
+      {
+        "pair": [
+          "piston_slider",
+          "guide_rail_right"
+        ],
+        "action": "keep",
+        "reason": "explicit guide contact or compound-web collision remains active",
+        "source_entity_ids": [
+          "link/piston_slider",
+          "link/guide_rail_right"
+        ],
+        "fact_ids": [
+          "pair/guide_rail_right/piston_slider",
+          "nearby/guide_rail_right/piston_slider"
+        ]
+      },
+      {
+        "pair": [
+          "piston_slider",
+          "guide_keeper_left"
+        ],
+        "action": "keep",
+        "reason": "explicit guide contact or compound-web collision remains active",
+        "source_entity_ids": [
+          "link/piston_slider",
+          "link/guide_keeper_left"
+        ],
+        "fact_ids": [
+          "pair/guide_keeper_left/piston_slider",
+          "nearby/guide_keeper_left/piston_slider"
+        ]
+      },
+      {
+        "pair": [
+          "piston_slider",
+          "guide_keeper_right"
+        ],
+        "action": "keep",
+        "reason": "explicit guide contact or compound-web collision remains active",
+        "source_entity_ids": [
+          "link/piston_slider",
+          "link/guide_keeper_right"
+        ],
+        "fact_ids": [
+          "pair/guide_keeper_right/piston_slider",
+          "nearby/guide_keeper_right/piston_slider"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "baseplate"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/baseplate"
+        ],
+        "fact_ids": [
+          "pair/baseplate/crankshaft",
+          "nearby/baseplate/crankshaft"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "upper_bearing_bracket"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/upper_bearing_bracket"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/upper_bearing_bracket",
+          "nearby/crankshaft/upper_bearing_bracket"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "hand_grip"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/hand_grip"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/hand_grip",
+          "nearby/crankshaft/hand_grip"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "guide_bed"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/guide_bed"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/guide_bed",
+          "nearby/crankshaft/guide_bed"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "guide_rail_left"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/guide_rail_left"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/guide_rail_left",
+          "nearby/crankshaft/guide_rail_left"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "guide_keeper_left"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/guide_keeper_left"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/guide_keeper_left",
+          "nearby/crankshaft/guide_keeper_left"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "guide_keeper_right"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/guide_keeper_right"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/guide_keeper_right",
+          "nearby/crankshaft/guide_keeper_right"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "guide_rail_right"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/guide_rail_right"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/guide_rail_right",
+          "nearby/crankshaft/guide_rail_right"
+        ]
+      },
+      {
+        "pair": [
+          "crank_pin",
+          "upper_bushing"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/crank_pin",
+          "link/upper_bushing"
+        ],
+        "fact_ids": [
+          "pair/crank_pin/upper_bushing",
+          "nearby/crank_pin/upper_bushing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_pin",
+          "hand_crank_arm"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/crank_pin",
+          "link/hand_crank_arm"
+        ],
+        "fact_ids": [
+          "pair/crank_pin/hand_crank_arm",
+          "nearby/crank_pin/hand_crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "crank_pin",
+          "upper_bearing_bracket"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/crank_pin",
+          "link/upper_bearing_bracket"
+        ],
+        "fact_ids": [
+          "pair/crank_pin/upper_bearing_bracket",
+          "nearby/crank_pin/upper_bearing_bracket"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "piston_slider"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/piston_slider"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/piston_slider",
+          "nearby/connecting_rod/piston_slider"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "guide_rail_left"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/guide_rail_left"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/guide_rail_left",
+          "nearby/connecting_rod/guide_rail_left"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "guide_bed"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/guide_bed"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/guide_bed",
+          "nearby/connecting_rod/guide_bed"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "guide_keeper_left"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/guide_keeper_left"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/guide_keeper_left",
+          "nearby/connecting_rod/guide_keeper_left"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "guide_keeper_right"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/guide_keeper_right"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/guide_keeper_right",
+          "nearby/connecting_rod/guide_keeper_right"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "guide_rail_right"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/guide_rail_right"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/guide_rail_right",
+          "nearby/connecting_rod/guide_rail_right"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "upper_bushing"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/upper_bushing"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/upper_bushing",
+          "nearby/connecting_rod/upper_bushing"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "hand_crank_arm"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/hand_crank_arm"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/hand_crank_arm",
+          "nearby/connecting_rod/hand_crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "upper_bearing_bracket"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/upper_bearing_bracket"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/upper_bearing_bracket",
+          "nearby/connecting_rod/upper_bearing_bracket"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "hand_grip"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/hand_grip"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/hand_grip",
+          "nearby/connecting_rod/hand_grip"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "lower_bushing"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/lower_bushing"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/lower_bushing",
+          "nearby/connecting_rod/lower_bushing"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "baseplate"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/baseplate"
+        ],
+        "fact_ids": [
+          "pair/baseplate/connecting_rod",
+          "nearby/baseplate/connecting_rod"
+        ]
+      },
+      {
+        "pair": [
+          "piston_slider",
+          "baseplate"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/piston_slider",
+          "link/baseplate"
+        ],
+        "fact_ids": [
+          "pair/baseplate/piston_slider",
+          "nearby/baseplate/piston_slider"
+        ]
+      },
+      {
+        "pair": [
+          "wrist_pin",
+          "guide_bed"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/wrist_pin",
+          "link/guide_bed"
+        ],
+        "fact_ids": [
+          "pair/guide_bed/wrist_pin",
+          "nearby/guide_bed/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "wrist_pin",
+          "guide_keeper_left"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/wrist_pin",
+          "link/guide_keeper_left"
+        ],
+        "fact_ids": [
+          "pair/guide_keeper_left/wrist_pin",
+          "nearby/guide_keeper_left/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "wrist_pin",
+          "guide_keeper_right"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/wrist_pin",
+          "link/guide_keeper_right"
+        ],
+        "fact_ids": [
+          "pair/guide_keeper_right/wrist_pin",
+          "nearby/guide_keeper_right/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "hand_crank_arm",
+          "upper_bushing"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/hand_crank_arm",
+          "link/upper_bushing"
+        ],
+        "fact_ids": [
+          "pair/hand_crank_arm/upper_bushing",
+          "nearby/hand_crank_arm/upper_bushing"
+        ]
+      },
+      {
+        "pair": [
+          "hand_crank_arm",
+          "guide_keeper_right"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/hand_crank_arm",
+          "link/guide_keeper_right"
+        ],
+        "fact_ids": [
+          "pair/guide_keeper_right/hand_crank_arm",
+          "nearby/guide_keeper_right/hand_crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "hand_crank_arm",
+          "guide_keeper_left"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/hand_crank_arm",
+          "link/guide_keeper_left"
+        ],
+        "fact_ids": [
+          "pair/guide_keeper_left/hand_crank_arm",
+          "nearby/guide_keeper_left/hand_crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "hand_crank_arm",
+          "guide_rail_right"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/hand_crank_arm",
+          "link/guide_rail_right"
+        ],
+        "fact_ids": [
+          "pair/guide_rail_right/hand_crank_arm",
+          "nearby/guide_rail_right/hand_crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "hand_crank_arm",
+          "guide_rail_left"
+        ],
+        "action": "exclude",
+        "reason": "positive mesh separation or disjoint AABB and no contact function",
+        "source_entity_ids": [
+          "link/hand_crank_arm",
+          "link/guide_rail_left"
+        ],
+        "fact_ids": [
+          "pair/guide_rail_left/hand_crank_arm",
+          "nearby/guide_rail_left/hand_crank_arm"
+        ]
+      }
+    ],
+    "support_ground": [
+      "baseplate"
+    ],
+    "support_strategy": "fixed base normally; free baseplate for support probe"
+  },
+  "decisions": [
+    {
+      "generated_kind": "constraint",
+      "generated_name": "small_end_closure",
+      "constraint_type": "connect",
+      "reason": "small-end revolute closes slider-crank",
+      "source_entity_ids": [
+        "relation/small_end_revolute"
+      ],
+      "fact_ids": [
+        "fit/wrist_pin/rod_journal/connecting_rod/small_end_bore"
+      ]
+    },
+    {
+      "entity_id": "link/baseplate",
+      "action": "emitted",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "immutable link emitted exactly once",
+      "fact_ids": [
+        "link/baseplate"
+      ]
+    },
+    {
+      "entity_id": "link/lower_bushing",
+      "action": "emitted",
+      "generated_nodes": [
+        "lower_bushing"
+      ],
+      "reason": "immutable link emitted exactly once",
+      "fact_ids": [
+        "link/lower_bushing"
+      ]
+    },
+    {
+      "entity_id": "link/upper_bearing_bracket",
+      "action": "emitted",
+      "generated_nodes": [
+        "upper_bearing_bracket"
+      ],
+      "reason": "immutable link emitted exactly once",
+      "fact_ids": [
+        "link/upper_bearing_bracket"
+      ]
+    },
+    {
+      "entity_id": "link/upper_bushing",
+      "action": "emitted",
+      "generated_nodes": [
+        "upper_bushing"
+      ],
+      "reason": "immutable link emitted exactly once",
+      "fact_ids": [
+        "link/upper_bushing"
+      ]
+    },
+    {
+      "entity_id": "link/crankshaft",
+      "action": "emitted",
+      "generated_nodes": [
+        "crankshaft"
+      ],
+      "reason": "immutable link emitted exactly once",
+      "fact_ids": [
+        "link/crankshaft"
+      ]
+    },
+    {
+      "entity_id": "link/crank_pin",
+      "action": "emitted",
+      "generated_nodes": [
+        "crank_pin"
+      ],
+      "reason": "immutable link emitted exactly once",
+      "fact_ids": [
+        "link/crank_pin"
+      ]
+    },
+    {
+      "entity_id": "link/connecting_rod",
+      "action": "emitted",
+      "generated_nodes": [
+        "connecting_rod"
+      ],
+      "reason": "immutable link emitted exactly once",
+      "fact_ids": [
+        "link/connecting_rod"
+      ]
+    },
+    {
+      "entity_id": "link/guide_bed",
+      "action": "emitted",
+      "generated_nodes": [
+        "guide_bed"
+      ],
+      "reason": "immutable link emitted exactly once",
+      "fact_ids": [
+        "link/guide_bed"
+      ]
+    },
+    {
+      "entity_id": "link/piston_slider",
+      "action": "emitted",
+      "generated_nodes": [
+        "piston_slider"
+      ],
+      "reason": "immutable link emitted exactly once",
+      "fact_ids": [
+        "link/piston_slider"
+      ]
+    },
+    {
+      "entity_id": "link/wrist_pin",
+      "action": "emitted",
+      "generated_nodes": [
+        "wrist_pin"
+      ],
+      "reason": "immutable link emitted exactly once",
+      "fact_ids": [
+        "link/wrist_pin"
+      ]
+    },
+    {
+      "entity_id": "link/guide_rail_left",
+      "action": "emitted",
+      "generated_nodes": [
+        "guide_rail_left"
+      ],
+      "reason": "immutable link emitted exactly once",
+      "fact_ids": [
+        "link/guide_rail_left"
+      ]
+    },
+    {
+      "entity_id": "link/guide_rail_right",
+      "action": "emitted",
+      "generated_nodes": [
+        "guide_rail_right"
+      ],
+      "reason": "immutable link emitted exactly once",
+      "fact_ids": [
+        "link/guide_rail_right"
+      ]
+    },
+    {
+      "entity_id": "link/guide_keeper_left",
+      "action": "emitted",
+      "generated_nodes": [
+        "guide_keeper_left"
+      ],
+      "reason": "immutable link emitted exactly once",
+      "fact_ids": [
+        "link/guide_keeper_left"
+      ]
+    },
+    {
+      "entity_id": "link/guide_keeper_right",
+      "action": "emitted",
+      "generated_nodes": [
+        "guide_keeper_right"
+      ],
+      "reason": "immutable link emitted exactly once",
+      "fact_ids": [
+        "link/guide_keeper_right"
+      ]
+    },
+    {
+      "entity_id": "link/hand_crank_arm",
+      "action": "emitted",
+      "generated_nodes": [
+        "hand_crank_arm"
+      ],
+      "reason": "immutable link emitted exactly once",
+      "fact_ids": [
+        "link/hand_crank_arm"
+      ]
+    },
+    {
+      "entity_id": "link/hand_grip",
+      "action": "emitted",
+      "generated_nodes": [
+        "hand_grip"
+      ],
+      "reason": "immutable link emitted exactly once",
+      "fact_ids": [
+        "link/hand_grip"
+      ]
+    },
+    {
+      "entity_id": "pose/place_baseplate",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "pose/place_baseplate"
+      ]
+    },
+    {
+      "entity_id": "pose/place_lower_bushing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "pose/place_lower_bushing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_upper_bearing_bracket",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "pose/place_upper_bearing_bracket"
+      ]
+    },
+    {
+      "entity_id": "pose/place_upper_bushing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "pose/place_upper_bushing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crankshaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "pose/place_crankshaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crank_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "pose/place_crank_pin"
+      ]
+    },
+    {
+      "entity_id": "pose/place_connecting_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "pose/place_connecting_rod"
+      ]
+    },
+    {
+      "entity_id": "pose/place_guide_bed",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "pose/place_guide_bed"
+      ]
+    },
+    {
+      "entity_id": "pose/place_piston_slider",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "pose/place_piston_slider"
+      ]
+    },
+    {
+      "entity_id": "pose/place_wrist_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "pose/place_wrist_pin"
+      ]
+    },
+    {
+      "entity_id": "pose/place_guide_rail_left",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "pose/place_guide_rail_left"
+      ]
+    },
+    {
+      "entity_id": "pose/place_guide_rail_right",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "pose/place_guide_rail_right"
+      ]
+    },
+    {
+      "entity_id": "pose/place_guide_keeper_left",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "pose/place_guide_keeper_left"
+      ]
+    },
+    {
+      "entity_id": "pose/place_guide_keeper_right",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "pose/place_guide_keeper_right"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hand_crank_arm",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "pose/place_hand_crank_arm"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hand_grip",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "pose/place_hand_grip"
+      ]
+    },
+    {
+      "entity_id": "port/baseplate/lower_bearing_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "port/baseplate/lower_bearing_seat"
+      ]
+    },
+    {
+      "entity_id": "port/baseplate/guide_mount",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "port/baseplate/guide_mount"
+      ]
+    },
+    {
+      "entity_id": "port/lower_bushing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "port/lower_bushing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/upper_bearing_bracket/bushing_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "port/upper_bearing_bracket/bushing_seat"
+      ]
+    },
+    {
+      "entity_id": "port/upper_bushing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "port/upper_bushing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/crankshaft/main_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "port/crankshaft/main_journal"
+      ]
+    },
+    {
+      "entity_id": "port/crankshaft/crank_pin_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "port/crankshaft/crank_pin_seat"
+      ]
+    },
+    {
+      "entity_id": "port/crankshaft/hand_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "port/crankshaft/hand_seat"
+      ]
+    },
+    {
+      "entity_id": "port/crank_pin/press_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "port/crank_pin/press_seat"
+      ]
+    },
+    {
+      "entity_id": "port/crank_pin/rod_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "port/crank_pin/rod_journal"
+      ]
+    },
+    {
+      "entity_id": "port/connecting_rod/big_end_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "port/connecting_rod/big_end_bore"
+      ]
+    },
+    {
+      "entity_id": "port/connecting_rod/small_end_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "port/connecting_rod/small_end_bore"
+      ]
+    },
+    {
+      "entity_id": "port/wrist_pin/slider_press",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "port/wrist_pin/slider_press"
+      ]
+    },
+    {
+      "entity_id": "port/wrist_pin/rod_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "port/wrist_pin/rod_journal"
+      ]
+    },
+    {
+      "entity_id": "port/piston_slider/wrist_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "port/piston_slider/wrist_bore"
+      ]
+    },
+    {
+      "entity_id": "port/piston_slider/guide_bottom",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "port/piston_slider/guide_bottom"
+      ]
+    },
+    {
+      "entity_id": "port/guide_bed/slide_surface",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "port/guide_bed/slide_surface"
+      ]
+    },
+    {
+      "entity_id": "port/hand_crank_arm/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "port/hand_crank_arm/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/hand_crank_arm/grip_mount",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "port/hand_crank_arm/grip_mount"
+      ]
+    },
+    {
+      "entity_id": "port/hand_grip/arm_mount",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "authored geometry or placement represented by emitted body topology",
+      "fact_ids": [
+        "port/hand_grip/arm_mount"
+      ]
+    },
+    {
+      "entity_id": "relation/lower_main_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crankshaft_world_hinge"
+      ],
+      "reason": "authored mechanical entity mapped to generated node",
+      "fact_ids": [
+        "relation/lower_main_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/upper_main_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crankshaft_world_hinge"
+      ],
+      "reason": "authored mechanical entity mapped to generated node",
+      "fact_ids": [
+        "relation/upper_main_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/crank_pin_press",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_pin"
+      ],
+      "reason": "authored mechanical entity mapped to generated node",
+      "fact_ids": [
+        "relation/crank_pin_press"
+      ]
+    },
+    {
+      "entity_id": "relation/big_end_revolute",
+      "action": "represented_by",
+      "generated_nodes": [
+        "big_end_hinge"
+      ],
+      "reason": "authored mechanical entity mapped to generated node",
+      "fact_ids": [
+        "relation/big_end_revolute"
+      ]
+    },
+    {
+      "entity_id": "relation/small_end_revolute",
+      "action": "represented_by",
+      "generated_nodes": [
+        "small_end_closure"
+      ],
+      "reason": "authored mechanical entity mapped to generated node",
+      "fact_ids": [
+        "relation/small_end_revolute"
+      ]
+    },
+    {
+      "entity_id": "relation/wrist_pin_press",
+      "action": "represented_by",
+      "generated_nodes": [
+        "wrist_pin"
+      ],
+      "reason": "authored mechanical entity mapped to generated node",
+      "fact_ids": [
+        "relation/wrist_pin_press"
+      ]
+    },
+    {
+      "entity_id": "relation/slider_on_bed",
+      "action": "represented_by",
+      "generated_nodes": [
+        "slider_world_prismatic"
+      ],
+      "reason": "authored mechanical entity mapped to generated node",
+      "fact_ids": [
+        "relation/slider_on_bed"
+      ]
+    },
+    {
+      "entity_id": "relation/hand_arm_press",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hand_crank_arm"
+      ],
+      "reason": "authored mechanical entity mapped to generated node",
+      "fact_ids": [
+        "relation/hand_arm_press"
+      ]
+    },
+    {
+      "entity_id": "relation/hand_grip_mount",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hand_grip"
+      ],
+      "reason": "authored mechanical entity mapped to generated node",
+      "fact_ids": [
+        "relation/hand_grip_mount"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/crankshaft_world_hinge",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crankshaft_world_hinge"
+      ],
+      "reason": "authored mechanical entity mapped to generated node",
+      "fact_ids": [
+        "motion_joint/crankshaft_world_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/slider_world_prismatic",
+      "action": "represented_by",
+      "generated_nodes": [
+        "slider_world_prismatic"
+      ],
+      "reason": "authored mechanical entity mapped to generated node",
+      "fact_ids": [
+        "motion_joint/slider_world_prismatic"
+      ]
+    },
+    {
+      "entity_id": "role/driver/crankshaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crankshaft_world_hinge"
+      ],
+      "reason": "authored mechanical entity mapped to generated node",
+      "fact_ids": [
+        "role/driver/crankshaft"
+      ]
+    },
+    {
+      "entity_id": "role/output/piston_slider",
+      "action": "represented_by",
+      "generated_nodes": [
+        "slider_world_prismatic"
+      ],
+      "reason": "authored mechanical entity mapped to generated node",
+      "fact_ids": [
+        "role/output/piston_slider"
+      ]
+    },
+    {
+      "entity_id": "role/watch/crankshaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crankshaft_world_hinge"
+      ],
+      "reason": "authored mechanical entity mapped to generated node",
+      "fact_ids": [
+        "role/watch/crankshaft"
+      ]
+    },
+    {
+      "entity_id": "role/watch/connecting_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "big_end_hinge"
+      ],
+      "reason": "authored mechanical entity mapped to generated node",
+      "fact_ids": [
+        "role/watch/connecting_rod"
+      ]
+    },
+    {
+      "entity_id": "role/watch/piston_slider",
+      "action": "represented_by",
+      "generated_nodes": [
+        "slider_world_prismatic"
+      ],
+      "reason": "authored mechanical entity mapped to generated node",
+      "fact_ids": [
+        "role/watch/piston_slider"
+      ]
+    }
+  ],
+  "excludes": [
+    {
+      "pair": [
+        "crankshaft",
+        "lower_bushing"
+      ],
+      "reason": "clearance journal represented by hinge",
+      "source_entity_ids": [
+        "relation/lower_main_journal"
+      ],
+      "fact_ids": [
+        "fit/lower_bushing/journal/crankshaft/main_journal",
+        "pair/crankshaft/lower_bushing",
+        "nearby/crankshaft/lower_bushing"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "upper_bushing"
+      ],
+      "reason": "clearance journal represented by hinge",
+      "source_entity_ids": [
+        "relation/upper_main_journal"
+      ],
+      "fact_ids": [
+        "fit/upper_bushing/journal/crankshaft/main_journal",
+        "pair/crankshaft/upper_bushing",
+        "nearby/crankshaft/upper_bushing"
+      ]
+    },
+    {
+      "pair": [
+        "crank_pin",
+        "crankshaft"
+      ],
+      "reason": "interference press fit rigidly carried",
+      "source_entity_ids": [
+        "relation/crank_pin_press"
+      ],
+      "fact_ids": [
+        "fit/crankshaft/crank_pin_seat/crank_pin/press_seat",
+        "pair/crank_pin/crankshaft",
+        "nearby/crank_pin/crankshaft"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "crank_pin"
+      ],
+      "reason": "dedicated running pin represented by hinge",
+      "source_entity_ids": [
+        "relation/big_end_revolute"
+      ],
+      "fact_ids": [
+        "fit/crank_pin/rod_journal/connecting_rod/big_end_bore",
+        "pair/connecting_rod/crank_pin",
+        "nearby/connecting_rod/crank_pin"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "wrist_pin"
+      ],
+      "reason": "dedicated running pin represented by closure",
+      "source_entity_ids": [
+        "relation/small_end_revolute"
+      ],
+      "fact_ids": [
+        "fit/wrist_pin/rod_journal/connecting_rod/small_end_bore",
+        "pair/connecting_rod/wrist_pin",
+        "nearby/connecting_rod/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "piston_slider",
+        "wrist_pin"
+      ],
+      "reason": "interference press fit rigidly carried",
+      "source_entity_ids": [
+        "relation/wrist_pin_press"
+      ],
+      "fact_ids": [
+        "fit/piston_slider/wrist_bore/wrist_pin/slider_press",
+        "pair/piston_slider/wrist_pin",
+        "nearby/piston_slider/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "hand_crank_arm"
+      ],
+      "reason": "interference press fit rigidly carried",
+      "source_entity_ids": [
+        "relation/hand_arm_press"
+      ],
+      "fact_ids": [
+        "fit/crankshaft/hand_seat/hand_crank_arm/shaft_bore",
+        "pair/crankshaft/hand_crank_arm",
+        "nearby/crankshaft/hand_crank_arm"
+      ]
+    },
+    {
+      "pair": [
+        "hand_crank_arm",
+        "hand_grip"
+      ],
+      "reason": "fixed authored grip mount rigidly carried",
+      "source_entity_ids": [
+        "relation/hand_grip_mount"
+      ],
+      "fact_ids": [
+        "fit/hand_crank_arm/grip_mount/hand_grip/arm_mount",
+        "pair/hand_crank_arm/hand_grip",
+        "nearby/hand_crank_arm/hand_grip"
+      ]
+    },
+    {
+      "pair": [
+        "baseplate",
+        "crankshaft"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/baseplate"
+      ],
+      "fact_ids": [
+        "pair/baseplate/crankshaft",
+        "nearby/baseplate/crankshaft"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "upper_bearing_bracket"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/upper_bearing_bracket"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/upper_bearing_bracket",
+        "nearby/crankshaft/upper_bearing_bracket"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "hand_grip"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/hand_grip"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/hand_grip",
+        "nearby/crankshaft/hand_grip"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "guide_bed"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/guide_bed"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/guide_bed",
+        "nearby/crankshaft/guide_bed"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "guide_rail_left"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/guide_rail_left"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/guide_rail_left",
+        "nearby/crankshaft/guide_rail_left"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "guide_keeper_left"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/guide_keeper_left"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/guide_keeper_left",
+        "nearby/crankshaft/guide_keeper_left"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "guide_keeper_right"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/guide_keeper_right"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/guide_keeper_right",
+        "nearby/crankshaft/guide_keeper_right"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "guide_rail_right"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/guide_rail_right"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/guide_rail_right",
+        "nearby/crankshaft/guide_rail_right"
+      ]
+    },
+    {
+      "pair": [
+        "crank_pin",
+        "upper_bushing"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/crank_pin",
+        "link/upper_bushing"
+      ],
+      "fact_ids": [
+        "pair/crank_pin/upper_bushing",
+        "nearby/crank_pin/upper_bushing"
+      ]
+    },
+    {
+      "pair": [
+        "crank_pin",
+        "hand_crank_arm"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/crank_pin",
+        "link/hand_crank_arm"
+      ],
+      "fact_ids": [
+        "pair/crank_pin/hand_crank_arm",
+        "nearby/crank_pin/hand_crank_arm"
+      ]
+    },
+    {
+      "pair": [
+        "crank_pin",
+        "upper_bearing_bracket"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/crank_pin",
+        "link/upper_bearing_bracket"
+      ],
+      "fact_ids": [
+        "pair/crank_pin/upper_bearing_bracket",
+        "nearby/crank_pin/upper_bearing_bracket"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "piston_slider"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/piston_slider"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/piston_slider",
+        "nearby/connecting_rod/piston_slider"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "guide_rail_left"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/guide_rail_left"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/guide_rail_left",
+        "nearby/connecting_rod/guide_rail_left"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "guide_bed"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/guide_bed"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/guide_bed",
+        "nearby/connecting_rod/guide_bed"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "guide_keeper_left"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/guide_keeper_left"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/guide_keeper_left",
+        "nearby/connecting_rod/guide_keeper_left"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "guide_keeper_right"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/guide_keeper_right"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/guide_keeper_right",
+        "nearby/connecting_rod/guide_keeper_right"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "guide_rail_right"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/guide_rail_right"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/guide_rail_right",
+        "nearby/connecting_rod/guide_rail_right"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "upper_bushing"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/upper_bushing"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/upper_bushing",
+        "nearby/connecting_rod/upper_bushing"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "hand_crank_arm"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/hand_crank_arm"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/hand_crank_arm",
+        "nearby/connecting_rod/hand_crank_arm"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "upper_bearing_bracket"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/upper_bearing_bracket"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/upper_bearing_bracket",
+        "nearby/connecting_rod/upper_bearing_bracket"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "hand_grip"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/hand_grip"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/hand_grip",
+        "nearby/connecting_rod/hand_grip"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "lower_bushing"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/lower_bushing"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/lower_bushing",
+        "nearby/connecting_rod/lower_bushing"
+      ]
+    },
+    {
+      "pair": [
+        "baseplate",
+        "connecting_rod"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/baseplate"
+      ],
+      "fact_ids": [
+        "pair/baseplate/connecting_rod",
+        "nearby/baseplate/connecting_rod"
+      ]
+    },
+    {
+      "pair": [
+        "baseplate",
+        "piston_slider"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/piston_slider",
+        "link/baseplate"
+      ],
+      "fact_ids": [
+        "pair/baseplate/piston_slider",
+        "nearby/baseplate/piston_slider"
+      ]
+    },
+    {
+      "pair": [
+        "guide_bed",
+        "wrist_pin"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/wrist_pin",
+        "link/guide_bed"
+      ],
+      "fact_ids": [
+        "pair/guide_bed/wrist_pin",
+        "nearby/guide_bed/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "guide_keeper_left",
+        "wrist_pin"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/wrist_pin",
+        "link/guide_keeper_left"
+      ],
+      "fact_ids": [
+        "pair/guide_keeper_left/wrist_pin",
+        "nearby/guide_keeper_left/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "guide_keeper_right",
+        "wrist_pin"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/wrist_pin",
+        "link/guide_keeper_right"
+      ],
+      "fact_ids": [
+        "pair/guide_keeper_right/wrist_pin",
+        "nearby/guide_keeper_right/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "hand_crank_arm",
+        "upper_bushing"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/hand_crank_arm",
+        "link/upper_bushing"
+      ],
+      "fact_ids": [
+        "pair/hand_crank_arm/upper_bushing",
+        "nearby/hand_crank_arm/upper_bushing"
+      ]
+    },
+    {
+      "pair": [
+        "guide_keeper_right",
+        "hand_crank_arm"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/hand_crank_arm",
+        "link/guide_keeper_right"
+      ],
+      "fact_ids": [
+        "pair/guide_keeper_right/hand_crank_arm",
+        "nearby/guide_keeper_right/hand_crank_arm"
+      ]
+    },
+    {
+      "pair": [
+        "guide_keeper_left",
+        "hand_crank_arm"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/hand_crank_arm",
+        "link/guide_keeper_left"
+      ],
+      "fact_ids": [
+        "pair/guide_keeper_left/hand_crank_arm",
+        "nearby/guide_keeper_left/hand_crank_arm"
+      ]
+    },
+    {
+      "pair": [
+        "guide_rail_right",
+        "hand_crank_arm"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/hand_crank_arm",
+        "link/guide_rail_right"
+      ],
+      "fact_ids": [
+        "pair/guide_rail_right/hand_crank_arm",
+        "nearby/guide_rail_right/hand_crank_arm"
+      ]
+    },
+    {
+      "pair": [
+        "guide_rail_left",
+        "hand_crank_arm"
+      ],
+      "reason": "positive mesh separation or disjoint AABB and no contact function",
+      "source_entity_ids": [
+        "link/hand_crank_arm",
+        "link/guide_rail_left"
+      ],
+      "fact_ids": [
+        "pair/guide_rail_left/hand_crank_arm",
+        "nearby/guide_rail_left/hand_crank_arm"
+      ]
+    }
+  ],
+  "ground_excludes": [],
+  "support_patches": [
+    {
+      "action": "free_body",
+      "name": "baseplate",
+      "reason": "release structural base for gravity support probe"
+    }
+  ],
+  "bodies": [
+    "baseplate",
+    "connecting_rod",
+    "crank_pin",
+    "crankshaft",
+    "guide_bed",
+    "guide_keeper_left",
+    "guide_keeper_right",
+    "guide_rail_left",
+    "guide_rail_right",
+    "hand_crank_arm",
+    "hand_grip",
+    "lower_bushing",
+    "piston_slider",
+    "upper_bearing_bracket",
+    "upper_bushing",
+    "wrist_pin"
+  ],
+  "joints": [
+    "big_end_hinge",
+    "crankshaft_world_hinge",
+    "slider_world_prismatic"
+  ],
+  "constraints": [
+    "small_end_closure"
+  ]
+}

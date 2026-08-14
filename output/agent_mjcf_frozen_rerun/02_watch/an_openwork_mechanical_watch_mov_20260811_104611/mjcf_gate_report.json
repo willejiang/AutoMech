@@ -1,0 +1,119 @@
+{
+  "ok": true,
+  "errors": [],
+  "policy_version": 4,
+  "bodies": [
+    "baseplate",
+    "bridge_post_high",
+    "bridge_post_low",
+    "central_lower_bearing",
+    "central_upper_bearing",
+    "chapter_ring",
+    "dial_post_1",
+    "dial_post_2",
+    "dial_post_3",
+    "dial_post_4",
+    "hour_hand",
+    "hour_marker_1",
+    "hour_marker_10",
+    "hour_marker_11",
+    "hour_marker_12",
+    "hour_marker_2",
+    "hour_marker_3",
+    "hour_marker_4",
+    "hour_marker_5",
+    "hour_marker_6",
+    "hour_marker_7",
+    "hour_marker_8",
+    "hour_marker_9",
+    "hour_pipe",
+    "hour_wheel",
+    "intermediate_arbor",
+    "intermediate_lower_bearing",
+    "intermediate_pinion",
+    "intermediate_upper_bearing",
+    "intermediate_wheel",
+    "minute_hand",
+    "minute_pinion",
+    "minute_shaft",
+    "upper_bridge"
+  ],
+  "joints": [
+    "hour_pipe_spin",
+    "intermediate_arbor_spin",
+    "intermediate_to_hour_eq",
+    "minute_shaft_spin",
+    "minute_to_intermediate_eq"
+  ],
+  "nq": 3,
+  "nv": 3,
+  "finite": true,
+  "dynamic_transmission_probe": {
+    "ran": true,
+    "ok": true,
+    "errors": [],
+    "warnings": [],
+    "contact_on": {
+      "ok": true,
+      "driver_travel": 52.92405524397603,
+      "commanded_travel": 1.0494,
+      "joint_deltas": {
+        "minute_shaft_spin": -52.92405524397603,
+        "hour_pipe_spin": -4.005118400100585,
+        "intermediate_arbor_spin": 16.306989786800436
+      },
+      "transmission_residuals": [
+        {
+          "name": "minute_shaft_spin->intermediate_arbor_spin",
+          "driving_joint": "minute_shaft_spin",
+          "driven_joint": "intermediate_arbor_spin",
+          "ratio": -0.3333333333333333,
+          "driving_delta": -52.92405524397603,
+          "driven_delta": 16.306989786800436,
+          "normalized_residual": 0.07563830596731076
+        },
+        {
+          "name": "intermediate_arbor_spin->hour_pipe_spin",
+          "driving_joint": "intermediate_arbor_spin",
+          "driven_joint": "hour_pipe_spin",
+          "ratio": -0.25,
+          "driving_delta": 16.306989786800436,
+          "driven_delta": -4.005118400100585,
+          "normalized_residual": 0.01757014569482432
+        }
+      ],
+      "active_contacts": []
+    },
+    "contact_off": {
+      "ok": true,
+      "driver_travel": 52.92405524397603,
+      "commanded_travel": 1.0494,
+      "joint_deltas": {
+        "minute_shaft_spin": -52.92405524397603,
+        "hour_pipe_spin": -4.005118400100585,
+        "intermediate_arbor_spin": 16.306989786800436
+      },
+      "transmission_residuals": [
+        {
+          "name": "minute_shaft_spin->intermediate_arbor_spin",
+          "driving_joint": "minute_shaft_spin",
+          "driven_joint": "intermediate_arbor_spin",
+          "ratio": -0.3333333333333333,
+          "driving_delta": -52.92405524397603,
+          "driven_delta": 16.306989786800436,
+          "normalized_residual": 0.07563830596731076
+        },
+        {
+          "name": "intermediate_arbor_spin->hour_pipe_spin",
+          "driving_joint": "intermediate_arbor_spin",
+          "driven_joint": "hour_pipe_spin",
+          "ratio": -0.25,
+          "driving_delta": 16.306989786800436,
+          "driven_delta": -4.005118400100585,
+          "normalized_residual": 0.01757014569482432
+        }
+      ],
+      "active_contacts": []
+    }
+  }
+}

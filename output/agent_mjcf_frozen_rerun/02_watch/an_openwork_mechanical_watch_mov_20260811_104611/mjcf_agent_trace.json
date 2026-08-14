@@ -1,0 +1,1265 @@
+{
+  "rounds": 17,
+  "executions": [
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "index",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"sections\": {\n    \"model\": 5,\n    \"links\": 34,\n    \"ports\": 13,\n    \"poses\": 34,\n    \"relations\": 13,\n    \"motion_joints\": 0,\n    \"transmissions\": 3,\n    \"planetary_stages\": 0,\n    \"entity_ids\": 116,\n    \"simulation\": 5\n  }\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "model",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"model\",\n  \"offset\": 0,\n  \"returned\": 5,\n  \"total\": 5,\n  \"next_offset\": null,\n  \"items\": {\n    \"name\": \"an_openwork_mechanical_watch_mov\",\n    \"root_link\": \"baseplate\",\n    \"mesh_pairs\": [\n      [\n        \"minute_pinion\",\n        \"intermediate_wheel\"\n      ],\n      [\n        \"intermediate_pinion\",\n        \"hour_wheel\"\n      ]\n    ],\n    \"output_link\": \"hour_hand\",\n    \"watch_links\": [\n      \"minute_hand\",\n      \"hour_hand\",\n      \"minute_pinion\",\n      \"intermediate_wheel\",\n      \"intermediate_pinion\",\n      \"hour_wheel\"\n    ]\n  }\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "links",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"links\",\n  \"offset\": 0,\n  \"returned\": 25,\n  \"total\": 34,\n  \"next_offset\": 25,\n  \"items\": {\n    \"baseplate\": {\n      \"entity_id\": \"link/baseplate\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.018775306652644597,\n      \"world_xyz_m\": [\n        0.0,\n        0.0,\n        0.0\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"central_lower_bearing\": {\n      \"entity_id\": \"link/central_lower_bearing\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"baseplate\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.0002491320235746016,\n      \"world_xyz_m\": [\n        0.0,\n        0.0,\n        0.002\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"intermediate_lower_bearing\": {\n      \"entity_id\": \"link/intermediate_lower_bearing\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"baseplate\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.0002491320235746016,\n      \"world_xyz_m\": [\n        0.012,\n        0.0,\n        0.002\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"bridge_post_low\": {\n      \"entity_id\": \"link/bridge_post_low\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"baseplate\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.0008319807923030713,\n      \"world_xyz_m\": [\n        0.006,\n        -0.0132,\n        0.002\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"bridge_post_high\": {\n      \"entity_id\": \"link/bridge_post_high\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"baseplate\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.0008319807923030713,\n      \"world_xyz_m\": [\n        0.006,\n        0.0132,\n        0.002\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"upper_bridge\": {\n      \"entity_id\": \"link/upper_bridge\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"bridge_post_low\",\n      \"extra_mounts\": [\n        \"bridge_post_high\"\n      ],\n      \"mass_kg\": 0.0032911590831243586,\n      \"world_xyz_m\": [\n        0.0,\n        0.0,\n        0.017\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"central_upper_bearing\": {\n      \"entity_id\": \"link/central_upper_bearing\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"upper_bridge\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.00020623879301978878,\n      \"world_xyz_m\": [\n        0.0,\n        0.0,\n        0.015500000000000002\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"intermediate_upper_bearing\": {\n      \"entity_id\": \"link/intermediate_upper_bearing\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n "
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "ports",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"ports\",\n  \"offset\": 0,\n  \"returned\": 13,\n  \"total\": 13,\n  \"next_offset\": null,\n  \"items\": {\n    \"central_lower_bearing\": {\n      \"bore\": {\n        \"entity_id\": \"port/central_lower_bearing/bore\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 2.1,\n        \"depth_mm\": 1.5,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0,\n          0.0,\n          0.00275\n        ]\n      }\n    },\n    \"central_upper_bearing\": {\n      \"bore\": {\n        \"entity_id\": \"port/central_upper_bearing/bore\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 3.7,\n        \"depth_mm\": 1.5,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0,\n          0.0,\n          0.01625\n        ]\n      }\n    },\n    \"intermediate_lower_bearing\": {\n      \"bore\": {\n        \"entity_id\": \"port/intermediate_lower_bearing/bore\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 2.1,\n        \"depth_mm\": 1.5,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.012,\n          0.0,\n          0.00275\n        ]\n      }\n    },\n    \"intermediate_upper_bearing\": {\n      \"bore\": {\n        \"entity_id\": \"port/intermediate_upper_bearing/bore\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 2.1,\n        \"depth_mm\": 1.5,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.012,\n          0.0,\n          0.01625\n        ]\n      }\n    },\n    \"minute_shaft\": {\n      \"outer\": {\n        \"entity_id\": \"port/minute_shaft/outer\",\n        \"type\": \"shaft\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 2.0,\n        \"depth_mm\": 20.4,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0,\n          0.0,\n          0.012199999999999999\n        ]\n      },\n      \"minute_pinion_seat\": {\n        \"entity_id\": \"port/minute_shaft/minute_pinion_seat\",\n        \"type\": \"cylindrical\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 2.0,\n        \"depth_mm\": 2.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0,\n          0.0,\n          0.0055\n        ]\n      },\n      \"minute_hand_seat\": {\n        \"entity_id\": \"port/minute_shaft/minute_hand_seat\",\n        \"type\": \"cylindrical\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 2.0,\n        \"depth_mm\": 0.4,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0,\n          0.0,\n          0.022199999999999998\n        ]\n      }\n    },\n    \"hour_pipe\": {\n      \"inner_bore\": {\n        \"entity_id\": \"port/hour_pipe/inner_bore\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 2.1,\n        \"depth_mm\": 14.899999999999999,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0,\n          0.0,\n          0.01395\n        ]\n      },\n      \"outer\": {\n        \"entity_id\": \"port/hour_pipe/outer\",\n        \"type\": \"shaft\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 3.6,\n        \"depth_mm\": 14.899999999999999,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0,\n          0.0,\n          0.01395\n        ]\n      },\n      \"hour_wheel_seat\": {\n        \"entity_id\": \"port/hour_pipe/hour_wheel_seat\",\n        \"type\": \"cylindrical\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 3.6,\n    "
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "entity_ids",
+        "offset": 0,
+        "limit": 300
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"entity_ids\",\n  \"offset\": 0,\n  \"returned\": 25,\n  \"total\": 116,\n  \"next_offset\": 25,\n  \"items\": [\n    \"link/baseplate\",\n    \"link/central_lower_bearing\",\n    \"link/intermediate_lower_bearing\",\n    \"link/bridge_post_low\",\n    \"link/bridge_post_high\",\n    \"link/upper_bridge\",\n    \"link/central_upper_bearing\",\n    \"link/intermediate_upper_bearing\",\n    \"link/minute_shaft\",\n    \"link/intermediate_arbor\",\n    \"link/minute_pinion\",\n    \"link/intermediate_wheel\",\n    \"link/hour_pipe\",\n    \"link/intermediate_pinion\",\n    \"link/hour_wheel\",\n    \"link/dial_post_1\",\n    \"link/dial_post_2\",\n    \"link/dial_post_3\",\n    \"link/dial_post_4\",\n    \"link/chapter_ring\",\n    \"link/hour_marker_1\",\n    \"link/hour_marker_2\",\n    \"link/hour_marker_3\",\n    \"link/hour_marker_4\",\n    \"link/hour_marker_5\"\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "simulation",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"simulation\",\n  \"offset\": 0,\n  \"returned\": 5,\n  \"total\": 5,\n  \"next_offset\": null,\n  \"items\": {\n    \"gravity\": [\n      0.0,\n      0.0,\n      -9.81\n    ],\n    \"timestep\": 0.0002,\n    \"solver\": \"Newton\",\n    \"iterations\": 100,\n    \"base_rests_on_plane\": true\n  }\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "relations",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"relations\",\n  \"offset\": 0,\n  \"returned\": 13,\n  \"total\": 13,\n  \"next_offset\": null,\n  \"items\": [\n    {\n      \"name\": \"minute_shaft_in_lower_bearing\",\n      \"mate_type\": \"journal_bearing\",\n      \"base_part\": \"central_lower_bearing\",\n      \"base_port\": \"bore\",\n      \"incoming_part\": \"minute_shaft\",\n      \"incoming_port\": \"outer\"\n    },\n    {\n      \"name\": \"hour_pipe_in_upper_bearing\",\n      \"mate_type\": \"journal_bearing\",\n      \"base_part\": \"central_upper_bearing\",\n      \"base_port\": \"bore\",\n      \"incoming_part\": \"hour_pipe\",\n      \"incoming_port\": \"outer\"\n    },\n    {\n      \"name\": \"minute_shaft_inside_hour_pipe\",\n      \"mate_type\": \"journal_bearing\",\n      \"base_part\": \"hour_pipe\",\n      \"base_port\": \"inner_bore\",\n      \"incoming_part\": \"minute_shaft\",\n      \"incoming_port\": \"outer\"\n    },\n    {\n      \"name\": \"intermediate_arbor_in_lower_bearing\",\n      \"mate_type\": \"journal_bearing\",\n      \"base_part\": \"intermediate_lower_bearing\",\n      \"base_port\": \"bore\",\n      \"incoming_part\": \"intermediate_arbor\",\n      \"incoming_port\": \"outer\"\n    },\n    {\n      \"name\": \"intermediate_arbor_in_upper_bearing\",\n      \"mate_type\": \"journal_bearing\",\n      \"base_part\": \"intermediate_upper_bearing\",\n      \"base_port\": \"bore\",\n      \"incoming_part\": \"intermediate_arbor\",\n      \"incoming_port\": \"outer\"\n    },\n    {\n      \"name\": \"minute_pinion_press_fit\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"minute_shaft\",\n      \"base_port\": \"minute_pinion_seat\",\n      \"incoming_part\": \"minute_pinion\",\n      \"incoming_port\": \"bore\"\n    },\n    {\n      \"name\": \"intermediate_wheel_press_fit\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"intermediate_arbor\",\n      \"base_port\": \"wheel_seat\",\n      \"incoming_part\": \"intermediate_wheel\",\n      \"incoming_port\": \"bore\"\n    },\n    {\n      \"name\": \"intermediate_pinion_press_fit\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"intermediate_arbor\",\n      \"base_port\": \"pinion_seat\",\n      \"incoming_part\": \"intermediate_pinion\",\n      \"incoming_port\": \"bore\"\n    },\n    {\n      \"name\": \"hour_wheel_press_fit\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"hour_pipe\",\n      \"base_port\": \"hour_wheel_seat\",\n      \"incoming_part\": \"hour_wheel\",\n      \"incoming_port\": \"bore\"\n    },\n    {\n      \"name\": \"hour_hand_press_fit\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"hour_pipe\",\n      \"base_port\": \"hour_hand_seat\",\n      \"incoming_part\": \"hour_hand\",\n      \"incoming_port\": \"hub_bore\"\n    },\n    {\n      \"name\": \"minute_hand_press_fit\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"minute_shaft\",\n      \"base_port\": \"minute_hand_seat\",\n      \"incoming_part\": \"minute_hand\",\n      \"incoming_port\": \"hub_bore\"\n    },\n    {\n      \"name\": \"minute_stage_mesh\",\n      \"mate_type\": \"gear_spur_external\",\n      \"base_part\": \"minute_pinion\",\n      \"base_port\": \"mesh\",\n      \"incoming_part\": \"intermediate_wheel\",\n      \"incoming_port\": \"mesh\",\n      \"separation_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"hour_stage_mesh\",\n      \"mate_type\": \"gear_spur_external\",\n      \"base_part\": \"hour_wheel\",\n      \"base_port\": \"mesh\",\n      \"incoming_part\": \"intermediate_pinion\",\n      \"incoming_port\": \"mesh\",\n      \"separation_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ]\n    }\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "transmissions",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"transmissions\",\n  \"offset\": 0,\n  \"returned\": 3,\n  \"total\": 3,\n  \"next_offset\": null,\n  \"items\": [\n    {\n      \"name\": \"minute_to_intermediate\",\n      \"type\": \"gear_external\",\n      \"driving_link\": \"minute_pinion\",\n      \"driven_link\": \"intermediate_wheel\"\n    },\n    {\n      \"name\": \"compound_intermediate_arbor\",\n      \"type\": \"compound_1to1\",\n      \"driving_link\": \"intermediate_wheel\",\n      \"driven_link\": \"intermediate_pinion\"\n    },\n    {\n      \"name\": \"intermediate_to_hour\",\n      \"type\": \"gear_external\",\n      \"driving_link\": \"intermediate_pinion\",\n      \"driven_link\": \"hour_wheel\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "motion_joints",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"motion_joints\",\n  \"offset\": 0,\n  \"returned\": 0,\n  \"total\": 0,\n  \"next_offset\": null,\n  \"items\": []\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "planetary_stages",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"planetary_stages\",\n  \"offset\": 0,\n  \"returned\": 0,\n  \"total\": 0,\n  \"next_offset\": null,\n  \"items\": []\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "poses",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"poses\",\n  \"offset\": 0,\n  \"returned\": 25,\n  \"total\": 34,\n  \"next_offset\": 25,\n  \"items\": [\n    {\n      \"name\": \"place_baseplate\",\n      \"parent\": \"\",\n      \"child\": \"baseplate\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.0\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_central_lower_bearing\",\n      \"parent\": \"baseplate\",\n      \"child\": \"central_lower_bearing\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.002\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_intermediate_lower_bearing\",\n      \"parent\": \"baseplate\",\n      \"child\": \"intermediate_lower_bearing\",\n      \"xyz_m\": [\n        0.012,\n        0.0,\n        0.002\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_bridge_post_low\",\n      \"parent\": \"baseplate\",\n      \"child\": \"bridge_post_low\",\n      \"xyz_m\": [\n        0.006,\n        -0.0132,\n        0.002\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_bridge_post_high\",\n      \"parent\": \"baseplate\",\n      \"child\": \"bridge_post_high\",\n      \"xyz_m\": [\n        0.006,\n        0.0132,\n        0.002\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_upper_bridge\",\n      \"parent\": \"bridge_post_low\",\n      \"child\": \"upper_bridge\",\n      \"xyz_m\": [\n        -0.006,\n        0.0132,\n        0.015\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_central_upper_bearing\",\n      \"parent\": \"upper_bridge\",\n      \"child\": \"central_upper_bearing\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        -0.0015\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_intermediate_upper_bearing\",\n      \"parent\": \"upper_bridge\",\n      \"child\": \"intermediate_upper_bearing\",\n      \"xyz_m\": [\n        0.012,\n        0.0,\n        -0.0015\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_minute_shaft\",\n      \"parent\": \"central_lower_bearing\",\n      \"child\": \"minute_shaft\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.0\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_intermediate_arbor\",\n      \"parent\": \"intermediate_lower_bearing\",\n      \"child\": \"intermediate_arbor\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.0\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_minute_pinion\",\n      \"parent\": \"minute_shaft\",\n      \"child\": \"minute_pinion\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.0025\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_intermediate_wheel\",\n      \"parent\": \"intermediate_arbor\",\n      \"child\": \"intermediate_wheel\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.0025\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.10471975511965981\n      ]\n    },\n    {\n      \"name\": \"place_hour_pipe\",\n      \"parent\": \"central_upper_bearing\",\n      \"child\": \"hour_pipe\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        -0.009\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_intermediate_pinion\",\n      \"parent\": \"intermediate_arbor\",\n      \"child\": \"intermediate_pinion\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.007\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.10471975511965981\n      ]\n    },\n    {\n      \"name\": \"place_hour_wheel\",\n      \"parent\": \"hour_pipe\",\n      \"child\": \"hour_wheel\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.0025\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.2028945255443408\n      ]\n    },\n    {\n      \"n"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "links",
+        "offset": 25,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"links\",\n  \"offset\": 25,\n  \"returned\": 9,\n  \"total\": 34,\n  \"next_offset\": null,\n  \"items\": {\n    \"hour_marker_6\": {\n      \"entity_id\": \"link/hour_marker_6\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"chapter_ring\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 2.225474844190482e-06,\n      \"world_xyz_m\": [\n        0.012899999999999998,\n        -0.02234345541763852,\n        0.0208\n      ],\n      \"world_quat_wxyz\": [\n        0.25881904510252074,\n        0.0,\n        0.0,\n        -0.9659258262890684\n      ]\n    },\n    \"hour_marker_7\": {\n      \"entity_id\": \"link/hour_marker_7\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"chapter_ring\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 4.821861976423879e-06,\n      \"world_xyz_m\": [\n        3.1595887418001713e-18,\n        -0.0258,\n        0.0208\n      ],\n      \"world_quat_wxyz\": [\n        6.123233995736766e-17,\n        0.0,\n        0.0,\n        -1.0\n      ]\n    },\n    \"hour_marker_8\": {\n      \"entity_id\": \"link/hour_marker_8\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"chapter_ring\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 2.225474844190482e-06,\n      \"world_xyz_m\": [\n        -0.012900000000000003,\n        -0.022343455417638516,\n        0.0208\n      ],\n      \"world_quat_wxyz\": [\n        0.25881904510252096,\n        0.0,\n        0.0,\n        0.9659258262890682\n      ]\n    },\n    \"hour_marker_9\": {\n      \"entity_id\": \"link/hour_marker_9\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"chapter_ring\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 2.225474844190482e-06,\n      \"world_xyz_m\": [\n        -0.022343455417638512,\n        -0.01290000000000001,\n        0.0208\n      ],\n      \"world_quat_wxyz\": [\n        0.4999999999999997,\n        0.0,\n        0.0,\n        0.8660254037844387\n      ]\n    },\n    \"hour_marker_10\": {\n      \"entity_id\": \"link/hour_marker_10\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"chapter_ring\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 4.821861976423879e-06,\n      \"world_xyz_m\": [\n        -0.0258,\n        -4.739383112700257e-18,\n        0.0208\n      ],\n      \"world_quat_wxyz\": [\n        0.7071067811865475,\n        0.0,\n        0.0,\n        0.7071067811865476\n      ]\n    },\n    \"hour_marker_11\": {\n      \"entity_id\": \"link/hour_marker_11\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"chapter_ring\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 2.225474844190482e-06,\n      \"world_xyz_m\": [\n        -0.022343455417638516,\n        0.012900000000000003,\n        0.0208\n      ],\n      \"world_quat_wxyz\": [\n        0.8660254037844387,\n        0.0,\n        0.0,\n        0.5\n      ]\n    },\n    \"hour_marker_12\": {\n      \"entity_id\": \"link/hour_marker_12\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"chapter_ring\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 2.225474844190482e-06,\n      \"world_xyz_m\": [\n        -0.01290000000000001,\n        0.02234345541763851,\n        0.0208\n      ],\n      \"world_quat_wxyz\": [\n        0.965"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "poses",
+        "offset": 25,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"poses\",\n  \"offset\": 25,\n  \"returned\": 9,\n  \"total\": 34,\n  \"next_offset\": null,\n  \"items\": [\n    {\n      \"name\": \"place_hour_marker_6\",\n      \"parent\": \"chapter_ring\",\n      \"child\": \"hour_marker_6\",\n      \"xyz_m\": [\n        0.012899999999999998,\n        -0.02234345541763852,\n        0.0008000000000000007\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        -2.6179938779914944\n      ]\n    },\n    {\n      \"name\": \"place_hour_marker_7\",\n      \"parent\": \"chapter_ring\",\n      \"child\": \"hour_marker_7\",\n      \"xyz_m\": [\n        3.1595887418001713e-18,\n        -0.0258,\n        0.0008000000000000007\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        -3.141592653589793\n      ]\n    },\n    {\n      \"name\": \"place_hour_marker_8\",\n      \"parent\": \"chapter_ring\",\n      \"child\": \"hour_marker_8\",\n      \"xyz_m\": [\n        -0.012900000000000003,\n        -0.022343455417638516,\n        0.0008000000000000007\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        2.617993877991494\n      ]\n    },\n    {\n      \"name\": \"place_hour_marker_9\",\n      \"parent\": \"chapter_ring\",\n      \"child\": \"hour_marker_9\",\n      \"xyz_m\": [\n        -0.022343455417638512,\n        -0.01290000000000001,\n        0.0008000000000000007\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        2.094395102393196\n      ]\n    },\n    {\n      \"name\": \"place_hour_marker_10\",\n      \"parent\": \"chapter_ring\",\n      \"child\": \"hour_marker_10\",\n      \"xyz_m\": [\n        -0.0258,\n        -4.739383112700257e-18,\n        0.0008000000000000007\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        1.5707963267948968\n      ]\n    },\n    {\n      \"name\": \"place_hour_marker_11\",\n      \"parent\": \"chapter_ring\",\n      \"child\": \"hour_marker_11\",\n      \"xyz_m\": [\n        -0.022343455417638516,\n        0.012900000000000003,\n        0.0008000000000000007\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        1.0471975511965976\n      ]\n    },\n    {\n      \"name\": \"place_hour_marker_12\",\n      \"parent\": \"chapter_ring\",\n      \"child\": \"hour_marker_12\",\n      \"xyz_m\": [\n        -0.01290000000000001,\n        0.02234345541763851,\n        0.0008000000000000007\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.5235987755982994\n      ]\n    },\n    {\n      \"name\": \"place_hour_hand\",\n      \"parent\": \"hour_pipe\",\n      \"child\": \"hour_hand\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.0145\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_minute_hand\",\n      \"parent\": \"minute_shaft\",\n      \"child\": \"minute_hand\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.02\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    }\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "entity_ids",
+        "offset": 25,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"entity_ids\",\n  \"offset\": 25,\n  \"returned\": 25,\n  \"total\": 116,\n  \"next_offset\": 50,\n  \"items\": [\n    \"link/hour_marker_6\",\n    \"link/hour_marker_7\",\n    \"link/hour_marker_8\",\n    \"link/hour_marker_9\",\n    \"link/hour_marker_10\",\n    \"link/hour_marker_11\",\n    \"link/hour_marker_12\",\n    \"link/hour_hand\",\n    \"link/minute_hand\",\n    \"pose/place_baseplate\",\n    \"pose/place_central_lower_bearing\",\n    \"pose/place_intermediate_lower_bearing\",\n    \"pose/place_bridge_post_low\",\n    \"pose/place_bridge_post_high\",\n    \"pose/place_upper_bridge\",\n    \"pose/place_central_upper_bearing\",\n    \"pose/place_intermediate_upper_bearing\",\n    \"pose/place_minute_shaft\",\n    \"pose/place_intermediate_arbor\",\n    \"pose/place_minute_pinion\",\n    \"pose/place_intermediate_wheel\",\n    \"pose/place_hour_pipe\",\n    \"pose/place_intermediate_pinion\",\n    \"pose/place_hour_wheel\",\n    \"pose/place_dial_post_1\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "minute_pinion",
+        "target": "intermediate_wheel"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"minute_pinion\",\n    \"intermediate_wheel\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "intermediate_wheel",
+        "target": "intermediate_pinion"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"intermediate_wheel\",\n    \"intermediate_arbor\",\n    \"intermediate_pinion\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "intermediate_pinion",
+        "target": "hour_wheel"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"intermediate_pinion\",\n    \"hour_wheel\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "minute_shaft",
+        "target": "hour_pipe"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"minute_shaft\",\n    \"hour_pipe\"\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "entity_ids",
+        "offset": 50,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"entity_ids\",\n  \"offset\": 50,\n  \"returned\": 25,\n  \"total\": 116,\n  \"next_offset\": 75,\n  \"items\": [\n    \"pose/place_dial_post_2\",\n    \"pose/place_dial_post_3\",\n    \"pose/place_dial_post_4\",\n    \"pose/place_chapter_ring\",\n    \"pose/place_hour_marker_1\",\n    \"pose/place_hour_marker_2\",\n    \"pose/place_hour_marker_3\",\n    \"pose/place_hour_marker_4\",\n    \"pose/place_hour_marker_5\",\n    \"pose/place_hour_marker_6\",\n    \"pose/place_hour_marker_7\",\n    \"pose/place_hour_marker_8\",\n    \"pose/place_hour_marker_9\",\n    \"pose/place_hour_marker_10\",\n    \"pose/place_hour_marker_11\",\n    \"pose/place_hour_marker_12\",\n    \"pose/place_hour_hand\",\n    \"pose/place_minute_hand\",\n    \"port/central_lower_bearing/bore\",\n    \"port/central_upper_bearing/bore\",\n    \"port/intermediate_lower_bearing/bore\",\n    \"port/intermediate_upper_bearing/bore\",\n    \"port/minute_shaft/outer\",\n    \"port/minute_shaft/minute_pinion_seat\",\n    \"port/minute_shaft/minute_hand_seat\"\n  ]\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "central_lower_bearing",
+        "port_a": "bore",
+        "b": "minute_shaft",
+        "port_b": "outer"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/central_lower_bearing/bore/minute_shaft/outer\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 9.45,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.10000000000000009,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "central_upper_bearing",
+        "port_a": "bore",
+        "b": "hour_pipe",
+        "port_b": "outer"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/central_upper_bearing/bore/hour_pipe/outer\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 2.3,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.10000000000000009,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "hour_pipe",
+        "port_a": "inner_bore",
+        "b": "minute_shaft",
+        "port_b": "outer"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/hour_pipe/inner_bore/minute_shaft/outer\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 1.7500000000000016,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.10000000000000009,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "intermediate_lower_bearing",
+        "port_a": "bore",
+        "b": "intermediate_arbor",
+        "port_b": "outer"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/intermediate_lower_bearing/bore/intermediate_arbor/outer\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 7.750000000000001,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.10000000000000009,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "intermediate_upper_bearing",
+        "port_a": "bore",
+        "b": "intermediate_arbor",
+        "port_b": "outer"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/intermediate_upper_bearing/bore/intermediate_arbor/outer\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 5.75,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.10000000000000009,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "minute_shaft",
+        "port_a": "minute_pinion_seat",
+        "b": "minute_pinion",
+        "port_b": "bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/minute_shaft/minute_pinion_seat/minute_pinion/bore\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 8.673617379884035e-16,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": null,\n  \"fit_sign\": \"not_shaft_bore\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "intermediate_arbor",
+        "port_a": "wheel_seat",
+        "b": "intermediate_wheel",
+        "port_b": "bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/intermediate_arbor/wheel_seat/intermediate_wheel/bore\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 8.673617379884035e-16,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": null,\n  \"fit_sign\": \"not_shaft_bore\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "intermediate_arbor",
+        "port_a": "pinion_seat",
+        "b": "intermediate_pinion",
+        "port_b": "bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/intermediate_arbor/pinion_seat/intermediate_pinion/bore\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 1.734723475976807e-15,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": null,\n  \"fit_sign\": \"not_shaft_bore\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "hour_pipe",
+        "port_a": "hour_wheel_seat",
+        "b": "hour_wheel",
+        "port_b": "bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/hour_pipe/hour_wheel_seat/hour_wheel/bore\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": null,\n  \"fit_sign\": \"not_shaft_bore\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "hour_pipe",
+        "port_a": "hour_hand_seat",
+        "b": "hour_hand",
+        "port_b": "hub_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/hour_pipe/hour_hand_seat/hour_hand/hub_bore\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": null,\n  \"fit_sign\": \"not_shaft_bore\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "minute_shaft",
+        "port_a": "minute_hand_seat",
+        "b": "minute_hand",
+        "port_b": "hub_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/minute_shaft/minute_hand_seat/minute_hand/hub_bore\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": null,\n  \"fit_sign\": \"not_shaft_bore\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "minute_pinion",
+        "port_a": "mesh",
+        "b": "intermediate_wheel",
+        "port_b": "mesh"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/minute_pinion/mesh/intermediate_wheel/mesh\",\n  \"radial_offset_mm\": 12.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": null,\n  \"fit_sign\": \"not_shaft_bore\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "hour_wheel",
+        "port_a": "mesh",
+        "b": "intermediate_pinion",
+        "port_b": "mesh"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/hour_wheel/mesh/intermediate_pinion/mesh\",\n  \"radial_offset_mm\": 12.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": null,\n  \"fit_sign\": \"not_shaft_bore\"\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "entity_ids",
+        "offset": 75,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"entity_ids\",\n  \"offset\": 75,\n  \"returned\": 25,\n  \"total\": 116,\n  \"next_offset\": 100,\n  \"items\": [\n    \"port/hour_pipe/inner_bore\",\n    \"port/hour_pipe/outer\",\n    \"port/hour_pipe/hour_wheel_seat\",\n    \"port/hour_pipe/hour_hand_seat\",\n    \"port/intermediate_arbor/outer\",\n    \"port/intermediate_arbor/wheel_seat\",\n    \"port/intermediate_arbor/pinion_seat\",\n    \"port/minute_pinion/bore\",\n    \"port/minute_pinion/mesh\",\n    \"port/intermediate_wheel/bore\",\n    \"port/intermediate_wheel/mesh\",\n    \"port/intermediate_pinion/bore\",\n    \"port/intermediate_pinion/mesh\",\n    \"port/hour_wheel/bore\",\n    \"port/hour_wheel/mesh\",\n    \"port/hour_hand/hub_bore\",\n    \"port/minute_hand/hub_bore\",\n    \"relation/minute_shaft_in_lower_bearing\",\n    \"relation/hour_pipe_in_upper_bearing\",\n    \"relation/minute_shaft_inside_hour_pipe\",\n    \"relation/intermediate_arbor_in_lower_bearing\",\n    \"relation/intermediate_arbor_in_upper_bearing\",\n    \"relation/minute_pinion_press_fit\",\n    \"relation/intermediate_wheel_press_fit\",\n    \"relation/intermediate_pinion_press_fit\"\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "minute_shaft",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"minute_shaft\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 10.297542159621596,\n  \"items\": [\n    {\n      \"part\": \"baseplate\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/baseplate/minute_shaft\"\n    },\n    {\n      \"part\": \"central_lower_bearing\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/central_lower_bearing/minute_shaft\"\n    },\n    {\n      \"part\": \"upper_bridge\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/minute_shaft/upper_bridge\"\n    },\n    {\n      \"part\": \"central_upper_bearing\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/central_upper_bearing/minute_shaft\"\n    },\n    {\n      \"part\": \"minute_pinion\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/minute_pinion/minute_shaft\"\n    },\n    {\n      \"part\": \"hour_pipe\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_pipe/minute_shaft\"\n    },\n    {\n      \"part\": \"hour_wheel\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_wheel/minute_shaft\"\n    },\n    {\n      \"part\": \"chapter_ring\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/chapter_ring/minute_shaft\"\n    },\n    {\n      \"part\": \"hour_hand\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_hand/minute_shaft\"\n    },\n    {\n      \"part\": \"minute_hand\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/minute_hand/minute_shaft\"\n    },\n    {\n      \"part\": \"intermediate_wheel\",\n      \"aabb_surface_distance_mm\": 0.45715151072695726,\n      \"fact_id\": \"nearby/intermediate_wheel/minute_shaft\"\n    },\n    {\n      \"part\": \"intermediate_pinion\",\n      \"aabb_surface_distance_mm\": 7.729665748231138,\n      \"fact_id\": \"nearby/intermediate_pinion/minute_shaft\"\n    },\n    {\n      \"part\": \"intermediate_lower_bearing\",\n      \"aabb_surface_distance_mm\": 8.200000047683716,\n      \"fact_id\": \"nearby/intermediate_lower_bearing/minute_shaft\"\n    },\n    {\n      \"part\": \"intermediate_upper_bearing\",\n      \"aabb_surface_distance_mm\": 8.200000047683716,\n      \"fact_id\": \"nearby/intermediate_upper_bearing/minute_shaft\"\n    },\n    {\n      \"part\": \"intermediate_arbor\",\n      \"aabb_surface_distance_mm\": 10.0,\n      \"fact_id\": \"nearby/intermediate_arbor/minute_shaft\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "intermediate_arbor",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"intermediate_arbor\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 8.616807902011939,\n  \"items\": [\n    {\n      \"part\": \"baseplate\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/baseplate/intermediate_arbor\"\n    },\n    {\n      \"part\": \"intermediate_lower_bearing\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/intermediate_arbor/intermediate_lower_bearing\"\n    },\n    {\n      \"part\": \"upper_bridge\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/intermediate_arbor/upper_bridge\"\n    },\n    {\n      \"part\": \"intermediate_upper_bearing\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/intermediate_arbor/intermediate_upper_bearing\"\n    },\n    {\n      \"part\": \"intermediate_wheel\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/intermediate_arbor/intermediate_wheel\"\n    },\n    {\n      \"part\": \"intermediate_pinion\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/intermediate_arbor/intermediate_pinion\"\n    },\n    {\n      \"part\": \"hour_wheel\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_wheel/intermediate_arbor\"\n    },\n    {\n      \"part\": \"chapter_ring\",\n      \"aabb_surface_distance_mm\": 0.9999999999999964,\n      \"fact_id\": \"nearby/chapter_ring/intermediate_arbor\"\n    },\n    {\n      \"part\": \"minute_pinion\",\n      \"aabb_surface_distance_mm\": 7.418748378753662,\n      \"fact_id\": \"nearby/intermediate_arbor/minute_pinion\"\n    },\n    {\n      \"part\": \"central_upper_bearing\",\n      \"aabb_surface_distance_mm\": 8.0,\n      \"fact_id\": \"nearby/central_upper_bearing/intermediate_arbor\"\n    },\n    {\n      \"part\": \"central_lower_bearing\",\n      \"aabb_surface_distance_mm\": 8.200000047683716,\n      \"fact_id\": \"nearby/central_lower_bearing/intermediate_arbor\"\n    },\n    {\n      \"part\": \"hour_hand\",\n      \"aabb_surface_distance_mm\": 8.537621491583428,\n      \"fact_id\": \"nearby/hour_hand/intermediate_arbor\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "hour_pipe",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"hour_pipe\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 7.872768452752785,\n  \"items\": [\n    {\n      \"part\": \"upper_bridge\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_pipe/upper_bridge\"\n    },\n    {\n      \"part\": \"central_upper_bearing\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/central_upper_bearing/hour_pipe\"\n    },\n    {\n      \"part\": \"minute_shaft\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_pipe/minute_shaft\"\n    },\n    {\n      \"part\": \"hour_wheel\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_pipe/hour_wheel\"\n    },\n    {\n      \"part\": \"chapter_ring\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/chapter_ring/hour_pipe\"\n    },\n    {\n      \"part\": \"hour_hand\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_hand/hour_pipe\"\n    },\n    {\n      \"part\": \"minute_pinion\",\n      \"aabb_surface_distance_mm\": 1.7763568394002505e-15,\n      \"fact_id\": \"nearby/hour_pipe/minute_pinion\"\n    },\n    {\n      \"part\": \"intermediate_wheel\",\n      \"aabb_surface_distance_mm\": 1.7763568394002505e-15,\n      \"fact_id\": \"nearby/hour_pipe/intermediate_wheel\"\n    },\n    {\n      \"part\": \"minute_hand\",\n      \"aabb_surface_distance_mm\": 0.600000381469723,\n      \"fact_id\": \"nearby/hour_pipe/minute_hand\"\n    },\n    {\n      \"part\": \"central_lower_bearing\",\n      \"aabb_surface_distance_mm\": 3.0000000000000027,\n      \"fact_id\": \"nearby/central_lower_bearing/hour_pipe\"\n    },\n    {\n      \"part\": \"baseplate\",\n      \"aabb_surface_distance_mm\": 4.500000000000003,\n      \"fact_id\": \"nearby/baseplate/hour_pipe\"\n    },\n    {\n      \"part\": \"intermediate_pinion\",\n      \"aabb_surface_distance_mm\": 6.929665795914854,\n      \"fact_id\": \"nearby/hour_pipe/intermediate_pinion\"\n    },\n    {\n      \"part\": \"intermediate_upper_bearing\",\n      \"aabb_surface_distance_mm\": 7.400000095367432,\n      \"fact_id\": \"nearby/hour_pipe/intermediate_upper_bearing\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "central_lower_bearing",
+        "b": "minute_shaft"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/central_lower_bearing/minute_shaft\",\n  \"origin_distance_mm\": 0.0,\n  \"surface_distance_mm\": 0.049984390877065375,\n  \"aabb_overlap_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    1.5\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    5.599999904632568,\n    5.598259449005127,\n    1.5\n  ],\n  \"b_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    20.399999618530273\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "central_upper_bearing",
+        "b": "hour_pipe"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/central_upper_bearing/hour_pipe\",\n  \"origin_distance_mm\": 9.0,\n  \"surface_distance_mm\": 0.04999991896251258,\n  \"aabb_overlap_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    1.4999999999999982\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.009\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    1.5\n  ],\n  \"b_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    14.899999618530273\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_pipe",
+        "b": "minute_shaft"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_pipe/minute_shaft\",\n  \"origin_distance_mm\": 4.500000000000003,\n  \"surface_distance_mm\": 0.04999993061927013,\n  \"aabb_overlap_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    14.899999618530273\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.004500000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    14.899999618530273\n  ],\n  \"b_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    20.399999618530273\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_lower_bearing",
+        "b": "intermediate_arbor"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/intermediate_arbor/intermediate_lower_bearing\",\n  \"origin_distance_mm\": 0.0,\n  \"surface_distance_mm\": 0.04998439087706543,\n  \"aabb_overlap_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    1.5\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    5.599999904632568,\n    5.598259449005127,\n    1.5\n  ],\n  \"b_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    17.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_upper_bearing",
+        "b": "intermediate_arbor"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/intermediate_arbor/intermediate_upper_bearing\",\n  \"origin_distance_mm\": 13.500000000000002,\n  \"surface_distance_mm\": 0.04999993061927013,\n  \"aabb_overlap_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    1.4999999999999982\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.013500000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    5.599999904632568,\n    5.598259449005127,\n    1.5\n  ],\n  \"b_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    17.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "minute_pinion"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/minute_pinion/minute_shaft\",\n  \"origin_distance_mm\": 2.5000000000000004,\n  \"surface_distance_mm\": 0.0049983978435488375,\n  \"aabb_overlap_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0025000000000000005\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    20.399999618530273\n  ],\n  \"b_extents_mm\": [\n    7.162503242492676,\n    7.038719654083252,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_arbor",
+        "b": "intermediate_wheel"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/intermediate_arbor/intermediate_wheel\",\n  \"origin_distance_mm\": 2.5000000000000004,\n  \"surface_distance_mm\": 0.004887055426747476,\n  \"aabb_overlap_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9945218953682733,\n      -0.1045284632676535,\n      0.0,\n      0.0\n    ],\n    [\n      0.1045284632676535,\n      0.9945218953682733,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0025000000000000005\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    17.0\n  ],\n  \"b_extents_mm\": [\n    19.188880920410156,\n    19.152053833007812,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_arbor",
+        "b": "intermediate_pinion"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/intermediate_arbor/intermediate_pinion\",\n  \"origin_distance_mm\": 7.000000000000001,\n  \"surface_distance_mm\": 0.004887055426747536,\n  \"aabb_overlap_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9945218953682733,\n      -0.1045284632676535,\n      0.0,\n      0.0\n    ],\n    [\n      0.1045284632676535,\n      0.9945218953682733,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.007000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    17.0\n  ],\n  \"b_extents_mm\": [\n    5.951200008392334,\n    5.951200008392334,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_pipe",
+        "b": "hour_wheel"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_pipe/hour_wheel\",\n  \"origin_distance_mm\": 2.5000000000000004,\n  \"surface_distance_mm\": 0.0048554814941268705,\n  \"aabb_overlap_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9794874195590514,\n      -0.2015053223256171,\n      0.0,\n      0.0\n    ],\n    [\n      0.2015053223256171,\n      0.9794874195590514,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0025000000000000005\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    14.899999618530273\n  ],\n  \"b_extents_mm\": [\n    20.389616012573242,\n    20.389616012573242,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_pipe",
+        "b": "hour_hand"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_hand/hour_pipe\",\n  \"origin_distance_mm\": 14.500000000000002,\n  \"surface_distance_mm\": 3.8743019104003906e-07,\n  \"aabb_overlap_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    0.39999961853027344\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.014500000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    14.899999618530273\n  ],\n  \"b_extents_mm\": [\n    5.399881839752197,\n    21.860000133514404,\n    0.4000000059604645\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "minute_hand"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/minute_hand/minute_shaft\",\n  \"origin_distance_mm\": 19.999999999999996,\n  \"surface_distance_mm\": 3.8743019104003906e-07,\n  \"aabb_overlap_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    0.39999961853027344\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.019999999999999997\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    20.399999618530273\n  ],\n  \"b_extents_mm\": [\n    4.399928569793701,\n    27.960000038146973,\n    0.4000000059604645\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_pinion",
+        "b": "intermediate_wheel"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/intermediate_wheel/minute_pinion\",\n  \"origin_distance_mm\": 12.0,\n  \"surface_distance_mm\": 2.220446049250313e-16,\n  \"aabb_overlap_extents_mm\": [\n    1.1572782692015924,\n    7.038719654083252,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9945218953682733,\n      -0.1045284632676535,\n      0.0,\n      0.012\n    ],\n    [\n      0.1045284632676535,\n      0.9945218953682733,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    7.162503242492676,\n    7.038719654083252,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    19.188880920410156,\n    19.152053833007812,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_wheel",
+        "b": "intermediate_pinion"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_wheel/intermediate_pinion\",\n  \"origin_distance_mm\": 12.0,\n  \"surface_distance_mm\": 1.7763568394002505e-15,\n  \"aabb_overlap_extents_mm\": [\n    1.1959329562766587,\n    5.998425636197021,\n    1.9999999999999982\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9951847266721968,\n      0.09801714032956055,\n      0.0,\n      0.011753849034708616\n    ],\n    [\n      -0.09801714032956053,\n      0.9951847266721968,\n      0.0,\n      -0.0024180638679074055\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -1.734723475976807e-18\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    20.389616012573242,\n    20.389616012573242,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    5.951200008392334,\n    5.951200008392334,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "baseplate"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/baseplate/minute_shaft\",\n  \"origin_distance_mm\": 2.0,\n  \"surface_distance_mm\": 0.0,\n  \"aabb_overlap_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    20.399999618530273\n  ],\n  \"b_extents_mm\": [\n    63.191139221191406,\n    57.20000076293945,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "upper_bridge"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/minute_shaft/upper_bridge\",\n  \"origin_distance_mm\": 15.000000000000002,\n  \"surface_distance_mm\": 0.8499999541077906,\n  \"aabb_overlap_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.015000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    20.399999618530273\n  ],\n  \"b_extents_mm\": [\n    22.0,\n    26.399999618530273,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "central_upper_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/central_upper_bearing/minute_shaft\",\n  \"origin_distance_mm\": 13.500000000000002,\n  \"surface_distance_mm\": 0.8499999541077906,\n  \"aabb_overlap_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    1.4999999999999982\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.013500000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    20.399999618530273\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    1.5\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "hour_wheel"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_wheel/minute_shaft\",\n  \"origin_distance_mm\": 7.000000000000003,\n  \"surface_distance_mm\": 0.7950131915921893,\n  \"aabb_overlap_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9794874195590514,\n      -0.2015053223256171,\n      0.0,\n      0.0\n    ],\n    [\n      0.2015053223256171,\n      0.9794874195590514,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.007000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    20.399999618530273\n  ],\n  \"b_extents_mm\": [\n    20.389616012573242,\n    20.389616012573242,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "chapter_ring"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/chapter_ring/minute_shaft\",\n  \"origin_distance_mm\": 17.999999999999996,\n  \"surface_distance_mm\": 21.999999030203032,\n  \"aabb_overlap_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    0.800000011920929\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.017999999999999995\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    20.399999618530273\n  ],\n  \"b_extents_mm\": [\n    57.20000076293945,\n    57.182220458984375,\n    0.800000011920929\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "hour_hand"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_hand/minute_shaft\",\n  \"origin_distance_mm\": 19.000000000000004,\n  \"surface_distance_mm\": 0.7949999241630893,\n  \"aabb_overlap_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    0.4000000059604645\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.019000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    20.399999618530273\n  ],\n  \"b_extents_mm\": [\n    5.399881839752197,\n    21.860000133514404,\n    0.4000000059604645\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "intermediate_wheel"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/intermediate_wheel/minute_shaft\",\n  \"origin_distance_mm\": 12.257650672131263,\n  \"surface_distance_mm\": 1.5173213425200862,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    1.9993783235549927,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9945218953682733,\n      -0.1045284632676535,\n      0.0,\n      0.012\n    ],\n    [\n      0.1045284632676535,\n      0.9945218953682733,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0025000000000000005\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    20.399999618530273\n  ],\n  \"b_extents_mm\": [\n    19.188880920410156,\n    19.152053833007812,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "intermediate_pinion"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/intermediate_pinion/minute_shaft\",\n  \"origin_distance_mm\": 13.892443989449806,\n  \"surface_distance_mm\": 8.107156200026996,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    1.9993783235549927,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9945218953682733,\n      -0.1045284632676535,\n      0.0,\n      0.012\n    ],\n    [\n      0.1045284632676535,\n      0.9945218953682733,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.007000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    20.399999618530273\n  ],\n  \"b_extents_mm\": [\n    5.951200008392334,\n    5.951200008392334,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "intermediate_lower_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/intermediate_lower_bearing/minute_shaft\",\n  \"origin_distance_mm\": 12.0,\n  \"surface_distance_mm\": 8.200000047683716,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    1.9993783235549927,\n    1.5\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.012\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    20.399999618530273\n  ],\n  \"b_extents_mm\": [\n    5.599999904632568,\n    5.598259449005127,\n    1.5\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "intermediate_upper_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/intermediate_upper_bearing/minute_shaft\",\n  \"origin_distance_mm\": 18.062391868188445,\n  \"surface_distance_mm\": 8.200000047683716,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    1.9993783235549927,\n    1.4999999999999982\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.012\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.013500000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    20.399999618530273\n  ],\n  \"b_extents_mm\": [\n    5.599999904632568,\n    5.598259449005127,\n    1.5\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "intermediate_arbor"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/intermediate_arbor/minute_shaft\",\n  \"origin_distance_mm\": 12.0,\n  \"surface_distance_mm\": 10.0,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    1.9993783235549927,\n    17.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.012\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    20.399999618530273\n  ],\n  \"b_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    17.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_arbor",
+        "b": "baseplate"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/baseplate/intermediate_arbor\",\n  \"origin_distance_mm\": 12.165525060596439,\n  \"surface_distance_mm\": 0.0,\n  \"aabb_overlap_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.012\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    17.0\n  ],\n  \"b_extents_mm\": [\n    63.191139221191406,\n    57.20000076293945,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_arbor",
+        "b": "upper_bridge"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/intermediate_arbor/upper_bridge\",\n  \"origin_distance_mm\": 19.20937271229855,\n  \"surface_distance_mm\": 0.049984039268555235,\n  \"aabb_overlap_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.012\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.015000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    17.0\n  ],\n  \"b_extents_mm\": [\n    22.0,\n    26.399999618530273,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_arbor",
+        "b": "hour_wheel"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_wheel/intermediate_arbor\",\n  \"origin_distance_mm\": 13.892443989449806,\n  \"surface_distance_mm\": 0.8497849938680181,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    1.9993783235549927,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9794874195590514,\n      -0.2015053223256171,\n      0.0,\n      -0.012\n    ],\n    [\n      0.2015053223256171,\n      0.9794874195590514,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.007000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    17.0\n  ],\n  \"b_extents_mm\": [\n    20.389616012573242,\n    20.389616012573242,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_arbor",
+        "b": "chapter_ring"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/chapter_ring/intermediate_arbor\",\n  \"origin_distance_mm\": 21.63330765278393,\n  \"surface_distance_mm\": 10.046782758373906,\n  \"aabb_overlap_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.012\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.017999999999999995\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    17.0\n  ],\n  \"b_extents_mm\": [\n    57.20000076293945,\n    57.182220458984375,\n    0.800000011920929\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_arbor",
+        "b": "minute_pinion"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/intermediate_arbor/minute_pinion\",\n  \"origin_distance_mm\": 12.257650672131263,\n  \"surface_distance_mm\": 7.426763357502029,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    1.9993783235549927,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.012\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0025000000000000005\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    17.0\n  ],\n  \"b_extents_mm\": [\n    7.162503242492676,\n    7.038719654083252,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_arbor",
+        "b": "central_upper_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/central_upper_bearing/intermediate_arbor\",\n  \"origin_distance_mm\": 18.062391868188445,\n  \"surface_distance_mm\": 8.0,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    1.9993783235549927,\n    1.4999999999999982\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.012\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.013500000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    17.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    1.5\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_arbor",
+        "b": "central_lower_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/central_lower_bearing/intermediate_arbor\",\n  \"origin_distance_mm\": 12.0,\n  \"surface_distance_mm\": 8.200000047683716,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    1.9993783235549927,\n    1.5\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.012\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    17.0\n  ],\n  \"b_extents_mm\": [\n    5.599999904632568,\n    5.598259449005127,\n    1.5\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_arbor",
+        "b": "hour_hand"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_hand/intermediate_arbor\",\n  \"origin_distance_mm\": 22.472205054244235,\n  \"surface_distance_mm\": 8.537640146610379,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    1.9993783235549927,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.012\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.019000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    2.0,\n    1.9993783235549927,\n    17.0\n  ],\n  \"b_extents_mm\": [\n    5.399881839752197,\n    21.860000133514404,\n    0.4000000059604645\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_pipe",
+        "b": "upper_bridge"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_pipe/upper_bridge\",\n  \"origin_distance_mm\": 10.499999999999998,\n  \"surface_distance_mm\": 0.04999991896251258,\n  \"aabb_overlap_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.010499999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    14.899999618530273\n  ],\n  \"b_extents_mm\": [\n    22.0,\n    26.399999618530273,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_pipe",
+        "b": "chapter_ring"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/chapter_ring/hour_pipe\",\n  \"origin_distance_mm\": 13.499999999999995,\n  \"surface_distance_mm\": 21.199999058849443,\n  \"aabb_overlap_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    0.800000011920929\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.013499999999999995\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    14.899999618530273\n  ],\n  \"b_extents_mm\": [\n    57.20000076293945,\n    57.182220458984375,\n    0.800000011920929\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_pipe",
+        "b": "minute_pinion"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_pipe/minute_pinion\",\n  \"origin_distance_mm\": 2.0000000000000018,\n  \"surface_distance_mm\": 1.7763568394002505e-15,\n  \"aabb_overlap_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0020000000000000018\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    14.899999618530273\n  ],\n  \"b_extents_mm\": [\n    7.162503242492676,\n    7.038719654083252,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_pipe",
+        "b": "intermediate_wheel"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_pipe/intermediate_wheel\",\n  \"origin_distance_mm\": 12.16552506059644,\n  \"surface_distance_mm\": 0.7187427920165245,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    3.5988810062408447,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9945218953682733,\n      -0.1045284632676535,\n      0.0,\n      0.012\n    ],\n    [\n      0.1045284632676535,\n      0.9945218953682733,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0020000000000000018\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    14.899999618530273\n  ],\n  \"b_extents_mm\": [\n    19.188880920410156,\n    19.152053833007812,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_pipe",
+        "b": "minute_hand"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_pipe/minute_hand\",\n  \"origin_distance_mm\": 15.499999999999996,\n  \"surface_distance_mm\": 0.600000381469723,\n  \"aabb_overlap_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.015499999999999996\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    14.899999618530273\n  ],\n  \"b_extents_mm\": [\n    4.399928569793701,\n    27.960000038146973,\n    0.4000000059604645\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_pipe",
+        "b": "central_lower_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/central_lower_bearing/hour_pipe\",\n  \"origin_distance_mm\": 4.500000000000003,\n  \"surface_distance_mm\": 3.0000000000000027,\n  \"aabb_overlap_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.004500000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    14.899999618530273\n  ],\n  \"b_extents_mm\": [\n    5.599999904632568,\n    5.598259449005127,\n    1.5\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_pipe",
+        "b": "baseplate"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/baseplate/hour_pipe\",\n  \"origin_distance_mm\": 6.500000000000003,\n  \"surface_distance_mm\": 4.500000000000003,\n  \"aabb_overlap_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.006500000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    14.899999618530273\n  ],\n  \"b_extents_mm\": [\n    63.191139221191406,\n    57.20000076293945,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_pipe",
+        "b": "intermediate_pinion"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_pipe/intermediate_pinion\",\n  \"origin_distance_mm\": 12.257650672131263,\n  \"surface_distance_mm\": 7.3074048022872455,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    3.5988810062408447,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9945218953682733,\n      -0.1045284632676535,\n      0.0,\n      0.012\n    ],\n    [\n      0.1045284632676535,\n      0.9945218953682733,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0024999999999999988\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    14.899999618530273\n  ],\n  \"b_extents_mm\": [\n    5.951200008392334,\n    5.951200008392334,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_pipe",
+        "b": "intermediate_upper_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_pipe/intermediate_upper_bearing\",\n  \"origin_distance_mm\": 15.0,\n  \"surface_distance_mm\": 7.400000095367432,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    3.5988810062408447,\n    1.4999999999999982\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.012\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.009\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    3.5999999046325684,\n    3.5988810062408447,\n    14.899999618530273\n  ],\n  \"b_extents_mm\": [\n    5.599999904632568,\n    5.598259449005127,\n    1.5\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "entity_ids",
+        "offset": 100,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"entity_ids\",\n  \"offset\": 100,\n  \"returned\": 16,\n  \"total\": 116,\n  \"next_offset\": null,\n  \"items\": [\n    \"relation/hour_wheel_press_fit\",\n    \"relation/hour_hand_press_fit\",\n    \"relation/minute_hand_press_fit\",\n    \"relation/minute_stage_mesh\",\n    \"relation/hour_stage_mesh\",\n    \"transmission/minute_to_intermediate\",\n    \"transmission/compound_intermediate_arbor\",\n    \"transmission/intermediate_to_hour\",\n    \"role/driver/minute_shaft\",\n    \"role/output/hour_hand\",\n    \"role/watch/minute_hand\",\n    \"role/watch/hour_hand\",\n    \"role/watch/minute_pinion\",\n    \"role/watch/intermediate_wheel\",\n    \"role/watch/intermediate_pinion\",\n    \"role/watch/hour_wheel\"\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "minute_pinion",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"minute_pinion\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 5.119693034438098,\n  \"items\": [\n    {\n      \"part\": \"minute_shaft\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/minute_pinion/minute_shaft\"\n    },\n    {\n      \"part\": \"intermediate_wheel\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/intermediate_wheel/minute_pinion\"\n    },\n    {\n      \"part\": \"hour_pipe\",\n      \"aabb_surface_distance_mm\": 1.7763568394002505e-15,\n      \"fact_id\": \"nearby/hour_pipe/minute_pinion\"\n    },\n    {\n      \"part\": \"central_lower_bearing\",\n      \"aabb_surface_distance_mm\": 1.0000000000000009,\n      \"fact_id\": \"nearby/central_lower_bearing/minute_pinion\"\n    },\n    {\n      \"part\": \"baseplate\",\n      \"aabb_surface_distance_mm\": 2.500000000000001,\n      \"fact_id\": \"nearby/baseplate/minute_pinion\"\n    },\n    {\n      \"part\": \"hour_wheel\",\n      \"aabb_surface_distance_mm\": 2.5000000000000027,\n      \"fact_id\": \"nearby/hour_wheel/minute_pinion\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "intermediate_wheel",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"intermediate_wheel\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 13.592408883271116,\n  \"items\": [\n    {\n      \"part\": \"intermediate_arbor\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/intermediate_arbor/intermediate_wheel\"\n    },\n    {\n      \"part\": \"minute_pinion\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/intermediate_wheel/minute_pinion\"\n    },\n    {\n      \"part\": \"hour_pipe\",\n      \"aabb_surface_distance_mm\": 1.7763568394002505e-15,\n      \"fact_id\": \"nearby/hour_pipe/intermediate_wheel\"\n    },\n    {\n      \"part\": \"minute_shaft\",\n      \"aabb_surface_distance_mm\": 0.45715151072695726,\n      \"fact_id\": \"nearby/intermediate_wheel/minute_shaft\"\n    },\n    {\n      \"part\": \"central_lower_bearing\",\n      \"aabb_surface_distance_mm\": 1.0000000000000009,\n      \"fact_id\": \"nearby/central_lower_bearing/intermediate_wheel\"\n    },\n    {\n      \"part\": \"intermediate_lower_bearing\",\n      \"aabb_surface_distance_mm\": 1.0000000000000009,\n      \"fact_id\": \"nearby/intermediate_lower_bearing/intermediate_wheel\"\n    },\n    {\n      \"part\": \"bridge_post_low\",\n      \"aabb_surface_distance_mm\": 1.1740056712141307,\n      \"fact_id\": \"nearby/bridge_post_low/intermediate_wheel\"\n    },\n    {\n      \"part\": \"bridge_post_high\",\n      \"aabb_surface_distance_mm\": 1.1740056712141307,\n      \"fact_id\": \"nearby/bridge_post_high/intermediate_wheel\"\n    },\n    {\n      \"part\": \"baseplate\",\n      \"aabb_surface_distance_mm\": 2.500000000000001,\n      \"fact_id\": \"nearby/baseplate/intermediate_wheel\"\n    },\n    {\n      \"part\": \"intermediate_pinion\",\n      \"aabb_surface_distance_mm\": 2.500000000000001,\n      \"fact_id\": \"nearby/intermediate_pinion/intermediate_wheel\"\n    },\n    {\n      \"part\": \"hour_wheel\",\n      \"aabb_surface_distance_mm\": 2.5000000000000027,\n      \"fact_id\": \"nearby/hour_wheel/intermediate_wheel\"\n    },\n    {\n      \"part\": \"dial_post_1\",\n      \"aabb_surface_distance_mm\": 2.8071515107269605,\n      \"fact_id\": \"nearby/dial_post_1/intermediate_wheel\"\n    },\n    {\n      \"part\": \"central_upper_bearing\",\n      \"aabb_surface_distance_mm\": 9.0,\n      \"fact_id\": \"nearby/central_upper_bearing/intermediate_wheel\"\n    },\n    {\n      \"part\": \"intermediate_upper_bearing\",\n      \"aabb_surface_distance_mm\": 9.0,\n      \"fact_id\": \"nearby/intermediate_upper_bearing/intermediate_wheel\"\n    },\n    {\n      \"part\": \"upper_bridge\",\n      \"aabb_surface_distance_mm\": 10.5,\n      \"fact_id\": \"nearby/intermediate_wheel/upper_bridge\"\n    },\n    {\n      \"part\": \"chapter_ring\",\n      \"aabb_surface_distance_mm\": 13.499999999999996,\n      \"fact_id\": \"nearby/chapter_ring/intermediate_wheel\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "intermediate_pinion",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"intermediate_pinion\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 4.325319730371901,\n  \"items\": [\n    {\n      \"part\": \"intermediate_arbor\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/intermediate_arbor/intermediate_pinion\"\n    },\n    {\n      \"part\": \"hour_wheel\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_wheel/intermediate_pinion\"\n    },\n    {\n      \"part\": \"intermediate_wheel\",\n      \"aabb_surface_distance_mm\": 2.500000000000001,\n      \"fact_id\": \"nearby/intermediate_pinion/intermediate_wheel\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "hour_wheel",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"hour_wheel\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 14.452273889256722,\n  \"items\": [\n    {\n      \"part\": \"bridge_post_low\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/bridge_post_low/hour_wheel\"\n    },\n    {\n      \"part\": \"bridge_post_high\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/bridge_post_high/hour_wheel\"\n    },\n    {\n      \"part\": \"minute_shaft\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_wheel/minute_shaft\"\n    },\n    {\n      \"part\": \"intermediate_arbor\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_wheel/intermediate_arbor\"\n    },\n    {\n      \"part\": \"hour_pipe\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_pipe/hour_wheel\"\n    },\n    {\n      \"part\": \"intermediate_pinion\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_wheel/intermediate_pinion\"\n    },\n    {\n      \"part\": \"minute_pinion\",\n      \"aabb_surface_distance_mm\": 2.5000000000000027,\n      \"fact_id\": \"nearby/hour_wheel/minute_pinion\"\n    },\n    {\n      \"part\": \"intermediate_wheel\",\n      \"aabb_surface_distance_mm\": 2.5000000000000027,\n      \"fact_id\": \"nearby/hour_wheel/intermediate_wheel\"\n    },\n    {\n      \"part\": \"central_upper_bearing\",\n      \"aabb_surface_distance_mm\": 4.499999999999998,\n      \"fact_id\": \"nearby/central_upper_bearing/hour_wheel\"\n    },\n    {\n      \"part\": \"intermediate_upper_bearing\",\n      \"aabb_surface_distance_mm\": 4.499999999999998,\n      \"fact_id\": \"nearby/hour_wheel/intermediate_upper_bearing\"\n    },\n    {\n      \"part\": \"central_lower_bearing\",\n      \"aabb_surface_distance_mm\": 5.5000000000000036,\n      \"fact_id\": \"nearby/central_lower_bearing/hour_wheel\"\n    },\n    {\n      \"part\": \"intermediate_lower_bearing\",\n      \"aabb_surface_distance_mm\": 5.5000000000000036,\n      \"fact_id\": \"nearby/hour_wheel/intermediate_lower_bearing\"\n    },\n    {\n      \"part\": \"upper_bridge\",\n      \"aabb_surface_distance_mm\": 5.9999999999999964,\n      \"fact_id\": \"nearby/hour_wheel/upper_bridge\"\n    },\n    {\n      \"part\": \"baseplate\",\n      \"aabb_surface_distance_mm\": 7.0000000000000036,\n      \"fact_id\": \"nearby/baseplate/hour_wheel\"\n    },\n    {\n      \"part\": \"chapter_ring\",\n      \"aabb_surface_distance_mm\": 8.999999999999993,\n      \"fact_id\": \"nearby/chapter_ring/hour_wheel\"\n    },\n    {\n      \"part\": \"hour_hand\",\n      \"aabb_surface_distance_mm\": 10.0,\n      \"fact_id\": \"nearby/hour_hand/hour_wheel\"\n    },\n    {\n      \"part\": \"minute_hand\",\n      \"aabb_surface_distance_mm\": 10.999999999999996,\n      \"fact_id\": \"nearby/hour_wheel/minute_hand\"\n    },\n    {\n      \"part\": \"dial_post_1\",\n      \"aabb_surface_distance_mm\": 13.310005739667794,\n      \"fact_id\": \"nearby/dial_post_1/hour_wheel\"\n    },\n    {\n      \"part\": \"dial_post_2\",\n      \"aabb_surface_distance_mm\": 13.310005739667794,\n      \"fact_id\": \"nearby/dial_post_2/hour_wheel\"\n    },\n    {\n      \"part\": \"dial_post_3\",\n      \"aabb_surface_distance_mm\": 13.31039424274244,\n      \"fact_id\": \"nearby/dial_post_3/hour_wheel\"\n    },\n    {\n      \"part\": \"dial_post_4\",\n      \"aabb_surface_distance_mm\": 13.31039424274244,\n      \"fact_id\": \"nearby/dial_post_4/hour_wheel\"\n    },\n    {\n      \"part\": \"hour_marker_12\",\n      \"aabb_surface_distance_mm\": 13.711550800605625,\n      \"fact_id\": \"nearby/hour_marker_12/hour_wheel\"\n    },\n    {\n      \"part\": \"hour_marker_9\",\n      \"aabb_surface_distance_mm\": 13.711550800605629,\n      \"fact_id\": \"nearby/hour_marker_9/hour_wheel\"\n    },\n    {\n      \"part\": \"hour_marker_3\",\n      \"aabb_surface_distance_mm\": 13.71155080060563,\n      \"fact_id\": \"nearby/hour_marker_3/hour_wheel\"\n    },\n    {\n      \"part\": \"hour_marker_8\",\n      \"aabb_surface_distance_mm\": 13.71155080060563,\n      \"fact_id\": \"nearby/hour_marker_8/hour_wheel\"\n    },\n    {\n      \"part\": \"hour_marker_11\",\n      \"aabb_surface_distance_mm\": 13.71155080060563,\n      \"fact_id\": \"nearby/hour_marker_11/hour_wheel\"\n    },\n    {\n      \"part\": \"hour_mark"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "hour_hand",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"hour_hand\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 11.26031005040829,\n  \"items\": [\n    {\n      \"part\": \"minute_shaft\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_hand/minute_shaft\"\n    },\n    {\n      \"part\": \"hour_pipe\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_hand/hour_pipe\"\n    },\n    {\n      \"part\": \"chapter_ring\",\n      \"aabb_surface_distance_mm\": 0.19999998807907815,\n      \"fact_id\": \"nearby/chapter_ring/hour_hand\"\n    },\n    {\n      \"part\": \"minute_hand\",\n      \"aabb_surface_distance_mm\": 0.599999994039532,\n      \"fact_id\": \"nearby/hour_hand/minute_hand\"\n    },\n    {\n      \"part\": \"upper_bridge\",\n      \"aabb_surface_distance_mm\": 2.0000000000000036,\n      \"fact_id\": \"nearby/hour_hand/upper_bridge\"\n    },\n    {\n      \"part\": \"central_upper_bearing\",\n      \"aabb_surface_distance_mm\": 4.0000000000000036,\n      \"fact_id\": \"nearby/central_upper_bearing/hour_hand\"\n    },\n    {\n      \"part\": \"bridge_post_high\",\n      \"aabb_surface_distance_mm\": 4.38636668461912,\n      \"fact_id\": \"nearby/bridge_post_high/hour_hand\"\n    },\n    {\n      \"part\": \"intermediate_upper_bearing\",\n      \"aabb_surface_distance_mm\": 7.6322191179888925,\n      \"fact_id\": \"nearby/hour_hand/intermediate_upper_bearing\"\n    },\n    {\n      \"part\": \"hour_marker_1\",\n      \"aabb_surface_distance_mm\": 7.7500000476837165,\n      \"fact_id\": \"nearby/hour_hand/hour_marker_1\"\n    },\n    {\n      \"part\": \"bridge_post_low\",\n      \"aabb_surface_distance_mm\": 8.126019263780583,\n      \"fact_id\": \"nearby/bridge_post_low/hour_hand\"\n    },\n    {\n      \"part\": \"dial_post_3\",\n      \"aabb_surface_distance_mm\": 8.410052803180326,\n      \"fact_id\": \"nearby/dial_post_3/hour_hand\"\n    },\n    {\n      \"part\": \"intermediate_arbor\",\n      \"aabb_surface_distance_mm\": 8.537621491583428,\n      \"fact_id\": \"nearby/hour_hand/intermediate_arbor\"\n    },\n    {\n      \"part\": \"hour_wheel\",\n      \"aabb_surface_distance_mm\": 10.0,\n      \"fact_id\": \"nearby/hour_hand/hour_wheel\"\n    },\n    {\n      \"part\": \"hour_marker_2\",\n      \"aabb_surface_distance_mm\": 10.705659743134834,\n      \"fact_id\": \"nearby/hour_hand/hour_marker_2\"\n    },\n    {\n      \"part\": \"hour_marker_12\",\n      \"aabb_surface_distance_mm\": 10.705659743134838,\n      \"fact_id\": \"nearby/hour_hand/hour_marker_12\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "minute_hand",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"minute_hand\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 14.153453408596379,\n  \"items\": [\n    {\n      \"part\": \"minute_shaft\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/minute_hand/minute_shaft\"\n    },\n    {\n      \"part\": \"hour_hand\",\n      \"aabb_surface_distance_mm\": 0.599999994039532,\n      \"fact_id\": \"nearby/hour_hand/minute_hand\"\n    },\n    {\n      \"part\": \"hour_pipe\",\n      \"aabb_surface_distance_mm\": 0.600000381469723,\n      \"fact_id\": \"nearby/hour_pipe/minute_hand\"\n    },\n    {\n      \"part\": \"hour_marker_1\",\n      \"aabb_surface_distance_mm\": 1.06066021392667,\n      \"fact_id\": \"nearby/hour_marker_1/minute_hand\"\n    },\n    {\n      \"part\": \"chapter_ring\",\n      \"aabb_surface_distance_mm\": 1.1999999880790746,\n      \"fact_id\": \"nearby/chapter_ring/minute_hand\"\n    },\n    {\n      \"part\": \"dial_post_3\",\n      \"aabb_surface_distance_mm\": 2.4132030808111007,\n      \"fact_id\": \"nearby/dial_post_3/minute_hand\"\n    },\n    {\n      \"part\": \"upper_bridge\",\n      \"aabb_surface_distance_mm\": 3.0,\n      \"fact_id\": \"nearby/minute_hand/upper_bridge\"\n    },\n    {\n      \"part\": \"central_upper_bearing\",\n      \"aabb_surface_distance_mm\": 5.0,\n      \"fact_id\": \"nearby/central_upper_bearing/minute_hand\"\n    },\n    {\n      \"part\": \"bridge_post_high\",\n      \"aabb_surface_distance_mm\": 5.503650087964355,\n      \"fact_id\": \"nearby/bridge_post_high/minute_hand\"\n    },\n    {\n      \"part\": \"intermediate_upper_bearing\",\n      \"aabb_surface_distance_mm\": 8.602354368444438,\n      \"fact_id\": \"nearby/intermediate_upper_bearing/minute_hand\"\n    },\n    {\n      \"part\": \"intermediate_arbor\",\n      \"aabb_surface_distance_mm\": 9.297345244051712,\n      \"fact_id\": \"nearby/intermediate_arbor/minute_hand\"\n    },\n    {\n      \"part\": \"bridge_post_low\",\n      \"aabb_surface_distance_mm\": 9.497630289696163,\n      \"fact_id\": \"nearby/bridge_post_low/minute_hand\"\n    },\n    {\n      \"part\": \"hour_marker_2\",\n      \"aabb_surface_distance_mm\": 10.182837574123514,\n      \"fact_id\": \"nearby/hour_marker_2/minute_hand\"\n    },\n    {\n      \"part\": \"hour_marker_12\",\n      \"aabb_surface_distance_mm\": 10.182837574123525,\n      \"fact_id\": \"nearby/hour_marker_12/minute_hand\"\n    },\n    {\n      \"part\": \"hour_wheel\",\n      \"aabb_surface_distance_mm\": 10.999999999999996,\n      \"fact_id\": \"nearby/hour_wheel/minute_hand\"\n    },\n    {\n      \"part\": \"intermediate_pinion\",\n      \"aabb_surface_distance_mm\": 12.792067901643966,\n      \"fact_id\": \"nearby/intermediate_pinion/minute_hand\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "read_current_compiler",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\"revision\": 0, \"source\": \"\"}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_pinion",
+        "b": "central_lower_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/central_lower_bearing/minute_pinion\",\n  \"origin_distance_mm\": 2.5000000000000004,\n  \"surface_distance_mm\": 1.0000000000000009,\n  \"aabb_overlap_extents_mm\": [\n    5.599999904632568,\n    5.598259449005127,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0025000000000000005\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    7.162503242492676,\n    7.038719654083252,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    5.599999904632568,\n    5.598259449005127,\n    1.5\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_pinion",
+        "b": "baseplate"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/baseplate/minute_pinion\",\n  \"origin_distance_mm\": 4.500000000000001,\n  \"surface_distance_mm\": 2.500000000000001,\n  \"aabb_overlap_extents_mm\": [\n    7.162503242492676,\n    7.038719654083252,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0045000000000000005\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    7.162503242492676,\n    7.038719654083252,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    63.191139221191406,\n    57.20000076293945,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_pinion",
+        "b": "hour_wheel"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_wheel/minute_pinion\",\n  \"origin_distance_mm\": 4.500000000000003,\n  \"surface_distance_mm\": 2.5000000000000027,\n  \"aabb_overlap_extents_mm\": [\n    7.162503242492676,\n    7.038719654083252,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9794874195590514,\n      -0.2015053223256171,\n      0.0,\n      0.0\n    ],\n    [\n      0.2015053223256171,\n      0.9794874195590514,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.004500000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    7.162503242492676,\n    7.038719654083252,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    20.389616012573242,\n    20.389616012573242,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_wheel",
+        "b": "central_lower_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/central_lower_bearing/intermediate_wheel\",\n  \"origin_distance_mm\": 12.257650672131263,\n  \"surface_distance_mm\": 1.0000000000000009,\n  \"aabb_overlap_extents_mm\": [\n    0.37602660027153867,\n    5.598259449005127,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9945218953682734,\n      0.10452846326765348,\n      0.0,\n      -0.01193426274441928\n    ],\n    [\n      -0.10452846326765348,\n      0.9945218953682733,\n      0.0,\n      0.001254341559211842\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0025000000000000005\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.188880920410156,\n    19.152053833007812,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    5.599999904632568,\n    5.598259449005127,\n    1.5\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_wheel",
+        "b": "intermediate_lower_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/intermediate_lower_bearing/intermediate_wheel\",\n  \"origin_distance_mm\": 2.5000000000000004,\n  \"surface_distance_mm\": 1.0000000000000009,\n  \"aabb_overlap_extents_mm\": [\n    5.599999904632568,\n    5.598259449005127,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9945218953682734,\n      0.10452846326765348,\n      0.0,\n      0.0\n    ],\n    [\n      -0.10452846326765348,\n      0.9945218953682733,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0025000000000000005\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.188880920410156,\n    19.152053833007812,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    5.599999904632568,\n    5.598259449005127,\n    1.5\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_wheel",
+        "b": "bridge_post_low"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/bridge_post_low/intermediate_wheel\",\n  \"origin_distance_mm\": 14.71359915180511,\n  \"surface_distance_mm\": 3.4246448320892657,\n  \"aabb_overlap_extents_mm\": [\n    3.0,\n    0.0,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9945218953682734,\n      0.10452846326765348,\n      0.0,\n      -0.007346907087342667\n    ],\n    [\n      -0.10452846326765348,\n      0.9945218953682733,\n      0.0,\n      -0.012500518239255286\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0025000000000000005\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.188880920410156,\n    19.152053833007812,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    3.0,\n    2.999067544937134,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_wheel",
+        "b": "bridge_post_high"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/bridge_post_high/intermediate_wheel\",\n  \"origin_distance_mm\": 14.71359915180511,\n  \"surface_distance_mm\": 3.4246448278131694,\n  \"aabb_overlap_extents_mm\": [\n    3.0,\n    0.0,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9945218953682734,\n      0.10452846326765348,\n      0.0,\n      -0.004587355657076614\n    ],\n    [\n      -0.10452846326765348,\n      0.9945218953682733,\n      0.0,\n      0.013754859798467129\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0025000000000000005\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.188880920410156,\n    19.152053833007812,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    3.0,\n    2.999067544937134,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_wheel",
+        "b": "baseplate"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/baseplate/intermediate_wheel\",\n  \"origin_distance_mm\": 12.816005617976296,\n  \"surface_distance_mm\": 2.500000000000001,\n  \"aabb_overlap_extents_mm\": [\n    19.152053295910505,\n    19.18888218199827,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9945218953682734,\n      0.10452846326765348,\n      0.0,\n      -0.01193426274441928\n    ],\n    [\n      -0.10452846326765348,\n      0.9945218953682733,\n      0.0,\n      0.001254341559211842\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0045000000000000005\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.188880920410156,\n    19.152053833007812,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    63.191139221191406,\n    57.20000076293945,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_wheel",
+        "b": "intermediate_pinion"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/intermediate_pinion/intermediate_wheel\",\n  \"origin_distance_mm\": 4.500000000000001,\n  \"surface_distance_mm\": 2.500000000000001,\n  \"aabb_overlap_extents_mm\": [\n    5.99842563619702,\n    5.998425636197021,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      -2.2159440343957485e-17,\n      0.0,\n      0.0\n    ],\n    [\n      1.9397899105817777e-17,\n      0.9999999999999999,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0045000000000000005\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.188880920410156,\n    19.152053833007812,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    5.951200008392334,\n    5.951200008392334,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_wheel",
+        "b": "hour_wheel"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_wheel/intermediate_wheel\",\n  \"origin_distance_mm\": 12.816005617976298,\n  \"surface_distance_mm\": 2.5000000000000027,\n  \"aabb_overlap_extents_mm\": [\n    7.772746786133403,\n    19.18888218199827,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9951847266721969,\n      -0.09801714032956058,\n      0.0,\n      -0.01193426274441928\n    ],\n    [\n      0.09801714032956056,\n      0.9951847266721968,\n      0.0,\n      0.001254341559211842\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.004500000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.188880920410156,\n    19.152053833007812,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    20.389616012573242,\n    20.389616012573242,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_wheel",
+        "b": "dial_post_1"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/dial_post_1/intermediate_wheel\",\n  \"origin_distance_mm\": 14.81249472573746,\n  \"surface_distance_mm\": 3.8197166233798763,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    2.499222993850708,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9945218953682734,\n      0.10452846326765348,\n      0.0,\n      0.014520019672376795\n    ],\n    [\n      -0.10452846326765348,\n      0.9945218953682733,\n      0.0,\n      -0.001526115563707741\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0025000000000000005\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.188880920410156,\n    19.152053833007812,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    2.5,\n    2.499222993850708,\n    18.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_wheel",
+        "b": "central_upper_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/central_upper_bearing/intermediate_wheel\",\n  \"origin_distance_mm\": 16.278820596099706,\n  \"surface_distance_mm\": 9.0,\n  \"aabb_overlap_extents_mm\": [\n    0.5760266479552545,\n    5.998135089874268,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9945218953682734,\n      0.10452846326765348,\n      0.0,\n      -0.01193426274441928\n    ],\n    [\n      -0.10452846326765348,\n      0.9945218953682733,\n      0.0,\n      0.001254341559211842\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.011000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.188880920410156,\n    19.152053833007812,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    1.5\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_wheel",
+        "b": "intermediate_upper_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/intermediate_upper_bearing/intermediate_wheel\",\n  \"origin_distance_mm\": 11.000000000000002,\n  \"surface_distance_mm\": 9.0,\n  \"aabb_overlap_extents_mm\": [\n    5.599999904632568,\n    5.598259449005127,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9945218953682734,\n      0.10452846326765348,\n      0.0,\n      0.0\n    ],\n    [\n      -0.10452846326765348,\n      0.9945218953682733,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.011000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.188880920410156,\n    19.152053833007812,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    5.599999904632568,\n    5.598259449005127,\n    1.5\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_wheel",
+        "b": "upper_bridge"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/intermediate_wheel/upper_bridge\",\n  \"origin_distance_mm\": 17.327723451163457,\n  \"surface_distance_mm\": 10.5,\n  \"aabb_overlap_extents_mm\": [\n    14.576026647955254,\n    19.18888218199827,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9945218953682734,\n      0.10452846326765348,\n      0.0,\n      -0.01193426274441928\n    ],\n    [\n      -0.10452846326765348,\n      0.9945218953682733,\n      0.0,\n      0.001254341559211842\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0125\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.188880920410156,\n    19.152053833007812,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    22.0,\n    26.399999618530273,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_wheel",
+        "b": "chapter_ring"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/chapter_ring/intermediate_wheel\",\n  \"origin_distance_mm\": 19.602295783912655,\n  \"surface_distance_mm\": 13.577223818837666,\n  \"aabb_overlap_extents_mm\": [\n    19.152053295910505,\n    19.18888218199827,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9945218953682734,\n      0.10452846326765348,\n      0.0,\n      -0.01193426274441928\n    ],\n    [\n      -0.10452846326765348,\n      0.9945218953682733,\n      0.0,\n      0.001254341559211842\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.015499999999999996\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    19.188880920410156,\n    19.152053833007812,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    57.20000076293945,\n    57.182220458984375,\n    0.800000011920929\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_wheel",
+        "b": "bridge_post_low"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/bridge_post_low/hour_wheel\",\n  \"origin_distance_mm\": 16.10093165006299,\n  \"surface_distance_mm\": 2.8000797776932007,\n  \"aabb_overlap_extents_mm\": [\n    3.0,\n    0.0,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9794874195590514,\n      0.2015053223256171,\n      0.0,\n      0.0032170542626561625\n    ],\n    [\n      -0.2015053223256171,\n      0.9794874195590514,\n      0.0,\n      -0.01413826587213318\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.007000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    20.389616012573242,\n    20.389616012573242,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    3.0,\n    2.999067544937134,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_wheel",
+        "b": "bridge_post_high"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/bridge_post_high/hour_wheel\",\n  \"origin_distance_mm\": 16.10093165006299,\n  \"surface_distance_mm\": 2.801376337412481,\n  \"aabb_overlap_extents_mm\": [\n    3.0,\n    0.0,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9794874195590514,\n      0.2015053223256171,\n      0.0,\n      0.008536794772052454\n    ],\n    [\n      -0.2015053223256171,\n      0.9794874195590514,\n      0.0,\n      0.011720202004225775\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.007000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    20.389616012573242,\n    20.389616012573242,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    3.0,\n    2.999067544937134,\n    15.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_wheel",
+        "b": "central_upper_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/central_upper_bearing/hour_wheel\",\n  \"origin_distance_mm\": 6.499999999999999,\n  \"surface_distance_mm\": 4.499999999999998,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9794874195590514,\n      0.2015053223256171,\n      0.0,\n      0.0\n    ],\n    [\n      -0.2015053223256171,\n      0.9794874195590514,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.006499999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    20.389616012573242,\n    20.389616012573242,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    1.5\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_wheel",
+        "b": "intermediate_upper_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_wheel/intermediate_upper_bearing\",\n  \"origin_distance_mm\": 13.647344063956181,\n  \"surface_distance_mm\": 4.499999999999998,\n  \"aabb_overlap_extents_mm\": [\n    0.9967200904944331,\n    5.598259449005127,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9794874195590514,\n      0.2015053223256171,\n      0.0,\n      0.011753849034708616\n    ],\n    [\n      -0.2015053223256171,\n      0.9794874195590514,\n      0.0,\n      -0.0024180638679074055\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.006499999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    20.389616012573242,\n    20.389616012573242,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    5.599999904632568,\n    5.598259449005127,\n    1.5\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_wheel",
+        "b": "central_lower_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/central_lower_bearing/hour_wheel\",\n  \"origin_distance_mm\": 7.000000000000003,\n  \"surface_distance_mm\": 5.5000000000000036,\n  \"aabb_overlap_extents_mm\": [\n    5.599999904632568,\n    5.598259449005127,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9794874195590514,\n      0.2015053223256171,\n      0.0,\n      0.0\n    ],\n    [\n      -0.2015053223256171,\n      0.9794874195590514,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.007000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    20.389616012573242,\n    20.389616012573242,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    5.599999904632568,\n    5.598259449005127,\n    1.5\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_wheel",
+        "b": "intermediate_lower_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_wheel/intermediate_lower_bearing\",\n  \"origin_distance_mm\": 13.892443989449806,\n  \"surface_distance_mm\": 5.5000000000000036,\n  \"aabb_overlap_extents_mm\": [\n    0.9967200904944331,\n    5.598259449005127,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9794874195590514,\n      0.2015053223256171,\n      0.0,\n      0.011753849034708616\n    ],\n    [\n      -0.2015053223256171,\n      0.9794874195590514,\n      0.0,\n      -0.0024180638679074055\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.007000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    20.389616012573242,\n    20.389616012573242,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    5.599999904632568,\n    5.598259449005127,\n    1.5\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_wheel",
+        "b": "upper_bridge"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_wheel/upper_bridge\",\n  \"origin_distance_mm\": 7.999999999999998,\n  \"surface_distance_mm\": 5.9999999999999964,\n  \"aabb_overlap_extents_mm\": [\n    15.196720138178149,\n    20.393440276356298,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9794874195590514,\n      0.2015053223256171,\n      0.0,\n      0.0\n    ],\n    [\n      -0.2015053223256171,\n      0.9794874195590514,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.007999999999999998\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    20.389616012573242,\n    20.389616012573242,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    22.0,\n    26.399999618530273,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_wheel",
+        "b": "baseplate"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/baseplate/hour_wheel\",\n  \"origin_distance_mm\": 9.000000000000004,\n  \"surface_distance_mm\": 7.0000000000000036,\n  \"aabb_overlap_extents_mm\": [\n    20.393440276356298,\n    20.393440276356298,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9794874195590514,\n      0.2015053223256171,\n      0.0,\n      0.0\n    ],\n    [\n      -0.2015053223256171,\n      0.9794874195590514,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.009000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    20.389616012573242,\n    20.389616012573242,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    63.191139221191406,\n    57.20000076293945,\n    2.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_wheel",
+        "b": "chapter_ring"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/chapter_ring/hour_wheel\",\n  \"origin_distance_mm\": 10.999999999999995,\n  \"surface_distance_mm\": 15.641521423504837,\n  \"aabb_overlap_extents_mm\": [\n    20.393440276356298,\n    20.393440276356298,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9794874195590514,\n      0.2015053223256171,\n      0.0,\n      0.0\n    ],\n    [\n      -0.2015053223256171,\n      0.9794874195590514,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.010999999999999994\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    20.389616012573242,\n    20.389616012573242,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    57.20000076293945,\n    57.182220458984375,\n    0.800000011920929\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_wheel",
+        "b": "hour_hand"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_hand/hour_wheel\",\n  \"origin_distance_mm\": 12.000000000000002,\n  \"surface_distance_mm\": 10.0,\n  \"aabb_overlap_extents_mm\": [\n    5.399881839752197,\n    15.056720271692553,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9794874195590514,\n      0.2015053223256171,\n      0.0,\n      0.0\n    ],\n    [\n      -0.2015053223256171,\n      0.9794874195590514,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.012000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    20.389616012573242,\n    20.389616012573242,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    5.399881839752197,\n    21.860000133514404,\n    0.4000000059604645\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_wheel",
+        "b": "minute_hand"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_wheel/minute_hand\",\n  \"origin_distance_mm\": 12.999999999999996,\n  \"surface_distance_mm\": 10.999999999999996,\n  \"aabb_overlap_extents_mm\": [\n    4.399928569793701,\n    14.156720176325122,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9794874195590514,\n      0.2015053223256171,\n      0.0,\n      0.0\n    ],\n    [\n      -0.2015053223256171,\n      0.9794874195590514,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.012999999999999996\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    20.389616012573242,\n    20.389616012573242,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    4.399928569793701,\n    27.960000038146973,\n    0.4000000059604645\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_wheel",
+        "b": "dial_post_1"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/dial_post_1/hour_wheel\",\n  \"origin_distance_mm\": 27.505635786143905,\n  \"surface_distance_mm\": 15.162604371243168,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    2.499222993850708,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9794874195590514,\n      0.2015053223256171,\n      0.0,\n      0.026054365360270768\n    ],\n    [\n      -0.2015053223256171,\n      0.9794874195590514,\n      0.0,\n      -0.005360041573861415\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.007000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    20.389616012573242,\n    20.389616012573242,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    2.5,\n    2.499222993850708,\n    18.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_wheel",
+        "b": "dial_post_2"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/dial_post_2/hour_wheel\",\n  \"origin_distance_mm\": 27.505635786143905,\n  \"surface_distance_mm\": 15.155487353404885,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    2.499222993850708,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9794874195590514,\n      0.2015053223256171,\n      0.0,\n      -0.026054365360270768\n    ],\n    [\n      -0.2015053223256171,\n      0.9794874195590514,\n      0.0,\n      0.005360041573861415\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.007000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    20.389616012573242,\n    20.389616012573242,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    2.5,\n    2.499222993850708,\n    18.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_wheel",
+        "b": "dial_post_3"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/dial_post_3/hour_wheel\",\n  \"origin_distance_mm\": 27.505635786143905,\n  \"surface_distance_mm\": 15.15537597099728,\n  \"aabb_overlap_extents_mm\": [\n    2.5,\n    0.0,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9794874195590514,\n      0.2015053223256171,\n      0.0,\n      0.005360041573861415\n    ],\n    [\n      -0.2015053223256171,\n      0.9794874195590514,\n      0.0,\n      0.026054365360270768\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.007000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    20.389616012573242,\n    20.389616012573242,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    2.5,\n    2.499222993850708,\n    18.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_wheel",
+        "b": "dial_post_4"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/dial_post_4/hour_wheel\",\n  \"origin_distance_mm\": 27.505635786143905,\n  \"surface_distance_mm\": 15.162225418816307,\n  \"aabb_overlap_extents_mm\": [\n    2.5,\n    0.0,\n    2.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9794874195590514,\n      0.2015053223256171,\n      0.0,\n      -0.005360041573861415\n    ],\n    [\n      -0.2015053223256171,\n      0.9794874195590514,\n      0.0,\n      -0.026054365360270768\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.007000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    20.389616012573242,\n    20.389616012573242,\n    2.0\n  ],\n  \"b_extents_mm\": [\n    2.5,\n    2.499222993850708,\n    18.0\n  ]\n}"
+    },
+    {
+      "name": "submit_compiler_source",
+      "arguments": {
+        "source": "def compile_mjcf(facts, out):\n    links = ['baseplate','central_lower_bearing','intermediate_lower_bearing','bridge_post_low','bridge_post_high','upper_bridge','central_upper_bearing','intermediate_upper_bearing','minute_shaft','intermediate_arbor','minute_pinion','intermediate_wheel','hour_pipe','intermediate_pinion','hour_wheel','dial_post_1','dial_post_2','dial_post_3','dial_post_4','chapter_ring'] + ['hour_marker_'+str(i) for i in range(1,13)] + ['hour_hand','minute_hand']\n    fixed = ['central_lower_bearing','intermediate_lower_bearing','bridge_post_low','bridge_post_high','upper_bridge','central_upper_bearing','intermediate_upper_bearing','dial_post_1','dial_post_2','dial_post_3','dial_post_4','chapter_ring'] + ['hour_marker_'+str(i) for i in range(1,13)]\n    carried = {'minute_pinion':'minute_shaft','minute_hand':'minute_shaft','intermediate_wheel':'intermediate_arbor','intermediate_pinion':'intermediate_arbor','hour_wheel':'hour_pipe','hour_hand':'hour_pipe'}\n    cmap = {}\n    for x in links: cmap[x] = None\n    cmap['minute_shaft']='minute_shaft_spin'; cmap['minute_pinion']='minute_shaft_spin'; cmap['minute_hand']='minute_shaft_spin'\n    cmap['intermediate_arbor']='intermediate_arbor_spin'; cmap['intermediate_wheel']='intermediate_arbor_spin'; cmap['intermediate_pinion']='intermediate_arbor_spin'\n    cmap['hour_pipe']='hour_pipe_spin'; cmap['hour_wheel']='hour_pipe_spin'; cmap['hour_hand']='hour_pipe_spin'\n    rel = [\n      ('central_lower_bearing','minute_shaft','minute_shaft_in_lower_bearing','fit/central_lower_bearing/bore/minute_shaft/outer','running journal represented by minute shaft hinge'),\n      ('central_upper_bearing','hour_pipe','hour_pipe_in_upper_bearing','fit/central_upper_bearing/bore/hour_pipe/outer','running journal represented by hour pipe hinge'),\n      ('hour_pipe','minute_shaft','minute_shaft_inside_hour_pipe','fit/hour_pipe/inner_bore/minute_shaft/outer','running coaxial clearance fit; coordinates remain independent'),\n      ('intermediate_lower_bearing','intermediate_arbor','intermediate_arbor_in_lower_bearing','fit/intermediate_lower_bearing/bore/intermediate_arbor/outer','running journal represented by arbor hinge'),\n      ('intermediate_upper_bearing','intermediate_arbor','intermediate_arbor_in_upper_bearing','fit/intermediate_upper_bearing/bore/intermediate_arbor/outer','running journal represented by arbor hinge'),\n      ('minute_shaft','minute_pinion','minute_pinion_press_fit','fit/minute_shaft/minute_pinion_seat/minute_pinion/bore','declared press fit rigidly carried'),\n      ('intermediate_arbor','intermediate_wheel','intermediate_wheel_press_fit','fit/intermediate_arbor/wheel_seat/intermediate_wheel/bore','declared press fit rigidly carried'),\n      ('intermediate_arbor','intermediate_pinion','intermediate_pinion_press_fit','fit/intermediate_arbor/pinion_seat/intermediate_pinion/bore','declared press fit rigidly carried'),\n      ('hour_pipe','hour_wheel','hour_wheel_press_fit','fit/hour_pipe/hour_wheel_seat/hour_wheel/bore','declared press fit rigidly carried'),\n      ('hour_pipe','hour_hand','hour_hand_press_fit','fit/hour_pipe/hour_hand_seat/hour_hand/hub_bore','declared press fit rigidly carried'),\n      ('minute_shaft','minute_hand','minute_hand_press_fit','fit/minute_shaft/minute_hand_seat/minute_hand/hub_bore','declared press fit rigidly carried'),\n      ('minute_pinion','intermediate_wheel','minute_stage_mesh','fit/minute_pinion/mesh/intermediate_wheel/mesh','ideal external gear equality replaces tooth contact'),\n      ('hour_wheel','intermediate_pinion','hour_stage_mesh','fit/hour_wheel/mesh/intermediate_pinion/mesh','ideal external gear equality replaces tooth contact')]\n    contacts=[]\n    for a,b,n,f,r in rel:\n        contacts.append({'pair':[a,b],'action':'exclude','reason':r,'source_entity_ids':['relation/'+n],'fact_ids':[f,'pair/'+('/'.join(sorted([a,b])))]})\n    out.topology_plan({'coordinate_map':cmap,'tree_edges':[['', 'baseplate']]+[['baseplate',x] for x in fixed]+[['baseplate','minute_shaft'],['baseplate','intermediate_arbor'],['baseplate','hour_pipe']]+[[v,k] for k,v in carried.items()],'closure_edges':[],'rigid_carried':carried,'independent_coaxial':[['minute_shaft','hour_pipe']],'transmissions':[{'driving_joint':'minute_shaft_spin','driven_joint':'intermediate_arbor_spin','ratio':-0.3333333333333333},{'driving_joint':'intermediate_arbor_spin','driven_joint':'hour_pipe_spin','ratio':-0.25}],'contact_decisions':contacts,'support_ground':'baseplate rests on global plane','support_strategy':'fixed baseplate is the structural gravity support; no support patch required'})\n    out.body('baseplate')\n    for x in fixed: out.body(x,'baseplate')\n    out.body('minute_shaft','baseplate'); out.joint('minute_shaft','minute_shaft_spin',axis=(0,0,1),pos_mm=(0,0,2),frame='world')\n    out.body('minute_pinion','minute_shaft'); out.body('minute_hand','minute_shaft')\n    out.body('intermediate_arbor','baseplate'); out.joint('intermediate_arbor','intermediate_arbor_spin',axis=(0,0,1),pos_mm=(12,0,2),frame='world')\n    out.body('intermediate_wheel','intermediate_arbor'); out.body('intermediate_pinion','intermediate_arbor')\n    out.body('hour_pipe','baseplate'); out.joint('hour_pipe','hour_pipe_spin',axis=(0,0,1),pos_mm=(0,0,6.5),frame='world')\n    out.body('hour_wheel','hour_pipe'); out.body('hour_hand','hour_pipe')\n    out.joint_equality('minute_to_intermediate_eq','minute_shaft_spin','intermediate_arbor_spin',-0.3333333333333333,reason='external 3 mm to 9 mm pitch-radius mesh',sources=['relation/minute_stage_mesh','transmission/minute_to_intermediate'],fact_ids=['fit/minute_pinion/mesh/intermediate_wheel/mesh'])\n    out.joint_equality('intermediate_to_hour_eq','intermediate_arbor_spin','hour_pipe_spin',-0.25,reason='rigid compound arbor drives external 2.4 mm to 9.6 mm mesh',sources=['relation/hour_stage_mesh','transmission/compound_intermediate_arbor','transmission/intermediate_to_hour'],fact_ids=['fit/hour_wheel/mesh/intermediate_pinion/mesh'])\n    for a,b,n,f,r in rel: out.exclude(a,b,r,['relation/'+n],[f,'pair/'+('/'.join(sorted([a,b])))])\n    nodes={'transmission/minute_to_intermediate':['minute_to_intermediate_eq'],'transmission/compound_intermediate_arbor':['intermediate_arbor_spin'],'transmission/intermediate_to_hour':['intermediate_to_hour_eq'],'role/driver/minute_shaft':['minute_shaft_spin'],'role/output/hour_hand':['hour_pipe_spin']}\n    for eid in facts['entity_ids']:\n        g=nodes.get(eid,[])\n        if eid.startswith('link/'): g=[eid[5:]]\n        elif eid.startswith('pose/'): g=[eid[11:]]\n        elif eid.startswith('port/'): g=[eid.split('/')[1]]\n        elif eid.startswith('relation/'):\n            n=eid[9:]\n            g=[n]\n            if n=='minute_stage_mesh': g=['minute_to_intermediate_eq']\n            if n=='hour_stage_mesh': g=['intermediate_to_hour_eq']\n        elif eid.startswith('role/watch/'):\n            x=eid[11:]; g=[cmap[x]]\n        out.decision(eid,'represented_by',g,'represented in the emitted body tree, rigid carrying, bearing coordinate, or ideal transmission',['model/an_openwork_mechanical_watch_mov'])\n",
+        "expected_revision": 0
+      },
+      "is_error": false,
+      "result": "{\"accepted\": false, \"errors\": [\"forbidden method call: join\", \"forbidden method call: split\"]}"
+    },
+    {
+      "name": "submit_compiler_source",
+      "arguments": {
+        "source": "def compile_mjcf(facts, out):\n    links = ['baseplate','central_lower_bearing','intermediate_lower_bearing','bridge_post_low','bridge_post_high','upper_bridge','central_upper_bearing','intermediate_upper_bearing','minute_shaft','intermediate_arbor','minute_pinion','intermediate_wheel','hour_pipe','intermediate_pinion','hour_wheel','dial_post_1','dial_post_2','dial_post_3','dial_post_4','chapter_ring'] + ['hour_marker_'+str(i) for i in range(1,13)] + ['hour_hand','minute_hand']\n    fixed = ['central_lower_bearing','intermediate_lower_bearing','bridge_post_low','bridge_post_high','upper_bridge','central_upper_bearing','intermediate_upper_bearing','dial_post_1','dial_post_2','dial_post_3','dial_post_4','chapter_ring'] + ['hour_marker_'+str(i) for i in range(1,13)]\n    carried = {'minute_pinion':'minute_shaft','minute_hand':'minute_shaft','intermediate_wheel':'intermediate_arbor','intermediate_pinion':'intermediate_arbor','hour_wheel':'hour_pipe','hour_hand':'hour_pipe'}\n    cmap = {}\n    for x in links: cmap[x] = None\n    for x in ['minute_shaft','minute_pinion','minute_hand']: cmap[x]='minute_shaft_spin'\n    for x in ['intermediate_arbor','intermediate_wheel','intermediate_pinion']: cmap[x]='intermediate_arbor_spin'\n    for x in ['hour_pipe','hour_wheel','hour_hand']: cmap[x]='hour_pipe_spin'\n    rel = [\n      ('central_lower_bearing','minute_shaft','minute_shaft_in_lower_bearing','fit/central_lower_bearing/bore/minute_shaft/outer','pair/central_lower_bearing/minute_shaft','running journal represented by minute shaft hinge'),\n      ('central_upper_bearing','hour_pipe','hour_pipe_in_upper_bearing','fit/central_upper_bearing/bore/hour_pipe/outer','pair/central_upper_bearing/hour_pipe','running journal represented by hour pipe hinge'),\n      ('hour_pipe','minute_shaft','minute_shaft_inside_hour_pipe','fit/hour_pipe/inner_bore/minute_shaft/outer','pair/hour_pipe/minute_shaft','running coaxial clearance fit; coordinates remain independent'),\n      ('intermediate_lower_bearing','intermediate_arbor','intermediate_arbor_in_lower_bearing','fit/intermediate_lower_bearing/bore/intermediate_arbor/outer','pair/intermediate_arbor/intermediate_lower_bearing','running journal represented by arbor hinge'),\n      ('intermediate_upper_bearing','intermediate_arbor','intermediate_arbor_in_upper_bearing','fit/intermediate_upper_bearing/bore/intermediate_arbor/outer','pair/intermediate_arbor/intermediate_upper_bearing','running journal represented by arbor hinge'),\n      ('minute_shaft','minute_pinion','minute_pinion_press_fit','fit/minute_shaft/minute_pinion_seat/minute_pinion/bore','pair/minute_pinion/minute_shaft','declared press fit rigidly carried'),\n      ('intermediate_arbor','intermediate_wheel','intermediate_wheel_press_fit','fit/intermediate_arbor/wheel_seat/intermediate_wheel/bore','pair/intermediate_arbor/intermediate_wheel','declared press fit rigidly carried'),\n      ('intermediate_arbor','intermediate_pinion','intermediate_pinion_press_fit','fit/intermediate_arbor/pinion_seat/intermediate_pinion/bore','pair/intermediate_arbor/intermediate_pinion','declared press fit rigidly carried'),\n      ('hour_pipe','hour_wheel','hour_wheel_press_fit','fit/hour_pipe/hour_wheel_seat/hour_wheel/bore','pair/hour_pipe/hour_wheel','declared press fit rigidly carried'),\n      ('hour_pipe','hour_hand','hour_hand_press_fit','fit/hour_pipe/hour_hand_seat/hour_hand/hub_bore','pair/hour_hand/hour_pipe','declared press fit rigidly carried'),\n      ('minute_shaft','minute_hand','minute_hand_press_fit','fit/minute_shaft/minute_hand_seat/minute_hand/hub_bore','pair/minute_hand/minute_shaft','declared press fit rigidly carried'),\n      ('minute_pinion','intermediate_wheel','minute_stage_mesh','fit/minute_pinion/mesh/intermediate_wheel/mesh','pair/intermediate_wheel/minute_pinion','ideal external gear equality replaces tooth contact'),\n      ('hour_wheel','intermediate_pinion','hour_stage_mesh','fit/hour_wheel/mesh/intermediate_pinion/mesh','pair/hour_wheel/intermediate_pinion','ideal external gear equality replaces tooth contact')]\n    contacts=[]\n    for a,b,n,f,p,r in rel: contacts.append({'pair':[a,b],'action':'exclude','reason':r,'source_entity_ids':['relation/'+n],'fact_ids':[f,p]})\n    out.topology_plan({'coordinate_map':cmap,'tree_edges':[['','baseplate']]+[['baseplate',x] for x in fixed]+[['baseplate','minute_shaft'],['baseplate','intermediate_arbor'],['baseplate','hour_pipe']]+[[v,k] for k,v in carried.items()],'closure_edges':[],'rigid_carried':carried,'independent_coaxial':[['minute_shaft','hour_pipe']],'transmissions':[{'driving_joint':'minute_shaft_spin','driven_joint':'intermediate_arbor_spin','ratio':-0.3333333333333333},{'driving_joint':'intermediate_arbor_spin','driven_joint':'hour_pipe_spin','ratio':-0.25}],'contact_decisions':contacts,'support_ground':'baseplate rests on global plane','support_strategy':'fixed baseplate is the structural gravity support; no support patch required'})\n    out.body('baseplate')\n    for x in fixed: out.body(x,'baseplate')\n    out.body('minute_shaft','baseplate'); out.joint('minute_shaft','minute_shaft_spin',axis=(0,0,1),pos_mm=(0,0,2),frame='world')\n    out.body('minute_pinion','minute_shaft'); out.body('minute_hand','minute_shaft')\n    out.body('intermediate_arbor','baseplate'); out.joint('intermediate_arbor','intermediate_arbor_spin',axis=(0,0,1),pos_mm=(12,0,2),frame='world')\n    out.body('intermediate_wheel','intermediate_arbor'); out.body('intermediate_pinion','intermediate_arbor')\n    out.body('hour_pipe','baseplate'); out.joint('hour_pipe','hour_pipe_spin',axis=(0,0,1),pos_mm=(0,0,6.5),frame='world')\n    out.body('hour_wheel','hour_pipe'); out.body('hour_hand','hour_pipe')\n    out.joint_equality('minute_to_intermediate_eq','minute_shaft_spin','intermediate_arbor_spin',-0.3333333333333333,reason='external 3 mm to 9 mm pitch-radius mesh',sources=['relation/minute_stage_mesh','transmission/minute_to_intermediate'],fact_ids=['fit/minute_pinion/mesh/intermediate_wheel/mesh'])\n    out.joint_equality('intermediate_to_hour_eq','intermediate_arbor_spin','hour_pipe_spin',-0.25,reason='rigid compound arbor drives external 2.4 mm to 9.6 mm mesh',sources=['relation/hour_stage_mesh','transmission/compound_intermediate_arbor','transmission/intermediate_to_hour'],fact_ids=['fit/hour_wheel/mesh/intermediate_pinion/mesh'])\n    for a,b,n,f,p,r in rel: out.exclude(a,b,r,['relation/'+n],[f,p])\n    generated={}\n    for x in links: generated['link/'+x]=[x]\n    pose_names=['baseplate','central_lower_bearing','intermediate_lower_bearing','bridge_post_low','bridge_post_high','upper_bridge','central_upper_bearing','intermediate_upper_bearing','minute_shaft','intermediate_arbor','minute_pinion','intermediate_wheel','hour_pipe','intermediate_pinion','hour_wheel','dial_post_1','dial_post_2','dial_post_3','dial_post_4','chapter_ring']+['hour_marker_'+str(i) for i in range(1,13)]+['hour_hand','minute_hand']\n    for x in pose_names: generated['pose/place_'+x]=[x]\n    port_owners={'central_lower_bearing':['bore'],'central_upper_bearing':['bore'],'intermediate_lower_bearing':['bore'],'intermediate_upper_bearing':['bore'],'minute_shaft':['outer','minute_pinion_seat','minute_hand_seat'],'hour_pipe':['inner_bore','outer','hour_wheel_seat','hour_hand_seat'],'intermediate_arbor':['outer','wheel_seat','pinion_seat'],'minute_pinion':['bore','mesh'],'intermediate_wheel':['bore','mesh'],'intermediate_pinion':['bore','mesh'],'hour_wheel':['bore','mesh'],'hour_hand':['hub_bore'],'minute_hand':['hub_bore']}\n    for x in port_owners:\n        for p in port_owners[x]: generated['port/'+x+'/'+p]=[x]\n    for a,b,n,f,p,r in rel: generated['relation/'+n]=[n]\n    generated['relation/minute_stage_mesh']=['minute_to_intermediate_eq']; generated['relation/hour_stage_mesh']=['intermediate_to_hour_eq']\n    generated['transmission/minute_to_intermediate']=['minute_to_intermediate_eq']; generated['transmission/compound_intermediate_arbor']=['intermediate_arbor_spin']; generated['transmission/intermediate_to_hour']=['intermediate_to_hour_eq']\n    generated['role/driver/minute_shaft']=['minute_shaft_spin']; generated['role/output/hour_hand']=['hour_pipe_spin']\n    for x in ['minute_hand','hour_hand','minute_pinion','intermediate_wheel','intermediate_pinion','hour_wheel']: generated['role/watch/'+x]=[cmap[x]]\n    for eid in facts['entity_ids']: out.decision(eid,'represented_by',generated[eid],'represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission',['model/an_openwork_mechanical_watch_mov'])\n",
+        "expected_revision": 0
+      },
+      "is_error": false,
+      "result": "{\"accepted\": true, \"revision\": 1}"
+    },
+    {
+      "name": "run_mjcf_gate",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\n  \"ok\": false,\n  \"errors\": [\n    \"decision 'link/baseplate' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/central_lower_bearing' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/intermediate_lower_bearing' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/bridge_post_low' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/bridge_post_high' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/upper_bridge' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/central_upper_bearing' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/intermediate_upper_bearing' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/minute_shaft' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/intermediate_arbor' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/minute_pinion' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/intermediate_wheel' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/hour_pipe' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/intermediate_pinion' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/hour_wheel' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/dial_post_1' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/dial_post_2' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/dial_post_3' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/dial_post_4' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/chapter_ring' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/hour_marker_1' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/hour_marker_2' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/hour_marker_3' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/hour_marker_4' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/hour_marker_5' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/hour_marker_6' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/hour_marker_7' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/hour_marker_8' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/hour_marker_9' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/hour_marker_10' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/hour_marker_11' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/hour_marker_12' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/hour_hand' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'link/minute_hand' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'pose/place_baseplate' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'pose/place_central_lower_bearing' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'pose/place_intermediate_lower_bearing' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decision 'pose/place_bridge_post_low' references unknown fact 'model/an_openwork_mechanical_watch_mov'\",\n    \"decisio"
+    },
+    {
+      "name": "read_current_compiler",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\"revision\": 1, \"source\": \"def compile_mjcf(facts, out):\\n    links = ['baseplate','central_lower_bearing','intermediate_lower_bearing','bridge_post_low','bridge_post_high','upper_bridge','central_upper_bearing','intermediate_upper_bearing','minute_shaft','intermediate_arbor','minute_pinion','intermediate_wheel','hour_pipe','intermediate_pinion','hour_wheel','dial_post_1','dial_post_2','dial_post_3','dial_post_4','chapter_ring'] + ['hour_marker_'+str(i) for i in range(1,13)] + ['hour_hand','minute_hand']\\n    fixed = ['central_lower_bearing','intermediate_lower_bearing','bridge_post_low','bridge_post_high','upper_bridge','central_upper_bearing','intermediate_upper_bearing','dial_post_1','dial_post_2','dial_post_3','dial_post_4','chapter_ring'] + ['hour_marker_'+str(i) for i in range(1,13)]\\n    carried = {'minute_pinion':'minute_shaft','minute_hand':'minute_shaft','intermediate_wheel':'intermediate_arbor','intermediate_pinion':'intermediate_arbor','hour_wheel':'hour_pipe','hour_hand':'hour_pipe'}\\n    cmap = {}\\n    for x in links: cmap[x] = None\\n    for x in ['minute_shaft','minute_pinion','minute_hand']: cmap[x]='minute_shaft_spin'\\n    for x in ['intermediate_arbor','intermediate_wheel','intermediate_pinion']: cmap[x]='intermediate_arbor_spin'\\n    for x in ['hour_pipe','hour_wheel','hour_hand']: cmap[x]='hour_pipe_spin'\\n    rel = [\\n      ('central_lower_bearing','minute_shaft','minute_shaft_in_lower_bearing','fit/central_lower_bearing/bore/minute_shaft/outer','pair/central_lower_bearing/minute_shaft','running journal represented by minute shaft hinge'),\\n      ('central_upper_bearing','hour_pipe','hour_pipe_in_upper_bearing','fit/central_upper_bearing/bore/hour_pipe/outer','pair/central_upper_bearing/hour_pipe','running journal represented by hour pipe hinge'),\\n      ('hour_pipe','minute_shaft','minute_shaft_inside_hour_pipe','fit/hour_pipe/inner_bore/minute_shaft/outer','pair/hour_pipe/minute_shaft','running coaxial clearance fit; coordinates remain independent'),\\n      ('intermediate_lower_bearing','intermediate_arbor','intermediate_arbor_in_lower_bearing','fit/intermediate_lower_bearing/bore/intermediate_arbor/outer','pair/intermediate_arbor/intermediate_lower_bearing','running journal represented by arbor hinge'),\\n      ('intermediate_upper_bearing','intermediate_arbor','intermediate_arbor_in_upper_bearing','fit/intermediate_upper_bearing/bore/intermediate_arbor/outer','pair/intermediate_arbor/intermediate_upper_bearing','running journal represented by arbor hinge'),\\n      ('minute_shaft','minute_pinion','minute_pinion_press_fit','fit/minute_shaft/minute_pinion_seat/minute_pinion/bore','pair/minute_pinion/minute_shaft','declared press fit rigidly carried'),\\n      ('intermediate_arbor','intermediate_wheel','intermediate_wheel_press_fit','fit/intermediate_arbor/wheel_seat/intermediate_wheel/bore','pair/intermediate_arbor/intermediate_wheel','declared press fit rigidly carried'),\\n      ('intermediate_arbor','intermediate_pinion','intermediate_pinion_press_fit','fit/intermediate_arbor/pinion_seat/intermediate_pinion/bore','pair/intermediate_arbor/intermediate_pinion','declared press fit rigidly carried'),\\n      ('hour_pipe','hour_wheel','hour_wheel_press_fit','fit/hour_pipe/hour_wheel_seat/hour_wheel/bore','pair/hour_pipe/hour_wheel','declared press fit rigidly carried'),\\n      ('hour_pipe','hour_hand','hour_hand_press_fit','fit/hour_pipe/hour_hand_seat/hour_hand/hub_bore','pair/hour_hand/hour_pipe','declared press fit rigidly carried'),\\n      ('minute_shaft','minute_hand','minute_hand_press_fit','fit/minute_shaft/minute_hand_seat/minute_hand/hub_bore','pair/minute_hand/minute_shaft','declared press fit rigidly carried'),\\n      ('minute_pinion','intermediate_wheel','minute_stage_mesh','fit/minute_pinion/mesh/intermediate_wheel/mesh','pair/intermediate_wheel/minute_pinion','ideal external gear equality replaces tooth contact'),\\n      ('hour_wheel','intermediate_pinion','hour_stage_mesh','fit/hour_wheel/mesh/in"
+    },
+    {
+      "name": "submit_compiler_source",
+      "arguments": {
+        "source": "def compile_mjcf(facts, out):\n    links = ['baseplate','central_lower_bearing','intermediate_lower_bearing','bridge_post_low','bridge_post_high','upper_bridge','central_upper_bearing','intermediate_upper_bearing','minute_shaft','intermediate_arbor','minute_pinion','intermediate_wheel','hour_pipe','intermediate_pinion','hour_wheel','dial_post_1','dial_post_2','dial_post_3','dial_post_4','chapter_ring'] + ['hour_marker_'+str(i) for i in range(1,13)] + ['hour_hand','minute_hand']\n    fixed = ['central_lower_bearing','intermediate_lower_bearing','bridge_post_low','bridge_post_high','upper_bridge','central_upper_bearing','intermediate_upper_bearing','dial_post_1','dial_post_2','dial_post_3','dial_post_4','chapter_ring'] + ['hour_marker_'+str(i) for i in range(1,13)]\n    carried = {'minute_pinion':'minute_shaft','minute_hand':'minute_shaft','intermediate_wheel':'intermediate_arbor','intermediate_pinion':'intermediate_arbor','hour_wheel':'hour_pipe','hour_hand':'hour_pipe'}\n    cmap = {}\n    for x in links: cmap[x] = None\n    for x in ['minute_shaft','minute_pinion','minute_hand']: cmap[x]='minute_shaft_spin'\n    for x in ['intermediate_arbor','intermediate_wheel','intermediate_pinion']: cmap[x]='intermediate_arbor_spin'\n    for x in ['hour_pipe','hour_wheel','hour_hand']: cmap[x]='hour_pipe_spin'\n    rel = [\n      ('central_lower_bearing','minute_shaft','minute_shaft_in_lower_bearing','fit/central_lower_bearing/bore/minute_shaft/outer','pair/central_lower_bearing/minute_shaft','running journal represented by minute shaft hinge'),\n      ('central_upper_bearing','hour_pipe','hour_pipe_in_upper_bearing','fit/central_upper_bearing/bore/hour_pipe/outer','pair/central_upper_bearing/hour_pipe','running journal represented by hour pipe hinge'),\n      ('hour_pipe','minute_shaft','minute_shaft_inside_hour_pipe','fit/hour_pipe/inner_bore/minute_shaft/outer','pair/hour_pipe/minute_shaft','running coaxial clearance fit; coordinates remain independent'),\n      ('intermediate_lower_bearing','intermediate_arbor','intermediate_arbor_in_lower_bearing','fit/intermediate_lower_bearing/bore/intermediate_arbor/outer','pair/intermediate_arbor/intermediate_lower_bearing','running journal represented by arbor hinge'),\n      ('intermediate_upper_bearing','intermediate_arbor','intermediate_arbor_in_upper_bearing','fit/intermediate_upper_bearing/bore/intermediate_arbor/outer','pair/intermediate_arbor/intermediate_upper_bearing','running journal represented by arbor hinge'),\n      ('minute_shaft','minute_pinion','minute_pinion_press_fit','fit/minute_shaft/minute_pinion_seat/minute_pinion/bore','pair/minute_pinion/minute_shaft','declared press fit rigidly carried'),\n      ('intermediate_arbor','intermediate_wheel','intermediate_wheel_press_fit','fit/intermediate_arbor/wheel_seat/intermediate_wheel/bore','pair/intermediate_arbor/intermediate_wheel','declared press fit rigidly carried'),\n      ('intermediate_arbor','intermediate_pinion','intermediate_pinion_press_fit','fit/intermediate_arbor/pinion_seat/intermediate_pinion/bore','pair/intermediate_arbor/intermediate_pinion','declared press fit rigidly carried'),\n      ('hour_pipe','hour_wheel','hour_wheel_press_fit','fit/hour_pipe/hour_wheel_seat/hour_wheel/bore','pair/hour_pipe/hour_wheel','declared press fit rigidly carried'),\n      ('hour_pipe','hour_hand','hour_hand_press_fit','fit/hour_pipe/hour_hand_seat/hour_hand/hub_bore','pair/hour_hand/hour_pipe','declared press fit rigidly carried'),\n      ('minute_shaft','minute_hand','minute_hand_press_fit','fit/minute_shaft/minute_hand_seat/minute_hand/hub_bore','pair/minute_hand/minute_shaft','declared press fit rigidly carried'),\n      ('minute_pinion','intermediate_wheel','minute_stage_mesh','fit/minute_pinion/mesh/intermediate_wheel/mesh','pair/intermediate_wheel/minute_pinion','ideal external gear equality replaces tooth contact'),\n      ('hour_wheel','intermediate_pinion','hour_stage_mesh','fit/hour_wheel/mesh/intermediate_pinion/mesh','pair/hour_wheel/intermediate_pinion','ideal external gear equality replaces tooth contact')]\n    contacts=[]\n    for a,b,n,f,p,r in rel: contacts.append({'pair':[a,b],'action':'exclude','reason':r,'source_entity_ids':['relation/'+n],'fact_ids':[f,p]})\n    out.topology_plan({'coordinate_map':cmap,'tree_edges':[['','baseplate']]+[['baseplate',x] for x in fixed]+[['baseplate','minute_shaft'],['baseplate','intermediate_arbor'],['baseplate','hour_pipe']]+[[v,k] for k,v in carried.items()],'closure_edges':[],'rigid_carried':carried,'independent_coaxial':[['minute_shaft','hour_pipe']],'transmissions':[{'driving_joint':'minute_shaft_spin','driven_joint':'intermediate_arbor_spin','ratio':-0.3333333333333333},{'driving_joint':'intermediate_arbor_spin','driven_joint':'hour_pipe_spin','ratio':-0.25}],'contact_decisions':contacts,'support_ground':'baseplate rests on global plane','support_strategy':'fixed baseplate is the structural gravity support; no support patch required'})\n    out.body('baseplate')\n    for x in fixed: out.body(x,'baseplate')\n    out.body('minute_shaft','baseplate'); out.joint('minute_shaft','minute_shaft_spin',axis=(0,0,1),pos_mm=(0,0,2),frame='world')\n    out.body('minute_pinion','minute_shaft'); out.body('minute_hand','minute_shaft')\n    out.body('intermediate_arbor','baseplate'); out.joint('intermediate_arbor','intermediate_arbor_spin',axis=(0,0,1),pos_mm=(12,0,2),frame='world')\n    out.body('intermediate_wheel','intermediate_arbor'); out.body('intermediate_pinion','intermediate_arbor')\n    out.body('hour_pipe','baseplate'); out.joint('hour_pipe','hour_pipe_spin',axis=(0,0,1),pos_mm=(0,0,6.5),frame='world')\n    out.body('hour_wheel','hour_pipe'); out.body('hour_hand','hour_pipe')\n    out.joint_equality('minute_to_intermediate_eq','minute_shaft_spin','intermediate_arbor_spin',-0.3333333333333333,reason='external 3 mm to 9 mm pitch-radius mesh',sources=['relation/minute_stage_mesh','transmission/minute_to_intermediate'],fact_ids=['fit/minute_pinion/mesh/intermediate_wheel/mesh'])\n    out.joint_equality('intermediate_to_hour_eq','intermediate_arbor_spin','hour_pipe_spin',-0.25,reason='rigid compound arbor drives external 2.4 mm to 9.6 mm mesh',sources=['relation/hour_stage_mesh','transmission/compound_intermediate_arbor','transmission/intermediate_to_hour'],fact_ids=['fit/hour_wheel/mesh/intermediate_pinion/mesh'])\n    for a,b,n,f,p,r in rel: out.exclude(a,b,r,['relation/'+n],[f,p])\n    generated={}\n    for x in links: generated['link/'+x]=[x]\n    for x in links: generated['pose/place_'+x]=[x]\n    port_owners={'central_lower_bearing':['bore'],'central_upper_bearing':['bore'],'intermediate_lower_bearing':['bore'],'intermediate_upper_bearing':['bore'],'minute_shaft':['outer','minute_pinion_seat','minute_hand_seat'],'hour_pipe':['inner_bore','outer','hour_wheel_seat','hour_hand_seat'],'intermediate_arbor':['outer','wheel_seat','pinion_seat'],'minute_pinion':['bore','mesh'],'intermediate_wheel':['bore','mesh'],'intermediate_pinion':['bore','mesh'],'hour_wheel':['bore','mesh'],'hour_hand':['hub_bore'],'minute_hand':['hub_bore']}\n    for x in port_owners:\n        for p in port_owners[x]: generated['port/'+x+'/'+p]=[x]\n    for a,b,n,f,p,r in rel: generated['relation/'+n]=[b]\n    generated['relation/minute_stage_mesh']=['minute_to_intermediate_eq']; generated['relation/hour_stage_mesh']=['intermediate_to_hour_eq']\n    generated['transmission/minute_to_intermediate']=['minute_to_intermediate_eq']; generated['transmission/compound_intermediate_arbor']=['intermediate_arbor_spin']; generated['transmission/intermediate_to_hour']=['intermediate_to_hour_eq']\n    generated['role/driver/minute_shaft']=['minute_shaft_spin']; generated['role/output/hour_hand']=['hour_pipe_spin']\n    for x in ['minute_hand','hour_hand','minute_pinion','intermediate_wheel','intermediate_pinion','hour_wheel']: generated['role/watch/'+x]=[cmap[x]]\n    for eid in facts['entity_ids']: out.decision(eid,'represented_by',generated[eid],'represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission',[])\n",
+        "expected_revision": 1
+      },
+      "is_error": false,
+      "result": "{\"accepted\": true, \"revision\": 2}"
+    },
+    {
+      "name": "run_mjcf_gate",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\n  \"ok\": false,\n  \"errors\": [\n    \"decision 'link/baseplate' lacks reason/fact_ids\",\n    \"decision 'link/central_lower_bearing' lacks reason/fact_ids\",\n    \"decision 'link/intermediate_lower_bearing' lacks reason/fact_ids\",\n    \"decision 'link/bridge_post_low' lacks reason/fact_ids\",\n    \"decision 'link/bridge_post_high' lacks reason/fact_ids\",\n    \"decision 'link/upper_bridge' lacks reason/fact_ids\",\n    \"decision 'link/central_upper_bearing' lacks reason/fact_ids\",\n    \"decision 'link/intermediate_upper_bearing' lacks reason/fact_ids\",\n    \"decision 'link/minute_shaft' lacks reason/fact_ids\",\n    \"decision 'link/intermediate_arbor' lacks reason/fact_ids\",\n    \"decision 'link/minute_pinion' lacks reason/fact_ids\",\n    \"decision 'link/intermediate_wheel' lacks reason/fact_ids\",\n    \"decision 'link/hour_pipe' lacks reason/fact_ids\",\n    \"decision 'link/intermediate_pinion' lacks reason/fact_ids\",\n    \"decision 'link/hour_wheel' lacks reason/fact_ids\",\n    \"decision 'link/dial_post_1' lacks reason/fact_ids\",\n    \"decision 'link/dial_post_2' lacks reason/fact_ids\",\n    \"decision 'link/dial_post_3' lacks reason/fact_ids\",\n    \"decision 'link/dial_post_4' lacks reason/fact_ids\",\n    \"decision 'link/chapter_ring' lacks reason/fact_ids\",\n    \"decision 'link/hour_marker_1' lacks reason/fact_ids\",\n    \"decision 'link/hour_marker_2' lacks reason/fact_ids\",\n    \"decision 'link/hour_marker_3' lacks reason/fact_ids\",\n    \"decision 'link/hour_marker_4' lacks reason/fact_ids\",\n    \"decision 'link/hour_marker_5' lacks reason/fact_ids\",\n    \"decision 'link/hour_marker_6' lacks reason/fact_ids\",\n    \"decision 'link/hour_marker_7' lacks reason/fact_ids\",\n    \"decision 'link/hour_marker_8' lacks reason/fact_ids\",\n    \"decision 'link/hour_marker_9' lacks reason/fact_ids\",\n    \"decision 'link/hour_marker_10' lacks reason/fact_ids\",\n    \"decision 'link/hour_marker_11' lacks reason/fact_ids\",\n    \"decision 'link/hour_marker_12' lacks reason/fact_ids\",\n    \"decision 'link/hour_hand' lacks reason/fact_ids\",\n    \"decision 'link/minute_hand' lacks reason/fact_ids\",\n    \"decision 'pose/place_baseplate' lacks reason/fact_ids\",\n    \"decision 'pose/place_central_lower_bearing' lacks reason/fact_ids\",\n    \"decision 'pose/place_intermediate_lower_bearing' lacks reason/fact_ids\",\n    \"decision 'pose/place_bridge_post_low' lacks reason/fact_ids\",\n    \"decision 'pose/place_bridge_post_high' lacks reason/fact_ids\",\n    \"decision 'pose/place_upper_bridge' lacks reason/fact_ids\",\n    \"decision 'pose/place_central_upper_bearing' lacks reason/fact_ids\",\n    \"decision 'pose/place_intermediate_upper_bearing' lacks reason/fact_ids\",\n    \"decision 'pose/place_minute_shaft' lacks reason/fact_ids\",\n    \"decision 'pose/place_intermediate_arbor' lacks reason/fact_ids\",\n    \"decision 'pose/place_minute_pinion' lacks reason/fact_ids\",\n    \"decision 'pose/place_intermediate_wheel' lacks reason/fact_ids\",\n    \"decision 'pose/place_hour_pipe' lacks reason/fact_ids\",\n    \"decision 'pose/place_intermediate_pinion' lacks reason/fact_ids\",\n    \"decision 'pose/place_hour_wheel' lacks reason/fact_ids\",\n    \"decision 'pose/place_dial_post_1' lacks reason/fact_ids\",\n    \"decision 'pose/place_dial_post_2' lacks reason/fact_ids\",\n    \"decision 'pose/place_dial_post_3' lacks reason/fact_ids\",\n    \"decision 'pose/place_dial_post_4' lacks reason/fact_ids\",\n    \"decision 'pose/place_chapter_ring' lacks reason/fact_ids\",\n    \"decision 'pose/place_hour_marker_1' lacks reason/fact_ids\",\n    \"decision 'pose/place_hour_marker_2' lacks reason/fact_ids\",\n    \"decision 'pose/place_hour_marker_3' lacks reason/fact_ids\",\n    \"decision 'pose/place_hour_marker_4' lacks reason/fact_ids\",\n    \"decision 'pose/place_hour_marker_5' lacks reason/fact_ids\",\n    \"decision 'pose/place_hour_marker_6' lacks reason/fact_ids\",\n    \"decision 'pose/place_hour_marker_7' lacks reason/fact_ids\",\n    \"decision 'pose/place_hour_marker_8' lacks reason/fact_ids\",\n    \"decision 'pose/place_hour_marker_9' lacks reason/fact_ids\","
+    },
+    {
+      "name": "read_current_compiler",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\"revision\": 2, \"source\": \"def compile_mjcf(facts, out):\\n    links = ['baseplate','central_lower_bearing','intermediate_lower_bearing','bridge_post_low','bridge_post_high','upper_bridge','central_upper_bearing','intermediate_upper_bearing','minute_shaft','intermediate_arbor','minute_pinion','intermediate_wheel','hour_pipe','intermediate_pinion','hour_wheel','dial_post_1','dial_post_2','dial_post_3','dial_post_4','chapter_ring'] + ['hour_marker_'+str(i) for i in range(1,13)] + ['hour_hand','minute_hand']\\n    fixed = ['central_lower_bearing','intermediate_lower_bearing','bridge_post_low','bridge_post_high','upper_bridge','central_upper_bearing','intermediate_upper_bearing','dial_post_1','dial_post_2','dial_post_3','dial_post_4','chapter_ring'] + ['hour_marker_'+str(i) for i in range(1,13)]\\n    carried = {'minute_pinion':'minute_shaft','minute_hand':'minute_shaft','intermediate_wheel':'intermediate_arbor','intermediate_pinion':'intermediate_arbor','hour_wheel':'hour_pipe','hour_hand':'hour_pipe'}\\n    cmap = {}\\n    for x in links: cmap[x] = None\\n    for x in ['minute_shaft','minute_pinion','minute_hand']: cmap[x]='minute_shaft_spin'\\n    for x in ['intermediate_arbor','intermediate_wheel','intermediate_pinion']: cmap[x]='intermediate_arbor_spin'\\n    for x in ['hour_pipe','hour_wheel','hour_hand']: cmap[x]='hour_pipe_spin'\\n    rel = [\\n      ('central_lower_bearing','minute_shaft','minute_shaft_in_lower_bearing','fit/central_lower_bearing/bore/minute_shaft/outer','pair/central_lower_bearing/minute_shaft','running journal represented by minute shaft hinge'),\\n      ('central_upper_bearing','hour_pipe','hour_pipe_in_upper_bearing','fit/central_upper_bearing/bore/hour_pipe/outer','pair/central_upper_bearing/hour_pipe','running journal represented by hour pipe hinge'),\\n      ('hour_pipe','minute_shaft','minute_shaft_inside_hour_pipe','fit/hour_pipe/inner_bore/minute_shaft/outer','pair/hour_pipe/minute_shaft','running coaxial clearance fit; coordinates remain independent'),\\n      ('intermediate_lower_bearing','intermediate_arbor','intermediate_arbor_in_lower_bearing','fit/intermediate_lower_bearing/bore/intermediate_arbor/outer','pair/intermediate_arbor/intermediate_lower_bearing','running journal represented by arbor hinge'),\\n      ('intermediate_upper_bearing','intermediate_arbor','intermediate_arbor_in_upper_bearing','fit/intermediate_upper_bearing/bore/intermediate_arbor/outer','pair/intermediate_arbor/intermediate_upper_bearing','running journal represented by arbor hinge'),\\n      ('minute_shaft','minute_pinion','minute_pinion_press_fit','fit/minute_shaft/minute_pinion_seat/minute_pinion/bore','pair/minute_pinion/minute_shaft','declared press fit rigidly carried'),\\n      ('intermediate_arbor','intermediate_wheel','intermediate_wheel_press_fit','fit/intermediate_arbor/wheel_seat/intermediate_wheel/bore','pair/intermediate_arbor/intermediate_wheel','declared press fit rigidly carried'),\\n      ('intermediate_arbor','intermediate_pinion','intermediate_pinion_press_fit','fit/intermediate_arbor/pinion_seat/intermediate_pinion/bore','pair/intermediate_arbor/intermediate_pinion','declared press fit rigidly carried'),\\n      ('hour_pipe','hour_wheel','hour_wheel_press_fit','fit/hour_pipe/hour_wheel_seat/hour_wheel/bore','pair/hour_pipe/hour_wheel','declared press fit rigidly carried'),\\n      ('hour_pipe','hour_hand','hour_hand_press_fit','fit/hour_pipe/hour_hand_seat/hour_hand/hub_bore','pair/hour_hand/hour_pipe','declared press fit rigidly carried'),\\n      ('minute_shaft','minute_hand','minute_hand_press_fit','fit/minute_shaft/minute_hand_seat/minute_hand/hub_bore','pair/minute_hand/minute_shaft','declared press fit rigidly carried'),\\n      ('minute_pinion','intermediate_wheel','minute_stage_mesh','fit/minute_pinion/mesh/intermediate_wheel/mesh','pair/intermediate_wheel/minute_pinion','ideal external gear equality replaces tooth contact'),\\n      ('hour_wheel','intermediate_pinion','hour_stage_mesh','fit/hour_wheel/mesh/in"
+    },
+    {
+      "name": "submit_compiler_source",
+      "arguments": {
+        "source": "def compile_mjcf(facts, out):\n    links = ['baseplate','central_lower_bearing','intermediate_lower_bearing','bridge_post_low','bridge_post_high','upper_bridge','central_upper_bearing','intermediate_upper_bearing','minute_shaft','intermediate_arbor','minute_pinion','intermediate_wheel','hour_pipe','intermediate_pinion','hour_wheel','dial_post_1','dial_post_2','dial_post_3','dial_post_4','chapter_ring'] + ['hour_marker_'+str(i) for i in range(1,13)] + ['hour_hand','minute_hand']\n    fixed = ['central_lower_bearing','intermediate_lower_bearing','bridge_post_low','bridge_post_high','upper_bridge','central_upper_bearing','intermediate_upper_bearing','dial_post_1','dial_post_2','dial_post_3','dial_post_4','chapter_ring'] + ['hour_marker_'+str(i) for i in range(1,13)]\n    carried = {'minute_pinion':'minute_shaft','minute_hand':'minute_shaft','intermediate_wheel':'intermediate_arbor','intermediate_pinion':'intermediate_arbor','hour_wheel':'hour_pipe','hour_hand':'hour_pipe'}\n    cmap = {}\n    for x in links: cmap[x] = None\n    for x in ['minute_shaft','minute_pinion','minute_hand']: cmap[x]='minute_shaft_spin'\n    for x in ['intermediate_arbor','intermediate_wheel','intermediate_pinion']: cmap[x]='intermediate_arbor_spin'\n    for x in ['hour_pipe','hour_wheel','hour_hand']: cmap[x]='hour_pipe_spin'\n    rel = [\n      ('central_lower_bearing','minute_shaft','minute_shaft_in_lower_bearing','fit/central_lower_bearing/bore/minute_shaft/outer','pair/central_lower_bearing/minute_shaft','running journal represented by minute shaft hinge'),\n      ('central_upper_bearing','hour_pipe','hour_pipe_in_upper_bearing','fit/central_upper_bearing/bore/hour_pipe/outer','pair/central_upper_bearing/hour_pipe','running journal represented by hour pipe hinge'),\n      ('hour_pipe','minute_shaft','minute_shaft_inside_hour_pipe','fit/hour_pipe/inner_bore/minute_shaft/outer','pair/hour_pipe/minute_shaft','running coaxial clearance fit; coordinates remain independent'),\n      ('intermediate_lower_bearing','intermediate_arbor','intermediate_arbor_in_lower_bearing','fit/intermediate_lower_bearing/bore/intermediate_arbor/outer','pair/intermediate_arbor/intermediate_lower_bearing','running journal represented by arbor hinge'),\n      ('intermediate_upper_bearing','intermediate_arbor','intermediate_arbor_in_upper_bearing','fit/intermediate_upper_bearing/bore/intermediate_arbor/outer','pair/intermediate_arbor/intermediate_upper_bearing','running journal represented by arbor hinge'),\n      ('minute_shaft','minute_pinion','minute_pinion_press_fit','fit/minute_shaft/minute_pinion_seat/minute_pinion/bore','pair/minute_pinion/minute_shaft','declared press fit rigidly carried'),\n      ('intermediate_arbor','intermediate_wheel','intermediate_wheel_press_fit','fit/intermediate_arbor/wheel_seat/intermediate_wheel/bore','pair/intermediate_arbor/intermediate_wheel','declared press fit rigidly carried'),\n      ('intermediate_arbor','intermediate_pinion','intermediate_pinion_press_fit','fit/intermediate_arbor/pinion_seat/intermediate_pinion/bore','pair/intermediate_arbor/intermediate_pinion','declared press fit rigidly carried'),\n      ('hour_pipe','hour_wheel','hour_wheel_press_fit','fit/hour_pipe/hour_wheel_seat/hour_wheel/bore','pair/hour_pipe/hour_wheel','declared press fit rigidly carried'),\n      ('hour_pipe','hour_hand','hour_hand_press_fit','fit/hour_pipe/hour_hand_seat/hour_hand/hub_bore','pair/hour_hand/hour_pipe','declared press fit rigidly carried'),\n      ('minute_shaft','minute_hand','minute_hand_press_fit','fit/minute_shaft/minute_hand_seat/minute_hand/hub_bore','pair/minute_hand/minute_shaft','declared press fit rigidly carried'),\n      ('minute_pinion','intermediate_wheel','minute_stage_mesh','fit/minute_pinion/mesh/intermediate_wheel/mesh','pair/intermediate_wheel/minute_pinion','ideal external gear equality replaces tooth contact'),\n      ('hour_wheel','intermediate_pinion','hour_stage_mesh','fit/hour_wheel/mesh/intermediate_pinion/mesh','pair/hour_wheel/intermediate_pinion','ideal external gear equality replaces tooth contact')]\n    contacts=[]\n    for a,b,n,f,p,r in rel: contacts.append({'pair':[a,b],'action':'exclude','reason':r,'source_entity_ids':['relation/'+n],'fact_ids':[f,p]})\n    out.topology_plan({'coordinate_map':cmap,'tree_edges':[['','baseplate']]+[['baseplate',x] for x in fixed]+[['baseplate','minute_shaft'],['baseplate','intermediate_arbor'],['baseplate','hour_pipe']]+[[v,k] for k,v in carried.items()],'closure_edges':[],'rigid_carried':carried,'independent_coaxial':[['minute_shaft','hour_pipe']],'transmissions':[{'driving_joint':'minute_shaft_spin','driven_joint':'intermediate_arbor_spin','ratio':-0.3333333333333333},{'driving_joint':'intermediate_arbor_spin','driven_joint':'hour_pipe_spin','ratio':-0.25}],'contact_decisions':contacts,'support_ground':'baseplate rests on global plane','support_strategy':'fixed baseplate is the structural gravity support; no support patch required'})\n    out.body('baseplate')\n    for x in fixed: out.body(x,'baseplate')\n    out.body('minute_shaft','baseplate'); out.joint('minute_shaft','minute_shaft_spin',axis=(0,0,1),pos_mm=(0,0,2),frame='world')\n    out.body('minute_pinion','minute_shaft'); out.body('minute_hand','minute_shaft')\n    out.body('intermediate_arbor','baseplate'); out.joint('intermediate_arbor','intermediate_arbor_spin',axis=(0,0,1),pos_mm=(12,0,2),frame='world')\n    out.body('intermediate_wheel','intermediate_arbor'); out.body('intermediate_pinion','intermediate_arbor')\n    out.body('hour_pipe','baseplate'); out.joint('hour_pipe','hour_pipe_spin',axis=(0,0,1),pos_mm=(0,0,6.5),frame='world')\n    out.body('hour_wheel','hour_pipe'); out.body('hour_hand','hour_pipe')\n    out.joint_equality('minute_to_intermediate_eq','minute_shaft_spin','intermediate_arbor_spin',-0.3333333333333333,reason='external 3 mm to 9 mm pitch-radius mesh',sources=['relation/minute_stage_mesh','transmission/minute_to_intermediate'],fact_ids=['fit/minute_pinion/mesh/intermediate_wheel/mesh'])\n    out.joint_equality('intermediate_to_hour_eq','intermediate_arbor_spin','hour_pipe_spin',-0.25,reason='rigid compound arbor drives external 2.4 mm to 9.6 mm mesh',sources=['relation/hour_stage_mesh','transmission/compound_intermediate_arbor','transmission/intermediate_to_hour'],fact_ids=['fit/hour_wheel/mesh/intermediate_pinion/mesh'])\n    for a,b,n,f,p,r in rel: out.exclude(a,b,r,['relation/'+n],[f,p])\n    generated={}\n    for x in links: generated['link/'+x]=[x]\n    for x in links: generated['pose/place_'+x]=[x]\n    port_owners={'central_lower_bearing':['bore'],'central_upper_bearing':['bore'],'intermediate_lower_bearing':['bore'],'intermediate_upper_bearing':['bore'],'minute_shaft':['outer','minute_pinion_seat','minute_hand_seat'],'hour_pipe':['inner_bore','outer','hour_wheel_seat','hour_hand_seat'],'intermediate_arbor':['outer','wheel_seat','pinion_seat'],'minute_pinion':['bore','mesh'],'intermediate_wheel':['bore','mesh'],'intermediate_pinion':['bore','mesh'],'hour_wheel':['bore','mesh'],'hour_hand':['hub_bore'],'minute_hand':['hub_bore']}\n    for x in port_owners:\n        for p in port_owners[x]: generated['port/'+x+'/'+p]=[x]\n    for a,b,n,f,p,r in rel: generated['relation/'+n]=[b]\n    generated['relation/minute_stage_mesh']=['minute_to_intermediate_eq']; generated['relation/hour_stage_mesh']=['intermediate_to_hour_eq']\n    generated['transmission/minute_to_intermediate']=['minute_to_intermediate_eq']; generated['transmission/compound_intermediate_arbor']=['intermediate_arbor_spin']; generated['transmission/intermediate_to_hour']=['intermediate_to_hour_eq']\n    generated['role/driver/minute_shaft']=['minute_shaft_spin']; generated['role/output/hour_hand']=['hour_pipe_spin']\n    for x in ['minute_hand','hour_hand','minute_pinion','intermediate_wheel','intermediate_pinion','hour_wheel']: generated['role/watch/'+x]=[cmap[x]]\n    for eid in facts['entity_ids']: out.decision(eid,'represented_by',generated[eid],'represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission',[eid])\n",
+        "expected_revision": 2
+      },
+      "is_error": false,
+      "result": "{\"accepted\": true, \"revision\": 3}"
+    },
+    {
+      "name": "run_mjcf_gate",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"errors\": [],\n  \"policy_version\": 4,\n  \"bodies\": [\n    \"baseplate\",\n    \"bridge_post_high\",\n    \"bridge_post_low\",\n    \"central_lower_bearing\",\n    \"central_upper_bearing\",\n    \"chapter_ring\",\n    \"dial_post_1\",\n    \"dial_post_2\",\n    \"dial_post_3\",\n    \"dial_post_4\",\n    \"hour_hand\",\n    \"hour_marker_1\",\n    \"hour_marker_10\",\n    \"hour_marker_11\",\n    \"hour_marker_12\",\n    \"hour_marker_2\",\n    \"hour_marker_3\",\n    \"hour_marker_4\",\n    \"hour_marker_5\",\n    \"hour_marker_6\",\n    \"hour_marker_7\",\n    \"hour_marker_8\",\n    \"hour_marker_9\",\n    \"hour_pipe\",\n    \"hour_wheel\",\n    \"intermediate_arbor\",\n    \"intermediate_lower_bearing\",\n    \"intermediate_pinion\",\n    \"intermediate_upper_bearing\",\n    \"intermediate_wheel\",\n    \"minute_hand\",\n    \"minute_pinion\",\n    \"minute_shaft\",\n    \"upper_bridge\"\n  ],\n  \"joints\": [\n    \"hour_pipe_spin\",\n    \"intermediate_arbor_spin\",\n    \"intermediate_to_hour_eq\",\n    \"minute_shaft_spin\",\n    \"minute_to_intermediate_eq\"\n  ],\n  \"nq\": 3,\n  \"nv\": 3,\n  \"finite\": true,\n  \"dynamic_transmission_probe\": {\n    \"ran\": true,\n    \"ok\": true,\n    \"errors\": [],\n    \"warnings\": [],\n    \"contact_on\": {\n      \"ok\": true,\n      \"driver_travel\": 52.92405524397603,\n      \"commanded_travel\": 1.0494,\n      \"joint_deltas\": {\n        \"minute_shaft_spin\": -52.92405524397603,\n        \"hour_pipe_spin\": -4.005118400100585,\n        \"intermediate_arbor_spin\": 16.306989786800436\n      },\n      \"transmission_residuals\": [\n        {\n          \"name\": \"minute_shaft_spin->intermediate_arbor_spin\",\n          \"driving_joint\": \"minute_shaft_spin\",\n          \"driven_joint\": \"intermediate_arbor_spin\",\n          \"ratio\": -0.3333333333333333,\n          \"driving_delta\": -52.92405524397603,\n          \"driven_delta\": 16.306989786800436,\n          \"normalized_residual\": 0.07563830596731076\n        },\n        {\n          \"name\": \"intermediate_arbor_spin->hour_pipe_spin\",\n          \"driving_joint\": \"intermediate_arbor_spin\",\n          \"driven_joint\": \"hour_pipe_spin\",\n          \"ratio\": -0.25,\n          \"driving_delta\": 16.306989786800436,\n          \"driven_delta\": -4.005118400100585,\n          \"normalized_residual\": 0.01757014569482432\n        }\n      ],\n      \"active_contacts\": []\n    },\n    \"contact_off\": {\n      \"ok\": true,\n      \"driver_travel\": 52.92405524397603,\n      \"commanded_travel\": 1.0494,\n      \"joint_deltas\": {\n        \"minute_shaft_spin\": -52.92405524397603,\n        \"hour_pipe_spin\": -4.005118400100585,\n        \"intermediate_arbor_spin\": 16.306989786800436\n      },\n      \"transmission_residuals\": [\n        {\n          \"name\": \"minute_shaft_spin->intermediate_arbor_spin\",\n          \"driving_joint\": \"minute_shaft_spin\",\n          \"driven_joint\": \"intermediate_arbor_spin\",\n          \"ratio\": -0.3333333333333333,\n          \"driving_delta\": -52.92405524397603,\n          \"driven_delta\": 16.306989786800436,\n          \"normalized_residual\": 0.07563830596731076\n        },\n        {\n          \"name\": \"intermediate_arbor_spin->hour_pipe_spin\",\n          \"driving_joint\": \"intermediate_arbor_spin\",\n          \"driven_joint\": \"hour_pipe_spin\",\n          \"ratio\": -0.25,\n          \"driving_delta\": 16.306989786800436,\n          \"driven_delta\": -4.005118400100585,\n          \"normalized_residual\": 0.01757014569482432\n        }\n      ],\n      \"active_contacts\": []\n    }\n  }\n}"
+    }
+  ],
+  "report": {
+    "ok": true,
+    "errors": [],
+    "policy_version": 4,
+    "bodies": [
+      "baseplate",
+      "bridge_post_high",
+      "bridge_post_low",
+      "central_lower_bearing",
+      "central_upper_bearing",
+      "chapter_ring",
+      "dial_post_1",
+      "dial_post_2",
+      "dial_post_3",
+      "dial_post_4",
+      "hour_hand",
+      "hour_marker_1",
+      "hour_marker_10",
+      "hour_marker_11",
+      "hour_marker_12",
+      "hour_marker_2",
+      "hour_marker_3",
+      "hour_marker_4",
+      "hour_marker_5",
+      "hour_marker_6",
+      "hour_marker_7",
+      "hour_marker_8",
+      "hour_marker_9",
+      "hour_pipe",
+      "hour_wheel",
+      "intermediate_arbor",
+      "intermediate_lower_bearing",
+      "intermediate_pinion",
+      "intermediate_upper_bearing",
+      "intermediate_wheel",
+      "minute_hand",
+      "minute_pinion",
+      "minute_shaft",
+      "upper_bridge"
+    ],
+    "joints": [
+      "hour_pipe_spin",
+      "intermediate_arbor_spin",
+      "intermediate_to_hour_eq",
+      "minute_shaft_spin",
+      "minute_to_intermediate_eq"
+    ],
+    "nq": 3,
+    "nv": 3,
+    "finite": true,
+    "dynamic_transmission_probe": {
+      "ran": true,
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "contact_on": {
+        "ok": true,
+        "driver_travel": 52.92405524397603,
+        "commanded_travel": 1.0494,
+        "joint_deltas": {
+          "minute_shaft_spin": -52.92405524397603,
+          "hour_pipe_spin": -4.005118400100585,
+          "intermediate_arbor_spin": 16.306989786800436
+        },
+        "transmission_residuals": [
+          {
+            "name": "minute_shaft_spin->intermediate_arbor_spin",
+            "driving_joint": "minute_shaft_spin",
+            "driven_joint": "intermediate_arbor_spin",
+            "ratio": -0.3333333333333333,
+            "driving_delta": -52.92405524397603,
+            "driven_delta": 16.306989786800436,
+            "normalized_residual": 0.07563830596731076
+          },
+          {
+            "name": "intermediate_arbor_spin->hour_pipe_spin",
+            "driving_joint": "intermediate_arbor_spin",
+            "driven_joint": "hour_pipe_spin",
+            "ratio": -0.25,
+            "driving_delta": 16.306989786800436,
+            "driven_delta": -4.005118400100585,
+            "normalized_residual": 0.01757014569482432
+          }
+        ],
+        "active_contacts": []
+      },
+      "contact_off": {
+        "ok": true,
+        "driver_travel": 52.92405524397603,
+        "commanded_travel": 1.0494,
+        "joint_deltas": {
+          "minute_shaft_spin": -52.92405524397603,
+          "hour_pipe_spin": -4.005118400100585,
+          "intermediate_arbor_spin": 16.306989786800436
+        },
+        "transmission_residuals": [
+          {
+            "name": "minute_shaft_spin->intermediate_arbor_spin",
+            "driving_joint": "minute_shaft_spin",
+            "driven_joint": "intermediate_arbor_spin",
+            "ratio": -0.3333333333333333,
+            "driving_delta": -52.92405524397603,
+            "driven_delta": 16.306989786800436,
+            "normalized_residual": 0.07563830596731076
+          },
+          {
+            "name": "intermediate_arbor_spin->hour_pipe_spin",
+            "driving_joint": "intermediate_arbor_spin",
+            "driven_joint": "hour_pipe_spin",
+            "ratio": -0.25,
+            "driving_delta": 16.306989786800436,
+            "driven_delta": -4.005118400100585,
+            "normalized_residual": 0.01757014569482432
+          }
+        ],
+        "active_contacts": []
+      }
+    }
+  }
+}

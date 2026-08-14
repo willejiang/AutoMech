@@ -1,0 +1,90 @@
+{
+  "task": "Design this as an open demonstration mechanism: expose the complete mechanical structure and motion path, and avoid covers, housings, bridges, or plates that obstruct the gears, shafts, bearings, joints, pins, linkages, carrier, or output from the simulation camera. Build an open-frame horizontal hand-cranked slider-crank mechanism. Fix the crankshaft axis rigidly to the base, attach one crank disk or crank web and one dedicated eccentric crank pin, connect it through a single rigid connecting rod to a slider constrained to one horizontal linear guide, and expose the complete crank, both rod ends, and slider. Use only one crankshaft input and do not directly actuate the slider. Author explicit revolute, slide, pin, closure, driver, output, and watched-link semantics. Keep rod collisions against the main shaft, web, frame, and guide physically meaningful; do not broadly exclude the whole rod from the crank body.",
+  "spec": {
+    "duration_s": 3.0,
+    "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\07_horizontal_slider_crank\\design_this_as_an_open_demonstra_20260811_173301",
+    "drive": {
+      "torque": 0.5,
+      "mode": "velocity",
+      "drive_method": "servo",
+      "target_velocity": 4.0,
+      "output_link": "slider"
+    },
+    "design": {
+      "input_joint": "crankshaft",
+      "output_joint": "place_slider",
+      "watch_joints": [
+        "place_crank_disk",
+        "place_slider",
+        "place_connecting_rod"
+      ],
+      "propagation_path": [
+        "place_crankshaft",
+        "place_crank_disk",
+        "place_connecting_rod",
+        "place_slider"
+      ],
+      "pass_criteria": null,
+      "environment": "Bench-mounted and driven open-frame demonstration. The base is rigidly fixed while the camera views the exposed crank disk, eccentric crank pin, both connecting-rod ends, guide rails, slider, and wrist pin.",
+      "camera": {
+        "target_link": "connecting_rod",
+        "azimuth_deg": 135.0,
+        "elevation_deg": -30.0,
+        "distance_scale": 2.5,
+        "lock_camera": true
+      }
+    }
+  },
+  "metrics": {
+    "verdict": "PASS",
+    "test_kind": "driven_mechanism",
+    "survive_s": 3.0,
+    "input_joint": "input_crankshaft_hinge",
+    "input_part": "crankshaft",
+    "input_travel": 12.1555,
+    "input_unit": "rad",
+    "moved_count": 3,
+    "watched_count": 3,
+    "output_reached": true,
+    "exploded": false,
+    "output_travel": 0.0024,
+    "output_unit": "m",
+    "ratio_in_out": null,
+    "displaced_parts": [
+      {
+        "part": "crank_pin",
+        "disp_mm": 24.0
+      },
+      {
+        "part": "connecting_rod",
+        "disp_mm": 24.0
+      },
+      {
+        "part": "slider",
+        "disp_mm": 21.28
+      },
+      {
+        "part": "wrist_pin",
+        "disp_mm": 21.28
+      }
+    ],
+    "end_z": 0.0,
+    "max_tilt_deg": 0.0,
+    "max_drift": 0.024
+  },
+  "stability": {
+    "verdict": "PASS",
+    "exploded": false,
+    "max_disp_m": 0.0,
+    "end_z": 0.0,
+    "displaced_parts": []
+  },
+  "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\07_horizontal_slider_crank\\design_this_as_an_open_demonstra_20260811_173301\\physics\\mujoco_0\\frames",
+  "n_frames": 40,
+  "log": [
+    "initial contacts: 0 interpenetrating pair(s)",
+    "stability(settle): PASS max_disp=0.000m exploded=False",
+    "camera: az=135.0 el=-30.0 dist=0.160 (designer)",
+    "drive: method=servo mode=velocity rate=4"
+  ]
+}

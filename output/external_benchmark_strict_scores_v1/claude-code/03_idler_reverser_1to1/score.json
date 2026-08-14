@@ -1,0 +1,363 @@
+{
+  "first_blocker": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=0",
+  "layer_weights": [
+    10,
+    15,
+    15,
+    20,
+    40
+  ],
+  "layers": [
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "source_execution",
+              "path": "output/external_benchmark_work/claude-code/03_idler_reverser_1to1/source/source_execution.json",
+              "sha256": "8999d8ce30ceb373dbc92d8983aa6e38b360682f17832f6c5996f8c88524012e",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "scorer_owned_execution",
+          "points_awarded": 10,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "scorer-owned source build produced a nonempty part set; MJCF replay compiled, initialized, and stayed finite",
+          "status": "PASS"
+        }
+      ],
+      "index": 1,
+      "name": "execution",
+      "points_awarded": 10,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 10
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/claude-code/03_idler_reverser_1to1/assembly.json",
+              "sha256": "aefb6611cf163c72cc094aa180918769912c1e8a4bb4648c024be1cde05f8b71",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "assembly_model",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "assembly/simulation model is available",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/claude-code/03_idler_reverser_1to1/assembly.json",
+              "sha256": "aefb6611cf163c72cc094aa180918769912c1e8a4bb4648c024be1cde05f8b71",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "required_role_cardinalities",
+          "points_awarded": 7,
+          "points_possible": 7,
+          "raw_status": "PASS",
+          "reason": "all required roles are bound",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/claude-code/03_idler_reverser_1to1/assembly.json",
+              "sha256": "aefb6611cf163c72cc094aa180918769912c1e8a4bb4648c024be1cde05f8b71",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "input_output_independence",
+          "points_awarded": 3,
+          "points_possible": 3,
+          "raw_status": "PASS",
+          "reason": "input and output are distinct",
+          "status": "PASS"
+        }
+      ],
+      "index": 2,
+      "name": "assembly",
+      "points_awarded": 15,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "geometry",
+              "path": "output/external_benchmark_strict/claude-code/03_idler_reverser_1to1/strict/geometry.json",
+              "sha256": "3fcb428fd6a4f6d4c8ddfb9001ea1e9dfdf49b5e344e35fa8a9ef198e40d23c0",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "mesh_inventory",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "strict geometry hashes every scanned usable mesh",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "geometry",
+              "path": "output/external_benchmark_strict/claude-code/03_idler_reverser_1to1/strict/geometry.json",
+              "sha256": "3fcb428fd6a4f6d4c8ddfb9001ea1e9dfdf49b5e344e35fa8a9ef198e40d23c0",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "non_exempt_conflicts",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "FAIL",
+          "reason": "strict non-exempt conflicts=3; unavailable=0",
+          "status": "FAIL"
+        }
+      ],
+      "index": 3,
+      "name": "geometry",
+      "points_awarded": 5,
+      "status": "FAIL",
+      "strict_gate": null,
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/03_idler_reverser_1to1/replay/trajectory.json",
+              "sha256": "2bae3ff23cc9cce2b991e75a298b7f144f6ffc3259073af5ec97fe7af9f60cf7",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=0",
+          "name": "trajectory_shape",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "trajectory has time samples and joint series",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/03_idler_reverser_1to1/replay/trajectory.json",
+              "sha256": "2bae3ff23cc9cce2b991e75a298b7f144f6ffc3259073af5ec97fe7af9f60cf7",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=0",
+          "name": "sample_alignment",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "all joint series align with time",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/03_idler_reverser_1to1/replay/trajectory.json",
+              "sha256": "2bae3ff23cc9cce2b991e75a298b7f144f6ffc3259073af5ec97fe7af9f60cf7",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=0",
+          "name": "finite_health",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "finite sample fraction=1",
+          "status": "GATED"
+        }
+      ],
+      "index": 4,
+      "name": "physics_ready",
+      "points_awarded": 0,
+      "status": "GATED",
+      "strict_gate": {
+        "passed": false,
+        "reason": "collision_coverage_ok, transmission_binding_ok, one or more physical mesh links lack active collision coverage, authored transmission/closure is not represented by a valid active constraint"
+      },
+      "weight": 20
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/03_idler_reverser_1to1/replay/trajectory.json",
+              "sha256": "2bae3ff23cc9cce2b991e75a298b7f144f6ffc3259073af5ec97fe7af9f60cf7",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=0",
+          "name": "input_motion",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "input travel=8 rad reaches minimum 6",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/03_idler_reverser_1to1/replay/trajectory.json",
+              "sha256": "2bae3ff23cc9cce2b991e75a298b7f144f6ffc3259073af5ec97fe7af9f60cf7",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=0",
+          "name": "motion_propagation",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "registered output exhibits motion",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/03_idler_reverser_1to1/replay/trajectory.json",
+              "sha256": "2bae3ff23cc9cce2b991e75a298b7f144f6ffc3259073af5ec97fe7af9f60cf7",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=0",
+          "name": "registered_output",
+          "points_awarded": 0,
+          "points_possible": 15,
+          "raw_status": "PASS",
+          "reason": "measured declared ratio=1, slope=1, R^2=1",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/03_idler_reverser_1to1/replay/trajectory.json",
+              "sha256": "2bae3ff23cc9cce2b991e75a298b7f144f6ffc3259073af5ec97fe7af9f60cf7",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=0",
+          "name": "registered_invariants",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "all registered invariants have passing named evidence",
+          "status": "GATED"
+        }
+      ],
+      "index": 5,
+      "name": "functional",
+      "points_awarded": 0,
+      "status": "GATED",
+      "strict_gate": null,
+      "weight": 40
+    }
+  ],
+  "method": "claude-code",
+  "points_possible": 100,
+  "provenance": {
+    "anchor_audit": {
+      "kind": "anchor_audit",
+      "path": "output/external_benchmark_strict/claude-code/03_idler_reverser_1to1/strict/anchor_audit.json",
+      "sha256": "0f1229a60cec500f02e6592eae4a640830ca881a004fe8312a47d4197a2a616c",
+      "source": "scorer_owned"
+    },
+    "assembly": {
+      "kind": "assembly",
+      "path": "output/external_benchmark_staged/claude-code/03_idler_reverser_1to1/assembly.json",
+      "sha256": "aefb6611cf163c72cc094aa180918769912c1e8a4bb4648c024be1cde05f8b71",
+      "source": "scorer_owned"
+    },
+    "bindings": {
+      "kind": "bindings",
+      "path": "output/external_benchmark_staged/claude-code/03_idler_reverser_1to1/task_bindings.json",
+      "sha256": "a7998ef516344d1fcea7688f9357573a7cb5211611603cde6c2e6f346aaf3dc3",
+      "source": "scorer_owned"
+    },
+    "contacts": {
+      "kind": "contacts",
+      "path": "output/external_benchmark_staged/claude-code/03_idler_reverser_1to1/evidence/contacts.json",
+      "sha256": "d951db7758a9fad03d32693290f131a98d8f4c83b5bca748bd225e505f6f91dc",
+      "source": "scorer_owned"
+    },
+    "geometry": {
+      "kind": "geometry",
+      "path": "output/external_benchmark_strict/claude-code/03_idler_reverser_1to1/strict/geometry.json",
+      "sha256": "3fcb428fd6a4f6d4c8ddfb9001ea1e9dfdf49b5e344e35fa8a9ef198e40d23c0",
+      "source": "scorer_owned"
+    },
+    "model_audit": {
+      "kind": "model_audit",
+      "path": "output/external_benchmark_strict/claude-code/03_idler_reverser_1to1/strict/model_audit.json",
+      "sha256": "b67816a149fdf878f85b90a8acac5a47bb7128e073cf8e1d32266f4f705f8743",
+      "source": "scorer_owned"
+    },
+    "realization": {
+      "kind": "realization",
+      "path": "output/external_declared_realization_audit/claude-code/03_idler_reverser_1to1.json",
+      "sha256": "8dc001f50e2187c6fe739e4571313904344878b51096a3db75d8df522b3fa964",
+      "source": "scorer_owned"
+    },
+    "replay_status": {
+      "kind": "replay_status",
+      "path": "output/external_benchmark_work/claude-code/03_idler_reverser_1to1/replay_status.json",
+      "sha256": "0a64b858c76cd5952c067ba189edeb9b844f9f78fbf9e1561463e5197dd80729",
+      "source": "scorer_owned"
+    },
+    "source_execution": {
+      "kind": "source_execution",
+      "path": "output/external_benchmark_work/claude-code/03_idler_reverser_1to1/source/source_execution.json",
+      "sha256": "8999d8ce30ceb373dbc92d8983aa6e38b360682f17832f6c5996f8c88524012e",
+      "source": "scorer_owned"
+    },
+    "strict_evidence_summary": {
+      "kind": "strict_evidence_summary",
+      "path": "output/external_benchmark_strict_scores_v1/claude-code/03_idler_reverser_1to1/evidence.json",
+      "sha256": "b5afcf364afdf52c7122647986b66c5e9384ef6366238edf2981a75cd7c09d7a",
+      "source": "scorer_owned"
+    },
+    "trajectory": {
+      "kind": "trajectory",
+      "path": "output/external_benchmark_work/claude-code/03_idler_reverser_1to1/replay/trajectory.json",
+      "sha256": "2bae3ff23cc9cce2b991e75a298b7f144f6ffc3259073af5ec97fe7af9f60cf7",
+      "source": "scorer_owned"
+    }
+  },
+  "schema": "physcad-external-strict-score/1.0",
+  "scorer_version": "physcad-external-strict-scorer/1.0",
+  "strict_verdict": "FAIL",
+  "suite_id": "physcad-comfort-v1",
+  "summary_reason": "Moving collisions disabled and three fragmented gear compounds.",
+  "task_id": "03_idler_reverser_1to1",
+  "total_points": 30
+}

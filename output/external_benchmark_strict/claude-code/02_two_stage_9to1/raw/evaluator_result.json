@@ -1,0 +1,227 @@
+{
+  "task_id": "02_two_stage_9to1",
+  "candidate_iteration": 1,
+  "checks": {
+    "mjcf_load": true,
+    "dimensions": {
+      "nq": 3,
+      "nv": 3,
+      "nu": 1,
+      "neq": 2
+    },
+    "finite_state": true,
+    "at_least_200_samples": true,
+    "input_minimum_9_rad": true,
+    "overall_ratio_8_5_to_9_5": true,
+    "same_direction": true,
+    "stage1_negative_three_to_one": true,
+    "two_live_equalities": true,
+    "only_input_actuated": true
+  },
+  "ideal_gear_equalities_disclosed": [
+    {
+      "name": "stage1_ideal_mesh",
+      "authored_transmission": "stage1_3to1",
+      "represented_mesh_pair": "stage1_mesh",
+      "ratio_driven_per_driving": -0.3333333333333333
+    },
+    {
+      "name": "stage2_ideal_mesh",
+      "authored_transmission": "stage2_3to1",
+      "represented_mesh_pair": "stage2_mesh",
+      "ratio_driven_per_driving": -0.3333333333333333
+    }
+  ],
+  "collision_model": "Gear tooth contact is not claimed; authored ideal gear equalities represent only the two exact disclosed mesh pairs. Moving decorative gear/shaft geoms are non-colliding in MJCF; no collision exclusions are present.",
+  "driver_mode": "finite velocity actuator on input only",
+  "direct_output_actuation": false,
+  "measurements": {
+    "samples": 800,
+    "horizon_s": 3.999999999999937,
+    "input_net_rad": 11.95302553766146,
+    "intermediate_net_rad": -3.7959720382257496,
+    "output_net_rad": 1.2668572687124906,
+    "output_per_input_slope": 0.11111110128120662,
+    "input_per_output_ratio": 9.000000796222334,
+    "intermediate_per_input_slope": -0.3333333036079092,
+    "same_direction": true,
+    "max_stage1_equality_residual_rad": 0.6130349351336578,
+    "max_stage2_equality_residual_rad": 0.004658184698134088,
+    "contact_records": 0
+  },
+  "status": "PASS",
+  "source_execution": true,
+  "step_generation": true,
+  "step_inspection": true,
+  "snapshot_status": "unavailable: CAD snapshot runtime missing playwright package",
+  "geometry_check": {
+    "part_count": 21,
+    "positive_aabb_pairs": [
+      {
+        "pair": [
+          "input_bearing_front",
+          "input_shaft"
+        ],
+        "aabb_overlap_mm": [
+          10.0,
+          4.400000200000008,
+          10.0
+        ],
+        "exact_common_volume_mm3": 0.0,
+        "exempt": false
+      },
+      {
+        "pair": [
+          "input_bearing_rear",
+          "input_shaft"
+        ],
+        "aabb_overlap_mm": [
+          10.0,
+          4.400000200000008,
+          10.0
+        ],
+        "exact_common_volume_mm3": 0.0,
+        "exempt": false
+      },
+      {
+        "pair": [
+          "intermediate_bearing_front",
+          "intermediate_shaft"
+        ],
+        "aabb_overlap_mm": [
+          10.0,
+          4.400000200000008,
+          10.0
+        ],
+        "exact_common_volume_mm3": 0.0,
+        "exempt": false
+      },
+      {
+        "pair": [
+          "intermediate_bearing_rear",
+          "intermediate_shaft"
+        ],
+        "aabb_overlap_mm": [
+          10.0,
+          4.400000200000008,
+          10.0
+        ],
+        "exact_common_volume_mm3": 0.0,
+        "exempt": false
+      },
+      {
+        "pair": [
+          "output_bearing_front",
+          "output_shaft"
+        ],
+        "aabb_overlap_mm": [
+          10.0,
+          4.400000200000008,
+          10.0
+        ],
+        "exact_common_volume_mm3": 0.0,
+        "exempt": false
+      },
+      {
+        "pair": [
+          "output_bearing_rear",
+          "output_shaft"
+        ],
+        "aabb_overlap_mm": [
+          10.0,
+          4.400000200000008,
+          10.0
+        ],
+        "exact_common_volume_mm3": 0.0,
+        "exempt": false
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "input_pinion"
+        ],
+        "aabb_overlap_mm": [
+          10.0,
+          8.0,
+          10.0
+        ],
+        "exact_common_volume_mm3": 0.0,
+        "exempt": true
+      },
+      {
+        "pair": [
+          "intermediate_shaft",
+          "stage1_driven_gear"
+        ],
+        "aabb_overlap_mm": [
+          10.0,
+          8.0,
+          10.0
+        ],
+        "exact_common_volume_mm3": 0.0,
+        "exempt": true
+      },
+      {
+        "pair": [
+          "intermediate_shaft",
+          "stage2_pinion"
+        ],
+        "aabb_overlap_mm": [
+          10.0,
+          8.0,
+          10.0
+        ],
+        "exact_common_volume_mm3": 0.0,
+        "exempt": true
+      },
+      {
+        "pair": [
+          "output_shaft",
+          "output_gear"
+        ],
+        "aabb_overlap_mm": [
+          10.0,
+          8.0,
+          10.0
+        ],
+        "exact_common_volume_mm3": 0.0,
+        "exempt": true
+      },
+      {
+        "pair": [
+          "input_pinion",
+          "stage1_driven_gear"
+        ],
+        "aabb_overlap_mm": [
+          6.0,
+          8.0,
+          42.0
+        ],
+        "exact_common_volume_mm3": null,
+        "exempt": true
+      },
+      {
+        "pair": [
+          "stage2_pinion",
+          "output_gear"
+        ],
+        "aabb_overlap_mm": [
+          6.0,
+          8.0,
+          42.0
+        ],
+        "exact_common_volume_mm3": null,
+        "exempt": true
+      }
+    ],
+    "non_exempt_positive_exact": []
+  },
+  "reference_validation": {
+    "source_build_part_count": 21,
+    "link_count": 9,
+    "joint_count": 3,
+    "mesh_file_count": 21,
+    "reference_errors": [],
+    "pass": true
+  }
+}

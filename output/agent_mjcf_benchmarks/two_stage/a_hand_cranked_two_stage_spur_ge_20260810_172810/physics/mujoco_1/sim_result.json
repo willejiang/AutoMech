@@ -1,0 +1,84 @@
+{
+  "task": "a hand-cranked two-stage spur gear reducer",
+  "spec": {
+    "duration_s": 6.0,
+    "run_dir": "output\\agent_mjcf_benchmarks\\two_stage\\a_hand_cranked_two_stage_spur_ge_20260810_172810",
+    "drive": {
+      "torque": 0.5,
+      "mode": "velocity",
+      "drive_method": "servo",
+      "target_velocity": 4.0,
+      "output_link": "output_shaft"
+    },
+    "design": {
+      "input_joint": "input_shaft",
+      "output_joint": "place_output_gear",
+      "watch_joints": [
+        "place_compound_shaft",
+        "place_output_shaft",
+        "place_input_pinion",
+        "place_compound_wheel",
+        "place_compound_pinion",
+        "place_output_gear"
+      ],
+      "propagation_path": [
+        "place_input_shaft",
+        "place_compound_shaft",
+        "place_output_shaft",
+        "place_input_pinion",
+        "place_compound_wheel",
+        "place_compound_pinion",
+        "place_output_gear"
+      ],
+      "pass_criteria": null,
+      "environment": "Bench-mount the reducer by fixing its baseplate and drive only place_input_shaft with a velocity servo. Observe the complete gear train and output coupling to verify motion transmission through both stages.",
+      "camera": {
+        "target_link": "compound_pinion",
+        "azimuth": 45.0,
+        "elevation": -30.0,
+        "distance_scale": 2.3,
+        "locked": true
+      }
+    }
+  },
+  "metrics": {
+    "verdict": "PASS",
+    "test_kind": "driven_mechanism",
+    "survive_s": 6.0,
+    "input_joint": "input_shaft_rotation",
+    "input_part": "input_shaft",
+    "input_travel": 1.2904,
+    "input_unit": "rad",
+    "moved_count": 6,
+    "watched_count": 6,
+    "output_reached": true,
+    "exploded": false,
+    "output_travel": 4.8359,
+    "output_unit": "rad",
+    "ratio_in_out": 0.2668,
+    "displaced_parts": [
+      {
+        "part": "crank_handle",
+        "disp_mm": 17.49
+      }
+    ],
+    "end_z": 0.0,
+    "max_tilt_deg": 0.0,
+    "max_drift": 0.0175
+  },
+  "stability": {
+    "verdict": "PASS",
+    "exploded": false,
+    "max_disp_m": 0.0,
+    "end_z": 0.0,
+    "displaced_parts": []
+  },
+  "frames_dir": "output\\agent_mjcf_benchmarks\\two_stage\\a_hand_cranked_two_stage_spur_ge_20260810_172810\\physics\\mujoco_1\\frames",
+  "n_frames": 40,
+  "log": [
+    "initial contacts: 0 interpenetrating pair(s)",
+    "stability(settle): PASS max_disp=0.000m exploded=False",
+    "camera: az=45.0 el=-30.0 dist=0.226 (designer)",
+    "drive: method=servo mode=velocity rate=4"
+  ]
+}

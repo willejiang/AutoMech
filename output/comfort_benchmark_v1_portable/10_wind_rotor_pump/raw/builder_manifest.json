@@ -1,0 +1,3242 @@
+{
+  "manifest_version": 3,
+  "engine": "mujoco-agent",
+  "topology_plan": {
+    "coordinate_map": {
+      "base": null,
+      "front_bearing_post": null,
+      "rear_bearing_post": null,
+      "front_bearing": null,
+      "rear_bearing": null,
+      "rotor_shaft": "world_rotor_shaft_hinge",
+      "crank_disk": "world_rotor_shaft_hinge",
+      "wind_rotor": "world_rotor_shaft_hinge",
+      "crank_pin": "world_rotor_shaft_hinge",
+      "connecting_rod": "crank_big_end_hinge",
+      "left_guide_column": null,
+      "right_guide_column": null,
+      "left_guide_arm": null,
+      "right_guide_arm": null,
+      "left_guide": null,
+      "right_guide": null,
+      "crosshead": "world_crosshead_vertical_slide",
+      "wrist_pin": "world_crosshead_vertical_slide",
+      "pump_rod": "world_crosshead_vertical_slide",
+      "pump_piston": "world_crosshead_vertical_slide"
+    },
+    "tree_edges": [
+      [
+        "",
+        "rotor_shaft",
+        "world_rotor_shaft_hinge"
+      ],
+      [
+        "crank_pin",
+        "connecting_rod",
+        "crank_big_end_hinge"
+      ],
+      [
+        "",
+        "crosshead",
+        "world_crosshead_vertical_slide"
+      ]
+    ],
+    "closure_edges": [
+      [
+        "connecting_rod",
+        "wrist_pin",
+        "rod_small_end_connect"
+      ]
+    ],
+    "rigid_carried": [
+      [
+        "rotor_shaft",
+        "crank_disk"
+      ],
+      [
+        "rotor_shaft",
+        "wind_rotor"
+      ],
+      [
+        "crank_disk",
+        "crank_pin"
+      ],
+      [
+        "crosshead",
+        "wrist_pin"
+      ],
+      [
+        "crosshead",
+        "pump_rod"
+      ],
+      [
+        "pump_rod",
+        "pump_piston"
+      ]
+    ],
+    "independent_coaxial": [],
+    "transmissions": [
+      {
+        "name": "shaft_to_crank_rigid_carry",
+        "ratio": 1.0
+      },
+      {
+        "name": "shaft_to_wind_rotor_rigid_carry",
+        "ratio": 1.0
+      }
+    ],
+    "contact_decisions": [
+      {
+        "pair": [
+          "front_bearing",
+          "rotor_shaft"
+        ],
+        "action": "exclude",
+        "reason": "authored ideal fit represented by topology",
+        "source_entity_ids": [
+          "relation/front_shaft_journal"
+        ],
+        "fact_ids": [
+          "fit/front_bearing/journal/rotor_shaft/shaft_axis",
+          "pair/front_bearing/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "rear_bearing",
+          "rotor_shaft"
+        ],
+        "action": "exclude",
+        "reason": "authored ideal fit represented by topology",
+        "source_entity_ids": [
+          "relation/rear_shaft_journal"
+        ],
+        "fact_ids": [
+          "fit/rear_bearing/journal/rotor_shaft/shaft_axis",
+          "pair/rear_bearing/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "rotor_shaft",
+          "crank_disk"
+        ],
+        "action": "exclude",
+        "reason": "authored ideal fit represented by topology",
+        "source_entity_ids": [
+          "relation/shaft_carries_crank"
+        ],
+        "fact_ids": [
+          "fit/rotor_shaft/crank_seat/crank_disk/shaft_bore",
+          "pair/crank_disk/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "rotor_shaft",
+          "wind_rotor"
+        ],
+        "action": "exclude",
+        "reason": "authored ideal fit represented by topology",
+        "source_entity_ids": [
+          "relation/shaft_carries_wind_rotor"
+        ],
+        "fact_ids": [
+          "fit/rotor_shaft/rotor_seat/wind_rotor/hub_bore",
+          "pair/rotor_shaft/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "crank_pin"
+        ],
+        "action": "exclude",
+        "reason": "authored ideal fit represented by topology",
+        "source_entity_ids": [
+          "relation/crank_carries_eccentric_pin"
+        ],
+        "fact_ids": [
+          "fit/crank_disk/eccentric_pin_seat/crank_pin/pin_axis",
+          "pair/crank_disk/crank_pin"
+        ]
+      },
+      {
+        "pair": [
+          "crank_pin",
+          "connecting_rod"
+        ],
+        "action": "exclude",
+        "reason": "authored ideal fit represented by topology",
+        "source_entity_ids": [
+          "relation/crank_big_end_pin"
+        ],
+        "fact_ids": [
+          "fit/crank_pin/pin_axis/connecting_rod/big_end",
+          "pair/connecting_rod/crank_pin"
+        ]
+      },
+      {
+        "pair": [
+          "crosshead",
+          "wrist_pin"
+        ],
+        "action": "exclude",
+        "reason": "authored ideal fit represented by topology",
+        "source_entity_ids": [
+          "relation/crosshead_carries_wrist_pin"
+        ],
+        "fact_ids": [
+          "fit/crosshead/wrist_bore/wrist_pin/pin_axis",
+          "pair/crosshead/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "wrist_pin",
+          "connecting_rod"
+        ],
+        "action": "exclude",
+        "reason": "authored ideal fit represented by topology",
+        "source_entity_ids": [
+          "relation/rod_small_end_closure"
+        ],
+        "fact_ids": [
+          "fit/wrist_pin/pin_axis/connecting_rod/small_end",
+          "pair/connecting_rod/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "crosshead",
+          "pump_rod"
+        ],
+        "action": "exclude",
+        "reason": "authored ideal fit represented by topology",
+        "source_entity_ids": [
+          "relation/crosshead_carries_pump_rod"
+        ],
+        "fact_ids": [
+          "fit/crosshead/pump_rod_seat/pump_rod/lower_end",
+          "pair/crosshead/pump_rod"
+        ]
+      },
+      {
+        "pair": [
+          "pump_rod",
+          "pump_piston"
+        ],
+        "action": "exclude",
+        "reason": "authored ideal fit represented by topology",
+        "source_entity_ids": [
+          "relation/pump_rod_carries_piston"
+        ],
+        "fact_ids": [
+          "fit/pump_rod/upper_end/pump_piston/rod_bore",
+          "pair/pump_piston/pump_rod"
+        ]
+      },
+      {
+        "pair": [
+          "rotor_shaft",
+          "connecting_rod"
+        ],
+        "action": "keep",
+        "reason": "uncertain real contact retained",
+        "source_entity_ids": [
+          "link/rotor_shaft",
+          "link/connecting_rod"
+        ],
+        "fact_ids": [
+          "nearby/connecting_rod/rotor_shaft",
+          "pair/connecting_rod/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "rotor_shaft",
+          "front_bearing_post"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/rotor_shaft",
+          "link/front_bearing_post"
+        ],
+        "fact_ids": [
+          "nearby/front_bearing_post/rotor_shaft",
+          "pair/front_bearing_post/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "rotor_shaft",
+          "rear_bearing_post"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/rotor_shaft",
+          "link/rear_bearing_post"
+        ],
+        "fact_ids": [
+          "nearby/rear_bearing_post/rotor_shaft",
+          "pair/rear_bearing_post/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "rotor_shaft",
+          "crank_pin"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/rotor_shaft",
+          "link/crank_pin"
+        ],
+        "fact_ids": [
+          "nearby/crank_pin/rotor_shaft",
+          "pair/crank_pin/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "rotor_shaft",
+          "right_guide_column"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/rotor_shaft",
+          "link/right_guide_column"
+        ],
+        "fact_ids": [
+          "nearby/right_guide_column/rotor_shaft",
+          "pair/right_guide_column/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "rotor_shaft",
+          "left_guide_column"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/rotor_shaft",
+          "link/left_guide_column"
+        ],
+        "fact_ids": [
+          "nearby/left_guide_column/rotor_shaft",
+          "pair/left_guide_column/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "rotor_shaft",
+          "right_guide_arm"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/rotor_shaft",
+          "link/right_guide_arm"
+        ],
+        "fact_ids": [
+          "nearby/right_guide_arm/rotor_shaft",
+          "pair/right_guide_arm/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "rotor_shaft",
+          "left_guide_arm"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/rotor_shaft",
+          "link/left_guide_arm"
+        ],
+        "fact_ids": [
+          "nearby/left_guide_arm/rotor_shaft",
+          "pair/left_guide_arm/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "rotor_shaft",
+          "right_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/rotor_shaft",
+          "link/right_guide"
+        ],
+        "fact_ids": [
+          "nearby/right_guide/rotor_shaft",
+          "pair/right_guide/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "rotor_shaft",
+          "left_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/rotor_shaft",
+          "link/left_guide"
+        ],
+        "fact_ids": [
+          "nearby/left_guide/rotor_shaft",
+          "pair/left_guide/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "connecting_rod"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/connecting_rod"
+        ],
+        "fact_ids": [
+          "nearby/connecting_rod/crank_disk",
+          "pair/connecting_rod/crank_disk"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "front_bearing_post"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/front_bearing_post"
+        ],
+        "fact_ids": [
+          "nearby/crank_disk/front_bearing_post",
+          "pair/crank_disk/front_bearing_post"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "front_bearing"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/front_bearing"
+        ],
+        "fact_ids": [
+          "nearby/crank_disk/front_bearing",
+          "pair/crank_disk/front_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "right_guide_column"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/right_guide_column"
+        ],
+        "fact_ids": [
+          "nearby/crank_disk/right_guide_column",
+          "pair/crank_disk/right_guide_column"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "left_guide_column"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/left_guide_column"
+        ],
+        "fact_ids": [
+          "nearby/crank_disk/left_guide_column",
+          "pair/crank_disk/left_guide_column"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "left_guide_arm"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/left_guide_arm"
+        ],
+        "fact_ids": [
+          "nearby/crank_disk/left_guide_arm",
+          "pair/crank_disk/left_guide_arm"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "right_guide_arm"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/right_guide_arm"
+        ],
+        "fact_ids": [
+          "nearby/crank_disk/right_guide_arm",
+          "pair/crank_disk/right_guide_arm"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "left_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/left_guide"
+        ],
+        "fact_ids": [
+          "nearby/crank_disk/left_guide",
+          "pair/crank_disk/left_guide"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "right_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/right_guide"
+        ],
+        "fact_ids": [
+          "nearby/crank_disk/right_guide",
+          "pair/crank_disk/right_guide"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "rear_bearing_post"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/rear_bearing_post"
+        ],
+        "fact_ids": [
+          "nearby/crank_disk/rear_bearing_post",
+          "pair/crank_disk/rear_bearing_post"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "rear_bearing"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/rear_bearing"
+        ],
+        "fact_ids": [
+          "nearby/crank_disk/rear_bearing",
+          "pair/crank_disk/rear_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "crosshead"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/crosshead"
+        ],
+        "fact_ids": [
+          "nearby/crank_disk/crosshead",
+          "pair/crank_disk/crosshead"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "rear_bearing_post"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/rear_bearing_post"
+        ],
+        "fact_ids": [
+          "nearby/rear_bearing_post/wind_rotor",
+          "pair/rear_bearing_post/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "rear_bearing"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/rear_bearing"
+        ],
+        "fact_ids": [
+          "nearby/rear_bearing/wind_rotor",
+          "pair/rear_bearing/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "front_bearing_post"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/front_bearing_post"
+        ],
+        "fact_ids": [
+          "nearby/front_bearing_post/wind_rotor",
+          "pair/front_bearing_post/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "front_bearing"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/front_bearing"
+        ],
+        "fact_ids": [
+          "nearby/front_bearing/wind_rotor",
+          "pair/front_bearing/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "crank_disk"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/crank_disk"
+        ],
+        "fact_ids": [
+          "nearby/crank_disk/wind_rotor",
+          "pair/crank_disk/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "left_guide_arm"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/left_guide_arm"
+        ],
+        "fact_ids": [
+          "nearby/left_guide_arm/wind_rotor",
+          "pair/left_guide_arm/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "right_guide_arm"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/right_guide_arm"
+        ],
+        "fact_ids": [
+          "nearby/right_guide_arm/wind_rotor",
+          "pair/right_guide_arm/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "left_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/left_guide"
+        ],
+        "fact_ids": [
+          "nearby/left_guide/wind_rotor",
+          "pair/left_guide/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "right_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/right_guide"
+        ],
+        "fact_ids": [
+          "nearby/right_guide/wind_rotor",
+          "pair/right_guide/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "crank_pin"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/crank_pin"
+        ],
+        "fact_ids": [
+          "nearby/crank_pin/wind_rotor",
+          "pair/crank_pin/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "crosshead"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/crosshead"
+        ],
+        "fact_ids": [
+          "nearby/crosshead/wind_rotor",
+          "pair/crosshead/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "left_guide_column"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/left_guide_column"
+        ],
+        "fact_ids": [
+          "nearby/left_guide_column/wind_rotor",
+          "pair/left_guide_column/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "right_guide_column"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/right_guide_column"
+        ],
+        "fact_ids": [
+          "nearby/right_guide_column/wind_rotor",
+          "pair/right_guide_column/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "connecting_rod"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/connecting_rod"
+        ],
+        "fact_ids": [
+          "nearby/connecting_rod/wind_rotor",
+          "pair/connecting_rod/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "base"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/base"
+        ],
+        "fact_ids": [
+          "nearby/base/wind_rotor",
+          "pair/base/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "wrist_pin"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/wrist_pin"
+        ],
+        "fact_ids": [
+          "nearby/wind_rotor/wrist_pin",
+          "pair/wind_rotor/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "left_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/left_guide"
+        ],
+        "fact_ids": [
+          "nearby/connecting_rod/left_guide",
+          "pair/connecting_rod/left_guide"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "left_guide_arm"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/left_guide_arm"
+        ],
+        "fact_ids": [
+          "nearby/connecting_rod/left_guide_arm",
+          "pair/connecting_rod/left_guide_arm"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "right_guide_column"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/right_guide_column"
+        ],
+        "fact_ids": [
+          "nearby/connecting_rod/right_guide_column",
+          "pair/connecting_rod/right_guide_column"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "pump_rod"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/pump_rod"
+        ],
+        "fact_ids": [
+          "nearby/connecting_rod/pump_rod",
+          "pair/connecting_rod/pump_rod"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "front_bearing_post"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/front_bearing_post"
+        ],
+        "fact_ids": [
+          "nearby/connecting_rod/front_bearing_post",
+          "pair/connecting_rod/front_bearing_post"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "front_bearing"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/front_bearing"
+        ],
+        "fact_ids": [
+          "nearby/connecting_rod/front_bearing",
+          "pair/connecting_rod/front_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "left_guide_column"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/left_guide_column"
+        ],
+        "fact_ids": [
+          "nearby/connecting_rod/left_guide_column",
+          "pair/connecting_rod/left_guide_column"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "rear_bearing_post"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/rear_bearing_post"
+        ],
+        "fact_ids": [
+          "nearby/connecting_rod/rear_bearing_post",
+          "pair/connecting_rod/rear_bearing_post"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "rear_bearing"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/rear_bearing"
+        ],
+        "fact_ids": [
+          "nearby/connecting_rod/rear_bearing",
+          "pair/connecting_rod/rear_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "pump_piston"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/pump_piston"
+        ],
+        "fact_ids": [
+          "nearby/connecting_rod/pump_piston",
+          "pair/connecting_rod/pump_piston"
+        ]
+      },
+      {
+        "pair": [
+          "crosshead",
+          "left_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/crosshead",
+          "link/left_guide"
+        ],
+        "fact_ids": [
+          "nearby/crosshead/left_guide",
+          "pair/crosshead/left_guide"
+        ]
+      },
+      {
+        "pair": [
+          "crosshead",
+          "right_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/crosshead",
+          "link/right_guide"
+        ],
+        "fact_ids": [
+          "nearby/crosshead/right_guide",
+          "pair/crosshead/right_guide"
+        ]
+      },
+      {
+        "pair": [
+          "crosshead",
+          "right_guide_arm"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/crosshead",
+          "link/right_guide_arm"
+        ],
+        "fact_ids": [
+          "nearby/crosshead/right_guide_arm",
+          "pair/crosshead/right_guide_arm"
+        ]
+      },
+      {
+        "pair": [
+          "crosshead",
+          "left_guide_arm"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/crosshead",
+          "link/left_guide_arm"
+        ],
+        "fact_ids": [
+          "nearby/crosshead/left_guide_arm",
+          "pair/crosshead/left_guide_arm"
+        ]
+      },
+      {
+        "pair": [
+          "wrist_pin",
+          "pump_rod"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/wrist_pin",
+          "link/pump_rod"
+        ],
+        "fact_ids": [
+          "nearby/pump_rod/wrist_pin",
+          "pair/pump_rod/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "wrist_pin",
+          "left_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/wrist_pin",
+          "link/left_guide"
+        ],
+        "fact_ids": [
+          "nearby/left_guide/wrist_pin",
+          "pair/left_guide/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "wrist_pin",
+          "right_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/wrist_pin",
+          "link/right_guide"
+        ],
+        "fact_ids": [
+          "nearby/right_guide/wrist_pin",
+          "pair/right_guide/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "pump_rod",
+          "left_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/pump_rod",
+          "link/left_guide"
+        ],
+        "fact_ids": [
+          "nearby/left_guide/pump_rod",
+          "pair/left_guide/pump_rod"
+        ]
+      },
+      {
+        "pair": [
+          "pump_rod",
+          "right_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/pump_rod",
+          "link/right_guide"
+        ],
+        "fact_ids": [
+          "nearby/pump_rod/right_guide",
+          "pair/pump_rod/right_guide"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "base"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/base"
+        ],
+        "fact_ids": [
+          "nearby/base/connecting_rod",
+          "pair/base/connecting_rod"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "right_guide_arm"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/right_guide_arm"
+        ],
+        "fact_ids": [
+          "nearby/connecting_rod/right_guide_arm",
+          "pair/connecting_rod/right_guide_arm"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "right_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/right_guide"
+        ],
+        "fact_ids": [
+          "nearby/connecting_rod/right_guide",
+          "pair/connecting_rod/right_guide"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "crosshead"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/crosshead"
+        ],
+        "fact_ids": [
+          "nearby/connecting_rod/crosshead",
+          "pair/connecting_rod/crosshead"
+        ]
+      },
+      {
+        "pair": [
+          "crank_pin",
+          "right_guide_column"
+        ],
+        "action": "exclude",
+        "reason": "measured separation or runtime stall without contact function",
+        "source_entity_ids": [
+          "link/crank_pin",
+          "link/right_guide_column"
+        ],
+        "fact_ids": [
+          "nearby/crank_pin/right_guide_column",
+          "pair/crank_pin/right_guide_column"
+        ]
+      }
+    ],
+    "support_ground": [
+      "base"
+    ],
+    "support_strategy": "fixed base supports gravity; moving rod ground-excluded"
+  },
+  "decisions": [
+    {
+      "generated_kind": "constraint",
+      "generated_name": "rod_small_end_connect",
+      "constraint_type": "connect",
+      "reason": "small-end closure",
+      "source_entity_ids": [
+        "relation/rod_small_end_closure"
+      ],
+      "fact_ids": [
+        "fit/wrist_pin/pin_axis/connecting_rod/small_end"
+      ]
+    },
+    {
+      "entity_id": "link/base",
+      "action": "emitted",
+      "generated_nodes": [
+        "body/base"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "link/base"
+      ]
+    },
+    {
+      "entity_id": "link/front_bearing_post",
+      "action": "emitted",
+      "generated_nodes": [
+        "body/front_bearing_post"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "link/front_bearing_post"
+      ]
+    },
+    {
+      "entity_id": "link/rear_bearing_post",
+      "action": "emitted",
+      "generated_nodes": [
+        "body/rear_bearing_post"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "link/rear_bearing_post"
+      ]
+    },
+    {
+      "entity_id": "link/front_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "body/front_bearing"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "link/front_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/rear_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "body/rear_bearing"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "link/rear_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/rotor_shaft",
+      "action": "emitted",
+      "generated_nodes": [
+        "body/rotor_shaft"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "link/rotor_shaft"
+      ]
+    },
+    {
+      "entity_id": "link/crank_disk",
+      "action": "emitted",
+      "generated_nodes": [
+        "body/crank_disk"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "link/crank_disk"
+      ]
+    },
+    {
+      "entity_id": "link/wind_rotor",
+      "action": "emitted",
+      "generated_nodes": [
+        "body/wind_rotor"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "link/wind_rotor"
+      ]
+    },
+    {
+      "entity_id": "link/crank_pin",
+      "action": "emitted",
+      "generated_nodes": [
+        "body/crank_pin"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "link/crank_pin"
+      ]
+    },
+    {
+      "entity_id": "link/connecting_rod",
+      "action": "emitted",
+      "generated_nodes": [
+        "body/connecting_rod"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "link/connecting_rod"
+      ]
+    },
+    {
+      "entity_id": "link/left_guide_column",
+      "action": "emitted",
+      "generated_nodes": [
+        "body/left_guide_column"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "link/left_guide_column"
+      ]
+    },
+    {
+      "entity_id": "link/right_guide_column",
+      "action": "emitted",
+      "generated_nodes": [
+        "body/right_guide_column"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "link/right_guide_column"
+      ]
+    },
+    {
+      "entity_id": "link/left_guide_arm",
+      "action": "emitted",
+      "generated_nodes": [
+        "body/left_guide_arm"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "link/left_guide_arm"
+      ]
+    },
+    {
+      "entity_id": "link/right_guide_arm",
+      "action": "emitted",
+      "generated_nodes": [
+        "body/right_guide_arm"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "link/right_guide_arm"
+      ]
+    },
+    {
+      "entity_id": "link/left_guide",
+      "action": "emitted",
+      "generated_nodes": [
+        "body/left_guide"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "link/left_guide"
+      ]
+    },
+    {
+      "entity_id": "link/right_guide",
+      "action": "emitted",
+      "generated_nodes": [
+        "body/right_guide"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "link/right_guide"
+      ]
+    },
+    {
+      "entity_id": "link/crosshead",
+      "action": "emitted",
+      "generated_nodes": [
+        "body/crosshead"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "link/crosshead"
+      ]
+    },
+    {
+      "entity_id": "link/wrist_pin",
+      "action": "emitted",
+      "generated_nodes": [
+        "body/wrist_pin"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "link/wrist_pin"
+      ]
+    },
+    {
+      "entity_id": "link/pump_rod",
+      "action": "emitted",
+      "generated_nodes": [
+        "body/pump_rod"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "link/pump_rod"
+      ]
+    },
+    {
+      "entity_id": "link/pump_piston",
+      "action": "emitted",
+      "generated_nodes": [
+        "body/pump_piston"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "link/pump_piston"
+      ]
+    },
+    {
+      "entity_id": "pose/place_base",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "pose/place_base"
+      ]
+    },
+    {
+      "entity_id": "pose/place_front_bearing_post",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "pose/place_front_bearing_post"
+      ]
+    },
+    {
+      "entity_id": "pose/place_rear_bearing_post",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "pose/place_rear_bearing_post"
+      ]
+    },
+    {
+      "entity_id": "pose/place_front_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "pose/place_front_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_rear_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "pose/place_rear_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_rotor_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "pose/place_rotor_shaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crank_disk",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "pose/place_crank_disk"
+      ]
+    },
+    {
+      "entity_id": "pose/place_wind_rotor",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "pose/place_wind_rotor"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crank_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "pose/place_crank_pin"
+      ]
+    },
+    {
+      "entity_id": "pose/place_connecting_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "pose/place_connecting_rod"
+      ]
+    },
+    {
+      "entity_id": "pose/place_left_guide_column",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "pose/place_left_guide_column"
+      ]
+    },
+    {
+      "entity_id": "pose/place_right_guide_column",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "pose/place_right_guide_column"
+      ]
+    },
+    {
+      "entity_id": "pose/place_left_guide_arm",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "pose/place_left_guide_arm"
+      ]
+    },
+    {
+      "entity_id": "pose/place_right_guide_arm",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "pose/place_right_guide_arm"
+      ]
+    },
+    {
+      "entity_id": "pose/place_left_guide",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "pose/place_left_guide"
+      ]
+    },
+    {
+      "entity_id": "pose/place_right_guide",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "pose/place_right_guide"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crosshead",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "pose/place_crosshead"
+      ]
+    },
+    {
+      "entity_id": "pose/place_wrist_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "pose/place_wrist_pin"
+      ]
+    },
+    {
+      "entity_id": "pose/place_pump_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "pose/place_pump_rod"
+      ]
+    },
+    {
+      "entity_id": "pose/place_pump_piston",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "pose/place_pump_piston"
+      ]
+    },
+    {
+      "entity_id": "port/front_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "port/front_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/rear_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "port/rear_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/rotor_shaft/shaft_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "port/rotor_shaft/shaft_axis"
+      ]
+    },
+    {
+      "entity_id": "port/rotor_shaft/crank_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "port/rotor_shaft/crank_seat"
+      ]
+    },
+    {
+      "entity_id": "port/rotor_shaft/rotor_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "port/rotor_shaft/rotor_seat"
+      ]
+    },
+    {
+      "entity_id": "port/crank_disk/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "port/crank_disk/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/crank_disk/eccentric_pin_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "port/crank_disk/eccentric_pin_seat"
+      ]
+    },
+    {
+      "entity_id": "port/wind_rotor/hub_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "port/wind_rotor/hub_bore"
+      ]
+    },
+    {
+      "entity_id": "port/crank_pin/pin_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "port/crank_pin/pin_axis"
+      ]
+    },
+    {
+      "entity_id": "port/connecting_rod/big_end",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "port/connecting_rod/big_end"
+      ]
+    },
+    {
+      "entity_id": "port/connecting_rod/small_end",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "port/connecting_rod/small_end"
+      ]
+    },
+    {
+      "entity_id": "port/crosshead/wrist_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "port/crosshead/wrist_bore"
+      ]
+    },
+    {
+      "entity_id": "port/crosshead/vertical_slide",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "port/crosshead/vertical_slide"
+      ]
+    },
+    {
+      "entity_id": "port/crosshead/pump_rod_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "port/crosshead/pump_rod_seat"
+      ]
+    },
+    {
+      "entity_id": "port/wrist_pin/pin_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "port/wrist_pin/pin_axis"
+      ]
+    },
+    {
+      "entity_id": "port/pump_rod/lower_end",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "port/pump_rod/lower_end"
+      ]
+    },
+    {
+      "entity_id": "port/pump_rod/upper_end",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "port/pump_rod/upper_end"
+      ]
+    },
+    {
+      "entity_id": "port/pump_piston/rod_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "port/pump_piston/rod_bore"
+      ]
+    },
+    {
+      "entity_id": "relation/front_shaft_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "relation/front_shaft_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/rear_shaft_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "relation/rear_shaft_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/shaft_carries_crank",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "relation/shaft_carries_crank"
+      ]
+    },
+    {
+      "entity_id": "relation/shaft_carries_wind_rotor",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "relation/shaft_carries_wind_rotor"
+      ]
+    },
+    {
+      "entity_id": "relation/crank_carries_eccentric_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "relation/crank_carries_eccentric_pin"
+      ]
+    },
+    {
+      "entity_id": "relation/crank_big_end_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "relation/crank_big_end_pin"
+      ]
+    },
+    {
+      "entity_id": "relation/crosshead_carries_wrist_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "relation/crosshead_carries_wrist_pin"
+      ]
+    },
+    {
+      "entity_id": "relation/rod_small_end_closure",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "relation/rod_small_end_closure"
+      ]
+    },
+    {
+      "entity_id": "relation/crosshead_carries_pump_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "relation/crosshead_carries_pump_rod"
+      ]
+    },
+    {
+      "entity_id": "relation/pump_rod_carries_piston",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "relation/pump_rod_carries_piston"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/world_rotor_shaft_hinge",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "motion_joint/world_rotor_shaft_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/world_crosshead_vertical_slide",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "motion_joint/world_crosshead_vertical_slide"
+      ]
+    },
+    {
+      "entity_id": "transmission/shaft_to_crank_rigid_carry",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "transmission/shaft_to_crank_rigid_carry"
+      ]
+    },
+    {
+      "entity_id": "transmission/shaft_to_wind_rotor_rigid_carry",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "transmission/shaft_to_wind_rotor_rigid_carry"
+      ]
+    },
+    {
+      "entity_id": "role/driver/rotor_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "role/driver/rotor_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/output/pump_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "role/output/pump_rod"
+      ]
+    },
+    {
+      "entity_id": "role/watch/rotor_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "role/watch/rotor_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/watch/wind_rotor",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "role/watch/wind_rotor"
+      ]
+    },
+    {
+      "entity_id": "role/watch/crank_disk",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "role/watch/crank_disk"
+      ]
+    },
+    {
+      "entity_id": "role/watch/connecting_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "role/watch/connecting_rod"
+      ]
+    },
+    {
+      "entity_id": "role/watch/crosshead",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "role/watch/crosshead"
+      ]
+    },
+    {
+      "entity_id": "role/watch/pump_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "role/watch/pump_rod"
+      ]
+    },
+    {
+      "entity_id": "role/watch/pump_piston",
+      "action": "represented_by",
+      "generated_nodes": [
+        "joint/world_rotor_shaft_hinge"
+      ],
+      "reason": "represented by topology",
+      "fact_ids": [
+        "role/watch/pump_piston"
+      ]
+    }
+  ],
+  "excludes": [
+    {
+      "pair": [
+        "front_bearing",
+        "rotor_shaft"
+      ],
+      "reason": "ideal fit topology",
+      "source_entity_ids": [
+        "relation/front_shaft_journal"
+      ],
+      "fact_ids": [
+        "fit/front_bearing/journal/rotor_shaft/shaft_axis",
+        "pair/front_bearing/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "rear_bearing",
+        "rotor_shaft"
+      ],
+      "reason": "ideal fit topology",
+      "source_entity_ids": [
+        "relation/rear_shaft_journal"
+      ],
+      "fact_ids": [
+        "fit/rear_bearing/journal/rotor_shaft/shaft_axis",
+        "pair/rear_bearing/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "rotor_shaft"
+      ],
+      "reason": "ideal fit topology",
+      "source_entity_ids": [
+        "relation/shaft_carries_crank"
+      ],
+      "fact_ids": [
+        "fit/rotor_shaft/crank_seat/crank_disk/shaft_bore",
+        "pair/crank_disk/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "rotor_shaft",
+        "wind_rotor"
+      ],
+      "reason": "ideal fit topology",
+      "source_entity_ids": [
+        "relation/shaft_carries_wind_rotor"
+      ],
+      "fact_ids": [
+        "fit/rotor_shaft/rotor_seat/wind_rotor/hub_bore",
+        "pair/rotor_shaft/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "crank_pin"
+      ],
+      "reason": "ideal fit topology",
+      "source_entity_ids": [
+        "relation/crank_carries_eccentric_pin"
+      ],
+      "fact_ids": [
+        "fit/crank_disk/eccentric_pin_seat/crank_pin/pin_axis",
+        "pair/crank_disk/crank_pin"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "crank_pin"
+      ],
+      "reason": "ideal fit topology",
+      "source_entity_ids": [
+        "relation/crank_big_end_pin"
+      ],
+      "fact_ids": [
+        "fit/crank_pin/pin_axis/connecting_rod/big_end",
+        "pair/connecting_rod/crank_pin"
+      ]
+    },
+    {
+      "pair": [
+        "crosshead",
+        "wrist_pin"
+      ],
+      "reason": "ideal fit topology",
+      "source_entity_ids": [
+        "relation/crosshead_carries_wrist_pin"
+      ],
+      "fact_ids": [
+        "fit/crosshead/wrist_bore/wrist_pin/pin_axis",
+        "pair/crosshead/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "wrist_pin"
+      ],
+      "reason": "ideal fit topology",
+      "source_entity_ids": [
+        "relation/rod_small_end_closure"
+      ],
+      "fact_ids": [
+        "fit/wrist_pin/pin_axis/connecting_rod/small_end",
+        "pair/connecting_rod/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "crosshead",
+        "pump_rod"
+      ],
+      "reason": "ideal fit topology",
+      "source_entity_ids": [
+        "relation/crosshead_carries_pump_rod"
+      ],
+      "fact_ids": [
+        "fit/crosshead/pump_rod_seat/pump_rod/lower_end",
+        "pair/crosshead/pump_rod"
+      ]
+    },
+    {
+      "pair": [
+        "pump_piston",
+        "pump_rod"
+      ],
+      "reason": "ideal fit topology",
+      "source_entity_ids": [
+        "relation/pump_rod_carries_piston"
+      ],
+      "fact_ids": [
+        "fit/pump_rod/upper_end/pump_piston/rod_bore",
+        "pair/pump_piston/pump_rod"
+      ]
+    },
+    {
+      "pair": [
+        "front_bearing_post",
+        "rotor_shaft"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/rotor_shaft",
+        "link/front_bearing_post"
+      ],
+      "fact_ids": [
+        "nearby/front_bearing_post/rotor_shaft",
+        "pair/front_bearing_post/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "rear_bearing_post",
+        "rotor_shaft"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/rotor_shaft",
+        "link/rear_bearing_post"
+      ],
+      "fact_ids": [
+        "nearby/rear_bearing_post/rotor_shaft",
+        "pair/rear_bearing_post/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "crank_pin",
+        "rotor_shaft"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/rotor_shaft",
+        "link/crank_pin"
+      ],
+      "fact_ids": [
+        "nearby/crank_pin/rotor_shaft",
+        "pair/crank_pin/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "right_guide_column",
+        "rotor_shaft"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/rotor_shaft",
+        "link/right_guide_column"
+      ],
+      "fact_ids": [
+        "nearby/right_guide_column/rotor_shaft",
+        "pair/right_guide_column/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "left_guide_column",
+        "rotor_shaft"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/rotor_shaft",
+        "link/left_guide_column"
+      ],
+      "fact_ids": [
+        "nearby/left_guide_column/rotor_shaft",
+        "pair/left_guide_column/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "right_guide_arm",
+        "rotor_shaft"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/rotor_shaft",
+        "link/right_guide_arm"
+      ],
+      "fact_ids": [
+        "nearby/right_guide_arm/rotor_shaft",
+        "pair/right_guide_arm/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "left_guide_arm",
+        "rotor_shaft"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/rotor_shaft",
+        "link/left_guide_arm"
+      ],
+      "fact_ids": [
+        "nearby/left_guide_arm/rotor_shaft",
+        "pair/left_guide_arm/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "right_guide",
+        "rotor_shaft"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/rotor_shaft",
+        "link/right_guide"
+      ],
+      "fact_ids": [
+        "nearby/right_guide/rotor_shaft",
+        "pair/right_guide/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "left_guide",
+        "rotor_shaft"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/rotor_shaft",
+        "link/left_guide"
+      ],
+      "fact_ids": [
+        "nearby/left_guide/rotor_shaft",
+        "pair/left_guide/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "crank_disk"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/connecting_rod"
+      ],
+      "fact_ids": [
+        "nearby/connecting_rod/crank_disk",
+        "pair/connecting_rod/crank_disk"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "front_bearing_post"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/front_bearing_post"
+      ],
+      "fact_ids": [
+        "nearby/crank_disk/front_bearing_post",
+        "pair/crank_disk/front_bearing_post"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "front_bearing"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/front_bearing"
+      ],
+      "fact_ids": [
+        "nearby/crank_disk/front_bearing",
+        "pair/crank_disk/front_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "right_guide_column"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/right_guide_column"
+      ],
+      "fact_ids": [
+        "nearby/crank_disk/right_guide_column",
+        "pair/crank_disk/right_guide_column"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "left_guide_column"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/left_guide_column"
+      ],
+      "fact_ids": [
+        "nearby/crank_disk/left_guide_column",
+        "pair/crank_disk/left_guide_column"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "left_guide_arm"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/left_guide_arm"
+      ],
+      "fact_ids": [
+        "nearby/crank_disk/left_guide_arm",
+        "pair/crank_disk/left_guide_arm"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "right_guide_arm"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/right_guide_arm"
+      ],
+      "fact_ids": [
+        "nearby/crank_disk/right_guide_arm",
+        "pair/crank_disk/right_guide_arm"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "left_guide"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/left_guide"
+      ],
+      "fact_ids": [
+        "nearby/crank_disk/left_guide",
+        "pair/crank_disk/left_guide"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "right_guide"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/right_guide"
+      ],
+      "fact_ids": [
+        "nearby/crank_disk/right_guide",
+        "pair/crank_disk/right_guide"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "rear_bearing_post"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/rear_bearing_post"
+      ],
+      "fact_ids": [
+        "nearby/crank_disk/rear_bearing_post",
+        "pair/crank_disk/rear_bearing_post"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "rear_bearing"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/rear_bearing"
+      ],
+      "fact_ids": [
+        "nearby/crank_disk/rear_bearing",
+        "pair/crank_disk/rear_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "crosshead"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/crosshead"
+      ],
+      "fact_ids": [
+        "nearby/crank_disk/crosshead",
+        "pair/crank_disk/crosshead"
+      ]
+    },
+    {
+      "pair": [
+        "rear_bearing_post",
+        "wind_rotor"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/rear_bearing_post"
+      ],
+      "fact_ids": [
+        "nearby/rear_bearing_post/wind_rotor",
+        "pair/rear_bearing_post/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "rear_bearing",
+        "wind_rotor"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/rear_bearing"
+      ],
+      "fact_ids": [
+        "nearby/rear_bearing/wind_rotor",
+        "pair/rear_bearing/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "front_bearing_post",
+        "wind_rotor"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/front_bearing_post"
+      ],
+      "fact_ids": [
+        "nearby/front_bearing_post/wind_rotor",
+        "pair/front_bearing_post/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "front_bearing",
+        "wind_rotor"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/front_bearing"
+      ],
+      "fact_ids": [
+        "nearby/front_bearing/wind_rotor",
+        "pair/front_bearing/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "wind_rotor"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/crank_disk"
+      ],
+      "fact_ids": [
+        "nearby/crank_disk/wind_rotor",
+        "pair/crank_disk/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "left_guide_arm",
+        "wind_rotor"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/left_guide_arm"
+      ],
+      "fact_ids": [
+        "nearby/left_guide_arm/wind_rotor",
+        "pair/left_guide_arm/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "right_guide_arm",
+        "wind_rotor"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/right_guide_arm"
+      ],
+      "fact_ids": [
+        "nearby/right_guide_arm/wind_rotor",
+        "pair/right_guide_arm/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "left_guide",
+        "wind_rotor"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/left_guide"
+      ],
+      "fact_ids": [
+        "nearby/left_guide/wind_rotor",
+        "pair/left_guide/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "right_guide",
+        "wind_rotor"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/right_guide"
+      ],
+      "fact_ids": [
+        "nearby/right_guide/wind_rotor",
+        "pair/right_guide/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "crank_pin",
+        "wind_rotor"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/crank_pin"
+      ],
+      "fact_ids": [
+        "nearby/crank_pin/wind_rotor",
+        "pair/crank_pin/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "crosshead",
+        "wind_rotor"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/crosshead"
+      ],
+      "fact_ids": [
+        "nearby/crosshead/wind_rotor",
+        "pair/crosshead/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "left_guide_column",
+        "wind_rotor"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/left_guide_column"
+      ],
+      "fact_ids": [
+        "nearby/left_guide_column/wind_rotor",
+        "pair/left_guide_column/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "right_guide_column",
+        "wind_rotor"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/right_guide_column"
+      ],
+      "fact_ids": [
+        "nearby/right_guide_column/wind_rotor",
+        "pair/right_guide_column/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "wind_rotor"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/connecting_rod"
+      ],
+      "fact_ids": [
+        "nearby/connecting_rod/wind_rotor",
+        "pair/connecting_rod/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "wind_rotor"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/base"
+      ],
+      "fact_ids": [
+        "nearby/base/wind_rotor",
+        "pair/base/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "wind_rotor",
+        "wrist_pin"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/wrist_pin"
+      ],
+      "fact_ids": [
+        "nearby/wind_rotor/wrist_pin",
+        "pair/wind_rotor/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "left_guide"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/left_guide"
+      ],
+      "fact_ids": [
+        "nearby/connecting_rod/left_guide",
+        "pair/connecting_rod/left_guide"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "left_guide_arm"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/left_guide_arm"
+      ],
+      "fact_ids": [
+        "nearby/connecting_rod/left_guide_arm",
+        "pair/connecting_rod/left_guide_arm"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "right_guide_column"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/right_guide_column"
+      ],
+      "fact_ids": [
+        "nearby/connecting_rod/right_guide_column",
+        "pair/connecting_rod/right_guide_column"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "pump_rod"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/pump_rod"
+      ],
+      "fact_ids": [
+        "nearby/connecting_rod/pump_rod",
+        "pair/connecting_rod/pump_rod"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "front_bearing_post"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/front_bearing_post"
+      ],
+      "fact_ids": [
+        "nearby/connecting_rod/front_bearing_post",
+        "pair/connecting_rod/front_bearing_post"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "front_bearing"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/front_bearing"
+      ],
+      "fact_ids": [
+        "nearby/connecting_rod/front_bearing",
+        "pair/connecting_rod/front_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "left_guide_column"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/left_guide_column"
+      ],
+      "fact_ids": [
+        "nearby/connecting_rod/left_guide_column",
+        "pair/connecting_rod/left_guide_column"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "rear_bearing_post"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/rear_bearing_post"
+      ],
+      "fact_ids": [
+        "nearby/connecting_rod/rear_bearing_post",
+        "pair/connecting_rod/rear_bearing_post"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "rear_bearing"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/rear_bearing"
+      ],
+      "fact_ids": [
+        "nearby/connecting_rod/rear_bearing",
+        "pair/connecting_rod/rear_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "pump_piston"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/pump_piston"
+      ],
+      "fact_ids": [
+        "nearby/connecting_rod/pump_piston",
+        "pair/connecting_rod/pump_piston"
+      ]
+    },
+    {
+      "pair": [
+        "crosshead",
+        "left_guide"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/crosshead",
+        "link/left_guide"
+      ],
+      "fact_ids": [
+        "nearby/crosshead/left_guide",
+        "pair/crosshead/left_guide"
+      ]
+    },
+    {
+      "pair": [
+        "crosshead",
+        "right_guide"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/crosshead",
+        "link/right_guide"
+      ],
+      "fact_ids": [
+        "nearby/crosshead/right_guide",
+        "pair/crosshead/right_guide"
+      ]
+    },
+    {
+      "pair": [
+        "crosshead",
+        "right_guide_arm"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/crosshead",
+        "link/right_guide_arm"
+      ],
+      "fact_ids": [
+        "nearby/crosshead/right_guide_arm",
+        "pair/crosshead/right_guide_arm"
+      ]
+    },
+    {
+      "pair": [
+        "crosshead",
+        "left_guide_arm"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/crosshead",
+        "link/left_guide_arm"
+      ],
+      "fact_ids": [
+        "nearby/crosshead/left_guide_arm",
+        "pair/crosshead/left_guide_arm"
+      ]
+    },
+    {
+      "pair": [
+        "pump_rod",
+        "wrist_pin"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/wrist_pin",
+        "link/pump_rod"
+      ],
+      "fact_ids": [
+        "nearby/pump_rod/wrist_pin",
+        "pair/pump_rod/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "left_guide",
+        "wrist_pin"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/wrist_pin",
+        "link/left_guide"
+      ],
+      "fact_ids": [
+        "nearby/left_guide/wrist_pin",
+        "pair/left_guide/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "right_guide",
+        "wrist_pin"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/wrist_pin",
+        "link/right_guide"
+      ],
+      "fact_ids": [
+        "nearby/right_guide/wrist_pin",
+        "pair/right_guide/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "left_guide",
+        "pump_rod"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/pump_rod",
+        "link/left_guide"
+      ],
+      "fact_ids": [
+        "nearby/left_guide/pump_rod",
+        "pair/left_guide/pump_rod"
+      ]
+    },
+    {
+      "pair": [
+        "pump_rod",
+        "right_guide"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/pump_rod",
+        "link/right_guide"
+      ],
+      "fact_ids": [
+        "nearby/pump_rod/right_guide",
+        "pair/pump_rod/right_guide"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "connecting_rod"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/base"
+      ],
+      "fact_ids": [
+        "nearby/base/connecting_rod",
+        "pair/base/connecting_rod"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "right_guide_arm"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/right_guide_arm"
+      ],
+      "fact_ids": [
+        "nearby/connecting_rod/right_guide_arm",
+        "pair/connecting_rod/right_guide_arm"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "right_guide"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/right_guide"
+      ],
+      "fact_ids": [
+        "nearby/connecting_rod/right_guide",
+        "pair/connecting_rod/right_guide"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "crosshead"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/crosshead"
+      ],
+      "fact_ids": [
+        "nearby/connecting_rod/crosshead",
+        "pair/connecting_rod/crosshead"
+      ]
+    },
+    {
+      "pair": [
+        "crank_pin",
+        "right_guide_column"
+      ],
+      "reason": "separated proxy or runtime stall",
+      "source_entity_ids": [
+        "link/crank_pin",
+        "link/right_guide_column"
+      ],
+      "fact_ids": [
+        "nearby/crank_pin/right_guide_column",
+        "pair/crank_pin/right_guide_column"
+      ]
+    }
+  ],
+  "ground_excludes": [
+    {
+      "body": "connecting_rod",
+      "reason": "intended below-plane crank travel; runtime ground stall",
+      "source_entity_ids": [
+        "link/connecting_rod"
+      ],
+      "fact_ids": [
+        "pair/base/connecting_rod"
+      ]
+    }
+  ],
+  "support_patches": [],
+  "bodies": [
+    "base",
+    "connecting_rod",
+    "crank_disk",
+    "crank_pin",
+    "crosshead",
+    "front_bearing",
+    "front_bearing_post",
+    "left_guide",
+    "left_guide_arm",
+    "left_guide_column",
+    "pump_piston",
+    "pump_rod",
+    "rear_bearing",
+    "rear_bearing_post",
+    "right_guide",
+    "right_guide_arm",
+    "right_guide_column",
+    "rotor_shaft",
+    "wind_rotor",
+    "wrist_pin"
+  ],
+  "joints": [
+    "crank_big_end_hinge",
+    "world_crosshead_vertical_slide",
+    "world_rotor_shaft_hinge"
+  ],
+  "constraints": [
+    "rod_small_end_connect"
+  ]
+}

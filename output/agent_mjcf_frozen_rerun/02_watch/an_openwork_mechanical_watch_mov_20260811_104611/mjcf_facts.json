@@ -1,0 +1,7955 @@
+{
+  "facts_version": 2,
+  "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\agent_mjcf_frozen_rerun\\02_watch\\an_openwork_mechanical_watch_mov_20260811_104611",
+  "units": {
+    "model_length": "m",
+    "mesh_source_length": "mm",
+    "mass": "kg",
+    "angle": "rad"
+  },
+  "model": {
+    "name": "an_openwork_mechanical_watch_mov",
+    "root_link": "baseplate",
+    "links": [
+      {
+        "name": "baseplate",
+        "description": "baseplate",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/baseplate.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": ""
+      },
+      {
+        "name": "central_lower_bearing",
+        "description": "central_lower_bearing",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/central_lower_bearing.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "baseplate"
+      },
+      {
+        "name": "intermediate_lower_bearing",
+        "description": "intermediate_lower_bearing",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/intermediate_lower_bearing.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "baseplate"
+      },
+      {
+        "name": "bridge_post_low",
+        "description": "bridge_post_low",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/bridge_post_low.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "baseplate"
+      },
+      {
+        "name": "bridge_post_high",
+        "description": "bridge_post_high",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/bridge_post_high.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "baseplate"
+      },
+      {
+        "name": "upper_bridge",
+        "description": "upper_bridge",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/upper_bridge.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "bridge_post_low",
+        "extra_mounts": [
+          "bridge_post_high"
+        ]
+      },
+      {
+        "name": "central_upper_bearing",
+        "description": "central_upper_bearing",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/central_upper_bearing.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "upper_bridge"
+      },
+      {
+        "name": "intermediate_upper_bearing",
+        "description": "intermediate_upper_bearing",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/intermediate_upper_bearing.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "upper_bridge"
+      },
+      {
+        "name": "minute_shaft",
+        "description": "minute_shaft",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/minute_shaft.stl",
+        "dof": "spin",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": true,
+        "material": "steel",
+        "mount": "central_lower_bearing",
+        "extra_mounts": [
+          "hour_pipe"
+        ]
+      },
+      {
+        "name": "intermediate_arbor",
+        "description": "intermediate_arbor",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/intermediate_arbor.stl",
+        "dof": "spin",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "intermediate_lower_bearing",
+        "extra_mounts": [
+          "intermediate_upper_bearing"
+        ]
+      },
+      {
+        "name": "minute_pinion",
+        "description": "minute_pinion",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/minute_pinion.stl",
+        "dof": "spin",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "minute_shaft"
+      },
+      {
+        "name": "intermediate_wheel",
+        "description": "intermediate_wheel",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/intermediate_wheel.stl",
+        "dof": "spin",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "intermediate_arbor"
+      },
+      {
+        "name": "hour_pipe",
+        "description": "hour_pipe",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/hour_pipe.stl",
+        "dof": "spin",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "central_upper_bearing",
+        "extra_mounts": [
+          "minute_shaft"
+        ]
+      },
+      {
+        "name": "intermediate_pinion",
+        "description": "intermediate_pinion",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/intermediate_pinion.stl",
+        "dof": "spin",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "intermediate_arbor"
+      },
+      {
+        "name": "hour_wheel",
+        "description": "hour_wheel",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/hour_wheel.stl",
+        "dof": "spin",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "hour_pipe"
+      },
+      {
+        "name": "dial_post_1",
+        "description": "dial_post_1",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/dial_post_1.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "baseplate"
+      },
+      {
+        "name": "dial_post_2",
+        "description": "dial_post_2",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/dial_post_2.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "baseplate"
+      },
+      {
+        "name": "dial_post_3",
+        "description": "dial_post_3",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/dial_post_3.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "baseplate"
+      },
+      {
+        "name": "dial_post_4",
+        "description": "dial_post_4",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/dial_post_4.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "baseplate"
+      },
+      {
+        "name": "chapter_ring",
+        "description": "chapter_ring",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/chapter_ring.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "dial_post_1",
+        "extra_mounts": [
+          "dial_post_2",
+          "dial_post_3",
+          "dial_post_4"
+        ]
+      },
+      {
+        "name": "hour_marker_1",
+        "description": "hour_marker_1",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/hour_marker_1.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "chapter_ring"
+      },
+      {
+        "name": "hour_marker_2",
+        "description": "hour_marker_2",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/hour_marker_2.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "chapter_ring"
+      },
+      {
+        "name": "hour_marker_3",
+        "description": "hour_marker_3",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/hour_marker_3.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "chapter_ring"
+      },
+      {
+        "name": "hour_marker_4",
+        "description": "hour_marker_4",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/hour_marker_4.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "chapter_ring"
+      },
+      {
+        "name": "hour_marker_5",
+        "description": "hour_marker_5",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/hour_marker_5.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "chapter_ring"
+      },
+      {
+        "name": "hour_marker_6",
+        "description": "hour_marker_6",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/hour_marker_6.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "chapter_ring"
+      },
+      {
+        "name": "hour_marker_7",
+        "description": "hour_marker_7",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/hour_marker_7.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "chapter_ring"
+      },
+      {
+        "name": "hour_marker_8",
+        "description": "hour_marker_8",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/hour_marker_8.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "chapter_ring"
+      },
+      {
+        "name": "hour_marker_9",
+        "description": "hour_marker_9",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/hour_marker_9.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "chapter_ring"
+      },
+      {
+        "name": "hour_marker_10",
+        "description": "hour_marker_10",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/hour_marker_10.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "chapter_ring"
+      },
+      {
+        "name": "hour_marker_11",
+        "description": "hour_marker_11",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/hour_marker_11.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "chapter_ring"
+      },
+      {
+        "name": "hour_marker_12",
+        "description": "hour_marker_12",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/hour_marker_12.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "chapter_ring"
+      },
+      {
+        "name": "hour_hand",
+        "description": "hour_hand",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/hour_hand.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "hour_pipe"
+      },
+      {
+        "name": "minute_hand",
+        "description": "minute_hand",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/minute_hand.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "minute_shaft"
+      }
+    ],
+    "poses": [
+      {
+        "name": "place_baseplate",
+        "parent": "",
+        "child": "baseplate",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_central_lower_bearing",
+        "parent": "baseplate",
+        "child": "central_lower_bearing",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.002
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_intermediate_lower_bearing",
+        "parent": "baseplate",
+        "child": "intermediate_lower_bearing",
+        "xyz_m": [
+          0.012,
+          0.0,
+          0.002
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_bridge_post_low",
+        "parent": "baseplate",
+        "child": "bridge_post_low",
+        "xyz_m": [
+          0.006,
+          -0.0132,
+          0.002
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_bridge_post_high",
+        "parent": "baseplate",
+        "child": "bridge_post_high",
+        "xyz_m": [
+          0.006,
+          0.0132,
+          0.002
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_upper_bridge",
+        "parent": "bridge_post_low",
+        "child": "upper_bridge",
+        "xyz_m": [
+          -0.006,
+          0.0132,
+          0.015
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_central_upper_bearing",
+        "parent": "upper_bridge",
+        "child": "central_upper_bearing",
+        "xyz_m": [
+          0.0,
+          0.0,
+          -0.0015
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_intermediate_upper_bearing",
+        "parent": "upper_bridge",
+        "child": "intermediate_upper_bearing",
+        "xyz_m": [
+          0.012,
+          0.0,
+          -0.0015
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_minute_shaft",
+        "parent": "central_lower_bearing",
+        "child": "minute_shaft",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_intermediate_arbor",
+        "parent": "intermediate_lower_bearing",
+        "child": "intermediate_arbor",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_minute_pinion",
+        "parent": "minute_shaft",
+        "child": "minute_pinion",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.0025
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_intermediate_wheel",
+        "parent": "intermediate_arbor",
+        "child": "intermediate_wheel",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.0025
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.10471975511965981
+        ]
+      },
+      {
+        "name": "place_hour_pipe",
+        "parent": "central_upper_bearing",
+        "child": "hour_pipe",
+        "xyz_m": [
+          0.0,
+          0.0,
+          -0.009
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_intermediate_pinion",
+        "parent": "intermediate_arbor",
+        "child": "intermediate_pinion",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.007
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.10471975511965981
+        ]
+      },
+      {
+        "name": "place_hour_wheel",
+        "parent": "hour_pipe",
+        "child": "hour_wheel",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.0025
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.2028945255443408
+        ]
+      },
+      {
+        "name": "place_dial_post_1",
+        "parent": "baseplate",
+        "child": "dial_post_1",
+        "xyz_m": [
+          0.026600000000000002,
+          0.0,
+          0.002
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_dial_post_2",
+        "parent": "baseplate",
+        "child": "dial_post_2",
+        "xyz_m": [
+          -0.026600000000000002,
+          0.0,
+          0.002
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_dial_post_3",
+        "parent": "baseplate",
+        "child": "dial_post_3",
+        "xyz_m": [
+          0.0,
+          0.026600000000000002,
+          0.002
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_dial_post_4",
+        "parent": "baseplate",
+        "child": "dial_post_4",
+        "xyz_m": [
+          0.0,
+          -0.026600000000000002,
+          0.002
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_chapter_ring",
+        "parent": "dial_post_1",
+        "child": "chapter_ring",
+        "xyz_m": [
+          -0.026600000000000002,
+          0.0,
+          0.018
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_hour_marker_1",
+        "parent": "chapter_ring",
+        "child": "hour_marker_1",
+        "xyz_m": [
+          0.0,
+          0.0258,
+          0.0008000000000000007
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_hour_marker_2",
+        "parent": "chapter_ring",
+        "child": "hour_marker_2",
+        "xyz_m": [
+          0.012899999999999998,
+          0.02234345541763852,
+          0.0008000000000000007
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          -0.5235987755982988
+        ]
+      },
+      {
+        "name": "place_hour_marker_3",
+        "parent": "chapter_ring",
+        "child": "hour_marker_3",
+        "xyz_m": [
+          0.022343455417638516,
+          0.012900000000000003,
+          0.0008000000000000007
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          -1.0471975511965976
+        ]
+      },
+      {
+        "name": "place_hour_marker_4",
+        "parent": "chapter_ring",
+        "child": "hour_marker_4",
+        "xyz_m": [
+          0.0258,
+          1.5797943709000856e-18,
+          0.0008000000000000007
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          -1.5707963267948966
+        ]
+      },
+      {
+        "name": "place_hour_marker_5",
+        "parent": "chapter_ring",
+        "child": "hour_marker_5",
+        "xyz_m": [
+          0.02234345541763852,
+          -0.012899999999999995,
+          0.0008000000000000007
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          -2.0943951023931953
+        ]
+      },
+      {
+        "name": "place_hour_marker_6",
+        "parent": "chapter_ring",
+        "child": "hour_marker_6",
+        "xyz_m": [
+          0.012899999999999998,
+          -0.02234345541763852,
+          0.0008000000000000007
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          -2.6179938779914944
+        ]
+      },
+      {
+        "name": "place_hour_marker_7",
+        "parent": "chapter_ring",
+        "child": "hour_marker_7",
+        "xyz_m": [
+          3.1595887418001713e-18,
+          -0.0258,
+          0.0008000000000000007
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          -3.141592653589793
+        ]
+      },
+      {
+        "name": "place_hour_marker_8",
+        "parent": "chapter_ring",
+        "child": "hour_marker_8",
+        "xyz_m": [
+          -0.012900000000000003,
+          -0.022343455417638516,
+          0.0008000000000000007
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          2.617993877991494
+        ]
+      },
+      {
+        "name": "place_hour_marker_9",
+        "parent": "chapter_ring",
+        "child": "hour_marker_9",
+        "xyz_m": [
+          -0.022343455417638512,
+          -0.01290000000000001,
+          0.0008000000000000007
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          2.094395102393196
+        ]
+      },
+      {
+        "name": "place_hour_marker_10",
+        "parent": "chapter_ring",
+        "child": "hour_marker_10",
+        "xyz_m": [
+          -0.0258,
+          -4.739383112700257e-18,
+          0.0008000000000000007
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          1.5707963267948968
+        ]
+      },
+      {
+        "name": "place_hour_marker_11",
+        "parent": "chapter_ring",
+        "child": "hour_marker_11",
+        "xyz_m": [
+          -0.022343455417638516,
+          0.012900000000000003,
+          0.0008000000000000007
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          1.0471975511965976
+        ]
+      },
+      {
+        "name": "place_hour_marker_12",
+        "parent": "chapter_ring",
+        "child": "hour_marker_12",
+        "xyz_m": [
+          -0.01290000000000001,
+          0.02234345541763851,
+          0.0008000000000000007
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.5235987755982994
+        ]
+      },
+      {
+        "name": "place_hour_hand",
+        "parent": "hour_pipe",
+        "child": "hour_hand",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.0145
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_minute_hand",
+        "parent": "minute_shaft",
+        "child": "minute_hand",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.02
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      }
+    ],
+    "mesh_pairs": [
+      [
+        "minute_pinion",
+        "intermediate_wheel"
+      ],
+      [
+        "intermediate_pinion",
+        "hour_wheel"
+      ]
+    ],
+    "ports_by_link": {
+      "central_lower_bearing": [
+        {
+          "name": "bore",
+          "type": "bore",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            0.75
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 2.1,
+          "depth_mm": 1.5
+        }
+      ],
+      "central_upper_bearing": [
+        {
+          "name": "bore",
+          "type": "bore",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            0.75
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 3.7,
+          "depth_mm": 1.5
+        }
+      ],
+      "intermediate_lower_bearing": [
+        {
+          "name": "bore",
+          "type": "bore",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            0.75
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 2.1,
+          "depth_mm": 1.5
+        }
+      ],
+      "intermediate_upper_bearing": [
+        {
+          "name": "bore",
+          "type": "bore",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            0.75
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 2.1,
+          "depth_mm": 1.5
+        }
+      ],
+      "minute_shaft": [
+        {
+          "name": "outer",
+          "type": "shaft",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            10.2
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 2.0,
+          "depth_mm": 20.4
+        },
+        {
+          "name": "minute_pinion_seat",
+          "type": "cylindrical",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            3.5
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 2.0,
+          "depth_mm": 2.0
+        },
+        {
+          "name": "minute_hand_seat",
+          "type": "cylindrical",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            20.2
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 2.0,
+          "depth_mm": 0.4
+        }
+      ],
+      "hour_pipe": [
+        {
+          "name": "inner_bore",
+          "type": "bore",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            7.449999999999999
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 2.1,
+          "depth_mm": 14.899999999999999
+        },
+        {
+          "name": "outer",
+          "type": "shaft",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            7.449999999999999
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 3.6,
+          "depth_mm": 14.899999999999999
+        },
+        {
+          "name": "hour_wheel_seat",
+          "type": "cylindrical",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            3.5
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 3.6,
+          "depth_mm": 2.0
+        },
+        {
+          "name": "hour_hand_seat",
+          "type": "cylindrical",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            14.7
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 3.6,
+          "depth_mm": 0.4
+        }
+      ],
+      "intermediate_arbor": [
+        {
+          "name": "outer",
+          "type": "shaft",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            8.5
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 2.0,
+          "depth_mm": 17.0
+        },
+        {
+          "name": "wheel_seat",
+          "type": "cylindrical",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            3.5
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 2.0,
+          "depth_mm": 2.0
+        },
+        {
+          "name": "pinion_seat",
+          "type": "cylindrical",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            8.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 2.0,
+          "depth_mm": 2.0
+        }
+      ],
+      "minute_pinion": [
+        {
+          "name": "bore",
+          "type": "bore",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 1.99,
+          "depth_mm": 2.0
+        },
+        {
+          "name": "mesh",
+          "type": "gear_mesh",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "depth_mm": 2.0,
+          "pitch_radius_mm": 3.0
+        }
+      ],
+      "intermediate_wheel": [
+        {
+          "name": "bore",
+          "type": "bore",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 1.99,
+          "depth_mm": 2.0
+        },
+        {
+          "name": "mesh",
+          "type": "gear_mesh",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "depth_mm": 2.0,
+          "pitch_radius_mm": 9.0
+        }
+      ],
+      "intermediate_pinion": [
+        {
+          "name": "bore",
+          "type": "bore",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 1.99,
+          "depth_mm": 2.0
+        },
+        {
+          "name": "mesh",
+          "type": "gear_mesh",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "depth_mm": 2.0,
+          "pitch_radius_mm": 2.4
+        }
+      ],
+      "hour_wheel": [
+        {
+          "name": "bore",
+          "type": "bore",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 3.5900000000000003,
+          "depth_mm": 2.0
+        },
+        {
+          "name": "mesh",
+          "type": "gear_mesh",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "depth_mm": 2.0,
+          "pitch_radius_mm": 9.6
+        }
+      ],
+      "hour_hand": [
+        {
+          "name": "hub_bore",
+          "type": "bore",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            0.2
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 3.5900000000000003,
+          "depth_mm": 0.4
+        }
+      ],
+      "minute_hand": [
+        {
+          "name": "hub_bore",
+          "type": "bore",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            0.2
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 1.99,
+          "depth_mm": 0.4
+        }
+      ]
+    },
+    "relations": [
+      {
+        "name": "minute_shaft_in_lower_bearing",
+        "mate_type": "journal_bearing",
+        "base_part": "central_lower_bearing",
+        "base_port": "bore",
+        "incoming_part": "minute_shaft",
+        "incoming_port": "outer"
+      },
+      {
+        "name": "hour_pipe_in_upper_bearing",
+        "mate_type": "journal_bearing",
+        "base_part": "central_upper_bearing",
+        "base_port": "bore",
+        "incoming_part": "hour_pipe",
+        "incoming_port": "outer"
+      },
+      {
+        "name": "minute_shaft_inside_hour_pipe",
+        "mate_type": "journal_bearing",
+        "base_part": "hour_pipe",
+        "base_port": "inner_bore",
+        "incoming_part": "minute_shaft",
+        "incoming_port": "outer"
+      },
+      {
+        "name": "intermediate_arbor_in_lower_bearing",
+        "mate_type": "journal_bearing",
+        "base_part": "intermediate_lower_bearing",
+        "base_port": "bore",
+        "incoming_part": "intermediate_arbor",
+        "incoming_port": "outer"
+      },
+      {
+        "name": "intermediate_arbor_in_upper_bearing",
+        "mate_type": "journal_bearing",
+        "base_part": "intermediate_upper_bearing",
+        "base_port": "bore",
+        "incoming_part": "intermediate_arbor",
+        "incoming_port": "outer"
+      },
+      {
+        "name": "minute_pinion_press_fit",
+        "mate_type": "press_fit",
+        "base_part": "minute_shaft",
+        "base_port": "minute_pinion_seat",
+        "incoming_part": "minute_pinion",
+        "incoming_port": "bore"
+      },
+      {
+        "name": "intermediate_wheel_press_fit",
+        "mate_type": "press_fit",
+        "base_part": "intermediate_arbor",
+        "base_port": "wheel_seat",
+        "incoming_part": "intermediate_wheel",
+        "incoming_port": "bore"
+      },
+      {
+        "name": "intermediate_pinion_press_fit",
+        "mate_type": "press_fit",
+        "base_part": "intermediate_arbor",
+        "base_port": "pinion_seat",
+        "incoming_part": "intermediate_pinion",
+        "incoming_port": "bore"
+      },
+      {
+        "name": "hour_wheel_press_fit",
+        "mate_type": "press_fit",
+        "base_part": "hour_pipe",
+        "base_port": "hour_wheel_seat",
+        "incoming_part": "hour_wheel",
+        "incoming_port": "bore"
+      },
+      {
+        "name": "hour_hand_press_fit",
+        "mate_type": "press_fit",
+        "base_part": "hour_pipe",
+        "base_port": "hour_hand_seat",
+        "incoming_part": "hour_hand",
+        "incoming_port": "hub_bore"
+      },
+      {
+        "name": "minute_hand_press_fit",
+        "mate_type": "press_fit",
+        "base_part": "minute_shaft",
+        "base_port": "minute_hand_seat",
+        "incoming_part": "minute_hand",
+        "incoming_port": "hub_bore"
+      },
+      {
+        "name": "minute_stage_mesh",
+        "mate_type": "gear_spur_external",
+        "base_part": "minute_pinion",
+        "base_port": "mesh",
+        "incoming_part": "intermediate_wheel",
+        "incoming_port": "mesh",
+        "separation_axis": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "hour_stage_mesh",
+        "mate_type": "gear_spur_external",
+        "base_part": "hour_wheel",
+        "base_port": "mesh",
+        "incoming_part": "intermediate_pinion",
+        "incoming_port": "mesh",
+        "separation_axis": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      }
+    ],
+    "transmissions": [
+      {
+        "name": "minute_to_intermediate",
+        "type": "gear_external",
+        "driving_link": "minute_pinion",
+        "driven_link": "intermediate_wheel"
+      },
+      {
+        "name": "compound_intermediate_arbor",
+        "type": "compound_1to1",
+        "driving_link": "intermediate_wheel",
+        "driven_link": "intermediate_pinion"
+      },
+      {
+        "name": "intermediate_to_hour",
+        "type": "gear_external",
+        "driving_link": "intermediate_pinion",
+        "driven_link": "hour_wheel"
+      }
+    ],
+    "output_link": "hour_hand",
+    "watch_links": [
+      "minute_hand",
+      "hour_hand",
+      "minute_pinion",
+      "intermediate_wheel",
+      "intermediate_pinion",
+      "hour_wheel"
+    ]
+  },
+  "entity_ids": [
+    "link/baseplate",
+    "link/central_lower_bearing",
+    "link/intermediate_lower_bearing",
+    "link/bridge_post_low",
+    "link/bridge_post_high",
+    "link/upper_bridge",
+    "link/central_upper_bearing",
+    "link/intermediate_upper_bearing",
+    "link/minute_shaft",
+    "link/intermediate_arbor",
+    "link/minute_pinion",
+    "link/intermediate_wheel",
+    "link/hour_pipe",
+    "link/intermediate_pinion",
+    "link/hour_wheel",
+    "link/dial_post_1",
+    "link/dial_post_2",
+    "link/dial_post_3",
+    "link/dial_post_4",
+    "link/chapter_ring",
+    "link/hour_marker_1",
+    "link/hour_marker_2",
+    "link/hour_marker_3",
+    "link/hour_marker_4",
+    "link/hour_marker_5",
+    "link/hour_marker_6",
+    "link/hour_marker_7",
+    "link/hour_marker_8",
+    "link/hour_marker_9",
+    "link/hour_marker_10",
+    "link/hour_marker_11",
+    "link/hour_marker_12",
+    "link/hour_hand",
+    "link/minute_hand",
+    "pose/place_baseplate",
+    "pose/place_central_lower_bearing",
+    "pose/place_intermediate_lower_bearing",
+    "pose/place_bridge_post_low",
+    "pose/place_bridge_post_high",
+    "pose/place_upper_bridge",
+    "pose/place_central_upper_bearing",
+    "pose/place_intermediate_upper_bearing",
+    "pose/place_minute_shaft",
+    "pose/place_intermediate_arbor",
+    "pose/place_minute_pinion",
+    "pose/place_intermediate_wheel",
+    "pose/place_hour_pipe",
+    "pose/place_intermediate_pinion",
+    "pose/place_hour_wheel",
+    "pose/place_dial_post_1",
+    "pose/place_dial_post_2",
+    "pose/place_dial_post_3",
+    "pose/place_dial_post_4",
+    "pose/place_chapter_ring",
+    "pose/place_hour_marker_1",
+    "pose/place_hour_marker_2",
+    "pose/place_hour_marker_3",
+    "pose/place_hour_marker_4",
+    "pose/place_hour_marker_5",
+    "pose/place_hour_marker_6",
+    "pose/place_hour_marker_7",
+    "pose/place_hour_marker_8",
+    "pose/place_hour_marker_9",
+    "pose/place_hour_marker_10",
+    "pose/place_hour_marker_11",
+    "pose/place_hour_marker_12",
+    "pose/place_hour_hand",
+    "pose/place_minute_hand",
+    "port/central_lower_bearing/bore",
+    "port/central_upper_bearing/bore",
+    "port/intermediate_lower_bearing/bore",
+    "port/intermediate_upper_bearing/bore",
+    "port/minute_shaft/outer",
+    "port/minute_shaft/minute_pinion_seat",
+    "port/minute_shaft/minute_hand_seat",
+    "port/hour_pipe/inner_bore",
+    "port/hour_pipe/outer",
+    "port/hour_pipe/hour_wheel_seat",
+    "port/hour_pipe/hour_hand_seat",
+    "port/intermediate_arbor/outer",
+    "port/intermediate_arbor/wheel_seat",
+    "port/intermediate_arbor/pinion_seat",
+    "port/minute_pinion/bore",
+    "port/minute_pinion/mesh",
+    "port/intermediate_wheel/bore",
+    "port/intermediate_wheel/mesh",
+    "port/intermediate_pinion/bore",
+    "port/intermediate_pinion/mesh",
+    "port/hour_wheel/bore",
+    "port/hour_wheel/mesh",
+    "port/hour_hand/hub_bore",
+    "port/minute_hand/hub_bore",
+    "relation/minute_shaft_in_lower_bearing",
+    "relation/hour_pipe_in_upper_bearing",
+    "relation/minute_shaft_inside_hour_pipe",
+    "relation/intermediate_arbor_in_lower_bearing",
+    "relation/intermediate_arbor_in_upper_bearing",
+    "relation/minute_pinion_press_fit",
+    "relation/intermediate_wheel_press_fit",
+    "relation/intermediate_pinion_press_fit",
+    "relation/hour_wheel_press_fit",
+    "relation/hour_hand_press_fit",
+    "relation/minute_hand_press_fit",
+    "relation/minute_stage_mesh",
+    "relation/hour_stage_mesh",
+    "transmission/minute_to_intermediate",
+    "transmission/compound_intermediate_arbor",
+    "transmission/intermediate_to_hour",
+    "role/driver/minute_shaft",
+    "role/output/hour_hand",
+    "role/watch/minute_hand",
+    "role/watch/hour_hand",
+    "role/watch/minute_pinion",
+    "role/watch/intermediate_wheel",
+    "role/watch/intermediate_pinion",
+    "role/watch/hour_wheel"
+  ],
+  "links": {
+    "baseplate": {
+      "entity_id": "link/baseplate",
+      "world_frame": {
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/baseplate.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "",
+      "extra_mounts": [],
+      "sha256": "80a1c885189fb14d69255f1a4757102bdf6fd79590d76d2c37952c0713ac63ed",
+      "vertices": 4380,
+      "faces": 1460,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -28.591140747070312,
+          -28.600000381469727,
+          0.0
+        ],
+        [
+          34.599998474121094,
+          28.600000381469727,
+          2.0
+        ]
+      ],
+      "extents_mm": [
+        63.191139221191406,
+        57.20000076293945,
+        2.0
+      ],
+      "volume_m3": 2.391758809254089e-06,
+      "mass_kg": 0.018775306652644597,
+      "com_m": [
+        0.001690548875832372,
+        -1.014031680512211e-18,
+        0.0009999999999999998
+      ],
+      "inertia_kg_m2": [
+        [
+          4.666285608484865e-06,
+          1.505861081258527e-22,
+          -3.2127900340128694e-23
+        ],
+        [
+          1.505861081258527e-22,
+          4.983509955415539e-06,
+          -3.426976036280393e-23
+        ],
+        [
+          -3.2127900340128694e-23,
+          -3.426976036280393e-23,
+          9.637278692798642e-06
+        ]
+      ]
+    },
+    "central_lower_bearing": {
+      "entity_id": "link/central_lower_bearing",
+      "world_frame": {
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.002
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.002
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/central_lower_bearing.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "baseplate",
+      "extra_mounts": [],
+      "sha256": "e9683989c2b7df3dab3a82cd051f7c968f50b9ec627254aae67c7339af3af40a",
+      "vertices": 3024,
+      "faces": 1008,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -2.799999952316284,
+          -2.7991297245025635,
+          0.0
+        ],
+        [
+          2.799999952316284,
+          2.7991297245025635,
+          1.5
+        ]
+      ],
+      "extents_mm": [
+        5.599999904632568,
+        5.598259449005127,
+        1.5
+      ],
+      "volume_m3": 3.1736563512688097e-08,
+      "mass_kg": 0.0002491320235746016,
+      "com_m": [
+        -5.8304097952156235e-22,
+        4.612856249699111e-20,
+        0.0007500000000000001
+      ],
+      "inertia_kg_m2": [
+        [
+          6.034472429413943e-10,
+          -8.441083480340931e-27,
+          -1.089406342913435e-28
+        ],
+        [
+          -8.441083480340931e-27,
+          6.034472458037071e-10,
+          1.115512377203772e-26
+        ],
+        [
+          -1.089406342913435e-28,
+          1.115512377203772e-26,
+          1.1134699799046259e-09
+        ]
+      ]
+    },
+    "intermediate_lower_bearing": {
+      "entity_id": "link/intermediate_lower_bearing",
+      "world_frame": {
+        "xyz_m": [
+          0.012,
+          0.0,
+          0.002
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.012
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.002
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/intermediate_lower_bearing.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "baseplate",
+      "extra_mounts": [],
+      "sha256": "e9683989c2b7df3dab3a82cd051f7c968f50b9ec627254aae67c7339af3af40a",
+      "vertices": 3024,
+      "faces": 1008,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -2.799999952316284,
+          -2.7991297245025635,
+          0.0
+        ],
+        [
+          2.799999952316284,
+          2.7991297245025635,
+          1.5
+        ]
+      ],
+      "extents_mm": [
+        5.599999904632568,
+        5.598259449005127,
+        1.5
+      ],
+      "volume_m3": 3.1736563512688097e-08,
+      "mass_kg": 0.0002491320235746016,
+      "com_m": [
+        -5.8304097952156235e-22,
+        4.612856249699111e-20,
+        0.0007500000000000001
+      ],
+      "inertia_kg_m2": [
+        [
+          6.034472429413943e-10,
+          -8.441083480340931e-27,
+          -1.089406342913435e-28
+        ],
+        [
+          -8.441083480340931e-27,
+          6.034472458037071e-10,
+          1.115512377203772e-26
+        ],
+        [
+          -1.089406342913435e-28,
+          1.115512377203772e-26,
+          1.1134699799046259e-09
+        ]
+      ]
+    },
+    "bridge_post_low": {
+      "entity_id": "link/bridge_post_low",
+      "world_frame": {
+        "xyz_m": [
+          0.006,
+          -0.0132,
+          0.002
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.006
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.0132
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.002
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/bridge_post_low.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "baseplate",
+      "extra_mounts": [],
+      "sha256": "86b7ecf95f3b89f2d16a2a9bbb067a3271ca4081ad9b2f388508de6d917f3b9e",
+      "vertices": 1500,
+      "faces": 500,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -1.5,
+          -1.499533772468567,
+          0.0
+        ],
+        [
+          1.5,
+          1.499533772468567,
+          15.0
+        ]
+      ],
+      "extents_mm": [
+        3.0,
+        2.999067544937134,
+        15.0
+      ],
+      "volume_m3": 1.0598481430612374e-07,
+      "mass_kg": 0.0008319807923030713,
+      "com_m": [
+        -2.7934140864581294e-21,
+        -1.2248466062692383e-20,
+        0.0075
+      ],
+      "inertia_kg_m2": [
+        [
+          1.6067435132213287e-08,
+          -1.8592534919055957e-27,
+          1.6105783373632223e-25
+        ],
+        [
+          -1.8592534919055957e-27,
+          1.6067435138161295e-08,
+          1.8592217175539273e-25
+        ],
+        [
+          1.6105783373632223e-25,
+          1.8592217175539273e-25,
+          9.35590559009394e-10
+        ]
+      ]
+    },
+    "bridge_post_high": {
+      "entity_id": "link/bridge_post_high",
+      "world_frame": {
+        "xyz_m": [
+          0.006,
+          0.0132,
+          0.002
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.006
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0132
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.002
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/bridge_post_high.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "baseplate",
+      "extra_mounts": [],
+      "sha256": "86b7ecf95f3b89f2d16a2a9bbb067a3271ca4081ad9b2f388508de6d917f3b9e",
+      "vertices": 1500,
+      "faces": 500,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -1.5,
+          -1.499533772468567,
+          0.0
+        ],
+        [
+          1.5,
+          1.499533772468567,
+          15.0
+        ]
+      ],
+      "extents_mm": [
+        3.0,
+        2.999067544937134,
+        15.0
+      ],
+      "volume_m3": 1.0598481430612374e-07,
+      "mass_kg": 0.0008319807923030713,
+      "com_m": [
+        -2.7934140864581294e-21,
+        -1.2248466062692383e-20,
+        0.0075
+      ],
+      "inertia_kg_m2": [
+        [
+          1.6067435132213287e-08,
+          -1.8592534919055957e-27,
+          1.6105783373632223e-25
+        ],
+        [
+          -1.8592534919055957e-27,
+          1.6067435138161295e-08,
+          1.8592217175539273e-25
+        ],
+        [
+          1.6105783373632223e-25,
+          1.8592217175539273e-25,
+          9.35590559009394e-10
+        ]
+      ]
+    },
+    "upper_bridge": {
+      "entity_id": "link/upper_bridge",
+      "world_frame": {
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.017
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.017
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/upper_bridge.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "bridge_post_low",
+      "extra_mounts": [
+        "bridge_post_high"
+      ],
+      "sha256": "797f028deb35a0b5b72fd095ca71e10b533839d054ed84a333e2a5055814d891",
+      "vertices": 5292,
+      "faces": 1764,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -5.0,
+          -13.199999809265137,
+          0.0
+        ],
+        [
+          17.0,
+          13.199999809265137,
+          2.0
+        ]
+      ],
+      "extents_mm": [
+        22.0,
+        26.399999618530273,
+        2.0
+      ],
+      "volume_m3": 4.1925593415596924e-07,
+      "mass_kg": 0.0032911590831243586,
+      "com_m": [
+        0.006208525871305205,
+        1.7795093921570028e-19,
+        0.001
+      ],
+      "inertia_kg_m2": [
+        [
+          1.0509802654677718e-07,
+          3.041154255420496e-24,
+          -0.0
+        ],
+        [
+          3.041154255420496e-24,
+          7.864337101253193e-08,
+          -1.2085147697386367e-25
+        ],
+        [
+          -0.0,
+          -1.2085147697386367e-25,
+          1.8154729150389291e-07
+        ]
+      ]
+    },
+    "central_upper_bearing": {
+      "entity_id": "link/central_upper_bearing",
+      "world_frame": {
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.015500000000000002
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.015500000000000002
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/central_upper_bearing.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "upper_bridge",
+      "extra_mounts": [],
+      "sha256": "ac09b95d188f3e9631937ec91f967d96badde91e38c975e3fc7d7545874532ad",
+      "vertices": 3024,
+      "faces": 1008,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -3.0,
+          -2.999067544937134,
+          0.0
+        ],
+        [
+          3.0,
+          2.999067544937134,
+          1.5
+        ]
+      ],
+      "extents_mm": [
+        6.0,
+        5.998135089874268,
+        1.5
+      ],
+      "volume_m3": 2.6272457709527232e-08,
+      "mass_kg": 0.00020623879301978878,
+      "com_m": [
+        -4.5075261173759844e-20,
+        1.4077215354851954e-19,
+        0.0007500000000000001
+      ],
+      "inertia_kg_m2": [
+        [
+          6.789047249793525e-10,
+          1.1475080145354835e-27,
+          -6.972200594645984e-27
+        ],
+        [
+          1.1475080145354835e-27,
+          6.789047328873528e-10,
+          5.5777604757167885e-27
+        ],
+        [
+          -6.972200594645984e-27,
+          5.5777604757167885e-27,
+          1.2804699104842847e-09
+        ]
+      ]
+    },
+    "intermediate_upper_bearing": {
+      "entity_id": "link/intermediate_upper_bearing",
+      "world_frame": {
+        "xyz_m": [
+          0.012,
+          0.0,
+          0.015500000000000002
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.012
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.015500000000000002
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/intermediate_upper_bearing.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "upper_bridge",
+      "extra_mounts": [],
+      "sha256": "e9683989c2b7df3dab3a82cd051f7c968f50b9ec627254aae67c7339af3af40a",
+      "vertices": 3024,
+      "faces": 1008,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -2.799999952316284,
+          -2.7991297245025635,
+          0.0
+        ],
+        [
+          2.799999952316284,
+          2.7991297245025635,
+          1.5
+        ]
+      ],
+      "extents_mm": [
+        5.599999904632568,
+        5.598259449005127,
+        1.5
+      ],
+      "volume_m3": 3.1736563512688097e-08,
+      "mass_kg": 0.0002491320235746016,
+      "com_m": [
+        -5.8304097952156235e-22,
+        4.612856249699111e-20,
+        0.0007500000000000001
+      ],
+      "inertia_kg_m2": [
+        [
+          6.034472429413943e-10,
+          -8.441083480340931e-27,
+          -1.089406342913435e-28
+        ],
+        [
+          -8.441083480340931e-27,
+          6.034472458037071e-10,
+          1.115512377203772e-26
+        ],
+        [
+          -1.089406342913435e-28,
+          1.115512377203772e-26,
+          1.1134699799046259e-09
+        ]
+      ]
+    },
+    "minute_shaft": {
+      "entity_id": "link/minute_shaft",
+      "world_frame": {
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.002
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.002
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/minute_shaft.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": true,
+      "mount": "central_lower_bearing",
+      "extra_mounts": [
+        "hour_pipe"
+      ],
+      "sha256": "3a4b89f3b0df7cd226749653b99dd00c182ac20d61af93d551f010701f2ddff4",
+      "vertices": 1500,
+      "faces": 500,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -1.0,
+          -0.9996891617774963,
+          0.0
+        ],
+        [
+          1.0,
+          0.9996891617774963,
+          20.399999618530273
+        ]
+      ],
+      "extents_mm": [
+        2.0,
+        1.9993783235549927,
+        20.399999618530273
+      ],
+      "volume_m3": 6.406193069113741e-08,
+      "mass_kg": 0.0005028861559254287,
+      "com_m": [
+        -4.621457237384405e-21,
+        1.3404031245148128e-20,
+        0.010199999809265135
+      ],
+      "inertia_kg_m2": [
+        [
+          1.7565760680137205e-08,
+          1.3944401189291968e-27,
+          6.042574291973763e-27
+        ],
+        [
+          1.3944401189291968e-27,
+          1.7565760679057406e-08,
+          1.8331712755221416e-25
+        ],
+        [
+          6.042574291973763e-27,
+          1.8331712755221416e-25,
+          2.5133888869057795e-10
+        ]
+      ]
+    },
+    "intermediate_arbor": {
+      "entity_id": "link/intermediate_arbor",
+      "world_frame": {
+        "xyz_m": [
+          0.012,
+          0.0,
+          0.002
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.012
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.002
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/intermediate_arbor.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "intermediate_lower_bearing",
+      "extra_mounts": [
+        "intermediate_upper_bearing"
+      ],
+      "sha256": "2ff66fa2c3ca00442d14c728d959784c15d407272d53b2a3428d17f37eb14e92",
+      "vertices": 1500,
+      "faces": 500,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -1.0,
+          -0.9996891617774963,
+          0.0
+        ],
+        [
+          1.0,
+          0.9996891617774963,
+          17.0
+        ]
+      ],
+      "extents_mm": [
+        2.0,
+        1.9993783235549927,
+        17.0
+      ],
+      "volume_m3": 5.3384943240886055e-08,
+      "mass_kg": 0.00041907180444095555,
+      "com_m": [
+        0.0,
+        -1.117408765632367e-20,
+        0.008500000000000002
+      ],
+      "inertia_kg_m2": [
+        [
+          1.019737049631562e-08,
+          -5.810167162204986e-28,
+          -2.974805587048953e-26
+        ],
+        [
+          -5.810167162204986e-28,
+          1.0197370495415796e-08,
+          4.834053404963179e-26
+        ],
+        [
+          -2.974805587048953e-26,
+          4.834053404963179e-26,
+          2.0944907782540723e-10
+        ]
+      ]
+    },
+    "minute_pinion": {
+      "entity_id": "link/minute_pinion",
+      "world_frame": {
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.0045000000000000005
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0045000000000000005
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/minute_pinion.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "minute_shaft",
+      "extra_mounts": [],
+      "sha256": "c9ffe00e281e97e0ce2b9a3024a52d5403da5db07b5b49a3e9d07e344038aefc",
+      "vertices": 2952,
+      "faces": 984,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -3.581251621246338,
+          -3.519359827041626,
+          0.0
+        ],
+        [
+          3.581251621246338,
+          3.519359827041626,
+          2.0
+        ]
+      ],
+      "extents_mm": [
+        7.162503242492676,
+        7.038719654083252,
+        2.0
+      ],
+      "volume_m3": 4.783151400905797e-08,
+      "mass_kg": 0.00037547738497110505,
+      "com_m": [
+        9.903411317561374e-20,
+        -1.3926672165320684e-20,
+        0.001
+      ],
+      "inertia_kg_m2": [
+        [
+          1.1890334599569143e-09,
+          3.369896954078891e-27,
+          2.2311041902867143e-26
+        ],
+        [
+          3.369896954078891e-27,
+          1.1890334340101207e-09,
+          1.196894435414227e-26
+        ],
+        [
+          2.2311041902867143e-26,
+          1.196894435414227e-26,
+          2.127748637319632e-09
+        ]
+      ]
+    },
+    "intermediate_wheel": {
+      "entity_id": "link/intermediate_wheel",
+      "world_frame": {
+        "xyz_m": [
+          0.012,
+          0.0,
+          0.0045000000000000005
+        ],
+        "quat_wxyz": [
+          0.9986295347545737,
+          0.0,
+          0.0,
+          0.05233595624294384
+        ],
+        "matrix": [
+          [
+            0.9945218953682733,
+            -0.1045284632676535,
+            0.0,
+            0.012
+          ],
+          [
+            0.1045284632676535,
+            0.9945218953682733,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0045000000000000005
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/intermediate_wheel.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "intermediate_arbor",
+      "extra_mounts": [],
+      "sha256": "1c607121480059ad8446c99f5da6ffe645b2c720fc2a98ce915cfbe1e836d5b4",
+      "vertices": 4848,
+      "faces": 1616,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -9.594440460205078,
+          -9.576026916503906,
+          0.0
+        ],
+        [
+          9.594440460205078,
+          9.576026916503906,
+          2.0
+        ]
+      ],
+      "extents_mm": [
+        19.188880920410156,
+        19.152053833007812,
+        2.0
+      ],
+      "volume_m3": 4.90629759626425e-07,
+      "mass_kg": 0.003851443613067436,
+      "com_m": [
+        2.8964518430399386e-19,
+        -5.430847205699884e-21,
+        0.0009999999999999998
+      ],
+      "inertia_kg_m2": [
+        [
+          7.994108235523861e-08,
+          2.52858474899161e-25,
+          1.710513212553148e-24
+        ],
+        [
+          2.52858474899161e-25,
+          7.994095181936523e-08,
+          3.1235458664014006e-25
+        ],
+        [
+          1.710513212553148e-24,
+          3.1235458664014006e-25,
+          1.5731440509922553e-07
+        ]
+      ]
+    },
+    "hour_pipe": {
+      "entity_id": "link/hour_pipe",
+      "world_frame": {
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.006500000000000002
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.006500000000000002
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/hour_pipe.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "central_upper_bearing",
+      "extra_mounts": [
+        "minute_shaft"
+      ],
+      "sha256": "1bdd2fca5f66ec2a39391d5efab82fe4a990b7a876ecd6e174f5bba36b1f990d",
+      "vertices": 3024,
+      "faces": 1008,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -1.7999999523162842,
+          -1.7994405031204224,
+          0.0
+        ],
+        [
+          1.7999999523162842,
+          1.7994405031204224,
+          14.899999618530273
+        ]
+      ],
+      "extents_mm": [
+        3.5999999046325684,
+        3.5988810062408447,
+        14.899999618530273
+      ],
+      "volume_m3": 1.0001433498553794e-07,
+      "mass_kg": 0.0007851125296364728,
+      "com_m": [
+        -1.1840681569344444e-20,
+        -1.129793548422618e-19,
+        0.0074499998092651355
+      ],
+      "inertia_kg_m2": [
+        [
+          1.5377219925639428e-08,
+          1.52516888007881e-27,
+          -6.925719080036112e-26
+        ],
+        [
+          1.52516888007881e-27,
+          1.5377219934814697e-08,
+          -9.325276885552435e-26
+        ],
+        [
+          -6.925719080036112e-26,
+          -9.325276885552435e-26,
+          1.7039692305219331e-09
+        ]
+      ]
+    },
+    "intermediate_pinion": {
+      "entity_id": "link/intermediate_pinion",
+      "world_frame": {
+        "xyz_m": [
+          0.012,
+          0.0,
+          0.009000000000000001
+        ],
+        "quat_wxyz": [
+          0.9986295347545737,
+          0.0,
+          0.0,
+          0.05233595624294384
+        ],
+        "matrix": [
+          [
+            0.9945218953682733,
+            -0.1045284632676535,
+            0.0,
+            0.012
+          ],
+          [
+            0.1045284632676535,
+            0.9945218953682733,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.009000000000000001
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/intermediate_pinion.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "intermediate_arbor",
+      "extra_mounts": [],
+      "sha256": "aa6eb1b41fa8ee276c9461a2765142f332dc4caa9c5aa70b8270fe2f8a3b2f68",
+      "vertices": 2760,
+      "faces": 920,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -2.975600004196167,
+          -2.975600004196167,
+          0.0
+        ],
+        [
+          2.975600004196167,
+          2.975600004196167,
+          2.0
+        ]
+      ],
+      "extents_mm": [
+        5.951200008392334,
+        5.951200008392334,
+        2.0
+      ],
+      "volume_m3": 2.8421595719278344e-08,
+      "mass_kg": 0.000223109526396335,
+      "com_m": [
+        -8.333366673921357e-20,
+        1.5625062513602546e-20,
+        0.001
+      ],
+      "inertia_kg_m2": [
+        [
+          5.391321570503285e-10,
+          2.649436225965474e-26,
+          -3.346656285430072e-26
+        ],
+        [
+          2.649436225965474e-26,
+          5.391321570345548e-10,
+          -1.162033432440997e-27
+        ],
+        [
+          -3.346656285430072e-26,
+          -1.162033432440997e-27,
+          9.2952462982066e-10
+        ]
+      ]
+    },
+    "hour_wheel": {
+      "entity_id": "link/hour_wheel",
+      "world_frame": {
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.009000000000000003
+        ],
+        "quat_wxyz": [
+          0.9948586380886109,
+          0.0,
+          0.0,
+          0.1012733440766834
+        ],
+        "matrix": [
+          [
+            0.9794874195590514,
+            -0.2015053223256171,
+            0.0,
+            0.0
+          ],
+          [
+            0.2015053223256171,
+            0.9794874195590514,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.009000000000000003
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/hour_wheel.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "hour_pipe",
+      "extra_mounts": [],
+      "sha256": "fbc7b247fdec770469693fa92847d32ebb563b25f5619d5ed53be916a627be9a",
+      "vertices": 4968,
+      "faces": 1656,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -10.194808006286621,
+          -10.194808006286621,
+          0.0
+        ],
+        [
+          10.194808006286621,
+          10.194808006286621,
+          2.0
+        ]
+      ],
+      "extents_mm": [
+        20.389616012573242,
+        20.389616012573242,
+        2.0
+      ],
+      "volume_m3": 5.457690330276678e-07,
+      "mass_kg": 0.004284286909267193,
+      "com_m": [
+        -3.471762804463742e-20,
+        -1.2205416109442843e-21,
+        0.001
+      ],
+      "inertia_kg_m2": [
+        [
+          1.0314690898373157e-07,
+          -5.949611174097906e-25,
+          8.924416761146859e-26
+        ],
+        [
+          -5.949611174097906e-25,
+          1.0314690897887511e-07,
+          2.490237645721057e-25
+        ],
+        [
+          8.924416761146859e-26,
+          2.490237645721057e-25,
+          2.0343762668976187e-07
+        ]
+      ]
+    },
+    "dial_post_1": {
+      "entity_id": "link/dial_post_1",
+      "world_frame": {
+        "xyz_m": [
+          0.026600000000000002,
+          0.0,
+          0.002
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.026600000000000002
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.002
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/dial_post_1.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "baseplate",
+      "extra_mounts": [],
+      "sha256": "82a2ddfe2e7b17f8514a37ea98c76260fc78be7c36603b225d4c0d4aa128e255",
+      "vertices": 1500,
+      "faces": 500,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -1.25,
+          -1.249611496925354,
+          0.0
+        ],
+        [
+          1.25,
+          1.249611496925354,
+          18.0
+        ]
+      ],
+      "extents_mm": [
+        2.5,
+        2.499222993850708,
+        18.0
+      ],
+      "volume_m3": 8.832067840610597e-08,
+      "mass_kg": 0.0006933173254879319,
+      "com_m": [
+        1.3408387642679488e-20,
+        8.929377293046624e-21,
+        0.009
+      ],
+      "inertia_kg_m2": [
+        [
+          1.8990282656076206e-08,
+          -4.067117013543491e-27,
+          1.4316251887673085e-25
+        ],
+        [
+          -4.067117013543491e-27,
+          1.8990282639685605e-08,
+          2.2311983785434457e-25
+        ],
+        [
+          1.4316251887673085e-25,
+          2.2311983785434457e-25,
+          5.414297194134845e-10
+        ]
+      ]
+    },
+    "dial_post_2": {
+      "entity_id": "link/dial_post_2",
+      "world_frame": {
+        "xyz_m": [
+          -0.026600000000000002,
+          0.0,
+          0.002
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.026600000000000002
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.002
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/dial_post_2.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "baseplate",
+      "extra_mounts": [],
+      "sha256": "82a2ddfe2e7b17f8514a37ea98c76260fc78be7c36603b225d4c0d4aa128e255",
+      "vertices": 1500,
+      "faces": 500,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -1.25,
+          -1.249611496925354,
+          0.0
+        ],
+        [
+          1.25,
+          1.249611496925354,
+          18.0
+        ]
+      ],
+      "extents_mm": [
+        2.5,
+        2.499222993850708,
+        18.0
+      ],
+      "volume_m3": 8.832067840610597e-08,
+      "mass_kg": 0.0006933173254879319,
+      "com_m": [
+        1.3408387642679488e-20,
+        8.929377293046624e-21,
+        0.009
+      ],
+      "inertia_kg_m2": [
+        [
+          1.8990282656076206e-08,
+          -4.067117013543491e-27,
+          1.4316251887673085e-25
+        ],
+        [
+          -4.067117013543491e-27,
+          1.8990282639685605e-08,
+          2.2311983785434457e-25
+        ],
+        [
+          1.4316251887673085e-25,
+          2.2311983785434457e-25,
+          5.414297194134845e-10
+        ]
+      ]
+    },
+    "dial_post_3": {
+      "entity_id": "link/dial_post_3",
+      "world_frame": {
+        "xyz_m": [
+          0.0,
+          0.026600000000000002,
+          0.002
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.026600000000000002
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.002
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/dial_post_3.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "baseplate",
+      "extra_mounts": [],
+      "sha256": "82a2ddfe2e7b17f8514a37ea98c76260fc78be7c36603b225d4c0d4aa128e255",
+      "vertices": 1500,
+      "faces": 500,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -1.25,
+          -1.249611496925354,
+          0.0
+        ],
+        [
+          1.25,
+          1.249611496925354,
+          18.0
+        ]
+      ],
+      "extents_mm": [
+        2.5,
+        2.499222993850708,
+        18.0
+      ],
+      "volume_m3": 8.832067840610597e-08,
+      "mass_kg": 0.0006933173254879319,
+      "com_m": [
+        1.3408387642679488e-20,
+        8.929377293046624e-21,
+        0.009
+      ],
+      "inertia_kg_m2": [
+        [
+          1.8990282656076206e-08,
+          -4.067117013543491e-27,
+          1.4316251887673085e-25
+        ],
+        [
+          -4.067117013543491e-27,
+          1.8990282639685605e-08,
+          2.2311983785434457e-25
+        ],
+        [
+          1.4316251887673085e-25,
+          2.2311983785434457e-25,
+          5.414297194134845e-10
+        ]
+      ]
+    },
+    "dial_post_4": {
+      "entity_id": "link/dial_post_4",
+      "world_frame": {
+        "xyz_m": [
+          0.0,
+          -0.026600000000000002,
+          0.002
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.026600000000000002
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.002
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/dial_post_4.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "baseplate",
+      "extra_mounts": [],
+      "sha256": "82a2ddfe2e7b17f8514a37ea98c76260fc78be7c36603b225d4c0d4aa128e255",
+      "vertices": 1500,
+      "faces": 500,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -1.25,
+          -1.249611496925354,
+          0.0
+        ],
+        [
+          1.25,
+          1.249611496925354,
+          18.0
+        ]
+      ],
+      "extents_mm": [
+        2.5,
+        2.499222993850708,
+        18.0
+      ],
+      "volume_m3": 8.832067840610597e-08,
+      "mass_kg": 0.0006933173254879319,
+      "com_m": [
+        1.3408387642679488e-20,
+        8.929377293046624e-21,
+        0.009
+      ],
+      "inertia_kg_m2": [
+        [
+          1.8990282656076206e-08,
+          -4.067117013543491e-27,
+          1.4316251887673085e-25
+        ],
+        [
+          -4.067117013543491e-27,
+          1.8990282639685605e-08,
+          2.2311983785434457e-25
+        ],
+        [
+          1.4316251887673085e-25,
+          2.2311983785434457e-25,
+          5.414297194134845e-10
+        ]
+      ]
+    },
+    "chapter_ring": {
+      "entity_id": "link/chapter_ring",
+      "world_frame": {
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.019999999999999997
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.019999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/chapter_ring.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "dial_post_1",
+      "extra_mounts": [
+        "dial_post_2",
+        "dial_post_3",
+        "dial_post_4"
+      ],
+      "sha256": "4abab7c939c6083f28e2a99f98c4e45a1d5f00b75f46d42f9ef6da240d2a9e84",
+      "vertices": 3024,
+      "faces": 1008,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -28.600000381469727,
+          -28.591110229492188,
+          0.0
+        ],
+        [
+          28.600000381469727,
+          28.591110229492188,
+          0.800000011920929
+        ]
+      ],
+      "extents_mm": [
+        57.20000076293945,
+        57.182220458984375,
+        0.800000011920929
+      ],
+      "volume_m3": 7.259347417294298e-07,
+      "mass_kg": 0.005698587722576024,
+      "com_m": [
+        -9.918476104177595e-19,
+        -3.602431712077044e-18,
+        0.00040000000596046413
+      ],
+      "inertia_kg_m2": [
+        [
+          1.9184512382947144e-06,
+          -5.473642280170053e-24,
+          -2.260852279846526e-24
+        ],
+        [
+          -5.473642280170053e-24,
+          1.9184512120593452e-06,
+          -1.1928970526427316e-23
+        ],
+        [
+          -2.260852279846526e-24,
+          -1.1928970526427316e-23,
+          3.83629460097887e-06
+        ]
+      ]
+    },
+    "hour_marker_1": {
+      "entity_id": "link/hour_marker_1",
+      "world_frame": {
+        "xyz_m": [
+          0.0,
+          0.0258,
+          0.0208
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0258
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0208
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/hour_marker_1.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "chapter_ring",
+      "extra_mounts": [],
+      "sha256": "a150e2981a1653ba1e4f81ee257acbac86d272ff9f7576cf1580fdc504cebf63",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -0.32499998807907104,
+          -1.0499999523162842,
+          0.0
+        ],
+        [
+          0.32499998807907104,
+          1.0499999523162842,
+          0.44999998807907104
+        ]
+      ],
+      "extents_mm": [
+        0.6499999761581421,
+        2.0999999046325684,
+        0.44999998807907104
+      ],
+      "volume_m3": 6.142499333024049e-10,
+      "mass_kg": 4.821861976423879e-06,
+      "com_m": [
+        0.0,
+        0.0,
+        0.00022499999403953553
+      ],
+      "inertia_kg_m2": [
+        [
+          1.853403031929844e-12,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          2.5113862784009746e-13,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          1.9418038266877965e-12
+        ]
+      ]
+    },
+    "hour_marker_2": {
+      "entity_id": "link/hour_marker_2",
+      "world_frame": {
+        "xyz_m": [
+          0.012899999999999998,
+          0.02234345541763852,
+          0.0208
+        ],
+        "quat_wxyz": [
+          0.9659258262890684,
+          0.0,
+          0.0,
+          -0.25881904510252074
+        ],
+        "matrix": [
+          [
+            0.8660254037844387,
+            0.49999999999999994,
+            0.0,
+            0.012899999999999998
+          ],
+          [
+            -0.49999999999999994,
+            0.8660254037844387,
+            0.0,
+            0.02234345541763852
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0208
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/hour_marker_2.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "chapter_ring",
+      "extra_mounts": [],
+      "sha256": "7ebd0c917fbfecd4df53ca54ec29aba15154064e6c38c39470e021fd514d57c7",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -0.22499999403953552,
+          -0.699999988079071,
+          0.0
+        ],
+        [
+          0.22499999403953552,
+          0.699999988079071,
+          0.44999998807907104
+        ]
+      ],
+      "extents_mm": [
+        0.44999998807907104,
+        1.399999976158142,
+        0.44999998807907104
+      ],
+      "volume_m3": 2.8349998015165376e-10,
+      "mass_kg": 2.225474844190482e-06,
+      "com_m": [
+        0.0,
+        0.0,
+        0.00022499999403953556
+      ],
+      "inertia_kg_m2": [
+        [
+          4.0104909817655746e-13,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          7.510977201196966e-14,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          4.010490981765575e-13
+        ]
+      ]
+    },
+    "hour_marker_3": {
+      "entity_id": "link/hour_marker_3",
+      "world_frame": {
+        "xyz_m": [
+          0.022343455417638516,
+          0.012900000000000003,
+          0.0208
+        ],
+        "quat_wxyz": [
+          0.8660254037844387,
+          0.0,
+          0.0,
+          -0.5
+        ],
+        "matrix": [
+          [
+            0.5000000000000001,
+            0.8660254037844386,
+            0.0,
+            0.022343455417638516
+          ],
+          [
+            -0.8660254037844386,
+            0.5000000000000001,
+            0.0,
+            0.012900000000000003
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0208
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/hour_marker_3.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "chapter_ring",
+      "extra_mounts": [],
+      "sha256": "7ebd0c917fbfecd4df53ca54ec29aba15154064e6c38c39470e021fd514d57c7",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -0.22499999403953552,
+          -0.699999988079071,
+          0.0
+        ],
+        [
+          0.22499999403953552,
+          0.699999988079071,
+          0.44999998807907104
+        ]
+      ],
+      "extents_mm": [
+        0.44999998807907104,
+        1.399999976158142,
+        0.44999998807907104
+      ],
+      "volume_m3": 2.8349998015165376e-10,
+      "mass_kg": 2.225474844190482e-06,
+      "com_m": [
+        0.0,
+        0.0,
+        0.00022499999403953556
+      ],
+      "inertia_kg_m2": [
+        [
+          4.0104909817655746e-13,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          7.510977201196966e-14,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          4.010490981765575e-13
+        ]
+      ]
+    },
+    "hour_marker_4": {
+      "entity_id": "link/hour_marker_4",
+      "world_frame": {
+        "xyz_m": [
+          0.0258,
+          1.5797943709000856e-18,
+          0.0208
+        ],
+        "quat_wxyz": [
+          0.7071067811865476,
+          0.0,
+          0.0,
+          -0.7071067811865475
+        ],
+        "matrix": [
+          [
+            6.123233995736766e-17,
+            1.0,
+            0.0,
+            0.0258
+          ],
+          [
+            -1.0,
+            6.123233995736766e-17,
+            0.0,
+            1.5797943709000856e-18
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0208
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/hour_marker_4.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "chapter_ring",
+      "extra_mounts": [],
+      "sha256": "a150e2981a1653ba1e4f81ee257acbac86d272ff9f7576cf1580fdc504cebf63",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -0.32499998807907104,
+          -1.0499999523162842,
+          0.0
+        ],
+        [
+          0.32499998807907104,
+          1.0499999523162842,
+          0.44999998807907104
+        ]
+      ],
+      "extents_mm": [
+        0.6499999761581421,
+        2.0999999046325684,
+        0.44999998807907104
+      ],
+      "volume_m3": 6.142499333024049e-10,
+      "mass_kg": 4.821861976423879e-06,
+      "com_m": [
+        0.0,
+        0.0,
+        0.00022499999403953553
+      ],
+      "inertia_kg_m2": [
+        [
+          1.853403031929844e-12,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          2.5113862784009746e-13,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          1.9418038266877965e-12
+        ]
+      ]
+    },
+    "hour_marker_5": {
+      "entity_id": "link/hour_marker_5",
+      "world_frame": {
+        "xyz_m": [
+          0.02234345541763852,
+          -0.012899999999999995,
+          0.0208
+        ],
+        "quat_wxyz": [
+          0.5,
+          0.0,
+          0.0,
+          -0.8660254037844385
+        ],
+        "matrix": [
+          [
+            -0.4999999999999998,
+            0.8660254037844387,
+            0.0,
+            0.02234345541763852
+          ],
+          [
+            -0.8660254037844387,
+            -0.4999999999999998,
+            0.0,
+            -0.012899999999999995
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0208
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/hour_marker_5.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "chapter_ring",
+      "extra_mounts": [],
+      "sha256": "7ebd0c917fbfecd4df53ca54ec29aba15154064e6c38c39470e021fd514d57c7",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -0.22499999403953552,
+          -0.699999988079071,
+          0.0
+        ],
+        [
+          0.22499999403953552,
+          0.699999988079071,
+          0.44999998807907104
+        ]
+      ],
+      "extents_mm": [
+        0.44999998807907104,
+        1.399999976158142,
+        0.44999998807907104
+      ],
+      "volume_m3": 2.8349998015165376e-10,
+      "mass_kg": 2.225474844190482e-06,
+      "com_m": [
+        0.0,
+        0.0,
+        0.00022499999403953556
+      ],
+      "inertia_kg_m2": [
+        [
+          4.0104909817655746e-13,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          7.510977201196966e-14,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          4.010490981765575e-13
+        ]
+      ]
+    },
+    "hour_marker_6": {
+      "entity_id": "link/hour_marker_6",
+      "world_frame": {
+        "xyz_m": [
+          0.012899999999999998,
+          -0.02234345541763852,
+          0.0208
+        ],
+        "quat_wxyz": [
+          0.25881904510252074,
+          0.0,
+          0.0,
+          -0.9659258262890684
+        ],
+        "matrix": [
+          [
+            -0.8660254037844387,
+            0.49999999999999994,
+            0.0,
+            0.012899999999999998
+          ],
+          [
+            -0.49999999999999994,
+            -0.8660254037844387,
+            0.0,
+            -0.02234345541763852
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0208
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/hour_marker_6.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "chapter_ring",
+      "extra_mounts": [],
+      "sha256": "7ebd0c917fbfecd4df53ca54ec29aba15154064e6c38c39470e021fd514d57c7",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -0.22499999403953552,
+          -0.699999988079071,
+          0.0
+        ],
+        [
+          0.22499999403953552,
+          0.699999988079071,
+          0.44999998807907104
+        ]
+      ],
+      "extents_mm": [
+        0.44999998807907104,
+        1.399999976158142,
+        0.44999998807907104
+      ],
+      "volume_m3": 2.8349998015165376e-10,
+      "mass_kg": 2.225474844190482e-06,
+      "com_m": [
+        0.0,
+        0.0,
+        0.00022499999403953556
+      ],
+      "inertia_kg_m2": [
+        [
+          4.0104909817655746e-13,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          7.510977201196966e-14,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          4.010490981765575e-13
+        ]
+      ]
+    },
+    "hour_marker_7": {
+      "entity_id": "link/hour_marker_7",
+      "world_frame": {
+        "xyz_m": [
+          3.1595887418001713e-18,
+          -0.0258,
+          0.0208
+        ],
+        "quat_wxyz": [
+          6.123233995736766e-17,
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "matrix": [
+          [
+            -1.0,
+            1.2246467991473532e-16,
+            0.0,
+            3.1595887418001713e-18
+          ],
+          [
+            -1.2246467991473532e-16,
+            -1.0,
+            0.0,
+            -0.0258
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0208
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/hour_marker_7.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "chapter_ring",
+      "extra_mounts": [],
+      "sha256": "a150e2981a1653ba1e4f81ee257acbac86d272ff9f7576cf1580fdc504cebf63",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -0.32499998807907104,
+          -1.0499999523162842,
+          0.0
+        ],
+        [
+          0.32499998807907104,
+          1.0499999523162842,
+          0.44999998807907104
+        ]
+      ],
+      "extents_mm": [
+        0.6499999761581421,
+        2.0999999046325684,
+        0.44999998807907104
+      ],
+      "volume_m3": 6.142499333024049e-10,
+      "mass_kg": 4.821861976423879e-06,
+      "com_m": [
+        0.0,
+        0.0,
+        0.00022499999403953553
+      ],
+      "inertia_kg_m2": [
+        [
+          1.853403031929844e-12,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          2.5113862784009746e-13,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          1.9418038266877965e-12
+        ]
+      ]
+    },
+    "hour_marker_8": {
+      "entity_id": "link/hour_marker_8",
+      "world_frame": {
+        "xyz_m": [
+          -0.012900000000000003,
+          -0.022343455417638516,
+          0.0208
+        ],
+        "quat_wxyz": [
+          0.25881904510252096,
+          0.0,
+          0.0,
+          0.9659258262890682
+        ],
+        "matrix": [
+          [
+            -0.8660254037844385,
+            -0.5000000000000003,
+            0.0,
+            -0.012900000000000003
+          ],
+          [
+            0.5000000000000003,
+            -0.8660254037844385,
+            0.0,
+            -0.022343455417638516
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0208
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/hour_marker_8.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "chapter_ring",
+      "extra_mounts": [],
+      "sha256": "7ebd0c917fbfecd4df53ca54ec29aba15154064e6c38c39470e021fd514d57c7",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -0.22499999403953552,
+          -0.699999988079071,
+          0.0
+        ],
+        [
+          0.22499999403953552,
+          0.699999988079071,
+          0.44999998807907104
+        ]
+      ],
+      "extents_mm": [
+        0.44999998807907104,
+        1.399999976158142,
+        0.44999998807907104
+      ],
+      "volume_m3": 2.8349998015165376e-10,
+      "mass_kg": 2.225474844190482e-06,
+      "com_m": [
+        0.0,
+        0.0,
+        0.00022499999403953556
+      ],
+      "inertia_kg_m2": [
+        [
+          4.0104909817655746e-13,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          7.510977201196966e-14,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          4.010490981765575e-13
+        ]
+      ]
+    },
+    "hour_marker_9": {
+      "entity_id": "link/hour_marker_9",
+      "world_frame": {
+        "xyz_m": [
+          -0.022343455417638512,
+          -0.01290000000000001,
+          0.0208
+        ],
+        "quat_wxyz": [
+          0.4999999999999997,
+          0.0,
+          0.0,
+          0.8660254037844387
+        ],
+        "matrix": [
+          [
+            -0.5000000000000006,
+            -0.8660254037844383,
+            0.0,
+            -0.022343455417638512
+          ],
+          [
+            0.8660254037844383,
+            -0.5000000000000006,
+            0.0,
+            -0.01290000000000001
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0208
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/hour_marker_9.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "chapter_ring",
+      "extra_mounts": [],
+      "sha256": "7ebd0c917fbfecd4df53ca54ec29aba15154064e6c38c39470e021fd514d57c7",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -0.22499999403953552,
+          -0.699999988079071,
+          0.0
+        ],
+        [
+          0.22499999403953552,
+          0.699999988079071,
+          0.44999998807907104
+        ]
+      ],
+      "extents_mm": [
+        0.44999998807907104,
+        1.399999976158142,
+        0.44999998807907104
+      ],
+      "volume_m3": 2.8349998015165376e-10,
+      "mass_kg": 2.225474844190482e-06,
+      "com_m": [
+        0.0,
+        0.0,
+        0.00022499999403953556
+      ],
+      "inertia_kg_m2": [
+        [
+          4.0104909817655746e-13,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          7.510977201196966e-14,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          4.010490981765575e-13
+        ]
+      ]
+    },
+    "hour_marker_10": {
+      "entity_id": "link/hour_marker_10",
+      "world_frame": {
+        "xyz_m": [
+          -0.0258,
+          -4.739383112700257e-18,
+          0.0208
+        ],
+        "quat_wxyz": [
+          0.7071067811865475,
+          0.0,
+          0.0,
+          0.7071067811865476
+        ],
+        "matrix": [
+          [
+            -1.6081226496766366e-16,
+            -1.0,
+            0.0,
+            -0.0258
+          ],
+          [
+            1.0,
+            -1.6081226496766366e-16,
+            0.0,
+            -4.739383112700257e-18
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0208
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/hour_marker_10.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "chapter_ring",
+      "extra_mounts": [],
+      "sha256": "a150e2981a1653ba1e4f81ee257acbac86d272ff9f7576cf1580fdc504cebf63",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -0.32499998807907104,
+          -1.0499999523162842,
+          0.0
+        ],
+        [
+          0.32499998807907104,
+          1.0499999523162842,
+          0.44999998807907104
+        ]
+      ],
+      "extents_mm": [
+        0.6499999761581421,
+        2.0999999046325684,
+        0.44999998807907104
+      ],
+      "volume_m3": 6.142499333024049e-10,
+      "mass_kg": 4.821861976423879e-06,
+      "com_m": [
+        0.0,
+        0.0,
+        0.00022499999403953553
+      ],
+      "inertia_kg_m2": [
+        [
+          1.853403031929844e-12,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          2.5113862784009746e-13,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          1.9418038266877965e-12
+        ]
+      ]
+    },
+    "hour_marker_11": {
+      "entity_id": "link/hour_marker_11",
+      "world_frame": {
+        "xyz_m": [
+          -0.022343455417638516,
+          0.012900000000000003,
+          0.0208
+        ],
+        "quat_wxyz": [
+          0.8660254037844387,
+          0.0,
+          0.0,
+          0.5
+        ],
+        "matrix": [
+          [
+            0.5000000000000001,
+            -0.8660254037844386,
+            0.0,
+            -0.022343455417638516
+          ],
+          [
+            0.8660254037844386,
+            0.5000000000000001,
+            0.0,
+            0.012900000000000003
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0208
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/hour_marker_11.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "chapter_ring",
+      "extra_mounts": [],
+      "sha256": "7ebd0c917fbfecd4df53ca54ec29aba15154064e6c38c39470e021fd514d57c7",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -0.22499999403953552,
+          -0.699999988079071,
+          0.0
+        ],
+        [
+          0.22499999403953552,
+          0.699999988079071,
+          0.44999998807907104
+        ]
+      ],
+      "extents_mm": [
+        0.44999998807907104,
+        1.399999976158142,
+        0.44999998807907104
+      ],
+      "volume_m3": 2.8349998015165376e-10,
+      "mass_kg": 2.225474844190482e-06,
+      "com_m": [
+        0.0,
+        0.0,
+        0.00022499999403953556
+      ],
+      "inertia_kg_m2": [
+        [
+          4.0104909817655746e-13,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          7.510977201196966e-14,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          4.010490981765575e-13
+        ]
+      ]
+    },
+    "hour_marker_12": {
+      "entity_id": "link/hour_marker_12",
+      "world_frame": {
+        "xyz_m": [
+          -0.01290000000000001,
+          0.02234345541763851,
+          0.0208
+        ],
+        "quat_wxyz": [
+          0.9659258262890682,
+          0.0,
+          0.0,
+          0.258819045102521
+        ],
+        "matrix": [
+          [
+            0.8660254037844384,
+            -0.5000000000000004,
+            0.0,
+            -0.01290000000000001
+          ],
+          [
+            0.5000000000000004,
+            0.8660254037844384,
+            0.0,
+            0.02234345541763851
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0208
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/hour_marker_12.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "chapter_ring",
+      "extra_mounts": [],
+      "sha256": "7ebd0c917fbfecd4df53ca54ec29aba15154064e6c38c39470e021fd514d57c7",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -0.22499999403953552,
+          -0.699999988079071,
+          0.0
+        ],
+        [
+          0.22499999403953552,
+          0.699999988079071,
+          0.44999998807907104
+        ]
+      ],
+      "extents_mm": [
+        0.44999998807907104,
+        1.399999976158142,
+        0.44999998807907104
+      ],
+      "volume_m3": 2.8349998015165376e-10,
+      "mass_kg": 2.225474844190482e-06,
+      "com_m": [
+        0.0,
+        0.0,
+        0.00022499999403953556
+      ],
+      "inertia_kg_m2": [
+        [
+          4.0104909817655746e-13,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          7.510977201196966e-14,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          4.010490981765575e-13
+        ]
+      ]
+    },
+    "hour_hand": {
+      "entity_id": "link/hour_hand",
+      "world_frame": {
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.021000000000000005
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.021000000000000005
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/hour_hand.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "hour_pipe",
+      "extra_mounts": [],
+      "sha256": "cc6219e7552b10f366cb03e516aa802d3fed7853c54fbf809eec7d929f936f6c",
+      "vertices": 2904,
+      "faces": 968,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -2.6999409198760986,
+          -4.860000133514404,
+          0.0
+        ],
+        [
+          2.6999409198760986,
+          17.0,
+          0.4000000059604645
+        ]
+      ],
+      "extents_mm": [
+        5.399881839752197,
+        21.860000133514404,
+        0.4000000059604645
+      ],
+      "volume_m3": 1.136085737834943e-08,
+      "mass_kg": 8.918273042004303e-05,
+      "com_m": [
+        4.23468606270041e-20,
+        0.00422448923522394,
+        0.00020000000298023223
+      ],
+      "inertia_kg_m2": [
+        [
+          2.9731464068264564e-09,
+          4.4791624651764355e-27,
+          1.220135115318218e-27
+        ],
+        [
+          4.4791624651764355e-27,
+          1.1053124261124986e-10,
+          -4.18332035678759e-26
+        ],
+        [
+          1.220135115318218e-27,
+          -4.18332035678759e-26,
+          3.081299443222296e-09
+        ]
+      ]
+    },
+    "minute_hand": {
+      "entity_id": "link/minute_hand",
+      "world_frame": {
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.022
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.022
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/minute_hand.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "minute_shaft",
+      "extra_mounts": [],
+      "sha256": "3a497f59378bf02053272446d97a30d1cf463380f95056349e26d3e0a8efb7dc",
+      "vertices": 2904,
+      "faces": 968,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -2.1999642848968506,
+          -3.9600000381469727,
+          0.0
+        ],
+        [
+          2.1999642848968506,
+          24.0,
+          0.4000000059604645
+        ]
+      ],
+      "extents_mm": [
+        4.399928569793701,
+        27.960000038146973,
+        0.4000000059604645
+      ],
+      "volume_m3": 1.1454618057105029e-08,
+      "mass_kg": 8.991875174827447e-05,
+      "com_m": [
+        2.019242041161788e-20,
+        0.006211050408329403,
+        0.0002000000029802322
+      ],
+      "inertia_kg_m2": [
+        [
+          5.157827281041262e-09,
+          1.1430687578275528e-26,
+          3.6313545304895147e-28
+        ],
+        [
+          1.1430687578275528e-26,
+          5.891500011362078e-11,
+          -2.788880237858393e-26
+        ],
+        [
+          3.6313545304895147e-28,
+          -2.788880237858393e-26,
+          5.214344447703469e-09
+        ]
+      ]
+    }
+  },
+  "ports": {
+    "central_lower_bearing": {
+      "bore": {
+        "entity_id": "port/central_lower_bearing/bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.00075
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.00075
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.00275
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.00275
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 2.1,
+        "depth_mm": 1.5,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "central_upper_bearing": {
+      "bore": {
+        "entity_id": "port/central_upper_bearing/bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.00075
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.00075
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.01625
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.01625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 3.7,
+        "depth_mm": 1.5,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "intermediate_lower_bearing": {
+      "bore": {
+        "entity_id": "port/intermediate_lower_bearing/bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.00075
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.00075
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.012,
+            0.0,
+            0.00275
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.012
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.00275
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 2.1,
+        "depth_mm": 1.5,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "intermediate_upper_bearing": {
+      "bore": {
+        "entity_id": "port/intermediate_upper_bearing/bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.00075
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.00075
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.012,
+            0.0,
+            0.01625
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.012
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.01625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 2.1,
+        "depth_mm": 1.5,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "minute_shaft": {
+      "outer": {
+        "entity_id": "port/minute_shaft/outer",
+        "type": "shaft",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.010199999999999999
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.010199999999999999
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.012199999999999999
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.012199999999999999
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 2.0,
+        "depth_mm": 20.4,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "minute_pinion_seat": {
+        "entity_id": "port/minute_shaft/minute_pinion_seat",
+        "type": "cylindrical",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0035
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0035
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0055
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0055
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 2.0,
+        "depth_mm": 2.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "minute_hand_seat": {
+        "entity_id": "port/minute_shaft/minute_hand_seat",
+        "type": "cylindrical",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0202
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0202
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.022199999999999998
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.022199999999999998
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 2.0,
+        "depth_mm": 0.4,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "hour_pipe": {
+      "inner_bore": {
+        "entity_id": "port/hour_pipe/inner_bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.007449999999999999
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.007449999999999999
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.01395
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.01395
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 2.1,
+        "depth_mm": 14.899999999999999,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "outer": {
+        "entity_id": "port/hour_pipe/outer",
+        "type": "shaft",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.007449999999999999
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.007449999999999999
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.01395
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.01395
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 3.6,
+        "depth_mm": 14.899999999999999,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "hour_wheel_seat": {
+        "entity_id": "port/hour_pipe/hour_wheel_seat",
+        "type": "cylindrical",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0035
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0035
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.010000000000000002
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.010000000000000002
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 3.6,
+        "depth_mm": 2.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "hour_hand_seat": {
+        "entity_id": "port/hour_pipe/hour_hand_seat",
+        "type": "cylindrical",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0147
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0147
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.021200000000000004
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.021200000000000004
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 3.6,
+        "depth_mm": 0.4,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "intermediate_arbor": {
+      "outer": {
+        "entity_id": "port/intermediate_arbor/outer",
+        "type": "shaft",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0085
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0085
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.012,
+            0.0,
+            0.0105
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.012
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0105
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 2.0,
+        "depth_mm": 17.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "wheel_seat": {
+        "entity_id": "port/intermediate_arbor/wheel_seat",
+        "type": "cylindrical",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0035
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0035
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.012,
+            0.0,
+            0.0055
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.012
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0055
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 2.0,
+        "depth_mm": 2.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "pinion_seat": {
+        "entity_id": "port/intermediate_arbor/pinion_seat",
+        "type": "cylindrical",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.008
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.008
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.012,
+            0.0,
+            0.01
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.012
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.01
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 2.0,
+        "depth_mm": 2.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "minute_pinion": {
+      "bore": {
+        "entity_id": "port/minute_pinion/bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.001
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.001
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0055000000000000005
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0055000000000000005
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 1.99,
+        "depth_mm": 2.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "mesh": {
+        "entity_id": "port/minute_pinion/mesh",
+        "type": "gear_mesh",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.001
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.001
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0055000000000000005
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0055000000000000005
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 0.0,
+        "depth_mm": 2.0,
+        "pitch_radius_mm": 3.0,
+        "normal_sign": 1.0
+      }
+    },
+    "intermediate_wheel": {
+      "bore": {
+        "entity_id": "port/intermediate_wheel/bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.001
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.001
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.012,
+            0.0,
+            0.0055000000000000005
+          ],
+          "quat_wxyz": [
+            0.7431448254773942,
+            0.0,
+            0.0,
+            -0.6691306063588583
+          ],
+          "matrix": [
+            [
+              0.1045284632676535,
+              0.9945218953682733,
+              0.0,
+              0.012
+            ],
+            [
+              -0.9945218953682733,
+              0.1045284632676535,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0055000000000000005
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 1.99,
+        "depth_mm": 2.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "mesh": {
+        "entity_id": "port/intermediate_wheel/mesh",
+        "type": "gear_mesh",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.001
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.001
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.012,
+            0.0,
+            0.0055000000000000005
+          ],
+          "quat_wxyz": [
+            0.7431448254773942,
+            0.0,
+            0.0,
+            -0.6691306063588583
+          ],
+          "matrix": [
+            [
+              0.1045284632676535,
+              0.9945218953682733,
+              0.0,
+              0.012
+            ],
+            [
+              -0.9945218953682733,
+              0.1045284632676535,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0055000000000000005
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 0.0,
+        "depth_mm": 2.0,
+        "pitch_radius_mm": 9.0,
+        "normal_sign": 1.0
+      }
+    },
+    "intermediate_pinion": {
+      "bore": {
+        "entity_id": "port/intermediate_pinion/bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.001
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.001
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.012,
+            0.0,
+            0.010000000000000002
+          ],
+          "quat_wxyz": [
+            0.7431448254773942,
+            0.0,
+            0.0,
+            -0.6691306063588583
+          ],
+          "matrix": [
+            [
+              0.1045284632676535,
+              0.9945218953682733,
+              0.0,
+              0.012
+            ],
+            [
+              -0.9945218953682733,
+              0.1045284632676535,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.010000000000000002
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 1.99,
+        "depth_mm": 2.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "mesh": {
+        "entity_id": "port/intermediate_pinion/mesh",
+        "type": "gear_mesh",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.001
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.001
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.012,
+            0.0,
+            0.010000000000000002
+          ],
+          "quat_wxyz": [
+            0.7431448254773942,
+            0.0,
+            0.0,
+            -0.6691306063588583
+          ],
+          "matrix": [
+            [
+              0.1045284632676535,
+              0.9945218953682733,
+              0.0,
+              0.012
+            ],
+            [
+              -0.9945218953682733,
+              0.1045284632676535,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.010000000000000002
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 0.0,
+        "depth_mm": 2.0,
+        "pitch_radius_mm": 2.4,
+        "normal_sign": 1.0
+      }
+    },
+    "hour_wheel": {
+      "bore": {
+        "entity_id": "port/hour_wheel/bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.001
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.001
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.010000000000000002
+          ],
+          "quat_wxyz": [
+            0.7750823576645315,
+            0.0,
+            0.0,
+            -0.6318602209644089
+          ],
+          "matrix": [
+            [
+              0.2015053223256171,
+              0.9794874195590514,
+              0.0,
+              0.0
+            ],
+            [
+              -0.9794874195590514,
+              0.2015053223256171,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.010000000000000002
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 3.5900000000000003,
+        "depth_mm": 2.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "mesh": {
+        "entity_id": "port/hour_wheel/mesh",
+        "type": "gear_mesh",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.001
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.001
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.010000000000000002
+          ],
+          "quat_wxyz": [
+            0.7750823576645315,
+            0.0,
+            0.0,
+            -0.6318602209644089
+          ],
+          "matrix": [
+            [
+              0.2015053223256171,
+              0.9794874195590514,
+              0.0,
+              0.0
+            ],
+            [
+              -0.9794874195590514,
+              0.2015053223256171,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.010000000000000002
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 0.0,
+        "depth_mm": 2.0,
+        "pitch_radius_mm": 9.6,
+        "normal_sign": 1.0
+      }
+    },
+    "hour_hand": {
+      "hub_bore": {
+        "entity_id": "port/hour_hand/hub_bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0002
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0002
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.021200000000000004
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.021200000000000004
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 3.5900000000000003,
+        "depth_mm": 0.4,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "minute_hand": {
+      "hub_bore": {
+        "entity_id": "port/minute_hand/hub_bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0002
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0002
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.022199999999999998
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.022199999999999998
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 1.99,
+        "depth_mm": 0.4,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    }
+  },
+  "simulation": {
+    "gravity": [
+      0.0,
+      0.0,
+      -9.81
+    ],
+    "timestep": 0.0002,
+    "solver": "Newton",
+    "iterations": 100,
+    "base_rests_on_plane": true
+  }
+}

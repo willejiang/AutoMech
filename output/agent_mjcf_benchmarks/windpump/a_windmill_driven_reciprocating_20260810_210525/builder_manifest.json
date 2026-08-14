@@ -1,0 +1,2075 @@
+{
+  "manifest_version": 3,
+  "engine": "mujoco-agent",
+  "topology_plan": {
+    "coordinate_map": {
+      "base": null,
+      "front_upright": null,
+      "rear_upright": null,
+      "front_bearing": null,
+      "rear_bearing": null,
+      "wind_rotor": "crank_rotation",
+      "crankshaft": "crank_rotation",
+      "connecting_rod": "big_end_hinge",
+      "piston_slider": "crosshead_slide",
+      "wrist_pin": "crosshead_slide",
+      "guide_frame": null,
+      "pump_barrel": null,
+      "pump_rod": "crosshead_slide",
+      "pump_piston": "crosshead_slide"
+    },
+    "tree_edges": [
+      [
+        "base",
+        "front_upright"
+      ],
+      [
+        "front_upright",
+        "front_bearing"
+      ],
+      [
+        "base",
+        "rear_upright"
+      ],
+      [
+        "rear_upright",
+        "rear_bearing"
+      ],
+      [
+        "base",
+        "guide_frame"
+      ],
+      [
+        "base",
+        "pump_barrel"
+      ],
+      [
+        "base",
+        "crankshaft"
+      ],
+      [
+        "crankshaft",
+        "wind_rotor"
+      ],
+      [
+        "crankshaft",
+        "connecting_rod"
+      ],
+      [
+        "base",
+        "piston_slider"
+      ],
+      [
+        "piston_slider",
+        "wrist_pin"
+      ],
+      [
+        "piston_slider",
+        "pump_rod"
+      ],
+      [
+        "pump_rod",
+        "pump_piston"
+      ]
+    ],
+    "closure_edges": [
+      [
+        "connecting_rod",
+        "wrist_pin",
+        "small_end_connect"
+      ]
+    ],
+    "rigid_carried": [
+      [
+        "crankshaft",
+        "wind_rotor"
+      ],
+      [
+        "piston_slider",
+        "wrist_pin"
+      ],
+      [
+        "piston_slider",
+        "pump_rod"
+      ],
+      [
+        "pump_rod",
+        "pump_piston"
+      ]
+    ],
+    "independent_coaxial": [],
+    "transmissions": [
+      {
+        "name": "rotor_to_crankshaft_press_drive",
+        "ratio": 1.0,
+        "representation": "same_coordinate"
+      }
+    ],
+    "contact_decisions": [
+      {
+        "pair": [
+          "wind_rotor",
+          "crankshaft"
+        ],
+        "action": "exclude",
+        "reason": "Interference press fit rigidly carried.",
+        "source_entity_ids": [
+          "relation/rotor_press_fit"
+        ],
+        "fact_ids": [
+          "fit/crankshaft/rotor_seat/wind_rotor/hub_bore",
+          "pair/crankshaft/wind_rotor",
+          "nearby/crankshaft/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "front_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Clearance journal represented by hinge.",
+        "source_entity_ids": [
+          "relation/front_shaft_journal"
+        ],
+        "fact_ids": [
+          "fit/front_bearing/journal_bore/crankshaft/front_journal",
+          "pair/crankshaft/front_bearing",
+          "nearby/crankshaft/front_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "rear_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Clearance journal represented by hinge.",
+        "source_entity_ids": [
+          "relation/rear_shaft_journal"
+        ],
+        "fact_ids": [
+          "fit/rear_bearing/journal_bore/crankshaft/rear_journal",
+          "pair/crankshaft/rear_bearing",
+          "nearby/crankshaft/rear_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "connecting_rod"
+        ],
+        "action": "keep",
+        "reason": "Shared crankshaft web remains collidable; local pin center is hinged.",
+        "source_entity_ids": [
+          "relation/crank_big_end_revolute"
+        ],
+        "fact_ids": [
+          "fit/crankshaft/eccentric_pin/connecting_rod/big_end_bore",
+          "pair/connecting_rod/crankshaft",
+          "nearby/connecting_rod/crankshaft"
+        ]
+      },
+      {
+        "pair": [
+          "wrist_pin",
+          "connecting_rod"
+        ],
+        "action": "exclude",
+        "reason": "Dedicated pin bearing represented by closure.",
+        "source_entity_ids": [
+          "relation/rod_small_end_revolute"
+        ],
+        "fact_ids": [
+          "fit/wrist_pin/pin_shaft/connecting_rod/small_end_bore",
+          "pair/connecting_rod/wrist_pin",
+          "nearby/connecting_rod/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "piston_slider",
+          "wrist_pin"
+        ],
+        "action": "exclude",
+        "reason": "Interference press fit rigidly carried.",
+        "source_entity_ids": [
+          "relation/wrist_pin_into_slider"
+        ],
+        "fact_ids": [
+          "fit/piston_slider/wrist_pin_seat/wrist_pin/pin_shaft",
+          "pair/piston_slider/wrist_pin",
+          "nearby/piston_slider/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "piston_slider",
+          "pump_rod"
+        ],
+        "action": "exclude",
+        "reason": "Interference press fit rigidly carried.",
+        "source_entity_ids": [
+          "relation/pump_rod_into_slider"
+        ],
+        "fact_ids": [
+          "fit/piston_slider/pump_rod_seat/pump_rod/upper_press_seat",
+          "pair/piston_slider/pump_rod",
+          "nearby/piston_slider/pump_rod"
+        ]
+      },
+      {
+        "pair": [
+          "pump_rod",
+          "pump_piston"
+        ],
+        "action": "exclude",
+        "reason": "Interference press fit rigidly carried.",
+        "source_entity_ids": [
+          "relation/pump_piston_on_rod"
+        ],
+        "fact_ids": [
+          "fit/pump_rod/piston_seat/pump_piston/rod_bore",
+          "pair/pump_piston/pump_rod",
+          "nearby/pump_piston/pump_rod"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "front_upright"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/front_upright"
+        ],
+        "fact_ids": [
+          "pair/front_upright/wind_rotor",
+          "nearby/front_upright/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "front_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/front_bearing"
+        ],
+        "fact_ids": [
+          "pair/front_bearing/wind_rotor",
+          "nearby/front_bearing/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "base"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/base"
+        ],
+        "fact_ids": [
+          "pair/base/wind_rotor",
+          "nearby/base/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "rear_upright"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/rear_upright"
+        ],
+        "fact_ids": [
+          "pair/rear_upright/wind_rotor",
+          "nearby/rear_upright/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "rear_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/rear_bearing"
+        ],
+        "fact_ids": [
+          "pair/rear_bearing/wind_rotor",
+          "nearby/rear_bearing/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "front_upright"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/front_upright"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/front_upright",
+          "nearby/crankshaft/front_upright"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "rear_upright"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/rear_upright"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/rear_upright",
+          "nearby/crankshaft/rear_upright"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "guide_frame"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/guide_frame"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/guide_frame",
+          "nearby/crankshaft/guide_frame"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "piston_slider"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/piston_slider"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/piston_slider",
+          "nearby/crankshaft/piston_slider"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "wrist_pin"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/wrist_pin"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/wrist_pin",
+          "nearby/crankshaft/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "pump_rod"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/pump_rod"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/pump_rod",
+          "nearby/crankshaft/pump_rod"
+        ]
+      },
+      {
+        "pair": [
+          "crankshaft",
+          "pump_barrel"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/crankshaft",
+          "link/pump_barrel"
+        ],
+        "fact_ids": [
+          "pair/crankshaft/pump_barrel",
+          "nearby/crankshaft/pump_barrel"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "piston_slider"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/piston_slider"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/piston_slider",
+          "nearby/connecting_rod/piston_slider"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "guide_frame"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/guide_frame"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/guide_frame",
+          "nearby/connecting_rod/guide_frame"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "pump_rod"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/pump_rod"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/pump_rod",
+          "nearby/connecting_rod/pump_rod"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "pump_barrel"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/pump_barrel"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/pump_barrel",
+          "nearby/connecting_rod/pump_barrel"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "rear_upright"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/rear_upright"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/rear_upright",
+          "nearby/connecting_rod/rear_upright"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "rear_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/rear_bearing"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/rear_bearing",
+          "nearby/connecting_rod/rear_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "pump_piston"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/pump_piston"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/pump_piston",
+          "nearby/connecting_rod/pump_piston"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "base"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/base"
+        ],
+        "fact_ids": [
+          "pair/base/connecting_rod",
+          "nearby/base/connecting_rod"
+        ]
+      },
+      {
+        "pair": [
+          "piston_slider",
+          "guide_frame"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/piston_slider",
+          "link/guide_frame"
+        ],
+        "fact_ids": [
+          "pair/guide_frame/piston_slider",
+          "nearby/guide_frame/piston_slider"
+        ]
+      },
+      {
+        "pair": [
+          "piston_slider",
+          "pump_barrel"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/piston_slider",
+          "link/pump_barrel"
+        ],
+        "fact_ids": [
+          "pair/piston_slider/pump_barrel",
+          "nearby/piston_slider/pump_barrel"
+        ]
+      },
+      {
+        "pair": [
+          "piston_slider",
+          "rear_upright"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/piston_slider",
+          "link/rear_upright"
+        ],
+        "fact_ids": [
+          "pair/piston_slider/rear_upright",
+          "nearby/piston_slider/rear_upright"
+        ]
+      },
+      {
+        "pair": [
+          "piston_slider",
+          "pump_piston"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/piston_slider",
+          "link/pump_piston"
+        ],
+        "fact_ids": [
+          "pair/piston_slider/pump_piston",
+          "nearby/piston_slider/pump_piston"
+        ]
+      },
+      {
+        "pair": [
+          "wrist_pin",
+          "guide_frame"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/wrist_pin",
+          "link/guide_frame"
+        ],
+        "fact_ids": [
+          "pair/guide_frame/wrist_pin",
+          "nearby/guide_frame/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "wrist_pin",
+          "pump_rod"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/wrist_pin",
+          "link/pump_rod"
+        ],
+        "fact_ids": [
+          "pair/pump_rod/wrist_pin",
+          "nearby/pump_rod/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "pump_rod",
+          "guide_frame"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/pump_rod",
+          "link/guide_frame"
+        ],
+        "fact_ids": [
+          "pair/guide_frame/pump_rod",
+          "nearby/guide_frame/pump_rod"
+        ]
+      },
+      {
+        "pair": [
+          "pump_rod",
+          "pump_barrel"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/pump_rod",
+          "link/pump_barrel"
+        ],
+        "fact_ids": [
+          "pair/pump_barrel/pump_rod",
+          "nearby/pump_barrel/pump_rod"
+        ]
+      },
+      {
+        "pair": [
+          "pump_rod",
+          "base"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/pump_rod",
+          "link/base"
+        ],
+        "fact_ids": [
+          "pair/base/pump_rod",
+          "nearby/base/pump_rod"
+        ]
+      },
+      {
+        "pair": [
+          "pump_piston",
+          "guide_frame"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/pump_piston",
+          "link/guide_frame"
+        ],
+        "fact_ids": [
+          "pair/guide_frame/pump_piston",
+          "nearby/guide_frame/pump_piston"
+        ]
+      },
+      {
+        "pair": [
+          "pump_piston",
+          "pump_barrel"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/pump_piston",
+          "link/pump_barrel"
+        ],
+        "fact_ids": [
+          "pair/pump_barrel/pump_piston",
+          "nearby/pump_barrel/pump_piston"
+        ]
+      },
+      {
+        "pair": [
+          "pump_piston",
+          "base"
+        ],
+        "action": "exclude",
+        "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+        "source_entity_ids": [
+          "link/pump_piston",
+          "link/base"
+        ],
+        "fact_ids": [
+          "pair/base/pump_piston",
+          "nearby/base/pump_piston"
+        ]
+      }
+    ],
+    "support_ground": true,
+    "support_strategy": "Fixed base uses ground; below-grade pump rod alone is ground-excluded."
+  },
+  "decisions": [
+    {
+      "generated_kind": "constraint",
+      "generated_name": "small_end_connect",
+      "constraint_type": "connect",
+      "reason": "Wrist-pin closure.",
+      "source_entity_ids": [
+        "relation/rod_small_end_revolute"
+      ],
+      "fact_ids": [
+        "fit/wrist_pin/pin_shaft/connecting_rod/small_end_bore"
+      ]
+    },
+    {
+      "entity_id": "link/base",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "link/base"
+      ]
+    },
+    {
+      "entity_id": "link/front_upright",
+      "action": "represented_by",
+      "generated_nodes": [
+        "front_upright"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "link/front_upright"
+      ]
+    },
+    {
+      "entity_id": "link/rear_upright",
+      "action": "represented_by",
+      "generated_nodes": [
+        "rear_upright"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "link/rear_upright"
+      ]
+    },
+    {
+      "entity_id": "link/front_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "front_bearing"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "link/front_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/rear_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "rear_bearing"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "link/rear_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/wind_rotor",
+      "action": "represented_by",
+      "generated_nodes": [
+        "wind_rotor"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "link/wind_rotor"
+      ]
+    },
+    {
+      "entity_id": "link/crankshaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crankshaft"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "link/crankshaft"
+      ]
+    },
+    {
+      "entity_id": "link/connecting_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "connecting_rod"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "link/connecting_rod"
+      ]
+    },
+    {
+      "entity_id": "link/piston_slider",
+      "action": "represented_by",
+      "generated_nodes": [
+        "piston_slider"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "link/piston_slider"
+      ]
+    },
+    {
+      "entity_id": "link/wrist_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "wrist_pin"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "link/wrist_pin"
+      ]
+    },
+    {
+      "entity_id": "link/guide_frame",
+      "action": "represented_by",
+      "generated_nodes": [
+        "guide_frame"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "link/guide_frame"
+      ]
+    },
+    {
+      "entity_id": "link/pump_barrel",
+      "action": "represented_by",
+      "generated_nodes": [
+        "pump_barrel"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "link/pump_barrel"
+      ]
+    },
+    {
+      "entity_id": "link/pump_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "pump_rod"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "link/pump_rod"
+      ]
+    },
+    {
+      "entity_id": "link/pump_piston",
+      "action": "represented_by",
+      "generated_nodes": [
+        "pump_piston"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "link/pump_piston"
+      ]
+    },
+    {
+      "entity_id": "pose/place_base",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "pose/place_base"
+      ]
+    },
+    {
+      "entity_id": "pose/place_front_upright",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "pose/place_front_upright"
+      ]
+    },
+    {
+      "entity_id": "pose/place_rear_upright",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "pose/place_rear_upright"
+      ]
+    },
+    {
+      "entity_id": "pose/place_front_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "pose/place_front_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_rear_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "pose/place_rear_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_wind_rotor",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "pose/place_wind_rotor"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crankshaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "pose/place_crankshaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_connecting_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "pose/place_connecting_rod"
+      ]
+    },
+    {
+      "entity_id": "pose/place_piston_slider",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "pose/place_piston_slider"
+      ]
+    },
+    {
+      "entity_id": "pose/place_wrist_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "pose/place_wrist_pin"
+      ]
+    },
+    {
+      "entity_id": "pose/place_guide_frame",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "pose/place_guide_frame"
+      ]
+    },
+    {
+      "entity_id": "pose/place_pump_barrel",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "pose/place_pump_barrel"
+      ]
+    },
+    {
+      "entity_id": "pose/place_pump_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "pose/place_pump_rod"
+      ]
+    },
+    {
+      "entity_id": "pose/place_pump_piston",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "pose/place_pump_piston"
+      ]
+    },
+    {
+      "entity_id": "port/wind_rotor/hub_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "port/wind_rotor/hub_bore"
+      ]
+    },
+    {
+      "entity_id": "port/crankshaft/rotor_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "port/crankshaft/rotor_seat"
+      ]
+    },
+    {
+      "entity_id": "port/crankshaft/front_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "port/crankshaft/front_journal"
+      ]
+    },
+    {
+      "entity_id": "port/crankshaft/rear_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "port/crankshaft/rear_journal"
+      ]
+    },
+    {
+      "entity_id": "port/crankshaft/eccentric_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "port/crankshaft/eccentric_pin"
+      ]
+    },
+    {
+      "entity_id": "port/front_bearing/journal_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "port/front_bearing/journal_bore"
+      ]
+    },
+    {
+      "entity_id": "port/rear_bearing/journal_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "port/rear_bearing/journal_bore"
+      ]
+    },
+    {
+      "entity_id": "port/connecting_rod/big_end_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "port/connecting_rod/big_end_bore"
+      ]
+    },
+    {
+      "entity_id": "port/connecting_rod/small_end_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "port/connecting_rod/small_end_bore"
+      ]
+    },
+    {
+      "entity_id": "port/wrist_pin/pin_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "port/wrist_pin/pin_shaft"
+      ]
+    },
+    {
+      "entity_id": "port/piston_slider/wrist_pin_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "port/piston_slider/wrist_pin_seat"
+      ]
+    },
+    {
+      "entity_id": "port/piston_slider/pump_rod_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "port/piston_slider/pump_rod_seat"
+      ]
+    },
+    {
+      "entity_id": "port/pump_rod/upper_press_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "port/pump_rod/upper_press_seat"
+      ]
+    },
+    {
+      "entity_id": "port/pump_rod/piston_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "port/pump_rod/piston_seat"
+      ]
+    },
+    {
+      "entity_id": "port/pump_piston/rod_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "port/pump_piston/rod_bore"
+      ]
+    },
+    {
+      "entity_id": "relation/rotor_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "relation/rotor_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/front_shaft_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "relation/front_shaft_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/rear_shaft_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "relation/rear_shaft_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/crank_big_end_revolute",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "relation/crank_big_end_revolute"
+      ]
+    },
+    {
+      "entity_id": "relation/rod_small_end_revolute",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "relation/rod_small_end_revolute"
+      ]
+    },
+    {
+      "entity_id": "relation/wrist_pin_into_slider",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "relation/wrist_pin_into_slider"
+      ]
+    },
+    {
+      "entity_id": "relation/pump_rod_into_slider",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "relation/pump_rod_into_slider"
+      ]
+    },
+    {
+      "entity_id": "relation/pump_piston_on_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "relation/pump_piston_on_rod"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/supported_crankshaft_rotation",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_rotation"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "motion_joint/supported_crankshaft_rotation"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/vertical_crosshead_guide",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crosshead_slide"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "motion_joint/vertical_crosshead_guide"
+      ]
+    },
+    {
+      "entity_id": "transmission/rotor_to_crankshaft_press_drive",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "transmission/rotor_to_crankshaft_press_drive"
+      ]
+    },
+    {
+      "entity_id": "role/driver/wind_rotor",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "role/driver/wind_rotor"
+      ]
+    },
+    {
+      "entity_id": "role/output/piston_slider",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "role/output/piston_slider"
+      ]
+    },
+    {
+      "entity_id": "role/watch/wind_rotor",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "role/watch/wind_rotor"
+      ]
+    },
+    {
+      "entity_id": "role/watch/crankshaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "role/watch/crankshaft"
+      ]
+    },
+    {
+      "entity_id": "role/watch/connecting_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "role/watch/connecting_rod"
+      ]
+    },
+    {
+      "entity_id": "role/watch/piston_slider",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "role/watch/piston_slider"
+      ]
+    },
+    {
+      "entity_id": "role/watch/pump_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "role/watch/pump_rod"
+      ]
+    },
+    {
+      "entity_id": "role/watch/pump_piston",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology and contact classification.",
+      "fact_ids": [
+        "role/watch/pump_piston"
+      ]
+    }
+  ],
+  "excludes": [
+    {
+      "pair": [
+        "crankshaft",
+        "wind_rotor"
+      ],
+      "reason": "Interference press fit rigidly carried.",
+      "source_entity_ids": [
+        "relation/rotor_press_fit"
+      ],
+      "fact_ids": [
+        "fit/crankshaft/rotor_seat/wind_rotor/hub_bore",
+        "pair/crankshaft/wind_rotor",
+        "nearby/crankshaft/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "front_bearing"
+      ],
+      "reason": "Clearance journal represented by hinge.",
+      "source_entity_ids": [
+        "relation/front_shaft_journal"
+      ],
+      "fact_ids": [
+        "fit/front_bearing/journal_bore/crankshaft/front_journal",
+        "pair/crankshaft/front_bearing",
+        "nearby/crankshaft/front_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "rear_bearing"
+      ],
+      "reason": "Clearance journal represented by hinge.",
+      "source_entity_ids": [
+        "relation/rear_shaft_journal"
+      ],
+      "fact_ids": [
+        "fit/rear_bearing/journal_bore/crankshaft/rear_journal",
+        "pair/crankshaft/rear_bearing",
+        "nearby/crankshaft/rear_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "wrist_pin"
+      ],
+      "reason": "Dedicated pin bearing represented by closure.",
+      "source_entity_ids": [
+        "relation/rod_small_end_revolute"
+      ],
+      "fact_ids": [
+        "fit/wrist_pin/pin_shaft/connecting_rod/small_end_bore",
+        "pair/connecting_rod/wrist_pin",
+        "nearby/connecting_rod/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "piston_slider",
+        "wrist_pin"
+      ],
+      "reason": "Interference press fit rigidly carried.",
+      "source_entity_ids": [
+        "relation/wrist_pin_into_slider"
+      ],
+      "fact_ids": [
+        "fit/piston_slider/wrist_pin_seat/wrist_pin/pin_shaft",
+        "pair/piston_slider/wrist_pin",
+        "nearby/piston_slider/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "piston_slider",
+        "pump_rod"
+      ],
+      "reason": "Interference press fit rigidly carried.",
+      "source_entity_ids": [
+        "relation/pump_rod_into_slider"
+      ],
+      "fact_ids": [
+        "fit/piston_slider/pump_rod_seat/pump_rod/upper_press_seat",
+        "pair/piston_slider/pump_rod",
+        "nearby/piston_slider/pump_rod"
+      ]
+    },
+    {
+      "pair": [
+        "pump_piston",
+        "pump_rod"
+      ],
+      "reason": "Interference press fit rigidly carried.",
+      "source_entity_ids": [
+        "relation/pump_piston_on_rod"
+      ],
+      "fact_ids": [
+        "fit/pump_rod/piston_seat/pump_piston/rod_bore",
+        "pair/pump_piston/pump_rod",
+        "nearby/pump_piston/pump_rod"
+      ]
+    },
+    {
+      "pair": [
+        "front_upright",
+        "wind_rotor"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/front_upright"
+      ],
+      "fact_ids": [
+        "pair/front_upright/wind_rotor",
+        "nearby/front_upright/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "front_bearing",
+        "wind_rotor"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/front_bearing"
+      ],
+      "fact_ids": [
+        "pair/front_bearing/wind_rotor",
+        "nearby/front_bearing/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "wind_rotor"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/base"
+      ],
+      "fact_ids": [
+        "pair/base/wind_rotor",
+        "nearby/base/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "rear_upright",
+        "wind_rotor"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/rear_upright"
+      ],
+      "fact_ids": [
+        "pair/rear_upright/wind_rotor",
+        "nearby/rear_upright/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "rear_bearing",
+        "wind_rotor"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/rear_bearing"
+      ],
+      "fact_ids": [
+        "pair/rear_bearing/wind_rotor",
+        "nearby/rear_bearing/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "front_upright"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/front_upright"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/front_upright",
+        "nearby/crankshaft/front_upright"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "rear_upright"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/rear_upright"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/rear_upright",
+        "nearby/crankshaft/rear_upright"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "guide_frame"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/guide_frame"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/guide_frame",
+        "nearby/crankshaft/guide_frame"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "piston_slider"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/piston_slider"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/piston_slider",
+        "nearby/crankshaft/piston_slider"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "wrist_pin"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/wrist_pin"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/wrist_pin",
+        "nearby/crankshaft/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "pump_rod"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/pump_rod"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/pump_rod",
+        "nearby/crankshaft/pump_rod"
+      ]
+    },
+    {
+      "pair": [
+        "crankshaft",
+        "pump_barrel"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/crankshaft",
+        "link/pump_barrel"
+      ],
+      "fact_ids": [
+        "pair/crankshaft/pump_barrel",
+        "nearby/crankshaft/pump_barrel"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "piston_slider"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/piston_slider"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/piston_slider",
+        "nearby/connecting_rod/piston_slider"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "guide_frame"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/guide_frame"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/guide_frame",
+        "nearby/connecting_rod/guide_frame"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "pump_rod"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/pump_rod"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/pump_rod",
+        "nearby/connecting_rod/pump_rod"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "pump_barrel"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/pump_barrel"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/pump_barrel",
+        "nearby/connecting_rod/pump_barrel"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "rear_upright"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/rear_upright"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/rear_upright",
+        "nearby/connecting_rod/rear_upright"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "rear_bearing"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/rear_bearing"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/rear_bearing",
+        "nearby/connecting_rod/rear_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "pump_piston"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/pump_piston"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/pump_piston",
+        "nearby/connecting_rod/pump_piston"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "connecting_rod"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/base"
+      ],
+      "fact_ids": [
+        "pair/base/connecting_rod",
+        "nearby/base/connecting_rod"
+      ]
+    },
+    {
+      "pair": [
+        "guide_frame",
+        "piston_slider"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/piston_slider",
+        "link/guide_frame"
+      ],
+      "fact_ids": [
+        "pair/guide_frame/piston_slider",
+        "nearby/guide_frame/piston_slider"
+      ]
+    },
+    {
+      "pair": [
+        "piston_slider",
+        "pump_barrel"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/piston_slider",
+        "link/pump_barrel"
+      ],
+      "fact_ids": [
+        "pair/piston_slider/pump_barrel",
+        "nearby/piston_slider/pump_barrel"
+      ]
+    },
+    {
+      "pair": [
+        "piston_slider",
+        "rear_upright"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/piston_slider",
+        "link/rear_upright"
+      ],
+      "fact_ids": [
+        "pair/piston_slider/rear_upright",
+        "nearby/piston_slider/rear_upright"
+      ]
+    },
+    {
+      "pair": [
+        "piston_slider",
+        "pump_piston"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/piston_slider",
+        "link/pump_piston"
+      ],
+      "fact_ids": [
+        "pair/piston_slider/pump_piston",
+        "nearby/piston_slider/pump_piston"
+      ]
+    },
+    {
+      "pair": [
+        "guide_frame",
+        "wrist_pin"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/wrist_pin",
+        "link/guide_frame"
+      ],
+      "fact_ids": [
+        "pair/guide_frame/wrist_pin",
+        "nearby/guide_frame/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "pump_rod",
+        "wrist_pin"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/wrist_pin",
+        "link/pump_rod"
+      ],
+      "fact_ids": [
+        "pair/pump_rod/wrist_pin",
+        "nearby/pump_rod/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "guide_frame",
+        "pump_rod"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/pump_rod",
+        "link/guide_frame"
+      ],
+      "fact_ids": [
+        "pair/guide_frame/pump_rod",
+        "nearby/guide_frame/pump_rod"
+      ]
+    },
+    {
+      "pair": [
+        "pump_barrel",
+        "pump_rod"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/pump_rod",
+        "link/pump_barrel"
+      ],
+      "fact_ids": [
+        "pair/pump_barrel/pump_rod",
+        "nearby/pump_barrel/pump_rod"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "pump_rod"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/pump_rod",
+        "link/base"
+      ],
+      "fact_ids": [
+        "pair/base/pump_rod",
+        "nearby/base/pump_rod"
+      ]
+    },
+    {
+      "pair": [
+        "guide_frame",
+        "pump_piston"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/pump_piston",
+        "link/guide_frame"
+      ],
+      "fact_ids": [
+        "pair/guide_frame/pump_piston",
+        "nearby/guide_frame/pump_piston"
+      ]
+    },
+    {
+      "pair": [
+        "pump_barrel",
+        "pump_piston"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/pump_piston",
+        "link/pump_barrel"
+      ],
+      "fact_ids": [
+        "pair/pump_barrel/pump_piston",
+        "nearby/pump_barrel/pump_piston"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "pump_piston"
+      ],
+      "reason": "Separated real meshes have no contact function; exact proxy risk excluded.",
+      "source_entity_ids": [
+        "link/pump_piston",
+        "link/base"
+      ],
+      "fact_ids": [
+        "pair/base/pump_piston",
+        "nearby/base/pump_piston"
+      ]
+    }
+  ],
+  "ground_excludes": [
+    {
+      "body": "pump_rod",
+      "reason": "Runtime evidence shows intended below-grade travel is stalled by ground.",
+      "source_entity_ids": [
+        "link/pump_rod",
+        "motion_joint/vertical_crosshead_guide"
+      ],
+      "fact_ids": [
+        "pair/base/pump_rod",
+        "nearby/base/pump_rod"
+      ]
+    }
+  ],
+  "support_patches": [],
+  "bodies": [
+    "base",
+    "connecting_rod",
+    "crankshaft",
+    "front_bearing",
+    "front_upright",
+    "guide_frame",
+    "piston_slider",
+    "pump_barrel",
+    "pump_piston",
+    "pump_rod",
+    "rear_bearing",
+    "rear_upright",
+    "wind_rotor",
+    "wrist_pin"
+  ],
+  "joints": [
+    "big_end_hinge",
+    "crank_rotation",
+    "crosshead_slide"
+  ],
+  "constraints": [
+    "small_end_connect"
+  ]
+}

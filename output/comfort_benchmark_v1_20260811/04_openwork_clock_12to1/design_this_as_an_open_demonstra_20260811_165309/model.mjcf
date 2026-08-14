@@ -1,0 +1,123 @@
+<mujoco model="design_this_as_an_open_demonstra">
+  <compiler angle="radian" coordinate="local" />
+  <option gravity="0 0 -9.81" timestep="0.0002" solver="Newton" iterations="100" cone="elliptic" />
+  <size memory="256M" />
+  <asset>
+    <mesh name="mesh_base" file="meshes/base.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_minute_input_bearing" file="meshes/minute_input_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_intermediate_bearing" file="meshes/intermediate_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_rear_mast" file="meshes/rear_mast.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_lower_sleeve_bracket" file="meshes/lower_sleeve_bracket.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_upper_sleeve_bracket" file="meshes/upper_sleeve_bracket.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_sleeve_thrust_washer" file="meshes/sleeve_thrust_washer.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_lower_sleeve_bearing" file="meshes/lower_sleeve_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_upper_sleeve_bearing" file="meshes/upper_sleeve_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_minute_shaft" file="meshes/minute_shaft.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_minute_gear" file="meshes/minute_gear.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_minute_hand" file="meshes/minute_hand.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_intermediate_shaft" file="meshes/intermediate_shaft.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_compound_big_gear" file="meshes/compound_big_gear.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_compound_pinion" file="meshes/compound_pinion.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hour_sleeve" file="meshes/hour_sleeve.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hour_gear" file="meshes/hour_gear.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hour_hand" file="meshes/hour_hand.stl" scale=".001 .001 .001" />
+  </asset>
+  <worldbody>
+    <light pos="0 0 3" dir="0 0 -1" />
+    <geom name="ground" type="plane" size="5 5 .1" friction="1 .05 .005" contype="1" conaffinity="0" />
+    <body name="base" pos="0.0114 -0.002 0" quat="1 0 0 0">
+      <inertial pos="0 0 0.002" mass="0.1171496304" fullinertia="2.69615985e-05 4.964644712e-05 7.62956466e-05 -0 -0 -0" />
+      <geom name="geom_base" type="sdf" mesh="mesh_base" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      <body name="minute_input_bearing" pos="-0.0114 0.002 0.004" quat="1 0 0 0">
+        <inertial pos="-3.13328888e-20 3.225199197e-19 0.0015" mass="0.001186774385" fullinertia="8.141974851e-09 8.141974873e-09 1.450378815e-08 6.054194183e-26 1.822068422e-25 9.816917447e-25" />
+        <geom name="geom_minute_input_bearing" type="sdf" mesh="mesh_minute_input_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="minute_shaft" pos="0 0 0" quat="1 0 0 0">
+          <inertial pos="-3.343181678e-20 -1.165787693e-20 0.01410000038" mass="0.002780664754" fullinertia="1.870541758e-07 1.870541758e-07 5.559025087e-09 -3.718506984e-27 -3.588359594e-25 -1.530851735e-24" />
+          <geom name="geom_minute_shaft" type="sdf" mesh="mesh_minute_shaft" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          <body name="minute_gear" pos="0 0 0.0035" quat="1 0 0 0">
+            <inertial pos="3.352430974e-11 9.427214901e-19 0.002" mass="0.003022426036" fullinertia="3.559326645e-08 3.559326673e-08 6.312673042e-08 -2.156733095e-25 -9.519378641e-25 -2.212511655e-25" />
+            <geom name="geom_minute_gear" type="sdf" mesh="mesh_minute_gear" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          </body>
+          <body name="minute_hand" pos="0 0 0.0262" quat="0.9914448614 0 0 0.1305261922">
+            <inertial pos="0 0.005779325745 0.0005" mass="0.0003707304542" fullinertia="1.251480201e-08 6.551250959e-10 1.310813869e-08 2.736588733e-26 -0 -0" />
+            <geom name="geom_minute_hand" type="sdf" mesh="mesh_minute_hand" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          </body>
+          <joint name="minute_spin" type="hinge" axis="0 0 1" pos="0 0 0.0015" />
+        </body>
+      </body>
+      <body name="intermediate_bearing" pos="0.0126 0.002 0.004" quat="1 0 0 0">
+        <inertial pos="-3.13328888e-20 3.225199197e-19 0.0015" mass="0.001186774385" fullinertia="8.141974851e-09 8.141974873e-09 1.450378815e-08 6.054194183e-26 1.822068422e-25 9.816917447e-25" />
+        <geom name="geom_intermediate_bearing" type="sdf" mesh="mesh_intermediate_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="intermediate_shaft" pos="0 0 0" quat="1 0 0 0">
+          <inertial pos="1.571295431e-20 1.058207629e-19 0.009" mass="0.001774892348" fullinertia="4.96962503e-08 4.969625029e-08 3.548313789e-09 1.580365468e-26 -2.844657843e-25 2.082396139e-24" />
+          <geom name="geom_intermediate_shaft" type="sdf" mesh="mesh_intermediate_shaft" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          <body name="compound_big_gear" pos="0 0 0.0035" quat="0.999390827 0 0 0.0348994967">
+            <inertial pos="-8.503061103e-09 -1.190193376e-18 0.002" mass="0.03103003873" fullinertia="2.565775131e-06 2.565778177e-06 5.048806538e-06 -5.045238872e-23 -2.855769787e-24 3.808680778e-24" />
+            <geom name="geom_compound_big_gear" type="sdf" mesh="mesh_compound_big_gear" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          </body>
+          <body name="compound_pinion" pos="0 0 0.013" quat="1 0 0 0">
+            <inertial pos="4.16875154e-20 -2.605469713e-21 0.002" mass="0.001783990698" fullinertia="1.550539598e-08 1.550539598e-08 2.625348343e-08 -3.346656285e-26 3.867247263e-25 -3.216508541e-25" />
+            <geom name="geom_compound_pinion" type="sdf" mesh="mesh_compound_pinion" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          </body>
+          <joint name="intermediate_spin" type="hinge" axis="0 0 1" pos="0 0 0.0015" />
+        </body>
+      </body>
+      <body name="rear_mast" pos="-0.0114 -0.0232 0.004" quat="1 0 0 0">
+        <inertial pos="0 0 0.011" mass="0.0015543" fullinertia="6.3855825e-08 6.3855825e-08 2.33145e-09 -0 -0 -0" />
+        <geom name="geom_rear_mast" type="sdf" mesh="mesh_rear_mast" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="lower_sleeve_bracket" pos="0 0.0102 0.0091" quat="1 0 0 0">
+          <inertial pos="0 0 0.0015" mass="0.001441259973" fullinertia="5.106383898e-08 2.16188996e-09 5.106383898e-08 -0 -0 -0" />
+          <geom name="geom_lower_sleeve_bracket" type="sdf" mesh="mesh_lower_sleeve_bracket" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          <body name="sleeve_thrust_washer" pos="0 0.015 -0.001" quat="1 0 0 0">
+            <inertial pos="-3.253761025e-20 6.078956602e-20 0.00025" mass="0.000142854183" fullinertia="7.315875642e-10 7.315875568e-10 1.457222863e-09 7.69847149e-28 -4.880540416e-27 -9.29598376e-28" />
+            <geom name="geom_sleeve_thrust_washer" type="sdf" mesh="mesh_sleeve_thrust_washer" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          </body>
+          <body name="lower_sleeve_bearing" pos="0 0.015 0" quat="1 0 0 0">
+            <inertial pos="2.287600234e-20 -3.991683689e-20 0.0015" mass="0.001015940998" fullinertia="8.973069895e-09 8.973069844e-09 1.642222824e-08 5.67072315e-26 -2.03123444e-25 -1.710485977e-25" />
+            <geom name="geom_lower_sleeve_bearing" type="sdf" mesh="mesh_lower_sleeve_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+            <body name="hour_sleeve" pos="0 0 -0.0005" quat="1 0 0 0">
+              <inertial pos="2.258784891e-20 1.673530197e-19 0.008699999809" mass="0.002057802736" fullinertia="5.870758153e-08 5.870758166e-08 1.357844167e-08 8.506084725e-26 -1.49948795e-24 -7.129348116e-25" />
+              <geom name="geom_hour_sleeve" type="sdf" mesh="mesh_hour_sleeve" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+              <body name="hour_gear" pos="0 0 0.0044" quat="0.9994645875 0 0 0.03271908282">
+                <inertial pos="4.432219018e-19 -2.383915878e-20 0.002" mass="0.03490122891" fullinertia="3.315649347e-06 3.315649347e-06 6.538228751e-06 4.402712269e-24 5.568836059e-23 3.809610405e-24" />
+                <geom name="geom_hour_gear" type="sdf" mesh="mesh_hour_gear" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+              </body>
+              <body name="hour_hand" pos="0 0 0.0134" quat="0.8870108332 0 0 -0.4617486132">
+                <inertial pos="-4.802317969e-20 0.003353347411 0.0005" mass="0.0003145654811" fullinertia="6.019498153e-09 1.182650002e-09 7.149720574e-09 -2.764886147e-26 -7.553217311e-27 2.23110419e-25" />
+                <geom name="geom_hour_hand" type="sdf" mesh="mesh_hour_hand" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+              </body>
+              <joint name="hour_spin" type="hinge" axis="0 0 1" pos="0 -1.734723476e-18 0.002" />
+            </body>
+          </body>
+        </body>
+        <body name="upper_sleeve_bracket" pos="0 0.0102 0.018" quat="1 0 0 0">
+          <inertial pos="0 0 0.0015" mass="0.001441259973" fullinertia="5.106383898e-08 2.16188996e-09 5.106383898e-08 -0 -0 -0" />
+          <geom name="geom_upper_sleeve_bracket" type="sdf" mesh="mesh_upper_sleeve_bracket" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          <body name="upper_sleeve_bearing" pos="0 0.015 0" quat="1 0 0 0">
+            <inertial pos="2.287600234e-20 -3.991683689e-20 0.0015" mass="0.001015940998" fullinertia="8.973069895e-09 8.973069844e-09 1.642222824e-08 5.67072315e-26 -2.03123444e-25 -1.710485977e-25" />
+            <geom name="geom_upper_sleeve_bearing" type="sdf" mesh="mesh_upper_sleeve_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <equality>
+    <joint name="minute_to_compound_reduction" joint1="intermediate_spin" joint2="minute_spin" polycoef="0 -0.3333333333 0 0 0" />
+    <joint name="compound_to_hour_reduction" joint1="hour_spin" joint2="intermediate_spin" polycoef="0 -0.25 0 0 0" />
+  </equality>
+  <contact>
+    <exclude body1="minute_input_bearing" body2="minute_shaft" />
+    <exclude body1="intermediate_bearing" body2="intermediate_shaft" />
+    <exclude body1="lower_sleeve_bearing" body2="hour_sleeve" />
+    <exclude body1="upper_sleeve_bearing" body2="hour_sleeve" />
+    <exclude body1="minute_shaft" body2="hour_sleeve" />
+    <exclude body1="minute_shaft" body2="minute_gear" />
+    <exclude body1="minute_shaft" body2="minute_hand" />
+    <exclude body1="intermediate_shaft" body2="compound_big_gear" />
+    <exclude body1="intermediate_shaft" body2="compound_pinion" />
+    <exclude body1="hour_sleeve" body2="hour_gear" />
+    <exclude body1="hour_sleeve" body2="hour_hand" />
+    <exclude body1="minute_gear" body2="compound_big_gear" />
+    <exclude body1="compound_pinion" body2="hour_gear" />
+  </contact>
+</mujoco>

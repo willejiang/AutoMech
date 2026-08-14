@@ -1,0 +1,421 @@
+{
+  "input_kind": "portable",
+  "layer_weights": [
+    10,
+    15,
+    15,
+    20,
+    40
+  ],
+  "layers": [
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "model_mjcf",
+              "media_type": "application/octet-stream",
+              "path": "models/model.mjcf",
+              "sha256": "3ad40e953ce6a45bc2f652b28088712512163ad5f3b9149a75923d61f559d273",
+              "source": "submitted"
+            },
+            {
+              "kind": "execution",
+              "media_type": "application/json",
+              "path": "evidence/execution.json",
+              "sha256": "0f8ca3ba303d9a1f484f3688fa4f441b0a3c57f4e642b8bc287b6a63b421c729",
+              "source": "submitted"
+            }
+          ],
+          "name": "scorer_owned_execution",
+          "points_awarded": 10,
+          "points_possible": 10,
+          "reason": "scorer-owned source reexecution produced a nonempty part set and MJCF replay remained finite",
+          "status": "PASS"
+        }
+      ],
+      "index": 1,
+      "name": "execution",
+      "points_awarded": 10,
+      "prerequisite": null,
+      "status": "PASS",
+      "weight": 10
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "media_type": "application/json",
+              "path": "assembly.json",
+              "sha256": "64c7c5a85186d484b481ed8effd2bbfb2c331d659a81f335457d010d2611ff0e",
+              "source": "submitted"
+            },
+            {
+              "kind": "model_mjcf",
+              "media_type": "application/octet-stream",
+              "path": "models/model.mjcf",
+              "sha256": "3ad40e953ce6a45bc2f652b28088712512163ad5f3b9149a75923d61f559d273",
+              "source": "submitted"
+            }
+          ],
+          "name": "assembly_model",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "reason": "assembly/simulation model is available",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "media_type": "application/json",
+              "path": "assembly.json",
+              "sha256": "64c7c5a85186d484b481ed8effd2bbfb2c331d659a81f335457d010d2611ff0e",
+              "source": "submitted"
+            },
+            {
+              "kind": "trajectory",
+              "media_type": "application/json",
+              "path": "evidence/trajectory.json",
+              "sha256": "071ce796bc860f5da1631e9fbe0aee5b782334cecb8c4da71ff5be8b628f98a0",
+              "source": "submitted"
+            }
+          ],
+          "name": "required_role_cardinalities",
+          "points_awarded": 7,
+          "points_possible": 7,
+          "reason": "all required roles are bound",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "media_type": "application/json",
+              "path": "assembly.json",
+              "sha256": "64c7c5a85186d484b481ed8effd2bbfb2c331d659a81f335457d010d2611ff0e",
+              "source": "submitted"
+            }
+          ],
+          "name": "input_output_independence",
+          "points_awarded": 3,
+          "points_possible": 3,
+          "reason": "input and output are distinct",
+          "status": "PASS"
+        }
+      ],
+      "index": 2,
+      "name": "assembly",
+      "points_awarded": 15,
+      "prerequisite": null,
+      "status": "PASS",
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/base.stl",
+              "sha256": "e2e756657d025932b31f45c2bd7de4af4ac19acae0593cb8c2cee11afc0a6b72",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/connecting_rod.stl",
+              "sha256": "3bec11038c4f99e19295d92ab3d4a23d54ee332c6a17dc53b670f9c5cfa6f418",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/crank_disk.stl",
+              "sha256": "69da2df97acb584335b6e8e33f38a6af7777e81e4f151e387667d27220318ff0",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/crank_pin.stl",
+              "sha256": "a08d0dbdc4b46e3500ab4f5348221e6bbc48d90fbe9b6d333d6f033f588e776c",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/front_bearing.stl",
+              "sha256": "6a1e180d2a274ee71651b6fab4bb75750b714dce923433035396aa0072879136",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/piston_output.stl",
+              "sha256": "b59582613d84e464020271bc0e013ed7873fb9c447553decb5cccf434df56dbc",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/pump_rod.stl",
+              "sha256": "461999e385a712c28140abc871930a9cfa29dd195993c18ad5489d762dc08102",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/rear_bearing.stl",
+              "sha256": "79205249c3c8b66dc5cff7eb36bffbc88f468864204e7d3b2798c726c292d8b8",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/rotor_shaft.stl",
+              "sha256": "6765bb9370f3e675e96bb1a8c33d2d14a8733603bd3ea6618da6e63cc1dc14a2",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/vertical_crosshead.stl",
+              "sha256": "74d648f4476628bd79ef65fdf7041f00f1d2029f3558350454df13307da10502",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/vertical_guide.stl",
+              "sha256": "b34e920c76d146da1852511c65e91394b638bc2e476df8c4536f738bceaeb6fa",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/wind_rotor.stl",
+              "sha256": "261824e45342b341e3072c49fcebe19f3e964e89db77d32bf9394b0de7fa3357",
+              "source": "submitted"
+            }
+          ],
+          "name": "mesh_inventory",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "reason": "mesh files are hash-addressed",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "media_type": "application/json",
+              "path": "assembly.json",
+              "sha256": "64c7c5a85186d484b481ed8effd2bbfb2c331d659a81f335457d010d2611ff0e",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/base.stl",
+              "sha256": "e2e756657d025932b31f45c2bd7de4af4ac19acae0593cb8c2cee11afc0a6b72",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/connecting_rod.stl",
+              "sha256": "3bec11038c4f99e19295d92ab3d4a23d54ee332c6a17dc53b670f9c5cfa6f418",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/crank_disk.stl",
+              "sha256": "69da2df97acb584335b6e8e33f38a6af7777e81e4f151e387667d27220318ff0",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/crank_pin.stl",
+              "sha256": "a08d0dbdc4b46e3500ab4f5348221e6bbc48d90fbe9b6d333d6f033f588e776c",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/front_bearing.stl",
+              "sha256": "6a1e180d2a274ee71651b6fab4bb75750b714dce923433035396aa0072879136",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/piston_output.stl",
+              "sha256": "b59582613d84e464020271bc0e013ed7873fb9c447553decb5cccf434df56dbc",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/pump_rod.stl",
+              "sha256": "461999e385a712c28140abc871930a9cfa29dd195993c18ad5489d762dc08102",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/rear_bearing.stl",
+              "sha256": "79205249c3c8b66dc5cff7eb36bffbc88f468864204e7d3b2798c726c292d8b8",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/rotor_shaft.stl",
+              "sha256": "6765bb9370f3e675e96bb1a8c33d2d14a8733603bd3ea6618da6e63cc1dc14a2",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/vertical_crosshead.stl",
+              "sha256": "74d648f4476628bd79ef65fdf7041f00f1d2029f3558350454df13307da10502",
+              "source": "submitted"
+            },
+            {
+              "kind": "mesh",
+              "media_type": "application/octet-stream",
+              "path": "meshes/vertical_guide.stl",
+              "sha256": "b34e920c76d146da1852511c65e91394b638bc2e476df8c4536f738bceaeb6fa",
+              "source": "submitted"
+            }
+          ],
+          "name": "non_exempt_conflicts",
+          "points_awarded": 10,
+          "points_possible": 10,
+          "reason": "non-exempt conflict count=0",
+          "status": "PASS"
+        }
+      ],
+      "index": 3,
+      "name": "geometry",
+      "points_awarded": 15,
+      "prerequisite": null,
+      "status": "PASS",
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "media_type": "application/json",
+              "path": "evidence/trajectory.json",
+              "sha256": "071ce796bc860f5da1631e9fbe0aee5b782334cecb8c4da71ff5be8b628f98a0",
+              "source": "submitted"
+            }
+          ],
+          "name": "trajectory_shape",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "reason": "trajectory has time samples and joint series",
+          "status": "PASS"
+        },
+        {
+          "evidence": [],
+          "name": "sample_alignment",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "reason": "all joint series align with time",
+          "status": "PASS"
+        },
+        {
+          "evidence": [],
+          "name": "finite_health",
+          "points_awarded": 10,
+          "points_possible": 10,
+          "reason": "finite sample fraction=1",
+          "status": "PASS"
+        }
+      ],
+      "index": 4,
+      "name": "physics_ready",
+      "points_awarded": 20,
+      "prerequisite": null,
+      "status": "PASS",
+      "weight": 20
+    },
+    {
+      "checks": [
+        {
+          "evidence": [],
+          "name": "input_motion",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "reason": "input travel=6.54203 rad reaches minimum 6.28319",
+          "status": "PASS"
+        },
+        {
+          "evidence": [],
+          "name": "motion_propagation",
+          "points_awarded": 10,
+          "points_possible": 10,
+          "reason": "registered output exhibits motion",
+          "status": "PASS"
+        },
+        {
+          "evidence": [],
+          "name": "registered_output",
+          "points_awarded": 15,
+          "points_possible": 15,
+          "reason": "output span=40 mm, reversals=2",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "contacts",
+              "media_type": "application/json",
+              "path": "evidence/contacts.json",
+              "sha256": "90b8ebfc0686ae7095240b96be1d487e985c6caf164b2fb21f8a8de19b3ae821",
+              "source": "submitted"
+            },
+            {
+              "kind": "trajectory",
+              "media_type": "application/json",
+              "path": "evidence/trajectory.json",
+              "sha256": "071ce796bc860f5da1631e9fbe0aee5b782334cecb8c4da71ff5be8b628f98a0",
+              "source": "submitted"
+            }
+          ],
+          "name": "registered_invariants",
+          "points_awarded": 10,
+          "points_possible": 10,
+          "reason": "all registered invariants have passing named evidence",
+          "status": "PASS"
+        }
+      ],
+      "index": 5,
+      "name": "functional",
+      "points_awarded": 40,
+      "prerequisite": null,
+      "status": "PASS",
+      "weight": 40
+    }
+  ],
+  "observed_mechanical_verdict": "PASS",
+  "overall_verdict": "PASS",
+  "points_possible": 100,
+  "schema": "physcad-benchmark-score/1.0",
+  "scorer_version": "physcad-benchmark-scorer/1.0",
+  "suite_id": "physcad-comfort-v1",
+  "task_id": "10_wind_rotor_pump",
+  "total_points": 100,
+  "unknown_checks": 0
+}

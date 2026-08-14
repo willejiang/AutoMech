@@ -1,0 +1,5457 @@
+{
+  "facts_version": 2,
+  "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\09_open_pumpjack\\design_this_as_an_open_demonstra_20260811_175836",
+  "units": {
+    "model_length": "m",
+    "mesh_source_length": "mm",
+    "mass": "kg",
+    "angle": "rad"
+  },
+  "model": {
+    "name": "design_this_as_an_open_demonstra",
+    "root_link": "base",
+    "links": [
+      {
+        "name": "base",
+        "description": "base",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/base.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": ""
+      },
+      {
+        "name": "negative_shaft_pedestal",
+        "description": "negative_shaft_pedestal",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/negative_shaft_pedestal.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "base"
+      },
+      {
+        "name": "positive_shaft_pedestal",
+        "description": "positive_shaft_pedestal",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/positive_shaft_pedestal.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "base"
+      },
+      {
+        "name": "negative_shaft_bearing",
+        "description": "negative_shaft_bearing",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/negative_shaft_bearing.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "negative_shaft_pedestal"
+      },
+      {
+        "name": "positive_shaft_bearing",
+        "description": "positive_shaft_bearing",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/positive_shaft_bearing.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "positive_shaft_pedestal"
+      },
+      {
+        "name": "crankshaft",
+        "description": "crankshaft",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/crankshaft.stl",
+        "dof": "spin",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": true,
+        "material": "steel",
+        "mount": "negative_shaft_bearing",
+        "extra_mounts": [
+          "positive_shaft_bearing"
+        ]
+      },
+      {
+        "name": "crank_disk",
+        "description": "crank_disk",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/crank_disk.stl",
+        "dof": "spin",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "crankshaft"
+      },
+      {
+        "name": "crank_pin",
+        "description": "crank_pin",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/crank_pin.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "crank_disk"
+      },
+      {
+        "name": "pitman",
+        "description": "pitman",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/pitman.stl",
+        "dof": "free",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": ""
+      },
+      {
+        "name": "negative_beam_support",
+        "description": "negative_beam_support",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/negative_beam_support.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "base"
+      },
+      {
+        "name": "positive_beam_support",
+        "description": "positive_beam_support",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/positive_beam_support.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "base"
+      },
+      {
+        "name": "negative_pivot_bearing",
+        "description": "negative_pivot_bearing",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/negative_pivot_bearing.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "negative_beam_support"
+      },
+      {
+        "name": "positive_pivot_bearing",
+        "description": "positive_pivot_bearing",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/positive_pivot_bearing.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "positive_beam_support"
+      },
+      {
+        "name": "beam_pivot_pin",
+        "description": "beam_pivot_pin",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/beam_pivot_pin.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "negative_pivot_bearing",
+        "extra_mounts": [
+          "positive_pivot_bearing"
+        ]
+      },
+      {
+        "name": "walking_beam",
+        "description": "walking_beam",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/walking_beam.stl",
+        "dof": "free",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "beam_pivot_pin"
+      },
+      {
+        "name": "pitman_beam_pin",
+        "description": "pitman_beam_pin",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/pitman_beam_pin.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "walking_beam"
+      },
+      {
+        "name": "beam_output_pin",
+        "description": "beam_output_pin",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/beam_output_pin.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "walking_beam"
+      },
+      {
+        "name": "polished_output_rod",
+        "description": "polished_output_rod",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/polished_output_rod.stl",
+        "dof": "free",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "lower_output_guide",
+        "extra_mounts": [
+          "upper_output_guide",
+          "beam_output_pin"
+        ]
+      },
+      {
+        "name": "output_guide_post",
+        "description": "output_guide_post",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/output_guide_post.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "base"
+      },
+      {
+        "name": "lower_output_guide",
+        "description": "lower_output_guide",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/lower_output_guide.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "output_guide_post"
+      },
+      {
+        "name": "upper_output_guide",
+        "description": "upper_output_guide",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/upper_output_guide.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "output_guide_post"
+      },
+      {
+        "name": "hand_crank_arm",
+        "description": "hand_crank_arm",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/hand_crank_arm.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "crankshaft"
+      },
+      {
+        "name": "handle_spindle",
+        "description": "handle_spindle",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/handle_spindle.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "hand_crank_arm"
+      },
+      {
+        "name": "hand_grip",
+        "description": "hand_grip",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/hand_grip.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "handle_spindle"
+      }
+    ],
+    "poses": [
+      {
+        "name": "place_base",
+        "parent": "",
+        "child": "base",
+        "xyz_m": [
+          0.01,
+          0.0,
+          0.0
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_negative_shaft_pedestal",
+        "parent": "base",
+        "child": "negative_shaft_pedestal",
+        "xyz_m": [
+          -0.055,
+          -0.023,
+          0.008
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_positive_shaft_pedestal",
+        "parent": "base",
+        "child": "positive_shaft_pedestal",
+        "xyz_m": [
+          -0.055,
+          0.023,
+          0.008
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_negative_shaft_bearing",
+        "parent": "negative_shaft_pedestal",
+        "child": "negative_shaft_bearing",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.037
+        ],
+        "rpy_rad": [
+          1.5707963267948966,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_positive_shaft_bearing",
+        "parent": "positive_shaft_pedestal",
+        "child": "positive_shaft_bearing",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.037
+        ],
+        "rpy_rad": [
+          1.5707963267948966,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_crankshaft",
+        "parent": "negative_shaft_bearing",
+        "child": "crankshaft",
+        "xyz_m": [
+          0.0,
+          0.0,
+          -0.023
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_crank_disk",
+        "parent": "crankshaft",
+        "child": "crank_disk",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_crank_pin",
+        "parent": "crank_disk",
+        "child": "crank_pin",
+        "xyz_m": [
+          0.014744736797201853,
+          0.010324375854318831,
+          0.0095
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_pitman",
+        "parent": "crank_pin",
+        "child": "pitman",
+        "xyz_m": [
+          0.00284660005471374,
+          0.014206417301239114,
+          0.0025
+        ],
+        "rpy_rad": [
+          -1.5707963267948966,
+          -0.0,
+          1.373040947727596
+        ]
+      },
+      {
+        "name": "place_negative_beam_support",
+        "parent": "base",
+        "child": "negative_beam_support",
+        "xyz_m": [
+          0.01,
+          -0.018,
+          0.008
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_positive_beam_support",
+        "parent": "base",
+        "child": "positive_beam_support",
+        "xyz_m": [
+          0.01,
+          0.004,
+          0.008
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_negative_pivot_bearing",
+        "parent": "negative_beam_support",
+        "child": "negative_pivot_bearing",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.082
+        ],
+        "rpy_rad": [
+          1.5707963267948966,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_positive_pivot_bearing",
+        "parent": "positive_beam_support",
+        "child": "positive_pivot_bearing",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.082
+        ],
+        "rpy_rad": [
+          1.5707963267948966,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_beam_pivot_pin",
+        "parent": "negative_pivot_bearing",
+        "child": "beam_pivot_pin",
+        "xyz_m": [
+          0.0,
+          0.0,
+          -0.011
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_walking_beam",
+        "parent": "beam_pivot_pin",
+        "child": "walking_beam",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rpy_rad": [
+          -1.5707963267948966,
+          -0.0,
+          0.1396263401595464
+        ]
+      },
+      {
+        "name": "place_pitman_beam_pin",
+        "parent": "walking_beam",
+        "child": "pitman_beam_pin",
+        "xyz_m": [
+          -0.045,
+          -0.0025,
+          -3.996802888650563e-18
+        ],
+        "rpy_rad": [
+          1.5707963267948966,
+          0.1396263401595464,
+          0.0
+        ]
+      },
+      {
+        "name": "place_beam_output_pin",
+        "parent": "walking_beam",
+        "child": "beam_output_pin",
+        "xyz_m": [
+          0.05499999999999999,
+          -0.0025,
+          7.105427357601002e-18
+        ],
+        "rpy_rad": [
+          1.5707963267948966,
+          0.1396263401595464,
+          0.0
+        ]
+      },
+      {
+        "name": "place_polished_output_rod",
+        "parent": "lower_output_guide",
+        "child": "polished_output_rod",
+        "xyz_m": [
+          0.0,
+          0.0,
+          -0.024
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_output_guide_post",
+        "parent": "base",
+        "child": "output_guide_post",
+        "xyz_m": [
+          0.06446474378078636,
+          0.01,
+          0.008
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_lower_output_guide",
+        "parent": "output_guide_post",
+        "child": "lower_output_guide",
+        "xyz_m": [
+          0.0,
+          -0.022,
+          0.016
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_upper_output_guide",
+        "parent": "output_guide_post",
+        "child": "upper_output_guide",
+        "xyz_m": [
+          0.0,
+          -0.022,
+          0.042
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_hand_crank_arm",
+        "parent": "crankshaft",
+        "child": "hand_crank_arm",
+        "xyz_m": [
+          0.0,
+          0.012,
+          -0.031
+        ],
+        "rpy_rad": [
+          -1.5707963267948966,
+          -0.0,
+          1.5707963267948966
+        ]
+      },
+      {
+        "name": "place_handle_spindle",
+        "parent": "hand_crank_arm",
+        "child": "handle_spindle",
+        "xyz_m": [
+          0.012,
+          0.008,
+          0.0
+        ],
+        "rpy_rad": [
+          1.5707963267948966,
+          1.5707963267948966,
+          0.0
+        ]
+      },
+      {
+        "name": "place_hand_grip",
+        "parent": "handle_spindle",
+        "child": "hand_grip",
+        "xyz_m": [
+          0.0,
+          0.0,
+          -0.0025
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      }
+    ],
+    "mesh_pairs": [],
+    "ports_by_link": {
+      "crankshaft": [
+        {
+          "name": "rotation_axis",
+          "type": "shaft",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 8.0,
+          "depth_mm": 72.0
+        },
+        {
+          "name": "disk_seat",
+          "type": "cylindrical",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 8.0,
+          "depth_mm": 10.0
+        }
+      ],
+      "crank_disk": [
+        {
+          "name": "shaft_bore",
+          "type": "bore",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 7.99,
+          "depth_mm": 10.0
+        },
+        {
+          "name": "crank_pin_seat",
+          "type": "bore",
+          "xyz_mm": [
+            14.744736797201853,
+            10.324375854318829,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 4.99,
+          "depth_mm": 10.0
+        }
+      ],
+      "crank_pin": [
+        {
+          "name": "pin_shaft",
+          "type": "shaft",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 5.0,
+          "depth_mm": 11.0
+        }
+      ],
+      "pitman": [
+        {
+          "name": "crank_end_bore",
+          "type": "bore",
+          "xyz_mm": [
+            -14.488803415342563,
+            0.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "diameter_mm": 5.1,
+          "depth_mm": 4.0
+        },
+        {
+          "name": "beam_end_bore",
+          "type": "bore",
+          "xyz_mm": [
+            14.488803415342563,
+            0.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "diameter_mm": 5.1,
+          "depth_mm": 4.0
+        }
+      ],
+      "walking_beam": [
+        {
+          "name": "pitman_pin_bore",
+          "type": "bore",
+          "xyz_mm": [
+            -45.0,
+            0.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "diameter_mm": 4.99,
+          "depth_mm": 4.0
+        },
+        {
+          "name": "pivot_bore",
+          "type": "bore",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "diameter_mm": 6.1,
+          "depth_mm": 4.0
+        },
+        {
+          "name": "output_pin_bore",
+          "type": "bore",
+          "xyz_mm": [
+            55.0,
+            0.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "diameter_mm": 4.99,
+          "depth_mm": 4.0
+        }
+      ],
+      "pitman_beam_pin": [
+        {
+          "name": "pin_shaft",
+          "type": "shaft",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 5.0,
+          "depth_mm": 11.0
+        }
+      ],
+      "beam_pivot_pin": [
+        {
+          "name": "pivot_shaft",
+          "type": "shaft",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 6.0,
+          "depth_mm": 28.0
+        }
+      ],
+      "beam_output_pin": [
+        {
+          "name": "pin_shaft",
+          "type": "shaft",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 5.0,
+          "depth_mm": 11.0
+        }
+      ],
+      "polished_output_rod": [
+        {
+          "name": "beam_pin_bore",
+          "type": "bore",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            97.6545205528036
+          ],
+          "axis": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "diameter_mm": 5.1,
+          "depth_mm": 4.0
+        },
+        {
+          "name": "guided_axis",
+          "type": "flat_face",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            32.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "depth_mm": 85.6545205528036
+        }
+      ]
+    },
+    "relations": [
+      {
+        "name": "shaft_in_negative_bearing",
+        "mate_type": "journal_bearing",
+        "base_part": "negative_shaft_bearing",
+        "base_port": "bearing_bore",
+        "incoming_part": "crankshaft",
+        "incoming_port": "rotation_axis"
+      },
+      {
+        "name": "shaft_in_positive_bearing",
+        "mate_type": "journal_bearing",
+        "base_part": "positive_shaft_bearing",
+        "base_port": "bearing_bore",
+        "incoming_part": "crankshaft",
+        "incoming_port": "rotation_axis"
+      },
+      {
+        "name": "disk_pressed_on_shaft",
+        "mate_type": "press_fit",
+        "base_part": "crankshaft",
+        "base_port": "disk_seat",
+        "incoming_part": "crank_disk",
+        "incoming_port": "shaft_bore"
+      },
+      {
+        "name": "crank_pin_pressed_in_disk",
+        "mate_type": "press_fit",
+        "base_part": "crank_disk",
+        "base_port": "crank_pin_seat",
+        "incoming_part": "crank_pin",
+        "incoming_port": "pin_shaft"
+      },
+      {
+        "name": "crank_pin_to_pitman_closure",
+        "mate_type": "revolute",
+        "base_part": "crank_pin",
+        "base_port": "pin_shaft",
+        "incoming_part": "pitman",
+        "incoming_port": "crank_end_bore"
+      },
+      {
+        "name": "pitman_to_walking_beam_closure",
+        "mate_type": "revolute",
+        "base_part": "pitman_beam_pin",
+        "base_port": "pin_shaft",
+        "incoming_part": "pitman",
+        "incoming_port": "beam_end_bore"
+      },
+      {
+        "name": "walking_beam_fixed_pivot",
+        "mate_type": "revolute",
+        "base_part": "beam_pivot_pin",
+        "base_port": "pivot_shaft",
+        "incoming_part": "walking_beam",
+        "incoming_port": "pivot_bore"
+      },
+      {
+        "name": "beam_to_output_rod_closure",
+        "mate_type": "revolute",
+        "base_part": "beam_output_pin",
+        "base_port": "pin_shaft",
+        "incoming_part": "polished_output_rod",
+        "incoming_port": "beam_pin_bore"
+      }
+    ],
+    "motion_joints": [
+      {
+        "name": "driven_crankshaft_hinge",
+        "parent": "",
+        "child": "crankshaft",
+        "type": "hinge",
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "pos_mm": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "crank_disk_hinge",
+        "parent": "",
+        "child": "crank_disk",
+        "type": "hinge",
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "pos_mm": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "walking_beam_hinge",
+        "parent": "",
+        "child": "walking_beam",
+        "type": "hinge",
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "pos_mm": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "vertical_guided_output",
+        "parent": "",
+        "child": "polished_output_rod",
+        "type": "slide",
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "pos_mm": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    ],
+    "transmissions": [
+      {
+        "name": "shaft_to_crank_disk_press_drive",
+        "type": "compound_1to1",
+        "driving_link": "crankshaft",
+        "driven_link": "crank_disk",
+        "ratio": 1.0
+      }
+    ],
+    "output_link": "polished_output_rod",
+    "watch_links": [
+      "crankshaft",
+      "crank_disk",
+      "crank_pin",
+      "pitman",
+      "walking_beam",
+      "polished_output_rod"
+    ]
+  },
+  "entity_ids": [
+    "link/base",
+    "link/negative_shaft_pedestal",
+    "link/positive_shaft_pedestal",
+    "link/negative_shaft_bearing",
+    "link/positive_shaft_bearing",
+    "link/crankshaft",
+    "link/crank_disk",
+    "link/crank_pin",
+    "link/pitman",
+    "link/negative_beam_support",
+    "link/positive_beam_support",
+    "link/negative_pivot_bearing",
+    "link/positive_pivot_bearing",
+    "link/beam_pivot_pin",
+    "link/walking_beam",
+    "link/pitman_beam_pin",
+    "link/beam_output_pin",
+    "link/polished_output_rod",
+    "link/output_guide_post",
+    "link/lower_output_guide",
+    "link/upper_output_guide",
+    "link/hand_crank_arm",
+    "link/handle_spindle",
+    "link/hand_grip",
+    "pose/place_base",
+    "pose/place_negative_shaft_pedestal",
+    "pose/place_positive_shaft_pedestal",
+    "pose/place_negative_shaft_bearing",
+    "pose/place_positive_shaft_bearing",
+    "pose/place_crankshaft",
+    "pose/place_crank_disk",
+    "pose/place_crank_pin",
+    "pose/place_pitman",
+    "pose/place_negative_beam_support",
+    "pose/place_positive_beam_support",
+    "pose/place_negative_pivot_bearing",
+    "pose/place_positive_pivot_bearing",
+    "pose/place_beam_pivot_pin",
+    "pose/place_walking_beam",
+    "pose/place_pitman_beam_pin",
+    "pose/place_beam_output_pin",
+    "pose/place_polished_output_rod",
+    "pose/place_output_guide_post",
+    "pose/place_lower_output_guide",
+    "pose/place_upper_output_guide",
+    "pose/place_hand_crank_arm",
+    "pose/place_handle_spindle",
+    "pose/place_hand_grip",
+    "port/crankshaft/rotation_axis",
+    "port/crankshaft/disk_seat",
+    "port/crank_disk/shaft_bore",
+    "port/crank_disk/crank_pin_seat",
+    "port/crank_pin/pin_shaft",
+    "port/pitman/crank_end_bore",
+    "port/pitman/beam_end_bore",
+    "port/walking_beam/pitman_pin_bore",
+    "port/walking_beam/pivot_bore",
+    "port/walking_beam/output_pin_bore",
+    "port/pitman_beam_pin/pin_shaft",
+    "port/beam_pivot_pin/pivot_shaft",
+    "port/beam_output_pin/pin_shaft",
+    "port/polished_output_rod/beam_pin_bore",
+    "port/polished_output_rod/guided_axis",
+    "relation/shaft_in_negative_bearing",
+    "relation/shaft_in_positive_bearing",
+    "relation/disk_pressed_on_shaft",
+    "relation/crank_pin_pressed_in_disk",
+    "relation/crank_pin_to_pitman_closure",
+    "relation/pitman_to_walking_beam_closure",
+    "relation/walking_beam_fixed_pivot",
+    "relation/beam_to_output_rod_closure",
+    "motion_joint/driven_crankshaft_hinge",
+    "motion_joint/crank_disk_hinge",
+    "motion_joint/walking_beam_hinge",
+    "motion_joint/vertical_guided_output",
+    "transmission/shaft_to_crank_disk_press_drive",
+    "role/driver/crankshaft",
+    "role/output/polished_output_rod",
+    "role/watch/crankshaft",
+    "role/watch/crank_disk",
+    "role/watch/crank_pin",
+    "role/watch/pitman",
+    "role/watch/walking_beam",
+    "role/watch/polished_output_rod"
+  ],
+  "links": {
+    "base": {
+      "entity_id": "link/base",
+      "world_frame": {
+        "xyz_m": [
+          0.01,
+          0.0,
+          0.0
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.01
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/base.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "",
+      "extra_mounts": [],
+      "sha256": "4da2bdd4779b576ba7ae231db40f389f166ffec0f7880a237e175371c5cf60a0",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -95.0,
+          -40.0,
+          0.0
+        ],
+        [
+          95.0,
+          40.0,
+          8.0
+        ]
+      ],
+      "extents_mm": [
+        190.0,
+        80.0,
+        8.0
+      ],
+      "volume_m3": 0.0001216,
+      "mass_kg": 0.95456,
+      "com_m": [
+        0.0,
+        0.0,
+        0.004
+      ],
+      "inertia_kg_m2": [
+        [
+          0.0005141896533333334,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          0.002876725653333333,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          0.0033807333333333326
+        ]
+      ]
+    },
+    "negative_shaft_pedestal": {
+      "entity_id": "link/negative_shaft_pedestal",
+      "world_frame": {
+        "xyz_m": [
+          -0.045,
+          -0.023,
+          0.008
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.045
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.023
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.008
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/negative_shaft_pedestal.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "base",
+      "extra_mounts": [],
+      "sha256": "29f3b60498f225573ab6da84fcec1b4aa506f9e98ff79edef9d0c960b390b265",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -8.0,
+          -4.0,
+          0.0
+        ],
+        [
+          8.0,
+          4.0,
+          29.0
+        ]
+      ],
+      "extents_mm": [
+        16.0,
+        8.0,
+        29.0
+      ],
+      "volume_m3": 3.712e-06,
+      "mass_kg": 0.0291392,
+      "com_m": [
+        0.0,
+        0.0,
+        0.0145
+      ],
+      "inertia_kg_m2": [
+        [
+          2.1975813333333336e-06,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          2.6638085333333335e-06,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          7.770453333333331e-07
+        ]
+      ]
+    },
+    "positive_shaft_pedestal": {
+      "entity_id": "link/positive_shaft_pedestal",
+      "world_frame": {
+        "xyz_m": [
+          -0.045,
+          0.023,
+          0.008
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.045
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.023
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.008
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/positive_shaft_pedestal.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "base",
+      "extra_mounts": [],
+      "sha256": "29f3b60498f225573ab6da84fcec1b4aa506f9e98ff79edef9d0c960b390b265",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -8.0,
+          -4.0,
+          0.0
+        ],
+        [
+          8.0,
+          4.0,
+          29.0
+        ]
+      ],
+      "extents_mm": [
+        16.0,
+        8.0,
+        29.0
+      ],
+      "volume_m3": 3.712e-06,
+      "mass_kg": 0.0291392,
+      "com_m": [
+        0.0,
+        0.0,
+        0.0145
+      ],
+      "inertia_kg_m2": [
+        [
+          2.1975813333333336e-06,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          2.6638085333333335e-06,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          7.770453333333331e-07
+        ]
+      ]
+    },
+    "negative_shaft_bearing": {
+      "entity_id": "link/negative_shaft_bearing",
+      "world_frame": {
+        "xyz_m": [
+          -0.045,
+          -0.023,
+          0.045
+        ],
+        "quat_wxyz": [
+          0.7071067811865475,
+          0.7071067811865475,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.045
+          ],
+          [
+            0.0,
+            6.123233995736766e-17,
+            -1.0,
+            -0.023
+          ],
+          [
+            0.0,
+            1.0,
+            6.123233995736766e-17,
+            0.045
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/negative_shaft_bearing.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "negative_shaft_pedestal",
+      "extra_mounts": [],
+      "sha256": "dcba362d0868b0ea0071ea36f51099514cb58d0a389f66a91db12a438cb2d6a1",
+      "vertices": 3024,
+      "faces": 1008,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -8.0,
+          -7.997513294219971,
+          -4.0
+        ],
+        [
+          8.0,
+          7.997513294219971,
+          4.0
+        ]
+      ],
+      "extents_mm": [
+        16.0,
+        15.995026588439941,
+        8.0
+      ],
+      "volume_m3": 1.1957599123917929e-06,
+      "mass_kg": 0.009386715312275574,
+      "com_m": [
+        6.536404183116808e-20,
+        1.1841816527296727e-19,
+        0.0
+      ],
+      "inertia_kg_m2": [
+        [
+          2.3866314612264965e-07,
+          7.232496083512768e-25,
+          -1.4279066817834975e-24
+        ],
+        [
+          7.232496083512768e-25,
+          2.38663144185349e-07,
+          2.9747692735041893e-25
+        ],
+        [
+          -1.4279066817834975e-24,
+          2.9747692735041893e-25,
+          3.772013269770592e-07
+        ]
+      ]
+    },
+    "positive_shaft_bearing": {
+      "entity_id": "link/positive_shaft_bearing",
+      "world_frame": {
+        "xyz_m": [
+          -0.045,
+          0.023,
+          0.045
+        ],
+        "quat_wxyz": [
+          0.7071067811865475,
+          0.7071067811865475,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.045
+          ],
+          [
+            0.0,
+            6.123233995736766e-17,
+            -1.0,
+            0.023
+          ],
+          [
+            0.0,
+            1.0,
+            6.123233995736766e-17,
+            0.045
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/positive_shaft_bearing.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "positive_shaft_pedestal",
+      "extra_mounts": [],
+      "sha256": "dcba362d0868b0ea0071ea36f51099514cb58d0a389f66a91db12a438cb2d6a1",
+      "vertices": 3024,
+      "faces": 1008,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -8.0,
+          -7.997513294219971,
+          -4.0
+        ],
+        [
+          8.0,
+          7.997513294219971,
+          4.0
+        ]
+      ],
+      "extents_mm": [
+        16.0,
+        15.995026588439941,
+        8.0
+      ],
+      "volume_m3": 1.1957599123917929e-06,
+      "mass_kg": 0.009386715312275574,
+      "com_m": [
+        6.536404183116808e-20,
+        1.1841816527296727e-19,
+        0.0
+      ],
+      "inertia_kg_m2": [
+        [
+          2.3866314612264965e-07,
+          7.232496083512768e-25,
+          -1.4279066817834975e-24
+        ],
+        [
+          7.232496083512768e-25,
+          2.38663144185349e-07,
+          2.9747692735041893e-25
+        ],
+        [
+          -1.4279066817834975e-24,
+          2.9747692735041893e-25,
+          3.772013269770592e-07
+        ]
+      ]
+    },
+    "crankshaft": {
+      "entity_id": "link/crankshaft",
+      "world_frame": {
+        "xyz_m": [
+          -0.045,
+          0.0,
+          0.045
+        ],
+        "quat_wxyz": [
+          0.7071067811865475,
+          0.7071067811865475,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.045
+          ],
+          [
+            0.0,
+            6.123233995736766e-17,
+            -1.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            6.123233995736766e-17,
+            0.045
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/crankshaft.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": true,
+      "mount": "negative_shaft_bearing",
+      "extra_mounts": [
+        "positive_shaft_bearing"
+      ],
+      "sha256": "9fcc08f989ce94e58f47fee3dea7eaf0d5f3e20fd37f6208f161f63f3f9ca34d",
+      "vertices": 1500,
+      "faces": 500,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -4.0,
+          -3.9987566471099854,
+          -36.0
+        ],
+        [
+          4.0,
+          3.9987566471099854,
+          36.0
+        ]
+      ],
+      "extents_mm": [
+        8.0,
+        7.997513294219971,
+        72.0
+      ],
+      "volume_m3": 3.61761497726475e-06,
+      "mass_kg": 0.028398277571528286,
+      "com_m": [
+        3.142590862656527e-20,
+        2.116415257479988e-19,
+        0.0
+      ],
+      "inertia_kg_m2": [
+        [
+          1.238160195263738e-05,
+          1.0114338995966443e-24,
+          -0.0
+        ],
+        [
+          1.0114338995966443e-24,
+          1.238160195166176e-05,
+          7.615967116218295e-24
+        ],
+        [
+          -0.0,
+          7.615967116218295e-24,
+          2.2709208249870035e-07
+        ]
+      ]
+    },
+    "crank_disk": {
+      "entity_id": "link/crank_disk",
+      "world_frame": {
+        "xyz_m": [
+          -0.045,
+          0.0,
+          0.045
+        ],
+        "quat_wxyz": [
+          0.7071067811865475,
+          0.7071067811865475,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.045
+          ],
+          [
+            0.0,
+            6.123233995736766e-17,
+            -1.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            6.123233995736766e-17,
+            0.045
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/crank_disk.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "crankshaft",
+      "extra_mounts": [],
+      "sha256": "939080305a00a71affccbad90dfa96da3bb0e79ab5e2541e6f68f0780ba561a1",
+      "vertices": 4548,
+      "faces": 1516,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -25.0,
+          -24.992229461669922,
+          -5.0
+        ],
+        [
+          25.0,
+          24.992229461669922,
+          5.0
+        ]
+      ],
+      "extents_mm": [
+        50.0,
+        49.984458923339844,
+        10.0
+      ],
+      "volume_m3": 1.8930142514352512e-05,
+      "mass_kg": 0.14860161873766722,
+      "com_m": [
+        -0.0001522629053441569,
+        -0.00010661563468630065,
+        0.0
+      ],
+      "inertia_kg_m2": [
+        [
+          2.511855101363634e-05,
+          2.3601697851199279e-07,
+          -1.218480368455251e-22
+        ],
+        [
+          2.3601697851199279e-07,
+          2.494674414222606e-05,
+          3.8582298837278964e-23
+        ],
+        [
+          -1.218480368455251e-22,
+          3.8582298837278964e-23,
+          4.758860151023462e-05
+        ]
+      ]
+    },
+    "crank_pin": {
+      "entity_id": "link/crank_pin",
+      "world_frame": {
+        "xyz_m": [
+          -0.030255263202798144,
+          -0.0095,
+          0.05532437585431883
+        ],
+        "quat_wxyz": [
+          0.7071067811865475,
+          0.7071067811865475,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.030255263202798144
+          ],
+          [
+            0.0,
+            6.123233995736766e-17,
+            -1.0,
+            -0.0095
+          ],
+          [
+            0.0,
+            1.0,
+            6.123233995736766e-17,
+            0.05532437585431883
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/crank_pin.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "crank_disk",
+      "extra_mounts": [],
+      "sha256": "dffbd1f09e33c79d1f9e8a8274054d2c1bff0b459aea1a65ae2659b882816325",
+      "vertices": 1500,
+      "faces": 500,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -2.5,
+          -2.499222993850708,
+          -5.5
+        ],
+        [
+          2.5,
+          2.499222993850708,
+          5.5
+        ]
+      ],
+      "extents_mm": [
+        5.0,
+        4.998445987701416,
+        11.0
+      ],
+      "volume_m3": 2.1589499165937024e-07,
+      "mass_kg": 0.0016947756845260564,
+      "com_m": [
+        -1.0970498980374121e-20,
+        8.104670389309593e-21,
+        0.0
+      ],
+      "inertia_kg_m2": [
+        [
+          1.9735977971791002e-08,
+          2.602954888667834e-26,
+          1.4874027935244766e-26
+        ],
+        [
+          2.602954888667834e-26,
+          1.9735977811527422e-08,
+          2.974805587048953e-26
+        ],
+        [
+          1.4874027935244766e-26,
+          2.974805587048953e-26,
+          5.293979478709628e-09
+        ]
+      ]
+    },
+    "pitman": {
+      "entity_id": "link/pitman",
+      "world_frame": {
+        "xyz_m": [
+          -0.027408663148084406,
+          -0.011999999999999999,
+          0.06953079315555795
+        ],
+        "quat_wxyz": [
+          0.7734561895176576,
+          -0.0,
+          -0.6338497636639342,
+          -0.0
+        ],
+        "matrix": [
+          [
+            0.19646895420634963,
+            -6.003892445973503e-17,
+            -0.9805100458603488,
+            -0.027408663148084406
+          ],
+          [
+            6.003892445973503e-17,
+            1.0,
+            -4.920208616233596e-17,
+            -0.011999999999999999
+          ],
+          [
+            0.9805100458603488,
+            -4.920208616233596e-17,
+            0.19646895420634963,
+            0.06953079315555795
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/pitman.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "free",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "",
+      "extra_mounts": [],
+      "sha256": "2c0ec520c9dcd4bdce47756ff3530ffd7e42150ff7ce010c1c06040f40671fc0",
+      "vertices": 5532,
+      "faces": 1844,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -20.98677635192871,
+          -2.0,
+          -6.499971389770508
+        ],
+        [
+          20.98677635192871,
+          2.0,
+          6.499971389770508
+        ]
+      ],
+      "extents_mm": [
+        41.97355270385742,
+        4.0,
+        12.999942779541016
+      ],
+      "volume_m3": 1.3639590215836287e-06,
+      "mass_kg": 0.010707078319431485,
+      "com_m": [
+        1.1113416744697564e-19,
+        0.0,
+        -4.3411784158974865e-20
+      ],
+      "inertia_kg_m2": [
+        [
+          1.1558101204686526e-07,
+          1.3089144583015393e-24,
+          -5.473642280170074e-24
+        ],
+        [
+          1.3089144583015393e-24,
+          1.7518330690283664e-06,
+          -1.7848833522293719e-25
+        ],
+        [
+          -5.473642280170074e-24,
+          -1.7848833522293719e-25,
+          1.6648042658333185e-06
+        ]
+      ]
+    },
+    "negative_beam_support": {
+      "entity_id": "link/negative_beam_support",
+      "world_frame": {
+        "xyz_m": [
+          0.02,
+          -0.018,
+          0.008
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.02
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.018
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.008
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/negative_beam_support.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "base",
+      "extra_mounts": [],
+      "sha256": "91602bd00670fd2cc5b8ae752c046a3fb3cd9977dc05aa801012c0c7a9b5f453",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -6.0,
+          -3.0,
+          0.0
+        ],
+        [
+          6.0,
+          3.0,
+          74.0
+        ]
+      ],
+      "extents_mm": [
+        12.0,
+        6.0,
+        74.0
+      ],
+      "volume_m3": 5.3280000000000005e-06,
+      "mass_kg": 0.0418248,
+      "com_m": [
+        0.0,
+        0.0,
+        0.037
+      ],
+      "inertia_kg_m2": [
+        [
+          1.9211524800000003e-05,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          1.9587948e-05,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          6.273720000000001e-07
+        ]
+      ]
+    },
+    "positive_beam_support": {
+      "entity_id": "link/positive_beam_support",
+      "world_frame": {
+        "xyz_m": [
+          0.02,
+          0.004,
+          0.008
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.02
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.004
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.008
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/positive_beam_support.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "base",
+      "extra_mounts": [],
+      "sha256": "91602bd00670fd2cc5b8ae752c046a3fb3cd9977dc05aa801012c0c7a9b5f453",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -6.0,
+          -3.0,
+          0.0
+        ],
+        [
+          6.0,
+          3.0,
+          74.0
+        ]
+      ],
+      "extents_mm": [
+        12.0,
+        6.0,
+        74.0
+      ],
+      "volume_m3": 5.3280000000000005e-06,
+      "mass_kg": 0.0418248,
+      "com_m": [
+        0.0,
+        0.0,
+        0.037
+      ],
+      "inertia_kg_m2": [
+        [
+          1.9211524800000003e-05,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          1.9587948e-05,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          6.273720000000001e-07
+        ]
+      ]
+    },
+    "negative_pivot_bearing": {
+      "entity_id": "link/negative_pivot_bearing",
+      "world_frame": {
+        "xyz_m": [
+          0.02,
+          -0.018,
+          0.09
+        ],
+        "quat_wxyz": [
+          0.7071067811865475,
+          0.7071067811865475,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.02
+          ],
+          [
+            0.0,
+            6.123233995736766e-17,
+            -1.0,
+            -0.018
+          ],
+          [
+            0.0,
+            1.0,
+            6.123233995736766e-17,
+            0.09
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/negative_pivot_bearing.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "negative_beam_support",
+      "extra_mounts": [],
+      "sha256": "fd6c0ada44fe6bf2d0387ce09370649f8f2d9a0ec6beebcb6ecef95870230dc8",
+      "vertices": 3024,
+      "faces": 1008,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -8.0,
+          -7.997513294219971,
+          -3.0
+        ],
+        [
+          8.0,
+          7.997513294219971,
+          3.0
+        ]
+      ],
+      "extents_mm": [
+        16.0,
+        15.995026588439941,
+        6.0
+      ],
+      "volume_m3": 1.0305963310433965e-06,
+      "mass_kg": 0.008090181198690663,
+      "com_m": [
+        -1.0916262404581107e-19,
+        8.465938536710701e-20,
+        0.0
+      ],
+      "inertia_kg_m2": [
+        [
+          1.7246673812195997e-07,
+          1.2085147697386363e-25,
+          -1.4874027935244766e-24
+        ],
+        [
+          1.2085147697386363e-25,
+          1.7246673673194155e-07,
+          -5.205909777335668e-26
+        ],
+        [
+          -1.4874027935244766e-24,
+          -5.205909777335668e-26,
+          2.963923876617575e-07
+        ]
+      ]
+    },
+    "positive_pivot_bearing": {
+      "entity_id": "link/positive_pivot_bearing",
+      "world_frame": {
+        "xyz_m": [
+          0.02,
+          0.004,
+          0.09
+        ],
+        "quat_wxyz": [
+          0.7071067811865475,
+          0.7071067811865475,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.02
+          ],
+          [
+            0.0,
+            6.123233995736766e-17,
+            -1.0,
+            0.004
+          ],
+          [
+            0.0,
+            1.0,
+            6.123233995736766e-17,
+            0.09
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/positive_pivot_bearing.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "positive_beam_support",
+      "extra_mounts": [],
+      "sha256": "fd6c0ada44fe6bf2d0387ce09370649f8f2d9a0ec6beebcb6ecef95870230dc8",
+      "vertices": 3024,
+      "faces": 1008,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -8.0,
+          -7.997513294219971,
+          -3.0
+        ],
+        [
+          8.0,
+          7.997513294219971,
+          3.0
+        ]
+      ],
+      "extents_mm": [
+        16.0,
+        15.995026588439941,
+        6.0
+      ],
+      "volume_m3": 1.0305963310433965e-06,
+      "mass_kg": 0.008090181198690663,
+      "com_m": [
+        -1.0916262404581107e-19,
+        8.465938536710701e-20,
+        0.0
+      ],
+      "inertia_kg_m2": [
+        [
+          1.7246673812195997e-07,
+          1.2085147697386363e-25,
+          -1.4874027935244766e-24
+        ],
+        [
+          1.2085147697386363e-25,
+          1.7246673673194155e-07,
+          -5.205909777335668e-26
+        ],
+        [
+          -1.4874027935244766e-24,
+          -5.205909777335668e-26,
+          2.963923876617575e-07
+        ]
+      ]
+    },
+    "beam_pivot_pin": {
+      "entity_id": "link/beam_pivot_pin",
+      "world_frame": {
+        "xyz_m": [
+          0.02,
+          -0.006999999999999999,
+          0.09
+        ],
+        "quat_wxyz": [
+          0.7071067811865475,
+          0.7071067811865475,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.02
+          ],
+          [
+            0.0,
+            6.123233995736766e-17,
+            -1.0,
+            -0.006999999999999999
+          ],
+          [
+            0.0,
+            1.0,
+            6.123233995736766e-17,
+            0.09
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/beam_pivot_pin.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "negative_pivot_bearing",
+      "extra_mounts": [
+        "positive_pivot_bearing"
+      ],
+      "sha256": "304c9b1f910c53457b0e3f8d75f33ff96a77e1766a4604d4b961622fd9134946",
+      "vertices": 1500,
+      "faces": 500,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -3.0,
+          -2.999067544937134,
+          -14.0
+        ],
+        [
+          3.0,
+          2.999067544937134,
+          14.0
+        ]
+      ],
+      "extents_mm": [
+        6.0,
+        5.998135089874268,
+        28.0
+      ],
+      "volume_m3": 7.913532801523906e-07,
+      "mass_kg": 0.006212123249196267,
+      "com_m": [
+        -2.394354931249825e-20,
+        7.428287424037389e-21,
+        0.0
+      ],
+      "inertia_kg_m2": [
+        [
+          4.1983020453987267e-07,
+          -2.52858474899161e-25,
+          -0.0
+        ],
+        [
+          -2.52858474899161e-25,
+          4.1983020471751994e-07,
+          -3.86725634154983e-25
+        ],
+        [
+          -0.0,
+          -3.86725634154983e-25,
+          2.79429713624139e-08
+        ]
+      ]
+    },
+    "walking_beam": {
+      "entity_id": "link/walking_beam",
+      "world_frame": {
+        "xyz_m": [
+          0.02,
+          -0.006999999999999999,
+          0.09
+        ],
+        "quat_wxyz": [
+          0.9975640502598243,
+          0.0,
+          -0.0697564737441253,
+          -3.3306690738754696e-16
+        ],
+        "matrix": [
+          [
+            0.9902680687415704,
+            -8.52189463090778e-18,
+            -0.13917310096006547,
+            0.02
+          ],
+          [
+            8.52189463090778e-18,
+            1.0,
+            -5.959089232578996e-19,
+            -0.006999999999999999
+          ],
+          [
+            0.13917310096006547,
+            -5.959089232578996e-19,
+            0.9902680687415704,
+            0.09
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/walking_beam.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "free",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "beam_pivot_pin",
+      "extra_mounts": [],
+      "sha256": "e33ca84c574381dd4fa8ca38d752845fb9134eabdca3d18def18aa4dbde39900",
+      "vertices": 7848,
+      "faces": 2616,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -52.99751663208008,
+          -2.0,
+          -8.0
+        ],
+        [
+          62.99751663208008,
+          2.0,
+          8.0
+        ]
+      ],
+      "extents_mm": [
+        115.99503326416016,
+        4.0,
+        16.0
+      ],
+      "volume_m3": 4.947859665928707e-06,
+      "mass_kg": 0.038840698377540346,
+      "com_m": [
+        0.004907292211004185,
+        1.2254385575184758e-19,
+        -6.127192787592379e-20
+      ],
+      "inertia_kg_m2": [
+        [
+          5.391170244909446e-07,
+          2.2500068598754813e-23,
+          1.368237026762221e-22
+        ],
+        [
+          2.2500068598754813e-23,
+          4.534389469712722e-05,
+          1.4279066817834973e-24
+        ],
+        [
+          1.368237026762221e-22,
+          1.4279066817834973e-24,
+          4.490835286830972e-05
+        ]
+      ]
+    },
+    "pitman_beam_pin": {
+      "entity_id": "link/pitman_beam_pin",
+      "world_frame": {
+        "xyz_m": [
+          -0.024562063093370664,
+          -0.0095,
+          0.08373721045679705
+        ],
+        "quat_wxyz": [
+          0.7071067811865475,
+          0.7071067811865475,
+          0.0,
+          -9.518429649750122e-19
+        ],
+        "matrix": [
+          [
+            1.0000000000000002,
+            -1.1214113091541944e-17,
+            8.521894630907781e-18,
+            -0.024562063093370664
+          ],
+          [
+            8.521894630907781e-18,
+            6.182824888062556e-17,
+            -1.0,
+            -0.0095
+          ],
+          [
+            -1.1214113091541944e-17,
+            1.0,
+            6.182824888062556e-17,
+            0.08373721045679705
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/pitman_beam_pin.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "walking_beam",
+      "extra_mounts": [],
+      "sha256": "dffbd1f09e33c79d1f9e8a8274054d2c1bff0b459aea1a65ae2659b882816325",
+      "vertices": 1500,
+      "faces": 500,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -2.5,
+          -2.499222993850708,
+          -5.5
+        ],
+        [
+          2.5,
+          2.499222993850708,
+          5.5
+        ]
+      ],
+      "extents_mm": [
+        5.0,
+        4.998445987701416,
+        11.0
+      ],
+      "volume_m3": 2.1589499165937024e-07,
+      "mass_kg": 0.0016947756845260564,
+      "com_m": [
+        -1.0970498980374121e-20,
+        8.104670389309593e-21,
+        0.0
+      ],
+      "inertia_kg_m2": [
+        [
+          1.9735977971791002e-08,
+          2.602954888667834e-26,
+          1.4874027935244766e-26
+        ],
+        [
+          2.602954888667834e-26,
+          1.9735977811527422e-08,
+          2.974805587048953e-26
+        ],
+        [
+          1.4874027935244766e-26,
+          2.974805587048953e-26,
+          5.293979478709628e-09
+        ]
+      ]
+    },
+    "beam_output_pin": {
+      "entity_id": "link/beam_output_pin",
+      "world_frame": {
+        "xyz_m": [
+          0.07446474378078637,
+          -0.009499999999999998,
+          0.0976545205528036
+        ],
+        "quat_wxyz": [
+          0.7071067811865475,
+          0.7071067811865475,
+          0.0,
+          -9.518429649750122e-19
+        ],
+        "matrix": [
+          [
+            1.0000000000000002,
+            -1.1214113091541944e-17,
+            8.521894630907781e-18,
+            0.07446474378078637
+          ],
+          [
+            8.521894630907781e-18,
+            6.182824888062556e-17,
+            -1.0,
+            -0.009499999999999998
+          ],
+          [
+            -1.1214113091541944e-17,
+            1.0,
+            6.182824888062556e-17,
+            0.0976545205528036
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/beam_output_pin.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "walking_beam",
+      "extra_mounts": [],
+      "sha256": "dffbd1f09e33c79d1f9e8a8274054d2c1bff0b459aea1a65ae2659b882816325",
+      "vertices": 1500,
+      "faces": 500,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -2.5,
+          -2.499222993850708,
+          -5.5
+        ],
+        [
+          2.5,
+          2.499222993850708,
+          5.5
+        ]
+      ],
+      "extents_mm": [
+        5.0,
+        4.998445987701416,
+        11.0
+      ],
+      "volume_m3": 2.1589499165937024e-07,
+      "mass_kg": 0.0016947756845260564,
+      "com_m": [
+        -1.0970498980374121e-20,
+        8.104670389309593e-21,
+        0.0
+      ],
+      "inertia_kg_m2": [
+        [
+          1.9735977971791002e-08,
+          2.602954888667834e-26,
+          1.4874027935244766e-26
+        ],
+        [
+          2.602954888667834e-26,
+          1.9735977811527422e-08,
+          2.974805587048953e-26
+        ],
+        [
+          1.4874027935244766e-26,
+          2.974805587048953e-26,
+          5.293979478709628e-09
+        ]
+      ]
+    },
+    "polished_output_rod": {
+      "entity_id": "link/polished_output_rod",
+      "world_frame": {
+        "xyz_m": [
+          0.07446474378078635,
+          -0.011999999999999999,
+          0.0
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.07446474378078635
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.011999999999999999
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/polished_output_rod.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "free",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "lower_output_guide",
+      "extra_mounts": [
+        "upper_output_guide",
+        "beam_output_pin"
+      ],
+      "sha256": "b15ee59858c3efffe5478b25cbe2e7e0db65d1052319a70993ee37ec16a4443b",
+      "vertices": 2916,
+      "faces": 972,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -6.998373985290527,
+          -3.0,
+          12.0
+        ],
+        [
+          6.998373985290527,
+          3.0,
+          104.6545181274414
+        ]
+      ],
+      "extents_mm": [
+        13.996747970581055,
+        6.0,
+        92.6545181274414
+      ],
+      "volume_m3": 3.43429084762492e-06,
+      "mass_kg": 0.02695918315385562,
+      "com_m": [
+        8.82758374412692e-20,
+        -9.931031712142786e-20,
+        0.059368102878462455
+      ],
+      "inertia_kg_m2": [
+        [
+          1.979291261334233e-05,
+          4.015987542516083e-25,
+          -8.717821777708188e-23
+        ],
+        [
+          4.015987542516083e-25,
+          1.984417396814758e-05,
+          -1.2848569851043112e-22
+        ],
+        [
+          -8.717821777708188e-23,
+          -1.2848569851043112e-22,
+          2.0223611820677214e-07
+        ]
+      ]
+    },
+    "output_guide_post": {
+      "entity_id": "link/output_guide_post",
+      "world_frame": {
+        "xyz_m": [
+          0.07446474378078635,
+          0.01,
+          0.008
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.07446474378078635
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.01
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.008
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/output_guide_post.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "base",
+      "extra_mounts": [],
+      "sha256": "4e51d4929fc5061ab9e3e3951ab31dadeef31cd0c4416bdc8f403b593f4101cc",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -5.0,
+          -5.0,
+          0.0
+        ],
+        [
+          5.0,
+          5.0,
+          66.0
+        ]
+      ],
+      "extents_mm": [
+        10.0,
+        10.0,
+        66.0
+      ],
+      "volume_m3": 6.6e-06,
+      "mass_kg": 0.05181,
+      "com_m": [
+        0.0,
+        0.0,
+        0.033
+      ],
+      "inertia_kg_m2": [
+        [
+          1.923878e-05,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          1.923878e-05,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          8.635000000000001e-07
+        ]
+      ]
+    },
+    "lower_output_guide": {
+      "entity_id": "link/lower_output_guide",
+      "world_frame": {
+        "xyz_m": [
+          0.07446474378078635,
+          -0.011999999999999999,
+          0.024
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.07446474378078635
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.011999999999999999
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.024
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/lower_output_guide.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "output_guide_post",
+      "extra_mounts": [],
+      "sha256": "d05529b1805d444c3f1fb7535587519ee2ff320a2c1fae1f35be28bea1959ceb",
+      "vertices": 96,
+      "faces": 32,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -8.0,
+          -8.0,
+          -4.0
+        ],
+        [
+          8.0,
+          22.0,
+          4.0
+        ]
+      ],
+      "extents_mm": [
+        16.0,
+        30.0,
+        8.0
+      ],
+      "volume_m3": 3.5403648112060547e-06,
+      "mass_kg": 0.02779186376796753,
+      "com_m": [
+        8.563097781092803e-20,
+        0.0075924379077881255,
+        0.0
+      ],
+      "inertia_kg_m2": [
+        [
+          2.2766726480497484e-06,
+          1.8068821365928305e-23,
+          -0.0
+        ],
+        [
+          1.8068821365928305e-23,
+          7.839537860963048e-07,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          2.764179887287733e-06
+        ]
+      ]
+    },
+    "upper_output_guide": {
+      "entity_id": "link/upper_output_guide",
+      "world_frame": {
+        "xyz_m": [
+          0.07446474378078635,
+          -0.011999999999999999,
+          0.05
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.07446474378078635
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.011999999999999999
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.05
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/upper_output_guide.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "output_guide_post",
+      "extra_mounts": [],
+      "sha256": "d05529b1805d444c3f1fb7535587519ee2ff320a2c1fae1f35be28bea1959ceb",
+      "vertices": 96,
+      "faces": 32,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -8.0,
+          -8.0,
+          -4.0
+        ],
+        [
+          8.0,
+          22.0,
+          4.0
+        ]
+      ],
+      "extents_mm": [
+        16.0,
+        30.0,
+        8.0
+      ],
+      "volume_m3": 3.5403648112060547e-06,
+      "mass_kg": 0.02779186376796753,
+      "com_m": [
+        8.563097781092803e-20,
+        0.0075924379077881255,
+        0.0
+      ],
+      "inertia_kg_m2": [
+        [
+          2.2766726480497484e-06,
+          1.8068821365928305e-23,
+          -0.0
+        ],
+        [
+          1.8068821365928305e-23,
+          7.839537860963048e-07,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          2.764179887287733e-06
+        ]
+      ]
+    },
+    "hand_crank_arm": {
+      "entity_id": "link/hand_crank_arm",
+      "world_frame": {
+        "xyz_m": [
+          -0.045,
+          0.031,
+          0.056999999999999995
+        ],
+        "quat_wxyz": [
+          0.7071067811865475,
+          -0.0,
+          -0.7071067811865476,
+          1.1102230246251565e-16
+        ],
+        "matrix": [
+          [
+            6.123233995736766e-17,
+            -6.123233995736766e-17,
+            -1.0,
+            -0.045
+          ],
+          [
+            6.123233995736766e-17,
+            1.0,
+            -6.123233995736766e-17,
+            0.031
+          ],
+          [
+            1.0,
+            -6.123233995736766e-17,
+            6.123233995736766e-17,
+            0.056999999999999995
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/hand_crank_arm.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "crankshaft",
+      "extra_mounts": [],
+      "sha256": "5656433a29ca6d17b1f6a2eed499595adfee346e0be63814421b631363268d09",
+      "vertices": 5580,
+      "faces": 1860,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -18.99782371520996,
+          -2.0,
+          -7.0
+        ],
+        [
+          18.99782371520996,
+          2.0,
+          7.0
+        ]
+      ],
+      "extents_mm": [
+        37.99564743041992,
+        4.0,
+        14.0
+      ],
+      "volume_m3": 1.2776171291786287e-06,
+      "mass_kg": 0.010029294464052235,
+      "com_m": [
+        0.0014134068878938115,
+        5.932233015415948e-20,
+        -9.269114086587419e-20
+      ],
+      "inertia_kg_m2": [
+        [
+          1.3499900705259966e-07,
+          7.814260296350177e-25,
+          -1.511703876980714e-23
+        ],
+        [
+          7.814260296350177e-25,
+          1.3436952418239042e-06,
+          -2.677325028344058e-25
+        ],
+        [
+          -1.511703876980714e-23,
+          -2.677325028344058e-25,
+          1.2354410200087774e-06
+        ]
+      ]
+    },
+    "handle_spindle": {
+      "entity_id": "link/handle_spindle",
+      "world_frame": {
+        "xyz_m": [
+          -0.045,
+          0.039,
+          0.06899999999999999
+        ],
+        "quat_wxyz": [
+          0.7071067811865476,
+          0.7071067811865475,
+          -0.0,
+          2.1648901405887335e-17
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            6.123233995736766e-17,
+            -0.045
+          ],
+          [
+            6.123233995736766e-17,
+            1.2246467991473532e-16,
+            -1.0,
+            0.039
+          ],
+          [
+            0.0,
+            1.0,
+            1.2246467991473532e-16,
+            0.06899999999999999
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/handle_spindle.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "hand_crank_arm",
+      "extra_mounts": [],
+      "sha256": "e5e92f8b9a953005ecb40e523f4275582cc518a79004d00a361ac806300d39fc",
+      "vertices": 1500,
+      "faces": 500,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -2.0,
+          -1.9993783235549927,
+          -8.0
+        ],
+        [
+          2.0,
+          1.9993783235549927,
+          8.0
+        ]
+      ],
+      "extents_mm": [
+        4.0,
+        3.9987566471099854,
+        16.0
+      ],
+      "volume_m3": 2.009786098480416e-07,
+      "mass_kg": 0.0015776820873071265,
+      "com_m": [
+        1.178471573496198e-20,
+        2.201722098676674e-20,
+        0.0
+      ],
+      "inertia_kg_m2": [
+        [
+          3.523424622001258e-08,
+          -4.6481337297639874e-27,
+          -4.462208380573429e-26
+        ],
+        [
+          -4.6481337297639874e-27,
+          3.523424620646231e-08,
+          7.436787007967608e-27
+        ],
+        [
+          -4.462208380573429e-26,
+          7.436787007967608e-27,
+          3.154056701370837e-09
+        ]
+      ]
+    },
+    "hand_grip": {
+      "entity_id": "link/hand_grip",
+      "world_frame": {
+        "xyz_m": [
+          -0.045,
+          0.0415,
+          0.06899999999999999
+        ],
+        "quat_wxyz": [
+          0.7071067811865476,
+          0.7071067811865475,
+          -0.0,
+          2.1648901405887335e-17
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            6.123233995736766e-17,
+            -0.045
+          ],
+          [
+            6.123233995736766e-17,
+            1.2246467991473532e-16,
+            -1.0,
+            0.0415
+          ],
+          [
+            0.0,
+            1.0,
+            1.2246467991473532e-16,
+            0.06899999999999999
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/hand_grip.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "handle_spindle",
+      "extra_mounts": [],
+      "sha256": "432b866e67692d74fc959737fe081b8ef9982d980b6d242a1358195b0aad823b",
+      "vertices": 3024,
+      "faces": 1008,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -5.0,
+          -4.998445987701416,
+          -5.5
+        ],
+        [
+          5.0,
+          4.998445987701416,
+          5.5
+        ]
+      ],
+      "extents_mm": [
+        10.0,
+        9.996891975402832,
+        11.0
+      ],
+      "volume_m3": 7.26097170410305e-07,
+      "mass_kg": 0.005699862787720895,
+      "com_m": [
+        0.0,
+        2.2804180901949644e-19,
+        0.0
+      ],
+      "inertia_kg_m2": [
+        [
+          9.875204801082848e-08,
+          5.937990839773497e-25,
+          -0.0
+        ],
+        [
+          5.937990839773497e-25,
+          9.875204543844683e-08,
+          -9.668118157909098e-26
+        ],
+        [
+          -0.0,
+          -9.668118157909098e-26,
+          8.255686056357063e-08
+        ]
+      ]
+    }
+  },
+  "ports": {
+    "crankshaft": {
+      "rotation_axis": {
+        "entity_id": "port/crankshaft/rotation_axis",
+        "type": "shaft",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            -0.045,
+            0.0,
+            0.045
+          ],
+          "quat_wxyz": [
+            0.5000000000000002,
+            0.5,
+            0.5000000000000001,
+            -0.5
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              -0.045
+            ],
+            [
+              -6.123233995736766e-17,
+              0.0,
+              -1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              6.123233995736766e-17,
+              0.045
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 8.0,
+        "depth_mm": 72.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "disk_seat": {
+        "entity_id": "port/crankshaft/disk_seat",
+        "type": "cylindrical",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            -0.045,
+            0.0,
+            0.045
+          ],
+          "quat_wxyz": [
+            0.5000000000000002,
+            0.5,
+            0.5000000000000001,
+            -0.5
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              -0.045
+            ],
+            [
+              -6.123233995736766e-17,
+              0.0,
+              -1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              6.123233995736766e-17,
+              0.045
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 8.0,
+        "depth_mm": 10.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "crank_disk": {
+      "shaft_bore": {
+        "entity_id": "port/crank_disk/shaft_bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            -0.045,
+            0.0,
+            0.045
+          ],
+          "quat_wxyz": [
+            0.5000000000000002,
+            0.5,
+            0.5000000000000001,
+            -0.5
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              -0.045
+            ],
+            [
+              -6.123233995736766e-17,
+              0.0,
+              -1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              6.123233995736766e-17,
+              0.045
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 7.99,
+        "depth_mm": 10.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "crank_pin_seat": {
+        "entity_id": "port/crank_disk/crank_pin_seat",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.014744736797201853,
+            0.01032437585431883,
+            0.0
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.014744736797201853
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.01032437585431883
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            -0.030255263202798144,
+            6.321856921592887e-19,
+            0.055324375854318826
+          ],
+          "quat_wxyz": [
+            0.5000000000000002,
+            0.5,
+            0.5000000000000001,
+            -0.5
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              -0.030255263202798144
+            ],
+            [
+              -6.123233995736766e-17,
+              0.0,
+              -1.0,
+              6.321856921592887e-19
+            ],
+            [
+              -1.0,
+              0.0,
+              6.123233995736766e-17,
+              0.055324375854318826
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 4.99,
+        "depth_mm": 10.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "crank_pin": {
+      "pin_shaft": {
+        "entity_id": "port/crank_pin/pin_shaft",
+        "type": "shaft",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            -0.030255263202798144,
+            -0.0095,
+            0.05532437585431883
+          ],
+          "quat_wxyz": [
+            0.5000000000000002,
+            0.5,
+            0.5000000000000001,
+            -0.5
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              -0.030255263202798144
+            ],
+            [
+              -6.123233995736766e-17,
+              0.0,
+              -1.0,
+              -0.0095
+            ],
+            [
+              -1.0,
+              0.0,
+              6.123233995736766e-17,
+              0.05532437585431883
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 5.0,
+        "depth_mm": 11.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "pitman": {
+      "crank_end_bore": {
+        "entity_id": "port/pitman/crank_end_bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            -0.014488803415342562,
+            0.0,
+            0.0
+          ],
+          "quat_wxyz": [
+            0.5000000000000001,
+            -0.5,
+            -0.5000000000000001,
+            -0.5000000000000001
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              -0.014488803415342562
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            -0.030255263202798144,
+            -0.012,
+            0.05532437585431883
+          ],
+          "quat_wxyz": [
+            0.06980321292686163,
+            -0.06980321292686172,
+            -0.7036529765907962,
+            -0.703652976590796
+          ],
+          "matrix": [
+            [
+              -0.9805100458603488,
+              0.19646895420634963,
+              -6.003892445973503e-17,
+              -0.030255263202798144
+            ],
+            [
+              -4.920208616233596e-17,
+              6.003892445973503e-17,
+              1.0,
+              -0.012
+            ],
+            [
+              0.19646895420634963,
+              0.9805100458603488,
+              -4.920208616233596e-17,
+              0.05532437585431883
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "diameter_mm": 5.1,
+        "depth_mm": 4.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "beam_end_bore": {
+        "entity_id": "port/pitman/beam_end_bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.014488803415342562,
+            0.0,
+            0.0
+          ],
+          "quat_wxyz": [
+            0.5000000000000001,
+            -0.5,
+            -0.5000000000000001,
+            -0.5000000000000001
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.014488803415342562
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            -0.024562063093370667,
+            -0.011999999999999997,
+            0.08373721045679706
+          ],
+          "quat_wxyz": [
+            0.06980321292686163,
+            -0.06980321292686172,
+            -0.7036529765907962,
+            -0.703652976590796
+          ],
+          "matrix": [
+            [
+              -0.9805100458603488,
+              0.19646895420634963,
+              -6.003892445973503e-17,
+              -0.024562063093370667
+            ],
+            [
+              -4.920208616233596e-17,
+              6.003892445973503e-17,
+              1.0,
+              -0.011999999999999997
+            ],
+            [
+              0.19646895420634963,
+              0.9805100458603488,
+              -4.920208616233596e-17,
+              0.08373721045679706
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "diameter_mm": 5.1,
+        "depth_mm": 4.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "walking_beam": {
+      "pitman_pin_bore": {
+        "entity_id": "port/walking_beam/pitman_pin_bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            -0.045,
+            0.0,
+            0.0
+          ],
+          "quat_wxyz": [
+            0.5000000000000001,
+            -0.5,
+            -0.5000000000000001,
+            -0.5000000000000001
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              -0.045
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            -0.024562063093370664,
+            -0.006999999999999999,
+            0.08373721045679705
+          ],
+          "quat_wxyz": [
+            0.46390378825784934,
+            -0.4639037882578495,
+            -0.5336602620019747,
+            -0.5336602620019748
+          ],
+          "matrix": [
+            [
+              -0.13917310096006547,
+              0.9902680687415704,
+              -8.52189463090778e-18,
+              -0.024562063093370664
+            ],
+            [
+              -5.959089232578996e-19,
+              8.52189463090778e-18,
+              1.0,
+              -0.006999999999999999
+            ],
+            [
+              0.9902680687415704,
+              0.13917310096006547,
+              -5.959089232578996e-19,
+              0.08373721045679705
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "diameter_mm": 4.99,
+        "depth_mm": 4.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "pivot_bore": {
+        "entity_id": "port/walking_beam/pivot_bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "quat_wxyz": [
+            0.5000000000000001,
+            -0.5,
+            -0.5000000000000001,
+            -0.5000000000000001
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.02,
+            -0.006999999999999999,
+            0.09
+          ],
+          "quat_wxyz": [
+            0.46390378825784934,
+            -0.4639037882578495,
+            -0.5336602620019747,
+            -0.5336602620019748
+          ],
+          "matrix": [
+            [
+              -0.13917310096006547,
+              0.9902680687415704,
+              -8.52189463090778e-18,
+              0.02
+            ],
+            [
+              -5.959089232578996e-19,
+              8.52189463090778e-18,
+              1.0,
+              -0.006999999999999999
+            ],
+            [
+              0.9902680687415704,
+              0.13917310096006547,
+              -5.959089232578996e-19,
+              0.09
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "diameter_mm": 6.1,
+        "depth_mm": 4.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "output_pin_bore": {
+        "entity_id": "port/walking_beam/output_pin_bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.055,
+            0.0,
+            0.0
+          ],
+          "quat_wxyz": [
+            0.5000000000000001,
+            -0.5,
+            -0.5000000000000001,
+            -0.5000000000000001
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.055
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.07446474378078637,
+            -0.006999999999999998,
+            0.0976545205528036
+          ],
+          "quat_wxyz": [
+            0.46390378825784934,
+            -0.4639037882578495,
+            -0.5336602620019747,
+            -0.5336602620019748
+          ],
+          "matrix": [
+            [
+              -0.13917310096006547,
+              0.9902680687415704,
+              -8.52189463090778e-18,
+              0.07446474378078637
+            ],
+            [
+              -5.959089232578996e-19,
+              8.52189463090778e-18,
+              1.0,
+              -0.006999999999999998
+            ],
+            [
+              0.9902680687415704,
+              0.13917310096006547,
+              -5.959089232578996e-19,
+              0.0976545205528036
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "diameter_mm": 4.99,
+        "depth_mm": 4.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "pitman_beam_pin": {
+      "pin_shaft": {
+        "entity_id": "port/pitman_beam_pin/pin_shaft",
+        "type": "shaft",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            -0.024562063093370664,
+            -0.0095,
+            0.08373721045679705
+          ],
+          "quat_wxyz": [
+            0.5,
+            0.5000000000000001,
+            0.5,
+            -0.49999999999999983
+          ],
+          "matrix": [
+            [
+              1.1214113091541944e-17,
+              1.0000000000000002,
+              8.521894630907781e-18,
+              -0.024562063093370664
+            ],
+            [
+              -6.182824888062556e-17,
+              8.521894630907781e-18,
+              -1.0,
+              -0.0095
+            ],
+            [
+              -1.0,
+              -1.1214113091541944e-17,
+              6.182824888062556e-17,
+              0.08373721045679705
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 5.0,
+        "depth_mm": 11.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "beam_pivot_pin": {
+      "pivot_shaft": {
+        "entity_id": "port/beam_pivot_pin/pivot_shaft",
+        "type": "shaft",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.02,
+            -0.006999999999999999,
+            0.09
+          ],
+          "quat_wxyz": [
+            0.5000000000000002,
+            0.5,
+            0.5000000000000001,
+            -0.5
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.02
+            ],
+            [
+              -6.123233995736766e-17,
+              0.0,
+              -1.0,
+              -0.006999999999999999
+            ],
+            [
+              -1.0,
+              0.0,
+              6.123233995736766e-17,
+              0.09
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 6.0,
+        "depth_mm": 28.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "beam_output_pin": {
+      "pin_shaft": {
+        "entity_id": "port/beam_output_pin/pin_shaft",
+        "type": "shaft",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.07446474378078637,
+            -0.009499999999999998,
+            0.0976545205528036
+          ],
+          "quat_wxyz": [
+            0.5,
+            0.5000000000000001,
+            0.5,
+            -0.49999999999999983
+          ],
+          "matrix": [
+            [
+              1.1214113091541944e-17,
+              1.0000000000000002,
+              8.521894630907781e-18,
+              0.07446474378078637
+            ],
+            [
+              -6.182824888062556e-17,
+              8.521894630907781e-18,
+              -1.0,
+              -0.009499999999999998
+            ],
+            [
+              -1.0,
+              -1.1214113091541944e-17,
+              6.182824888062556e-17,
+              0.0976545205528036
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 5.0,
+        "depth_mm": 11.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "polished_output_rod": {
+      "beam_pin_bore": {
+        "entity_id": "port/polished_output_rod/beam_pin_bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0976545205528036
+          ],
+          "quat_wxyz": [
+            0.5000000000000001,
+            -0.5,
+            -0.5000000000000001,
+            -0.5000000000000001
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0976545205528036
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.07446474378078635,
+            -0.011999999999999999,
+            0.0976545205528036
+          ],
+          "quat_wxyz": [
+            0.5000000000000001,
+            -0.5,
+            -0.5000000000000001,
+            -0.5000000000000001
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.07446474378078635
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              -0.011999999999999999
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0976545205528036
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "diameter_mm": 5.1,
+        "depth_mm": 4.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "guided_axis": {
+        "entity_id": "port/polished_output_rod/guided_axis",
+        "type": "flat_face",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.032
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.032
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.07446474378078635,
+            -0.011999999999999999,
+            0.032
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.07446474378078635
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              -0.011999999999999999
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.032
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 0.0,
+        "depth_mm": 85.6545205528036,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    }
+  },
+  "simulation": {
+    "gravity": [
+      0.0,
+      0.0,
+      -9.81
+    ],
+    "timestep": 0.0002,
+    "solver": "Newton",
+    "iterations": 100,
+    "base_rests_on_plane": true
+  }
+}

@@ -1,0 +1,832 @@
+{
+  "links": [
+    {
+      "axis": null,
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/base.stl",
+      "mesh_filename": "meshes/base.stl",
+      "mount": "",
+      "name": "base",
+      "rigid_mount": "world",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axis": null,
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/left_crank_support.stl",
+      "mesh_filename": "meshes/left_crank_support.stl",
+      "mount": "base",
+      "name": "left_crank_support",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axis": null,
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/right_crank_support.stl",
+      "mesh_filename": "meshes/right_crank_support.stl",
+      "mount": "base",
+      "name": "right_crank_support",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/front_crank_bearing.stl",
+      "mesh_filename": "meshes/front_crank_bearing.stl",
+      "mount": "left_crank_support",
+      "name": "front_crank_bearing",
+      "rigid_mount": "left_crank_support",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/rear_crank_bearing.stl",
+      "mesh_filename": "meshes/rear_crank_bearing.stl",
+      "mount": "right_crank_support",
+      "name": "rear_crank_bearing",
+      "rigid_mount": "right_crank_support",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "dof": "spin",
+      "driver": true,
+      "mesh": "meshes/crankshaft_input.stl",
+      "mesh_filename": "meshes/crankshaft_input.stl",
+      "mount": "",
+      "name": "crankshaft_input",
+      "rigid_mount": null,
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/crank_web.stl",
+      "mesh_filename": "meshes/crank_web.stl",
+      "mount": "crankshaft_input",
+      "name": "crank_web",
+      "rigid_mount": "crankshaft_input",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/eccentric_pin.stl",
+      "mesh_filename": "meshes/eccentric_pin.stl",
+      "mount": "crankshaft_input",
+      "name": "eccentric_pin",
+      "rigid_mount": "crankshaft_input",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "dof": "planar_link",
+      "driver": false,
+      "mesh": "meshes/connecting_rod.stl",
+      "mesh_filename": "meshes/connecting_rod.stl",
+      "mount": "",
+      "name": "connecting_rod",
+      "rigid_mount": null,
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "dof": "slide",
+      "driver": false,
+      "mesh": "meshes/vertical_crosshead.stl",
+      "mesh_filename": "meshes/vertical_crosshead.stl",
+      "mount": "",
+      "name": "vertical_crosshead",
+      "rigid_mount": null,
+      "slide_axis": [
+        0,
+        0,
+        1
+      ],
+      "spin_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/left_vertical_guide.stl",
+      "mesh_filename": "meshes/left_vertical_guide.stl",
+      "mount": "base",
+      "name": "left_vertical_guide",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0,
+        0,
+        1
+      ],
+      "spin_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/right_vertical_guide.stl",
+      "mesh_filename": "meshes/right_vertical_guide.stl",
+      "mount": "base",
+      "name": "right_vertical_guide",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0,
+        0,
+        1
+      ],
+      "spin_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/pump_rod.stl",
+      "mesh_filename": "meshes/pump_rod.stl",
+      "mount": "vertical_crosshead",
+      "name": "pump_rod",
+      "rigid_mount": "vertical_crosshead",
+      "slide_axis": [
+        0,
+        0,
+        1
+      ],
+      "spin_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/piston_output.stl",
+      "mesh_filename": "meshes/piston_output.stl",
+      "mount": "pump_rod",
+      "name": "piston_output",
+      "rigid_mount": "pump_rod",
+      "slide_axis": [
+        0,
+        0,
+        1
+      ],
+      "spin_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "axis": null,
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/lower_cylinder_frame.stl",
+      "mesh_filename": "meshes/lower_cylinder_frame.stl",
+      "mount": "base",
+      "name": "lower_cylinder_frame",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axis": null,
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/upper_cylinder_frame.stl",
+      "mesh_filename": "meshes/upper_cylinder_frame.stl",
+      "mount": "base",
+      "name": "upper_cylinder_frame",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/hand_crank.stl",
+      "mesh_filename": "meshes/hand_crank.stl",
+      "mount": "crankshaft_input",
+      "name": "hand_crank",
+      "rigid_mount": "crankshaft_input",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    }
+  ],
+  "mesh_pairs": [],
+  "motion_joints": [
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "child": "crankshaft_input",
+      "driver": true,
+      "kind": "spin",
+      "name": "crankshaft_input_hinge",
+      "origin_m": [
+        -0.045,
+        0,
+        0.075
+      ],
+      "parent": "base",
+      "pos_mm": [
+        -45.0,
+        0.0,
+        75.0
+      ],
+      "type": "spin"
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "child": "connecting_rod",
+      "driver": false,
+      "kind": "spin",
+      "name": "eccentric_pin_hinge",
+      "origin_m": [
+        0,
+        0,
+        0
+      ],
+      "parent": "eccentric_pin",
+      "pos_mm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "type": "spin"
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "child": "connecting_rod",
+      "driver": false,
+      "kind": "spin",
+      "name": "rod_crosshead_hinge",
+      "origin_m": [
+        0,
+        0,
+        0
+      ],
+      "parent": "vertical_crosshead",
+      "pos_mm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "type": "spin"
+    },
+    {
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "child": "vertical_crosshead",
+      "driver": false,
+      "kind": "slide",
+      "name": "vertical_crosshead_slide",
+      "origin_m": [
+        0,
+        0,
+        0.160058948
+      ],
+      "parent": "base",
+      "pos_mm": [
+        0.0,
+        0.0,
+        160.05894800000002
+      ],
+      "type": "slide"
+    }
+  ],
+  "name": "open_vertical_piston_pump",
+  "output_link": "piston_output",
+  "planetary_stages": [],
+  "ports_by_link": {
+    "connecting_rod": [
+      "rod_big_end",
+      "rod_small_end"
+    ],
+    "crankshaft_input": [
+      "crank_axis"
+    ],
+    "eccentric_pin": [
+      "eccentric_pin_axis"
+    ],
+    "piston_output": [
+      "piston_axis"
+    ],
+    "vertical_crosshead": [
+      "crosshead_pin_axis",
+      "vertical_guide_axis"
+    ]
+  },
+  "poses": [
+    {
+      "child": "base",
+      "name": "place_base",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0.004
+      ]
+    },
+    {
+      "child": "left_crank_support",
+      "name": "place_left_crank_support",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        -0.045,
+        -0.029,
+        0.0415
+      ]
+    },
+    {
+      "child": "right_crank_support",
+      "name": "place_right_crank_support",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        -0.045,
+        0.029,
+        0.0415
+      ]
+    },
+    {
+      "child": "front_crank_bearing",
+      "name": "place_front_crank_bearing",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        -0.045,
+        -0.029,
+        0.075
+      ]
+    },
+    {
+      "child": "rear_crank_bearing",
+      "name": "place_rear_crank_bearing",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        -0.045,
+        0.029,
+        0.075
+      ]
+    },
+    {
+      "child": "crankshaft_input",
+      "name": "place_crankshaft_input",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        -0.045,
+        0,
+        0.075
+      ]
+    },
+    {
+      "child": "crank_web",
+      "name": "place_crank_web",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        -0.045,
+        0,
+        0.075
+      ]
+    },
+    {
+      "child": "eccentric_pin",
+      "name": "place_eccentric_pin",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        -0.027679492,
+        0,
+        0.085
+      ]
+    },
+    {
+      "child": "connecting_rod",
+      "name": "place_connecting_rod",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        -1.217645,
+        0
+      ],
+      "xyz_m": [
+        -0.013839746,
+        0,
+        0.122529474
+      ]
+    },
+    {
+      "child": "vertical_crosshead",
+      "name": "place_vertical_crosshead",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0.160058948
+      ]
+    },
+    {
+      "child": "left_vertical_guide",
+      "name": "place_left_vertical_guide",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        -0.023,
+        0.154
+      ]
+    },
+    {
+      "child": "right_vertical_guide",
+      "name": "place_right_vertical_guide",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0.023,
+        0.154
+      ]
+    },
+    {
+      "child": "pump_rod",
+      "name": "place_pump_rod",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0.160058948
+      ]
+    },
+    {
+      "child": "piston_output",
+      "name": "place_piston_output",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0.160058948
+      ]
+    },
+    {
+      "child": "lower_cylinder_frame",
+      "name": "place_lower_cylinder_frame",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0.084
+      ]
+    },
+    {
+      "child": "upper_cylinder_frame",
+      "name": "place_upper_cylinder_frame",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0.21
+      ]
+    },
+    {
+      "child": "hand_crank",
+      "name": "place_hand_crank",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        -0.045,
+        0,
+        0.075
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "base_part": "front_crank_bearing",
+      "incoming_part": "crankshaft_input",
+      "mate_type": "journal_bearing",
+      "name": "front_bearing_interface"
+    },
+    {
+      "base_part": "rear_crank_bearing",
+      "incoming_part": "crankshaft_input",
+      "mate_type": "journal_bearing",
+      "name": "rear_bearing_interface"
+    },
+    {
+      "base_part": "crankshaft_input",
+      "incoming_part": "crank_web",
+      "mate_type": "press_fit",
+      "name": "web_press_fit"
+    },
+    {
+      "base_part": "crankshaft_input",
+      "incoming_part": "hand_crank",
+      "mate_type": "press_fit",
+      "name": "hand_crank_press_fit"
+    },
+    {
+      "base_part": "crank_web",
+      "incoming_part": "eccentric_pin",
+      "mate_type": "press_fit",
+      "name": "eccentric_pin_press_fit"
+    },
+    {
+      "base_part": "eccentric_pin",
+      "incoming_part": "connecting_rod",
+      "mate_type": "dedicated_pin_fit",
+      "name": "rod_big_end_pin_fit"
+    },
+    {
+      "base_part": "vertical_crosshead",
+      "incoming_part": "connecting_rod",
+      "mate_type": "revolute",
+      "name": "rod_crosshead_revolute"
+    },
+    {
+      "base_part": "vertical_crosshead",
+      "incoming_part": "pump_rod",
+      "mate_type": "rigid_carry",
+      "name": "crosshead_carries_pump_rod"
+    },
+    {
+      "base_part": "pump_rod",
+      "incoming_part": "piston_output",
+      "mate_type": "rigid_carry",
+      "name": "pump_rod_carries_piston"
+    }
+  ],
+  "root_link": "base",
+  "transmissions": [],
+  "watch_links": [
+    "crank_web",
+    "eccentric_pin",
+    "connecting_rod",
+    "vertical_crosshead",
+    "pump_rod",
+    "piston_output"
+  ]
+}

@@ -1,0 +1,484 @@
+<?xml version='1.0' encoding='ASCII'?>
+<robot name="design_this_as_an_open_demonstra">
+  <link name="world"/>
+  <link name="base">
+    <visual name="base_visual">
+      <geometry>
+        <mesh filename="meshes/base.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="base_mat">
+        <color rgba="0.82 0.27 0.24 1.0"/>
+      </material>
+    </visual>
+    <collision name="base_collision">
+      <geometry>
+        <mesh filename="meshes/base.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="negative_shaft_pedestal">
+    <visual name="negative_shaft_pedestal_visual">
+      <geometry>
+        <mesh filename="meshes/negative_shaft_pedestal.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="negative_shaft_pedestal_mat">
+        <color rgba="0.27 0.51 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="negative_shaft_pedestal_collision">
+      <geometry>
+        <mesh filename="meshes/negative_shaft_pedestal.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="positive_shaft_pedestal">
+    <visual name="positive_shaft_pedestal_visual">
+      <geometry>
+        <mesh filename="meshes/positive_shaft_pedestal.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="positive_shaft_pedestal_mat">
+        <color rgba="0.35 0.71 0.35 1.0"/>
+      </material>
+    </visual>
+    <collision name="positive_shaft_pedestal_collision">
+      <geometry>
+        <mesh filename="meshes/positive_shaft_pedestal.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="negative_shaft_bearing">
+    <visual name="negative_shaft_bearing_visual">
+      <geometry>
+        <mesh filename="meshes/negative_shaft_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="negative_shaft_bearing_mat">
+        <color rgba="0.9 0.67 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision name="negative_shaft_bearing_collision">
+      <geometry>
+        <mesh filename="meshes/negative_shaft_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="positive_shaft_bearing">
+    <visual name="positive_shaft_bearing_visual">
+      <geometry>
+        <mesh filename="meshes/positive_shaft_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="positive_shaft_bearing_mat">
+        <color rgba="0.59 0.39 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="positive_shaft_bearing_collision">
+      <geometry>
+        <mesh filename="meshes/positive_shaft_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="crankshaft">
+    <visual name="crankshaft_visual">
+      <geometry>
+        <mesh filename="meshes/crankshaft.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="crankshaft_mat">
+        <color rgba="0.24 0.75 0.75 1.0"/>
+      </material>
+    </visual>
+    <collision name="crankshaft_collision">
+      <geometry>
+        <mesh filename="meshes/crankshaft.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="crank_disk">
+    <visual name="crank_disk_visual">
+      <geometry>
+        <mesh filename="meshes/crank_disk.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="crank_disk_mat">
+        <color rgba="0.86 0.47 0.67 1.0"/>
+      </material>
+    </visual>
+    <collision name="crank_disk_collision">
+      <geometry>
+        <mesh filename="meshes/crank_disk.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="crank_pin">
+    <visual name="crank_pin_visual">
+      <geometry>
+        <mesh filename="meshes/crank_pin.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="crank_pin_mat">
+        <color rgba="0.63 0.63 0.31 1.0"/>
+      </material>
+    </visual>
+    <collision name="crank_pin_collision">
+      <geometry>
+        <mesh filename="meshes/crank_pin.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="pitman">
+    <visual name="pitman_visual">
+      <geometry>
+        <mesh filename="meshes/pitman.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="pitman_mat">
+        <color rgba="0.47 0.43 0.39 1.0"/>
+      </material>
+    </visual>
+    <collision name="pitman_collision">
+      <geometry>
+        <mesh filename="meshes/pitman.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="negative_beam_support">
+    <visual name="negative_beam_support_visual">
+      <geometry>
+        <mesh filename="meshes/negative_beam_support.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="negative_beam_support_mat">
+        <color rgba="0.78 0.78 0.82 1.0"/>
+      </material>
+    </visual>
+    <collision name="negative_beam_support_collision">
+      <geometry>
+        <mesh filename="meshes/negative_beam_support.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="positive_beam_support">
+    <visual name="positive_beam_support_visual">
+      <geometry>
+        <mesh filename="meshes/positive_beam_support.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="positive_beam_support_mat">
+        <color rgba="0.71 0.35 0.24 1.0"/>
+      </material>
+    </visual>
+    <collision name="positive_beam_support_collision">
+      <geometry>
+        <mesh filename="meshes/positive_beam_support.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="negative_pivot_bearing">
+    <visual name="negative_pivot_bearing_visual">
+      <geometry>
+        <mesh filename="meshes/negative_pivot_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="negative_pivot_bearing_mat">
+        <color rgba="0.31 0.59 0.47 1.0"/>
+      </material>
+    </visual>
+    <collision name="negative_pivot_bearing_collision">
+      <geometry>
+        <mesh filename="meshes/negative_pivot_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="positive_pivot_bearing">
+    <visual name="positive_pivot_bearing_visual">
+      <geometry>
+        <mesh filename="meshes/positive_pivot_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="positive_pivot_bearing_mat">
+        <color rgba="0.82 0.27 0.24 1.0"/>
+      </material>
+    </visual>
+    <collision name="positive_pivot_bearing_collision">
+      <geometry>
+        <mesh filename="meshes/positive_pivot_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="beam_pivot_pin">
+    <visual name="beam_pivot_pin_visual">
+      <geometry>
+        <mesh filename="meshes/beam_pivot_pin.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="beam_pivot_pin_mat">
+        <color rgba="0.27 0.51 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="beam_pivot_pin_collision">
+      <geometry>
+        <mesh filename="meshes/beam_pivot_pin.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="walking_beam">
+    <visual name="walking_beam_visual">
+      <geometry>
+        <mesh filename="meshes/walking_beam.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="walking_beam_mat">
+        <color rgba="0.35 0.71 0.35 1.0"/>
+      </material>
+    </visual>
+    <collision name="walking_beam_collision">
+      <geometry>
+        <mesh filename="meshes/walking_beam.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="pitman_beam_pin">
+    <visual name="pitman_beam_pin_visual">
+      <geometry>
+        <mesh filename="meshes/pitman_beam_pin.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="pitman_beam_pin_mat">
+        <color rgba="0.9 0.67 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision name="pitman_beam_pin_collision">
+      <geometry>
+        <mesh filename="meshes/pitman_beam_pin.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="beam_output_pin">
+    <visual name="beam_output_pin_visual">
+      <geometry>
+        <mesh filename="meshes/beam_output_pin.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="beam_output_pin_mat">
+        <color rgba="0.59 0.39 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="beam_output_pin_collision">
+      <geometry>
+        <mesh filename="meshes/beam_output_pin.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="polished_output_rod">
+    <visual name="polished_output_rod_visual">
+      <geometry>
+        <mesh filename="meshes/polished_output_rod.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="polished_output_rod_mat">
+        <color rgba="0.24 0.75 0.75 1.0"/>
+      </material>
+    </visual>
+    <collision name="polished_output_rod_collision">
+      <geometry>
+        <mesh filename="meshes/polished_output_rod.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="output_guide_post">
+    <visual name="output_guide_post_visual">
+      <geometry>
+        <mesh filename="meshes/output_guide_post.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="output_guide_post_mat">
+        <color rgba="0.86 0.47 0.67 1.0"/>
+      </material>
+    </visual>
+    <collision name="output_guide_post_collision">
+      <geometry>
+        <mesh filename="meshes/output_guide_post.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="lower_output_guide">
+    <visual name="lower_output_guide_visual">
+      <geometry>
+        <mesh filename="meshes/lower_output_guide.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="lower_output_guide_mat">
+        <color rgba="0.63 0.63 0.31 1.0"/>
+      </material>
+    </visual>
+    <collision name="lower_output_guide_collision">
+      <geometry>
+        <mesh filename="meshes/lower_output_guide.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="upper_output_guide">
+    <visual name="upper_output_guide_visual">
+      <geometry>
+        <mesh filename="meshes/upper_output_guide.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="upper_output_guide_mat">
+        <color rgba="0.47 0.43 0.39 1.0"/>
+      </material>
+    </visual>
+    <collision name="upper_output_guide_collision">
+      <geometry>
+        <mesh filename="meshes/upper_output_guide.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="hand_crank_arm">
+    <visual name="hand_crank_arm_visual">
+      <geometry>
+        <mesh filename="meshes/hand_crank_arm.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="hand_crank_arm_mat">
+        <color rgba="0.78 0.78 0.82 1.0"/>
+      </material>
+    </visual>
+    <collision name="hand_crank_arm_collision">
+      <geometry>
+        <mesh filename="meshes/hand_crank_arm.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="handle_spindle">
+    <visual name="handle_spindle_visual">
+      <geometry>
+        <mesh filename="meshes/handle_spindle.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="handle_spindle_mat">
+        <color rgba="0.71 0.35 0.24 1.0"/>
+      </material>
+    </visual>
+    <collision name="handle_spindle_collision">
+      <geometry>
+        <mesh filename="meshes/handle_spindle.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="hand_grip">
+    <visual name="hand_grip_visual">
+      <geometry>
+        <mesh filename="meshes/hand_grip.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="hand_grip_mat">
+        <color rgba="0.31 0.59 0.47 1.0"/>
+      </material>
+    </visual>
+    <collision name="hand_grip_collision">
+      <geometry>
+        <mesh filename="meshes/hand_grip.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="place_negative_shaft_pedestal" type="fixed">
+    <parent link="base"/>
+    <child link="negative_shaft_pedestal"/>
+    <origin xyz="-0.055 -0.023 0.008" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_positive_shaft_pedestal" type="fixed">
+    <parent link="base"/>
+    <child link="positive_shaft_pedestal"/>
+    <origin xyz="-0.055 0.023 0.008" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_negative_shaft_bearing" type="fixed">
+    <parent link="negative_shaft_pedestal"/>
+    <child link="negative_shaft_bearing"/>
+    <origin xyz="0.0 0.0 0.037" rpy="1.5707963267948966 -0.0 0.0"/>
+  </joint>
+  <joint name="place_positive_shaft_bearing" type="fixed">
+    <parent link="positive_shaft_pedestal"/>
+    <child link="positive_shaft_bearing"/>
+    <origin xyz="0.0 0.0 0.037" rpy="1.5707963267948966 -0.0 0.0"/>
+  </joint>
+  <joint name="place_crankshaft" type="fixed">
+    <parent link="negative_shaft_bearing"/>
+    <child link="crankshaft"/>
+    <origin xyz="0.0 0.0 -0.023" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_crank_disk" type="fixed">
+    <parent link="crankshaft"/>
+    <child link="crank_disk"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_crank_pin" type="fixed">
+    <parent link="crank_disk"/>
+    <child link="crank_pin"/>
+    <origin xyz="0.014744736797201853 0.010324375854318831 0.0095" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_pitman" type="fixed">
+    <parent link="crank_pin"/>
+    <child link="pitman"/>
+    <origin xyz="0.00284660005471374 0.014206417301239114 0.0025" rpy="-1.5707963267948966 -0.0 1.373040947727596"/>
+  </joint>
+  <joint name="place_negative_beam_support" type="fixed">
+    <parent link="base"/>
+    <child link="negative_beam_support"/>
+    <origin xyz="0.01 -0.018 0.008" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_positive_beam_support" type="fixed">
+    <parent link="base"/>
+    <child link="positive_beam_support"/>
+    <origin xyz="0.01 0.004 0.008" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_negative_pivot_bearing" type="fixed">
+    <parent link="negative_beam_support"/>
+    <child link="negative_pivot_bearing"/>
+    <origin xyz="0.0 0.0 0.082" rpy="1.5707963267948966 -0.0 0.0"/>
+  </joint>
+  <joint name="place_positive_pivot_bearing" type="fixed">
+    <parent link="positive_beam_support"/>
+    <child link="positive_pivot_bearing"/>
+    <origin xyz="0.0 0.0 0.082" rpy="1.5707963267948966 -0.0 0.0"/>
+  </joint>
+  <joint name="place_beam_pivot_pin" type="fixed">
+    <parent link="negative_pivot_bearing"/>
+    <child link="beam_pivot_pin"/>
+    <origin xyz="0.0 0.0 -0.011" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_walking_beam" type="fixed">
+    <parent link="beam_pivot_pin"/>
+    <child link="walking_beam"/>
+    <origin xyz="0.0 0.0 0.0" rpy="-1.5707963267948966 -0.0 0.1396263401595464"/>
+  </joint>
+  <joint name="place_pitman_beam_pin" type="fixed">
+    <parent link="walking_beam"/>
+    <child link="pitman_beam_pin"/>
+    <origin xyz="-0.045 -0.0025 -3.996802888650563e-18" rpy="1.5707963267948966 0.1396263401595464 0.0"/>
+  </joint>
+  <joint name="place_beam_output_pin" type="fixed">
+    <parent link="walking_beam"/>
+    <child link="beam_output_pin"/>
+    <origin xyz="0.05499999999999999 -0.0025 7.105427357601002e-18" rpy="1.5707963267948966 0.1396263401595464 0.0"/>
+  </joint>
+  <joint name="place_polished_output_rod" type="fixed">
+    <parent link="lower_output_guide"/>
+    <child link="polished_output_rod"/>
+    <origin xyz="0.0 0.0 -0.024" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_output_guide_post" type="fixed">
+    <parent link="base"/>
+    <child link="output_guide_post"/>
+    <origin xyz="0.06446474378078636 0.01 0.008" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_lower_output_guide" type="fixed">
+    <parent link="output_guide_post"/>
+    <child link="lower_output_guide"/>
+    <origin xyz="0.0 -0.022 0.016" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_upper_output_guide" type="fixed">
+    <parent link="output_guide_post"/>
+    <child link="upper_output_guide"/>
+    <origin xyz="0.0 -0.022 0.042" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_hand_crank_arm" type="fixed">
+    <parent link="crankshaft"/>
+    <child link="hand_crank_arm"/>
+    <origin xyz="0.0 0.012 -0.031" rpy="-1.5707963267948966 -0.0 1.5707963267948966"/>
+  </joint>
+  <joint name="place_handle_spindle" type="fixed">
+    <parent link="hand_crank_arm"/>
+    <child link="handle_spindle"/>
+    <origin xyz="0.012 0.008 0.0" rpy="1.5707963267948966 1.5707963267948966 0.0"/>
+  </joint>
+  <joint name="place_hand_grip" type="fixed">
+    <parent link="handle_spindle"/>
+    <child link="hand_grip"/>
+    <origin xyz="0.0 0.0 -0.0025" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="world_to_base" type="fixed">
+    <parent link="world"/>
+    <child link="base"/>
+    <origin xyz="0.01 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+</robot>

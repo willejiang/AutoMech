@@ -1,0 +1,375 @@
+{
+  "first_blocker": "strict_model_audit: collision_coverage_ok, one or more physical mesh links lack active collision coverage",
+  "layer_weights": [
+    10,
+    15,
+    15,
+    20,
+    40
+  ],
+  "layers": [
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "source_execution",
+              "path": "output/external_benchmark_work/codex/03_idler_reverser_1to1/source/source_execution.json",
+              "sha256": "1778350b434355f8c9773c503cbe2d123085ffbb2ef47ce11cca41ff370786a5",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "scorer_owned_execution",
+          "points_awarded": 10,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "scorer-owned source build produced a nonempty part set; MJCF replay compiled, initialized, and stayed finite",
+          "status": "PASS"
+        }
+      ],
+      "index": 1,
+      "name": "execution",
+      "points_awarded": 10,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 10
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/codex/03_idler_reverser_1to1/assembly.json",
+              "sha256": "687390a95b83d0b82f22b7f71bffa1bc682eb507223081a192ac13ac1fab4068",
+              "source": "normalized_submission"
+            }
+          ],
+          "gate": null,
+          "name": "assembly_model",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "assembly/simulation model is available",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/codex/03_idler_reverser_1to1/assembly.json",
+              "sha256": "687390a95b83d0b82f22b7f71bffa1bc682eb507223081a192ac13ac1fab4068",
+              "source": "normalized_submission"
+            }
+          ],
+          "gate": null,
+          "name": "required_role_cardinalities",
+          "points_awarded": 7,
+          "points_possible": 7,
+          "raw_status": "PASS",
+          "reason": "all required roles are bound",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/codex/03_idler_reverser_1to1/assembly.json",
+              "sha256": "687390a95b83d0b82f22b7f71bffa1bc682eb507223081a192ac13ac1fab4068",
+              "source": "normalized_submission"
+            }
+          ],
+          "gate": null,
+          "name": "input_output_independence",
+          "points_awarded": 3,
+          "points_possible": 3,
+          "raw_status": "PASS",
+          "reason": "input and output are distinct",
+          "status": "PASS"
+        }
+      ],
+      "index": 2,
+      "name": "assembly",
+      "points_awarded": 15,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "geometry",
+              "path": "output/external_benchmark_strict/codex/03_idler_reverser_1to1/strict/geometry.json",
+              "sha256": "da753d2213a930039e3666d88e7a392dbe63d4ae7683c7874d7eab6053647191",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "mesh_inventory",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "strict geometry hashes every scanned usable mesh",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "geometry",
+              "path": "output/external_benchmark_strict/codex/03_idler_reverser_1to1/strict/geometry.json",
+              "sha256": "da753d2213a930039e3666d88e7a392dbe63d4ae7683c7874d7eab6053647191",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "non_exempt_conflicts",
+          "points_awarded": 10,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "strict non-exempt conflicts=0; unavailable=0",
+          "status": "PASS"
+        }
+      ],
+      "index": 3,
+      "name": "geometry",
+      "points_awarded": 15,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/03_idler_reverser_1to1/replay/trajectory.json",
+              "sha256": "fa5d8a8886a086c06e2d29b5ffc5b416194a8bc66dd6527896afd21c598fe721",
+              "source": "scorer_owned"
+            },
+            {
+              "kind": "model_audit",
+              "path": "output/external_benchmark_strict/codex/03_idler_reverser_1to1/strict/model_audit.json",
+              "sha256": "6d42a2add3eaa98857ff72f9451944acf6ef6ca6cbc707d602f182b0230a0377",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "strict_model_audit: collision_coverage_ok, one or more physical mesh links lack active collision coverage",
+          "name": "trajectory_shape",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "trajectory has time samples and joint series",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/03_idler_reverser_1to1/replay/trajectory.json",
+              "sha256": "fa5d8a8886a086c06e2d29b5ffc5b416194a8bc66dd6527896afd21c598fe721",
+              "source": "scorer_owned"
+            },
+            {
+              "kind": "model_audit",
+              "path": "output/external_benchmark_strict/codex/03_idler_reverser_1to1/strict/model_audit.json",
+              "sha256": "6d42a2add3eaa98857ff72f9451944acf6ef6ca6cbc707d602f182b0230a0377",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "strict_model_audit: collision_coverage_ok, one or more physical mesh links lack active collision coverage",
+          "name": "sample_alignment",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "all joint series align with time",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/03_idler_reverser_1to1/replay/trajectory.json",
+              "sha256": "fa5d8a8886a086c06e2d29b5ffc5b416194a8bc66dd6527896afd21c598fe721",
+              "source": "scorer_owned"
+            },
+            {
+              "kind": "model_audit",
+              "path": "output/external_benchmark_strict/codex/03_idler_reverser_1to1/strict/model_audit.json",
+              "sha256": "6d42a2add3eaa98857ff72f9451944acf6ef6ca6cbc707d602f182b0230a0377",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "strict_model_audit: collision_coverage_ok, one or more physical mesh links lack active collision coverage",
+          "name": "finite_health",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "finite sample fraction=1",
+          "status": "GATED"
+        }
+      ],
+      "index": 4,
+      "name": "physics_ready",
+      "points_awarded": 0,
+      "status": "FAIL",
+      "strict_gate": {
+        "passed": false,
+        "reason": "collision_coverage_ok, one or more physical mesh links lack active collision coverage"
+      },
+      "weight": 20
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/03_idler_reverser_1to1/replay/trajectory.json",
+              "sha256": "fa5d8a8886a086c06e2d29b5ffc5b416194a8bc66dd6527896afd21c598fe721",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "strict_model_audit: collision_coverage_ok, one or more physical mesh links lack active collision coverage",
+          "name": "input_motion",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "input travel=8 rad reaches minimum 6",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/03_idler_reverser_1to1/replay/trajectory.json",
+              "sha256": "fa5d8a8886a086c06e2d29b5ffc5b416194a8bc66dd6527896afd21c598fe721",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "strict_model_audit: collision_coverage_ok, one or more physical mesh links lack active collision coverage",
+          "name": "motion_propagation",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "registered output exhibits motion",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/03_idler_reverser_1to1/replay/trajectory.json",
+              "sha256": "fa5d8a8886a086c06e2d29b5ffc5b416194a8bc66dd6527896afd21c598fe721",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "strict_model_audit: collision_coverage_ok, one or more physical mesh links lack active collision coverage",
+          "name": "registered_output",
+          "points_awarded": 0,
+          "points_possible": 15,
+          "raw_status": "PASS",
+          "reason": "measured declared ratio=1, slope=1, R^2=1",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/03_idler_reverser_1to1/replay/trajectory.json",
+              "sha256": "fa5d8a8886a086c06e2d29b5ffc5b416194a8bc66dd6527896afd21c598fe721",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "strict_model_audit: collision_coverage_ok, one or more physical mesh links lack active collision coverage",
+          "name": "registered_invariants",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "all registered invariants have passing named evidence",
+          "status": "GATED"
+        }
+      ],
+      "index": 5,
+      "name": "functional",
+      "points_awarded": 0,
+      "status": "GATED",
+      "strict_gate": null,
+      "weight": 40
+    }
+  ],
+  "method": "codex",
+  "points_possible": 100,
+  "provenance": {
+    "anchor_audit": {
+      "kind": "anchor_audit",
+      "path": "output/external_benchmark_strict/codex/03_idler_reverser_1to1/strict/anchor_audit.json",
+      "sha256": "39817f4c6a9174d7488c7142a5aa8613ebcce749e1965b86b52bb8284d057ece",
+      "source": "scorer_owned"
+    },
+    "assembly": {
+      "kind": "assembly",
+      "path": "output/external_benchmark_staged/codex/03_idler_reverser_1to1/assembly.json",
+      "sha256": "687390a95b83d0b82f22b7f71bffa1bc682eb507223081a192ac13ac1fab4068",
+      "source": "normalized_submission"
+    },
+    "bindings": {
+      "kind": "bindings",
+      "path": "output/external_benchmark_staged/codex/03_idler_reverser_1to1/task_bindings.json",
+      "sha256": "3a543b38865bec25da4c63b344770717feec7b5dd5e27150cde885f0d9c8dbf3",
+      "source": "normalized_submission"
+    },
+    "contacts": {
+      "kind": "contacts",
+      "path": "output/external_benchmark_staged/codex/03_idler_reverser_1to1/evidence/contacts.json",
+      "sha256": "d2e362585337e803d91a5acae6a472049dd389ab839850bbdcc7f0618cd37a21",
+      "source": "normalized_submission"
+    },
+    "geometry": {
+      "kind": "geometry",
+      "path": "output/external_benchmark_strict/codex/03_idler_reverser_1to1/strict/geometry.json",
+      "sha256": "da753d2213a930039e3666d88e7a392dbe63d4ae7683c7874d7eab6053647191",
+      "source": "scorer_owned"
+    },
+    "model_audit": {
+      "kind": "model_audit",
+      "path": "output/external_benchmark_strict/codex/03_idler_reverser_1to1/strict/model_audit.json",
+      "sha256": "6d42a2add3eaa98857ff72f9451944acf6ef6ca6cbc707d602f182b0230a0377",
+      "source": "scorer_owned"
+    },
+    "realization": {
+      "kind": "realization",
+      "path": "output/external_declared_realization_audit/codex/03_idler_reverser_1to1.json",
+      "sha256": "497a14f3fcdc1cbc7cca1545d5e65e1df90c900281f6d82e5338cfa505cef7a7",
+      "source": "scorer_owned"
+    },
+    "replay_status": {
+      "kind": "replay_status",
+      "path": "output/external_benchmark_work/codex/03_idler_reverser_1to1/replay_status.json",
+      "sha256": "c9077bd7d6e839bc1a36cfc4b4b4d30605aeea76ec1562c90514d94db0977d22",
+      "source": "scorer_owned"
+    },
+    "source_execution": {
+      "kind": "source_execution",
+      "path": "output/external_benchmark_work/codex/03_idler_reverser_1to1/source/source_execution.json",
+      "sha256": "1778350b434355f8c9773c503cbe2d123085ffbb2ef47ce11cca41ff370786a5",
+      "source": "scorer_owned"
+    },
+    "trajectory": {
+      "kind": "trajectory",
+      "path": "output/external_benchmark_work/codex/03_idler_reverser_1to1/replay/trajectory.json",
+      "sha256": "fa5d8a8886a086c06e2d29b5ffc5b416194a8bc66dd6527896afd21c598fe721",
+      "source": "scorer_owned"
+    }
+  },
+  "schema": "physcad-external-strict-score/1.0",
+  "scorer_version": "physcad-external-strict-scorer/1.0",
+  "strict_verdict": "FAIL",
+  "suite_id": "physcad-comfort-v1",
+  "summary_reason": "Incomplete gear/crank collision coverage and detached physical islands.",
+  "task_id": "03_idler_reverser_1to1",
+  "total_points": 40
+}

@@ -1,0 +1,42 @@
+{
+  "task_id": "07_horizontal_slider_crank",
+  "simulation": {
+    "engine": "MuJoCo 3.3.7",
+    "sample_count": 1501,
+    "all_finite": true,
+    "input_mode": "finite-effort motor",
+    "motor_force_limit_nm": 2.0,
+    "direct_qpos_used": false,
+    "output_directly_actuated": false
+  },
+  "functional_measurements": {
+    "input_net_rad": 74.44596345339828,
+    "input_minimum_2pi_reached": true,
+    "horizontal_stroke_mm": 55.86477396193179,
+    "stroke_at_least_20_mm": true,
+    "reversal_count": 23,
+    "at_least_two_reversals": true
+  },
+  "invariant_measurements": {
+    "fixed_crank_axis_max_drift_mm": 0.0,
+    "slider_lateral_drift_mm": 0.0,
+    "lateral_drift_limit_mm": 1.1172954792386358,
+    "lateral_drift_pass": true,
+    "max_closure_residual_mm": 0.07926715680251291,
+    "closure_limit_mm": 0.16,
+    "closure_pass": true
+  },
+  "contacts_measured": true,
+  "contact_event_count": 0,
+  "disclosures": {
+    "two_authored_point_closure_equalities_used": true,
+    "collision_exclusions": [
+      "crankshaft_input-left_pedestal running bearing",
+      "crankshaft_input-right_pedestal running bearing"
+    ],
+    "rod_collision_broadly_excluded": true,
+    "rod_collision_missing_reason": "Final physics refinement disables connecting-rod simulation collision after collidable CAD mesh stalled at rod/web contact; real rod CAD and the measured failure are retained, so the collision invariant is not claimed",
+    "snapshot_missing_reason": "Playwright unavailable in dedicated environment; installation and CAD Viewer prohibited"
+  },
+  "harness_final_status": "PASS"
+}

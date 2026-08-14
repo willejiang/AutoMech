@@ -1,0 +1,4194 @@
+{
+  "manifest_version": 3,
+  "engine": "mujoco-agent",
+  "topology_plan": {
+    "coordinate_map": {
+      "baseplate": null,
+      "front_left_column": null,
+      "rear_left_column": null,
+      "front_right_column": null,
+      "rear_right_column": null,
+      "upper_bridge": null,
+      "input_thrust_button": null,
+      "compound_thrust_button": null,
+      "output_thrust_button": null,
+      "input_lower_bearing": null,
+      "compound_lower_bearing": null,
+      "output_lower_bearing": null,
+      "input_upper_bearing": null,
+      "compound_upper_bearing": null,
+      "output_upper_bearing": null,
+      "input_shaft": "input_shaft_rotation",
+      "input_pinion": "input_shaft_rotation",
+      "hand_crank": "input_shaft_rotation",
+      "crank_handle": "input_shaft_rotation",
+      "compound_shaft": "compound_shaft_rotation",
+      "compound_wheel": "compound_shaft_rotation",
+      "compound_pinion": "compound_shaft_rotation",
+      "output_shaft": "output_shaft_rotation",
+      "output_gear": "output_shaft_rotation",
+      "output_coupling": "output_shaft_rotation"
+    },
+    "tree_edges": [
+      [
+        "baseplate",
+        "front_left_column"
+      ],
+      [
+        "baseplate",
+        "rear_left_column"
+      ],
+      [
+        "baseplate",
+        "front_right_column"
+      ],
+      [
+        "baseplate",
+        "rear_right_column"
+      ],
+      [
+        "front_left_column",
+        "upper_bridge"
+      ],
+      [
+        "baseplate",
+        "input_thrust_button"
+      ],
+      [
+        "baseplate",
+        "compound_thrust_button"
+      ],
+      [
+        "baseplate",
+        "output_thrust_button"
+      ],
+      [
+        "baseplate",
+        "input_lower_bearing"
+      ],
+      [
+        "baseplate",
+        "compound_lower_bearing"
+      ],
+      [
+        "baseplate",
+        "output_lower_bearing"
+      ],
+      [
+        "upper_bridge",
+        "input_upper_bearing"
+      ],
+      [
+        "upper_bridge",
+        "compound_upper_bearing"
+      ],
+      [
+        "upper_bridge",
+        "output_upper_bearing"
+      ],
+      [
+        "baseplate",
+        "input_shaft"
+      ],
+      [
+        "input_shaft",
+        "input_pinion"
+      ],
+      [
+        "input_shaft",
+        "hand_crank"
+      ],
+      [
+        "hand_crank",
+        "crank_handle"
+      ],
+      [
+        "baseplate",
+        "compound_shaft"
+      ],
+      [
+        "compound_shaft",
+        "compound_wheel"
+      ],
+      [
+        "compound_shaft",
+        "compound_pinion"
+      ],
+      [
+        "baseplate",
+        "output_shaft"
+      ],
+      [
+        "output_shaft",
+        "output_gear"
+      ],
+      [
+        "output_shaft",
+        "output_coupling"
+      ]
+    ],
+    "closure_edges": [
+      [
+        "input_shaft_rotation",
+        "compound_shaft_rotation"
+      ],
+      [
+        "compound_shaft_rotation",
+        "output_shaft_rotation"
+      ]
+    ],
+    "rigid_carried": {
+      "input_shaft": [
+        "input_pinion",
+        "hand_crank",
+        "crank_handle"
+      ],
+      "compound_shaft": [
+        "compound_wheel",
+        "compound_pinion"
+      ],
+      "output_shaft": [
+        "output_gear",
+        "output_coupling"
+      ]
+    },
+    "independent_coaxial": [],
+    "transmissions": [
+      {
+        "name": "first_reduction",
+        "driving_joint": "input_shaft_rotation",
+        "driven_joint": "compound_shaft_rotation",
+        "ratio": -0.3333333333333333
+      },
+      {
+        "name": "second_reduction",
+        "driving_joint": "compound_shaft_rotation",
+        "driven_joint": "output_shaft_rotation",
+        "ratio": -0.25
+      }
+    ],
+    "contact_decisions": [
+      {
+        "pair": [
+          "baseplate",
+          "compound_shaft"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/compound_shaft"
+        ],
+        "fact_ids": [
+          "pair/baseplate/compound_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "compound_wheel"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/compound_wheel"
+        ],
+        "fact_ids": [
+          "pair/baseplate/compound_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "input_pinion"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/input_pinion"
+        ],
+        "fact_ids": [
+          "pair/baseplate/input_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/baseplate/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/baseplate/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/output_shaft"
+        ],
+        "fact_ids": [
+          "pair/baseplate/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "compound_lower_bearing",
+          "compound_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured clearance is a running journal represented by hinge",
+        "source_entity_ids": [
+          "relation/compound_lower_journal"
+        ],
+        "fact_ids": [
+          "fit/compound_lower_bearing/journal/compound_shaft/lower_journal",
+          "pair/compound_lower_bearing/compound_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "compound_lower_bearing",
+          "compound_wheel"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_lower_bearing",
+          "link/compound_wheel"
+        ],
+        "fact_ids": [
+          "pair/compound_lower_bearing/compound_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "compound_lower_bearing",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_lower_bearing",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/compound_lower_bearing/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "compound_lower_bearing",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_lower_bearing",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/compound_lower_bearing/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "compound_lower_bearing",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_lower_bearing",
+          "link/output_shaft"
+        ],
+        "fact_ids": [
+          "pair/compound_lower_bearing/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "compound_pinion",
+          "compound_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured interference is a rigid press fit",
+        "source_entity_ids": [
+          "relation/compound_pinion_press_fit"
+        ],
+        "fact_ids": [
+          "fit/compound_pinion/bore/compound_shaft/pinion_seat",
+          "pair/compound_pinion/compound_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "compound_pinion",
+          "compound_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_pinion",
+          "link/compound_upper_bearing"
+        ],
+        "fact_ids": [
+          "pair/compound_pinion/compound_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "compound_pinion",
+          "compound_wheel"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_pinion",
+          "link/compound_wheel"
+        ],
+        "fact_ids": [
+          "pair/compound_pinion/compound_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "compound_pinion",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_pinion",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/compound_pinion/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "compound_pinion",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "ideal external gear equality replaces tooth contact",
+        "source_entity_ids": [
+          "relation/stage_2_mesh"
+        ],
+        "fact_ids": [
+          "fit/compound_pinion/teeth/output_gear/teeth",
+          "pair/compound_pinion/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "compound_pinion",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_pinion",
+          "link/output_shaft"
+        ],
+        "fact_ids": [
+          "pair/compound_pinion/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "compound_pinion",
+          "upper_bridge"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_pinion",
+          "link/upper_bridge"
+        ],
+        "fact_ids": [
+          "pair/compound_pinion/upper_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "compound_shaft",
+          "compound_thrust_button"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_shaft",
+          "link/compound_thrust_button"
+        ],
+        "fact_ids": [
+          "pair/compound_shaft/compound_thrust_button"
+        ]
+      },
+      {
+        "pair": [
+          "compound_shaft",
+          "compound_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "measured clearance is a running journal represented by hinge",
+        "source_entity_ids": [
+          "relation/compound_upper_journal"
+        ],
+        "fact_ids": [
+          "fit/compound_upper_bearing/journal/compound_shaft/upper_journal",
+          "pair/compound_shaft/compound_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "compound_shaft",
+          "compound_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured interference is a rigid press fit",
+        "source_entity_ids": [
+          "relation/compound_wheel_press_fit"
+        ],
+        "fact_ids": [
+          "fit/compound_wheel/bore/compound_shaft/wheel_seat",
+          "pair/compound_shaft/compound_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "compound_shaft",
+          "crank_handle"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_shaft",
+          "link/crank_handle"
+        ],
+        "fact_ids": [
+          "pair/compound_shaft/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "compound_shaft",
+          "hand_crank"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_shaft",
+          "link/hand_crank"
+        ],
+        "fact_ids": [
+          "pair/compound_shaft/hand_crank"
+        ]
+      },
+      {
+        "pair": [
+          "compound_shaft",
+          "input_lower_bearing"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_shaft",
+          "link/input_lower_bearing"
+        ],
+        "fact_ids": [
+          "pair/compound_shaft/input_lower_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "compound_shaft",
+          "input_pinion"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_shaft",
+          "link/input_pinion"
+        ],
+        "fact_ids": [
+          "pair/compound_shaft/input_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "compound_shaft",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_shaft",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/compound_shaft/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "compound_shaft",
+          "input_thrust_button"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_shaft",
+          "link/input_thrust_button"
+        ],
+        "fact_ids": [
+          "pair/compound_shaft/input_thrust_button"
+        ]
+      },
+      {
+        "pair": [
+          "compound_shaft",
+          "input_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_shaft",
+          "link/input_upper_bearing"
+        ],
+        "fact_ids": [
+          "pair/compound_shaft/input_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "compound_shaft",
+          "output_coupling"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_shaft",
+          "link/output_coupling"
+        ],
+        "fact_ids": [
+          "pair/compound_shaft/output_coupling"
+        ]
+      },
+      {
+        "pair": [
+          "compound_shaft",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_shaft",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/compound_shaft/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "compound_shaft",
+          "output_lower_bearing"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_shaft",
+          "link/output_lower_bearing"
+        ],
+        "fact_ids": [
+          "pair/compound_shaft/output_lower_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "compound_shaft",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_shaft",
+          "link/output_shaft"
+        ],
+        "fact_ids": [
+          "pair/compound_shaft/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "compound_shaft",
+          "output_thrust_button"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_shaft",
+          "link/output_thrust_button"
+        ],
+        "fact_ids": [
+          "pair/compound_shaft/output_thrust_button"
+        ]
+      },
+      {
+        "pair": [
+          "compound_shaft",
+          "output_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_shaft",
+          "link/output_upper_bearing"
+        ],
+        "fact_ids": [
+          "pair/compound_shaft/output_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "compound_shaft",
+          "upper_bridge"
+        ],
+        "action": "keep",
+        "reason": "solid overlap unavailable; retain uncertain contact",
+        "source_entity_ids": [
+          "link/compound_shaft",
+          "link/upper_bridge"
+        ],
+        "fact_ids": [
+          "pair/compound_shaft/upper_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "compound_thrust_button",
+          "compound_wheel"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_thrust_button",
+          "link/compound_wheel"
+        ],
+        "fact_ids": [
+          "pair/compound_thrust_button/compound_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "compound_thrust_button",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_thrust_button",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/compound_thrust_button/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "compound_thrust_button",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_thrust_button",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/compound_thrust_button/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "compound_thrust_button",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_thrust_button",
+          "link/output_shaft"
+        ],
+        "fact_ids": [
+          "pair/compound_thrust_button/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "compound_upper_bearing",
+          "compound_wheel"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_upper_bearing",
+          "link/compound_wheel"
+        ],
+        "fact_ids": [
+          "pair/compound_upper_bearing/compound_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "compound_upper_bearing",
+          "hand_crank"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_upper_bearing",
+          "link/hand_crank"
+        ],
+        "fact_ids": [
+          "pair/compound_upper_bearing/hand_crank"
+        ]
+      },
+      {
+        "pair": [
+          "compound_upper_bearing",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_upper_bearing",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/compound_upper_bearing/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "compound_upper_bearing",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_upper_bearing",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/compound_upper_bearing/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "compound_upper_bearing",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_upper_bearing",
+          "link/output_shaft"
+        ],
+        "fact_ids": [
+          "pair/compound_upper_bearing/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "compound_wheel",
+          "front_left_column"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_wheel",
+          "link/front_left_column"
+        ],
+        "fact_ids": [
+          "pair/compound_wheel/front_left_column"
+        ]
+      },
+      {
+        "pair": [
+          "compound_wheel",
+          "input_lower_bearing"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_wheel",
+          "link/input_lower_bearing"
+        ],
+        "fact_ids": [
+          "pair/compound_wheel/input_lower_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "compound_wheel",
+          "input_pinion"
+        ],
+        "action": "exclude",
+        "reason": "ideal external gear equality replaces tooth contact",
+        "source_entity_ids": [
+          "relation/stage_1_mesh"
+        ],
+        "fact_ids": [
+          "fit/input_pinion/teeth/compound_wheel/teeth",
+          "pair/compound_wheel/input_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "compound_wheel",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_wheel",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/compound_wheel/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "compound_wheel",
+          "input_thrust_button"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_wheel",
+          "link/input_thrust_button"
+        ],
+        "fact_ids": [
+          "pair/compound_wheel/input_thrust_button"
+        ]
+      },
+      {
+        "pair": [
+          "compound_wheel",
+          "input_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_wheel",
+          "link/input_upper_bearing"
+        ],
+        "fact_ids": [
+          "pair/compound_wheel/input_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "compound_wheel",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_wheel",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/compound_wheel/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "compound_wheel",
+          "output_lower_bearing"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_wheel",
+          "link/output_lower_bearing"
+        ],
+        "fact_ids": [
+          "pair/compound_wheel/output_lower_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "compound_wheel",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_wheel",
+          "link/output_shaft"
+        ],
+        "fact_ids": [
+          "pair/compound_wheel/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "compound_wheel",
+          "output_thrust_button"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_wheel",
+          "link/output_thrust_button"
+        ],
+        "fact_ids": [
+          "pair/compound_wheel/output_thrust_button"
+        ]
+      },
+      {
+        "pair": [
+          "compound_wheel",
+          "output_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_wheel",
+          "link/output_upper_bearing"
+        ],
+        "fact_ids": [
+          "pair/compound_wheel/output_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "compound_wheel",
+          "rear_left_column"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_wheel",
+          "link/rear_left_column"
+        ],
+        "fact_ids": [
+          "pair/compound_wheel/rear_left_column"
+        ]
+      },
+      {
+        "pair": [
+          "compound_wheel",
+          "upper_bridge"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/compound_wheel",
+          "link/upper_bridge"
+        ],
+        "fact_ids": [
+          "pair/compound_wheel/upper_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "crank_handle",
+          "hand_crank"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/crank_handle",
+          "link/hand_crank"
+        ],
+        "fact_ids": [
+          "pair/crank_handle/hand_crank"
+        ]
+      },
+      {
+        "pair": [
+          "crank_handle",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/crank_handle",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/crank_handle/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "crank_handle",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/crank_handle",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/crank_handle/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "front_left_column",
+          "hand_crank"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/front_left_column",
+          "link/hand_crank"
+        ],
+        "fact_ids": [
+          "pair/front_left_column/hand_crank"
+        ]
+      },
+      {
+        "pair": [
+          "front_left_column",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/front_left_column",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/front_left_column/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "front_left_column",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/front_left_column",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/front_left_column/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "front_right_column",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/front_right_column",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/front_right_column/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "hand_crank",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured interference is a rigid press fit",
+        "source_entity_ids": [
+          "relation/crank_press_fit"
+        ],
+        "fact_ids": [
+          "fit/hand_crank/shaft_bore/input_shaft/crank_seat",
+          "pair/hand_crank/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "hand_crank",
+          "input_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/hand_crank",
+          "link/input_upper_bearing"
+        ],
+        "fact_ids": [
+          "pair/hand_crank/input_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "hand_crank",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/hand_crank",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/hand_crank/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "hand_crank",
+          "upper_bridge"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/hand_crank",
+          "link/upper_bridge"
+        ],
+        "fact_ids": [
+          "pair/hand_crank/upper_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "input_lower_bearing",
+          "input_pinion"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/input_lower_bearing",
+          "link/input_pinion"
+        ],
+        "fact_ids": [
+          "pair/input_lower_bearing/input_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "input_lower_bearing",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured clearance is a running journal represented by hinge",
+        "source_entity_ids": [
+          "relation/input_lower_journal"
+        ],
+        "fact_ids": [
+          "fit/input_lower_bearing/journal/input_shaft/lower_journal",
+          "pair/input_lower_bearing/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_lower_bearing",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/input_lower_bearing",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/input_lower_bearing/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "input_pinion",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured interference is a rigid press fit",
+        "source_entity_ids": [
+          "relation/input_pinion_press_fit"
+        ],
+        "fact_ids": [
+          "fit/input_pinion/bore/input_shaft/pinion_seat",
+          "pair/input_pinion/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_pinion",
+          "input_thrust_button"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/input_pinion",
+          "link/input_thrust_button"
+        ],
+        "fact_ids": [
+          "pair/input_pinion/input_thrust_button"
+        ]
+      },
+      {
+        "pair": [
+          "input_pinion",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/input_pinion",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/input_pinion/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "input_thrust_button"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/input_thrust_button"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/input_thrust_button"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "input_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "measured clearance is a running journal represented by hinge",
+        "source_entity_ids": [
+          "relation/input_upper_journal"
+        ],
+        "fact_ids": [
+          "fit/input_upper_bearing/journal/input_shaft/upper_journal",
+          "pair/input_shaft/input_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "rear_left_column"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/rear_left_column"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/rear_left_column"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "upper_bridge"
+        ],
+        "action": "keep",
+        "reason": "solid overlap unavailable; retain uncertain contact",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/upper_bridge"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/upper_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "input_thrust_button",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/input_thrust_button",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/input_thrust_button/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "input_upper_bearing",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/input_upper_bearing",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/input_upper_bearing/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_coupling",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/output_coupling",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/output_coupling/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_coupling",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured interference is a rigid press fit",
+        "source_entity_ids": [
+          "relation/output_coupling_press_fit"
+        ],
+        "fact_ids": [
+          "fit/output_coupling/shaft_bore/output_shaft/coupling_seat",
+          "pair/output_coupling/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "output_coupling",
+          "output_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/output_coupling",
+          "link/output_upper_bearing"
+        ],
+        "fact_ids": [
+          "pair/output_coupling/output_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "output_coupling",
+          "upper_bridge"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/output_coupling",
+          "link/upper_bridge"
+        ],
+        "fact_ids": [
+          "pair/output_coupling/upper_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "output_lower_bearing"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/output_lower_bearing"
+        ],
+        "fact_ids": [
+          "pair/output_gear/output_lower_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured interference is a rigid press fit",
+        "source_entity_ids": [
+          "relation/output_gear_press_fit"
+        ],
+        "fact_ids": [
+          "fit/output_gear/bore/output_shaft/gear_seat",
+          "pair/output_gear/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "output_thrust_button"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/output_thrust_button"
+        ],
+        "fact_ids": [
+          "pair/output_gear/output_thrust_button"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "output_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/output_upper_bearing"
+        ],
+        "fact_ids": [
+          "pair/output_gear/output_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "rear_left_column"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/rear_left_column"
+        ],
+        "fact_ids": [
+          "pair/output_gear/rear_left_column"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "rear_right_column"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/rear_right_column"
+        ],
+        "fact_ids": [
+          "pair/output_gear/rear_right_column"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "upper_bridge"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/upper_bridge"
+        ],
+        "fact_ids": [
+          "pair/output_gear/upper_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "output_lower_bearing",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured clearance is a running journal represented by hinge",
+        "source_entity_ids": [
+          "relation/output_lower_journal"
+        ],
+        "fact_ids": [
+          "fit/output_lower_bearing/journal/output_shaft/lower_journal",
+          "pair/output_lower_bearing/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "output_shaft",
+          "output_thrust_button"
+        ],
+        "action": "exclude",
+        "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+        "source_entity_ids": [
+          "link/output_shaft",
+          "link/output_thrust_button"
+        ],
+        "fact_ids": [
+          "pair/output_shaft/output_thrust_button"
+        ]
+      },
+      {
+        "pair": [
+          "output_shaft",
+          "output_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "measured clearance is a running journal represented by hinge",
+        "source_entity_ids": [
+          "relation/output_upper_journal"
+        ],
+        "fact_ids": [
+          "fit/output_upper_bearing/journal/output_shaft/upper_journal",
+          "pair/output_shaft/output_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "output_shaft",
+          "upper_bridge"
+        ],
+        "action": "keep",
+        "reason": "solid overlap unavailable; retain uncertain contact",
+        "source_entity_ids": [
+          "link/output_shaft",
+          "link/upper_bridge"
+        ],
+        "fact_ids": [
+          "pair/output_shaft/upper_bridge"
+        ]
+      }
+    ],
+    "support_ground": "baseplate rests on plane",
+    "support_strategy": "remove gear equalities for support probe"
+  },
+  "decisions": [
+    {
+      "generated_kind": "constraint",
+      "generated_name": "stage_1_ratio",
+      "constraint_type": "joint",
+      "reason": "external pitch radii 4.8 and 14.4 mm",
+      "source_entity_ids": [
+        "relation/stage_1_mesh",
+        "transmission/first_reduction"
+      ],
+      "fact_ids": [
+        "fit/input_pinion/teeth/compound_wheel/teeth"
+      ]
+    },
+    {
+      "generated_kind": "constraint",
+      "generated_name": "stage_2_ratio",
+      "constraint_type": "joint",
+      "reason": "external pitch radii 4.8 and 19.2 mm",
+      "source_entity_ids": [
+        "relation/stage_2_mesh",
+        "transmission/second_reduction"
+      ],
+      "fact_ids": [
+        "fit/compound_pinion/teeth/output_gear/teeth"
+      ]
+    },
+    {
+      "entity_id": "link/baseplate",
+      "action": "emitted",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/baseplate"
+      ]
+    },
+    {
+      "entity_id": "link/front_left_column",
+      "action": "emitted",
+      "generated_nodes": [
+        "front_left_column"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/front_left_column"
+      ]
+    },
+    {
+      "entity_id": "link/rear_left_column",
+      "action": "emitted",
+      "generated_nodes": [
+        "rear_left_column"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/rear_left_column"
+      ]
+    },
+    {
+      "entity_id": "link/front_right_column",
+      "action": "emitted",
+      "generated_nodes": [
+        "front_right_column"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/front_right_column"
+      ]
+    },
+    {
+      "entity_id": "link/rear_right_column",
+      "action": "emitted",
+      "generated_nodes": [
+        "rear_right_column"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/rear_right_column"
+      ]
+    },
+    {
+      "entity_id": "link/upper_bridge",
+      "action": "emitted",
+      "generated_nodes": [
+        "upper_bridge"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/upper_bridge"
+      ]
+    },
+    {
+      "entity_id": "link/input_thrust_button",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_thrust_button"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/input_thrust_button"
+      ]
+    },
+    {
+      "entity_id": "link/compound_thrust_button",
+      "action": "emitted",
+      "generated_nodes": [
+        "compound_thrust_button"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/compound_thrust_button"
+      ]
+    },
+    {
+      "entity_id": "link/output_thrust_button",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_thrust_button"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/output_thrust_button"
+      ]
+    },
+    {
+      "entity_id": "link/input_lower_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_lower_bearing"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/input_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/compound_lower_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "compound_lower_bearing"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/compound_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/output_lower_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_lower_bearing"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/output_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/input_upper_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_upper_bearing"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/input_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/compound_upper_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "compound_upper_bearing"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/compound_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/output_upper_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_upper_bearing"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/output_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/input_shaft",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_shaft"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "link/compound_shaft",
+      "action": "emitted",
+      "generated_nodes": [
+        "compound_shaft"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/compound_shaft"
+      ]
+    },
+    {
+      "entity_id": "link/output_shaft",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_shaft"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/output_shaft"
+      ]
+    },
+    {
+      "entity_id": "link/input_pinion",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_pinion"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/input_pinion"
+      ]
+    },
+    {
+      "entity_id": "link/compound_wheel",
+      "action": "emitted",
+      "generated_nodes": [
+        "compound_wheel"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/compound_wheel"
+      ]
+    },
+    {
+      "entity_id": "link/compound_pinion",
+      "action": "emitted",
+      "generated_nodes": [
+        "compound_pinion"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/compound_pinion"
+      ]
+    },
+    {
+      "entity_id": "link/output_gear",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_gear"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/output_gear"
+      ]
+    },
+    {
+      "entity_id": "link/hand_crank",
+      "action": "emitted",
+      "generated_nodes": [
+        "hand_crank"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/hand_crank"
+      ]
+    },
+    {
+      "entity_id": "link/crank_handle",
+      "action": "emitted",
+      "generated_nodes": [
+        "crank_handle"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/crank_handle"
+      ]
+    },
+    {
+      "entity_id": "link/output_coupling",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_coupling"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "link/output_coupling"
+      ]
+    },
+    {
+      "entity_id": "pose/place_baseplate",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_baseplate"
+      ]
+    },
+    {
+      "entity_id": "pose/place_front_left_column",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_front_left_column"
+      ]
+    },
+    {
+      "entity_id": "pose/place_rear_left_column",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_rear_left_column"
+      ]
+    },
+    {
+      "entity_id": "pose/place_front_right_column",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_front_right_column"
+      ]
+    },
+    {
+      "entity_id": "pose/place_rear_right_column",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_rear_right_column"
+      ]
+    },
+    {
+      "entity_id": "pose/place_upper_bridge",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_upper_bridge"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_thrust_button",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_input_thrust_button"
+      ]
+    },
+    {
+      "entity_id": "pose/place_compound_thrust_button",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_compound_thrust_button"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_thrust_button",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_output_thrust_button"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_lower_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_input_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_compound_lower_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_compound_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_lower_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_output_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_upper_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_input_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_compound_upper_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_compound_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_upper_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_output_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_input_shaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_compound_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_compound_shaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_output_shaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_input_pinion"
+      ]
+    },
+    {
+      "entity_id": "pose/place_compound_wheel",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_compound_wheel"
+      ]
+    },
+    {
+      "entity_id": "pose/place_compound_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_compound_pinion"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_output_gear"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hand_crank",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_hand_crank"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crank_handle",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_crank_handle"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_coupling",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "pose/place_output_coupling"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/input_shaft/lower_journal"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/upper_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/input_shaft/upper_journal"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/pinion_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/input_shaft/pinion_seat"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/crank_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/input_shaft/crank_seat"
+      ]
+    },
+    {
+      "entity_id": "port/compound_shaft/lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/compound_shaft/lower_journal"
+      ]
+    },
+    {
+      "entity_id": "port/compound_shaft/upper_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/compound_shaft/upper_journal"
+      ]
+    },
+    {
+      "entity_id": "port/compound_shaft/wheel_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/compound_shaft/wheel_seat"
+      ]
+    },
+    {
+      "entity_id": "port/compound_shaft/pinion_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/compound_shaft/pinion_seat"
+      ]
+    },
+    {
+      "entity_id": "port/output_shaft/lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/output_shaft/lower_journal"
+      ]
+    },
+    {
+      "entity_id": "port/output_shaft/upper_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/output_shaft/upper_journal"
+      ]
+    },
+    {
+      "entity_id": "port/output_shaft/gear_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/output_shaft/gear_seat"
+      ]
+    },
+    {
+      "entity_id": "port/output_shaft/coupling_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/output_shaft/coupling_seat"
+      ]
+    },
+    {
+      "entity_id": "port/input_pinion/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/input_pinion/bore"
+      ]
+    },
+    {
+      "entity_id": "port/input_pinion/teeth",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/input_pinion/teeth"
+      ]
+    },
+    {
+      "entity_id": "port/compound_wheel/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/compound_wheel/bore"
+      ]
+    },
+    {
+      "entity_id": "port/compound_wheel/teeth",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/compound_wheel/teeth"
+      ]
+    },
+    {
+      "entity_id": "port/compound_pinion/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/compound_pinion/bore"
+      ]
+    },
+    {
+      "entity_id": "port/compound_pinion/teeth",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/compound_pinion/teeth"
+      ]
+    },
+    {
+      "entity_id": "port/output_gear/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/output_gear/bore"
+      ]
+    },
+    {
+      "entity_id": "port/output_gear/teeth",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/output_gear/teeth"
+      ]
+    },
+    {
+      "entity_id": "port/input_lower_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/input_lower_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/input_upper_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/input_upper_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/compound_lower_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/compound_lower_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/compound_upper_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/compound_upper_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/output_lower_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/output_lower_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/output_upper_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/output_upper_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/hand_crank/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/hand_crank/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/output_coupling/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "port/output_coupling/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "relation/stage_1_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "relation/stage_1_mesh"
+      ]
+    },
+    {
+      "entity_id": "relation/stage_2_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "relation/stage_2_mesh"
+      ]
+    },
+    {
+      "entity_id": "relation/input_pinion_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "relation/input_pinion_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/compound_wheel_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "relation/compound_wheel_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/compound_pinion_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "relation/compound_pinion_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/output_gear_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "relation/output_gear_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/crank_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "relation/crank_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/output_coupling_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "relation/output_coupling_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/input_lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "relation/input_lower_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/input_upper_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "relation/input_upper_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/compound_lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "relation/compound_lower_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/compound_upper_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "relation/compound_upper_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/output_lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "relation/output_lower_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/output_upper_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "relation/output_upper_journal"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/input_shaft_rotation",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_shaft_rotation"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "motion_joint/input_shaft_rotation"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/compound_shaft_rotation",
+      "action": "emitted",
+      "generated_nodes": [
+        "compound_shaft_rotation"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "motion_joint/compound_shaft_rotation"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/output_shaft_rotation",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_shaft_rotation"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "motion_joint/output_shaft_rotation"
+      ]
+    },
+    {
+      "entity_id": "transmission/input_shaft_to_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "transmission/input_shaft_to_pinion"
+      ]
+    },
+    {
+      "entity_id": "transmission/first_reduction",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "transmission/first_reduction"
+      ]
+    },
+    {
+      "entity_id": "transmission/compound_pair_lock",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "transmission/compound_pair_lock"
+      ]
+    },
+    {
+      "entity_id": "transmission/second_reduction",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "transmission/second_reduction"
+      ]
+    },
+    {
+      "entity_id": "transmission/output_gear_to_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "transmission/output_gear_to_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/driver/input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "role/driver/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/output/output_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "role/output/output_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/watch/input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "role/watch/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/watch/input_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "role/watch/input_pinion"
+      ]
+    },
+    {
+      "entity_id": "role/watch/compound_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "role/watch/compound_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/watch/compound_wheel",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "role/watch/compound_wheel"
+      ]
+    },
+    {
+      "entity_id": "role/watch/compound_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "role/watch/compound_pinion"
+      ]
+    },
+    {
+      "entity_id": "role/watch/output_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "role/watch/output_gear"
+      ]
+    },
+    {
+      "entity_id": "role/watch/output_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "entity compiled into the selected three-shaft topology",
+      "fact_ids": [
+        "role/watch/output_shaft"
+      ]
+    }
+  ],
+  "excludes": [
+    {
+      "pair": [
+        "baseplate",
+        "compound_shaft"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/baseplate",
+        "link/compound_shaft"
+      ],
+      "fact_ids": [
+        "pair/baseplate/compound_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "baseplate",
+        "compound_wheel"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/baseplate",
+        "link/compound_wheel"
+      ],
+      "fact_ids": [
+        "pair/baseplate/compound_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "baseplate",
+        "input_pinion"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/baseplate",
+        "link/input_pinion"
+      ],
+      "fact_ids": [
+        "pair/baseplate/input_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "baseplate",
+        "input_shaft"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/baseplate",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "pair/baseplate/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "baseplate",
+        "output_gear"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/baseplate",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/baseplate/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "baseplate",
+        "output_shaft"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/baseplate",
+        "link/output_shaft"
+      ],
+      "fact_ids": [
+        "pair/baseplate/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "compound_lower_bearing",
+        "compound_shaft"
+      ],
+      "reason": "measured clearance is a running journal represented by hinge",
+      "source_entity_ids": [
+        "relation/compound_lower_journal"
+      ],
+      "fact_ids": [
+        "fit/compound_lower_bearing/journal/compound_shaft/lower_journal",
+        "pair/compound_lower_bearing/compound_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "compound_lower_bearing",
+        "compound_wheel"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_lower_bearing",
+        "link/compound_wheel"
+      ],
+      "fact_ids": [
+        "pair/compound_lower_bearing/compound_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "compound_lower_bearing",
+        "input_shaft"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_lower_bearing",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "pair/compound_lower_bearing/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "compound_lower_bearing",
+        "output_gear"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_lower_bearing",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/compound_lower_bearing/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "compound_lower_bearing",
+        "output_shaft"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_lower_bearing",
+        "link/output_shaft"
+      ],
+      "fact_ids": [
+        "pair/compound_lower_bearing/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "compound_pinion",
+        "compound_shaft"
+      ],
+      "reason": "measured interference is a rigid press fit",
+      "source_entity_ids": [
+        "relation/compound_pinion_press_fit"
+      ],
+      "fact_ids": [
+        "fit/compound_pinion/bore/compound_shaft/pinion_seat",
+        "pair/compound_pinion/compound_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "compound_pinion",
+        "compound_upper_bearing"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_pinion",
+        "link/compound_upper_bearing"
+      ],
+      "fact_ids": [
+        "pair/compound_pinion/compound_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "compound_pinion",
+        "compound_wheel"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_pinion",
+        "link/compound_wheel"
+      ],
+      "fact_ids": [
+        "pair/compound_pinion/compound_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "compound_pinion",
+        "input_shaft"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_pinion",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "pair/compound_pinion/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "compound_pinion",
+        "output_gear"
+      ],
+      "reason": "ideal external gear equality replaces tooth contact",
+      "source_entity_ids": [
+        "relation/stage_2_mesh"
+      ],
+      "fact_ids": [
+        "fit/compound_pinion/teeth/output_gear/teeth",
+        "pair/compound_pinion/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "compound_pinion",
+        "output_shaft"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_pinion",
+        "link/output_shaft"
+      ],
+      "fact_ids": [
+        "pair/compound_pinion/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "compound_pinion",
+        "upper_bridge"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_pinion",
+        "link/upper_bridge"
+      ],
+      "fact_ids": [
+        "pair/compound_pinion/upper_bridge"
+      ]
+    },
+    {
+      "pair": [
+        "compound_shaft",
+        "compound_thrust_button"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_shaft",
+        "link/compound_thrust_button"
+      ],
+      "fact_ids": [
+        "pair/compound_shaft/compound_thrust_button"
+      ]
+    },
+    {
+      "pair": [
+        "compound_shaft",
+        "compound_upper_bearing"
+      ],
+      "reason": "measured clearance is a running journal represented by hinge",
+      "source_entity_ids": [
+        "relation/compound_upper_journal"
+      ],
+      "fact_ids": [
+        "fit/compound_upper_bearing/journal/compound_shaft/upper_journal",
+        "pair/compound_shaft/compound_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "compound_shaft",
+        "compound_wheel"
+      ],
+      "reason": "measured interference is a rigid press fit",
+      "source_entity_ids": [
+        "relation/compound_wheel_press_fit"
+      ],
+      "fact_ids": [
+        "fit/compound_wheel/bore/compound_shaft/wheel_seat",
+        "pair/compound_shaft/compound_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "compound_shaft",
+        "crank_handle"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_shaft",
+        "link/crank_handle"
+      ],
+      "fact_ids": [
+        "pair/compound_shaft/crank_handle"
+      ]
+    },
+    {
+      "pair": [
+        "compound_shaft",
+        "hand_crank"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_shaft",
+        "link/hand_crank"
+      ],
+      "fact_ids": [
+        "pair/compound_shaft/hand_crank"
+      ]
+    },
+    {
+      "pair": [
+        "compound_shaft",
+        "input_lower_bearing"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_shaft",
+        "link/input_lower_bearing"
+      ],
+      "fact_ids": [
+        "pair/compound_shaft/input_lower_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "compound_shaft",
+        "input_pinion"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_shaft",
+        "link/input_pinion"
+      ],
+      "fact_ids": [
+        "pair/compound_shaft/input_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "compound_shaft",
+        "input_shaft"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_shaft",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "pair/compound_shaft/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "compound_shaft",
+        "input_thrust_button"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_shaft",
+        "link/input_thrust_button"
+      ],
+      "fact_ids": [
+        "pair/compound_shaft/input_thrust_button"
+      ]
+    },
+    {
+      "pair": [
+        "compound_shaft",
+        "input_upper_bearing"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_shaft",
+        "link/input_upper_bearing"
+      ],
+      "fact_ids": [
+        "pair/compound_shaft/input_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "compound_shaft",
+        "output_coupling"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_shaft",
+        "link/output_coupling"
+      ],
+      "fact_ids": [
+        "pair/compound_shaft/output_coupling"
+      ]
+    },
+    {
+      "pair": [
+        "compound_shaft",
+        "output_gear"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_shaft",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/compound_shaft/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "compound_shaft",
+        "output_lower_bearing"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_shaft",
+        "link/output_lower_bearing"
+      ],
+      "fact_ids": [
+        "pair/compound_shaft/output_lower_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "compound_shaft",
+        "output_shaft"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_shaft",
+        "link/output_shaft"
+      ],
+      "fact_ids": [
+        "pair/compound_shaft/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "compound_shaft",
+        "output_thrust_button"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_shaft",
+        "link/output_thrust_button"
+      ],
+      "fact_ids": [
+        "pair/compound_shaft/output_thrust_button"
+      ]
+    },
+    {
+      "pair": [
+        "compound_shaft",
+        "output_upper_bearing"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_shaft",
+        "link/output_upper_bearing"
+      ],
+      "fact_ids": [
+        "pair/compound_shaft/output_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "compound_thrust_button",
+        "compound_wheel"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_thrust_button",
+        "link/compound_wheel"
+      ],
+      "fact_ids": [
+        "pair/compound_thrust_button/compound_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "compound_thrust_button",
+        "input_shaft"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_thrust_button",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "pair/compound_thrust_button/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "compound_thrust_button",
+        "output_gear"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_thrust_button",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/compound_thrust_button/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "compound_thrust_button",
+        "output_shaft"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_thrust_button",
+        "link/output_shaft"
+      ],
+      "fact_ids": [
+        "pair/compound_thrust_button/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "compound_upper_bearing",
+        "compound_wheel"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_upper_bearing",
+        "link/compound_wheel"
+      ],
+      "fact_ids": [
+        "pair/compound_upper_bearing/compound_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "compound_upper_bearing",
+        "hand_crank"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_upper_bearing",
+        "link/hand_crank"
+      ],
+      "fact_ids": [
+        "pair/compound_upper_bearing/hand_crank"
+      ]
+    },
+    {
+      "pair": [
+        "compound_upper_bearing",
+        "input_shaft"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_upper_bearing",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "pair/compound_upper_bearing/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "compound_upper_bearing",
+        "output_gear"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_upper_bearing",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/compound_upper_bearing/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "compound_upper_bearing",
+        "output_shaft"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_upper_bearing",
+        "link/output_shaft"
+      ],
+      "fact_ids": [
+        "pair/compound_upper_bearing/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "compound_wheel",
+        "front_left_column"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_wheel",
+        "link/front_left_column"
+      ],
+      "fact_ids": [
+        "pair/compound_wheel/front_left_column"
+      ]
+    },
+    {
+      "pair": [
+        "compound_wheel",
+        "input_lower_bearing"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_wheel",
+        "link/input_lower_bearing"
+      ],
+      "fact_ids": [
+        "pair/compound_wheel/input_lower_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "compound_wheel",
+        "input_pinion"
+      ],
+      "reason": "ideal external gear equality replaces tooth contact",
+      "source_entity_ids": [
+        "relation/stage_1_mesh"
+      ],
+      "fact_ids": [
+        "fit/input_pinion/teeth/compound_wheel/teeth",
+        "pair/compound_wheel/input_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "compound_wheel",
+        "input_shaft"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_wheel",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "pair/compound_wheel/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "compound_wheel",
+        "input_thrust_button"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_wheel",
+        "link/input_thrust_button"
+      ],
+      "fact_ids": [
+        "pair/compound_wheel/input_thrust_button"
+      ]
+    },
+    {
+      "pair": [
+        "compound_wheel",
+        "input_upper_bearing"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_wheel",
+        "link/input_upper_bearing"
+      ],
+      "fact_ids": [
+        "pair/compound_wheel/input_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "compound_wheel",
+        "output_gear"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_wheel",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/compound_wheel/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "compound_wheel",
+        "output_lower_bearing"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_wheel",
+        "link/output_lower_bearing"
+      ],
+      "fact_ids": [
+        "pair/compound_wheel/output_lower_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "compound_wheel",
+        "output_shaft"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_wheel",
+        "link/output_shaft"
+      ],
+      "fact_ids": [
+        "pair/compound_wheel/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "compound_wheel",
+        "output_thrust_button"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_wheel",
+        "link/output_thrust_button"
+      ],
+      "fact_ids": [
+        "pair/compound_wheel/output_thrust_button"
+      ]
+    },
+    {
+      "pair": [
+        "compound_wheel",
+        "output_upper_bearing"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_wheel",
+        "link/output_upper_bearing"
+      ],
+      "fact_ids": [
+        "pair/compound_wheel/output_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "compound_wheel",
+        "rear_left_column"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_wheel",
+        "link/rear_left_column"
+      ],
+      "fact_ids": [
+        "pair/compound_wheel/rear_left_column"
+      ]
+    },
+    {
+      "pair": [
+        "compound_wheel",
+        "upper_bridge"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/compound_wheel",
+        "link/upper_bridge"
+      ],
+      "fact_ids": [
+        "pair/compound_wheel/upper_bridge"
+      ]
+    },
+    {
+      "pair": [
+        "crank_handle",
+        "hand_crank"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/crank_handle",
+        "link/hand_crank"
+      ],
+      "fact_ids": [
+        "pair/crank_handle/hand_crank"
+      ]
+    },
+    {
+      "pair": [
+        "crank_handle",
+        "input_shaft"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/crank_handle",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "pair/crank_handle/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "crank_handle",
+        "output_gear"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/crank_handle",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/crank_handle/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "front_left_column",
+        "hand_crank"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/front_left_column",
+        "link/hand_crank"
+      ],
+      "fact_ids": [
+        "pair/front_left_column/hand_crank"
+      ]
+    },
+    {
+      "pair": [
+        "front_left_column",
+        "input_shaft"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/front_left_column",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "pair/front_left_column/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "front_left_column",
+        "output_gear"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/front_left_column",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/front_left_column/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "front_right_column",
+        "output_gear"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/front_right_column",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/front_right_column/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "hand_crank",
+        "input_shaft"
+      ],
+      "reason": "measured interference is a rigid press fit",
+      "source_entity_ids": [
+        "relation/crank_press_fit"
+      ],
+      "fact_ids": [
+        "fit/hand_crank/shaft_bore/input_shaft/crank_seat",
+        "pair/hand_crank/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "hand_crank",
+        "input_upper_bearing"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/hand_crank",
+        "link/input_upper_bearing"
+      ],
+      "fact_ids": [
+        "pair/hand_crank/input_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "hand_crank",
+        "output_gear"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/hand_crank",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/hand_crank/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "hand_crank",
+        "upper_bridge"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/hand_crank",
+        "link/upper_bridge"
+      ],
+      "fact_ids": [
+        "pair/hand_crank/upper_bridge"
+      ]
+    },
+    {
+      "pair": [
+        "input_lower_bearing",
+        "input_pinion"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/input_lower_bearing",
+        "link/input_pinion"
+      ],
+      "fact_ids": [
+        "pair/input_lower_bearing/input_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "input_lower_bearing",
+        "input_shaft"
+      ],
+      "reason": "measured clearance is a running journal represented by hinge",
+      "source_entity_ids": [
+        "relation/input_lower_journal"
+      ],
+      "fact_ids": [
+        "fit/input_lower_bearing/journal/input_shaft/lower_journal",
+        "pair/input_lower_bearing/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "input_lower_bearing",
+        "output_gear"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/input_lower_bearing",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/input_lower_bearing/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "input_pinion",
+        "input_shaft"
+      ],
+      "reason": "measured interference is a rigid press fit",
+      "source_entity_ids": [
+        "relation/input_pinion_press_fit"
+      ],
+      "fact_ids": [
+        "fit/input_pinion/bore/input_shaft/pinion_seat",
+        "pair/input_pinion/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "input_pinion",
+        "input_thrust_button"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/input_pinion",
+        "link/input_thrust_button"
+      ],
+      "fact_ids": [
+        "pair/input_pinion/input_thrust_button"
+      ]
+    },
+    {
+      "pair": [
+        "input_pinion",
+        "output_gear"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/input_pinion",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/input_pinion/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "input_thrust_button"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/input_thrust_button"
+      ],
+      "fact_ids": [
+        "pair/input_shaft/input_thrust_button"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "input_upper_bearing"
+      ],
+      "reason": "measured clearance is a running journal represented by hinge",
+      "source_entity_ids": [
+        "relation/input_upper_journal"
+      ],
+      "fact_ids": [
+        "fit/input_upper_bearing/journal/input_shaft/upper_journal",
+        "pair/input_shaft/input_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "output_gear"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/input_shaft/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "rear_left_column"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/rear_left_column"
+      ],
+      "fact_ids": [
+        "pair/input_shaft/rear_left_column"
+      ]
+    },
+    {
+      "pair": [
+        "input_thrust_button",
+        "output_gear"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/input_thrust_button",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/input_thrust_button/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "input_upper_bearing",
+        "output_gear"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/input_upper_bearing",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/input_upper_bearing/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "output_coupling",
+        "output_gear"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/output_coupling",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/output_coupling/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "output_coupling",
+        "output_shaft"
+      ],
+      "reason": "measured interference is a rigid press fit",
+      "source_entity_ids": [
+        "relation/output_coupling_press_fit"
+      ],
+      "fact_ids": [
+        "fit/output_coupling/shaft_bore/output_shaft/coupling_seat",
+        "pair/output_coupling/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "output_coupling",
+        "output_upper_bearing"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/output_coupling",
+        "link/output_upper_bearing"
+      ],
+      "fact_ids": [
+        "pair/output_coupling/output_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "output_coupling",
+        "upper_bridge"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/output_coupling",
+        "link/upper_bridge"
+      ],
+      "fact_ids": [
+        "pair/output_coupling/upper_bridge"
+      ]
+    },
+    {
+      "pair": [
+        "output_gear",
+        "output_lower_bearing"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/output_lower_bearing"
+      ],
+      "fact_ids": [
+        "pair/output_gear/output_lower_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "output_gear",
+        "output_shaft"
+      ],
+      "reason": "measured interference is a rigid press fit",
+      "source_entity_ids": [
+        "relation/output_gear_press_fit"
+      ],
+      "fact_ids": [
+        "fit/output_gear/bore/output_shaft/gear_seat",
+        "pair/output_gear/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "output_gear",
+        "output_thrust_button"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/output_thrust_button"
+      ],
+      "fact_ids": [
+        "pair/output_gear/output_thrust_button"
+      ]
+    },
+    {
+      "pair": [
+        "output_gear",
+        "output_upper_bearing"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/output_upper_bearing"
+      ],
+      "fact_ids": [
+        "pair/output_gear/output_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "output_gear",
+        "rear_left_column"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/rear_left_column"
+      ],
+      "fact_ids": [
+        "pair/output_gear/rear_left_column"
+      ]
+    },
+    {
+      "pair": [
+        "output_gear",
+        "rear_right_column"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/rear_right_column"
+      ],
+      "fact_ids": [
+        "pair/output_gear/rear_right_column"
+      ]
+    },
+    {
+      "pair": [
+        "output_gear",
+        "upper_bridge"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/upper_bridge"
+      ],
+      "fact_ids": [
+        "pair/output_gear/upper_bridge"
+      ]
+    },
+    {
+      "pair": [
+        "output_lower_bearing",
+        "output_shaft"
+      ],
+      "reason": "measured clearance is a running journal represented by hinge",
+      "source_entity_ids": [
+        "relation/output_lower_journal"
+      ],
+      "fact_ids": [
+        "fit/output_lower_bearing/journal/output_shaft/lower_journal",
+        "pair/output_lower_bearing/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "output_shaft",
+        "output_thrust_button"
+      ],
+      "reason": "separated surfaces or zero overlap extent indicate collision-proxy false contact",
+      "source_entity_ids": [
+        "link/output_shaft",
+        "link/output_thrust_button"
+      ],
+      "fact_ids": [
+        "pair/output_shaft/output_thrust_button"
+      ]
+    },
+    {
+      "pair": [
+        "output_shaft",
+        "output_upper_bearing"
+      ],
+      "reason": "measured clearance is a running journal represented by hinge",
+      "source_entity_ids": [
+        "relation/output_upper_journal"
+      ],
+      "fact_ids": [
+        "fit/output_upper_bearing/journal/output_shaft/upper_journal",
+        "pair/output_shaft/output_upper_bearing"
+      ]
+    }
+  ],
+  "support_patches": [
+    {
+      "action": "remove_constraint",
+      "name": "stage_1_ratio",
+      "reason": "isolate passive support under gravity"
+    },
+    {
+      "action": "remove_constraint",
+      "name": "stage_2_ratio",
+      "reason": "isolate passive support under gravity"
+    }
+  ],
+  "bodies": [
+    "baseplate",
+    "compound_lower_bearing",
+    "compound_pinion",
+    "compound_shaft",
+    "compound_thrust_button",
+    "compound_upper_bearing",
+    "compound_wheel",
+    "crank_handle",
+    "front_left_column",
+    "front_right_column",
+    "hand_crank",
+    "input_lower_bearing",
+    "input_pinion",
+    "input_shaft",
+    "input_thrust_button",
+    "input_upper_bearing",
+    "output_coupling",
+    "output_gear",
+    "output_lower_bearing",
+    "output_shaft",
+    "output_thrust_button",
+    "output_upper_bearing",
+    "rear_left_column",
+    "rear_right_column",
+    "upper_bridge"
+  ],
+  "joints": [
+    "compound_shaft_rotation",
+    "input_shaft_rotation",
+    "output_shaft_rotation"
+  ],
+  "constraints": [
+    "stage_1_ratio",
+    "stage_2_ratio"
+  ]
+}

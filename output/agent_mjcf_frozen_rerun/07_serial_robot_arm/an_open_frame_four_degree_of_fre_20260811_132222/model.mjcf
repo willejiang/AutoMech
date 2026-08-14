@@ -1,0 +1,117 @@
+<mujoco model="an_open_frame_four_degree_of_fre">
+  <compiler angle="radian" coordinate="local" />
+  <option gravity="0 0 -9.81" timestep="0.0002" solver="Newton" iterations="100" cone="elliptic" />
+  <size memory="256M" />
+  <asset>
+    <mesh name="mesh_base_frame" file="meshes/base_frame.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_base_bolt_1" file="meshes/base_bolt_1.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_base_bolt_2" file="meshes/base_bolt_2.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_base_bolt_3" file="meshes/base_bolt_3.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_base_bolt_4" file="meshes/base_bolt_4.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_yaw_pin" file="meshes/yaw_pin.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_yaw_thrust_bearing" file="meshes/yaw_thrust_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_yaw_carriage" file="meshes/yaw_carriage.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_shoulder_pin" file="meshes/shoulder_pin.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_shoulder_link" file="meshes/shoulder_link.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_elbow_pin" file="meshes/elbow_pin.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_elbow_link" file="meshes/elbow_link.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_wrist_pin" file="meshes/wrist_pin.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_wrist_link" file="meshes/wrist_link.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_end_effector_pointer" file="meshes/end_effector_pointer.stl" scale=".001 .001 .001" />
+  </asset>
+  <worldbody>
+    <light pos="0 0 3" dir="0 0 -1" />
+    <geom name="ground" type="plane" size="5 5 .1" friction="1 .05 .005" contype="1" conaffinity="0" />
+    <body name="base_frame" pos="0 0 0" quat="1 0 0 0">
+      <inertial pos="-3.489467214e-18 2.726146261e-20 0.005" mass="1.396752334" fullinertia="0.001691019953 0.002630406492 0.004298147239 2.339482307e-20 -2.592316984e-20 -5.330851612e-23" />
+      <geom name="geom_base_frame" type="sdf" mesh="mesh_base_frame" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      <body name="base_bolt_1" pos="-0.055 -0.04 0" quat="1 0 0 0">
+        <inertial pos="3.574510884e-20 -1.39556026e-19 0.009014218037" mass="0.005201420704" fullinertia="1.123455134e-07 1.12345513e-07 5.507586904e-08 -1.041181955e-25 -9.747281818e-24 -1.211167516e-23" />
+        <geom name="geom_base_bolt_1" type="sdf" mesh="mesh_base_bolt_1" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="base_bolt_2" pos="-0.055 0.04 0" quat="1 0 0 0">
+        <inertial pos="3.574510884e-20 -1.39556026e-19 0.009014218037" mass="0.005201420704" fullinertia="1.123455134e-07 1.12345513e-07 5.507586904e-08 -1.041181955e-25 -9.747281818e-24 -1.211167516e-23" />
+        <geom name="geom_base_bolt_2" type="sdf" mesh="mesh_base_bolt_2" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="base_bolt_3" pos="0.055 -0.04 0" quat="1 0 0 0">
+        <inertial pos="3.574510884e-20 -1.39556026e-19 0.009014218037" mass="0.005201420704" fullinertia="1.123455134e-07 1.12345513e-07 5.507586904e-08 -1.041181955e-25 -9.747281818e-24 -1.211167516e-23" />
+        <geom name="geom_base_bolt_3" type="sdf" mesh="mesh_base_bolt_3" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="base_bolt_4" pos="0.055 0.04 0" quat="1 0 0 0">
+        <inertial pos="3.574510884e-20 -1.39556026e-19 0.009014218037" mass="0.005201420704" fullinertia="1.123455134e-07 1.12345513e-07 5.507586904e-08 -1.041181955e-25 -9.747281818e-24 -1.211167516e-23" />
+        <geom name="geom_base_bolt_4" type="sdf" mesh="mesh_base_bolt_4" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="yaw_pin" pos="0 0 0" quat="1 0 0 0">
+        <inertial pos="3.713091963e-20 -1.458154602e-19 0.013" mass="0.01602333374" fullinertia="1.002752143e-06 1.002752137e-06 2.002086785e-07 -1.189922235e-25 5.342750834e-23 -3.28420062e-23" />
+        <geom name="geom_yaw_pin" type="sdf" mesh="mesh_yaw_pin" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="yaw_thrust_bearing" pos="0 0 0.01" quat="1 0 0 0">
+        <inertial pos="3.868146896e-19 -3.309702054e-19 0.001" mass="0.04311497022" fullinertia="9.985991245e-06 9.98599131e-06 1.994323924e-05 -3.804032644e-23 1.667750382e-23 1.546898905e-23" />
+        <geom name="geom_yaw_thrust_bearing" type="sdf" mesh="mesh_yaw_thrust_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="yaw_carriage" pos="0 0 0.012" quat="1 0 0 0">
+        <inertial pos="7.343306908e-19 -3.805438398e-19 0.0205861658" mass="0.4002430999" fullinertia="0.0003979167209 0.0003896496038 0.000182111379 -1.825816677e-21 3.613535557e-21 4.662794497e-21" />
+        <geom name="geom_yaw_carriage" type="sdf" mesh="mesh_yaw_carriage" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="shoulder_pin" pos="0 0 0.082" quat="0.7071067812 0.7071067812 0 0">
+          <inertial pos="0 -9.451428144e-20 -2.818697587e-19" mass="0.0168861284" fullinertia="1.161947025e-06 1.161947019e-06 2.109891428e-07 5.949611174e-26 -1.903875576e-24 2.855813364e-24" />
+          <geom name="geom_shoulder_pin" type="sdf" mesh="mesh_shoulder_pin" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        </body>
+        <body name="shoulder_link" pos="0 0 0.082" quat="1 0 0 0">
+          <inertial pos="0.04382076476 3.809868958e-19 0.02043396" mass="0.1998888252" fullinertia="8.119889758e-05 0.0003743319308 0.000311436094 3.337171349e-21 -0.0001371929822 1.556148694e-21" />
+          <geom name="geom_shoulder_link" type="sdf" mesh="mesh_shoulder_link" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          <body name="elbow_pin" pos="0.09516231764 0 0.04437491748" quat="0.7071067812 0.7071067812 0 0">
+            <inertial pos="0 -9.451428144e-20 -2.818697587e-19" mass="0.0168861284" fullinertia="1.161947025e-06 1.161947019e-06 2.109891428e-07 5.949611174e-26 -1.903875576e-24 2.855813364e-24" />
+            <geom name="geom_elbow_pin" type="sdf" mesh="mesh_elbow_pin" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          </body>
+          <body name="elbow_link" pos="0.09516231764 0 0.04437491748" quat="1 0 0 0">
+            <inertial pos="0.04026894591 4.099669449e-19 -0.007100501426" mass="0.1857589349" fullinertia="2.458373795e-05 0.0002694878114 0.0002628680195 3.066682503e-21 4.336419363e-05 -1.515523144e-21" />
+            <geom name="geom_elbow_link" type="sdf" mesh="mesh_elbow_link" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+            <body name="wrist_pin" pos="0.08863269777 0 -0.01562833599" quat="0.7071067812 0.7071067812 0 0">
+              <inertial pos="0 -9.451428144e-20 -2.818697587e-19" mass="0.0168861284" fullinertia="1.161947025e-06 1.161947019e-06 2.109891428e-07 5.949611174e-26 -1.903875576e-24 2.855813364e-24" />
+              <geom name="geom_wrist_pin" type="sdf" mesh="mesh_wrist_pin" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+            </body>
+            <body name="wrist_link" pos="0.08863269777 0 -0.01562833599" quat="1 0 0 0">
+              <inertial pos="0.009607284278 1.901961828e-19 0.002042085744" mass="0.1001006197" fullinertia="7.09986342e-06 3.294837404e-05 2.884672128e-05 1.118128853e-22 -4.841159982e-06 3.887877171e-23" />
+              <geom name="geom_wrist_link" type="sdf" mesh="mesh_wrist_link" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+              <body name="end_effector_pointer" pos="0.04695108484 0 0.009979761159" quat="0.7771459615 -0 0.629320391 -0">
+                <inertial pos="-5.838784502e-10 5.668600857e-13 0.02480239276" mass="0.04861084069" fullinertia="2.004883764e-05 2.004883746e-05 9.076792998e-07 -7.053292381e-17 1.21450054e-12 1.173596854e-16" />
+                <geom name="geom_end_effector_pointer" type="sdf" mesh="mesh_end_effector_pointer" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+              </body>
+              <joint name="wrist_pitch_revolute" type="hinge" axis="0 1 0" pos="-0.1837950154 0 -0.1227465815" />
+            </body>
+            <joint name="elbow_pitch_revolute" type="hinge" axis="0 1 0" pos="-0.09516231764 0 -0.1383749175" />
+          </body>
+          <joint name="shoulder_pitch_revolute" type="hinge" axis="0 1 0" pos="0 0 -0.094" />
+        </body>
+        <joint name="base_yaw_revolute" type="hinge" axis="0 0 1" pos="0 0 -0.012" />
+      </body>
+    </body>
+  </worldbody>
+  <contact>
+    <exclude body1="base_frame" body2="yaw_pin" />
+    <exclude body1="yaw_carriage" body2="yaw_pin" />
+    <exclude body1="yaw_carriage" body2="yaw_thrust_bearing" />
+    <exclude body1="yaw_carriage" body2="shoulder_pin" />
+    <exclude body1="shoulder_link" body2="shoulder_pin" />
+    <exclude body1="shoulder_link" body2="elbow_pin" />
+    <exclude body1="elbow_link" body2="elbow_pin" />
+    <exclude body1="elbow_link" body2="wrist_pin" />
+    <exclude body1="wrist_link" body2="wrist_pin" />
+    <exclude body1="wrist_link" body2="end_effector_pointer" />
+    <exclude body1="base_frame" body2="yaw_carriage" />
+    <exclude body1="base_bolt_1" body2="yaw_carriage" />
+    <exclude body1="base_bolt_2" body2="yaw_carriage" />
+    <exclude body1="base_bolt_3" body2="yaw_carriage" />
+    <exclude body1="base_bolt_4" body2="yaw_carriage" />
+    <exclude body1="elbow_link" body2="yaw_carriage" />
+    <exclude body1="elbow_pin" body2="yaw_carriage" />
+    <exclude body1="shoulder_link" body2="yaw_pin" />
+    <exclude body1="shoulder_link" body2="wrist_link" />
+    <exclude body1="shoulder_link" body2="yaw_thrust_bearing" />
+    <exclude body1="base_bolt_3" body2="shoulder_link" />
+    <exclude body1="base_bolt_4" body2="shoulder_link" />
+    <exclude body1="shoulder_link" body2="wrist_pin" />
+    <exclude body1="base_frame" body2="shoulder_link" />
+    <exclude body1="elbow_link" body2="end_effector_pointer" />
+  </contact>
+</mujoco>

@@ -1,0 +1,113 @@
+{
+  "ok": true,
+  "errors": [],
+  "policy_version": 4,
+  "bodies": [
+    "base",
+    "crank_arm",
+    "crank_grip",
+    "crank_handle_spindle",
+    "input_high_bearing",
+    "input_low_bearing",
+    "input_pinion",
+    "input_shaft",
+    "intermediate_driven_gear",
+    "intermediate_high_bearing",
+    "intermediate_low_bearing",
+    "intermediate_shaft",
+    "intermediate_stage2_pinion",
+    "output_gear",
+    "output_high_bearing",
+    "output_low_bearing",
+    "output_shaft"
+  ],
+  "joints": [
+    "input_spin",
+    "intermediate_spin",
+    "output_spin",
+    "stage1_gear",
+    "stage2_gear"
+  ],
+  "nq": 3,
+  "nv": 3,
+  "finite": true,
+  "dynamic_transmission_probe": {
+    "ran": true,
+    "ok": true,
+    "errors": [],
+    "warnings": [],
+    "contact_on": {
+      "ok": true,
+      "driver_travel": 0.4213907274424149,
+      "commanded_travel": 1.0494,
+      "joint_deltas": {
+        "intermediate_spin": -0.14963576862037647,
+        "output_spin": 0.051540636271835874,
+        "input_spin": 0.4213907274424149
+      },
+      "transmission_residuals": [
+        {
+          "name": "input_spin->intermediate_spin",
+          "driving_joint": "input_spin",
+          "driven_joint": "intermediate_spin",
+          "ratio": -0.3333333333333333,
+          "driving_delta": 0.4213907274424149,
+          "driven_delta": -0.14963576862037647,
+          "normalized_residual": 0.0652994397520881
+        },
+        {
+          "name": "intermediate_spin->output_spin",
+          "driving_joint": "intermediate_spin",
+          "driven_joint": "output_spin",
+          "ratio": -0.3333333333333333,
+          "driving_delta": -0.14963576862037647,
+          "driven_delta": 0.051540636271835874,
+          "normalized_residual": 0.03332184704969116
+        }
+      ],
+      "active_contacts": [
+        {
+          "pair": [
+            "base",
+            "crank_grip"
+          ],
+          "count": 7624,
+          "max_penetration_mm": 0.16974093676105043,
+          "max_force_n": 19.84097459549936,
+          "impulse_ns": 18.907982589307736
+        }
+      ]
+    },
+    "contact_off": {
+      "ok": true,
+      "driver_travel": 1.4047985930636933,
+      "commanded_travel": 1.0494,
+      "joint_deltas": {
+        "intermediate_spin": -0.47642155570476136,
+        "output_spin": 0.1595115081037121,
+        "input_spin": 1.4047985930636933
+      },
+      "transmission_residuals": [
+        {
+          "name": "input_spin->intermediate_spin",
+          "driving_joint": "input_spin",
+          "driven_joint": "intermediate_spin",
+          "ratio": -0.3333333333333333,
+          "driving_delta": 1.4047985930636933,
+          "driven_delta": -0.47642155570476136,
+          "normalized_residual": 0.01741607243301217
+        },
+        {
+          "name": "intermediate_spin->output_spin",
+          "driving_joint": "intermediate_spin",
+          "driven_joint": "output_spin",
+          "ratio": -0.3333333333333333,
+          "driving_delta": -0.47642155570476136,
+          "driven_delta": 0.1595115081037121,
+          "normalized_residual": 0.004435081874600105
+        }
+      ],
+      "active_contacts": []
+    }
+  }
+}

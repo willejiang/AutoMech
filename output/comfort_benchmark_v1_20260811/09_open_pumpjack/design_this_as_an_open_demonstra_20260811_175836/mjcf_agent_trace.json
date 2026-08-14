@@ -1,0 +1,1114 @@
+{
+  "rounds": 17,
+  "executions": [
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "index",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"sections\": {\n    \"model\": 5,\n    \"links\": 24,\n    \"ports\": 9,\n    \"poses\": 24,\n    \"relations\": 8,\n    \"motion_joints\": 4,\n    \"transmissions\": 1,\n    \"planetary_stages\": 0,\n    \"entity_ids\": 84,\n    \"simulation\": 5\n  }\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "model",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"model\",\n  \"offset\": 0,\n  \"returned\": 5,\n  \"total\": 5,\n  \"next_offset\": null,\n  \"items\": {\n    \"name\": \"design_this_as_an_open_demonstra\",\n    \"root_link\": \"base\",\n    \"mesh_pairs\": [],\n    \"output_link\": \"polished_output_rod\",\n    \"watch_links\": [\n      \"crankshaft\",\n      \"crank_disk\",\n      \"crank_pin\",\n      \"pitman\",\n      \"walking_beam\",\n      \"polished_output_rod\"\n    ]\n  }\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "links",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"links\",\n  \"offset\": 0,\n  \"returned\": 24,\n  \"total\": 24,\n  \"next_offset\": null,\n  \"items\": {\n    \"base\": {\n      \"entity_id\": \"link/base\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.95456,\n      \"world_xyz_m\": [\n        0.01,\n        0.0,\n        0.0\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"negative_shaft_pedestal\": {\n      \"entity_id\": \"link/negative_shaft_pedestal\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"base\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.0291392,\n      \"world_xyz_m\": [\n        -0.045,\n        -0.023,\n        0.008\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"positive_shaft_pedestal\": {\n      \"entity_id\": \"link/positive_shaft_pedestal\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"base\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.0291392,\n      \"world_xyz_m\": [\n        -0.045,\n        0.023,\n        0.008\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"negative_shaft_bearing\": {\n      \"entity_id\": \"link/negative_shaft_bearing\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"negative_shaft_pedestal\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.009386715312275574,\n      \"world_xyz_m\": [\n        -0.045,\n        -0.023,\n        0.045\n      ],\n      \"world_quat_wxyz\": [\n        0.7071067811865475,\n        0.7071067811865475,\n        0.0,\n        0.0\n      ]\n    },\n    \"positive_shaft_bearing\": {\n      \"entity_id\": \"link/positive_shaft_bearing\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"positive_shaft_pedestal\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.009386715312275574,\n      \"world_xyz_m\": [\n        -0.045,\n        0.023,\n        0.045\n      ],\n      \"world_quat_wxyz\": [\n        0.7071067811865475,\n        0.7071067811865475,\n        0.0,\n        0.0\n      ]\n    },\n    \"crankshaft\": {\n      \"entity_id\": \"link/crankshaft\",\n      \"dof\": \"spin\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": true,\n      \"mount\": \"negative_shaft_bearing\",\n      \"extra_mounts\": [\n        \"positive_shaft_bearing\"\n      ],\n      \"mass_kg\": 0.028398277571528286,\n      \"world_xyz_m\": [\n        -0.045,\n        0.0,\n        0.045\n      ],\n      \"world_quat_wxyz\": [\n        0.7071067811865475,\n        0.7071067811865475,\n        0.0,\n        0.0\n      ]\n    },\n    \"crank_disk\": {\n      \"entity_id\": \"link/crank_disk\",\n      \"dof\": \"spin\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"crankshaft\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.14860161873766722,\n      \"world_xyz_m\": [\n        -0.045,\n        0.0,\n        0.045\n      ],\n      \"world_quat_wxyz\": [\n        0.7071067811865475,\n        0.7071067811865475,\n        0.0,\n        0.0\n      ]\n    },\n    \"crank_pin\": {\n      \"entity_id\": \"link/crank_pin\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n "
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "ports",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"ports\",\n  \"offset\": 0,\n  \"returned\": 9,\n  \"total\": 9,\n  \"next_offset\": null,\n  \"items\": {\n    \"crankshaft\": {\n      \"rotation_axis\": {\n        \"entity_id\": \"port/crankshaft/rotation_axis\",\n        \"type\": \"shaft\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 8.0,\n        \"depth_mm\": 72.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          -0.045,\n          0.0,\n          0.045\n        ]\n      },\n      \"disk_seat\": {\n        \"entity_id\": \"port/crankshaft/disk_seat\",\n        \"type\": \"cylindrical\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 8.0,\n        \"depth_mm\": 10.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          -0.045,\n          0.0,\n          0.045\n        ]\n      }\n    },\n    \"crank_disk\": {\n      \"shaft_bore\": {\n        \"entity_id\": \"port/crank_disk/shaft_bore\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 7.99,\n        \"depth_mm\": 10.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          -0.045,\n          0.0,\n          0.045\n        ]\n      },\n      \"crank_pin_seat\": {\n        \"entity_id\": \"port/crank_disk/crank_pin_seat\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 4.99,\n        \"depth_mm\": 10.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          -0.030255263202798144,\n          6.321856921592887e-19,\n          0.055324375854318826\n        ]\n      }\n    },\n    \"crank_pin\": {\n      \"pin_shaft\": {\n        \"entity_id\": \"port/crank_pin/pin_shaft\",\n        \"type\": \"shaft\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 5.0,\n        \"depth_mm\": 11.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          -0.030255263202798144,\n          -0.0095,\n          0.05532437585431883\n        ]\n      }\n    },\n    \"pitman\": {\n      \"crank_end_bore\": {\n        \"entity_id\": \"port/pitman/crank_end_bore\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          1.0,\n          0.0\n        ],\n        \"diameter_mm\": 5.1,\n        \"depth_mm\": 4.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          -0.030255263202798144,\n          -0.012,\n          0.05532437585431883\n        ]\n      },\n      \"beam_end_bore\": {\n        \"entity_id\": \"port/pitman/beam_end_bore\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          1.0,\n          0.0\n        ],\n        \"diameter_mm\": 5.1,\n        \"depth_mm\": 4.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          -0.024562063093370667,\n          -0.011999999999999997,\n          0.08373721045679706\n        ]\n      }\n    },\n    \"walking_beam\": {\n      \"pitman_pin_bore\": {\n        \"entity_id\": \"port/walking_beam/pitman_pin_bore\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          1.0,\n          0.0\n        ],\n        \"diameter_mm\": 4.99,\n        \"depth_mm\": 4.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          -0.024562063093370664,\n          -0.006999999999999999,\n          0.08373721045679705\n        ]\n      },\n      \"pivot_bore\": {\n        \"entity_id\": \"port/walking_beam/pivot_bore\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          1.0,\n          0.0\n        ],\n        \"diameter_mm\": 6.1,\n        \"depth_mm\": 4.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.02,\n          -0.006999999999999999,\n          0.09\n        ]\n      },\n      \"output_pin_bore\": {\n        \"entity_id\": \"port/walking_beam/output_pin_bore\",\n        \"type\": \"bore\",\n        \"axi"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "entity_ids",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"entity_ids\",\n  \"offset\": 0,\n  \"returned\": 25,\n  \"total\": 84,\n  \"next_offset\": 25,\n  \"items\": [\n    \"link/base\",\n    \"link/negative_shaft_pedestal\",\n    \"link/positive_shaft_pedestal\",\n    \"link/negative_shaft_bearing\",\n    \"link/positive_shaft_bearing\",\n    \"link/crankshaft\",\n    \"link/crank_disk\",\n    \"link/crank_pin\",\n    \"link/pitman\",\n    \"link/negative_beam_support\",\n    \"link/positive_beam_support\",\n    \"link/negative_pivot_bearing\",\n    \"link/positive_pivot_bearing\",\n    \"link/beam_pivot_pin\",\n    \"link/walking_beam\",\n    \"link/pitman_beam_pin\",\n    \"link/beam_output_pin\",\n    \"link/polished_output_rod\",\n    \"link/output_guide_post\",\n    \"link/lower_output_guide\",\n    \"link/upper_output_guide\",\n    \"link/hand_crank_arm\",\n    \"link/handle_spindle\",\n    \"link/hand_grip\",\n    \"pose/place_base\"\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "simulation",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"simulation\",\n  \"offset\": 0,\n  \"returned\": 5,\n  \"total\": 5,\n  \"next_offset\": null,\n  \"items\": {\n    \"gravity\": [\n      0.0,\n      0.0,\n      -9.81\n    ],\n    \"timestep\": 0.0002,\n    \"solver\": \"Newton\",\n    \"iterations\": 100,\n    \"base_rests_on_plane\": true\n  }\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "relations",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"relations\",\n  \"offset\": 0,\n  \"returned\": 8,\n  \"total\": 8,\n  \"next_offset\": null,\n  \"items\": [\n    {\n      \"name\": \"shaft_in_negative_bearing\",\n      \"mate_type\": \"journal_bearing\",\n      \"base_part\": \"negative_shaft_bearing\",\n      \"base_port\": \"bearing_bore\",\n      \"incoming_part\": \"crankshaft\",\n      \"incoming_port\": \"rotation_axis\"\n    },\n    {\n      \"name\": \"shaft_in_positive_bearing\",\n      \"mate_type\": \"journal_bearing\",\n      \"base_part\": \"positive_shaft_bearing\",\n      \"base_port\": \"bearing_bore\",\n      \"incoming_part\": \"crankshaft\",\n      \"incoming_port\": \"rotation_axis\"\n    },\n    {\n      \"name\": \"disk_pressed_on_shaft\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"crankshaft\",\n      \"base_port\": \"disk_seat\",\n      \"incoming_part\": \"crank_disk\",\n      \"incoming_port\": \"shaft_bore\"\n    },\n    {\n      \"name\": \"crank_pin_pressed_in_disk\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"crank_disk\",\n      \"base_port\": \"crank_pin_seat\",\n      \"incoming_part\": \"crank_pin\",\n      \"incoming_port\": \"pin_shaft\"\n    },\n    {\n      \"name\": \"crank_pin_to_pitman_closure\",\n      \"mate_type\": \"revolute\",\n      \"base_part\": \"crank_pin\",\n      \"base_port\": \"pin_shaft\",\n      \"incoming_part\": \"pitman\",\n      \"incoming_port\": \"crank_end_bore\"\n    },\n    {\n      \"name\": \"pitman_to_walking_beam_closure\",\n      \"mate_type\": \"revolute\",\n      \"base_part\": \"pitman_beam_pin\",\n      \"base_port\": \"pin_shaft\",\n      \"incoming_part\": \"pitman\",\n      \"incoming_port\": \"beam_end_bore\"\n    },\n    {\n      \"name\": \"walking_beam_fixed_pivot\",\n      \"mate_type\": \"revolute\",\n      \"base_part\": \"beam_pivot_pin\",\n      \"base_port\": \"pivot_shaft\",\n      \"incoming_part\": \"walking_beam\",\n      \"incoming_port\": \"pivot_bore\"\n    },\n    {\n      \"name\": \"beam_to_output_rod_closure\",\n      \"mate_type\": \"revolute\",\n      \"base_part\": \"beam_output_pin\",\n      \"base_port\": \"pin_shaft\",\n      \"incoming_part\": \"polished_output_rod\",\n      \"incoming_port\": \"beam_pin_bore\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "motion_joints",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"motion_joints\",\n  \"offset\": 0,\n  \"returned\": 4,\n  \"total\": 4,\n  \"next_offset\": null,\n  \"items\": [\n    {\n      \"name\": \"driven_crankshaft_hinge\",\n      \"parent\": \"\",\n      \"child\": \"crankshaft\",\n      \"type\": \"hinge\",\n      \"axis\": [\n        0.0,\n        1.0,\n        0.0\n      ],\n      \"pos_mm\": [\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"crank_disk_hinge\",\n      \"parent\": \"\",\n      \"child\": \"crank_disk\",\n      \"type\": \"hinge\",\n      \"axis\": [\n        0.0,\n        1.0,\n        0.0\n      ],\n      \"pos_mm\": [\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"walking_beam_hinge\",\n      \"parent\": \"\",\n      \"child\": \"walking_beam\",\n      \"type\": \"hinge\",\n      \"axis\": [\n        0.0,\n        1.0,\n        0.0\n      ],\n      \"pos_mm\": [\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"vertical_guided_output\",\n      \"parent\": \"\",\n      \"child\": \"polished_output_rod\",\n      \"type\": \"slide\",\n      \"axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"pos_mm\": [\n        0.0,\n        0.0,\n        0.0\n      ]\n    }\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "transmissions",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"transmissions\",\n  \"offset\": 0,\n  \"returned\": 1,\n  \"total\": 1,\n  \"next_offset\": null,\n  \"items\": [\n    {\n      \"name\": \"shaft_to_crank_disk_press_drive\",\n      \"type\": \"compound_1to1\",\n      \"driving_link\": \"crankshaft\",\n      \"driven_link\": \"crank_disk\",\n      \"ratio\": 1.0\n    }\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "poses",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"poses\",\n  \"offset\": 0,\n  \"returned\": 24,\n  \"total\": 24,\n  \"next_offset\": null,\n  \"items\": [\n    {\n      \"name\": \"place_base\",\n      \"parent\": \"\",\n      \"child\": \"base\",\n      \"xyz_m\": [\n        0.01,\n        0.0,\n        0.0\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_negative_shaft_pedestal\",\n      \"parent\": \"base\",\n      \"child\": \"negative_shaft_pedestal\",\n      \"xyz_m\": [\n        -0.055,\n        -0.023,\n        0.008\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_positive_shaft_pedestal\",\n      \"parent\": \"base\",\n      \"child\": \"positive_shaft_pedestal\",\n      \"xyz_m\": [\n        -0.055,\n        0.023,\n        0.008\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_negative_shaft_bearing\",\n      \"parent\": \"negative_shaft_pedestal\",\n      \"child\": \"negative_shaft_bearing\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.037\n      ],\n      \"rpy_rad\": [\n        1.5707963267948966,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_positive_shaft_bearing\",\n      \"parent\": \"positive_shaft_pedestal\",\n      \"child\": \"positive_shaft_bearing\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.037\n      ],\n      \"rpy_rad\": [\n        1.5707963267948966,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_crankshaft\",\n      \"parent\": \"negative_shaft_bearing\",\n      \"child\": \"crankshaft\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        -0.023\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_crank_disk\",\n      \"parent\": \"crankshaft\",\n      \"child\": \"crank_disk\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.0\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_crank_pin\",\n      \"parent\": \"crank_disk\",\n      \"child\": \"crank_pin\",\n      \"xyz_m\": [\n        0.014744736797201853,\n        0.010324375854318831,\n        0.0095\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_pitman\",\n      \"parent\": \"crank_pin\",\n      \"child\": \"pitman\",\n      \"xyz_m\": [\n        0.00284660005471374,\n        0.014206417301239114,\n        0.0025\n      ],\n      \"rpy_rad\": [\n        -1.5707963267948966,\n        -0.0,\n        1.373040947727596\n      ]\n    },\n    {\n      \"name\": \"place_negative_beam_support\",\n      \"parent\": \"base\",\n      \"child\": \"negative_beam_support\",\n      \"xyz_m\": [\n        0.01,\n        -0.018,\n        0.008\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_positive_beam_support\",\n      \"parent\": \"base\",\n      \"child\": \"positive_beam_support\",\n      \"xyz_m\": [\n        0.01,\n        0.004,\n        0.008\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_negative_pivot_bearing\",\n      \"parent\": \"negative_beam_support\",\n      \"child\": \"negative_pivot_bearing\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.082\n      ],\n      \"rpy_rad\": [\n        1.5707963267948966,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_positive_pivot_bearing\",\n      \"parent\": \"positive_beam_support\",\n      \"child\": \"positive_pivot_bearing\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.082\n      ],\n      \"rpy_rad\": [\n        1.5707963267948966,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_beam_pivot_pin\",\n      \"parent\": \"negative_pivot_bearing\",\n      \"child\": \"beam_pivot_pin\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        -0.011\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_walking_beam\",\n      \"parent\": \"beam_pivot_pin\",\n      \"child\": \"walking_beam\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.0\n      ]"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "entity_ids",
+        "offset": 25,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"entity_ids\",\n  \"offset\": 25,\n  \"returned\": 25,\n  \"total\": 84,\n  \"next_offset\": 50,\n  \"items\": [\n    \"pose/place_negative_shaft_pedestal\",\n    \"pose/place_positive_shaft_pedestal\",\n    \"pose/place_negative_shaft_bearing\",\n    \"pose/place_positive_shaft_bearing\",\n    \"pose/place_crankshaft\",\n    \"pose/place_crank_disk\",\n    \"pose/place_crank_pin\",\n    \"pose/place_pitman\",\n    \"pose/place_negative_beam_support\",\n    \"pose/place_positive_beam_support\",\n    \"pose/place_negative_pivot_bearing\",\n    \"pose/place_positive_pivot_bearing\",\n    \"pose/place_beam_pivot_pin\",\n    \"pose/place_walking_beam\",\n    \"pose/place_pitman_beam_pin\",\n    \"pose/place_beam_output_pin\",\n    \"pose/place_polished_output_rod\",\n    \"pose/place_output_guide_post\",\n    \"pose/place_lower_output_guide\",\n    \"pose/place_upper_output_guide\",\n    \"pose/place_hand_crank_arm\",\n    \"pose/place_handle_spindle\",\n    \"pose/place_hand_grip\",\n    \"port/crankshaft/rotation_axis\",\n    \"port/crankshaft/disk_seat\"\n  ]\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "negative_shaft_bearing",
+        "port_a": "bearing_bore",
+        "b": "crankshaft",
+        "port_b": "rotation_axis"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": false,\n  \"reason\": \"unknown port\",\n  \"fact_id\": \"fit/negative_shaft_bearing/bearing_bore/crankshaft/rotation_axis\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "positive_shaft_bearing",
+        "port_a": "bearing_bore",
+        "b": "crankshaft",
+        "port_b": "rotation_axis"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": false,\n  \"reason\": \"unknown port\",\n  \"fact_id\": \"fit/positive_shaft_bearing/bearing_bore/crankshaft/rotation_axis\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "crankshaft",
+        "port_a": "disk_seat",
+        "b": "crank_disk",
+        "port_b": "shaft_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/crankshaft/disk_seat/crank_disk/shaft_bore\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": null,\n  \"fit_sign\": \"not_shaft_bore\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "crank_disk",
+        "port_a": "crank_pin_seat",
+        "b": "crank_pin",
+        "port_b": "pin_shaft"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/crank_disk/crank_pin_seat/crank_pin/pin_shaft\",\n  \"radial_offset_mm\": 6.357186674312236e-15,\n  \"axial_offset_mm\": 9.5,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": -0.009999999999999787,\n  \"fit_sign\": \"interference\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "crank_pin",
+        "port_a": "pin_shaft",
+        "b": "pitman",
+        "port_b": "crank_end_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/crank_pin/pin_shaft/pitman/crank_end_bore\",\n  \"radial_offset_mm\": 1.5308084989341918e-16,\n  \"axial_offset_mm\": 2.5000000000000004,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.09999999999999964,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "pitman_beam_pin",
+        "port_a": "pin_shaft",
+        "b": "pitman",
+        "port_b": "beam_end_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/pitman_beam_pin/pin_shaft/pitman/beam_end_bore\",\n  \"radial_offset_mm\": 1.4160227303065523e-14,\n  \"axial_offset_mm\": 2.499999999999997,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.09999999999999964,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "beam_pivot_pin",
+        "port_a": "pivot_shaft",
+        "b": "walking_beam",
+        "port_b": "pivot_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/beam_pivot_pin/pivot_shaft/walking_beam/pivot_bore\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.09999999999999964,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "beam_output_pin",
+        "port_a": "pin_shaft",
+        "b": "polished_output_rod",
+        "port_b": "beam_pin_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/beam_output_pin/pin_shaft/polished_output_rod/beam_pin_bore\",\n  \"radial_offset_mm\": 1.3899952001169409e-14,\n  \"axial_offset_mm\": 2.5000000000000004,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.09999999999999964,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "crankshaft",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"crankshaft\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 36.44159786182278,\n  \"items\": [\n    {\n      \"part\": \"negative_shaft_bearing\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/crankshaft/negative_shaft_bearing\"\n    },\n    {\n      \"part\": \"positive_shaft_bearing\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/crankshaft/positive_shaft_bearing\"\n    },\n    {\n      \"part\": \"crank_disk\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/crank_disk/crankshaft\"\n    },\n    {\n      \"part\": \"hand_crank_arm\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/crankshaft/hand_crank_arm\"\n    },\n    {\n      \"part\": \"pitman\",\n      \"aabb_surface_distance_mm\": 3.0947996044147743,\n      \"fact_id\": \"nearby/crankshaft/pitman\"\n    },\n    {\n      \"part\": \"negative_shaft_pedestal\",\n      \"aabb_surface_distance_mm\": 4.001243352890015,\n      \"fact_id\": \"nearby/crankshaft/negative_shaft_pedestal\"\n    },\n    {\n      \"part\": \"positive_shaft_pedestal\",\n      \"aabb_surface_distance_mm\": 4.001243352890015,\n      \"fact_id\": \"nearby/crankshaft/positive_shaft_pedestal\"\n    },\n    {\n      \"part\": \"crank_pin\",\n      \"aabb_surface_distance_mm\": 9.08938902439189,\n      \"fact_id\": \"nearby/crank_pin/crankshaft\"\n    },\n    {\n      \"part\": \"hand_grip\",\n      \"aabb_surface_distance_mm\": 15.002797365188584,\n      \"fact_id\": \"nearby/crankshaft/hand_grip\"\n    },\n    {\n      \"part\": \"handle_spindle\",\n      \"aabb_surface_distance_mm\": 18.001865029335008,\n      \"fact_id\": \"nearby/crankshaft/handle_spindle\"\n    },\n    {\n      \"part\": \"walking_beam\",\n      \"aabb_surface_distance_mm\": 26.748647514704345,\n      \"fact_id\": \"nearby/crankshaft/walking_beam\"\n    },\n    {\n      \"part\": \"base\",\n      \"aabb_surface_distance_mm\": 33.001243352890015,\n      \"fact_id\": \"nearby/base/crankshaft\"\n    },\n    {\n      \"part\": \"pitman_beam_pin\",\n      \"aabb_surface_distance_mm\": 35.12312754880966,\n      \"fact_id\": \"nearby/crankshaft/pitman_beam_pin\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "crank_disk",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"crank_disk\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 35.701702108789746,\n  \"items\": [\n    {\n      \"part\": \"crankshaft\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/crank_disk/crankshaft\"\n    },\n    {\n      \"part\": \"crank_pin\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/crank_disk/crank_pin\"\n    },\n    {\n      \"part\": \"walking_beam\",\n      \"aabb_surface_distance_mm\": 4.7097972555282865,\n      \"fact_id\": \"nearby/crank_disk/walking_beam\"\n    },\n    {\n      \"part\": \"pitman\",\n      \"aabb_surface_distance_mm\": 4.999999999999995,\n      \"fact_id\": \"nearby/crank_disk/pitman\"\n    },\n    {\n      \"part\": \"pitman_beam_pin\",\n      \"aabb_surface_distance_mm\": 11.245758001276414,\n      \"fact_id\": \"nearby/crank_disk/pitman_beam_pin\"\n    },\n    {\n      \"part\": \"base\",\n      \"aabb_surface_distance_mm\": 12.007770538330078,\n      \"fact_id\": \"nearby/base/crank_disk\"\n    },\n    {\n      \"part\": \"negative_shaft_pedestal\",\n      \"aabb_surface_distance_mm\": 13.999999999999998,\n      \"fact_id\": \"nearby/crank_disk/negative_shaft_pedestal\"\n    },\n    {\n      \"part\": \"positive_shaft_pedestal\",\n      \"aabb_surface_distance_mm\": 13.999999999999998,\n      \"fact_id\": \"nearby/crank_disk/positive_shaft_pedestal\"\n    },\n    {\n      \"part\": \"negative_shaft_bearing\",\n      \"aabb_surface_distance_mm\": 13.999999999999998,\n      \"fact_id\": \"nearby/crank_disk/negative_shaft_bearing\"\n    },\n    {\n      \"part\": \"positive_shaft_bearing\",\n      \"aabb_surface_distance_mm\": 13.999999999999998,\n      \"fact_id\": \"nearby/crank_disk/positive_shaft_bearing\"\n    },\n    {\n      \"part\": \"hand_crank_arm\",\n      \"aabb_surface_distance_mm\": 24.0,\n      \"fact_id\": \"nearby/crank_disk/hand_crank_arm\"\n    },\n    {\n      \"part\": \"handle_spindle\",\n      \"aabb_surface_distance_mm\": 26.0,\n      \"fact_id\": \"nearby/crank_disk/handle_spindle\"\n    },\n    {\n      \"part\": \"hand_grip\",\n      \"aabb_surface_distance_mm\": 31.0,\n      \"fact_id\": \"nearby/crank_disk/hand_grip\"\n    },\n    {\n      \"part\": \"positive_beam_support\",\n      \"aabb_surface_distance_mm\": 34.0,\n      \"fact_id\": \"nearby/crank_disk/positive_beam_support\"\n    },\n    {\n      \"part\": \"positive_pivot_bearing\",\n      \"aabb_surface_distance_mm\": 34.179617889463,\n      \"fact_id\": \"nearby/crank_disk/positive_pivot_bearing\"\n    },\n    {\n      \"part\": \"negative_beam_support\",\n      \"aabb_surface_distance_mm\": 35.4400902933387,\n      \"fact_id\": \"nearby/crank_disk/negative_beam_support\"\n    },\n    {\n      \"part\": \"negative_pivot_bearing\",\n      \"aabb_surface_distance_mm\": 35.612445564292535,\n      \"fact_id\": \"nearby/crank_disk/negative_pivot_bearing\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "crank_pin",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"crank_pin\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 6.53805135900538,\n  \"items\": [\n    {\n      \"part\": \"crank_disk\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/crank_disk/crank_pin\"\n    },\n    {\n      \"part\": \"pitman\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/crank_pin/pitman\"\n    },\n    {\n      \"part\": \"negative_shaft_bearing\",\n      \"aabb_surface_distance_mm\": 5.832477216202344,\n      \"fact_id\": \"nearby/crank_pin/negative_shaft_bearing\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "pitman",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"pitman\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 22.06115159536576,\n  \"items\": [\n    {\n      \"part\": \"crank_pin\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/crank_pin/pitman\"\n    },\n    {\n      \"part\": \"pitman_beam_pin\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/pitman/pitman_beam_pin\"\n    },\n    {\n      \"part\": \"walking_beam\",\n      \"aabb_surface_distance_mm\": 0.9999999999999964,\n      \"fact_id\": \"nearby/pitman/walking_beam\"\n    },\n    {\n      \"part\": \"crankshaft\",\n      \"aabb_surface_distance_mm\": 3.0947996044147743,\n      \"fact_id\": \"nearby/crankshaft/pitman\"\n    },\n    {\n      \"part\": \"crank_disk\",\n      \"aabb_surface_distance_mm\": 4.999999999999995,\n      \"fact_id\": \"nearby/crank_disk/pitman\"\n    },\n    {\n      \"part\": \"negative_shaft_bearing\",\n      \"aabb_surface_distance_mm\": 5.0,\n      \"fact_id\": \"nearby/negative_shaft_bearing/pitman\"\n    },\n    {\n      \"part\": \"negative_shaft_pedestal\",\n      \"aabb_surface_distance_mm\": 11.788854655853255,\n      \"fact_id\": \"nearby/negative_shaft_pedestal/pitman\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "walking_beam",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"walking_beam\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 58.58081542184613,\n  \"items\": [\n    {\n      \"part\": \"beam_pivot_pin\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/beam_pivot_pin/walking_beam\"\n    },\n    {\n      \"part\": \"pitman_beam_pin\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/pitman_beam_pin/walking_beam\"\n    },\n    {\n      \"part\": \"beam_output_pin\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/beam_output_pin/walking_beam\"\n    },\n    {\n      \"part\": \"polished_output_rod\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/polished_output_rod/walking_beam\"\n    },\n    {\n      \"part\": \"pitman\",\n      \"aabb_surface_distance_mm\": 0.9999999999999964,\n      \"fact_id\": \"nearby/pitman/walking_beam\"\n    },\n    {\n      \"part\": \"crank_disk\",\n      \"aabb_surface_distance_mm\": 4.7097972555282865,\n      \"fact_id\": \"nearby/crank_disk/walking_beam\"\n    },\n    {\n      \"part\": \"positive_beam_support\",\n      \"aabb_surface_distance_mm\": 5.999999999999998,\n      \"fact_id\": \"nearby/positive_beam_support/walking_beam\"\n    },\n    {\n      \"part\": \"positive_pivot_bearing\",\n      \"aabb_surface_distance_mm\": 5.999999999999998,\n      \"fact_id\": \"nearby/positive_pivot_bearing/walking_beam\"\n    },\n    {\n      \"part\": \"negative_beam_support\",\n      \"aabb_surface_distance_mm\": 6.0,\n      \"fact_id\": \"nearby/negative_beam_support/walking_beam\"\n    },\n    {\n      \"part\": \"negative_pivot_bearing\",\n      \"aabb_surface_distance_mm\": 6.0,\n      \"fact_id\": \"nearby/negative_pivot_bearing/walking_beam\"\n    },\n    {\n      \"part\": \"output_guide_post\",\n      \"aabb_surface_distance_mm\": 10.024611788576157,\n      \"fact_id\": \"nearby/output_guide_post/walking_beam\"\n    },\n    {\n      \"part\": \"crank_pin\",\n      \"aabb_surface_distance_mm\": 16.87842786902867,\n      \"fact_id\": \"nearby/crank_pin/walking_beam\"\n    },\n    {\n      \"part\": \"upper_output_guide\",\n      \"aabb_surface_distance_mm\": 20.70202671719821,\n      \"fact_id\": \"nearby/upper_output_guide/walking_beam\"\n    },\n    {\n      \"part\": \"negative_shaft_bearing\",\n      \"aabb_surface_distance_mm\": 24.138745214001617,\n      \"fact_id\": \"nearby/negative_shaft_bearing/walking_beam\"\n    },\n    {\n      \"part\": \"crankshaft\",\n      \"aabb_surface_distance_mm\": 26.748647514704345,\n      \"fact_id\": \"nearby/crankshaft/walking_beam\"\n    },\n    {\n      \"part\": \"positive_shaft_bearing\",\n      \"aabb_surface_distance_mm\": 32.53734808656793,\n      \"fact_id\": \"nearby/positive_shaft_bearing/walking_beam\"\n    },\n    {\n      \"part\": \"hand_crank_arm\",\n      \"aabb_surface_distance_mm\": 34.28414868530622,\n      \"fact_id\": \"nearby/hand_crank_arm/walking_beam\"\n    },\n    {\n      \"part\": \"handle_spindle\",\n      \"aabb_surface_distance_mm\": 37.39199277509606,\n      \"fact_id\": \"nearby/handle_spindle/walking_beam\"\n    },\n    {\n      \"part\": \"negative_shaft_pedestal\",\n      \"aabb_surface_distance_mm\": 39.15400281149516,\n      \"fact_id\": \"nearby/negative_shaft_pedestal/walking_beam\"\n    },\n    {\n      \"part\": \"hand_grip\",\n      \"aabb_surface_distance_mm\": 41.50322088603467,\n      \"fact_id\": \"nearby/hand_grip/walking_beam\"\n    },\n    {\n      \"part\": \"positive_shaft_pedestal\",\n      \"aabb_surface_distance_mm\": 44.82227053778703,\n      \"fact_id\": \"nearby/positive_shaft_pedestal/walking_beam\"\n    },\n    {\n      \"part\": \"lower_output_guide\",\n      \"aabb_surface_distance_mm\": 46.70202671719821,\n      \"fact_id\": \"nearby/lower_output_guide/walking_beam\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "polished_output_rod",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"polished_output_rod\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 46.948825020388774,\n  \"items\": [\n    {\n      \"part\": \"walking_beam\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/polished_output_rod/walking_beam\"\n    },\n    {\n      \"part\": \"beam_output_pin\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/beam_output_pin/polished_output_rod\"\n    },\n    {\n      \"part\": \"lower_output_guide\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/lower_output_guide/polished_output_rod\"\n    },\n    {\n      \"part\": \"upper_output_guide\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/polished_output_rod/upper_output_guide\"\n    },\n    {\n      \"part\": \"base\",\n      \"aabb_surface_distance_mm\": 4.0,\n      \"fact_id\": \"nearby/base/polished_output_rod\"\n    },\n    {\n      \"part\": \"output_guide_post\",\n      \"aabb_surface_distance_mm\": 13.999999999999998,\n      \"fact_id\": \"nearby/output_guide_post/polished_output_rod\"\n    },\n    {\n      \"part\": \"negative_pivot_bearing\",\n      \"aabb_surface_distance_mm\": 39.46636979549582,\n      \"fact_id\": \"nearby/negative_pivot_bearing/polished_output_rod\"\n    },\n    {\n      \"part\": \"positive_pivot_bearing\",\n      \"aabb_surface_distance_mm\": 40.713564629430635,\n      \"fact_id\": \"nearby/polished_output_rod/positive_pivot_bearing\"\n    },\n    {\n      \"part\": \"negative_beam_support\",\n      \"aabb_surface_distance_mm\": 41.46636979549582,\n      \"fact_id\": \"nearby/negative_beam_support/polished_output_rod\"\n    },\n    {\n      \"part\": \"positive_beam_support\",\n      \"aabb_surface_distance_mm\": 42.655126585403636,\n      \"fact_id\": \"nearby/polished_output_rod/positive_beam_support\"\n    },\n    {\n      \"part\": \"beam_pivot_pin\",\n      \"aabb_surface_distance_mm\": 44.46636979549582,\n      \"fact_id\": \"nearby/beam_pivot_pin/polished_output_rod\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "entity_ids",
+        "offset": 50,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"entity_ids\",\n  \"offset\": 50,\n  \"returned\": 25,\n  \"total\": 84,\n  \"next_offset\": 75,\n  \"items\": [\n    \"port/crank_disk/shaft_bore\",\n    \"port/crank_disk/crank_pin_seat\",\n    \"port/crank_pin/pin_shaft\",\n    \"port/pitman/crank_end_bore\",\n    \"port/pitman/beam_end_bore\",\n    \"port/walking_beam/pitman_pin_bore\",\n    \"port/walking_beam/pivot_bore\",\n    \"port/walking_beam/output_pin_bore\",\n    \"port/pitman_beam_pin/pin_shaft\",\n    \"port/beam_pivot_pin/pivot_shaft\",\n    \"port/beam_output_pin/pin_shaft\",\n    \"port/polished_output_rod/beam_pin_bore\",\n    \"port/polished_output_rod/guided_axis\",\n    \"relation/shaft_in_negative_bearing\",\n    \"relation/shaft_in_positive_bearing\",\n    \"relation/disk_pressed_on_shaft\",\n    \"relation/crank_pin_pressed_in_disk\",\n    \"relation/crank_pin_to_pitman_closure\",\n    \"relation/pitman_to_walking_beam_closure\",\n    \"relation/walking_beam_fixed_pivot\",\n    \"relation/beam_to_output_rod_closure\",\n    \"motion_joint/driven_crankshaft_hinge\",\n    \"motion_joint/crank_disk_hinge\",\n    \"motion_joint/walking_beam_hinge\",\n    \"motion_joint/vertical_guided_output\"\n  ]\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "crank_disk",
+        "port_a": "shaft_bore",
+        "b": "crankshaft",
+        "port_b": "disk_seat"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/crank_disk/shaft_bore/crankshaft/disk_seat\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": null,\n  \"fit_sign\": \"not_shaft_bore\"\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "crankshaft",
+        "target": "crank_disk"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"crankshaft\",\n    \"crank_disk\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "crank_pin",
+        "target": "pitman"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"crank_pin\",\n    \"pitman\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "pitman_beam_pin",
+        "target": "pitman"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"pitman_beam_pin\",\n    \"pitman\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "beam_pivot_pin",
+        "target": "walking_beam"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"beam_pivot_pin\",\n    \"walking_beam\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "beam_output_pin",
+        "target": "polished_output_rod"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"beam_output_pin\",\n    \"polished_output_rod\"\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crankshaft",
+        "b": "negative_shaft_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crankshaft/negative_shaft_bearing\",\n  \"origin_distance_mm\": 23.0,\n  \"surface_distance_mm\": 0.049999812856890175,\n  \"aabb_overlap_extents_mm\": [\n    8.0,\n    8.0,\n    7.997513294219971\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.023\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    8.0,\n    7.997513294219971,\n    72.0\n  ],\n  \"b_extents_mm\": [\n    16.0,\n    15.995026588439941,\n    8.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crankshaft",
+        "b": "positive_shaft_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crankshaft/positive_shaft_bearing\",\n  \"origin_distance_mm\": 23.0,\n  \"surface_distance_mm\": 0.049999812856890175,\n  \"aabb_overlap_extents_mm\": [\n    8.0,\n    8.0,\n    7.997513294219971\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.023\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    8.0,\n    7.997513294219971,\n    72.0\n  ],\n  \"b_extents_mm\": [\n    16.0,\n    15.995026588439941,\n    8.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crankshaft",
+        "b": "crank_disk"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/crankshaft\",\n  \"origin_distance_mm\": 0.0,\n  \"surface_distance_mm\": 0.004998226721358758,\n  \"aabb_overlap_extents_mm\": [\n    8.0,\n    10.000000000000004,\n    7.997513294219971\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    8.0,\n    7.997513294219971,\n    72.0\n  ],\n  \"b_extents_mm\": [\n    50.0,\n    49.984458923339844,\n    10.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crankshaft",
+        "b": "hand_crank_arm"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crankshaft/hand_crank_arm\",\n  \"origin_distance_mm\": 33.24154027718932,\n  \"surface_distance_mm\": 0.0037564032051482016,\n  \"aabb_overlap_extents_mm\": [\n    8.0,\n    4.0,\n    7.997513294219971\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      6.123233995736766e-17,\n      -6.123233995736766e-17,\n      -1.0,\n      0.0\n    ],\n    [\n      1.0,\n      0.0,\n      6.123233995736766e-17,\n      0.011999999999999997\n    ],\n    [\n      0.0,\n      -1.0,\n      6.123233995736766e-17,\n      -0.031\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    8.0,\n    7.997513294219971,\n    72.0\n  ],\n  \"b_extents_mm\": [\n    37.99564743041992,\n    4.0,\n    14.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crankshaft",
+        "b": "pitman"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crankshaft/pitman\",\n  \"origin_distance_mm\": 32.484072175118875,\n  \"surface_distance_mm\": 7.501824306563624,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    4.0000000000000036,\n    0.17267746893352864\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.19646895420634963,\n      -6.003892445973503e-17,\n      -0.9805100458603488,\n      0.017591336851915593\n    ],\n    [\n      0.9805100458603488,\n      1.2030253795031698e-17,\n      0.19646895420634963,\n      0.02453079315555795\n    ],\n    [\n      3.233934305250094e-33,\n      -1.0,\n      6.123233995736766e-17,\n      0.011999999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    8.0,\n    7.997513294219971,\n    72.0\n  ],\n  \"b_extents_mm\": [\n    41.97355270385742,\n    4.0,\n    12.999942779541016\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crankshaft",
+        "b": "negative_shaft_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crankshaft/negative_shaft_pedestal\",\n  \"origin_distance_mm\": 43.56604182158392,\n  \"surface_distance_mm\": 7.314189257001861,\n  \"aabb_overlap_extents_mm\": [\n    8.0,\n    8.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      1.0,\n      -0.037\n    ],\n    [\n      0.0,\n      -1.0,\n      6.123233995736766e-17,\n      0.022999999999999996\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    8.0,\n    7.997513294219971,\n    72.0\n  ],\n  \"b_extents_mm\": [\n    16.0,\n    8.0,\n    29.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crankshaft",
+        "b": "positive_shaft_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crankshaft/positive_shaft_pedestal\",\n  \"origin_distance_mm\": 43.56604182158392,\n  \"surface_distance_mm\": 7.314189257001861,\n  \"aabb_overlap_extents_mm\": [\n    8.0,\n    8.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      1.0,\n      -0.037\n    ],\n    [\n      0.0,\n      -1.0,\n      6.123233995736766e-17,\n      -0.023000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    8.0,\n    7.997513294219971,\n    72.0\n  ],\n  \"b_extents_mm\": [\n    16.0,\n    8.0,\n    29.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crankshaft",
+        "b": "crank_pin"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_pin/crankshaft\",\n  \"origin_distance_mm\": 20.353132437047623,\n  \"surface_distance_mm\": 11.500790763145552,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    11.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.014744736797201854\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.010324375854318835\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0095\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    8.0,\n    7.997513294219971,\n    72.0\n  ],\n  \"b_extents_mm\": [\n    5.0,\n    4.998445987701416,\n    11.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crankshaft",
+        "b": "hand_grip"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crankshaft/hand_grip\",\n  \"origin_distance_mm\": 47.940066750057824,\n  \"surface_distance_mm\": 15.002797365188584,\n  \"aabb_overlap_extents_mm\": [\n    8.0,\n    0.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      6.123233995736766e-17,\n      0.0\n    ],\n    [\n      3.749399456654644e-33,\n      1.0,\n      6.123233995736766e-17,\n      0.023999999999999994\n    ],\n    [\n      -6.123233995736766e-17,\n      -6.123233995736766e-17,\n      1.0,\n      -0.041499999999999995\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    8.0,\n    7.997513294219971,\n    72.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    9.996891975402832,\n    11.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crankshaft",
+        "b": "handle_spindle"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crankshaft/handle_spindle\",\n  \"origin_distance_mm\": 45.79301256742124,\n  \"surface_distance_mm\": 18.001865029335008,\n  \"aabb_overlap_extents_mm\": [\n    4.0,\n    5.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      6.123233995736766e-17,\n      0.0\n    ],\n    [\n      3.749399456654644e-33,\n      1.0,\n      6.123233995736766e-17,\n      0.023999999999999994\n    ],\n    [\n      -6.123233995736766e-17,\n      -6.123233995736766e-17,\n      1.0,\n      -0.03899999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    8.0,\n    7.997513294219971,\n    72.0\n  ],\n  \"b_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    16.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crankshaft",
+        "b": "walking_beam"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crankshaft/walking_beam\",\n  \"origin_distance_mm\": 79.36623967405788,\n  \"surface_distance_mm\": 31.80217158181413,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    4.000000000000002,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9902680687415704,\n      -8.52189463090778e-18,\n      -0.13917310096006547,\n      0.065\n    ],\n    [\n      0.13917310096006547,\n      6.063643103410976e-17,\n      0.9902680687415704,\n      0.045\n    ],\n    [\n      1.95035880174085e-34,\n      -1.0,\n      6.123233995736766e-17,\n      0.007000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    8.0,\n    7.997513294219971,\n    72.0\n  ],\n  \"b_extents_mm\": [\n    115.99503326416016,\n    4.0,\n    16.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crankshaft",
+        "b": "base"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/base/crankshaft\",\n  \"origin_distance_mm\": 71.06335201775947,\n  \"surface_distance_mm\": 33.001243352890015,\n  \"aabb_overlap_extents_mm\": [\n    8.0,\n    72.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.055\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      1.0,\n      -0.045\n    ],\n    [\n      0.0,\n      -1.0,\n      6.123233995736766e-17,\n      -2.7554552980815448e-18\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    8.0,\n    7.997513294219971,\n    72.0\n  ],\n  \"b_extents_mm\": [\n    190.0,\n    80.0,\n    8.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crankshaft",
+        "b": "pitman_beam_pin"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crankshaft/pitman_beam_pin\",\n  \"origin_distance_mm\": 44.81663462346931,\n  \"surface_distance_mm\": 37.29870918412191,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    11.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0000000000000002,\n      -1.1214113091541944e-17,\n      8.521894630907781e-18,\n      0.020437936906629334\n    ],\n    [\n      -1.1214113091541944e-17,\n      1.0,\n      5.959089232578996e-19,\n      0.03873721045679705\n    ],\n    [\n      -8.521894630907781e-18,\n      -5.959089232578996e-19,\n      1.0,\n      0.009500000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    8.0,\n    7.997513294219971,\n    72.0\n  ],\n  \"b_extents_mm\": [\n    5.0,\n    4.998445987701416,\n    11.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "crank_pin"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/crank_pin\",\n  \"origin_distance_mm\": 20.353132437047623,\n  \"surface_distance_mm\": 0.004997651256937012,\n  \"aabb_overlap_extents_mm\": [\n    5.0000000000000036,\n    1.0000000000000018,\n    4.998445987701416\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.014744736797201854\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.010324375854318835\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0095\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    50.0,\n    49.984458923339844,\n    10.0\n  ],\n  \"b_extents_mm\": [\n    5.0,\n    4.998445987701416,\n    11.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "walking_beam"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/walking_beam\",\n  \"origin_distance_mm\": 79.36623967405788,\n  \"surface_distance_mm\": 10.80267836069716,\n  \"aabb_overlap_extents_mm\": [\n    12.561156614759675,\n    3.552713678800501e-15,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9902680687415704,\n      -8.52189463090778e-18,\n      -0.13917310096006547,\n      0.065\n    ],\n    [\n      0.13917310096006547,\n      6.063643103410976e-17,\n      0.9902680687415704,\n      0.045\n    ],\n    [\n      1.95035880174085e-34,\n      -1.0,\n      6.123233995736766e-17,\n      0.007000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    50.0,\n    49.984458923339844,\n    10.0\n  ],\n  \"b_extents_mm\": [\n    115.99503326416016,\n    4.0,\n    16.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "pitman"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/pitman\",\n  \"origin_distance_mm\": 32.484072175118875,\n  \"surface_distance_mm\": 4.999999999999999,\n  \"aabb_overlap_extents_mm\": [\n    16.75526068513622,\n    0.0,\n    21.166150283493465\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.19646895420634963,\n      -6.003892445973503e-17,\n      -0.9805100458603488,\n      0.017591336851915593\n    ],\n    [\n      0.9805100458603488,\n      1.2030253795031698e-17,\n      0.19646895420634963,\n      0.02453079315555795\n    ],\n    [\n      3.233934305250094e-33,\n      -1.0,\n      6.123233995736766e-17,\n      0.011999999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    50.0,\n    49.984458923339844,\n    10.0\n  ],\n  \"b_extents_mm\": [\n    41.97355270385742,\n    4.0,\n    12.999942779541016\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "pitman_beam_pin"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/pitman_beam_pin\",\n  \"origin_distance_mm\": 44.81663462346931,\n  \"surface_distance_mm\": 16.3029254339766,\n  \"aabb_overlap_extents_mm\": [\n    5.0,\n    1.0000000000000018,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0000000000000002,\n      -1.1214113091541944e-17,\n      8.521894630907781e-18,\n      0.020437936906629334\n    ],\n    [\n      -1.1214113091541944e-17,\n      1.0,\n      5.959089232578996e-19,\n      0.03873721045679705\n    ],\n    [\n      -8.521894630907781e-18,\n      -5.959089232578996e-19,\n      1.0,\n      0.009500000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    50.0,\n    49.984458923339844,\n    10.0\n  ],\n  \"b_extents_mm\": [\n    5.0,\n    4.998445987701416,\n    11.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "base"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/base/crank_disk\",\n  \"origin_distance_mm\": 71.06335201775947,\n  \"surface_distance_mm\": 12.007770538330078,\n  \"aabb_overlap_extents_mm\": [\n    50.0,\n    10.000000000000004,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.055\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      1.0,\n      -0.045\n    ],\n    [\n      0.0,\n      -1.0,\n      6.123233995736766e-17,\n      -2.7554552980815448e-18\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    50.0,\n    49.984458923339844,\n    10.0\n  ],\n  \"b_extents_mm\": [\n    190.0,\n    80.0,\n    8.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "negative_shaft_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/negative_shaft_pedestal\",\n  \"origin_distance_mm\": 43.56604182158392,\n  \"surface_distance_mm\": 13.999999999999998,\n  \"aabb_overlap_extents_mm\": [\n    16.0,\n    0.0,\n    16.992229461669922\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      1.0,\n      -0.037\n    ],\n    [\n      0.0,\n      -1.0,\n      6.123233995736766e-17,\n      0.022999999999999996\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    50.0,\n    49.984458923339844,\n    10.0\n  ],\n  \"b_extents_mm\": [\n    16.0,\n    8.0,\n    29.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "positive_shaft_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/positive_shaft_pedestal\",\n  \"origin_distance_mm\": 43.56604182158392,\n  \"surface_distance_mm\": 14.0,\n  \"aabb_overlap_extents_mm\": [\n    16.0,\n    0.0,\n    16.992229461669922\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      1.0,\n      -0.037\n    ],\n    [\n      0.0,\n      -1.0,\n      6.123233995736766e-17,\n      -0.023000000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    50.0,\n    49.984458923339844,\n    10.0\n  ],\n  \"b_extents_mm\": [\n    16.0,\n    8.0,\n    29.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "negative_shaft_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/negative_shaft_bearing\",\n  \"origin_distance_mm\": 23.0,\n  \"surface_distance_mm\": 14.0,\n  \"aabb_overlap_extents_mm\": [\n    16.0,\n    0.0,\n    15.995026588439941\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.023\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    50.0,\n    49.984458923339844,\n    10.0\n  ],\n  \"b_extents_mm\": [\n    16.0,\n    15.995026588439941,\n    8.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "positive_shaft_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/positive_shaft_bearing\",\n  \"origin_distance_mm\": 23.0,\n  \"surface_distance_mm\": 14.0,\n  \"aabb_overlap_extents_mm\": [\n    16.0,\n    0.0,\n    15.995026588439941\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.023\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    50.0,\n    49.984458923339844,\n    10.0\n  ],\n  \"b_extents_mm\": [\n    16.0,\n    15.995026588439941,\n    8.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "hand_crank_arm"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/hand_crank_arm\",\n  \"origin_distance_mm\": 33.24154027718932,\n  \"surface_distance_mm\": 24.0,\n  \"aabb_overlap_extents_mm\": [\n    14.0,\n    0.0,\n    31.99005317687989\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      6.123233995736766e-17,\n      -6.123233995736766e-17,\n      -1.0,\n      0.0\n    ],\n    [\n      1.0,\n      0.0,\n      6.123233995736766e-17,\n      0.011999999999999997\n    ],\n    [\n      0.0,\n      -1.0,\n      6.123233995736766e-17,\n      -0.031\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    50.0,\n    49.984458923339844,\n    10.0\n  ],\n  \"b_extents_mm\": [\n    37.99564743041992,\n    4.0,\n    14.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "handle_spindle"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/handle_spindle\",\n  \"origin_distance_mm\": 45.79301256742124,\n  \"surface_distance_mm\": 26.0,\n  \"aabb_overlap_extents_mm\": [\n    4.0,\n    0.0,\n    2.9916077852249288\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      6.123233995736766e-17,\n      0.0\n    ],\n    [\n      3.749399456654644e-33,\n      1.0,\n      6.123233995736766e-17,\n      0.023999999999999994\n    ],\n    [\n      -6.123233995736766e-17,\n      -6.123233995736766e-17,\n      1.0,\n      -0.03899999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    50.0,\n    49.984458923339844,\n    10.0\n  ],\n  \"b_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    16.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "hand_grip"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/hand_grip\",\n  \"origin_distance_mm\": 47.940066750057824,\n  \"surface_distance_mm\": 31.0,\n  \"aabb_overlap_extents_mm\": [\n    10.0,\n    0.0,\n    5.990675449371352\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      6.123233995736766e-17,\n      0.0\n    ],\n    [\n      3.749399456654644e-33,\n      1.0,\n      6.123233995736766e-17,\n      0.023999999999999994\n    ],\n    [\n      -6.123233995736766e-17,\n      -6.123233995736766e-17,\n      1.0,\n      -0.041499999999999995\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    50.0,\n    49.984458923339844,\n    10.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    9.996891975402832,\n    11.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "positive_beam_support"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/positive_beam_support\",\n  \"origin_distance_mm\": 74.89993324429602,\n  \"surface_distance_mm\": 34.0,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    4.000000000000002,\n    49.984458923339844\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.065\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      1.0,\n      -0.037\n    ],\n    [\n      0.0,\n      -1.0,\n      6.123233995736766e-17,\n      -0.004000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    50.0,\n    49.984458923339844,\n    10.0\n  ],\n  \"b_extents_mm\": [\n    12.0,\n    6.0,\n    74.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "positive_pivot_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/positive_pivot_bearing\",\n  \"origin_distance_mm\": 79.1580697086532,\n  \"surface_distance_mm\": 46.058387984895845,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    4.000000000000002,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.065\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.045\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0039999999999999975\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    50.0,\n    49.984458923339844,\n    10.0\n  ],\n  \"b_extents_mm\": [\n    16.0,\n    15.995026588439941,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "negative_beam_support"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/negative_beam_support\",\n  \"origin_distance_mm\": 76.92853826766762,\n  \"surface_distance_mm\": 35.4400902933387,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    49.984458923339844\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.065\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      1.0,\n      -0.037\n    ],\n    [\n      0.0,\n      -1.0,\n      6.123233995736766e-17,\n      0.017999999999999995\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    50.0,\n    49.984458923339844,\n    10.0\n  ],\n  \"b_extents_mm\": [\n    12.0,\n    6.0,\n    74.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_disk",
+        "b": "negative_pivot_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_disk/negative_pivot_bearing\",\n  \"origin_distance_mm\": 81.08020720249795,\n  \"surface_distance_mm\": 47.13146617459718,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.065\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.045\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.018000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    50.0,\n    49.984458923339844,\n    10.0\n  ],\n  \"b_extents_mm\": [\n    16.0,\n    15.995026588439941,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_pin",
+        "b": "pitman"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_pin/pitman\",\n  \"origin_distance_mm\": 14.70290530502194,\n  \"surface_distance_mm\": 0.05077257754883545,\n  \"aabb_overlap_extents_mm\": [\n    5.0000000000000036,\n    4.0000000000000036,\n    4.998445987701416\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.19646895420634963,\n      -6.003892445973503e-17,\n      -0.9805100458603488,\n      0.0028466000547137382\n    ],\n    [\n      0.9805100458603488,\n      1.2030253795031698e-17,\n      0.19646895420634963,\n      0.014206417301239116\n    ],\n    [\n      3.233934305250094e-33,\n      -1.0,\n      6.123233995736766e-17,\n      0.0024999999999999988\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    5.0,\n    4.998445987701416,\n    11.0\n  ],\n  \"b_extents_mm\": [\n    41.97355270385742,\n    4.0,\n    12.999942779541016\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "crank_pin",
+        "b": "negative_shaft_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_pin/negative_shaft_bearing\",\n  \"origin_distance_mm\": 22.500000000000004,\n  \"surface_distance_mm\": 8.501645772052122,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    0.17236043375184806\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.014744736797201854\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.010324375854318835\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0135\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    5.0,\n    4.998445987701416,\n    11.0\n  ],\n  \"b_extents_mm\": [\n    16.0,\n    15.995026588439941,\n    8.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pitman",
+        "b": "pitman_beam_pin"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/pitman/pitman_beam_pin\",\n  \"origin_distance_mm\": 14.702905305021929,\n  \"surface_distance_mm\": 0.05077257754884329,\n  \"aabb_overlap_extents_mm\": [\n    5.0,\n    4.0000000000000036,\n    4.998445987701416\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.19646895420634972,\n      0.9805100458603488,\n      2.258582411663359e-18,\n      0.014488803415342547\n    ],\n    [\n      -5.151702982882726e-17,\n      1.2626162718289598e-17,\n      -1.0,\n      0.0024999999999999988\n    ],\n    [\n      -0.9805100458603491,\n      0.19646895420634963,\n      5.299361426495392e-17,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    41.97355270385742,\n    4.0,\n    12.999942779541016\n  ],\n  \"b_extents_mm\": [\n    5.0,\n    4.998445987701416,\n    11.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pitman",
+        "b": "walking_beam"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/pitman/walking_beam\",\n  \"origin_distance_mm\": 51.88034088485821,\n  \"surface_distance_mm\": 0.9999999999999964,\n  \"aabb_overlap_extents_mm\": [\n    14.499091003727088,\n    0.0,\n    14.497804969657977\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.33101755545447864,\n      5.778034204807168e-17,\n      0.9436245958965574,\n      0.029384593410794094\n    ],\n    [\n      -5.778034204807169e-17,\n      1.0,\n      -4.0963360469922226e-17,\n      0.004999999999999996\n    ],\n    [\n      -0.9436245958965576,\n      -4.0963360469922226e-17,\n      0.33101755545447864,\n      -0.042463106815345084\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    41.97355270385742,\n    4.0,\n    12.999942779541016\n  ],\n  \"b_extents_mm\": [\n    115.99503326416016,\n    4.0,\n    16.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pitman",
+        "b": "negative_shaft_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/negative_shaft_bearing/pitman\",\n  \"origin_distance_mm\": 32.128102108253024,\n  \"surface_distance_mm\": 6.1050607486888095,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    4.171434116043514\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.19646895420634966,\n      0.9805100458603488,\n      3.233934305250094e-33,\n      -0.027508840676334335\n    ],\n    [\n      -6.003892445973503e-17,\n      1.2030253795031698e-17,\n      -1.0,\n      -0.011\n    ],\n    [\n      -0.9805100458603488,\n      0.19646895420634963,\n      6.123233995736766e-17,\n      0.012428943226291865\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    41.97355270385742,\n    4.0,\n    12.999942779541016\n  ],\n  \"b_extents_mm\": [\n    16.0,\n    15.995026588439941,\n    8.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "pitman",
+        "b": "negative_shaft_pedestal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/negative_shaft_pedestal/pitman\",\n  \"origin_distance_mm\": 64.93453348249774,\n  \"surface_distance_mm\": 13.954547886165178,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.19646895420634966,\n      6.003892445973503e-17,\n      0.9805100458603488,\n      -0.06378771237316724\n    ],\n    [\n      -6.003892445973503e-17,\n      1.0,\n      -4.920208616233596e-17,\n      -0.010999999999999996\n    ],\n    [\n      -0.9805100458603488,\n      -4.920208616233596e-17,\n      0.19646895420634963,\n      0.005159591920656924\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    41.97355270385742,\n    4.0,\n    12.999942779541016\n  ],\n  \"b_extents_mm\": [\n    16.0,\n    8.0,\n    29.0\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "entity_ids",
+        "offset": 75,
+        "limit": 20
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"entity_ids\",\n  \"offset\": 75,\n  \"returned\": 9,\n  \"total\": 84,\n  \"next_offset\": null,\n  \"items\": [\n    \"transmission/shaft_to_crank_disk_press_drive\",\n    \"role/driver/crankshaft\",\n    \"role/output/polished_output_rod\",\n    \"role/watch/crankshaft\",\n    \"role/watch/crank_disk\",\n    \"role/watch/crank_pin\",\n    \"role/watch/pitman\",\n    \"role/watch/walking_beam\",\n    \"role/watch/polished_output_rod\"\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "walking_beam",
+        "b": "beam_pivot_pin"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/beam_pivot_pin/walking_beam\",\n  \"origin_distance_mm\": 0.0,\n  \"surface_distance_mm\": 0.05059099389523891,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    4.000000000000002,\n    5.998135089874268\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9902680687415704,\n      0.13917310096006547,\n      1.95035880174085e-34,\n      0.0\n    ],\n    [\n      -8.52189463090778e-18,\n      6.063643103410976e-17,\n      -1.0,\n      0.0\n    ],\n    [\n      -0.13917310096006547,\n      0.9902680687415704,\n      6.123233995736766e-17,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    115.99503326416016,\n    4.0,\n    16.0\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    28.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "walking_beam",
+        "b": "pitman_beam_pin"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/pitman_beam_pin/walking_beam\",\n  \"origin_distance_mm\": 45.06939094329987,\n  \"surface_distance_mm\": 0.004501012227189777,\n  \"aabb_overlap_extents_mm\": [\n    5.0,\n    4.000000000000002,\n    4.998445987701416\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9902680687415706,\n      0.13917310096006547,\n      8.521894630907783e-18,\n      -0.045000000000000005\n    ],\n    [\n      6.682590057673072e-36,\n      6.123233995736766e-17,\n      -1.0,\n      -0.0025000000000000005\n    ],\n    [\n      -0.1391731009600655,\n      0.9902680687415704,\n      6.063643103410976e-17,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    115.99503326416016,\n    4.0,\n    16.0\n  ],\n  \"b_extents_mm\": [\n    5.0,\n    4.998445987701416,\n    11.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "walking_beam",
+        "b": "beam_output_pin"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/beam_output_pin/walking_beam\",\n  \"origin_distance_mm\": 55.056788863863105,\n  \"surface_distance_mm\": 0.004501012227181247,\n  \"aabb_overlap_extents_mm\": [\n    5.0,\n    4.000000000000002,\n    4.998445987701416\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9902680687415706,\n      0.13917310096006547,\n      8.521894630907783e-18,\n      0.05499999999999999\n    ],\n    [\n      6.682590057673072e-36,\n      6.123233995736766e-17,\n      -1.0,\n      -0.0024999999999999988\n    ],\n    [\n      -0.1391731009600655,\n      0.9902680687415704,\n      6.063643103410976e-17,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    115.99503326416016,\n    4.0,\n    16.0\n  ],\n  \"b_extents_mm\": [\n    5.0,\n    4.998445987701416,\n    11.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "walking_beam",
+        "b": "polished_output_rod"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/polished_output_rod/walking_beam\",\n  \"origin_distance_mm\": 105.31575530331018,\n  \"surface_distance_mm\": 0.0,\n  \"aabb_overlap_extents_mm\": [\n    13.996747970581055,\n    1.7763568394002505e-15,\n    28.91681596415995\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9902680687415704,\n      8.52189463090778e-18,\n      0.13917310096006547,\n      0.041409117551897856\n    ],\n    [\n      -8.52189463090778e-18,\n      1.0,\n      -5.959089232578994e-19,\n      -0.004999999999999999\n    ],\n    [\n      -0.13917310096006547,\n      -5.959089232578992e-19,\n      0.9902680687415704,\n      -0.09670415347170881\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    115.99503326416016,\n    4.0,\n    16.0\n  ],\n  \"b_extents_mm\": [\n    13.996747970581055,\n    6.0,\n    92.6545181274414\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "walking_beam",
+        "b": "positive_beam_support"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/positive_beam_support/walking_beam\",\n  \"origin_distance_mm\": 82.7345151674922,\n  \"surface_distance_mm\": 6.324791466346072,\n  \"aabb_overlap_extents_mm\": [\n    12.0,\n    0.0,\n    6.262297836718545\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9902680687415704,\n      8.52189463090778e-18,\n      0.13917310096006547,\n      -0.01141219427872537\n    ],\n    [\n      -8.52189463090778e-18,\n      1.0,\n      -5.959089232578994e-19,\n      0.011\n    ],\n    [\n      -0.13917310096006547,\n      -5.959089232578992e-19,\n      0.9902680687415704,\n      -0.08120198163680876\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    115.99503326416016,\n    4.0,\n    16.0\n  ],\n  \"b_extents_mm\": [\n    12.0,\n    6.0,\n    74.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "walking_beam",
+        "b": "positive_pivot_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/positive_pivot_bearing/walking_beam\",\n  \"origin_distance_mm\": 11.0,\n  \"surface_distance_mm\": 5.999999999999998,\n  \"aabb_overlap_extents_mm\": [\n    16.0,\n    0.0,\n    15.995026588439941\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9902680687415704,\n      0.13917310096006547,\n      1.95035880174085e-34,\n      0.0\n    ],\n    [\n      -8.52189463090778e-18,\n      6.063643103410976e-17,\n      -1.0,\n      0.011\n    ],\n    [\n      -0.13917310096006547,\n      0.9902680687415704,\n      6.123233995736766e-17,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    115.99503326416016,\n    4.0,\n    16.0\n  ],\n  \"b_extents_mm\": [\n    16.0,\n    15.995026588439941,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "walking_beam",
+        "b": "negative_beam_support"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/negative_beam_support/walking_beam\",\n  \"origin_distance_mm\": 82.7345151674922,\n  \"surface_distance_mm\": 6.000000011570981,\n  \"aabb_overlap_extents_mm\": [\n    12.0,\n    0.0,\n    6.262297836718545\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9902680687415704,\n      8.52189463090778e-18,\n      0.13917310096006547,\n      -0.01141219427872537\n    ],\n    [\n      -8.52189463090778e-18,\n      1.0,\n      -5.959089232578994e-19,\n      -0.011\n    ],\n    [\n      -0.13917310096006547,\n      -5.959089232578992e-19,\n      0.9902680687415704,\n      -0.08120198163680876\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    115.99503326416016,\n    4.0,\n    16.0\n  ],\n  \"b_extents_mm\": [\n    12.0,\n    6.0,\n    74.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "walking_beam",
+        "b": "negative_pivot_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/negative_pivot_bearing/walking_beam\",\n  \"origin_distance_mm\": 11.0,\n  \"surface_distance_mm\": 6.0,\n  \"aabb_overlap_extents_mm\": [\n    16.0,\n    0.0,\n    15.995026588439941\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9902680687415704,\n      0.13917310096006547,\n      1.95035880174085e-34,\n      0.0\n    ],\n    [\n      -8.52189463090778e-18,\n      6.063643103410976e-17,\n      -1.0,\n      -0.011\n    ],\n    [\n      -0.13917310096006547,\n      0.9902680687415704,\n      6.123233995736766e-17,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    115.99503326416016,\n    4.0,\n    16.0\n  ],\n  \"b_extents_mm\": [\n    16.0,\n    15.995026588439941,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "walking_beam",
+        "b": "output_guide_post"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/output_guide_post/walking_beam\",\n  \"origin_distance_mm\": 99.89698851870712,\n  \"surface_distance_mm\": 19.018448984778303,\n  \"aabb_overlap_extents_mm\": [\n    10.0,\n    0.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9902680687415704,\n      8.52189463090778e-18,\n      0.13917310096006547,\n      0.042522502359578385\n    ],\n    [\n      -8.52189463090778e-18,\n      1.0,\n      -5.959089232578994e-19,\n      0.017\n    ],\n    [\n      -0.13917310096006547,\n      -5.959089232578992e-19,\n      0.9902680687415704,\n      -0.08878200892177625\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    115.99503326416016,\n    4.0,\n    16.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    10.0,\n    66.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "walking_beam",
+        "b": "crank_pin"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/crank_pin/walking_beam\",\n  \"origin_distance_mm\": 61.108431410690486,\n  \"surface_distance_mm\": 18.478970585366028,\n  \"aabb_overlap_extents_mm\": [\n    4.805893411961531,\n    4.000000000000002,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9902680687415704,\n      0.13917310096006547,\n      1.95035880174085e-34,\n      -0.054592096576014396\n    ],\n    [\n      -8.52189463090778e-18,\n      6.063643103410976e-17,\n      -1.0,\n      -0.0025000000000000005\n    ],\n    [\n      -0.13917310096006547,\n      0.9902680687415704,\n      6.123233995736766e-17,\n      -0.027343982535654565\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    115.99503326416016,\n    4.0,\n    16.0\n  ],\n  \"b_extents_mm\": [\n    5.0,\n    4.998445987701416,\n    11.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "walking_beam",
+        "b": "upper_output_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/upper_output_guide/walking_beam\",\n  \"origin_distance_mm\": 67.75993148688023,\n  \"surface_distance_mm\": 35.66136035990889,\n  \"aabb_overlap_extents_mm\": [\n    15.999093521389028,\n    4.000000000000002,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9902680687415704,\n      8.52189463090778e-18,\n      0.13917310096006547,\n      0.04836777259990113\n    ],\n    [\n      -8.52189463090778e-18,\n      1.0,\n      -5.959089232578994e-19,\n      -0.004999999999999999\n    ],\n    [\n      -0.13917310096006547,\n      -5.959089232578992e-19,\n      0.9902680687415704,\n      -0.04719075003463029\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    115.99503326416016,\n    4.0,\n    16.0\n  ],\n  \"b_extents_mm\": [\n    16.0,\n    30.0,\n    8.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "walking_beam",
+        "b": "hand_crank_arm"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hand_crank_arm/walking_beam\",\n  \"origin_distance_mm\": 82.20705565825844,\n  \"surface_distance_mm\": 35.49786790735657,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    0.2601215519285063\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.13917310096006552,\n      -6.063643103410976e-17,\n      -0.9902680687415704,\n      -0.06896013679988423\n    ],\n    [\n      6.063643103410976e-17,\n      1.0,\n      -5.2710445326459884e-17,\n      0.038\n    ],\n    [\n      0.9902680687415704,\n      -5.2710445326459884e-17,\n      0.13917310096006552,\n      -0.023632594706067572\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    115.99503326416016,\n    4.0,\n    16.0\n  ],\n  \"b_extents_mm\": [\n    37.99564743041992,\n    4.0,\n    14.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "walking_beam",
+        "b": "handle_spindle"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/handle_spindle/walking_beam\",\n  \"origin_distance_mm\": 82.35289915965315,\n  \"surface_distance_mm\": 39.076695654001945,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9902680687415704,\n      0.13917310096006547,\n      6.915832566501755e-17,\n      -0.06729005958836345\n    ],\n    [\n      5.2710445326459884e-17,\n      1.2186877099147743e-16,\n      -1.0,\n      0.046\n    ],\n    [\n      -0.13917310096006547,\n      0.9902680687415704,\n      1.1334687636056966e-16,\n      -0.011749377881168727\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    115.99503326416016,\n    4.0,\n    16.0\n  ],\n  \"b_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    16.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "walking_beam",
+        "b": "hand_grip"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hand_grip/walking_beam\",\n  \"origin_distance_mm\": 83.77499626977014,\n  \"surface_distance_mm\": 42.77636561593933,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9902680687415704,\n      0.13917310096006547,\n      6.915832566501755e-17,\n      -0.06729005958836345\n    ],\n    [\n      5.2710445326459884e-17,\n      1.2186877099147743e-16,\n      -1.0,\n      0.0485\n    ],\n    [\n      -0.13917310096006547,\n      0.9902680687415704,\n      1.1334687636056966e-16,\n      -0.011749377881168727\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    115.99503326416016,\n    4.0,\n    16.0\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    9.996891975402832,\n    11.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "walking_beam",
+        "b": "lower_output_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/lower_output_guide/walking_beam\",\n  \"origin_distance_mm\": 85.71702465150494,\n  \"surface_distance_mm\": 61.66133907683273,\n  \"aabb_overlap_extents_mm\": [\n    15.999093521389028,\n    4.000000000000002,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9902680687415704,\n      8.52189463090778e-18,\n      0.13917310096006547,\n      0.04474927197493943\n    ],\n    [\n      -8.52189463090778e-18,\n      1.0,\n      -5.959089232578994e-19,\n      -0.004999999999999999\n    ],\n    [\n      -0.13917310096006547,\n      -5.959089232578992e-19,\n      0.9902680687415704,\n      -0.07293771982191112\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    115.99503326416016,\n    4.0,\n    16.0\n  ],\n  \"b_extents_mm\": [\n    16.0,\n    30.0,\n    8.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "polished_output_rod",
+        "b": "beam_output_pin"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/beam_output_pin/polished_output_rod\",\n  \"origin_distance_mm\": 97.68651587807778,\n  \"surface_distance_mm\": 0.04998124682276976,\n  \"aabb_overlap_extents_mm\": [\n    5.0,\n    6.0,\n    4.998445987701416\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0000000000000002,\n      -1.1214113091541944e-17,\n      8.521894630907781e-18,\n      1.3877787807814457e-17\n    ],\n    [\n      8.521894630907781e-18,\n      6.182824888062556e-17,\n      -1.0,\n      0.0025000000000000005\n    ],\n    [\n      -1.1214113091541944e-17,\n      1.0,\n      6.182824888062556e-17,\n      0.0976545205528036\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    13.996747970581055,\n    6.0,\n    92.6545181274414\n  ],\n  \"b_extents_mm\": [\n    5.0,\n    4.998445987701416,\n    11.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "polished_output_rod",
+        "b": "lower_output_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/lower_output_guide/polished_output_rod\",\n  \"origin_distance_mm\": 24.0,\n  \"surface_distance_mm\": 0.08485273282043657,\n  \"aabb_overlap_extents_mm\": [\n    13.996747970581055,\n    6.0,\n    8.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.024\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    13.996747970581055,\n    6.0,\n    92.6545181274414\n  ],\n  \"b_extents_mm\": [\n    16.0,\n    30.0,\n    8.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "polished_output_rod",
+        "b": "upper_output_guide"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/polished_output_rod/upper_output_guide\",\n  \"origin_distance_mm\": 50.0,\n  \"surface_distance_mm\": 0.08485273282043657,\n  \"aabb_overlap_extents_mm\": [\n    13.996747970581055,\n    6.0,\n    8.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.05\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    13.996747970581055,\n    6.0,\n    92.6545181274414\n  ],\n  \"b_extents_mm\": [\n    16.0,\n    30.0,\n    8.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "polished_output_rod",
+        "b": "base"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/base/polished_output_rod\",\n  \"origin_distance_mm\": 65.57212205444044,\n  \"surface_distance_mm\": 4.0,\n  \"aabb_overlap_extents_mm\": [\n    13.996747970581055,\n    6.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.06446474378078636\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.011999999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    13.996747970581055,\n    6.0,\n    92.6545181274414\n  ],\n  \"b_extents_mm\": [\n    190.0,\n    80.0,\n    8.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "polished_output_rod",
+        "b": "output_guide_post"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/output_guide_post/polished_output_rod\",\n  \"origin_distance_mm\": 23.40939982143925,\n  \"surface_distance_mm\": 13.999999999999998,\n  \"aabb_overlap_extents_mm\": [\n    10.0,\n    0.0,\n    62.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.022\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.008\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    13.996747970581055,\n    6.0,\n    92.6545181274414\n  ],\n  \"b_extents_mm\": [\n    10.0,\n    10.0,\n    66.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "polished_output_rod",
+        "b": "negative_pivot_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/negative_pivot_bearing/polished_output_rod\",\n  \"origin_distance_mm\": 105.36796626635015,\n  \"surface_distance_mm\": 40.0133386867872,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    15.995026588439941\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.05446474378078635\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      -0.006\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.09\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    13.996747970581055,\n    6.0,\n    92.6545181274414\n  ],\n  \"b_extents_mm\": [\n    16.0,\n    15.995026588439941,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "polished_output_rod",
+        "b": "positive_pivot_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/polished_output_rod/positive_pivot_bearing\",\n  \"origin_distance_mm\": 106.40680577438036,\n  \"surface_distance_mm\": 41.485747828182404,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    15.995026588439941\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.05446474378078635\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.016\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.09\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    13.996747970581055,\n    6.0,\n    92.6545181274414\n  ],\n  \"b_extents_mm\": [\n    16.0,\n    15.995026588439941,\n    6.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "polished_output_rod",
+        "b": "negative_beam_support"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/negative_beam_support/polished_output_rod\",\n  \"origin_distance_mm\": 55.37515972985275,\n  \"surface_distance_mm\": 43.942697116890734,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    70.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.05446474378078635\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.006\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.008\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    13.996747970581055,\n    6.0,\n    92.6545181274414\n  ],\n  \"b_extents_mm\": [\n    12.0,\n    6.0,\n    74.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "polished_output_rod",
+        "b": "positive_beam_support"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/polished_output_rod/positive_beam_support\",\n  \"origin_distance_mm\": 57.327203970773816,\n  \"surface_distance_mm\": 45.28753283086635,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    70.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.05446474378078635\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.016\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.008\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    13.996747970581055,\n    6.0,\n    92.6545181274414\n  ],\n  \"b_extents_mm\": [\n    12.0,\n    6.0,\n    74.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "polished_output_rod",
+        "b": "beam_pivot_pin"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/beam_pivot_pin/polished_output_rod\",\n  \"origin_distance_mm\": 105.31575530331018,\n  \"surface_distance_mm\": 45.00061862398886,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    6.0,\n    5.998135089874268\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.05446474378078635\n    ],\n    [\n      0.0,\n      6.123233995736766e-17,\n      -1.0,\n      0.004999999999999999\n    ],\n    [\n      0.0,\n      1.0,\n      6.123233995736766e-17,\n      0.09\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    13.996747970581055,\n    6.0,\n    92.6545181274414\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    28.0\n  ]\n}"
+    },
+    {
+      "name": "read_current_compiler",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\"revision\": 0, \"source\": \"\"}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "pitman_beam_pin",
+        "port_a": "pin_shaft",
+        "b": "walking_beam",
+        "port_b": "pitman_pin_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/pitman_beam_pin/pin_shaft/walking_beam/pitman_pin_bore\",\n  \"radial_offset_mm\": 1.5603194880666411e-16,\n  \"axial_offset_mm\": 2.5000000000000004,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": -0.009999999999999787,\n  \"fit_sign\": \"interference\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "beam_output_pin",
+        "port_a": "pin_shaft",
+        "b": "walking_beam",
+        "port_b": "output_pin_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/beam_output_pin/pin_shaft/walking_beam/output_pin_bore\",\n  \"radial_offset_mm\": 1.5603194880666404e-16,\n  \"axial_offset_mm\": 2.4999999999999996,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": -0.009999999999999787,\n  \"fit_sign\": \"interference\"\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "crankshaft",
+        "target": "hand_crank_arm"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": false,\n  \"path\": []\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "walking_beam",
+        "target": "pitman_beam_pin"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"walking_beam\",\n    \"__world__\",\n    \"crank_disk\",\n    \"crank_pin\",\n    \"pitman\",\n    \"pitman_beam_pin\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "walking_beam",
+        "target": "beam_output_pin"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"walking_beam\",\n    \"__world__\",\n    \"polished_output_rod\",\n    \"beam_output_pin\"\n  ]\n}"
+    },
+    {
+      "name": "submit_compiler_source",
+      "arguments": {
+        "source": "def compile_mjcf(facts, out):\n    coord = {\n        'base':None,'negative_shaft_pedestal':None,'positive_shaft_pedestal':None,\n        'negative_shaft_bearing':None,'positive_shaft_bearing':None,\n        'crankshaft':'driven_crankshaft_hinge','crank_disk':'crank_disk_hinge','crank_pin':'crank_disk_hinge',\n        'pitman':'pitman_free','negative_beam_support':None,'positive_beam_support':None,\n        'negative_pivot_bearing':None,'positive_pivot_bearing':None,'beam_pivot_pin':None,\n        'walking_beam':'walking_beam_hinge','pitman_beam_pin':'walking_beam_hinge','beam_output_pin':'walking_beam_hinge',\n        'polished_output_rod':'vertical_guided_output','output_guide_post':None,'lower_output_guide':None,'upper_output_guide':None,\n        'hand_crank_arm':'driven_crankshaft_hinge','handle_spindle':'driven_crankshaft_hinge','hand_grip':'driven_crankshaft_hinge'\n    }\n    raw = [\n      ('crankshaft','negative_shaft_bearing','exclude','journal running fit is represented by the shaft hinge',['relation/shaft_in_negative_bearing'],['pair/crankshaft/negative_shaft_bearing','fit/negative_shaft_bearing/bearing_bore/crankshaft/rotation_axis','nearby/crankshaft/negative_shaft_bearing']),\n      ('crankshaft','positive_shaft_bearing','exclude','second journal running fit supports the same shaft hinge without friction torque',['relation/shaft_in_positive_bearing'],['pair/crankshaft/positive_shaft_bearing','fit/positive_shaft_bearing/bearing_bore/crankshaft/rotation_axis','nearby/crankshaft/positive_shaft_bearing']),\n      ('crankshaft','crank_disk','exclude','declared press fit is represented by a 1:1 joint equality',['relation/disk_pressed_on_shaft','transmission/shaft_to_crank_disk_press_drive'],['pair/crank_disk/crankshaft','fit/crankshaft/disk_seat/crank_disk/shaft_bore','nearby/crank_disk/crankshaft']),\n      ('crankshaft','hand_crank_arm','keep','rigid carried accessory has uncertain measured overlap; no idealized pair relation was authored',[],['pair/crankshaft/hand_crank_arm','nearby/crankshaft/hand_crank_arm']),\n      ('crankshaft','pitman','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crankshaft/pitman','nearby/crankshaft/pitman']),\n      ('crankshaft','negative_shaft_pedestal','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crankshaft/negative_shaft_pedestal','nearby/crankshaft/negative_shaft_pedestal']),\n      ('crankshaft','positive_shaft_pedestal','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crankshaft/positive_shaft_pedestal','nearby/crankshaft/positive_shaft_pedestal']),\n      ('crankshaft','crank_pin','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crank_pin/crankshaft','nearby/crank_pin/crankshaft']),\n      ('crankshaft','hand_grip','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crankshaft/hand_grip','nearby/crankshaft/hand_grip']),\n      ('crankshaft','handle_spindle','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crankshaft/handle_spindle','nearby/crankshaft/handle_spindle']),\n      ('crankshaft','walking_beam','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crankshaft/walking_beam','nearby/crankshaft/walking_beam']),\n      ('crankshaft','base','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/base/crankshaft','nearby/base/crankshaft']),\n      ('crankshaft','pitman_beam_pin','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crankshaft/pitman_beam_pin','nearby/crankshaft/pitman_beam_pin']),\n      ('crank_disk','crank_pin','exclude','measured interference press fit rigidly carries the dedicated crank pin',['relation/crank_pin_pressed_in_disk'],['pair/crank_disk/crank_pin','fit/crank_disk/crank_pin_seat/crank_pin/pin_shaft','nearby/crank_disk/crank_pin']),\n      ('crank_disk','walking_beam','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crank_disk/walking_beam','nearby/crank_disk/walking_beam']),\n      ('crank_disk','pitman','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crank_disk/pitman','nearby/crank_disk/pitman']),\n      ('crank_disk','pitman_beam_pin','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crank_disk/pitman_beam_pin','nearby/crank_disk/pitman_beam_pin']),\n      ('crank_disk','base','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/base/crank_disk','nearby/base/crank_disk']),\n      ('crank_disk','negative_shaft_pedestal','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crank_disk/negative_shaft_pedestal','nearby/crank_disk/negative_shaft_pedestal']),\n      ('crank_disk','positive_shaft_pedestal','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crank_disk/positive_shaft_pedestal','nearby/crank_disk/positive_shaft_pedestal']),\n      ('crank_disk','negative_shaft_bearing','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crank_disk/negative_shaft_bearing','nearby/crank_disk/negative_shaft_bearing']),\n      ('crank_disk','positive_shaft_bearing','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crank_disk/positive_shaft_bearing','nearby/crank_disk/positive_shaft_bearing']),\n      ('crank_disk','hand_crank_arm','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crank_disk/hand_crank_arm','nearby/crank_disk/hand_crank_arm']),\n      ('crank_disk','handle_spindle','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crank_disk/handle_spindle','nearby/crank_disk/handle_spindle']),\n      ('crank_disk','hand_grip','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crank_disk/hand_grip','nearby/crank_disk/hand_grip']),\n      ('crank_disk','positive_beam_support','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crank_disk/positive_beam_support','nearby/crank_disk/positive_beam_support']),\n      ('crank_disk','positive_pivot_bearing','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crank_disk/positive_pivot_bearing','nearby/crank_disk/positive_pivot_bearing']),\n      ('crank_disk','negative_beam_support','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crank_disk/negative_beam_support','nearby/crank_disk/negative_beam_support']),\n      ('crank_disk','negative_pivot_bearing','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crank_disk/negative_pivot_bearing','nearby/crank_disk/negative_pivot_bearing']),\n      ('crank_pin','pitman','exclude','clearance revolute on a dedicated pin is represented by the crank-end closure',['relation/crank_pin_to_pitman_closure'],['pair/crank_pin/pitman','fit/crank_pin/pin_shaft/pitman/crank_end_bore','nearby/crank_pin/pitman']),\n      ('crank_pin','negative_shaft_bearing','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crank_pin/negative_shaft_bearing','nearby/crank_pin/negative_shaft_bearing']),\n      ('pitman','pitman_beam_pin','exclude','clearance revolute on a dedicated pin is represented by the beam-end closure',['relation/pitman_to_walking_beam_closure'],['pair/pitman/pitman_beam_pin','fit/pitman_beam_pin/pin_shaft/pitman/beam_end_bore','nearby/pitman/pitman_beam_pin']),\n      ('pitman','walking_beam','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/pitman/walking_beam','nearby/pitman/walking_beam']),\n      ('pitman','negative_shaft_bearing','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/negative_shaft_bearing/pitman','nearby/negative_shaft_bearing/pitman']),\n      ('pitman','negative_shaft_pedestal','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/negative_shaft_pedestal/pitman','nearby/negative_shaft_pedestal/pitman']),\n      ('walking_beam','beam_pivot_pin','exclude','clearance pivot journal is represented by the walking-beam hinge',['relation/walking_beam_fixed_pivot'],['pair/beam_pivot_pin/walking_beam','fit/beam_pivot_pin/pivot_shaft/walking_beam/pivot_bore','nearby/beam_pivot_pin/walking_beam']),\n      ('walking_beam','pitman_beam_pin','exclude','measured interference rigidly carries the dedicated beam pin',[],['pair/pitman_beam_pin/walking_beam','fit/pitman_beam_pin/pin_shaft/walking_beam/pitman_pin_bore','nearby/pitman_beam_pin/walking_beam']),\n      ('walking_beam','beam_output_pin','exclude','measured interference rigidly carries the dedicated output pin',[],['pair/beam_output_pin/walking_beam','fit/beam_output_pin/pin_shaft/walking_beam/output_pin_bore','nearby/beam_output_pin/walking_beam']),\n      ('walking_beam','polished_output_rod','keep','measured solids meet near the output joint and overlap status is uncertain; retain real collision',[],['pair/polished_output_rod/walking_beam','nearby/polished_output_rod/walking_beam']),\n      ('walking_beam','positive_beam_support','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/positive_beam_support/walking_beam','nearby/positive_beam_support/walking_beam']),\n      ('walking_beam','positive_pivot_bearing','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/positive_pivot_bearing/walking_beam','nearby/positive_pivot_bearing/walking_beam']),\n      ('walking_beam','negative_beam_support','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/negative_beam_support/walking_beam','nearby/negative_beam_support/walking_beam']),\n      ('walking_beam','negative_pivot_bearing','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/negative_pivot_bearing/walking_beam','nearby/negative_pivot_bearing/walking_beam']),\n      ('walking_beam','output_guide_post','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/output_guide_post/walking_beam','nearby/output_guide_post/walking_beam']),\n      ('walking_beam','crank_pin','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crank_pin/walking_beam','nearby/crank_pin/walking_beam']),\n      ('walking_beam','upper_output_guide','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/upper_output_guide/walking_beam','nearby/upper_output_guide/walking_beam']),\n      ('walking_beam','hand_crank_arm','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/hand_crank_arm/walking_beam','nearby/hand_crank_arm/walking_beam']),\n      ('walking_beam','handle_spindle','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/handle_spindle/walking_beam','nearby/handle_spindle/walking_beam']),\n      ('walking_beam','hand_grip','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/hand_grip/walking_beam','nearby/hand_grip/walking_beam']),\n      ('walking_beam','lower_output_guide','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/lower_output_guide/walking_beam','nearby/lower_output_guide/walking_beam']),\n      ('polished_output_rod','beam_output_pin','exclude','clearance revolute on a dedicated pin is represented by the output closure',['relation/beam_to_output_rod_closure'],['pair/beam_output_pin/polished_output_rod','fit/beam_output_pin/pin_shaft/polished_output_rod/beam_pin_bore','nearby/beam_output_pin/polished_output_rod']),\n      ('polished_output_rod','lower_output_guide','exclude','guide running interface is idealized by the vertical slide',[],['pair/lower_output_guide/polished_output_rod','nearby/lower_output_guide/polished_output_rod']),\n      ('polished_output_rod','upper_output_guide','exclude','guide running interface is idealized by the vertical slide',[],['pair/polished_output_rod/upper_output_guide','nearby/polished_output_rod/upper_output_guide']),\n      ('polished_output_rod','base','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/base/polished_output_rod','nearby/base/polished_output_rod']),\n      ('polished_output_rod','output_guide_post','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/output_guide_post/polished_output_rod','nearby/output_guide_post/polished_output_rod']),\n      ('polished_output_rod','negative_pivot_bearing','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/negative_pivot_bearing/polished_output_rod','nearby/negative_pivot_bearing/polished_output_rod']),\n      ('polished_output_rod','positive_pivot_bearing','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/polished_output_rod/positive_pivot_bearing','nearby/polished_output_rod/positive_pivot_bearing']),\n      ('polished_output_rod','negative_beam_support','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/negative_beam_support/polished_output_rod','nearby/negative_beam_support/polished_output_rod']),\n      ('polished_output_rod','positive_beam_support','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/polished_output_rod/positive_beam_support','nearby/polished_output_rod/positive_beam_support']),\n      ('polished_output_rod','beam_pivot_pin','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/beam_pivot_pin/polished_output_rod','nearby/beam_pivot_pin/polished_output_rod'])\n    ]\n    contacts=[{'pair':[a,b],'action':act,'reason':why,'source_entity_ids':src,'fact_ids':fid} for a,b,act,why,src,fid in raw]\n    out.topology_plan({'coordinate_map':coord,\n      'tree_edges':[['base','negative_shaft_pedestal'],['negative_shaft_pedestal','negative_shaft_bearing'],['base','positive_shaft_pedestal'],['positive_shaft_pedestal','positive_shaft_bearing'],['base','crankshaft'],['base','crank_disk'],['crank_disk','crank_pin'],['base','pitman'],['base','negative_beam_support'],['negative_beam_support','negative_pivot_bearing'],['base','positive_beam_support'],['positive_beam_support','positive_pivot_bearing'],['negative_pivot_bearing','beam_pivot_pin'],['base','walking_beam'],['walking_beam','pitman_beam_pin'],['walking_beam','beam_output_pin'],['base','polished_output_rod'],['base','output_guide_post'],['output_guide_post','lower_output_guide'],['output_guide_post','upper_output_guide'],['crankshaft','hand_crank_arm'],['hand_crank_arm','handle_spindle'],['handle_spindle','hand_grip']],\n      'closure_edges':[['crank_pin','pitman'],['pitman_beam_pin','pitman'],['beam_output_pin','polished_output_rod']],\n      'rigid_carried':[['crank_disk','crank_pin'],['walking_beam','pitman_beam_pin'],['walking_beam','beam_output_pin'],['crankshaft','hand_crank_arm'],['hand_crank_arm','handle_spindle'],['handle_spindle','hand_grip']],\n      'independent_coaxial':[],\n      'transmissions':[{'name':'shaft_to_crank_disk_press_drive','driving_joint':'driven_crankshaft_hinge','driven_joint':'crank_disk_hinge','ratio':1.0}],\n      'contact_decisions':contacts,'support_ground':['base'],'support_strategy':'fixed base tree rests on global ground; no support probe patch is required'})\n    parents={'negative_shaft_pedestal':'base','negative_shaft_bearing':'negative_shaft_pedestal','positive_shaft_pedestal':'base','positive_shaft_bearing':'positive_shaft_pedestal','crankshaft':'base','crank_disk':'base','crank_pin':'crank_disk','pitman':'base','negative_beam_support':'base','negative_pivot_bearing':'negative_beam_support','positive_beam_support':'base','positive_pivot_bearing':'positive_beam_support','beam_pivot_pin':'negative_pivot_bearing','walking_beam':'base','pitman_beam_pin':'walking_beam','beam_output_pin':'walking_beam','polished_output_rod':'base','output_guide_post':'base','lower_output_guide':'output_guide_post','upper_output_guide':'output_guide_post','hand_crank_arm':'crankshaft','handle_spindle':'hand_crank_arm','hand_grip':'handle_spindle'}\n    order=['base','negative_shaft_pedestal','negative_shaft_bearing','positive_shaft_pedestal','positive_shaft_bearing','crankshaft','crank_disk','crank_pin','pitman','negative_beam_support','negative_pivot_bearing','positive_beam_support','positive_pivot_bearing','beam_pivot_pin','walking_beam','pitman_beam_pin','beam_output_pin','polished_output_rod','output_guide_post','lower_output_guide','upper_output_guide','hand_crank_arm','handle_spindle','hand_grip']\n    for b in order: out.body(b,parents.get(b,''))\n    out.joint('crankshaft','driven_crankshaft_hinge','hinge',(0,1,0),(0,0,0),'world')\n    out.joint('crank_disk','crank_disk_hinge','hinge',(0,1,0),(0,0,0),'world')\n    out.freejoint('pitman','pitman_free')\n    out.joint('walking_beam','walking_beam_hinge','hinge',(0,1,0),(0,0,0),'world')\n    out.joint('polished_output_rod','vertical_guided_output','slide',(0,0,1),(0,0,0),'world')\n    out.joint_equality('shaft_to_crank_disk_press_drive','driven_crankshaft_hinge','crank_disk_hinge',1.0,0.0,'declared press-fit compound transmits crank angle 1:1',['relation/disk_pressed_on_shaft','transmission/shaft_to_crank_disk_press_drive'],['fit/crankshaft/disk_seat/crank_disk/shaft_bore','pair/crank_disk/crankshaft'])\n    out.connect('crank_pin_to_pitman_closure','crank_pin','pitman',(-0.030255263202798144,-0.01,0.05532437585431883),'clearance crank-pin revolute closure',['relation/crank_pin_to_pitman_closure'],['fit/crank_pin/pin_shaft/pitman/crank_end_bore','pair/crank_pin/pitman'])\n    out.connect('pitman_to_walking_beam_closure','pitman_beam_pin','pitman',(-0.024562063093370664,-0.01,0.08373721045679705),'clearance beam-end revolute closure',['relation/pitman_to_walking_beam_closure'],['fit/pitman_beam_pin/pin_shaft/pitman/beam_end_bore','pair/pitman/pitman_beam_pin'])\n    out.connect('beam_to_output_rod_closure','beam_output_pin','polished_output_rod',(0.07446474378078637,-0.01,0.0976545205528036),'clearance beam-output revolute closure',['relation/beam_to_output_rod_closure'],['fit/beam_output_pin/pin_shaft/polished_output_rod/beam_pin_bore','pair/beam_output_pin/polished_output_rod'])\n    for a,b,act,why,src,fid in raw:\n        if act=='exclude': out.exclude(a,b,why,src,fid)\n    ids=['link/'+x for x in order]\n    ids += ['pose/place_'+x for x in order]\n    ids += ['port/crankshaft/rotation_axis','port/crankshaft/disk_seat','port/crank_disk/shaft_bore','port/crank_disk/crank_pin_seat','port/crank_pin/pin_shaft','port/pitman/crank_end_bore','port/pitman/beam_end_bore','port/walking_beam/pitman_pin_bore','port/walking_beam/pivot_bore','port/walking_beam/output_pin_bore','port/pitman_beam_pin/pin_shaft','port/beam_pivot_pin/pivot_shaft','port/beam_output_pin/pin_shaft','port/polished_output_rod/beam_pin_bore','port/polished_output_rod/guided_axis']\n    ids += ['relation/'+x for x in ['shaft_in_negative_bearing','shaft_in_positive_bearing','disk_pressed_on_shaft','crank_pin_pressed_in_disk','crank_pin_to_pitman_closure','pitman_to_walking_beam_closure','walking_beam_fixed_pivot','beam_to_output_rod_closure']]\n    ids += ['motion_joint/'+x for x in ['driven_crankshaft_hinge','crank_disk_hinge','walking_beam_hinge','vertical_guided_output']]\n    ids += ['transmission/shaft_to_crank_disk_press_drive','role/driver/crankshaft','role/output/polished_output_rod']+['role/watch/'+x for x in ['crankshaft','crank_disk','crank_pin','pitman','walking_beam','polished_output_rod']]\n    for e in ids:\n        if e.startswith('link/'): out.decision(e,'emitted',[e[5:]],'mesh link emitted exactly once',[e])\n        elif e.startswith('motion_joint/'): out.decision(e,'emitted',[e[13:]],'authored motion coordinate emitted',[e])\n        else: out.decision(e,'represented_by',[],'authored fact represented by topology, coordinate, constraint, contact decision, or role map',[e])\n",
+        "expected_revision": 0
+      },
+      "is_error": false,
+      "result": "{\"accepted\": true, \"revision\": 1}"
+    },
+    {
+      "name": "run_mjcf_gate",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\n  \"ok\": false,\n  \"errors\": [\n    \"MJCFValidationError: Traceback (most recent call last):\\n  File \\\"C:\\\\Users\\\\T-ZHIJ~1\\\\AppData\\\\Local\\\\Temp\\\\maker2_mjcf_compiler__ao13dw1\\\\runner.py\\\", line 10, in <module>\\n    out=MJCFEmitter(facts);ns[\\\"compile_mjcf\\\"](facts,out)\\n                           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^\\n  File \\\"<mjcf_compiler>\\\", line 95, in compile_mjcf\\n  File \\\"C:\\\\Users\\\\t-zhijjiang\\\\Downloads\\\\PhysCADResearcher\\\\maker2\\\\mjcf_emitter.py\\\", line 161, in exclude\\n    raise ValueError(\\\"exclude needs reason, sources and fact_ids\\\")\\nValueError: exclude needs reason, sources and fact_ids\\n\"\n  ]\n}"
+    },
+    {
+      "name": "read_current_compiler",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\"revision\": 1, \"source\": \"def compile_mjcf(facts, out):\\n    coord = {\\n        'base':None,'negative_shaft_pedestal':None,'positive_shaft_pedestal':None,\\n        'negative_shaft_bearing':None,'positive_shaft_bearing':None,\\n        'crankshaft':'driven_crankshaft_hinge','crank_disk':'crank_disk_hinge','crank_pin':'crank_disk_hinge',\\n        'pitman':'pitman_free','negative_beam_support':None,'positive_beam_support':None,\\n        'negative_pivot_bearing':None,'positive_pivot_bearing':None,'beam_pivot_pin':None,\\n        'walking_beam':'walking_beam_hinge','pitman_beam_pin':'walking_beam_hinge','beam_output_pin':'walking_beam_hinge',\\n        'polished_output_rod':'vertical_guided_output','output_guide_post':None,'lower_output_guide':None,'upper_output_guide':None,\\n        'hand_crank_arm':'driven_crankshaft_hinge','handle_spindle':'driven_crankshaft_hinge','hand_grip':'driven_crankshaft_hinge'\\n    }\\n    raw = [\\n      ('crankshaft','negative_shaft_bearing','exclude','journal running fit is represented by the shaft hinge',['relation/shaft_in_negative_bearing'],['pair/crankshaft/negative_shaft_bearing','fit/negative_shaft_bearing/bearing_bore/crankshaft/rotation_axis','nearby/crankshaft/negative_shaft_bearing']),\\n      ('crankshaft','positive_shaft_bearing','exclude','second journal running fit supports the same shaft hinge without friction torque',['relation/shaft_in_positive_bearing'],['pair/crankshaft/positive_shaft_bearing','fit/positive_shaft_bearing/bearing_bore/crankshaft/rotation_axis','nearby/crankshaft/positive_shaft_bearing']),\\n      ('crankshaft','crank_disk','exclude','declared press fit is represented by a 1:1 joint equality',['relation/disk_pressed_on_shaft','transmission/shaft_to_crank_disk_press_drive'],['pair/crank_disk/crankshaft','fit/crankshaft/disk_seat/crank_disk/shaft_bore','nearby/crank_disk/crankshaft']),\\n      ('crankshaft','hand_crank_arm','keep','rigid carried accessory has uncertain measured overlap; no idealized pair relation was authored',[],['pair/crankshaft/hand_crank_arm','nearby/crankshaft/hand_crank_arm']),\\n      ('crankshaft','pitman','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crankshaft/pitman','nearby/crankshaft/pitman']),\\n      ('crankshaft','negative_shaft_pedestal','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crankshaft/negative_shaft_pedestal','nearby/crankshaft/negative_shaft_pedestal']),\\n      ('crankshaft','positive_shaft_pedestal','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crankshaft/positive_shaft_pedestal','nearby/crankshaft/positive_shaft_pedestal']),\\n      ('crankshaft','crank_pin','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crank_pin/crankshaft','nearby/crank_pin/crankshaft']),\\n      ('crankshaft','hand_grip','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crankshaft/hand_grip','nearby/crankshaft/hand_grip']),\\n      ('crankshaft','handle_spindle','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crankshaft/handle_spindle','nearby/crankshaft/handle_spindle']),\\n      ('crankshaft','walking_beam','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crankshaft/walking_beam','nearby/crankshaft/walking_beam']),\\n      ('crankshaft','base','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/base/crankshaft','nearby/base/crankshaft']),\\n      ('crankshaft','pitman_beam_pin','exclude','positive mesh separation and disjoint AABB extent make this a proxy false-contact risk',[],['pair/crankshaft/pitman_beam_pin','nearby/crankshaft/pitman_beam_pin']),\\n      ('crank_disk','crank_pin','exc"
+    },
+    {
+      "name": "submit_compiler_source",
+      "arguments": {
+        "source": "def compile_mjcf(facts, out):\n    coord = {'base':None,'negative_shaft_pedestal':None,'positive_shaft_pedestal':None,'negative_shaft_bearing':None,'positive_shaft_bearing':None,'crankshaft':'driven_crankshaft_hinge','crank_disk':'crank_disk_hinge','crank_pin':'crank_disk_hinge','pitman':'pitman_free','negative_beam_support':None,'positive_beam_support':None,'negative_pivot_bearing':None,'positive_pivot_bearing':None,'beam_pivot_pin':None,'walking_beam':'walking_beam_hinge','pitman_beam_pin':'walking_beam_hinge','beam_output_pin':'walking_beam_hinge','polished_output_rod':'vertical_guided_output','output_guide_post':None,'lower_output_guide':None,'upper_output_guide':None,'hand_crank_arm':'driven_crankshaft_hinge','handle_spindle':'driven_crankshaft_hinge','hand_grip':'driven_crankshaft_hinge'}\n    specs=[\n    ('crankshaft','negative_shaft_bearing','journal running fit represented by shaft hinge',['relation/shaft_in_negative_bearing'],['pair/crankshaft/negative_shaft_bearing','fit/negative_shaft_bearing/bearing_bore/crankshaft/rotation_axis','nearby/crankshaft/negative_shaft_bearing']),\n    ('crankshaft','positive_shaft_bearing','journal running fit represented by shaft hinge',['relation/shaft_in_positive_bearing'],['pair/crankshaft/positive_shaft_bearing','fit/positive_shaft_bearing/bearing_bore/crankshaft/rotation_axis','nearby/crankshaft/positive_shaft_bearing']),\n    ('crankshaft','crank_disk','press fit represented by 1:1 equality',['relation/disk_pressed_on_shaft','transmission/shaft_to_crank_disk_press_drive'],['pair/crank_disk/crankshaft','fit/crankshaft/disk_seat/crank_disk/shaft_bore','nearby/crank_disk/crankshaft']),\n    ('crank_disk','crank_pin','interference press fit rigidly carries pin',['relation/crank_pin_pressed_in_disk'],['pair/crank_disk/crank_pin','fit/crank_disk/crank_pin_seat/crank_pin/pin_shaft','nearby/crank_disk/crank_pin']),\n    ('crank_pin','pitman','dedicated clearance pin bearing represented by closure',['relation/crank_pin_to_pitman_closure'],['pair/crank_pin/pitman','fit/crank_pin/pin_shaft/pitman/crank_end_bore','nearby/crank_pin/pitman']),\n    ('pitman','pitman_beam_pin','dedicated clearance pin bearing represented by closure',['relation/pitman_to_walking_beam_closure'],['pair/pitman/pitman_beam_pin','fit/pitman_beam_pin/pin_shaft/pitman/beam_end_bore','nearby/pitman/pitman_beam_pin']),\n    ('walking_beam','beam_pivot_pin','clearance pivot represented by beam hinge',['relation/walking_beam_fixed_pivot'],['pair/beam_pivot_pin/walking_beam','fit/beam_pivot_pin/pivot_shaft/walking_beam/pivot_bore','nearby/beam_pivot_pin/walking_beam']),\n    ('walking_beam','pitman_beam_pin','measured interference rigidly carries dedicated pin',['link/walking_beam','link/pitman_beam_pin'],['pair/pitman_beam_pin/walking_beam','fit/pitman_beam_pin/pin_shaft/walking_beam/pitman_pin_bore','nearby/pitman_beam_pin/walking_beam']),\n    ('walking_beam','beam_output_pin','measured interference rigidly carries dedicated pin',['link/walking_beam','link/beam_output_pin'],['pair/beam_output_pin/walking_beam','fit/beam_output_pin/pin_shaft/walking_beam/output_pin_bore','nearby/beam_output_pin/walking_beam']),\n    ('polished_output_rod','beam_output_pin','dedicated clearance pin bearing represented by closure',['relation/beam_to_output_rod_closure'],['pair/beam_output_pin/polished_output_rod','fit/beam_output_pin/pin_shaft/polished_output_rod/beam_pin_bore','nearby/beam_output_pin/polished_output_rod']),\n    ('polished_output_rod','lower_output_guide','running guide represented by vertical slide',['link/polished_output_rod','link/lower_output_guide'],['pair/lower_output_guide/polished_output_rod','nearby/lower_output_guide/polished_output_rod']),\n    ('polished_output_rod','upper_output_guide','running guide represented by vertical slide',['link/polished_output_rod','link/upper_output_guide'],['pair/polished_output_rod/upper_output_guide','nearby/polished_output_rod/upper_output_guide'])]\n    false_pairs=[\n    ('crankshaft','pitman'),('crankshaft','negative_shaft_pedestal'),('crankshaft','positive_shaft_pedestal'),('crankshaft','crank_pin'),('crankshaft','hand_grip'),('crankshaft','handle_spindle'),('crankshaft','walking_beam'),('crankshaft','base'),('crankshaft','pitman_beam_pin'),\n    ('crank_disk','walking_beam'),('crank_disk','pitman'),('crank_disk','pitman_beam_pin'),('crank_disk','base'),('crank_disk','negative_shaft_pedestal'),('crank_disk','positive_shaft_pedestal'),('crank_disk','negative_shaft_bearing'),('crank_disk','positive_shaft_bearing'),('crank_disk','hand_crank_arm'),('crank_disk','handle_spindle'),('crank_disk','hand_grip'),('crank_disk','positive_beam_support'),('crank_disk','positive_pivot_bearing'),('crank_disk','negative_beam_support'),('crank_disk','negative_pivot_bearing'),\n    ('crank_pin','negative_shaft_bearing'),('pitman','walking_beam'),('pitman','negative_shaft_bearing'),('pitman','negative_shaft_pedestal'),\n    ('walking_beam','positive_beam_support'),('walking_beam','positive_pivot_bearing'),('walking_beam','negative_beam_support'),('walking_beam','negative_pivot_bearing'),('walking_beam','output_guide_post'),('walking_beam','crank_pin'),('walking_beam','upper_output_guide'),('walking_beam','hand_crank_arm'),('walking_beam','handle_spindle'),('walking_beam','hand_grip'),('walking_beam','lower_output_guide'),\n    ('polished_output_rod','base'),('polished_output_rod','output_guide_post'),('polished_output_rod','negative_pivot_bearing'),('polished_output_rod','positive_pivot_bearing'),('polished_output_rod','negative_beam_support'),('polished_output_rod','positive_beam_support'),('polished_output_rod','beam_pivot_pin')]\n    nearby={('crankshaft','pitman'):'nearby/crankshaft/pitman',('crankshaft','negative_shaft_pedestal'):'nearby/crankshaft/negative_shaft_pedestal',('crankshaft','positive_shaft_pedestal'):'nearby/crankshaft/positive_shaft_pedestal',('crankshaft','crank_pin'):'nearby/crank_pin/crankshaft',('crankshaft','hand_grip'):'nearby/crankshaft/hand_grip',('crankshaft','handle_spindle'):'nearby/crankshaft/handle_spindle',('crankshaft','walking_beam'):'nearby/crankshaft/walking_beam',('crankshaft','base'):'nearby/base/crankshaft',('crankshaft','pitman_beam_pin'):'nearby/crankshaft/pitman_beam_pin'}\n    raw=[]\n    for a,b,r,s,f in specs: raw.append((a,b,'exclude',r,s,f))\n    for a,b in false_pairs:\n        p='pair/'+a+'/'+b\n        n=nearby.get((a,b),'nearby/'+a+'/'+b)\n        raw.append((a,b,'exclude','positive real-mesh separation with a disjoint AABB overlap extent is a collision-proxy false-contact risk',['link/'+a,'link/'+b],[p,n]))\n    raw += [\n      ('crankshaft','hand_crank_arm','keep','uncertain measured overlap on rigid-carried accessory; policy keeps uncertain contact',['link/crankshaft','link/hand_crank_arm'],['pair/crankshaft/hand_crank_arm','nearby/crankshaft/hand_crank_arm']),\n      ('walking_beam','polished_output_rod','keep','output-joint solids meet and overlap is uncertain; retain possible real contact',['link/walking_beam','link/polished_output_rod'],['pair/polished_output_rod/walking_beam','nearby/polished_output_rod/walking_beam'])]\n    contacts=[{'pair':[a,b],'action':x,'reason':r,'source_entity_ids':s,'fact_ids':f} for a,b,x,r,s,f in raw]\n    tree=[['base','negative_shaft_pedestal'],['negative_shaft_pedestal','negative_shaft_bearing'],['base','positive_shaft_pedestal'],['positive_shaft_pedestal','positive_shaft_bearing'],['base','crankshaft'],['base','crank_disk'],['crank_disk','crank_pin'],['base','pitman'],['base','negative_beam_support'],['negative_beam_support','negative_pivot_bearing'],['base','positive_beam_support'],['positive_beam_support','positive_pivot_bearing'],['negative_pivot_bearing','beam_pivot_pin'],['base','walking_beam'],['walking_beam','pitman_beam_pin'],['walking_beam','beam_output_pin'],['base','polished_output_rod'],['base','output_guide_post'],['output_guide_post','lower_output_guide'],['output_guide_post','upper_output_guide'],['crankshaft','hand_crank_arm'],['hand_crank_arm','handle_spindle'],['handle_spindle','hand_grip']]\n    out.topology_plan({'coordinate_map':coord,'tree_edges':tree,'closure_edges':[['crank_pin','pitman'],['pitman_beam_pin','pitman'],['beam_output_pin','polished_output_rod']],'rigid_carried':[['crank_disk','crank_pin'],['walking_beam','pitman_beam_pin'],['walking_beam','beam_output_pin'],['crankshaft','hand_crank_arm'],['hand_crank_arm','handle_spindle'],['handle_spindle','hand_grip']],'independent_coaxial':[],'transmissions':[{'name':'shaft_to_crank_disk_press_drive','driving_joint':'driven_crankshaft_hinge','driven_joint':'crank_disk_hinge','ratio':1.0}],'contact_decisions':contacts,'support_ground':['base'],'support_strategy':'fixed base tree rests on global ground; no support patch required'})\n    parents={x[1]:x[0] for x in tree}\n    order=['base','negative_shaft_pedestal','negative_shaft_bearing','positive_shaft_pedestal','positive_shaft_bearing','crankshaft','crank_disk','crank_pin','pitman','negative_beam_support','negative_pivot_bearing','positive_beam_support','positive_pivot_bearing','beam_pivot_pin','walking_beam','pitman_beam_pin','beam_output_pin','polished_output_rod','output_guide_post','lower_output_guide','upper_output_guide','hand_crank_arm','handle_spindle','hand_grip']\n    for b in order: out.body(b,parents.get(b,''))\n    out.joint('crankshaft','driven_crankshaft_hinge','hinge',(0,1,0),(0,0,0),'world')\n    out.joint('crank_disk','crank_disk_hinge','hinge',(0,1,0),(0,0,0),'world')\n    out.freejoint('pitman','pitman_free')\n    out.joint('walking_beam','walking_beam_hinge','hinge',(0,1,0),(0,0,0),'world')\n    out.joint('polished_output_rod','vertical_guided_output','slide',(0,0,1),(0,0,0),'world')\n    out.joint_equality('shaft_to_crank_disk_press_drive','driven_crankshaft_hinge','crank_disk_hinge',1,0,'press-fit compound transmits angle 1:1',['relation/disk_pressed_on_shaft','transmission/shaft_to_crank_disk_press_drive'],['fit/crankshaft/disk_seat/crank_disk/shaft_bore','pair/crank_disk/crankshaft'])\n    out.connect('crank_pin_to_pitman_closure','crank_pin','pitman',(-.0302552632,-.01,.0553243759),'clearance crank-pin closure',['relation/crank_pin_to_pitman_closure'],['fit/crank_pin/pin_shaft/pitman/crank_end_bore','pair/crank_pin/pitman'])\n    out.connect('pitman_to_walking_beam_closure','pitman_beam_pin','pitman',(-.0245620631,-.01,.0837372105),'clearance beam-end closure',['relation/pitman_to_walking_beam_closure'],['fit/pitman_beam_pin/pin_shaft/pitman/beam_end_bore','pair/pitman/pitman_beam_pin'])\n    out.connect('beam_to_output_rod_closure','beam_output_pin','polished_output_rod',(.0744647438,-.01,.0976545206),'clearance output closure',['relation/beam_to_output_rod_closure'],['fit/beam_output_pin/pin_shaft/polished_output_rod/beam_pin_bore','pair/beam_output_pin/polished_output_rod'])\n    for a,b,x,r,s,f in raw:\n        if x=='exclude': out.exclude(a,b,r,s,f)\n    ids=['link/'+x for x in order]+['pose/place_'+x for x in order]\n    ids += ['port/crankshaft/rotation_axis','port/crankshaft/disk_seat','port/crank_disk/shaft_bore','port/crank_disk/crank_pin_seat','port/crank_pin/pin_shaft','port/pitman/crank_end_bore','port/pitman/beam_end_bore','port/walking_beam/pitman_pin_bore','port/walking_beam/pivot_bore','port/walking_beam/output_pin_bore','port/pitman_beam_pin/pin_shaft','port/beam_pivot_pin/pivot_shaft','port/beam_output_pin/pin_shaft','port/polished_output_rod/beam_pin_bore','port/polished_output_rod/guided_axis']\n    ids += ['relation/'+x for x in ['shaft_in_negative_bearing','shaft_in_positive_bearing','disk_pressed_on_shaft','crank_pin_pressed_in_disk','crank_pin_to_pitman_closure','pitman_to_walking_beam_closure','walking_beam_fixed_pivot','beam_to_output_rod_closure']]\n    ids += ['motion_joint/'+x for x in ['driven_crankshaft_hinge','crank_disk_hinge','walking_beam_hinge','vertical_guided_output']]\n    ids += ['transmission/shaft_to_crank_disk_press_drive','role/driver/crankshaft','role/output/polished_output_rod']+['role/watch/'+x for x in ['crankshaft','crank_disk','crank_pin','pitman','walking_beam','polished_output_rod']]\n    for e in ids:\n        if e.startswith('link/'): out.decision(e,'emitted',[e[5:]],'link emitted exactly once',[e])\n        elif e.startswith('motion_joint/'): out.decision(e,'emitted',[e[13:]],'motion coordinate emitted',[e])\n        else: out.decision(e,'represented_by',[],'represented by topology, coordinate, constraint, contact decision, or role map',[e])\n",
+        "expected_revision": 1
+      },
+      "is_error": false,
+      "result": "{\"accepted\": true, \"revision\": 2}"
+    },
+    {
+      "name": "run_mjcf_gate",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\n  \"ok\": false,\n  \"errors\": [\n    \"decision 'pose/place_base' does not resolve to a generated node\",\n    \"decision 'pose/place_negative_shaft_pedestal' does not resolve to a generated node\",\n    \"decision 'pose/place_negative_shaft_bearing' does not resolve to a generated node\",\n    \"decision 'pose/place_positive_shaft_pedestal' does not resolve to a generated node\",\n    \"decision 'pose/place_positive_shaft_bearing' does not resolve to a generated node\",\n    \"decision 'pose/place_crankshaft' does not resolve to a generated node\",\n    \"decision 'pose/place_crank_disk' does not resolve to a generated node\",\n    \"decision 'pose/place_crank_pin' does not resolve to a generated node\",\n    \"decision 'pose/place_pitman' does not resolve to a generated node\",\n    \"decision 'pose/place_negative_beam_support' does not resolve to a generated node\",\n    \"decision 'pose/place_negative_pivot_bearing' does not resolve to a generated node\",\n    \"decision 'pose/place_positive_beam_support' does not resolve to a generated node\",\n    \"decision 'pose/place_positive_pivot_bearing' does not resolve to a generated node\",\n    \"decision 'pose/place_beam_pivot_pin' does not resolve to a generated node\",\n    \"decision 'pose/place_walking_beam' does not resolve to a generated node\",\n    \"decision 'pose/place_pitman_beam_pin' does not resolve to a generated node\",\n    \"decision 'pose/place_beam_output_pin' does not resolve to a generated node\",\n    \"decision 'pose/place_polished_output_rod' does not resolve to a generated node\",\n    \"decision 'pose/place_output_guide_post' does not resolve to a generated node\",\n    \"decision 'pose/place_lower_output_guide' does not resolve to a generated node\",\n    \"decision 'pose/place_upper_output_guide' does not resolve to a generated node\",\n    \"decision 'pose/place_hand_crank_arm' does not resolve to a generated node\",\n    \"decision 'pose/place_handle_spindle' does not resolve to a generated node\",\n    \"decision 'pose/place_hand_grip' does not resolve to a generated node\",\n    \"decision 'port/crankshaft/rotation_axis' does not resolve to a generated node\",\n    \"decision 'port/crankshaft/disk_seat' does not resolve to a generated node\",\n    \"decision 'port/crank_disk/shaft_bore' does not resolve to a generated node\",\n    \"decision 'port/crank_disk/crank_pin_seat' does not resolve to a generated node\",\n    \"decision 'port/crank_pin/pin_shaft' does not resolve to a generated node\",\n    \"decision 'port/pitman/crank_end_bore' does not resolve to a generated node\",\n    \"decision 'port/pitman/beam_end_bore' does not resolve to a generated node\",\n    \"decision 'port/walking_beam/pitman_pin_bore' does not resolve to a generated node\",\n    \"decision 'port/walking_beam/pivot_bore' does not resolve to a generated node\",\n    \"decision 'port/walking_beam/output_pin_bore' does not resolve to a generated node\",\n    \"decision 'port/pitman_beam_pin/pin_shaft' does not resolve to a generated node\",\n    \"decision 'port/beam_pivot_pin/pivot_shaft' does not resolve to a generated node\",\n    \"decision 'port/beam_output_pin/pin_shaft' does not resolve to a generated node\",\n    \"decision 'port/polished_output_rod/beam_pin_bore' does not resolve to a generated node\",\n    \"decision 'port/polished_output_rod/guided_axis' does not resolve to a generated node\",\n    \"decision 'relation/shaft_in_negative_bearing' does not resolve to a generated node\",\n    \"decision 'relation/shaft_in_positive_bearing' does not resolve to a generated node\",\n    \"decision 'relation/disk_pressed_on_shaft' does not resolve to a generated node\",\n    \"decision 'relation/crank_pin_pressed_in_disk' does not resolve to a generated node\",\n    \"decision 'relation/crank_pin_to_pitman_closure' does not resolve to a generated node\",\n    \"decision 'relation/pitman_to_walking_beam_closure' does not resolve to a generated node\",\n    \"decision 'relation/walking_beam_fixed_pivot' does not resolve to a generated node\",\n    \"decision 'relation/beam_to_output_rod_closure' does not reso"
+    },
+    {
+      "name": "submit_compiler_source",
+      "arguments": {
+        "source": "def compile_mjcf(facts, out):\n    order=['base','negative_shaft_pedestal','negative_shaft_bearing','positive_shaft_pedestal','positive_shaft_bearing','crankshaft','crank_disk','crank_pin','pitman','negative_beam_support','negative_pivot_bearing','positive_beam_support','positive_pivot_bearing','beam_pivot_pin','walking_beam','pitman_beam_pin','beam_output_pin','polished_output_rod','output_guide_post','lower_output_guide','upper_output_guide','hand_crank_arm','handle_spindle','hand_grip']\n    tree=[['base','negative_shaft_pedestal'],['negative_shaft_pedestal','negative_shaft_bearing'],['base','positive_shaft_pedestal'],['positive_shaft_pedestal','positive_shaft_bearing'],['base','crankshaft'],['base','crank_disk'],['crank_disk','crank_pin'],['base','pitman'],['base','negative_beam_support'],['negative_beam_support','negative_pivot_bearing'],['base','positive_beam_support'],['positive_beam_support','positive_pivot_bearing'],['negative_pivot_bearing','beam_pivot_pin'],['base','walking_beam'],['walking_beam','pitman_beam_pin'],['walking_beam','beam_output_pin'],['base','polished_output_rod'],['base','output_guide_post'],['output_guide_post','lower_output_guide'],['output_guide_post','upper_output_guide'],['crankshaft','hand_crank_arm'],['hand_crank_arm','handle_spindle'],['handle_spindle','hand_grip']]\n    coord={x:None for x in order}\n    coord.update({'crankshaft':'driven_crankshaft_hinge','crank_disk':'crank_disk_hinge','crank_pin':'crank_disk_hinge','walking_beam':'walking_beam_hinge','pitman_beam_pin':'walking_beam_hinge','beam_output_pin':'walking_beam_hinge','polished_output_rod':'vertical_guided_output','hand_crank_arm':'driven_crankshaft_hinge','handle_spindle':'driven_crankshaft_hinge','hand_grip':'driven_crankshaft_hinge'})\n    special=[\n    ('crankshaft','negative_shaft_bearing','journal running fit represented by shaft hinge',['relation/shaft_in_negative_bearing'],['pair/crankshaft/negative_shaft_bearing','fit/negative_shaft_bearing/bearing_bore/crankshaft/rotation_axis','nearby/crankshaft/negative_shaft_bearing']),\n    ('crankshaft','positive_shaft_bearing','journal running fit represented by shaft hinge',['relation/shaft_in_positive_bearing'],['pair/crankshaft/positive_shaft_bearing','fit/positive_shaft_bearing/bearing_bore/crankshaft/rotation_axis','nearby/crankshaft/positive_shaft_bearing']),\n    ('crankshaft','crank_disk','press fit represented by 1:1 equality',['relation/disk_pressed_on_shaft','transmission/shaft_to_crank_disk_press_drive'],['pair/crank_disk/crankshaft','fit/crankshaft/disk_seat/crank_disk/shaft_bore','nearby/crank_disk/crankshaft']),\n    ('crank_disk','crank_pin','interference press fit rigidly carries pin',['relation/crank_pin_pressed_in_disk'],['pair/crank_disk/crank_pin','fit/crank_disk/crank_pin_seat/crank_pin/pin_shaft','nearby/crank_disk/crank_pin']),\n    ('crank_pin','pitman','dedicated clearance pin bearing represented by closure',['relation/crank_pin_to_pitman_closure'],['pair/crank_pin/pitman','fit/crank_pin/pin_shaft/pitman/crank_end_bore','nearby/crank_pin/pitman']),\n    ('pitman','pitman_beam_pin','dedicated clearance pin bearing represented by closure',['relation/pitman_to_walking_beam_closure'],['pair/pitman/pitman_beam_pin','fit/pitman_beam_pin/pin_shaft/pitman/beam_end_bore','nearby/pitman/pitman_beam_pin']),\n    ('walking_beam','beam_pivot_pin','clearance pivot represented by beam hinge',['relation/walking_beam_fixed_pivot'],['pair/beam_pivot_pin/walking_beam','fit/beam_pivot_pin/pivot_shaft/walking_beam/pivot_bore','nearby/beam_pivot_pin/walking_beam']),\n    ('walking_beam','pitman_beam_pin','interference fit rigidly carries dedicated pin',['link/walking_beam','link/pitman_beam_pin'],['pair/pitman_beam_pin/walking_beam','fit/pitman_beam_pin/pin_shaft/walking_beam/pitman_pin_bore','nearby/pitman_beam_pin/walking_beam']),\n    ('walking_beam','beam_output_pin','interference fit rigidly carries dedicated pin',['link/walking_beam','link/beam_output_pin'],['pair/beam_output_pin/walking_beam','fit/beam_output_pin/pin_shaft/walking_beam/output_pin_bore','nearby/beam_output_pin/walking_beam']),\n    ('polished_output_rod','beam_output_pin','dedicated clearance pin bearing represented by closure',['relation/beam_to_output_rod_closure'],['pair/beam_output_pin/polished_output_rod','fit/beam_output_pin/pin_shaft/polished_output_rod/beam_pin_bore','nearby/beam_output_pin/polished_output_rod']),\n    ('polished_output_rod','lower_output_guide','running guide represented by vertical slide',['link/polished_output_rod','link/lower_output_guide'],['pair/lower_output_guide/polished_output_rod','nearby/lower_output_guide/polished_output_rod']),\n    ('polished_output_rod','upper_output_guide','running guide represented by vertical slide',['link/polished_output_rod','link/upper_output_guide'],['pair/polished_output_rod/upper_output_guide','nearby/polished_output_rod/upper_output_guide'])]\n    false_pairs=[('crankshaft','pitman'),('crankshaft','negative_shaft_pedestal'),('crankshaft','positive_shaft_pedestal'),('crankshaft','crank_pin'),('crankshaft','hand_grip'),('crankshaft','handle_spindle'),('crankshaft','walking_beam'),('crankshaft','base'),('crankshaft','pitman_beam_pin'),('crank_disk','walking_beam'),('crank_disk','pitman'),('crank_disk','pitman_beam_pin'),('crank_disk','base'),('crank_disk','negative_shaft_pedestal'),('crank_disk','positive_shaft_pedestal'),('crank_disk','negative_shaft_bearing'),('crank_disk','positive_shaft_bearing'),('crank_disk','hand_crank_arm'),('crank_disk','handle_spindle'),('crank_disk','hand_grip'),('crank_disk','positive_beam_support'),('crank_disk','positive_pivot_bearing'),('crank_disk','negative_beam_support'),('crank_disk','negative_pivot_bearing'),('crank_pin','negative_shaft_bearing'),('pitman','walking_beam'),('pitman','negative_shaft_bearing'),('pitman','negative_shaft_pedestal'),('walking_beam','positive_beam_support'),('walking_beam','positive_pivot_bearing'),('walking_beam','negative_beam_support'),('walking_beam','negative_pivot_bearing'),('walking_beam','output_guide_post'),('walking_beam','crank_pin'),('walking_beam','upper_output_guide'),('walking_beam','hand_crank_arm'),('walking_beam','handle_spindle'),('walking_beam','hand_grip'),('walking_beam','lower_output_guide'),('polished_output_rod','base'),('polished_output_rod','output_guide_post'),('polished_output_rod','negative_pivot_bearing'),('polished_output_rod','positive_pivot_bearing'),('polished_output_rod','negative_beam_support'),('polished_output_rod','positive_beam_support'),('polished_output_rod','beam_pivot_pin')]\n    raw=[]\n    for a,b,r,s,f in special: raw.append((a,b,'exclude',r,s,f))\n    for a,b in false_pairs: raw.append((a,b,'exclude','positive real-mesh separation with a disjoint AABB overlap extent is a collision-proxy false-contact risk',['link/'+a,'link/'+b],['pair/'+a+'/'+b,'nearby/'+a+'/'+b]))\n    raw += [('crankshaft','hand_crank_arm','keep','uncertain measured overlap on a rigid-carried accessory is retained',['link/crankshaft','link/hand_crank_arm'],['pair/crankshaft/hand_crank_arm','nearby/crankshaft/hand_crank_arm']),('walking_beam','polished_output_rod','keep','output-joint solids meet and overlap is uncertain, so possible real contact is retained',['link/walking_beam','link/polished_output_rod'],['pair/polished_output_rod/walking_beam','nearby/polished_output_rod/walking_beam'])]\n    contacts=[{'pair':[a,b],'action':x,'reason':r,'source_entity_ids':s,'fact_ids':f} for a,b,x,r,s,f in raw]\n    out.topology_plan({'coordinate_map':coord,'tree_edges':tree,'closure_edges':[['crank_pin','pitman'],['pitman_beam_pin','pitman'],['beam_output_pin','polished_output_rod']],'rigid_carried':[['crank_disk','crank_pin'],['walking_beam','pitman_beam_pin'],['walking_beam','beam_output_pin'],['crankshaft','hand_crank_arm'],['hand_crank_arm','handle_spindle'],['handle_spindle','hand_grip']],'independent_coaxial':[],'transmissions':[{'name':'shaft_to_crank_disk_press_drive','driving_joint':'driven_crankshaft_hinge','driven_joint':'crank_disk_hinge','ratio':1.0}],'contact_decisions':contacts,'support_ground':['base'],'support_strategy':'fixed base tree rests on global ground; no support patch required'})\n    parents={x[1]:x[0] for x in tree}\n    for b in order: out.body(b,parents.get(b,''))\n    out.joint('crankshaft','driven_crankshaft_hinge','hinge',(0,1,0),(0,0,0),'world')\n    out.joint('crank_disk','crank_disk_hinge','hinge',(0,1,0),(0,0,0),'world')\n    out.freejoint('pitman','pitman_free')\n    out.joint('walking_beam','walking_beam_hinge','hinge',(0,1,0),(0,0,0),'world')\n    out.joint('polished_output_rod','vertical_guided_output','slide',(0,0,1),(0,0,0),'world')\n    out.joint_equality('shaft_to_crank_disk_press_drive','driven_crankshaft_hinge','crank_disk_hinge',1,0,'press-fit compound transmits angle 1:1',['relation/disk_pressed_on_shaft','transmission/shaft_to_crank_disk_press_drive'],['fit/crankshaft/disk_seat/crank_disk/shaft_bore','pair/crank_disk/crankshaft'])\n    out.connect('crank_pin_to_pitman_closure','crank_pin','pitman',(-.0302552632,-.01,.0553243759),'clearance crank-pin closure',['relation/crank_pin_to_pitman_closure'],['fit/crank_pin/pin_shaft/pitman/crank_end_bore','pair/crank_pin/pitman'])\n    out.connect('pitman_to_walking_beam_closure','pitman_beam_pin','pitman',(-.0245620631,-.01,.0837372105),'clearance beam-end closure',['relation/pitman_to_walking_beam_closure'],['fit/pitman_beam_pin/pin_shaft/pitman/beam_end_bore','pair/pitman/pitman_beam_pin'])\n    out.connect('beam_to_output_rod_closure','beam_output_pin','polished_output_rod',(.0744647438,-.01,.0976545206),'clearance output closure',['relation/beam_to_output_rod_closure'],['fit/beam_output_pin/pin_shaft/polished_output_rod/beam_pin_bore','pair/beam_output_pin/polished_output_rod'])\n    for a,b,x,r,s,f in raw:\n        if x=='exclude': out.exclude(a,b,r,s,f)\n    ids=['link/'+x for x in order]+['pose/place_'+x for x in order]\n    ids += ['port/crankshaft/rotation_axis','port/crankshaft/disk_seat','port/crank_disk/shaft_bore','port/crank_disk/crank_pin_seat','port/crank_pin/pin_shaft','port/pitman/crank_end_bore','port/pitman/beam_end_bore','port/walking_beam/pitman_pin_bore','port/walking_beam/pivot_bore','port/walking_beam/output_pin_bore','port/pitman_beam_pin/pin_shaft','port/beam_pivot_pin/pivot_shaft','port/beam_output_pin/pin_shaft','port/polished_output_rod/beam_pin_bore','port/polished_output_rod/guided_axis']\n    ids += ['relation/'+x for x in ['shaft_in_negative_bearing','shaft_in_positive_bearing','disk_pressed_on_shaft','crank_pin_pressed_in_disk','crank_pin_to_pitman_closure','pitman_to_walking_beam_closure','walking_beam_fixed_pivot','beam_to_output_rod_closure']]\n    ids += ['motion_joint/'+x for x in ['driven_crankshaft_hinge','crank_disk_hinge','walking_beam_hinge','vertical_guided_output']]\n    ids += ['transmission/shaft_to_crank_disk_press_drive','role/driver/crankshaft','role/output/polished_output_rod']+['role/watch/'+x for x in ['crankshaft','crank_disk','crank_pin','pitman','walking_beam','polished_output_rod']]\n    for e in ids:\n        nodes=['base']\n        action='represented_by'\n        if e.startswith('link/'):\n            nodes=[e[5:]]; action='emitted'\n        elif e.startswith('pose/place_'): nodes=[e[11:]]\n        elif e.startswith('motion_joint/'):\n            nodes=[e[13:]]; action='emitted'\n        elif e=='relation/crank_pin_to_pitman_closure': nodes=['crank_pin_to_pitman_closure']\n        elif e=='relation/pitman_to_walking_beam_closure': nodes=['pitman_to_walking_beam_closure']\n        elif e=='relation/beam_to_output_rod_closure': nodes=['beam_to_output_rod_closure']\n        elif e in ['relation/disk_pressed_on_shaft','transmission/shaft_to_crank_disk_press_drive']: nodes=['shaft_to_crank_disk_press_drive']\n        out.decision(e,action,nodes,'represented by emitted topology, coordinate, constraint, contact decision, or role map',[e])\n",
+        "expected_revision": 2
+      },
+      "is_error": false,
+      "result": "{\"accepted\": true, \"revision\": 3}"
+    },
+    {
+      "name": "run_mjcf_gate",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\n  \"ok\": false,\n  \"errors\": [\n    \"MuJoCo load/smoke failed: ValueError: Error: free joint can only be used on top level\\nElement name 'pitman', id 12, line 79\"\n  ],\n  \"policy_version\": 4,\n  \"bodies\": [\n    \"base\",\n    \"beam_output_pin\",\n    \"beam_pivot_pin\",\n    \"crank_disk\",\n    \"crank_pin\",\n    \"crankshaft\",\n    \"hand_crank_arm\",\n    \"hand_grip\",\n    \"handle_spindle\",\n    \"lower_output_guide\",\n    \"negative_beam_support\",\n    \"negative_pivot_bearing\",\n    \"negative_shaft_bearing\",\n    \"negative_shaft_pedestal\",\n    \"output_guide_post\",\n    \"pitman\",\n    \"pitman_beam_pin\",\n    \"polished_output_rod\",\n    \"positive_beam_support\",\n    \"positive_pivot_bearing\",\n    \"positive_shaft_bearing\",\n    \"positive_shaft_pedestal\",\n    \"upper_output_guide\",\n    \"walking_beam\"\n  ],\n  \"joints\": [\n    \"crank_disk_hinge\",\n    \"driven_crankshaft_hinge\",\n    \"shaft_to_crank_disk_press_drive\",\n    \"vertical_guided_output\",\n    \"walking_beam_hinge\"\n  ]\n}"
+    },
+    {
+      "name": "submit_compiler_source",
+      "arguments": {
+        "source": "def compile_mjcf(facts, out):\n    order=['base','negative_shaft_pedestal','negative_shaft_bearing','positive_shaft_pedestal','positive_shaft_bearing','crankshaft','crank_disk','crank_pin','pitman','negative_beam_support','negative_pivot_bearing','positive_beam_support','positive_pivot_bearing','beam_pivot_pin','walking_beam','pitman_beam_pin','beam_output_pin','polished_output_rod','output_guide_post','lower_output_guide','upper_output_guide','hand_crank_arm','handle_spindle','hand_grip']\n    tree=[['base','negative_shaft_pedestal'],['negative_shaft_pedestal','negative_shaft_bearing'],['base','positive_shaft_pedestal'],['positive_shaft_pedestal','positive_shaft_bearing'],['base','crankshaft'],['base','crank_disk'],['crank_disk','crank_pin'],['base','negative_beam_support'],['negative_beam_support','negative_pivot_bearing'],['base','positive_beam_support'],['positive_beam_support','positive_pivot_bearing'],['negative_pivot_bearing','beam_pivot_pin'],['base','walking_beam'],['walking_beam','pitman_beam_pin'],['walking_beam','beam_output_pin'],['base','polished_output_rod'],['base','output_guide_post'],['output_guide_post','lower_output_guide'],['output_guide_post','upper_output_guide'],['crankshaft','hand_crank_arm'],['hand_crank_arm','handle_spindle'],['handle_spindle','hand_grip']]\n    coord={x:None for x in order}\n    coord.update({'crankshaft':'driven_crankshaft_hinge','crank_disk':'crank_disk_hinge','crank_pin':'crank_disk_hinge','walking_beam':'walking_beam_hinge','pitman_beam_pin':'walking_beam_hinge','beam_output_pin':'walking_beam_hinge','polished_output_rod':'vertical_guided_output','hand_crank_arm':'driven_crankshaft_hinge','handle_spindle':'driven_crankshaft_hinge','hand_grip':'driven_crankshaft_hinge'})\n    raw=[]\n    special=[\n      ('crankshaft','negative_shaft_bearing','journal running fit represented by shaft hinge',['relation/shaft_in_negative_bearing'],['pair/crankshaft/negative_shaft_bearing','fit/negative_shaft_bearing/bearing_bore/crankshaft/rotation_axis']),\n      ('crankshaft','positive_shaft_bearing','journal running fit represented by shaft hinge',['relation/shaft_in_positive_bearing'],['pair/crankshaft/positive_shaft_bearing','fit/positive_shaft_bearing/bearing_bore/crankshaft/rotation_axis']),\n      ('crankshaft','crank_disk','press fit represented by 1:1 equality',['relation/disk_pressed_on_shaft','transmission/shaft_to_crank_disk_press_drive'],['pair/crank_disk/crankshaft','fit/crankshaft/disk_seat/crank_disk/shaft_bore']),\n      ('crank_disk','crank_pin','interference press fit rigidly carries pin',['relation/crank_pin_pressed_in_disk'],['pair/crank_disk/crank_pin','fit/crank_disk/crank_pin_seat/crank_pin/pin_shaft']),\n      ('crank_pin','pitman','dedicated clearance pin bearing represented by closure',['relation/crank_pin_to_pitman_closure'],['pair/crank_pin/pitman','fit/crank_pin/pin_shaft/pitman/crank_end_bore']),\n      ('pitman','pitman_beam_pin','dedicated clearance pin bearing represented by closure',['relation/pitman_to_walking_beam_closure'],['pair/pitman/pitman_beam_pin','fit/pitman_beam_pin/pin_shaft/pitman/beam_end_bore']),\n      ('walking_beam','beam_pivot_pin','clearance pivot represented by beam hinge',['relation/walking_beam_fixed_pivot'],['pair/beam_pivot_pin/walking_beam','fit/beam_pivot_pin/pivot_shaft/walking_beam/pivot_bore']),\n      ('walking_beam','pitman_beam_pin','interference fit rigidly carries dedicated pin',['link/walking_beam','link/pitman_beam_pin'],['pair/pitman_beam_pin/walking_beam','fit/pitman_beam_pin/pin_shaft/walking_beam/pitman_pin_bore']),\n      ('walking_beam','beam_output_pin','interference fit rigidly carries dedicated pin',['link/walking_beam','link/beam_output_pin'],['pair/beam_output_pin/walking_beam','fit/beam_output_pin/pin_shaft/walking_beam/output_pin_bore']),\n      ('polished_output_rod','beam_output_pin','dedicated clearance pin bearing represented by closure',['relation/beam_to_output_rod_closure'],['pair/beam_output_pin/polished_output_rod','fit/beam_output_pin/pin_shaft/polished_output_rod/beam_pin_bore']),\n      ('polished_output_rod','lower_output_guide','running guide represented by vertical slide',['link/polished_output_rod','link/lower_output_guide'],['pair/lower_output_guide/polished_output_rod']),\n      ('polished_output_rod','upper_output_guide','running guide represented by vertical slide',['link/polished_output_rod','link/upper_output_guide'],['pair/polished_output_rod/upper_output_guide'])]\n    for a,b,r,s,f in special: raw.append((a,b,'exclude',r,s,f))\n    groups={\n      'crankshaft':['pitman','negative_shaft_pedestal','positive_shaft_pedestal','crank_pin','hand_grip','handle_spindle','walking_beam','base','pitman_beam_pin'],\n      'crank_disk':['walking_beam','pitman','pitman_beam_pin','base','negative_shaft_pedestal','positive_shaft_pedestal','negative_shaft_bearing','positive_shaft_bearing','hand_crank_arm','handle_spindle','hand_grip','positive_beam_support','positive_pivot_bearing','negative_beam_support','negative_pivot_bearing'],\n      'crank_pin':['negative_shaft_bearing'],\n      'pitman':['walking_beam','negative_shaft_bearing','negative_shaft_pedestal'],\n      'walking_beam':['positive_beam_support','positive_pivot_bearing','negative_beam_support','negative_pivot_bearing','output_guide_post','crank_pin','upper_output_guide','hand_crank_arm','handle_spindle','hand_grip','lower_output_guide'],\n      'polished_output_rod':['base','output_guide_post','negative_pivot_bearing','positive_pivot_bearing','negative_beam_support','positive_beam_support','beam_pivot_pin']}\n    for a in groups:\n        for b in groups[a]: raw.append((a,b,'exclude','positive real-mesh separation with disjoint AABB extent is a collision-proxy false-contact risk',['link/'+a,'link/'+b],['pair/'+a+'/'+b,'nearby/'+a+'/'+b]))\n    raw.append(('crankshaft','hand_crank_arm','keep','uncertain measured overlap is retained',['link/crankshaft','link/hand_crank_arm'],['pair/crankshaft/hand_crank_arm']))\n    raw.append(('walking_beam','polished_output_rod','keep','output solids meet and uncertain overlap is retained',['link/walking_beam','link/polished_output_rod'],['pair/polished_output_rod/walking_beam']))\n    contacts=[{'pair':[a,b],'action':x,'reason':r,'source_entity_ids':s,'fact_ids':f} for a,b,x,r,s,f in raw]\n    out.topology_plan({'coordinate_map':coord,'tree_edges':tree,'closure_edges':[['crank_pin','pitman'],['pitman_beam_pin','pitman'],['beam_output_pin','polished_output_rod']],'rigid_carried':[['crank_disk','crank_pin'],['walking_beam','pitman_beam_pin'],['walking_beam','beam_output_pin'],['crankshaft','hand_crank_arm'],['hand_crank_arm','handle_spindle'],['handle_spindle','hand_grip']],'independent_coaxial':[],'transmissions':[{'name':'shaft_to_crank_disk_press_drive','driving_joint':'driven_crankshaft_hinge','driven_joint':'crank_disk_hinge','ratio':1.0}],'contact_decisions':contacts,'support_ground':['base'],'support_strategy':'fixed base and supports remain on global ground; no support patch required'})\n    parents={x[1]:x[0] for x in tree}\n    for b in order: out.body(b,parents.get(b,''))\n    out.joint('crankshaft','driven_crankshaft_hinge','hinge',(0,1,0),(0,0,0),'world')\n    out.joint('crank_disk','crank_disk_hinge','hinge',(0,1,0),(0,0,0),'world')\n    out.freejoint('pitman','pitman_free')\n    out.joint('walking_beam','walking_beam_hinge','hinge',(0,1,0),(0,0,0),'world')\n    out.joint('polished_output_rod','vertical_guided_output','slide',(0,0,1),(0,0,0),'world')\n    out.joint_equality('shaft_to_crank_disk_press_drive','driven_crankshaft_hinge','crank_disk_hinge',1,0,'press-fit compound transmits angle 1:1',['relation/disk_pressed_on_shaft','transmission/shaft_to_crank_disk_press_drive'],['fit/crankshaft/disk_seat/crank_disk/shaft_bore','pair/crank_disk/crankshaft'])\n    out.connect('crank_pin_to_pitman_closure','crank_pin','pitman',(-.0302552632,-.01,.0553243759),'clearance crank-pin closure',['relation/crank_pin_to_pitman_closure'],['fit/crank_pin/pin_shaft/pitman/crank_end_bore','pair/crank_pin/pitman'])\n    out.connect('pitman_to_walking_beam_closure','pitman_beam_pin','pitman',(-.0245620631,-.01,.0837372105),'clearance beam-end closure',['relation/pitman_to_walking_beam_closure'],['fit/pitman_beam_pin/pin_shaft/pitman/beam_end_bore','pair/pitman/pitman_beam_pin'])\n    out.connect('beam_to_output_rod_closure','beam_output_pin','polished_output_rod',(.0744647438,-.01,.0976545206),'clearance output closure',['relation/beam_to_output_rod_closure'],['fit/beam_output_pin/pin_shaft/polished_output_rod/beam_pin_bore','pair/beam_output_pin/polished_output_rod'])\n    for a,b,x,r,s,f in raw:\n        if x=='exclude': out.exclude(a,b,r,s,f)\n    ids=['link/'+x for x in order]+['pose/place_'+x for x in order]\n    ports=['crankshaft/rotation_axis','crankshaft/disk_seat','crank_disk/shaft_bore','crank_disk/crank_pin_seat','crank_pin/pin_shaft','pitman/crank_end_bore','pitman/beam_end_bore','walking_beam/pitman_pin_bore','walking_beam/pivot_bore','walking_beam/output_pin_bore','pitman_beam_pin/pin_shaft','beam_pivot_pin/pivot_shaft','beam_output_pin/pin_shaft','polished_output_rod/beam_pin_bore','polished_output_rod/guided_axis']\n    ids += ['port/'+x for x in ports]\n    rels=['shaft_in_negative_bearing','shaft_in_positive_bearing','disk_pressed_on_shaft','crank_pin_pressed_in_disk','crank_pin_to_pitman_closure','pitman_to_walking_beam_closure','walking_beam_fixed_pivot','beam_to_output_rod_closure']\n    ids += ['relation/'+x for x in rels]+['motion_joint/'+x for x in ['driven_crankshaft_hinge','crank_disk_hinge','walking_beam_hinge','vertical_guided_output']]\n    ids += ['transmission/shaft_to_crank_disk_press_drive','role/driver/crankshaft','role/output/polished_output_rod']+['role/watch/'+x for x in ['crankshaft','crank_disk','crank_pin','pitman','walking_beam','polished_output_rod']]\n    for e in ids:\n        nodes=['base']; action='represented_by'\n        if e.startswith('link/'): nodes=[e[5:]]; action='emitted'\n        elif e.startswith('pose/place_'): nodes=[e[11:]]\n        elif e.startswith('motion_joint/'): nodes=[e[13:]]; action='emitted'\n        elif e=='relation/crank_pin_to_pitman_closure': nodes=['crank_pin_to_pitman_closure']\n        elif e=='relation/pitman_to_walking_beam_closure': nodes=['pitman_to_walking_beam_closure']\n        elif e=='relation/beam_to_output_rod_closure': nodes=['beam_to_output_rod_closure']\n        elif e in ['relation/disk_pressed_on_shaft','transmission/shaft_to_crank_disk_press_drive']: nodes=['shaft_to_crank_disk_press_drive']\n        out.decision(e,action,nodes,'represented by emitted topology, coordinate, constraint, contact decision, or role map',[e])\n",
+        "expected_revision": 3
+      },
+      "is_error": false,
+      "result": "{\"accepted\": true, \"revision\": 4}"
+    },
+    {
+      "name": "run_mjcf_gate",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"errors\": [],\n  \"policy_version\": 4,\n  \"bodies\": [\n    \"base\",\n    \"beam_output_pin\",\n    \"beam_pivot_pin\",\n    \"crank_disk\",\n    \"crank_pin\",\n    \"crankshaft\",\n    \"hand_crank_arm\",\n    \"hand_grip\",\n    \"handle_spindle\",\n    \"lower_output_guide\",\n    \"negative_beam_support\",\n    \"negative_pivot_bearing\",\n    \"negative_shaft_bearing\",\n    \"negative_shaft_pedestal\",\n    \"output_guide_post\",\n    \"pitman\",\n    \"pitman_beam_pin\",\n    \"polished_output_rod\",\n    \"positive_beam_support\",\n    \"positive_pivot_bearing\",\n    \"positive_shaft_bearing\",\n    \"positive_shaft_pedestal\",\n    \"upper_output_guide\",\n    \"walking_beam\"\n  ],\n  \"joints\": [\n    \"crank_disk_hinge\",\n    \"driven_crankshaft_hinge\",\n    \"shaft_to_crank_disk_press_drive\",\n    \"vertical_guided_output\",\n    \"walking_beam_hinge\"\n  ],\n  \"nq\": 11,\n  \"nv\": 10,\n  \"finite\": true,\n  \"dynamic_transmission_probe\": {\n    \"ran\": true,\n    \"ok\": true,\n    \"errors\": [],\n    \"warnings\": [],\n    \"contact_on\": {\n      \"ok\": true,\n      \"driver_travel\": 1.0103703716623837,\n      \"commanded_travel\": 1.0494,\n      \"joint_deltas\": {\n        \"driven_crankshaft_hinge\": 1.0103703716623837,\n        \"crank_disk_hinge\": 0.9827077484318325\n      },\n      \"transmission_residuals\": [\n        {\n          \"name\": \"shaft_to_crank_disk_press_drive\",\n          \"driving_joint\": \"driven_crankshaft_hinge\",\n          \"driven_joint\": \"crank_disk_hinge\",\n          \"ratio\": 1.0,\n          \"driving_delta\": 1.0103703716623837,\n          \"driven_delta\": 0.9827077484318325,\n          \"normalized_residual\": 0.02737869597763179\n        }\n      ],\n      \"active_contacts\": [\n        {\n          \"pair\": [\n            \"pitman\",\n            \"world\"\n          ],\n          \"count\": 618,\n          \"max_penetration_mm\": 1.850798947506534,\n          \"max_force_n\": 3.1088110967466545,\n          \"impulse_ns\": 0.1970582884509527\n        },\n        {\n          \"pair\": [\n            \"crankshaft\",\n            \"negative_beam_support\"\n          ],\n          \"count\": 81,\n          \"max_penetration_mm\": 0.024145239157353338,\n          \"max_force_n\": 18.544331417824335,\n          \"impulse_ns\": 0.07537954374400595\n        },\n        {\n          \"pair\": [\n            \"crankshaft\",\n            \"positive_beam_support\"\n          ],\n          \"count\": 81,\n          \"max_penetration_mm\": 0.024145239157319517,\n          \"max_force_n\": 18.54433141781218,\n          \"impulse_ns\": 0.0753795437255721\n        }\n      ]\n    },\n    \"contact_off\": {\n      \"ok\": true,\n      \"driver_travel\": 1.0405938549178486,\n      \"commanded_travel\": 1.0494,\n      \"joint_deltas\": {\n        \"driven_crankshaft_hinge\": 1.0405938549178486,\n        \"crank_disk_hinge\": 1.01079015895966\n      },\n      \"transmission_residuals\": [\n        {\n          \"name\": \"shaft_to_crank_disk_press_drive\",\n          \"driving_joint\": \"driven_crankshaft_hinge\",\n          \"driven_joint\": \"crank_disk_hinge\",\n          \"ratio\": 1.0,\n          \"driving_delta\": 1.0405938549178486,\n          \"driven_delta\": 1.01079015895966,\n          \"normalized_residual\": 0.028641045511979848\n        }\n      ],\n      \"active_contacts\": []\n    }\n  }\n}"
+    }
+  ],
+  "report": {
+    "ok": true,
+    "errors": [],
+    "policy_version": 4,
+    "bodies": [
+      "base",
+      "beam_output_pin",
+      "beam_pivot_pin",
+      "crank_disk",
+      "crank_pin",
+      "crankshaft",
+      "hand_crank_arm",
+      "hand_grip",
+      "handle_spindle",
+      "lower_output_guide",
+      "negative_beam_support",
+      "negative_pivot_bearing",
+      "negative_shaft_bearing",
+      "negative_shaft_pedestal",
+      "output_guide_post",
+      "pitman",
+      "pitman_beam_pin",
+      "polished_output_rod",
+      "positive_beam_support",
+      "positive_pivot_bearing",
+      "positive_shaft_bearing",
+      "positive_shaft_pedestal",
+      "upper_output_guide",
+      "walking_beam"
+    ],
+    "joints": [
+      "crank_disk_hinge",
+      "driven_crankshaft_hinge",
+      "shaft_to_crank_disk_press_drive",
+      "vertical_guided_output",
+      "walking_beam_hinge"
+    ],
+    "nq": 11,
+    "nv": 10,
+    "finite": true,
+    "dynamic_transmission_probe": {
+      "ran": true,
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "contact_on": {
+        "ok": true,
+        "driver_travel": 1.0103703716623837,
+        "commanded_travel": 1.0494,
+        "joint_deltas": {
+          "driven_crankshaft_hinge": 1.0103703716623837,
+          "crank_disk_hinge": 0.9827077484318325
+        },
+        "transmission_residuals": [
+          {
+            "name": "shaft_to_crank_disk_press_drive",
+            "driving_joint": "driven_crankshaft_hinge",
+            "driven_joint": "crank_disk_hinge",
+            "ratio": 1.0,
+            "driving_delta": 1.0103703716623837,
+            "driven_delta": 0.9827077484318325,
+            "normalized_residual": 0.02737869597763179
+          }
+        ],
+        "active_contacts": [
+          {
+            "pair": [
+              "pitman",
+              "world"
+            ],
+            "count": 618,
+            "max_penetration_mm": 1.850798947506534,
+            "max_force_n": 3.1088110967466545,
+            "impulse_ns": 0.1970582884509527
+          },
+          {
+            "pair": [
+              "crankshaft",
+              "negative_beam_support"
+            ],
+            "count": 81,
+            "max_penetration_mm": 0.024145239157353338,
+            "max_force_n": 18.544331417824335,
+            "impulse_ns": 0.07537954374400595
+          },
+          {
+            "pair": [
+              "crankshaft",
+              "positive_beam_support"
+            ],
+            "count": 81,
+            "max_penetration_mm": 0.024145239157319517,
+            "max_force_n": 18.54433141781218,
+            "impulse_ns": 0.0753795437255721
+          }
+        ]
+      },
+      "contact_off": {
+        "ok": true,
+        "driver_travel": 1.0405938549178486,
+        "commanded_travel": 1.0494,
+        "joint_deltas": {
+          "driven_crankshaft_hinge": 1.0405938549178486,
+          "crank_disk_hinge": 1.01079015895966
+        },
+        "transmission_residuals": [
+          {
+            "name": "shaft_to_crank_disk_press_drive",
+            "driving_joint": "driven_crankshaft_hinge",
+            "driven_joint": "crank_disk_hinge",
+            "ratio": 1.0,
+            "driving_delta": 1.0405938549178486,
+            "driven_delta": 1.01079015895966,
+            "normalized_residual": 0.028641045511979848
+          }
+        ],
+        "active_contacts": []
+      }
+    }
+  }
+}

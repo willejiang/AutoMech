@@ -1,0 +1,5176 @@
+{
+  "facts_version": 2,
+  "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\10_wind_rotor_pump\\design_this_as_an_open_demonstra_20260811_180801",
+  "units": {
+    "model_length": "m",
+    "mesh_source_length": "mm",
+    "mass": "kg",
+    "angle": "rad"
+  },
+  "model": {
+    "name": "design_this_as_an_open_demonstra",
+    "root_link": "base",
+    "links": [
+      {
+        "name": "base",
+        "description": "base",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/base.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": ""
+      },
+      {
+        "name": "front_bearing_post",
+        "description": "front_bearing_post",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/front_bearing_post.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "base"
+      },
+      {
+        "name": "rear_bearing_post",
+        "description": "rear_bearing_post",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/rear_bearing_post.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "base"
+      },
+      {
+        "name": "front_bearing",
+        "description": "front_bearing",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/front_bearing.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "front_bearing_post"
+      },
+      {
+        "name": "rear_bearing",
+        "description": "rear_bearing",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/rear_bearing.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "rear_bearing_post"
+      },
+      {
+        "name": "rotor_shaft",
+        "description": "rotor_shaft",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/rotor_shaft.stl",
+        "dof": "spin",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": true,
+        "material": "steel",
+        "mount": "front_bearing",
+        "extra_mounts": [
+          "rear_bearing"
+        ]
+      },
+      {
+        "name": "crank_disk",
+        "description": "crank_disk",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/crank_disk.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "rotor_shaft"
+      },
+      {
+        "name": "wind_rotor",
+        "description": "wind_rotor",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/wind_rotor.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "rotor_shaft"
+      },
+      {
+        "name": "crank_pin",
+        "description": "crank_pin",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/crank_pin.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "crank_disk"
+      },
+      {
+        "name": "connecting_rod",
+        "description": "connecting_rod",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/connecting_rod.stl",
+        "dof": "free",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": ""
+      },
+      {
+        "name": "left_guide_column",
+        "description": "left_guide_column",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/left_guide_column.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "base"
+      },
+      {
+        "name": "right_guide_column",
+        "description": "right_guide_column",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/right_guide_column.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "base"
+      },
+      {
+        "name": "left_guide_arm",
+        "description": "left_guide_arm",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/left_guide_arm.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "left_guide_column"
+      },
+      {
+        "name": "right_guide_arm",
+        "description": "right_guide_arm",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/right_guide_arm.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "right_guide_column"
+      },
+      {
+        "name": "left_guide",
+        "description": "left_guide",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/left_guide.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "left_guide_arm"
+      },
+      {
+        "name": "right_guide",
+        "description": "right_guide",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/right_guide.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "right_guide_arm"
+      },
+      {
+        "name": "crosshead",
+        "description": "crosshead",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/crosshead.stl",
+        "dof": "slide",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "left_guide",
+        "extra_mounts": [
+          "right_guide"
+        ]
+      },
+      {
+        "name": "wrist_pin",
+        "description": "wrist_pin",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/wrist_pin.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "crosshead"
+      },
+      {
+        "name": "pump_rod",
+        "description": "pump_rod",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/pump_rod.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "crosshead"
+      },
+      {
+        "name": "pump_piston",
+        "description": "pump_piston",
+        "shape_hint": "",
+        "size_mm": {},
+        "origin_note": "",
+        "color": [],
+        "mesh_filename": "meshes/pump_piston.stl",
+        "dof": "fixed",
+        "spin_axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "slide_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "driver": false,
+        "material": "steel",
+        "mount": "pump_rod"
+      }
+    ],
+    "poses": [
+      {
+        "name": "place_base",
+        "parent": "",
+        "child": "base",
+        "xyz_m": [
+          -0.04,
+          -0.035,
+          0.0
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_front_bearing_post",
+        "parent": "base",
+        "child": "front_bearing_post",
+        "xyz_m": [
+          0.035,
+          0.024,
+          0.004
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_rear_bearing_post",
+        "parent": "base",
+        "child": "rear_bearing_post",
+        "xyz_m": [
+          0.035,
+          0.04,
+          0.004
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_front_bearing",
+        "parent": "front_bearing_post",
+        "child": "front_bearing",
+        "xyz_m": [
+          0.005,
+          0.0,
+          0.066
+        ],
+        "rpy_rad": [
+          -1.5707963267948966,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_rear_bearing",
+        "parent": "rear_bearing_post",
+        "child": "rear_bearing",
+        "xyz_m": [
+          0.005,
+          0.0,
+          0.066
+        ],
+        "rpy_rad": [
+          -1.5707963267948966,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_rotor_shaft",
+        "parent": "front_bearing",
+        "child": "rotor_shaft",
+        "xyz_m": [
+          0.0,
+          0.0,
+          -0.021
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_crank_disk",
+        "parent": "rotor_shaft",
+        "child": "crank_disk",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.012
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_wind_rotor",
+        "parent": "rotor_shaft",
+        "child": "wind_rotor",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.046
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_crank_pin",
+        "parent": "crank_disk",
+        "child": "crank_pin",
+        "xyz_m": [
+          0.012,
+          0.0,
+          -0.008
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_connecting_rod",
+        "parent": "crank_pin",
+        "child": "connecting_rod",
+        "xyz_m": [
+          -0.012,
+          0.07,
+          0.006
+        ],
+        "rpy_rad": [
+          3.141592653589793,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_left_guide_column",
+        "parent": "base",
+        "child": "left_guide_column",
+        "xyz_m": [
+          0.016,
+          0.0105,
+          0.004
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_right_guide_column",
+        "parent": "base",
+        "child": "right_guide_column",
+        "xyz_m": [
+          0.064,
+          0.0105,
+          0.004
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_left_guide_arm",
+        "parent": "left_guide_column",
+        "child": "left_guide_arm",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.092
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_right_guide_arm",
+        "parent": "right_guide_column",
+        "child": "right_guide_arm",
+        "xyz_m": [
+          -0.0149,
+          0.0,
+          0.092
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_left_guide",
+        "parent": "left_guide_arm",
+        "child": "left_guide",
+        "xyz_m": [
+          0.0099,
+          0.0,
+          0.004
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_right_guide",
+        "parent": "right_guide_arm",
+        "child": "right_guide",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.004
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_crosshead",
+        "parent": "left_guide",
+        "child": "crosshead",
+        "xyz_m": [
+          0.0141,
+          0.0,
+          0.02
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_wrist_pin",
+        "parent": "crosshead",
+        "child": "wrist_pin",
+        "xyz_m": [
+          0.0,
+          -0.0065,
+          0.0
+        ],
+        "rpy_rad": [
+          -1.5707963267948966,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_pump_rod",
+        "parent": "crosshead",
+        "child": "pump_rod",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.008
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "place_pump_piston",
+        "parent": "pump_rod",
+        "child": "pump_piston",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.042
+        ],
+        "rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ]
+      }
+    ],
+    "mesh_pairs": [],
+    "ports_by_link": {
+      "front_bearing": [
+        {
+          "name": "journal",
+          "type": "bore",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            3.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 6.1,
+          "depth_mm": 6.0
+        }
+      ],
+      "rear_bearing": [
+        {
+          "name": "journal",
+          "type": "bore",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            3.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 6.1,
+          "depth_mm": 6.0
+        }
+      ],
+      "rotor_shaft": [
+        {
+          "name": "shaft_axis",
+          "type": "shaft",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            28.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 6.0,
+          "depth_mm": 56.0
+        },
+        {
+          "name": "crank_seat",
+          "type": "shaft",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            15.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 6.0,
+          "depth_mm": 6.0
+        },
+        {
+          "name": "rotor_seat",
+          "type": "shaft",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            48.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 6.0,
+          "depth_mm": 4.0
+        }
+      ],
+      "crank_disk": [
+        {
+          "name": "shaft_bore",
+          "type": "bore",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            3.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 5.99,
+          "depth_mm": 6.0
+        },
+        {
+          "name": "eccentric_pin_seat",
+          "type": "bore",
+          "xyz_mm": [
+            12.0,
+            0.0,
+            0.5
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 4.99,
+          "depth_mm": 1.0
+        }
+      ],
+      "wind_rotor": [
+        {
+          "name": "hub_bore",
+          "type": "bore",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            2.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 5.99,
+          "depth_mm": 4.0
+        }
+      ],
+      "crank_pin": [
+        {
+          "name": "pin_axis",
+          "type": "shaft",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            4.5
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 5.0,
+          "depth_mm": 9.0
+        }
+      ],
+      "connecting_rod": [
+        {
+          "name": "big_end",
+          "type": "bore",
+          "xyz_mm": [
+            12.0,
+            70.0,
+            2.5
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 5.1,
+          "depth_mm": 5.0
+        },
+        {
+          "name": "small_end",
+          "type": "bore",
+          "xyz_mm": [
+            0.0,
+            120.0,
+            2.5
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 5.1,
+          "depth_mm": 5.0
+        }
+      ],
+      "crosshead": [
+        {
+          "name": "wrist_bore",
+          "type": "bore",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "diameter_mm": 5.1,
+          "depth_mm": 13.0
+        },
+        {
+          "name": "vertical_slide",
+          "type": "flat_face",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "name": "pump_rod_seat",
+          "type": "cylindrical",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            8.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 5.0
+        }
+      ],
+      "wrist_pin": [
+        {
+          "name": "pin_axis",
+          "type": "shaft",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            6.5
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 5.0,
+          "depth_mm": 13.0
+        }
+      ],
+      "pump_rod": [
+        {
+          "name": "lower_end",
+          "type": "cylindrical",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 5.0
+        },
+        {
+          "name": "upper_end",
+          "type": "cylindrical",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            42.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 5.0
+        }
+      ],
+      "pump_piston": [
+        {
+          "name": "rod_bore",
+          "type": "bore",
+          "xyz_mm": [
+            0.0,
+            0.0,
+            4.0
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "diameter_mm": 5.99,
+          "depth_mm": 8.0
+        }
+      ]
+    },
+    "relations": [
+      {
+        "name": "front_shaft_journal",
+        "mate_type": "journal_bearing",
+        "base_part": "front_bearing",
+        "base_port": "journal",
+        "incoming_part": "rotor_shaft",
+        "incoming_port": "shaft_axis"
+      },
+      {
+        "name": "rear_shaft_journal",
+        "mate_type": "journal_bearing",
+        "base_part": "rear_bearing",
+        "base_port": "journal",
+        "incoming_part": "rotor_shaft",
+        "incoming_port": "shaft_axis"
+      },
+      {
+        "name": "shaft_carries_crank",
+        "mate_type": "press_fit",
+        "base_part": "rotor_shaft",
+        "base_port": "crank_seat",
+        "incoming_part": "crank_disk",
+        "incoming_port": "shaft_bore"
+      },
+      {
+        "name": "shaft_carries_wind_rotor",
+        "mate_type": "press_fit",
+        "base_part": "rotor_shaft",
+        "base_port": "rotor_seat",
+        "incoming_part": "wind_rotor",
+        "incoming_port": "hub_bore"
+      },
+      {
+        "name": "crank_carries_eccentric_pin",
+        "mate_type": "press_fit",
+        "base_part": "crank_disk",
+        "base_port": "eccentric_pin_seat",
+        "incoming_part": "crank_pin",
+        "incoming_port": "pin_axis"
+      },
+      {
+        "name": "crank_big_end_pin",
+        "mate_type": "pin",
+        "base_part": "crank_pin",
+        "base_port": "pin_axis",
+        "incoming_part": "connecting_rod",
+        "incoming_port": "big_end"
+      },
+      {
+        "name": "crosshead_carries_wrist_pin",
+        "mate_type": "press_fit",
+        "base_part": "crosshead",
+        "base_port": "wrist_bore",
+        "incoming_part": "wrist_pin",
+        "incoming_port": "pin_axis"
+      },
+      {
+        "name": "rod_small_end_closure",
+        "mate_type": "pin",
+        "base_part": "wrist_pin",
+        "base_port": "pin_axis",
+        "incoming_part": "connecting_rod",
+        "incoming_port": "small_end"
+      },
+      {
+        "name": "crosshead_carries_pump_rod",
+        "mate_type": "coaxial_face",
+        "base_part": "crosshead",
+        "base_port": "pump_rod_seat",
+        "incoming_part": "pump_rod",
+        "incoming_port": "lower_end"
+      },
+      {
+        "name": "pump_rod_carries_piston",
+        "mate_type": "press_fit",
+        "base_part": "pump_rod",
+        "base_port": "upper_end",
+        "incoming_part": "pump_piston",
+        "incoming_port": "rod_bore"
+      }
+    ],
+    "motion_joints": [
+      {
+        "name": "world_rotor_shaft_hinge",
+        "parent": "",
+        "child": "rotor_shaft",
+        "type": "hinge",
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "pos_mm": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "world_crosshead_vertical_slide",
+        "parent": "",
+        "child": "crosshead",
+        "type": "slide",
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "pos_mm": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    ],
+    "transmissions": [
+      {
+        "name": "shaft_to_crank_rigid_carry",
+        "type": "compound_1to1",
+        "driving_link": "rotor_shaft",
+        "driven_link": "crank_disk",
+        "ratio": 1.0
+      },
+      {
+        "name": "shaft_to_wind_rotor_rigid_carry",
+        "type": "compound_1to1",
+        "driving_link": "rotor_shaft",
+        "driven_link": "wind_rotor",
+        "ratio": 1.0
+      }
+    ],
+    "output_link": "pump_rod",
+    "watch_links": [
+      "rotor_shaft",
+      "wind_rotor",
+      "crank_disk",
+      "connecting_rod",
+      "crosshead",
+      "pump_rod",
+      "pump_piston"
+    ]
+  },
+  "entity_ids": [
+    "link/base",
+    "link/front_bearing_post",
+    "link/rear_bearing_post",
+    "link/front_bearing",
+    "link/rear_bearing",
+    "link/rotor_shaft",
+    "link/crank_disk",
+    "link/wind_rotor",
+    "link/crank_pin",
+    "link/connecting_rod",
+    "link/left_guide_column",
+    "link/right_guide_column",
+    "link/left_guide_arm",
+    "link/right_guide_arm",
+    "link/left_guide",
+    "link/right_guide",
+    "link/crosshead",
+    "link/wrist_pin",
+    "link/pump_rod",
+    "link/pump_piston",
+    "pose/place_base",
+    "pose/place_front_bearing_post",
+    "pose/place_rear_bearing_post",
+    "pose/place_front_bearing",
+    "pose/place_rear_bearing",
+    "pose/place_rotor_shaft",
+    "pose/place_crank_disk",
+    "pose/place_wind_rotor",
+    "pose/place_crank_pin",
+    "pose/place_connecting_rod",
+    "pose/place_left_guide_column",
+    "pose/place_right_guide_column",
+    "pose/place_left_guide_arm",
+    "pose/place_right_guide_arm",
+    "pose/place_left_guide",
+    "pose/place_right_guide",
+    "pose/place_crosshead",
+    "pose/place_wrist_pin",
+    "pose/place_pump_rod",
+    "pose/place_pump_piston",
+    "port/front_bearing/journal",
+    "port/rear_bearing/journal",
+    "port/rotor_shaft/shaft_axis",
+    "port/rotor_shaft/crank_seat",
+    "port/rotor_shaft/rotor_seat",
+    "port/crank_disk/shaft_bore",
+    "port/crank_disk/eccentric_pin_seat",
+    "port/wind_rotor/hub_bore",
+    "port/crank_pin/pin_axis",
+    "port/connecting_rod/big_end",
+    "port/connecting_rod/small_end",
+    "port/crosshead/wrist_bore",
+    "port/crosshead/vertical_slide",
+    "port/crosshead/pump_rod_seat",
+    "port/wrist_pin/pin_axis",
+    "port/pump_rod/lower_end",
+    "port/pump_rod/upper_end",
+    "port/pump_piston/rod_bore",
+    "relation/front_shaft_journal",
+    "relation/rear_shaft_journal",
+    "relation/shaft_carries_crank",
+    "relation/shaft_carries_wind_rotor",
+    "relation/crank_carries_eccentric_pin",
+    "relation/crank_big_end_pin",
+    "relation/crosshead_carries_wrist_pin",
+    "relation/rod_small_end_closure",
+    "relation/crosshead_carries_pump_rod",
+    "relation/pump_rod_carries_piston",
+    "motion_joint/world_rotor_shaft_hinge",
+    "motion_joint/world_crosshead_vertical_slide",
+    "transmission/shaft_to_crank_rigid_carry",
+    "transmission/shaft_to_wind_rotor_rigid_carry",
+    "role/driver/rotor_shaft",
+    "role/output/pump_rod",
+    "role/watch/rotor_shaft",
+    "role/watch/wind_rotor",
+    "role/watch/crank_disk",
+    "role/watch/connecting_rod",
+    "role/watch/crosshead",
+    "role/watch/pump_rod",
+    "role/watch/pump_piston"
+  ],
+  "links": {
+    "base": {
+      "entity_id": "link/base",
+      "world_frame": {
+        "xyz_m": [
+          -0.04,
+          -0.035,
+          0.0
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.04
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.035
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/base.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "",
+      "extra_mounts": [],
+      "sha256": "59cb2169a5b9bba2d27c2c3e775c3e257cd3e97685b797273d166a70e89038fb",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          80.0,
+          70.0,
+          4.0
+        ]
+      ],
+      "extents_mm": [
+        80.0,
+        70.0,
+        4.0
+      ],
+      "volume_m3": 2.2400000000000002e-05,
+      "mass_kg": 0.17584000000000002,
+      "com_m": [
+        0.04,
+        0.035,
+        0.002
+      ],
+      "inertia_kg_m2": [
+        [
+          7.203578666666663e-05,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          9.401578666666664e-05,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          0.00016558266666666664
+        ]
+      ]
+    },
+    "front_bearing_post": {
+      "entity_id": "link/front_bearing_post",
+      "world_frame": {
+        "xyz_m": [
+          -0.0049999999999999975,
+          -0.011000000000000003,
+          0.004
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.0049999999999999975
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.011000000000000003
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.004
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/front_bearing_post.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "base",
+      "extra_mounts": [],
+      "sha256": "41d82423b59793ce8f3d0c9743e0e9bcd8be362f45942bdd3e4be1e0e3935b4f",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          10.0,
+          6.0,
+          59.0
+        ]
+      ],
+      "extents_mm": [
+        10.0,
+        6.0,
+        59.0
+      ],
+      "volume_m3": 3.5400000000000004e-06,
+      "mass_kg": 0.027789000000000005,
+      "com_m": [
+        0.005,
+        0.003,
+        0.0295
+      ],
+      "inertia_kg_m2": [
+        [
+          8.14449275e-06,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          8.292700750000001e-06,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          3.1494200000000004e-07
+        ]
+      ]
+    },
+    "rear_bearing_post": {
+      "entity_id": "link/rear_bearing_post",
+      "world_frame": {
+        "xyz_m": [
+          -0.0049999999999999975,
+          0.0049999999999999975,
+          0.004
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.0049999999999999975
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0049999999999999975
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.004
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/rear_bearing_post.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "base",
+      "extra_mounts": [],
+      "sha256": "41d82423b59793ce8f3d0c9743e0e9bcd8be362f45942bdd3e4be1e0e3935b4f",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          10.0,
+          6.0,
+          59.0
+        ]
+      ],
+      "extents_mm": [
+        10.0,
+        6.0,
+        59.0
+      ],
+      "volume_m3": 3.5400000000000004e-06,
+      "mass_kg": 0.027789000000000005,
+      "com_m": [
+        0.005,
+        0.003,
+        0.0295
+      ],
+      "inertia_kg_m2": [
+        [
+          8.14449275e-06,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          8.292700750000001e-06,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          3.1494200000000004e-07
+        ]
+      ]
+    },
+    "front_bearing": {
+      "entity_id": "link/front_bearing",
+      "world_frame": {
+        "xyz_m": [
+          2.6020852139652106e-18,
+          -0.011000000000000003,
+          0.07
+        ],
+        "quat_wxyz": [
+          0.7071067811865475,
+          -0.7071067811865475,
+          -0.0,
+          -0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            2.6020852139652106e-18
+          ],
+          [
+            0.0,
+            6.123233995736766e-17,
+            1.0,
+            -0.011000000000000003
+          ],
+          [
+            0.0,
+            -1.0,
+            6.123233995736766e-17,
+            0.07
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/front_bearing.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "front_bearing_post",
+      "extra_mounts": [],
+      "sha256": "af737b8f786da4915f573d223add0c962901b074c2e6acbd75d931b11ca745ec",
+      "vertices": 3024,
+      "faces": 1008,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -7.0,
+          -6.997824192047119,
+          0.0
+        ],
+        [
+          7.0,
+          6.997824192047119,
+          6.0
+        ]
+      ],
+      "extents_mm": [
+        14.0,
+        13.995648384094238,
+        6.0
+      ],
+      "volume_m3": 7.47970160474928e-07,
+      "mass_kg": 0.005871565759728185,
+      "com_m": [
+        0.0,
+        -2.7865532633541803e-19,
+        0.003
+      ],
+      "inertia_kg_m2": [
+        [
+          1.0316097471270425e-07,
+          -4.164727821868534e-25,
+          3.80775115142266e-24
+        ],
+        [
+          -4.164727821868534e-25,
+          1.0316097665129013e-07,
+          -6.247091732802803e-25
+        ],
+        [
+          3.80775115142266e-24,
+          -6.247091732802803e-25,
+          1.7109255680562525e-07
+        ]
+      ]
+    },
+    "rear_bearing": {
+      "entity_id": "link/rear_bearing",
+      "world_frame": {
+        "xyz_m": [
+          2.6020852139652106e-18,
+          0.0049999999999999975,
+          0.07
+        ],
+        "quat_wxyz": [
+          0.7071067811865475,
+          -0.7071067811865475,
+          -0.0,
+          -0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            2.6020852139652106e-18
+          ],
+          [
+            0.0,
+            6.123233995736766e-17,
+            1.0,
+            0.0049999999999999975
+          ],
+          [
+            0.0,
+            -1.0,
+            6.123233995736766e-17,
+            0.07
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/rear_bearing.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "rear_bearing_post",
+      "extra_mounts": [],
+      "sha256": "af737b8f786da4915f573d223add0c962901b074c2e6acbd75d931b11ca745ec",
+      "vertices": 3024,
+      "faces": 1008,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -7.0,
+          -6.997824192047119,
+          0.0
+        ],
+        [
+          7.0,
+          6.997824192047119,
+          6.0
+        ]
+      ],
+      "extents_mm": [
+        14.0,
+        13.995648384094238,
+        6.0
+      ],
+      "volume_m3": 7.47970160474928e-07,
+      "mass_kg": 0.005871565759728185,
+      "com_m": [
+        0.0,
+        -2.7865532633541803e-19,
+        0.003
+      ],
+      "inertia_kg_m2": [
+        [
+          1.0316097471270425e-07,
+          -4.164727821868534e-25,
+          3.80775115142266e-24
+        ],
+        [
+          -4.164727821868534e-25,
+          1.0316097665129013e-07,
+          -6.247091732802803e-25
+        ],
+        [
+          3.80775115142266e-24,
+          -6.247091732802803e-25,
+          1.7109255680562525e-07
+        ]
+      ]
+    },
+    "rotor_shaft": {
+      "entity_id": "link/rotor_shaft",
+      "world_frame": {
+        "xyz_m": [
+          2.6020852139652106e-18,
+          -0.032,
+          0.07
+        ],
+        "quat_wxyz": [
+          0.7071067811865475,
+          -0.7071067811865475,
+          -0.0,
+          -0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            2.6020852139652106e-18
+          ],
+          [
+            0.0,
+            6.123233995736766e-17,
+            1.0,
+            -0.032
+          ],
+          [
+            0.0,
+            -1.0,
+            6.123233995736766e-17,
+            0.07
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/rotor_shaft.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": true,
+      "mount": "front_bearing",
+      "extra_mounts": [
+        "rear_bearing"
+      ],
+      "sha256": "893d393d5818de28854df22e7952f2a0572eb41f3067c68ba219bc47d1831bd0",
+      "vertices": 1500,
+      "faces": 500,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -3.0,
+          -2.999067544937134,
+          0.0
+        ],
+        [
+          3.0,
+          2.999067544937134,
+          56.0
+        ]
+      ],
+      "extents_mm": [
+        6.0,
+        5.998135089874268,
+        56.0
+      ],
+      "volume_m3": 1.5827065603047813e-06,
+      "mass_kg": 0.012424246498392534,
+      "com_m": [
+        -2.394354931249825e-20,
+        7.428287424037389e-21,
+        0.028
+      ],
+      "inertia_kg_m2": [
+        [
+          3.2748127227646816e-06,
+          -5.05716949798322e-25,
+          -3.879146485511835e-23
+        ],
+        [
+          -5.05716949798322e-25,
+          3.274812723119976e-06,
+          4.759935871382719e-24
+        ],
+        [
+          -3.879146485511835e-23,
+          4.759935871382719e-24,
+          5.58859427248278e-08
+        ]
+      ]
+    },
+    "crank_disk": {
+      "entity_id": "link/crank_disk",
+      "world_frame": {
+        "xyz_m": [
+          2.6020852139652106e-18,
+          -0.02,
+          0.07
+        ],
+        "quat_wxyz": [
+          0.7071067811865475,
+          -0.7071067811865475,
+          -0.0,
+          -0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            2.6020852139652106e-18
+          ],
+          [
+            0.0,
+            6.123233995736766e-17,
+            1.0,
+            -0.02
+          ],
+          [
+            0.0,
+            -1.0,
+            6.123233995736766e-17,
+            0.07
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/crank_disk.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "rotor_shaft",
+      "extra_mounts": [],
+      "sha256": "05eb25061b31204adcbdedc3a79eec890a63f02f3c47fd80acc92b36c350a9e8",
+      "vertices": 4548,
+      "faces": 1516,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -18.0,
+          -17.99440574645996,
+          0.0
+        ],
+        [
+          18.0,
+          17.99440574645996,
+          6.0
+        ]
+      ],
+      "extents_mm": [
+        36.0,
+        35.98881149291992,
+        6.0
+      ],
+      "volume_m3": 5.818424091736111e-06,
+      "mass_kg": 0.04567462912012847,
+      "com_m": [
+        -0.0002419012357530061,
+        3.5435785597993815e-19,
+        0.003
+      ],
+      "inertia_kg_m2": [
+        [
+          4.012698822131163e-06,
+          9.303370299468513e-23,
+          2.855813363566995e-23
+        ],
+        [
+          9.303370299468513e-23,
+          3.8774411349529975e-06,
+          1.4505152065146662e-22
+        ],
+        [
+          2.855813363566995e-23,
+          1.4505152065146662e-22,
+          7.61609218236339e-06
+        ]
+      ]
+    },
+    "wind_rotor": {
+      "entity_id": "link/wind_rotor",
+      "world_frame": {
+        "xyz_m": [
+          2.6020852139652106e-18,
+          0.013999999999999999,
+          0.07
+        ],
+        "quat_wxyz": [
+          0.7071067811865475,
+          -0.7071067811865475,
+          -0.0,
+          -0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            2.6020852139652106e-18
+          ],
+          [
+            0.0,
+            6.123233995736766e-17,
+            1.0,
+            0.013999999999999999
+          ],
+          [
+            0.0,
+            -1.0,
+            6.123233995736766e-17,
+            0.07
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/wind_rotor.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "rotor_shaft",
+      "extra_mounts": [],
+      "sha256": "6b41d5b8f16e8ac48b9d93e64c824a51255f49fe42c5440f9ffc69c7be2fc5e0",
+      "vertices": 3168,
+      "faces": 1056,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -30.0,
+          -30.0,
+          0.0
+        ],
+        [
+          30.0,
+          30.0,
+          4.0
+        ]
+      ],
+      "extents_mm": [
+        60.0,
+        60.0,
+        4.0
+      ],
+      "volume_m3": 4.18282304545004e-06,
+      "mass_kg": 0.03283516090678282,
+      "com_m": [
+        1.811963459228514e-20,
+        7.077982262611383e-22,
+        0.002
+      ],
+      "inertia_kg_m2": [
+        [
+          6.6402410311156495e-06,
+          2.3798444696391625e-25,
+          1.90387557571133e-24
+        ],
+        [
+          2.3798444696391625e-25,
+          6.640241032522786e-06,
+          -5.763685824907345e-26
+        ],
+        [
+          1.90387557571133e-24,
+          -5.763685824907345e-26,
+          1.3192921634553682e-05
+        ]
+      ]
+    },
+    "crank_pin": {
+      "entity_id": "link/crank_pin",
+      "world_frame": {
+        "xyz_m": [
+          0.012000000000000004,
+          -0.028,
+          0.07
+        ],
+        "quat_wxyz": [
+          0.7071067811865475,
+          -0.7071067811865475,
+          -0.0,
+          -0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.012000000000000004
+          ],
+          [
+            0.0,
+            6.123233995736766e-17,
+            1.0,
+            -0.028
+          ],
+          [
+            0.0,
+            -1.0,
+            6.123233995736766e-17,
+            0.07
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/crank_pin.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "crank_disk",
+      "extra_mounts": [],
+      "sha256": "79c752294b9e41f13a099fb5b3463d3fee42206c0943b57a0a4a93e25b0f8771",
+      "vertices": 1500,
+      "faces": 500,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -2.5,
+          -2.499222993850708,
+          0.0
+        ],
+        [
+          2.5,
+          2.499222993850708,
+          9.0
+        ]
+      ],
+      "extents_mm": [
+        5.0,
+        4.998445987701416,
+        9.0
+      ],
+      "volume_m3": 1.7664135681221195e-07,
+      "mass_kg": 0.0013866346509758638,
+      "com_m": [
+        2.6816775285358975e-20,
+        1.785875458609325e-20,
+        0.0045
+      ],
+      "inertia_kg_m2": [
+        [
+          1.1525502837303393e-08,
+          -3.2536936108347926e-26,
+          2.2682892601248267e-25
+        ],
+        [
+          -3.2536936108347926e-26,
+          1.1525502706178644e-08,
+          4.462396757086891e-25
+        ],
+        [
+          2.2682892601248267e-25,
+          4.462396757086891e-25,
+          4.331437755307876e-09
+        ]
+      ]
+    },
+    "connecting_rod": {
+      "entity_id": "link/connecting_rod",
+      "world_frame": {
+        "xyz_m": [
+          3.469446951953614e-18,
+          -0.021999999999999995,
+          0.0
+        ],
+        "quat_wxyz": [
+          0.7071067811865475,
+          0.7071067811865475,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            3.469446951953614e-18
+          ],
+          [
+            0.0,
+            6.123233995736766e-17,
+            -1.0,
+            -0.021999999999999995
+          ],
+          [
+            0.0,
+            1.0,
+            6.123233995736766e-17,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/connecting_rod.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "free",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "",
+      "extra_mounts": [],
+      "sha256": "90ba0b57d2916e8511e5ba70595a11437a0cbdbcf95776fbed28b0bf0f784c35",
+      "vertices": 3060,
+      "faces": 1020,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -6.0,
+          -5.998135089874268,
+          0.0
+        ],
+        [
+          14.91716194152832,
+          120.70011901855469,
+          5.0
+        ]
+      ],
+      "extents_mm": [
+        20.91716194152832,
+        126.69825410842896,
+        5.0
+      ],
+      "volume_m3": 2.0057488924483384e-06,
+      "mass_kg": 0.015745128805719457,
+      "com_m": [
+        0.004614521564883642,
+        0.07306325811065764,
+        0.0025000000000000005
+      ],
+      "inertia_kg_m2": [
+        [
+          2.7832000542185793e-05,
+          -9.966163698494359e-07,
+          1.1423253454267977e-22
+        ],
+        [
+          -9.966163698494359e-07,
+          3.517442294755594e-07,
+          4.569301381707191e-22
+        ],
+        [
+          1.1423253454267977e-22,
+          4.569301381707191e-22,
+          2.81181400683042e-05
+        ]
+      ]
+    },
+    "left_guide_column": {
+      "entity_id": "link/left_guide_column",
+      "world_frame": {
+        "xyz_m": [
+          -0.024,
+          -0.0245,
+          0.004
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.024
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.0245
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.004
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/left_guide_column.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "base",
+      "extra_mounts": [],
+      "sha256": "b3046d20b08b687120c069e90540b0f067900b0014321987a267fd5d34a04251",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -3.0,
+          -4.0,
+          0.0
+        ],
+        [
+          3.0,
+          4.0,
+          92.0
+        ]
+      ],
+      "extents_mm": [
+        6.0,
+        8.0,
+        92.0
+      ],
+      "volume_m3": 4.416000000000001e-06,
+      "mass_kg": 0.034665600000000005,
+      "com_m": [
+        0.0,
+        0.0,
+        0.046
+      ],
+      "inertia_kg_m2": [
+        [
+          2.4635686400000003e-05,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          2.45548e-05,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          2.8888000000000003e-07
+        ]
+      ]
+    },
+    "right_guide_column": {
+      "entity_id": "link/right_guide_column",
+      "world_frame": {
+        "xyz_m": [
+          0.024,
+          -0.0245,
+          0.004
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.024
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.0245
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.004
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/right_guide_column.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "base",
+      "extra_mounts": [],
+      "sha256": "b3046d20b08b687120c069e90540b0f067900b0014321987a267fd5d34a04251",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -3.0,
+          -4.0,
+          0.0
+        ],
+        [
+          3.0,
+          4.0,
+          92.0
+        ]
+      ],
+      "extents_mm": [
+        6.0,
+        8.0,
+        92.0
+      ],
+      "volume_m3": 4.416000000000001e-06,
+      "mass_kg": 0.034665600000000005,
+      "com_m": [
+        0.0,
+        0.0,
+        0.046
+      ],
+      "inertia_kg_m2": [
+        [
+          2.4635686400000003e-05,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          2.45548e-05,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          2.8888000000000003e-07
+        ]
+      ]
+    },
+    "left_guide_arm": {
+      "entity_id": "link/left_guide_arm",
+      "world_frame": {
+        "xyz_m": [
+          -0.024,
+          -0.0245,
+          0.096
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.024
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.0245
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.096
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/left_guide_arm.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "left_guide_column",
+      "extra_mounts": [],
+      "sha256": "565361dfd57319931942745ad089d8a0ea0c843a6086e25fae46da62976c99e7",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          0.0,
+          -7.0,
+          0.0
+        ],
+        [
+          14.899999618530273,
+          7.0,
+          4.0
+        ]
+      ],
+      "extents_mm": [
+        14.899999618530273,
+        14.0,
+        4.0
+      ],
+      "volume_m3": 8.343999786376954e-07,
+      "mass_kg": 0.006550039832305909,
+      "com_m": [
+        0.007449999809265136,
+        0.0,
+        0.002
+      ],
+      "inertia_kg_m2": [
+        [
+          1.1571737037073771e-07,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          1.2991457550230028e-07,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          2.281651729868889e-07
+        ]
+      ]
+    },
+    "right_guide_arm": {
+      "entity_id": "link/right_guide_arm",
+      "world_frame": {
+        "xyz_m": [
+          0.0091,
+          -0.0245,
+          0.096
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0091
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.0245
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.096
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/right_guide_arm.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "right_guide_column",
+      "extra_mounts": [],
+      "sha256": "565361dfd57319931942745ad089d8a0ea0c843a6086e25fae46da62976c99e7",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          0.0,
+          -7.0,
+          0.0
+        ],
+        [
+          14.899999618530273,
+          7.0,
+          4.0
+        ]
+      ],
+      "extents_mm": [
+        14.899999618530273,
+        14.0,
+        4.0
+      ],
+      "volume_m3": 8.343999786376954e-07,
+      "mass_kg": 0.006550039832305909,
+      "com_m": [
+        0.007449999809265136,
+        0.0,
+        0.002
+      ],
+      "inertia_kg_m2": [
+        [
+          1.1571737037073771e-07,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          1.2991457550230028e-07,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          2.281651729868889e-07
+        ]
+      ]
+    },
+    "left_guide": {
+      "entity_id": "link/left_guide",
+      "world_frame": {
+        "xyz_m": [
+          -0.0141,
+          -0.0245,
+          0.1
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.0141
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.0245
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.1
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/left_guide.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "left_guide_arm",
+      "extra_mounts": [],
+      "sha256": "87d0f91ca0159293f4bb790e14c9c53b47f763fca1a3f7a7d5f1100579796e2b",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          0.0,
+          -7.0,
+          0.0
+        ],
+        [
+          5.0,
+          7.0,
+          56.0
+        ]
+      ],
+      "extents_mm": [
+        5.0,
+        14.0,
+        56.0
+      ],
+      "volume_m3": 3.920000000000001e-06,
+      "mass_kg": 0.030772000000000004,
+      "com_m": [
+        0.0025,
+        0.0,
+        0.028
+      ],
+      "inertia_kg_m2": [
+        [
+          8.544358666666665e-06,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          8.105857666666665e-06,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          5.667176666666666e-07
+        ]
+      ]
+    },
+    "right_guide": {
+      "entity_id": "link/right_guide",
+      "world_frame": {
+        "xyz_m": [
+          0.0091,
+          -0.0245,
+          0.1
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0091
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.0245
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.1
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/right_guide.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "right_guide_arm",
+      "extra_mounts": [],
+      "sha256": "87d0f91ca0159293f4bb790e14c9c53b47f763fca1a3f7a7d5f1100579796e2b",
+      "vertices": 36,
+      "faces": 12,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          0.0,
+          -7.0,
+          0.0
+        ],
+        [
+          5.0,
+          7.0,
+          56.0
+        ]
+      ],
+      "extents_mm": [
+        5.0,
+        14.0,
+        56.0
+      ],
+      "volume_m3": 3.920000000000001e-06,
+      "mass_kg": 0.030772000000000004,
+      "com_m": [
+        0.0025,
+        0.0,
+        0.028
+      ],
+      "inertia_kg_m2": [
+        [
+          8.544358666666665e-06,
+          -0.0,
+          -0.0
+        ],
+        [
+          -0.0,
+          8.105857666666665e-06,
+          -0.0
+        ],
+        [
+          -0.0,
+          -0.0,
+          5.667176666666666e-07
+        ]
+      ]
+    },
+    "crosshead": {
+      "entity_id": "link/crosshead",
+      "world_frame": {
+        "xyz_m": [
+          0.0,
+          -0.0245,
+          0.12000000000000001
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.0245
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.12000000000000001
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/crosshead.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "slide",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "driver": false,
+      "mount": "left_guide",
+      "extra_mounts": [
+        "right_guide"
+      ],
+      "sha256": "370a66d12f50471fbe96a10e07eca9b11901c1e37d04f6ef1f8325668162c6df",
+      "vertices": 3144,
+      "faces": 1048,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -9.0,
+          -6.5,
+          -8.0
+        ],
+        [
+          9.0,
+          6.5,
+          8.0
+        ]
+      ],
+      "extents_mm": [
+        18.0,
+        13.0,
+        16.0
+      ],
+      "volume_m3": 2.552009954304098e-06,
+      "mass_kg": 0.02003327814128717,
+      "com_m": [
+        0.0,
+        1.1879456037374489e-19,
+        -1.6520956148657008e-19
+      ],
+      "inertia_kg_m2": [
+        [
+          8.182795481600558e-07,
+          3.5102705927177646e-24,
+          -9.853811100413168e-24
+        ],
+        [
+          3.5102705927177646e-24,
+          1.1452808280713085e-06,
+          5.354650056688111e-25
+        ],
+        [
+          -9.853811100413168e-24,
+          5.354650056688111e-25,
+          1.0607880294495892e-06
+        ]
+      ]
+    },
+    "wrist_pin": {
+      "entity_id": "link/wrist_pin",
+      "world_frame": {
+        "xyz_m": [
+          0.0,
+          -0.031,
+          0.12000000000000001
+        ],
+        "quat_wxyz": [
+          0.7071067811865475,
+          -0.7071067811865475,
+          -0.0,
+          -0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            6.123233995736766e-17,
+            1.0,
+            -0.031
+          ],
+          [
+            0.0,
+            -1.0,
+            6.123233995736766e-17,
+            0.12000000000000001
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/wrist_pin.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "crosshead",
+      "extra_mounts": [],
+      "sha256": "0a7653ae2bc63d185d45f3244b69163ad5218d243e014fd31a0bb4fae2aad697",
+      "vertices": 1500,
+      "faces": 500,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -2.5,
+          -2.499222993850708,
+          0.0
+        ],
+        [
+          2.5,
+          2.499222993850708,
+          13.0
+        ]
+      ],
+      "extents_mm": [
+        5.0,
+        4.998445987701416,
+        13.0
+      ],
+      "volume_m3": 2.551486265065284e-07,
+      "mass_kg": 0.0020029167180762478,
+      "com_m": [
+        1.8565459812940828e-20,
+        1.3541091599404472e-21,
+        0.006500000000000001
+      ],
+      "inertia_kg_m2": [
+        [
+          3.133600447533068e-08,
+          -3.7185069838111914e-27,
+          2.417029539477275e-25
+        ],
+        [
+          -3.7185069838111914e-27,
+          3.133600428592827e-08,
+          -5.95008778937293e-26
+        ],
+        [
+          2.417029539477275e-25,
+          -5.95008778937293e-26,
+          6.256521202111378e-09
+        ]
+      ]
+    },
+    "pump_rod": {
+      "entity_id": "link/pump_rod",
+      "world_frame": {
+        "xyz_m": [
+          0.0,
+          -0.0245,
+          0.128
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.0245
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.128
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/pump_rod.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "crosshead",
+      "extra_mounts": [],
+      "sha256": "678120a52155b456a3ae140683c02cd39549da64b8d1a80e044d5580b8d58f49",
+      "vertices": 1500,
+      "faces": 500,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -2.5,
+          -2.499222993850708,
+          0.0
+        ],
+        [
+          2.5,
+          2.499222993850708,
+          42.0
+        ]
+      ],
+      "extents_mm": [
+        5.0,
+        4.998445987701416,
+        42.0
+      ],
+      "volume_m3": 8.243263317903225e-07,
+      "mass_kg": 0.006470961704554031,
+      "com_m": [
+        -1.1492903693725274e-20,
+        -1.0473245197070057e-19,
+        0.020999999999999998
+      ],
+      "inertia_kg_m2": [
+        [
+          9.613380589711195e-07,
+          -3.3466562854300707e-26,
+          3.421026425106299e-25
+        ],
+        [
+          -3.3466562854300707e-26,
+          9.613380583592042e-07,
+          -2.724897950797296e-23
+        ],
+        [
+          3.421026425106299e-25,
+          -2.724897950797296e-23,
+          2.0213376191436753e-08
+        ]
+      ]
+    },
+    "pump_piston": {
+      "entity_id": "link/pump_piston",
+      "world_frame": {
+        "xyz_m": [
+          0.0,
+          -0.0245,
+          0.17
+        ],
+        "quat_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.0245
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.17
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "mesh_path": "meshes/pump_piston.stl",
+      "material": "steel",
+      "density_kg_m3": 7850.0,
+      "friction": [
+        1.0,
+        0.05,
+        0.005
+      ],
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "mount": "pump_rod",
+      "extra_mounts": [],
+      "sha256": "9af3e1d41f718f52baf8ef094e0060c7f6fbda0fdc1bf5e31930f2944a5a4962",
+      "vertices": 3024,
+      "faces": 1008,
+      "watertight": false,
+      "bounds_mm": [
+        [
+          -6.0,
+          -5.998135089874268,
+          0.0
+        ],
+        [
+          6.0,
+          5.998135089874268,
+          8.0
+        ]
+      ],
+      "extents_mm": [
+        12.0,
+        11.996270179748535,
+        8.0
+      ],
+      "volume_m3": 7.480166381405961e-07,
+      "mass_kg": 0.0058719306094036795,
+      "com_m": [
+        -1.0132291353323936e-19,
+        -1.2665364191654922e-19,
+        0.003999999999999999
+      ],
+      "inertia_kg_m2": [
+        [
+          9.327688274964337e-08,
+          1.7848833522293723e-25,
+          1.4279066817834977e-24
+        ],
+        [
+          1.7848833522293723e-25,
+          9.327688350382219e-08,
+          -7.258525632399444e-24
+        ],
+        [
+          1.4279066817834977e-24,
+          -7.258525632399444e-24,
+          1.2391983975315966e-07
+        ]
+      ]
+    }
+  },
+  "ports": {
+    "front_bearing": {
+      "journal": {
+        "entity_id": "port/front_bearing/journal",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.003
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.003
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            2.6020852139652106e-18,
+            -0.008000000000000004,
+            0.07
+          ],
+          "quat_wxyz": [
+            0.5000000000000002,
+            -0.5,
+            -0.5000000000000001,
+            -0.5
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.6020852139652106e-18
+            ],
+            [
+              -6.123233995736766e-17,
+              0.0,
+              1.0,
+              -0.008000000000000004
+            ],
+            [
+              1.0,
+              0.0,
+              6.123233995736766e-17,
+              0.07
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 6.1,
+        "depth_mm": 6.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "rear_bearing": {
+      "journal": {
+        "entity_id": "port/rear_bearing/journal",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.003
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.003
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            2.6020852139652106e-18,
+            0.007999999999999997,
+            0.07
+          ],
+          "quat_wxyz": [
+            0.5000000000000002,
+            -0.5,
+            -0.5000000000000001,
+            -0.5
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.6020852139652106e-18
+            ],
+            [
+              -6.123233995736766e-17,
+              0.0,
+              1.0,
+              0.007999999999999997
+            ],
+            [
+              1.0,
+              0.0,
+              6.123233995736766e-17,
+              0.07
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 6.1,
+        "depth_mm": 6.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "rotor_shaft": {
+      "shaft_axis": {
+        "entity_id": "port/rotor_shaft/shaft_axis",
+        "type": "shaft",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.028
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.028
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            2.6020852139652106e-18,
+            -0.004,
+            0.07
+          ],
+          "quat_wxyz": [
+            0.5000000000000002,
+            -0.5,
+            -0.5000000000000001,
+            -0.5
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.6020852139652106e-18
+            ],
+            [
+              -6.123233995736766e-17,
+              0.0,
+              1.0,
+              -0.004
+            ],
+            [
+              1.0,
+              0.0,
+              6.123233995736766e-17,
+              0.07
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 6.0,
+        "depth_mm": 56.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "crank_seat": {
+        "entity_id": "port/rotor_shaft/crank_seat",
+        "type": "shaft",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.015
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.015
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            2.6020852139652106e-18,
+            -0.017,
+            0.07
+          ],
+          "quat_wxyz": [
+            0.5000000000000002,
+            -0.5,
+            -0.5000000000000001,
+            -0.5
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.6020852139652106e-18
+            ],
+            [
+              -6.123233995736766e-17,
+              0.0,
+              1.0,
+              -0.017
+            ],
+            [
+              1.0,
+              0.0,
+              6.123233995736766e-17,
+              0.07
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 6.0,
+        "depth_mm": 6.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "rotor_seat": {
+        "entity_id": "port/rotor_shaft/rotor_seat",
+        "type": "shaft",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.048
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.048
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            2.6020852139652106e-18,
+            0.016,
+            0.07
+          ],
+          "quat_wxyz": [
+            0.5000000000000002,
+            -0.5,
+            -0.5000000000000001,
+            -0.5
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.6020852139652106e-18
+            ],
+            [
+              -6.123233995736766e-17,
+              0.0,
+              1.0,
+              0.016
+            ],
+            [
+              1.0,
+              0.0,
+              6.123233995736766e-17,
+              0.07
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 6.0,
+        "depth_mm": 4.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "crank_disk": {
+      "shaft_bore": {
+        "entity_id": "port/crank_disk/shaft_bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.003
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.003
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            2.6020852139652106e-18,
+            -0.017,
+            0.07
+          ],
+          "quat_wxyz": [
+            0.5000000000000002,
+            -0.5,
+            -0.5000000000000001,
+            -0.5
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.6020852139652106e-18
+            ],
+            [
+              -6.123233995736766e-17,
+              0.0,
+              1.0,
+              -0.017
+            ],
+            [
+              1.0,
+              0.0,
+              6.123233995736766e-17,
+              0.07
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 5.99,
+        "depth_mm": 6.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "eccentric_pin_seat": {
+        "entity_id": "port/crank_disk/eccentric_pin_seat",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.012,
+            0.0,
+            0.0005
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.012
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0005
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.012000000000000004,
+            -0.0195,
+            0.07
+          ],
+          "quat_wxyz": [
+            0.5000000000000002,
+            -0.5,
+            -0.5000000000000001,
+            -0.5
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.012000000000000004
+            ],
+            [
+              -6.123233995736766e-17,
+              0.0,
+              1.0,
+              -0.0195
+            ],
+            [
+              1.0,
+              0.0,
+              6.123233995736766e-17,
+              0.07
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 4.99,
+        "depth_mm": 1.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "wind_rotor": {
+      "hub_bore": {
+        "entity_id": "port/wind_rotor/hub_bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.002
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.002
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            2.6020852139652106e-18,
+            0.016,
+            0.07
+          ],
+          "quat_wxyz": [
+            0.5000000000000002,
+            -0.5,
+            -0.5000000000000001,
+            -0.5
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.6020852139652106e-18
+            ],
+            [
+              -6.123233995736766e-17,
+              0.0,
+              1.0,
+              0.016
+            ],
+            [
+              1.0,
+              0.0,
+              6.123233995736766e-17,
+              0.07
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 5.99,
+        "depth_mm": 4.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "crank_pin": {
+      "pin_axis": {
+        "entity_id": "port/crank_pin/pin_axis",
+        "type": "shaft",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0045
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0045
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.012000000000000004,
+            -0.0235,
+            0.07
+          ],
+          "quat_wxyz": [
+            0.5000000000000002,
+            -0.5,
+            -0.5000000000000001,
+            -0.5
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.012000000000000004
+            ],
+            [
+              -6.123233995736766e-17,
+              0.0,
+              1.0,
+              -0.0235
+            ],
+            [
+              1.0,
+              0.0,
+              6.123233995736766e-17,
+              0.07
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 5.0,
+        "depth_mm": 9.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "connecting_rod": {
+      "big_end": {
+        "entity_id": "port/connecting_rod/big_end",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.012,
+            0.07,
+            0.0025
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.012
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.07
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0025
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.012000000000000004,
+            -0.02449999999999999,
+            0.07
+          ],
+          "quat_wxyz": [
+            0.5000000000000002,
+            0.5,
+            0.5000000000000001,
+            -0.5
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.012000000000000004
+            ],
+            [
+              -6.123233995736766e-17,
+              0.0,
+              -1.0,
+              -0.02449999999999999
+            ],
+            [
+              -1.0,
+              0.0,
+              6.123233995736766e-17,
+              0.07
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 5.1,
+        "depth_mm": 5.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "small_end": {
+        "entity_id": "port/connecting_rod/small_end",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.12,
+            0.0025
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.12
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0025
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            3.469446951953614e-18,
+            -0.024499999999999987,
+            0.12
+          ],
+          "quat_wxyz": [
+            0.5000000000000002,
+            0.5,
+            0.5000000000000001,
+            -0.5
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              3.469446951953614e-18
+            ],
+            [
+              -6.123233995736766e-17,
+              0.0,
+              -1.0,
+              -0.024499999999999987
+            ],
+            [
+              -1.0,
+              0.0,
+              6.123233995736766e-17,
+              0.12
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 5.1,
+        "depth_mm": 5.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "crosshead": {
+      "wrist_bore": {
+        "entity_id": "port/crosshead/wrist_bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "quat_wxyz": [
+            0.5000000000000001,
+            -0.5,
+            -0.5000000000000001,
+            -0.5000000000000001
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            -0.0245,
+            0.12000000000000001
+          ],
+          "quat_wxyz": [
+            0.5000000000000001,
+            -0.5,
+            -0.5000000000000001,
+            -0.5000000000000001
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              -0.0245
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.12000000000000001
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "diameter_mm": 5.1,
+        "depth_mm": 13.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "vertical_slide": {
+        "entity_id": "port/crosshead/vertical_slide",
+        "type": "flat_face",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            -0.0245,
+            0.12000000000000001
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              -0.0245
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.12000000000000001
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 0.0,
+        "depth_mm": 0.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "pump_rod_seat": {
+        "entity_id": "port/crosshead/pump_rod_seat",
+        "type": "cylindrical",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.008
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.008
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            -0.0245,
+            0.128
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              -0.0245
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.128
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 5.0,
+        "depth_mm": 0.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "wrist_pin": {
+      "pin_axis": {
+        "entity_id": "port/wrist_pin/pin_axis",
+        "type": "shaft",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0065
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0065
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            -0.0245,
+            0.12000000000000001
+          ],
+          "quat_wxyz": [
+            0.5000000000000002,
+            -0.5,
+            -0.5000000000000001,
+            -0.5
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -6.123233995736766e-17,
+              0.0,
+              1.0,
+              -0.0245
+            ],
+            [
+              1.0,
+              0.0,
+              6.123233995736766e-17,
+              0.12000000000000001
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 5.0,
+        "depth_mm": 13.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "pump_rod": {
+      "lower_end": {
+        "entity_id": "port/pump_rod/lower_end",
+        "type": "cylindrical",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            -0.0245,
+            0.128
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              -0.0245
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.128
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 5.0,
+        "depth_mm": 0.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      },
+      "upper_end": {
+        "entity_id": "port/pump_rod/upper_end",
+        "type": "cylindrical",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.042
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.042
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            -0.0245,
+            0.17
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              -0.0245
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.17
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 5.0,
+        "depth_mm": 0.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    },
+    "pump_piston": {
+      "rod_bore": {
+        "entity_id": "port/pump_piston/rod_bore",
+        "type": "bore",
+        "local_frame": {
+          "xyz_m": [
+            0.0,
+            0.0,
+            0.004
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              1.0,
+              0.004
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "world_frame": {
+          "xyz_m": [
+            0.0,
+            -0.0245,
+            0.17400000000000002
+          ],
+          "quat_wxyz": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+          ],
+          "matrix": [
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              -0.0245
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.17400000000000002
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 5.99,
+        "depth_mm": 8.0,
+        "pitch_radius_mm": 0.0,
+        "normal_sign": 1.0
+      }
+    }
+  },
+  "simulation": {
+    "gravity": [
+      0.0,
+      0.0,
+      -9.81
+    ],
+    "timestep": 0.0002,
+    "solver": "Newton",
+    "iterations": 100,
+    "base_rests_on_plane": true
+  }
+}

@@ -1,0 +1,59 @@
+<mujoco model="open_hand_cranked_pumpjack">
+  <compiler angle="radian" coordinate="local" autolimits="true" meshdir="meshes" />
+  <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast" iterations="80" />
+  <default>
+    <joint damping="0.4" armature="0.002" />
+    <geom density="900" friction="0.8 0.1 0.02" condim="3" />
+  </default>
+  <asset>
+    <material name="frame" rgba="0.18 0.23 0.30 1" />
+    <material name="input" rgba="0.90 0.40 0.10 1" />
+    <material name="link" rgba="0.90 0.72 0.12 1" />
+    <material name="output" rgba="0.18 0.72 0.72 1" />
+  </asset>
+  <worldbody>
+    <light pos="0 -1 1.2" dir="0 1 -0.7" />
+    <geom name="base_geom" type="box" pos="0 0 0.006" size="0.18 0.075 0.006" material="frame" />
+    <geom name="left_support_geom" type="box" pos="-0.1 -0.05 0.111" size="0.009 0.009 0.105" material="frame" />
+    <geom name="right_support_geom" type="box" pos="-0.1 0.05 0.111" size="0.009 0.009 0.105" material="frame" />
+    <geom name="crank_bearing_left" type="cylinder" pos="-0.09 -0.05 0.11" size="0.016 0.012" quat="0.707107 0.707107 0 0" material="frame" />
+    <geom name="crank_bearing_right" type="cylinder" pos="-0.09 0.05 0.11" size="0.016 0.012" quat="0.707107 0.707107 0 0" material="frame" />
+    <geom name="beam_pivot" type="cylinder" pos="-0.1 0 0.22" size="0.013 0.06" quat="0.707107 0.707107 0 0" material="frame" />
+    <geom name="guide_left" type="box" pos="0.08 -0.018 0.105" size="0.008 0.012 0.025" material="frame" />
+    <geom name="guide_right" type="box" pos="0.08 0.018 0.105" size="0.008 0.012 0.025" material="frame" />
+
+    <body name="crankshaft_input" pos="-0.09 0 0.11">
+      <joint name="crankshaft_hinge" type="hinge" axis="0 1 0" limited="false" damping="0.25" />
+      <geom name="crankshaft_input_geom" type="cylinder" size="0.010 0.065" quat="0.707107 0.707107 0 0" material="input" />
+      <geom name="crank_disk_geom" type="cylinder" pos="0 -0.02 0" size="0.052 0.006" quat="0.707107 0.707107 0 0" material="input" />
+      <geom name="hand_crank_arm" type="capsule" fromto="0 0.058 0 0.075 0.058 0" size="0.005" material="input" />
+      <geom name="hand_crank_grip" type="capsule" fromto="0.075 0.058 0 0.075 0.10 0" size="0.008" material="input" />
+      <body name="crank_pin" pos="0.04 -0.026 0">
+        <geom name="crank_pin_geom" type="cylinder" size="0.008 0.017" quat="0.707107 0.707107 0 0" material="input" />
+      </body>
+    </body>
+
+    <body name="pitman_rod" pos="-0.05 0 0.11" euler="0 0.347132773 0">
+      <joint name="pitman_lower_pin" type="hinge" axis="0 1 0" damping="0.18" />
+      <geom name="pitman_rod_geom" type="capsule" fromto="0 0 0 0 0 0.14" size="0.006" material="link" />
+    </body>
+
+    <body name="walking_beam" pos="-0.1 0 0.22" euler="0 0.218220657 0">
+      <joint name="walking_beam_hinge" type="hinge" axis="0 1 0" limited="true" range="-0.8 0.8" damping="0.35" />
+      <geom name="walking_beam_geom" type="box" pos="0.04 0 0" size="0.14 0.009 0.010" material="link" />
+    </body>
+
+    <body name="polished_rod_output" pos="-0.275731158 0 0.181031292">
+      <joint name="polished_rod_slide" type="slide" axis="0 0 1" limited="true" range="-0.08 0.08" damping="1.2" />
+      <geom name="polished_rod_geom" type="cylinder" pos="0 0 -0.075" size="0.007 0.075" material="output" />
+    </body>
+  </worldbody>
+  <equality>
+    <connect name="lower_pin_closure" body1="pitman_rod" body2="crank_pin" anchor="-0.05 0 0.11" solref="0.004 1" />
+    <connect name="upper_pin_closure" body1="pitman_rod" body2="walking_beam" anchor="-0.00237158 0 0.24164928" solref="0.004 1" />
+    <connect name="output_pin_closure" body1="walking_beam" body2="polished_rod_output" anchor="-0.275731158 0 0.181031292" solref="0.004 1" />
+  </equality>
+  <actuator>
+    <motor name="hand_crank_motor" joint="crankshaft_hinge" gear="1" ctrlrange="-35 35" ctrllimited="true" />
+  </actuator>
+</mujoco>

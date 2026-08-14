@@ -1,0 +1,444 @@
+<?xml version='1.0' encoding='ASCII'?>
+<robot name="design_this_as_an_open_demonstra">
+  <link name="world"/>
+  <link name="bench_base">
+    <visual name="bench_base_visual">
+      <geometry>
+        <mesh filename="meshes/bench_base.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="bench_base_mat">
+        <color rgba="0.82 0.27 0.24 1.0"/>
+      </material>
+    </visual>
+    <collision name="bench_base_collision">
+      <geometry>
+        <mesh filename="meshes/bench_base.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="rear_pedestal">
+    <visual name="rear_pedestal_visual">
+      <geometry>
+        <mesh filename="meshes/rear_pedestal.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="rear_pedestal_mat">
+        <color rgba="0.27 0.51 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="rear_pedestal_collision">
+      <geometry>
+        <mesh filename="meshes/rear_pedestal.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="front_pedestal">
+    <visual name="front_pedestal_visual">
+      <geometry>
+        <mesh filename="meshes/front_pedestal.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="front_pedestal_mat">
+        <color rgba="0.35 0.71 0.35 1.0"/>
+      </material>
+    </visual>
+    <collision name="front_pedestal_collision">
+      <geometry>
+        <mesh filename="meshes/front_pedestal.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="rear_bearing">
+    <visual name="rear_bearing_visual">
+      <geometry>
+        <mesh filename="meshes/rear_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="rear_bearing_mat">
+        <color rgba="0.9 0.67 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision name="rear_bearing_collision">
+      <geometry>
+        <mesh filename="meshes/rear_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="front_bearing">
+    <visual name="front_bearing_visual">
+      <geometry>
+        <mesh filename="meshes/front_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="front_bearing_mat">
+        <color rgba="0.59 0.39 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="front_bearing_collision">
+      <geometry>
+        <mesh filename="meshes/front_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="crankshaft">
+    <visual name="crankshaft_visual">
+      <geometry>
+        <mesh filename="meshes/crankshaft.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="crankshaft_mat">
+        <color rgba="0.24 0.75 0.75 1.0"/>
+      </material>
+    </visual>
+    <collision name="crankshaft_collision">
+      <geometry>
+        <mesh filename="meshes/crankshaft.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="crank_web">
+    <visual name="crank_web_visual">
+      <geometry>
+        <mesh filename="meshes/crank_web.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="crank_web_mat">
+        <color rgba="0.86 0.47 0.67 1.0"/>
+      </material>
+    </visual>
+    <collision name="crank_web_collision">
+      <geometry>
+        <mesh filename="meshes/crank_web.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="crank_pin">
+    <visual name="crank_pin_visual">
+      <geometry>
+        <mesh filename="meshes/crank_pin.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="crank_pin_mat">
+        <color rgba="0.63 0.63 0.31 1.0"/>
+      </material>
+    </visual>
+    <collision name="crank_pin_collision">
+      <geometry>
+        <mesh filename="meshes/crank_pin.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="connecting_rod">
+    <visual name="connecting_rod_visual">
+      <geometry>
+        <mesh filename="meshes/connecting_rod.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="connecting_rod_mat">
+        <color rgba="0.47 0.43 0.39 1.0"/>
+      </material>
+    </visual>
+    <collision name="connecting_rod_collision">
+      <geometry>
+        <mesh filename="meshes/connecting_rod.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="crosshead">
+    <visual name="crosshead_visual">
+      <geometry>
+        <mesh filename="meshes/crosshead.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="crosshead_mat">
+        <color rgba="0.78 0.78 0.82 1.0"/>
+      </material>
+    </visual>
+    <collision name="crosshead_collision">
+      <geometry>
+        <mesh filename="meshes/crosshead.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="wrist_pin">
+    <visual name="wrist_pin_visual">
+      <geometry>
+        <mesh filename="meshes/wrist_pin.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="wrist_pin_mat">
+        <color rgba="0.71 0.35 0.24 1.0"/>
+      </material>
+    </visual>
+    <collision name="wrist_pin_collision">
+      <geometry>
+        <mesh filename="meshes/wrist_pin.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_guide_rail">
+    <visual name="left_guide_rail_visual">
+      <geometry>
+        <mesh filename="meshes/left_guide_rail.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="left_guide_rail_mat">
+        <color rgba="0.31 0.59 0.47 1.0"/>
+      </material>
+    </visual>
+    <collision name="left_guide_rail_collision">
+      <geometry>
+        <mesh filename="meshes/left_guide_rail.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_guide_rail">
+    <visual name="right_guide_rail_visual">
+      <geometry>
+        <mesh filename="meshes/right_guide_rail.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="right_guide_rail_mat">
+        <color rgba="0.82 0.27 0.24 1.0"/>
+      </material>
+    </visual>
+    <collision name="right_guide_rail_collision">
+      <geometry>
+        <mesh filename="meshes/right_guide_rail.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="pump_rod">
+    <visual name="pump_rod_visual">
+      <geometry>
+        <mesh filename="meshes/pump_rod.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="pump_rod_mat">
+        <color rgba="0.27 0.51 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="pump_rod_collision">
+      <geometry>
+        <mesh filename="meshes/pump_rod.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="pump_piston">
+    <visual name="pump_piston_visual">
+      <geometry>
+        <mesh filename="meshes/pump_piston.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="pump_piston_mat">
+        <color rgba="0.35 0.71 0.35 1.0"/>
+      </material>
+    </visual>
+    <collision name="pump_piston_collision">
+      <geometry>
+        <mesh filename="meshes/pump_piston.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="cylinder_lower_frame">
+    <visual name="cylinder_lower_frame_visual">
+      <geometry>
+        <mesh filename="meshes/cylinder_lower_frame.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="cylinder_lower_frame_mat">
+        <color rgba="0.9 0.67 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision name="cylinder_lower_frame_collision">
+      <geometry>
+        <mesh filename="meshes/cylinder_lower_frame.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="cylinder_left_post">
+    <visual name="cylinder_left_post_visual">
+      <geometry>
+        <mesh filename="meshes/cylinder_left_post.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="cylinder_left_post_mat">
+        <color rgba="0.59 0.39 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="cylinder_left_post_collision">
+      <geometry>
+        <mesh filename="meshes/cylinder_left_post.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="cylinder_right_post">
+    <visual name="cylinder_right_post_visual">
+      <geometry>
+        <mesh filename="meshes/cylinder_right_post.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="cylinder_right_post_mat">
+        <color rgba="0.24 0.75 0.75 1.0"/>
+      </material>
+    </visual>
+    <collision name="cylinder_right_post_collision">
+      <geometry>
+        <mesh filename="meshes/cylinder_right_post.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="cylinder_upper_frame">
+    <visual name="cylinder_upper_frame_visual">
+      <geometry>
+        <mesh filename="meshes/cylinder_upper_frame.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="cylinder_upper_frame_mat">
+        <color rgba="0.86 0.47 0.67 1.0"/>
+      </material>
+    </visual>
+    <collision name="cylinder_upper_frame_collision">
+      <geometry>
+        <mesh filename="meshes/cylinder_upper_frame.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="hand_crank_arm">
+    <visual name="hand_crank_arm_visual">
+      <geometry>
+        <mesh filename="meshes/hand_crank_arm.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="hand_crank_arm_mat">
+        <color rgba="0.63 0.63 0.31 1.0"/>
+      </material>
+    </visual>
+    <collision name="hand_crank_arm_collision">
+      <geometry>
+        <mesh filename="meshes/hand_crank_arm.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="handle_pin">
+    <visual name="handle_pin_visual">
+      <geometry>
+        <mesh filename="meshes/handle_pin.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="handle_pin_mat">
+        <color rgba="0.47 0.43 0.39 1.0"/>
+      </material>
+    </visual>
+    <collision name="handle_pin_collision">
+      <geometry>
+        <mesh filename="meshes/handle_pin.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="hand_grip">
+    <visual name="hand_grip_visual">
+      <geometry>
+        <mesh filename="meshes/hand_grip.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="hand_grip_mat">
+        <color rgba="0.78 0.78 0.82 1.0"/>
+      </material>
+    </visual>
+    <collision name="hand_grip_collision">
+      <geometry>
+        <mesh filename="meshes/hand_grip.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="place_rear_pedestal" type="fixed">
+    <parent link="bench_base"/>
+    <child link="rear_pedestal"/>
+    <origin xyz="0.0 -0.019 0.004" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_front_pedestal" type="fixed">
+    <parent link="bench_base"/>
+    <child link="front_pedestal"/>
+    <origin xyz="0.0 0.015 0.004" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_rear_bearing" type="fixed">
+    <parent link="rear_pedestal"/>
+    <child link="rear_bearing"/>
+    <origin xyz="0.0 -0.003 0.026" rpy="-1.5707963267948966 -0.0 0.0"/>
+  </joint>
+  <joint name="place_front_bearing" type="fixed">
+    <parent link="front_pedestal"/>
+    <child link="front_bearing"/>
+    <origin xyz="0.0 -0.003 0.026" rpy="-1.5707963267948966 -0.0 0.0"/>
+  </joint>
+  <joint name="place_crankshaft" type="fixed">
+    <parent link="rear_bearing"/>
+    <child link="crankshaft"/>
+    <origin xyz="0.0 0.0 -0.01" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_crank_web" type="fixed">
+    <parent link="crankshaft"/>
+    <child link="crank_web"/>
+    <origin xyz="0.0 0.0 0.05" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_crank_pin" type="fixed">
+    <parent link="crank_web"/>
+    <child link="crank_pin"/>
+    <origin xyz="0.01 0.0 0.002" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_connecting_rod" type="fixed">
+    <parent link="crank_pin"/>
+    <child link="connecting_rod"/>
+    <origin xyz="0.0 0.0 0.005" rpy="1.5707963267948966 -0.0 -0.3671738338182193"/>
+  </joint>
+  <joint name="place_crosshead" type="fixed">
+    <parent link="left_guide_rail"/>
+    <child link="crosshead"/>
+    <origin xyz="0.01105 -0.0075 0.047" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_wrist_pin" type="fixed">
+    <parent link="crosshead"/>
+    <child link="wrist_pin"/>
+    <origin xyz="0.0 -0.007 0.005" rpy="-1.5707963267948966 -0.0 0.0"/>
+  </joint>
+  <joint name="place_left_guide_rail" type="fixed">
+    <parent link="bench_base"/>
+    <child link="left_guide_rail"/>
+    <origin xyz="-0.01105 0.0325 0.004" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_right_guide_rail" type="fixed">
+    <parent link="bench_base"/>
+    <child link="right_guide_rail"/>
+    <origin xyz="0.01105 0.0325 0.004" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_pump_rod" type="fixed">
+    <parent link="crosshead"/>
+    <child link="pump_rod"/>
+    <origin xyz="0.0 0.0 0.011399999999999999" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_pump_piston" type="fixed">
+    <parent link="pump_rod"/>
+    <child link="pump_piston"/>
+    <origin xyz="0.0 0.0 0.026000000000000006" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_cylinder_lower_frame" type="fixed">
+    <parent link="left_guide_rail"/>
+    <child link="cylinder_lower_frame"/>
+    <origin xyz="0.01105 -0.0075 0.074" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_cylinder_left_post" type="fixed">
+    <parent link="cylinder_lower_frame"/>
+    <child link="cylinder_left_post"/>
+    <origin xyz="-0.009 0.0 0.002" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_cylinder_right_post" type="fixed">
+    <parent link="cylinder_lower_frame"/>
+    <child link="cylinder_right_post"/>
+    <origin xyz="0.009 0.0 0.002" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_cylinder_upper_frame" type="fixed">
+    <parent link="cylinder_left_post"/>
+    <child link="cylinder_upper_frame"/>
+    <origin xyz="0.009 0.0 0.027256776554368246" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_hand_crank_arm" type="fixed">
+    <parent link="crankshaft"/>
+    <child link="hand_crank_arm"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_handle_pin" type="fixed">
+    <parent link="hand_crank_arm"/>
+    <child link="handle_pin"/>
+    <origin xyz="-0.014 0.0 -0.008" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_hand_grip" type="fixed">
+    <parent link="handle_pin"/>
+    <child link="hand_grip"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="world_to_bench_base" type="fixed">
+    <parent link="world"/>
+    <child link="bench_base"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+</robot>

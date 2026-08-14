@@ -1,0 +1,696 @@
+{
+  "links": [
+    {
+      "axes": [],
+      "degree_of_freedom": "fixed",
+      "dof": "fixed",
+      "driver": false,
+      "mesh_file": "meshes/base.stl",
+      "mesh_filename": "meshes/base.stl",
+      "mount": "",
+      "name": "base",
+      "rigid_mount": "world",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axes": [],
+      "degree_of_freedom": "fixed",
+      "dof": "fixed",
+      "driver": false,
+      "mesh_file": "meshes/input_support.stl",
+      "mesh_filename": "meshes/input_support.stl",
+      "mount": "base",
+      "name": "input_support",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axes": [],
+      "degree_of_freedom": "fixed",
+      "dof": "fixed",
+      "driver": false,
+      "mesh_file": "meshes/idler_support.stl",
+      "mesh_filename": "meshes/idler_support.stl",
+      "mount": "base",
+      "name": "idler_support",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axes": [],
+      "degree_of_freedom": "fixed",
+      "dof": "fixed",
+      "driver": false,
+      "mesh_file": "meshes/output_support.stl",
+      "mesh_filename": "meshes/output_support.stl",
+      "mount": "base",
+      "name": "output_support",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axes": [
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "degree_of_freedom": "revolute",
+      "dof": "spin",
+      "driver": true,
+      "mesh_file": "meshes/input_shaft.stl",
+      "mesh_filename": "meshes/input_shaft.stl",
+      "mount": "",
+      "name": "input_shaft",
+      "rigid_mount": null,
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axes": [
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "degree_of_freedom": "rigid_carried",
+      "dof": "rigid_carried",
+      "driver": false,
+      "mesh_file": "meshes/input_gear.stl",
+      "mesh_filename": "meshes/input_gear.stl",
+      "mount": "input_shaft",
+      "name": "input_gear",
+      "rigid_mount": "input_shaft",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axes": [
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "degree_of_freedom": "rigid_carried",
+      "dof": "rigid_carried",
+      "driver": false,
+      "mesh_file": "meshes/hand_crank.stl",
+      "mesh_filename": "meshes/hand_crank.stl",
+      "mount": "input_shaft",
+      "name": "hand_crank",
+      "rigid_mount": "input_shaft",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axes": [
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "degree_of_freedom": "revolute",
+      "dof": "spin",
+      "driver": false,
+      "mesh_file": "meshes/idler_shaft.stl",
+      "mesh_filename": "meshes/idler_shaft.stl",
+      "mount": "",
+      "name": "idler_shaft",
+      "rigid_mount": null,
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axes": [
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "degree_of_freedom": "rigid_carried",
+      "dof": "rigid_carried",
+      "driver": false,
+      "mesh_file": "meshes/idler_gear.stl",
+      "mesh_filename": "meshes/idler_gear.stl",
+      "mount": "idler_shaft",
+      "name": "idler_gear",
+      "rigid_mount": "idler_shaft",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axes": [
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "degree_of_freedom": "revolute",
+      "dof": "spin",
+      "driver": false,
+      "mesh_file": "meshes/output_shaft.stl",
+      "mesh_filename": "meshes/output_shaft.stl",
+      "mount": "",
+      "name": "output_shaft",
+      "rigid_mount": null,
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axes": [
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "degree_of_freedom": "rigid_carried",
+      "dof": "rigid_carried",
+      "driver": false,
+      "mesh_file": "meshes/output_gear.stl",
+      "mesh_filename": "meshes/output_gear.stl",
+      "mount": "output_shaft",
+      "name": "output_gear",
+      "rigid_mount": "output_shaft",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    }
+  ],
+  "mesh_pairs": [
+    [
+      "input_gear",
+      "idler_gear"
+    ],
+    [
+      "idler_gear",
+      "output_gear"
+    ]
+  ],
+  "motion_joints": [
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "child": "input_shaft",
+      "kind": "revolute",
+      "limited": false,
+      "name": "input_shaft_hinge",
+      "origin_m": [
+        -0.06,
+        0,
+        0.07
+      ],
+      "parent": "base",
+      "pos_mm": [
+        -60.0,
+        0.0,
+        70.0
+      ],
+      "type": "revolute"
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "child": "idler_shaft",
+      "kind": "revolute",
+      "limited": false,
+      "name": "idler_shaft_hinge",
+      "origin_m": [
+        0,
+        0,
+        0.07
+      ],
+      "parent": "base",
+      "pos_mm": [
+        0.0,
+        0.0,
+        70.0
+      ],
+      "type": "revolute"
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "child": "output_shaft",
+      "kind": "revolute",
+      "limited": false,
+      "name": "output_shaft_hinge",
+      "origin_m": [
+        0.06,
+        0,
+        0.07
+      ],
+      "parent": "base",
+      "pos_mm": [
+        60.0,
+        0.0,
+        70.0
+      ],
+      "type": "revolute"
+    }
+  ],
+  "name": "open_idler_reverser_1to1",
+  "output_link": "output_shaft",
+  "planetary_stages": [],
+  "ports_by_link": {
+    "idler_shaft": [
+      {
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "kind": "revolute",
+        "name": "idler_axis",
+        "position_m": [
+          0,
+          0,
+          0.07
+        ]
+      }
+    ],
+    "input_shaft": [
+      {
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "kind": "revolute",
+        "name": "input_axis",
+        "position_m": [
+          -0.06,
+          0,
+          0.07
+        ]
+      }
+    ],
+    "output_shaft": [
+      {
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "kind": "revolute",
+        "name": "output_axis",
+        "position_m": [
+          0.06,
+          0,
+          0.07
+        ]
+      }
+    ]
+  },
+  "poses": [
+    {
+      "child": "base",
+      "name": "place_base",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "input_support",
+      "name": "place_input_support",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "idler_support",
+      "name": "place_idler_support",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "output_support",
+      "name": "place_output_support",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "input_shaft",
+      "name": "place_input_shaft",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "input_gear",
+      "name": "place_input_gear",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "hand_crank",
+      "name": "place_hand_crank",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "idler_shaft",
+      "name": "place_idler_shaft",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "idler_gear",
+      "name": "place_idler_gear",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "output_shaft",
+      "name": "place_output_shaft",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "output_gear",
+      "name": "place_output_gear",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "base_part": "world",
+      "incoming_part": "base",
+      "mate_type": "rigid_mount",
+      "name": "base_world_mount"
+    },
+    {
+      "base_part": "base",
+      "incoming_part": "input_support",
+      "mate_type": "rigid_mount",
+      "name": "input_support_mount"
+    },
+    {
+      "base_part": "base",
+      "incoming_part": "idler_support",
+      "mate_type": "rigid_mount",
+      "name": "idler_support_mount"
+    },
+    {
+      "base_part": "base",
+      "incoming_part": "output_support",
+      "mate_type": "rigid_mount",
+      "name": "output_support_mount"
+    },
+    {
+      "base_part": "input_support",
+      "incoming_part": "input_shaft",
+      "mate_type": "journal_bearing",
+      "name": "input_front_bearing"
+    },
+    {
+      "base_part": "idler_support",
+      "incoming_part": "idler_shaft",
+      "mate_type": "journal_bearing",
+      "name": "idler_front_bearing"
+    },
+    {
+      "base_part": "output_support",
+      "incoming_part": "output_shaft",
+      "mate_type": "journal_bearing",
+      "name": "output_front_bearing"
+    },
+    {
+      "base_part": "input_shaft",
+      "incoming_part": "input_gear",
+      "mate_type": "press_fit",
+      "name": "input_gear_press_fit"
+    },
+    {
+      "base_part": "idler_shaft",
+      "incoming_part": "idler_gear",
+      "mate_type": "press_fit",
+      "name": "idler_gear_press_fit"
+    },
+    {
+      "base_part": "output_shaft",
+      "incoming_part": "output_gear",
+      "mate_type": "press_fit",
+      "name": "output_gear_press_fit"
+    },
+    {
+      "base_part": "input_shaft",
+      "incoming_part": "hand_crank",
+      "mate_type": "press_fit",
+      "name": "crank_press_fit"
+    },
+    {
+      "base_part": "input_gear",
+      "incoming_part": "idler_gear",
+      "mate_type": "gear_spur_external",
+      "name": "input_idler_mesh"
+    },
+    {
+      "base_part": "idler_gear",
+      "incoming_part": "output_gear",
+      "mate_type": "gear_spur_external",
+      "name": "idler_output_mesh"
+    }
+  ],
+  "root_link": "base",
+  "transmissions": [
+    {
+      "driven": "idler_shaft_hinge",
+      "driven_link": "idler_shaft_hinge",
+      "driven_per_driving": -1.0,
+      "driven_teeth": 30,
+      "driving": "input_shaft_hinge",
+      "driving_link": "input_shaft_hinge",
+      "driving_teeth": 30,
+      "kind": "external_spur",
+      "name": "input_to_idler",
+      "ratio": null,
+      "type": "external_spur"
+    },
+    {
+      "driven": "output_shaft_hinge",
+      "driven_link": "output_shaft_hinge",
+      "driven_per_driving": -1.0,
+      "driven_teeth": 30,
+      "driving": "idler_shaft_hinge",
+      "driving_link": "idler_shaft_hinge",
+      "driving_teeth": 30,
+      "kind": "external_spur",
+      "name": "idler_to_output",
+      "ratio": null,
+      "type": "external_spur"
+    }
+  ],
+  "watch_links": [
+    "input_shaft",
+    "input_gear",
+    "idler_shaft",
+    "idler_gear",
+    "output_shaft",
+    "output_gear",
+    "hand_crank"
+  ]
+}

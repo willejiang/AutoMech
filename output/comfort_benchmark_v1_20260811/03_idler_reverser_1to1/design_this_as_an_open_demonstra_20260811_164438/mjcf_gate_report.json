@@ -1,0 +1,106 @@
+{
+  "ok": true,
+  "errors": [],
+  "policy_version": 4,
+  "bodies": [
+    "base",
+    "crank_arm",
+    "crank_handle",
+    "idler_front_bearing",
+    "idler_front_pedestal",
+    "idler_gear",
+    "idler_rear_bearing",
+    "idler_rear_pedestal",
+    "idler_shaft",
+    "input_front_bearing",
+    "input_front_pedestal",
+    "input_gear",
+    "input_rear_bearing",
+    "input_rear_pedestal",
+    "input_shaft",
+    "output_front_bearing",
+    "output_front_pedestal",
+    "output_gear",
+    "output_rear_bearing",
+    "output_rear_pedestal",
+    "output_shaft"
+  ],
+  "joints": [
+    "idler_shaft_hinge",
+    "idler_to_output",
+    "input_shaft_hinge",
+    "input_to_idler",
+    "output_shaft_hinge"
+  ],
+  "nq": 3,
+  "nv": 3,
+  "finite": true,
+  "dynamic_transmission_probe": {
+    "ran": true,
+    "ok": true,
+    "errors": [],
+    "warnings": [],
+    "contact_on": {
+      "ok": true,
+      "driver_travel": 1.1161123112124816,
+      "commanded_travel": 1.0494,
+      "joint_deltas": {
+        "idler_shaft_hinge": -1.1150726842336747,
+        "output_shaft_hinge": 1.114066700507863,
+        "input_shaft_hinge": 1.1161123112124816
+      },
+      "transmission_residuals": [
+        {
+          "name": "input_shaft_hinge->idler_shaft_hinge",
+          "driving_joint": "input_shaft_hinge",
+          "driven_joint": "idler_shaft_hinge",
+          "ratio": -1.0,
+          "driving_delta": 1.1161123112124816,
+          "driven_delta": -1.1150726842336747,
+          "normalized_residual": 0.0009314716524159584
+        },
+        {
+          "name": "idler_shaft_hinge->output_shaft_hinge",
+          "driving_joint": "idler_shaft_hinge",
+          "driven_joint": "output_shaft_hinge",
+          "ratio": -1.0,
+          "driving_delta": -1.1150726842336747,
+          "driven_delta": 1.114066700507863,
+          "normalized_residual": 0.0009021687465180585
+        }
+      ],
+      "active_contacts": []
+    },
+    "contact_off": {
+      "ok": true,
+      "driver_travel": 1.1161123112124816,
+      "commanded_travel": 1.0494,
+      "joint_deltas": {
+        "idler_shaft_hinge": -1.1150726842336747,
+        "output_shaft_hinge": 1.114066700507863,
+        "input_shaft_hinge": 1.1161123112124816
+      },
+      "transmission_residuals": [
+        {
+          "name": "input_shaft_hinge->idler_shaft_hinge",
+          "driving_joint": "input_shaft_hinge",
+          "driven_joint": "idler_shaft_hinge",
+          "ratio": -1.0,
+          "driving_delta": 1.1161123112124816,
+          "driven_delta": -1.1150726842336747,
+          "normalized_residual": 0.0009314716524159584
+        },
+        {
+          "name": "idler_shaft_hinge->output_shaft_hinge",
+          "driving_joint": "idler_shaft_hinge",
+          "driven_joint": "output_shaft_hinge",
+          "ratio": -1.0,
+          "driving_delta": -1.1150726842336747,
+          "driven_delta": 1.114066700507863,
+          "normalized_residual": 0.0009021687465180585
+        }
+      ],
+      "active_contacts": []
+    }
+  }
+}

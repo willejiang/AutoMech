@@ -1,0 +1,4233 @@
+{
+  "manifest_version": 3,
+  "engine": "mujoco-agent",
+  "topology_plan": {
+    "coordinate_map": {
+      "base": null,
+      "lower_input_bearing": null,
+      "upper_input_bearing": null,
+      "carrier_bearing": null,
+      "input_shaft": "sun_input_hinge",
+      "ring_post_1": null,
+      "ring_post_2": null,
+      "ring_post_3": null,
+      "carrier": "carrier_output_hinge",
+      "planet_pin_1": "carrier_output_hinge",
+      "planet_pin_2": "carrier_output_hinge",
+      "planet_pin_3": "carrier_output_hinge",
+      "fixed_ring": null,
+      "sun_gear": "sun_input_hinge",
+      "planet_1": "planet_1_carrier_hinge",
+      "planet_2": "planet_2_carrier_hinge",
+      "planet_3": "planet_3_carrier_hinge",
+      "input_crank": "sun_input_hinge",
+      "crank_grip": "sun_input_hinge"
+    },
+    "tree_edges": [
+      [
+        "base",
+        "lower_input_bearing"
+      ],
+      [
+        "base",
+        "upper_input_bearing"
+      ],
+      [
+        "base",
+        "carrier_bearing"
+      ],
+      [
+        "base",
+        "ring_post_1"
+      ],
+      [
+        "base",
+        "ring_post_2"
+      ],
+      [
+        "base",
+        "ring_post_3"
+      ],
+      [
+        "base",
+        "fixed_ring"
+      ],
+      [
+        "base",
+        "input_shaft"
+      ],
+      [
+        "input_shaft",
+        "sun_gear"
+      ],
+      [
+        "input_shaft",
+        "input_crank"
+      ],
+      [
+        "input_crank",
+        "crank_grip"
+      ],
+      [
+        "base",
+        "carrier"
+      ],
+      [
+        "carrier",
+        "planet_pin_1"
+      ],
+      [
+        "carrier",
+        "planet_pin_2"
+      ],
+      [
+        "carrier",
+        "planet_pin_3"
+      ],
+      [
+        "carrier",
+        "planet_1"
+      ],
+      [
+        "carrier",
+        "planet_2"
+      ],
+      [
+        "carrier",
+        "planet_3"
+      ]
+    ],
+    "closure_edges": [
+      [
+        "sun_gear",
+        "carrier"
+      ],
+      [
+        "sun_gear",
+        "planet_1"
+      ],
+      [
+        "fixed_ring",
+        "planet_1"
+      ],
+      [
+        "sun_gear",
+        "planet_2"
+      ],
+      [
+        "fixed_ring",
+        "planet_2"
+      ],
+      [
+        "sun_gear",
+        "planet_3"
+      ],
+      [
+        "fixed_ring",
+        "planet_3"
+      ]
+    ],
+    "rigid_carried": [
+      [
+        "input_shaft",
+        "sun_gear"
+      ],
+      [
+        "input_shaft",
+        "input_crank"
+      ],
+      [
+        "input_crank",
+        "crank_grip"
+      ],
+      [
+        "carrier",
+        "planet_pin_1"
+      ],
+      [
+        "carrier",
+        "planet_pin_2"
+      ],
+      [
+        "carrier",
+        "planet_pin_3"
+      ]
+    ],
+    "independent_coaxial": [
+      [
+        "input_shaft",
+        "carrier"
+      ],
+      [
+        "sun_gear",
+        "carrier"
+      ],
+      [
+        "sun_gear",
+        "fixed_ring"
+      ]
+    ],
+    "transmissions": [
+      {
+        "name": "planetary_carrier_ratio",
+        "driving_joint": "sun_input_hinge",
+        "driven_joint": "carrier_output_hinge",
+        "ratio": 0.25
+      },
+      {
+        "name": "planetary_planet_ratio_1",
+        "driving_joint": "sun_input_hinge",
+        "driven_joint": "planet_1_carrier_hinge",
+        "ratio": -0.75
+      },
+      {
+        "name": "planetary_planet_ratio_2",
+        "driving_joint": "sun_input_hinge",
+        "driven_joint": "planet_2_carrier_hinge",
+        "ratio": -0.75
+      },
+      {
+        "name": "planetary_planet_ratio_3",
+        "driving_joint": "sun_input_hinge",
+        "driven_joint": "planet_3_carrier_hinge",
+        "ratio": -0.75
+      }
+    ],
+    "contact_decisions": [
+      {
+        "pair": [
+          "base",
+          "input_shaft"
+        ],
+        "action": "keep",
+        "reason": "Touching geometry has unavailable overlap; preserve uncertain real contact.",
+        "source_entity_ids": [
+          "link/base",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "nearby/base/input_shaft",
+          "pair/base/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "lower_input_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/lower_input_bearing",
+          "relation/shaft_in_lower_bearing"
+        ],
+        "fact_ids": [
+          "nearby/input_shaft/lower_input_bearing",
+          "pair/input_shaft/lower_input_bearing",
+          "fit/lower_input_bearing/journal/input_shaft/shaft_axis"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "upper_input_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/upper_input_bearing",
+          "relation/shaft_in_upper_bearing"
+        ],
+        "fact_ids": [
+          "nearby/input_shaft/upper_input_bearing",
+          "pair/input_shaft/upper_input_bearing",
+          "fit/upper_input_bearing/journal/input_shaft/shaft_axis"
+        ]
+      },
+      {
+        "pair": [
+          "carrier_bearing",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/carrier_bearing",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "nearby/carrier_bearing/input_shaft",
+          "pair/carrier_bearing/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "nearby/carrier/input_shaft",
+          "pair/carrier/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/fixed_ring",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "nearby/fixed_ring/input_shaft",
+          "pair/fixed_ring/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "sun_gear"
+        ],
+        "action": "exclude",
+        "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/sun_gear",
+          "relation/sun_press_fit"
+        ],
+        "fact_ids": [
+          "nearby/input_shaft/sun_gear",
+          "pair/input_shaft/sun_gear",
+          "fit/input_shaft/sun_seat/sun_gear/shaft_bore"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_2"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "nearby/input_shaft/planet_2",
+          "pair/input_shaft/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_3"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "nearby/input_shaft/planet_3",
+          "pair/input_shaft/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "input_crank",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+        "source_entity_ids": [
+          "link/input_crank",
+          "link/input_shaft",
+          "relation/crank_press_fit"
+        ],
+        "fact_ids": [
+          "nearby/input_crank/input_shaft",
+          "pair/input_crank/input_shaft",
+          "fit/input_shaft/crank_seat/input_crank/hub_bore"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_1"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_1"
+        ],
+        "fact_ids": [
+          "nearby/input_shaft/planet_1",
+          "pair/input_shaft/planet_1"
+        ]
+      },
+      {
+        "pair": [
+          "crank_grip",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/crank_grip",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "nearby/crank_grip/input_shaft",
+          "pair/crank_grip/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_pin_2"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "nearby/input_shaft/planet_pin_2",
+          "pair/input_shaft/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_pin_3"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "nearby/input_shaft/planet_pin_3",
+          "pair/input_shaft/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_pin_1"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "nearby/input_shaft/planet_pin_1",
+          "pair/input_shaft/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring",
+          "sun_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/fixed_ring",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "nearby/fixed_ring/sun_gear",
+          "pair/fixed_ring/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "planet_1",
+          "sun_gear"
+        ],
+        "action": "exclude",
+        "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+        "source_entity_ids": [
+          "link/planet_1",
+          "link/sun_gear",
+          "relation/sun_planet_mesh_1"
+        ],
+        "fact_ids": [
+          "nearby/planet_1/sun_gear",
+          "pair/planet_1/sun_gear",
+          "fit/sun_gear/sun_mesh/planet_1/planet_mesh"
+        ]
+      },
+      {
+        "pair": [
+          "planet_2",
+          "sun_gear"
+        ],
+        "action": "exclude",
+        "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+        "source_entity_ids": [
+          "link/planet_2",
+          "link/sun_gear",
+          "relation/sun_planet_mesh_2"
+        ],
+        "fact_ids": [
+          "nearby/planet_2/sun_gear",
+          "pair/planet_2/sun_gear",
+          "fit/sun_gear/sun_mesh/planet_2/planet_mesh"
+        ]
+      },
+      {
+        "pair": [
+          "planet_3",
+          "sun_gear"
+        ],
+        "action": "exclude",
+        "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+        "source_entity_ids": [
+          "link/planet_3",
+          "link/sun_gear",
+          "relation/sun_planet_mesh_3"
+        ],
+        "fact_ids": [
+          "nearby/planet_3/sun_gear",
+          "pair/planet_3/sun_gear",
+          "fit/sun_gear/sun_mesh/planet_3/planet_mesh"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "sun_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "nearby/carrier/sun_gear",
+          "pair/carrier/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "input_crank",
+          "sun_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/input_crank",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "nearby/input_crank/sun_gear",
+          "pair/input_crank/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "sun_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/planet_pin_3",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "nearby/planet_pin_3/sun_gear",
+          "pair/planet_pin_3/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "sun_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "nearby/planet_pin_2/sun_gear",
+          "pair/planet_pin_2/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "carrier_bearing",
+          "sun_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/carrier_bearing",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "nearby/carrier_bearing/sun_gear",
+          "pair/carrier_bearing/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "sun_gear",
+          "upper_input_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/sun_gear",
+          "link/upper_input_bearing"
+        ],
+        "fact_ids": [
+          "nearby/sun_gear/upper_input_bearing",
+          "pair/sun_gear/upper_input_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_grip",
+          "sun_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/crank_grip",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "nearby/crank_grip/sun_gear",
+          "pair/crank_grip/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "sun_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "nearby/planet_pin_1/sun_gear",
+          "pair/planet_pin_1/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "lower_input_bearing",
+          "sun_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/lower_input_bearing",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "nearby/lower_input_bearing/sun_gear",
+          "pair/lower_input_bearing/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "sun_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/base",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "nearby/base/sun_gear",
+          "pair/base/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "carrier_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/carrier_bearing",
+          "relation/carrier_on_support_bearing"
+        ],
+        "fact_ids": [
+          "nearby/carrier/carrier_bearing",
+          "pair/carrier/carrier_bearing",
+          "fit/carrier_bearing/carrier_journal/carrier/output_axis"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "planet_pin_1"
+        ],
+        "action": "exclude",
+        "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/planet_pin_1",
+          "relation/carrier_pin_press_fit_1"
+        ],
+        "fact_ids": [
+          "nearby/carrier/planet_pin_1",
+          "pair/carrier/planet_pin_1",
+          "fit/carrier/pin_seat_1/planet_pin_1/pin_axis"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "planet_pin_2"
+        ],
+        "action": "exclude",
+        "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/planet_pin_2",
+          "relation/carrier_pin_press_fit_2"
+        ],
+        "fact_ids": [
+          "nearby/carrier/planet_pin_2",
+          "pair/carrier/planet_pin_2",
+          "fit/carrier/pin_seat_2/planet_pin_2/pin_axis"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "planet_pin_3"
+        ],
+        "action": "exclude",
+        "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/planet_pin_3",
+          "relation/carrier_pin_press_fit_3"
+        ],
+        "fact_ids": [
+          "nearby/carrier/planet_pin_3",
+          "pair/carrier/planet_pin_3",
+          "fit/carrier/pin_seat_3/planet_pin_3/pin_axis"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "fixed_ring"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/fixed_ring"
+        ],
+        "fact_ids": [
+          "nearby/carrier/fixed_ring",
+          "pair/carrier/fixed_ring"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "planet_1"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/planet_1"
+        ],
+        "fact_ids": [
+          "nearby/carrier/planet_1",
+          "pair/carrier/planet_1"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "planet_2"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "nearby/carrier/planet_2",
+          "pair/carrier/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "planet_3"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "nearby/carrier/planet_3",
+          "pair/carrier/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "upper_input_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/upper_input_bearing"
+        ],
+        "fact_ids": [
+          "nearby/carrier/upper_input_bearing",
+          "pair/carrier/upper_input_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "lower_input_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/lower_input_bearing"
+        ],
+        "fact_ids": [
+          "nearby/carrier/lower_input_bearing",
+          "pair/carrier/lower_input_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "ring_post_1"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/ring_post_1"
+        ],
+        "fact_ids": [
+          "nearby/carrier/ring_post_1",
+          "pair/carrier/ring_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "ring_post_3"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/ring_post_3"
+        ],
+        "fact_ids": [
+          "nearby/carrier/ring_post_3",
+          "pair/carrier/ring_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "carrier"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/base",
+          "link/carrier"
+        ],
+        "fact_ids": [
+          "nearby/base/carrier",
+          "pair/base/carrier"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "input_crank"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/input_crank"
+        ],
+        "fact_ids": [
+          "nearby/carrier/input_crank",
+          "pair/carrier/input_crank"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "crank_grip"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/crank_grip"
+        ],
+        "fact_ids": [
+          "nearby/carrier/crank_grip",
+          "pair/carrier/crank_grip"
+        ]
+      },
+      {
+        "pair": [
+          "carrier",
+          "ring_post_2"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/carrier",
+          "link/ring_post_2"
+        ],
+        "fact_ids": [
+          "nearby/carrier/ring_post_2",
+          "pair/carrier/ring_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_1",
+          "planet_pin_1"
+        ],
+        "action": "exclude",
+        "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+        "source_entity_ids": [
+          "link/planet_1",
+          "link/planet_pin_1",
+          "relation/planet_pin_journal_1"
+        ],
+        "fact_ids": [
+          "nearby/planet_1/planet_pin_1",
+          "pair/planet_1/planet_pin_1",
+          "fit/planet_pin_1/pin_axis/planet_1/pin_bore"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring",
+          "planet_1"
+        ],
+        "action": "exclude",
+        "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+        "source_entity_ids": [
+          "link/fixed_ring",
+          "link/planet_1",
+          "relation/ring_planet_mesh_1"
+        ],
+        "fact_ids": [
+          "nearby/fixed_ring/planet_1",
+          "pair/fixed_ring/planet_1",
+          "fit/fixed_ring/internal_mesh/planet_1/planet_mesh"
+        ]
+      },
+      {
+        "pair": [
+          "planet_1",
+          "planet_2"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/planet_1",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "nearby/planet_1/planet_2",
+          "pair/planet_1/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "input_crank",
+          "planet_1"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/input_crank",
+          "link/planet_1"
+        ],
+        "fact_ids": [
+          "nearby/input_crank/planet_1",
+          "pair/input_crank/planet_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_1",
+          "planet_3"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/planet_1",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "nearby/planet_1/planet_3",
+          "pair/planet_1/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "carrier_bearing",
+          "planet_1"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/carrier_bearing",
+          "link/planet_1"
+        ],
+        "fact_ids": [
+          "nearby/carrier_bearing/planet_1",
+          "pair/carrier_bearing/planet_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_1",
+          "upper_input_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/planet_1",
+          "link/upper_input_bearing"
+        ],
+        "fact_ids": [
+          "nearby/planet_1/upper_input_bearing",
+          "pair/planet_1/upper_input_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_grip",
+          "planet_1"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/crank_grip",
+          "link/planet_1"
+        ],
+        "fact_ids": [
+          "nearby/crank_grip/planet_1",
+          "pair/crank_grip/planet_1"
+        ]
+      },
+      {
+        "pair": [
+          "lower_input_bearing",
+          "planet_1"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/lower_input_bearing",
+          "link/planet_1"
+        ],
+        "fact_ids": [
+          "nearby/lower_input_bearing/planet_1",
+          "pair/lower_input_bearing/planet_1"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "planet_1"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/base",
+          "link/planet_1"
+        ],
+        "fact_ids": [
+          "nearby/base/planet_1",
+          "pair/base/planet_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_1",
+          "planet_pin_2"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/planet_1",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "nearby/planet_1/planet_pin_2",
+          "pair/planet_1/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_1",
+          "planet_pin_3"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/planet_1",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "nearby/planet_1/planet_pin_3",
+          "pair/planet_1/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_1",
+          "ring_post_1"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/planet_1",
+          "link/ring_post_1"
+        ],
+        "fact_ids": [
+          "nearby/planet_1/ring_post_1",
+          "pair/planet_1/ring_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_1",
+          "ring_post_3"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/planet_1",
+          "link/ring_post_3"
+        ],
+        "fact_ids": [
+          "nearby/planet_1/ring_post_3",
+          "pair/planet_1/ring_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_2",
+          "planet_pin_2"
+        ],
+        "action": "exclude",
+        "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+        "source_entity_ids": [
+          "link/planet_2",
+          "link/planet_pin_2",
+          "relation/planet_pin_journal_2"
+        ],
+        "fact_ids": [
+          "nearby/planet_2/planet_pin_2",
+          "pair/planet_2/planet_pin_2",
+          "fit/planet_pin_2/pin_axis/planet_2/pin_bore"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring",
+          "planet_2"
+        ],
+        "action": "exclude",
+        "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+        "source_entity_ids": [
+          "link/fixed_ring",
+          "link/planet_2",
+          "relation/ring_planet_mesh_2"
+        ],
+        "fact_ids": [
+          "nearby/fixed_ring/planet_2",
+          "pair/fixed_ring/planet_2",
+          "fit/fixed_ring/internal_mesh/planet_2/planet_mesh"
+        ]
+      },
+      {
+        "pair": [
+          "input_crank",
+          "planet_2"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/input_crank",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "nearby/input_crank/planet_2",
+          "pair/input_crank/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "carrier_bearing",
+          "planet_2"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/carrier_bearing",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "nearby/carrier_bearing/planet_2",
+          "pair/carrier_bearing/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_2",
+          "upper_input_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/planet_2",
+          "link/upper_input_bearing"
+        ],
+        "fact_ids": [
+          "nearby/planet_2/upper_input_bearing",
+          "pair/planet_2/upper_input_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "planet_2",
+          "planet_3"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/planet_2",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "nearby/planet_2/planet_3",
+          "pair/planet_2/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_2",
+          "ring_post_2"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/planet_2",
+          "link/ring_post_2"
+        ],
+        "fact_ids": [
+          "nearby/planet_2/ring_post_2",
+          "pair/planet_2/ring_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "lower_input_bearing",
+          "planet_2"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/lower_input_bearing",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "nearby/lower_input_bearing/planet_2",
+          "pair/lower_input_bearing/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_2",
+          "ring_post_1"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/planet_2",
+          "link/ring_post_1"
+        ],
+        "fact_ids": [
+          "nearby/planet_2/ring_post_1",
+          "pair/planet_2/ring_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "crank_grip",
+          "planet_2"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/crank_grip",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "nearby/crank_grip/planet_2",
+          "pair/crank_grip/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "planet_2"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/base",
+          "link/planet_2"
+        ],
+        "fact_ids": [
+          "nearby/base/planet_2",
+          "pair/base/planet_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_2",
+          "planet_pin_1"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/planet_2",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "nearby/planet_2/planet_pin_1",
+          "pair/planet_2/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_3",
+          "planet_pin_3"
+        ],
+        "action": "exclude",
+        "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+        "source_entity_ids": [
+          "link/planet_3",
+          "link/planet_pin_3",
+          "relation/planet_pin_journal_3"
+        ],
+        "fact_ids": [
+          "nearby/planet_3/planet_pin_3",
+          "pair/planet_3/planet_pin_3",
+          "fit/planet_pin_3/pin_axis/planet_3/pin_bore"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring",
+          "planet_3"
+        ],
+        "action": "exclude",
+        "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+        "source_entity_ids": [
+          "link/fixed_ring",
+          "link/planet_3",
+          "relation/ring_planet_mesh_3"
+        ],
+        "fact_ids": [
+          "nearby/fixed_ring/planet_3",
+          "pair/fixed_ring/planet_3",
+          "fit/fixed_ring/internal_mesh/planet_3/planet_mesh"
+        ]
+      },
+      {
+        "pair": [
+          "input_crank",
+          "planet_3"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/input_crank",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "nearby/input_crank/planet_3",
+          "pair/input_crank/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "carrier_bearing",
+          "planet_3"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/carrier_bearing",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "nearby/carrier_bearing/planet_3",
+          "pair/carrier_bearing/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_3",
+          "upper_input_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/planet_3",
+          "link/upper_input_bearing"
+        ],
+        "fact_ids": [
+          "nearby/planet_3/upper_input_bearing",
+          "pair/planet_3/upper_input_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "planet_3",
+          "ring_post_2"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/planet_3",
+          "link/ring_post_2"
+        ],
+        "fact_ids": [
+          "nearby/planet_3/ring_post_2",
+          "pair/planet_3/ring_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "lower_input_bearing",
+          "planet_3"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/lower_input_bearing",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "nearby/lower_input_bearing/planet_3",
+          "pair/lower_input_bearing/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "crank_grip",
+          "planet_3"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/crank_grip",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "nearby/crank_grip/planet_3",
+          "pair/crank_grip/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_3",
+          "ring_post_3"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/planet_3",
+          "link/ring_post_3"
+        ],
+        "fact_ids": [
+          "nearby/planet_3/ring_post_3",
+          "pair/planet_3/ring_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "planet_3"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/base",
+          "link/planet_3"
+        ],
+        "fact_ids": [
+          "nearby/base/planet_3",
+          "pair/base/planet_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_3",
+          "planet_pin_1"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/planet_3",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "nearby/planet_3/planet_pin_1",
+          "pair/planet_3/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "crank_grip",
+          "input_crank"
+        ],
+        "action": "keep",
+        "reason": "Touching geometry has unavailable overlap; preserve uncertain real contact.",
+        "source_entity_ids": [
+          "link/crank_grip",
+          "link/input_crank"
+        ],
+        "fact_ids": [
+          "nearby/crank_grip/input_crank",
+          "pair/crank_grip/input_crank"
+        ]
+      },
+      {
+        "pair": [
+          "input_crank",
+          "planet_pin_1"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/input_crank",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "nearby/input_crank/planet_pin_1",
+          "pair/input_crank/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring",
+          "input_crank"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/fixed_ring",
+          "link/input_crank"
+        ],
+        "fact_ids": [
+          "nearby/fixed_ring/input_crank",
+          "pair/fixed_ring/input_crank"
+        ]
+      },
+      {
+        "pair": [
+          "input_crank",
+          "planet_pin_3"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/input_crank",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "nearby/input_crank/planet_pin_3",
+          "pair/input_crank/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "input_crank",
+          "planet_pin_2"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/input_crank",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "nearby/input_crank/planet_pin_2",
+          "pair/input_crank/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "carrier_bearing",
+          "input_crank"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/carrier_bearing",
+          "link/input_crank"
+        ],
+        "fact_ids": [
+          "nearby/carrier_bearing/input_crank",
+          "pair/carrier_bearing/input_crank"
+        ]
+      },
+      {
+        "pair": [
+          "input_crank",
+          "upper_input_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+        "source_entity_ids": [
+          "link/input_crank",
+          "link/upper_input_bearing"
+        ],
+        "fact_ids": [
+          "nearby/input_crank/upper_input_bearing",
+          "pair/input_crank/upper_input_bearing"
+        ]
+      }
+    ],
+    "support_ground": [
+      "base"
+    ],
+    "support_strategy": "Fixed base and supports remain ground-collidable; no support patch."
+  },
+  "decisions": [
+    {
+      "generated_kind": "constraint",
+      "generated_name": "planetary_carrier_ratio",
+      "constraint_type": "joint",
+      "reason": "Fixed 54 tooth ring and 18 tooth sun give four to one reduction.",
+      "source_entity_ids": [
+        "planetary_stage/four_to_one_planetary_stage"
+      ],
+      "fact_ids": [
+        "planetary_stage/four_to_one_planetary_stage"
+      ]
+    },
+    {
+      "generated_kind": "constraint",
+      "generated_name": "planetary_planet_ratio_1",
+      "constraint_type": "joint",
+      "reason": "Fixed-ring planetary local planet spin.",
+      "source_entity_ids": [
+        "transmission/sun_to_planet_1",
+        "transmission/planet_to_internal_ring_1",
+        "planetary_stage/four_to_one_planetary_stage"
+      ],
+      "fact_ids": [
+        "transmission/sun_to_planet_1",
+        "transmission/planet_to_internal_ring_1",
+        "planetary_stage/four_to_one_planetary_stage"
+      ]
+    },
+    {
+      "generated_kind": "constraint",
+      "generated_name": "planetary_planet_ratio_2",
+      "constraint_type": "joint",
+      "reason": "Fixed-ring planetary local planet spin.",
+      "source_entity_ids": [
+        "transmission/sun_to_planet_2",
+        "transmission/planet_to_internal_ring_2",
+        "planetary_stage/four_to_one_planetary_stage"
+      ],
+      "fact_ids": [
+        "transmission/sun_to_planet_2",
+        "transmission/planet_to_internal_ring_2",
+        "planetary_stage/four_to_one_planetary_stage"
+      ]
+    },
+    {
+      "generated_kind": "constraint",
+      "generated_name": "planetary_planet_ratio_3",
+      "constraint_type": "joint",
+      "reason": "Fixed-ring planetary local planet spin.",
+      "source_entity_ids": [
+        "transmission/sun_to_planet_3",
+        "transmission/planet_to_internal_ring_3",
+        "planetary_stage/four_to_one_planetary_stage"
+      ],
+      "fact_ids": [
+        "transmission/sun_to_planet_3",
+        "transmission/planet_to_internal_ring_3",
+        "planetary_stage/four_to_one_planetary_stage"
+      ]
+    },
+    {
+      "entity_id": "link/base",
+      "action": "emitted",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "link/base"
+      ]
+    },
+    {
+      "entity_id": "pose/place_base",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "pose/place_base"
+      ]
+    },
+    {
+      "entity_id": "link/lower_input_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "lower_input_bearing"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "link/lower_input_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_lower_input_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "lower_input_bearing"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "pose/place_lower_input_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/upper_input_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "upper_input_bearing"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "link/upper_input_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_upper_input_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "upper_input_bearing"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "pose/place_upper_input_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/carrier_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "carrier_bearing"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "link/carrier_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_carrier_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "carrier_bearing"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "pose/place_carrier_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/input_shaft",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_shaft"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "link/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "input_shaft"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "pose/place_input_shaft"
+      ]
+    },
+    {
+      "entity_id": "link/ring_post_1",
+      "action": "emitted",
+      "generated_nodes": [
+        "ring_post_1"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "link/ring_post_1"
+      ]
+    },
+    {
+      "entity_id": "pose/place_ring_post_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "ring_post_1"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "pose/place_ring_post_1"
+      ]
+    },
+    {
+      "entity_id": "link/ring_post_2",
+      "action": "emitted",
+      "generated_nodes": [
+        "ring_post_2"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "link/ring_post_2"
+      ]
+    },
+    {
+      "entity_id": "pose/place_ring_post_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "ring_post_2"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "pose/place_ring_post_2"
+      ]
+    },
+    {
+      "entity_id": "link/ring_post_3",
+      "action": "emitted",
+      "generated_nodes": [
+        "ring_post_3"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "link/ring_post_3"
+      ]
+    },
+    {
+      "entity_id": "pose/place_ring_post_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "ring_post_3"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "pose/place_ring_post_3"
+      ]
+    },
+    {
+      "entity_id": "link/carrier",
+      "action": "emitted",
+      "generated_nodes": [
+        "carrier"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "link/carrier"
+      ]
+    },
+    {
+      "entity_id": "pose/place_carrier",
+      "action": "represented_by",
+      "generated_nodes": [
+        "carrier"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "pose/place_carrier"
+      ]
+    },
+    {
+      "entity_id": "link/planet_pin_1",
+      "action": "emitted",
+      "generated_nodes": [
+        "planet_pin_1"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "link/planet_pin_1"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_pin_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_pin_1"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "pose/place_planet_pin_1"
+      ]
+    },
+    {
+      "entity_id": "link/planet_pin_2",
+      "action": "emitted",
+      "generated_nodes": [
+        "planet_pin_2"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "link/planet_pin_2"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_pin_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_pin_2"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "pose/place_planet_pin_2"
+      ]
+    },
+    {
+      "entity_id": "link/planet_pin_3",
+      "action": "emitted",
+      "generated_nodes": [
+        "planet_pin_3"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "link/planet_pin_3"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_pin_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_pin_3"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "pose/place_planet_pin_3"
+      ]
+    },
+    {
+      "entity_id": "link/fixed_ring",
+      "action": "emitted",
+      "generated_nodes": [
+        "fixed_ring"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "link/fixed_ring"
+      ]
+    },
+    {
+      "entity_id": "pose/place_fixed_ring",
+      "action": "represented_by",
+      "generated_nodes": [
+        "fixed_ring"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "pose/place_fixed_ring"
+      ]
+    },
+    {
+      "entity_id": "link/sun_gear",
+      "action": "emitted",
+      "generated_nodes": [
+        "sun_gear"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "link/sun_gear"
+      ]
+    },
+    {
+      "entity_id": "pose/place_sun_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "sun_gear"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "pose/place_sun_gear"
+      ]
+    },
+    {
+      "entity_id": "link/planet_1",
+      "action": "emitted",
+      "generated_nodes": [
+        "planet_1"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "link/planet_1"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_1"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "pose/place_planet_1"
+      ]
+    },
+    {
+      "entity_id": "link/planet_2",
+      "action": "emitted",
+      "generated_nodes": [
+        "planet_2"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "link/planet_2"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_2"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "pose/place_planet_2"
+      ]
+    },
+    {
+      "entity_id": "link/planet_3",
+      "action": "emitted",
+      "generated_nodes": [
+        "planet_3"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "link/planet_3"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_3"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "pose/place_planet_3"
+      ]
+    },
+    {
+      "entity_id": "link/input_crank",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_crank"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "link/input_crank"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_crank",
+      "action": "represented_by",
+      "generated_nodes": [
+        "input_crank"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "pose/place_input_crank"
+      ]
+    },
+    {
+      "entity_id": "link/crank_grip",
+      "action": "emitted",
+      "generated_nodes": [
+        "crank_grip"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "link/crank_grip"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crank_grip",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_grip"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "pose/place_crank_grip"
+      ]
+    },
+    {
+      "entity_id": "port/base/top",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/base/top"
+      ]
+    },
+    {
+      "entity_id": "port/lower_input_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "lower_input_bearing"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/lower_input_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/upper_input_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "upper_input_bearing"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/upper_input_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/carrier_bearing/carrier_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "carrier_bearing"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/carrier_bearing/carrier_journal"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/shaft_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "input_shaft"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/input_shaft/shaft_axis"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/sun_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "input_shaft"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/input_shaft/sun_seat"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/crank_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "input_shaft"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/input_shaft/crank_seat"
+      ]
+    },
+    {
+      "entity_id": "port/sun_gear/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "sun_gear"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/sun_gear/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/sun_gear/sun_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "sun_gear"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/sun_gear/sun_mesh"
+      ]
+    },
+    {
+      "entity_id": "port/carrier/output_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "carrier"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/carrier/output_axis"
+      ]
+    },
+    {
+      "entity_id": "port/carrier/pin_seat_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "carrier"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/carrier/pin_seat_1"
+      ]
+    },
+    {
+      "entity_id": "port/carrier/pin_seat_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "carrier"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/carrier/pin_seat_2"
+      ]
+    },
+    {
+      "entity_id": "port/carrier/pin_seat_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "carrier"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/carrier/pin_seat_3"
+      ]
+    },
+    {
+      "entity_id": "port/fixed_ring/internal_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "fixed_ring"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/fixed_ring/internal_mesh"
+      ]
+    },
+    {
+      "entity_id": "port/input_crank/hub_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "input_crank"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/input_crank/hub_bore"
+      ]
+    },
+    {
+      "entity_id": "port/crank_grip/grip_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_grip"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/crank_grip/grip_axis"
+      ]
+    },
+    {
+      "entity_id": "port/planet_1/pin_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_1"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/planet_1/pin_bore"
+      ]
+    },
+    {
+      "entity_id": "port/planet_1/planet_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_1"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/planet_1/planet_mesh"
+      ]
+    },
+    {
+      "entity_id": "port/planet_pin_1/pin_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_pin_1"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/planet_pin_1/pin_axis"
+      ]
+    },
+    {
+      "entity_id": "port/planet_2/pin_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_2"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/planet_2/pin_bore"
+      ]
+    },
+    {
+      "entity_id": "port/planet_2/planet_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_2"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/planet_2/planet_mesh"
+      ]
+    },
+    {
+      "entity_id": "port/planet_pin_2/pin_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_pin_2"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/planet_pin_2/pin_axis"
+      ]
+    },
+    {
+      "entity_id": "port/planet_3/pin_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_3"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/planet_3/pin_bore"
+      ]
+    },
+    {
+      "entity_id": "port/planet_3/planet_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_3"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/planet_3/planet_mesh"
+      ]
+    },
+    {
+      "entity_id": "port/planet_pin_3/pin_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_pin_3"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/planet_pin_3/pin_axis"
+      ]
+    },
+    {
+      "entity_id": "port/ring_post_1/support_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "ring_post_1"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/ring_post_1/support_axis"
+      ]
+    },
+    {
+      "entity_id": "port/ring_post_2/support_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "ring_post_2"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/ring_post_2/support_axis"
+      ]
+    },
+    {
+      "entity_id": "port/ring_post_3/support_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "ring_post_3"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "port/ring_post_3/support_axis"
+      ]
+    },
+    {
+      "entity_id": "relation/shaft_in_lower_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "sun_input_hinge"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "relation/shaft_in_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "relation/shaft_in_upper_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "sun_input_hinge"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "relation/shaft_in_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "relation/sun_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "sun_input_hinge"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "relation/sun_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/crank_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "sun_input_hinge"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "relation/crank_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/carrier_on_support_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "carrier_output_hinge"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "relation/carrier_on_support_bearing"
+      ]
+    },
+    {
+      "entity_id": "relation/carrier_pin_press_fit_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "carrier_output_hinge"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "relation/carrier_pin_press_fit_1"
+      ]
+    },
+    {
+      "entity_id": "relation/planet_pin_journal_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planetary_planet_ratio_1"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "relation/planet_pin_journal_1"
+      ]
+    },
+    {
+      "entity_id": "relation/sun_planet_mesh_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planetary_planet_ratio_1"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "relation/sun_planet_mesh_1"
+      ]
+    },
+    {
+      "entity_id": "relation/ring_planet_mesh_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planetary_planet_ratio_1"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "relation/ring_planet_mesh_1"
+      ]
+    },
+    {
+      "entity_id": "relation/carrier_pin_press_fit_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "carrier_output_hinge"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "relation/carrier_pin_press_fit_2"
+      ]
+    },
+    {
+      "entity_id": "relation/planet_pin_journal_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planetary_planet_ratio_2"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "relation/planet_pin_journal_2"
+      ]
+    },
+    {
+      "entity_id": "relation/sun_planet_mesh_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planetary_planet_ratio_2"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "relation/sun_planet_mesh_2"
+      ]
+    },
+    {
+      "entity_id": "relation/ring_planet_mesh_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planetary_planet_ratio_2"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "relation/ring_planet_mesh_2"
+      ]
+    },
+    {
+      "entity_id": "relation/carrier_pin_press_fit_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "carrier_output_hinge"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "relation/carrier_pin_press_fit_3"
+      ]
+    },
+    {
+      "entity_id": "relation/planet_pin_journal_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planetary_planet_ratio_3"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "relation/planet_pin_journal_3"
+      ]
+    },
+    {
+      "entity_id": "relation/sun_planet_mesh_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planetary_planet_ratio_3"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "relation/sun_planet_mesh_3"
+      ]
+    },
+    {
+      "entity_id": "relation/ring_planet_mesh_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planetary_planet_ratio_3"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "relation/ring_planet_mesh_3"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/sun_input_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "sun_input_hinge"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "motion_joint/sun_input_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/carrier_output_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "carrier_output_hinge"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "motion_joint/carrier_output_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/planet_1_carrier_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "planet_1_carrier_hinge"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "motion_joint/planet_1_carrier_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/planet_2_carrier_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "planet_2_carrier_hinge"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "motion_joint/planet_2_carrier_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/planet_3_carrier_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "planet_3_carrier_hinge"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "motion_joint/planet_3_carrier_hinge"
+      ]
+    },
+    {
+      "entity_id": "transmission/sun_to_planet_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planetary_planet_ratio_1"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "transmission/sun_to_planet_1"
+      ]
+    },
+    {
+      "entity_id": "transmission/planet_to_internal_ring_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planetary_planet_ratio_1"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "transmission/planet_to_internal_ring_1"
+      ]
+    },
+    {
+      "entity_id": "transmission/sun_to_planet_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planetary_planet_ratio_2"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "transmission/sun_to_planet_2"
+      ]
+    },
+    {
+      "entity_id": "transmission/planet_to_internal_ring_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planetary_planet_ratio_2"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "transmission/planet_to_internal_ring_2"
+      ]
+    },
+    {
+      "entity_id": "transmission/sun_to_planet_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planetary_planet_ratio_3"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "transmission/sun_to_planet_3"
+      ]
+    },
+    {
+      "entity_id": "transmission/planet_to_internal_ring_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planetary_planet_ratio_3"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "transmission/planet_to_internal_ring_3"
+      ]
+    },
+    {
+      "entity_id": "planetary_stage/four_to_one_planetary_stage",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planetary_carrier_ratio"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "planetary_stage/four_to_one_planetary_stage"
+      ]
+    },
+    {
+      "entity_id": "role/driver/input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "sun_input_hinge"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "role/driver/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/output/carrier",
+      "action": "represented_by",
+      "generated_nodes": [
+        "carrier_output_hinge"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "role/output/carrier"
+      ]
+    },
+    {
+      "entity_id": "role/watch/sun_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "sun_input_hinge"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "role/watch/sun_gear"
+      ]
+    },
+    {
+      "entity_id": "role/watch/planet_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_1_carrier_hinge"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "role/watch/planet_1"
+      ]
+    },
+    {
+      "entity_id": "role/watch/planet_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_2_carrier_hinge"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "role/watch/planet_2"
+      ]
+    },
+    {
+      "entity_id": "role/watch/planet_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_3_carrier_hinge"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "role/watch/planet_3"
+      ]
+    },
+    {
+      "entity_id": "role/watch/carrier",
+      "action": "represented_by",
+      "generated_nodes": [
+        "carrier_output_hinge"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "role/watch/carrier"
+      ]
+    },
+    {
+      "entity_id": "role/watch/input_crank",
+      "action": "represented_by",
+      "generated_nodes": [
+        "sun_input_hinge"
+      ],
+      "reason": "Represented by emitted topology, ideal coordinate, transmission, or contact classification.",
+      "fact_ids": [
+        "role/watch/input_crank"
+      ]
+    }
+  ],
+  "excludes": [
+    {
+      "pair": [
+        "input_shaft",
+        "lower_input_bearing"
+      ],
+      "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/lower_input_bearing",
+        "relation/shaft_in_lower_bearing"
+      ],
+      "fact_ids": [
+        "nearby/input_shaft/lower_input_bearing",
+        "pair/input_shaft/lower_input_bearing",
+        "fit/lower_input_bearing/journal/input_shaft/shaft_axis"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "upper_input_bearing"
+      ],
+      "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/upper_input_bearing",
+        "relation/shaft_in_upper_bearing"
+      ],
+      "fact_ids": [
+        "nearby/input_shaft/upper_input_bearing",
+        "pair/input_shaft/upper_input_bearing",
+        "fit/upper_input_bearing/journal/input_shaft/shaft_axis"
+      ]
+    },
+    {
+      "pair": [
+        "carrier_bearing",
+        "input_shaft"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/carrier_bearing",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "nearby/carrier_bearing/input_shaft",
+        "pair/carrier_bearing/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "input_shaft"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/carrier",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "nearby/carrier/input_shaft",
+        "pair/carrier/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "fixed_ring",
+        "input_shaft"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/fixed_ring",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "nearby/fixed_ring/input_shaft",
+        "pair/fixed_ring/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "sun_gear"
+      ],
+      "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/sun_gear",
+        "relation/sun_press_fit"
+      ],
+      "fact_ids": [
+        "nearby/input_shaft/sun_gear",
+        "pair/input_shaft/sun_gear",
+        "fit/input_shaft/sun_seat/sun_gear/shaft_bore"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "planet_2"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/planet_2"
+      ],
+      "fact_ids": [
+        "nearby/input_shaft/planet_2",
+        "pair/input_shaft/planet_2"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "planet_3"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/planet_3"
+      ],
+      "fact_ids": [
+        "nearby/input_shaft/planet_3",
+        "pair/input_shaft/planet_3"
+      ]
+    },
+    {
+      "pair": [
+        "input_crank",
+        "input_shaft"
+      ],
+      "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+      "source_entity_ids": [
+        "link/input_crank",
+        "link/input_shaft",
+        "relation/crank_press_fit"
+      ],
+      "fact_ids": [
+        "nearby/input_crank/input_shaft",
+        "pair/input_crank/input_shaft",
+        "fit/input_shaft/crank_seat/input_crank/hub_bore"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "planet_1"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/planet_1"
+      ],
+      "fact_ids": [
+        "nearby/input_shaft/planet_1",
+        "pair/input_shaft/planet_1"
+      ]
+    },
+    {
+      "pair": [
+        "crank_grip",
+        "input_shaft"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/crank_grip",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "nearby/crank_grip/input_shaft",
+        "pair/crank_grip/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "planet_pin_2"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/planet_pin_2"
+      ],
+      "fact_ids": [
+        "nearby/input_shaft/planet_pin_2",
+        "pair/input_shaft/planet_pin_2"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "planet_pin_3"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/planet_pin_3"
+      ],
+      "fact_ids": [
+        "nearby/input_shaft/planet_pin_3",
+        "pair/input_shaft/planet_pin_3"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "planet_pin_1"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/planet_pin_1"
+      ],
+      "fact_ids": [
+        "nearby/input_shaft/planet_pin_1",
+        "pair/input_shaft/planet_pin_1"
+      ]
+    },
+    {
+      "pair": [
+        "fixed_ring",
+        "sun_gear"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/fixed_ring",
+        "link/sun_gear"
+      ],
+      "fact_ids": [
+        "nearby/fixed_ring/sun_gear",
+        "pair/fixed_ring/sun_gear"
+      ]
+    },
+    {
+      "pair": [
+        "planet_1",
+        "sun_gear"
+      ],
+      "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+      "source_entity_ids": [
+        "link/planet_1",
+        "link/sun_gear",
+        "relation/sun_planet_mesh_1"
+      ],
+      "fact_ids": [
+        "nearby/planet_1/sun_gear",
+        "pair/planet_1/sun_gear",
+        "fit/sun_gear/sun_mesh/planet_1/planet_mesh"
+      ]
+    },
+    {
+      "pair": [
+        "planet_2",
+        "sun_gear"
+      ],
+      "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+      "source_entity_ids": [
+        "link/planet_2",
+        "link/sun_gear",
+        "relation/sun_planet_mesh_2"
+      ],
+      "fact_ids": [
+        "nearby/planet_2/sun_gear",
+        "pair/planet_2/sun_gear",
+        "fit/sun_gear/sun_mesh/planet_2/planet_mesh"
+      ]
+    },
+    {
+      "pair": [
+        "planet_3",
+        "sun_gear"
+      ],
+      "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+      "source_entity_ids": [
+        "link/planet_3",
+        "link/sun_gear",
+        "relation/sun_planet_mesh_3"
+      ],
+      "fact_ids": [
+        "nearby/planet_3/sun_gear",
+        "pair/planet_3/sun_gear",
+        "fit/sun_gear/sun_mesh/planet_3/planet_mesh"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "sun_gear"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/carrier",
+        "link/sun_gear"
+      ],
+      "fact_ids": [
+        "nearby/carrier/sun_gear",
+        "pair/carrier/sun_gear"
+      ]
+    },
+    {
+      "pair": [
+        "input_crank",
+        "sun_gear"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/input_crank",
+        "link/sun_gear"
+      ],
+      "fact_ids": [
+        "nearby/input_crank/sun_gear",
+        "pair/input_crank/sun_gear"
+      ]
+    },
+    {
+      "pair": [
+        "planet_pin_3",
+        "sun_gear"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/planet_pin_3",
+        "link/sun_gear"
+      ],
+      "fact_ids": [
+        "nearby/planet_pin_3/sun_gear",
+        "pair/planet_pin_3/sun_gear"
+      ]
+    },
+    {
+      "pair": [
+        "planet_pin_2",
+        "sun_gear"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/planet_pin_2",
+        "link/sun_gear"
+      ],
+      "fact_ids": [
+        "nearby/planet_pin_2/sun_gear",
+        "pair/planet_pin_2/sun_gear"
+      ]
+    },
+    {
+      "pair": [
+        "carrier_bearing",
+        "sun_gear"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/carrier_bearing",
+        "link/sun_gear"
+      ],
+      "fact_ids": [
+        "nearby/carrier_bearing/sun_gear",
+        "pair/carrier_bearing/sun_gear"
+      ]
+    },
+    {
+      "pair": [
+        "sun_gear",
+        "upper_input_bearing"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/sun_gear",
+        "link/upper_input_bearing"
+      ],
+      "fact_ids": [
+        "nearby/sun_gear/upper_input_bearing",
+        "pair/sun_gear/upper_input_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "crank_grip",
+        "sun_gear"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/crank_grip",
+        "link/sun_gear"
+      ],
+      "fact_ids": [
+        "nearby/crank_grip/sun_gear",
+        "pair/crank_grip/sun_gear"
+      ]
+    },
+    {
+      "pair": [
+        "planet_pin_1",
+        "sun_gear"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/planet_pin_1",
+        "link/sun_gear"
+      ],
+      "fact_ids": [
+        "nearby/planet_pin_1/sun_gear",
+        "pair/planet_pin_1/sun_gear"
+      ]
+    },
+    {
+      "pair": [
+        "lower_input_bearing",
+        "sun_gear"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/lower_input_bearing",
+        "link/sun_gear"
+      ],
+      "fact_ids": [
+        "nearby/lower_input_bearing/sun_gear",
+        "pair/lower_input_bearing/sun_gear"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "sun_gear"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/base",
+        "link/sun_gear"
+      ],
+      "fact_ids": [
+        "nearby/base/sun_gear",
+        "pair/base/sun_gear"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "carrier_bearing"
+      ],
+      "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+      "source_entity_ids": [
+        "link/carrier",
+        "link/carrier_bearing",
+        "relation/carrier_on_support_bearing"
+      ],
+      "fact_ids": [
+        "nearby/carrier/carrier_bearing",
+        "pair/carrier/carrier_bearing",
+        "fit/carrier_bearing/carrier_journal/carrier/output_axis"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "planet_pin_1"
+      ],
+      "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+      "source_entity_ids": [
+        "link/carrier",
+        "link/planet_pin_1",
+        "relation/carrier_pin_press_fit_1"
+      ],
+      "fact_ids": [
+        "nearby/carrier/planet_pin_1",
+        "pair/carrier/planet_pin_1",
+        "fit/carrier/pin_seat_1/planet_pin_1/pin_axis"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "planet_pin_2"
+      ],
+      "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+      "source_entity_ids": [
+        "link/carrier",
+        "link/planet_pin_2",
+        "relation/carrier_pin_press_fit_2"
+      ],
+      "fact_ids": [
+        "nearby/carrier/planet_pin_2",
+        "pair/carrier/planet_pin_2",
+        "fit/carrier/pin_seat_2/planet_pin_2/pin_axis"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "planet_pin_3"
+      ],
+      "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+      "source_entity_ids": [
+        "link/carrier",
+        "link/planet_pin_3",
+        "relation/carrier_pin_press_fit_3"
+      ],
+      "fact_ids": [
+        "nearby/carrier/planet_pin_3",
+        "pair/carrier/planet_pin_3",
+        "fit/carrier/pin_seat_3/planet_pin_3/pin_axis"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "fixed_ring"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/carrier",
+        "link/fixed_ring"
+      ],
+      "fact_ids": [
+        "nearby/carrier/fixed_ring",
+        "pair/carrier/fixed_ring"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "planet_1"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/carrier",
+        "link/planet_1"
+      ],
+      "fact_ids": [
+        "nearby/carrier/planet_1",
+        "pair/carrier/planet_1"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "planet_2"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/carrier",
+        "link/planet_2"
+      ],
+      "fact_ids": [
+        "nearby/carrier/planet_2",
+        "pair/carrier/planet_2"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "planet_3"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/carrier",
+        "link/planet_3"
+      ],
+      "fact_ids": [
+        "nearby/carrier/planet_3",
+        "pair/carrier/planet_3"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "upper_input_bearing"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/carrier",
+        "link/upper_input_bearing"
+      ],
+      "fact_ids": [
+        "nearby/carrier/upper_input_bearing",
+        "pair/carrier/upper_input_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "lower_input_bearing"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/carrier",
+        "link/lower_input_bearing"
+      ],
+      "fact_ids": [
+        "nearby/carrier/lower_input_bearing",
+        "pair/carrier/lower_input_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "ring_post_1"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/carrier",
+        "link/ring_post_1"
+      ],
+      "fact_ids": [
+        "nearby/carrier/ring_post_1",
+        "pair/carrier/ring_post_1"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "ring_post_3"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/carrier",
+        "link/ring_post_3"
+      ],
+      "fact_ids": [
+        "nearby/carrier/ring_post_3",
+        "pair/carrier/ring_post_3"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "carrier"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/base",
+        "link/carrier"
+      ],
+      "fact_ids": [
+        "nearby/base/carrier",
+        "pair/base/carrier"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "input_crank"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/carrier",
+        "link/input_crank"
+      ],
+      "fact_ids": [
+        "nearby/carrier/input_crank",
+        "pair/carrier/input_crank"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "crank_grip"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/carrier",
+        "link/crank_grip"
+      ],
+      "fact_ids": [
+        "nearby/carrier/crank_grip",
+        "pair/carrier/crank_grip"
+      ]
+    },
+    {
+      "pair": [
+        "carrier",
+        "ring_post_2"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/carrier",
+        "link/ring_post_2"
+      ],
+      "fact_ids": [
+        "nearby/carrier/ring_post_2",
+        "pair/carrier/ring_post_2"
+      ]
+    },
+    {
+      "pair": [
+        "planet_1",
+        "planet_pin_1"
+      ],
+      "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+      "source_entity_ids": [
+        "link/planet_1",
+        "link/planet_pin_1",
+        "relation/planet_pin_journal_1"
+      ],
+      "fact_ids": [
+        "nearby/planet_1/planet_pin_1",
+        "pair/planet_1/planet_pin_1",
+        "fit/planet_pin_1/pin_axis/planet_1/pin_bore"
+      ]
+    },
+    {
+      "pair": [
+        "fixed_ring",
+        "planet_1"
+      ],
+      "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+      "source_entity_ids": [
+        "link/fixed_ring",
+        "link/planet_1",
+        "relation/ring_planet_mesh_1"
+      ],
+      "fact_ids": [
+        "nearby/fixed_ring/planet_1",
+        "pair/fixed_ring/planet_1",
+        "fit/fixed_ring/internal_mesh/planet_1/planet_mesh"
+      ]
+    },
+    {
+      "pair": [
+        "planet_1",
+        "planet_2"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/planet_1",
+        "link/planet_2"
+      ],
+      "fact_ids": [
+        "nearby/planet_1/planet_2",
+        "pair/planet_1/planet_2"
+      ]
+    },
+    {
+      "pair": [
+        "input_crank",
+        "planet_1"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/input_crank",
+        "link/planet_1"
+      ],
+      "fact_ids": [
+        "nearby/input_crank/planet_1",
+        "pair/input_crank/planet_1"
+      ]
+    },
+    {
+      "pair": [
+        "planet_1",
+        "planet_3"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/planet_1",
+        "link/planet_3"
+      ],
+      "fact_ids": [
+        "nearby/planet_1/planet_3",
+        "pair/planet_1/planet_3"
+      ]
+    },
+    {
+      "pair": [
+        "carrier_bearing",
+        "planet_1"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/carrier_bearing",
+        "link/planet_1"
+      ],
+      "fact_ids": [
+        "nearby/carrier_bearing/planet_1",
+        "pair/carrier_bearing/planet_1"
+      ]
+    },
+    {
+      "pair": [
+        "planet_1",
+        "upper_input_bearing"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/planet_1",
+        "link/upper_input_bearing"
+      ],
+      "fact_ids": [
+        "nearby/planet_1/upper_input_bearing",
+        "pair/planet_1/upper_input_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "crank_grip",
+        "planet_1"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/crank_grip",
+        "link/planet_1"
+      ],
+      "fact_ids": [
+        "nearby/crank_grip/planet_1",
+        "pair/crank_grip/planet_1"
+      ]
+    },
+    {
+      "pair": [
+        "lower_input_bearing",
+        "planet_1"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/lower_input_bearing",
+        "link/planet_1"
+      ],
+      "fact_ids": [
+        "nearby/lower_input_bearing/planet_1",
+        "pair/lower_input_bearing/planet_1"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "planet_1"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/base",
+        "link/planet_1"
+      ],
+      "fact_ids": [
+        "nearby/base/planet_1",
+        "pair/base/planet_1"
+      ]
+    },
+    {
+      "pair": [
+        "planet_1",
+        "planet_pin_2"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/planet_1",
+        "link/planet_pin_2"
+      ],
+      "fact_ids": [
+        "nearby/planet_1/planet_pin_2",
+        "pair/planet_1/planet_pin_2"
+      ]
+    },
+    {
+      "pair": [
+        "planet_1",
+        "planet_pin_3"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/planet_1",
+        "link/planet_pin_3"
+      ],
+      "fact_ids": [
+        "nearby/planet_1/planet_pin_3",
+        "pair/planet_1/planet_pin_3"
+      ]
+    },
+    {
+      "pair": [
+        "planet_1",
+        "ring_post_1"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/planet_1",
+        "link/ring_post_1"
+      ],
+      "fact_ids": [
+        "nearby/planet_1/ring_post_1",
+        "pair/planet_1/ring_post_1"
+      ]
+    },
+    {
+      "pair": [
+        "planet_1",
+        "ring_post_3"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/planet_1",
+        "link/ring_post_3"
+      ],
+      "fact_ids": [
+        "nearby/planet_1/ring_post_3",
+        "pair/planet_1/ring_post_3"
+      ]
+    },
+    {
+      "pair": [
+        "planet_2",
+        "planet_pin_2"
+      ],
+      "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+      "source_entity_ids": [
+        "link/planet_2",
+        "link/planet_pin_2",
+        "relation/planet_pin_journal_2"
+      ],
+      "fact_ids": [
+        "nearby/planet_2/planet_pin_2",
+        "pair/planet_2/planet_pin_2",
+        "fit/planet_pin_2/pin_axis/planet_2/pin_bore"
+      ]
+    },
+    {
+      "pair": [
+        "fixed_ring",
+        "planet_2"
+      ],
+      "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+      "source_entity_ids": [
+        "link/fixed_ring",
+        "link/planet_2",
+        "relation/ring_planet_mesh_2"
+      ],
+      "fact_ids": [
+        "nearby/fixed_ring/planet_2",
+        "pair/fixed_ring/planet_2",
+        "fit/fixed_ring/internal_mesh/planet_2/planet_mesh"
+      ]
+    },
+    {
+      "pair": [
+        "input_crank",
+        "planet_2"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/input_crank",
+        "link/planet_2"
+      ],
+      "fact_ids": [
+        "nearby/input_crank/planet_2",
+        "pair/input_crank/planet_2"
+      ]
+    },
+    {
+      "pair": [
+        "carrier_bearing",
+        "planet_2"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/carrier_bearing",
+        "link/planet_2"
+      ],
+      "fact_ids": [
+        "nearby/carrier_bearing/planet_2",
+        "pair/carrier_bearing/planet_2"
+      ]
+    },
+    {
+      "pair": [
+        "planet_2",
+        "upper_input_bearing"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/planet_2",
+        "link/upper_input_bearing"
+      ],
+      "fact_ids": [
+        "nearby/planet_2/upper_input_bearing",
+        "pair/planet_2/upper_input_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "planet_2",
+        "planet_3"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/planet_2",
+        "link/planet_3"
+      ],
+      "fact_ids": [
+        "nearby/planet_2/planet_3",
+        "pair/planet_2/planet_3"
+      ]
+    },
+    {
+      "pair": [
+        "planet_2",
+        "ring_post_2"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/planet_2",
+        "link/ring_post_2"
+      ],
+      "fact_ids": [
+        "nearby/planet_2/ring_post_2",
+        "pair/planet_2/ring_post_2"
+      ]
+    },
+    {
+      "pair": [
+        "lower_input_bearing",
+        "planet_2"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/lower_input_bearing",
+        "link/planet_2"
+      ],
+      "fact_ids": [
+        "nearby/lower_input_bearing/planet_2",
+        "pair/lower_input_bearing/planet_2"
+      ]
+    },
+    {
+      "pair": [
+        "planet_2",
+        "ring_post_1"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/planet_2",
+        "link/ring_post_1"
+      ],
+      "fact_ids": [
+        "nearby/planet_2/ring_post_1",
+        "pair/planet_2/ring_post_1"
+      ]
+    },
+    {
+      "pair": [
+        "crank_grip",
+        "planet_2"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/crank_grip",
+        "link/planet_2"
+      ],
+      "fact_ids": [
+        "nearby/crank_grip/planet_2",
+        "pair/crank_grip/planet_2"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "planet_2"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/base",
+        "link/planet_2"
+      ],
+      "fact_ids": [
+        "nearby/base/planet_2",
+        "pair/base/planet_2"
+      ]
+    },
+    {
+      "pair": [
+        "planet_2",
+        "planet_pin_1"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/planet_2",
+        "link/planet_pin_1"
+      ],
+      "fact_ids": [
+        "nearby/planet_2/planet_pin_1",
+        "pair/planet_2/planet_pin_1"
+      ]
+    },
+    {
+      "pair": [
+        "planet_3",
+        "planet_pin_3"
+      ],
+      "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+      "source_entity_ids": [
+        "link/planet_3",
+        "link/planet_pin_3",
+        "relation/planet_pin_journal_3"
+      ],
+      "fact_ids": [
+        "nearby/planet_3/planet_pin_3",
+        "pair/planet_3/planet_pin_3",
+        "fit/planet_pin_3/pin_axis/planet_3/pin_bore"
+      ]
+    },
+    {
+      "pair": [
+        "fixed_ring",
+        "planet_3"
+      ],
+      "reason": "Authored fit, bearing, or gear interface is idealized; exact-pair contact would fight its coordinate or equality.",
+      "source_entity_ids": [
+        "link/fixed_ring",
+        "link/planet_3",
+        "relation/ring_planet_mesh_3"
+      ],
+      "fact_ids": [
+        "nearby/fixed_ring/planet_3",
+        "pair/fixed_ring/planet_3",
+        "fit/fixed_ring/internal_mesh/planet_3/planet_mesh"
+      ]
+    },
+    {
+      "pair": [
+        "input_crank",
+        "planet_3"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/input_crank",
+        "link/planet_3"
+      ],
+      "fact_ids": [
+        "nearby/input_crank/planet_3",
+        "pair/input_crank/planet_3"
+      ]
+    },
+    {
+      "pair": [
+        "carrier_bearing",
+        "planet_3"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/carrier_bearing",
+        "link/planet_3"
+      ],
+      "fact_ids": [
+        "nearby/carrier_bearing/planet_3",
+        "pair/carrier_bearing/planet_3"
+      ]
+    },
+    {
+      "pair": [
+        "planet_3",
+        "upper_input_bearing"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/planet_3",
+        "link/upper_input_bearing"
+      ],
+      "fact_ids": [
+        "nearby/planet_3/upper_input_bearing",
+        "pair/planet_3/upper_input_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "planet_3",
+        "ring_post_2"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/planet_3",
+        "link/ring_post_2"
+      ],
+      "fact_ids": [
+        "nearby/planet_3/ring_post_2",
+        "pair/planet_3/ring_post_2"
+      ]
+    },
+    {
+      "pair": [
+        "lower_input_bearing",
+        "planet_3"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/lower_input_bearing",
+        "link/planet_3"
+      ],
+      "fact_ids": [
+        "nearby/lower_input_bearing/planet_3",
+        "pair/lower_input_bearing/planet_3"
+      ]
+    },
+    {
+      "pair": [
+        "crank_grip",
+        "planet_3"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/crank_grip",
+        "link/planet_3"
+      ],
+      "fact_ids": [
+        "nearby/crank_grip/planet_3",
+        "pair/crank_grip/planet_3"
+      ]
+    },
+    {
+      "pair": [
+        "planet_3",
+        "ring_post_3"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/planet_3",
+        "link/ring_post_3"
+      ],
+      "fact_ids": [
+        "nearby/planet_3/ring_post_3",
+        "pair/planet_3/ring_post_3"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "planet_3"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/base",
+        "link/planet_3"
+      ],
+      "fact_ids": [
+        "nearby/base/planet_3",
+        "pair/base/planet_3"
+      ]
+    },
+    {
+      "pair": [
+        "planet_3",
+        "planet_pin_1"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/planet_3",
+        "link/planet_pin_1"
+      ],
+      "fact_ids": [
+        "nearby/planet_3/planet_pin_1",
+        "pair/planet_3/planet_pin_1"
+      ]
+    },
+    {
+      "pair": [
+        "input_crank",
+        "planet_pin_1"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/input_crank",
+        "link/planet_pin_1"
+      ],
+      "fact_ids": [
+        "nearby/input_crank/planet_pin_1",
+        "pair/input_crank/planet_pin_1"
+      ]
+    },
+    {
+      "pair": [
+        "fixed_ring",
+        "input_crank"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/fixed_ring",
+        "link/input_crank"
+      ],
+      "fact_ids": [
+        "nearby/fixed_ring/input_crank",
+        "pair/fixed_ring/input_crank"
+      ]
+    },
+    {
+      "pair": [
+        "input_crank",
+        "planet_pin_3"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/input_crank",
+        "link/planet_pin_3"
+      ],
+      "fact_ids": [
+        "nearby/input_crank/planet_pin_3",
+        "pair/input_crank/planet_pin_3"
+      ]
+    },
+    {
+      "pair": [
+        "input_crank",
+        "planet_pin_2"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/input_crank",
+        "link/planet_pin_2"
+      ],
+      "fact_ids": [
+        "nearby/input_crank/planet_pin_2",
+        "pair/input_crank/planet_pin_2"
+      ]
+    },
+    {
+      "pair": [
+        "carrier_bearing",
+        "input_crank"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/carrier_bearing",
+        "link/input_crank"
+      ],
+      "fact_ids": [
+        "nearby/carrier_bearing/input_crank",
+        "pair/carrier_bearing/input_crank"
+      ]
+    },
+    {
+      "pair": [
+        "input_crank",
+        "upper_input_bearing"
+      ],
+      "reason": "Positive mesh separation or disjoint AABB and no contact function identifies exact proxy false-contact risk.",
+      "source_entity_ids": [
+        "link/input_crank",
+        "link/upper_input_bearing"
+      ],
+      "fact_ids": [
+        "nearby/input_crank/upper_input_bearing",
+        "pair/input_crank/upper_input_bearing"
+      ]
+    }
+  ],
+  "ground_excludes": [],
+  "support_patches": [],
+  "bodies": [
+    "base",
+    "carrier",
+    "carrier_bearing",
+    "crank_grip",
+    "fixed_ring",
+    "input_crank",
+    "input_shaft",
+    "lower_input_bearing",
+    "planet_1",
+    "planet_2",
+    "planet_3",
+    "planet_pin_1",
+    "planet_pin_2",
+    "planet_pin_3",
+    "ring_post_1",
+    "ring_post_2",
+    "ring_post_3",
+    "sun_gear",
+    "upper_input_bearing"
+  ],
+  "joints": [
+    "carrier_output_hinge",
+    "planet_1_carrier_hinge",
+    "planet_2_carrier_hinge",
+    "planet_3_carrier_hinge",
+    "sun_input_hinge"
+  ],
+  "constraints": [
+    "planetary_carrier_ratio",
+    "planetary_planet_ratio_1",
+    "planetary_planet_ratio_2",
+    "planetary_planet_ratio_3"
+  ]
+}

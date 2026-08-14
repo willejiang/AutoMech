@@ -1,0 +1,3949 @@
+{
+  "manifest_version": 3,
+  "engine": "mujoco-agent",
+  "topology_plan": {
+    "coordinate_map": {
+      "wind_rotor": "shaft_hinge",
+      "rotor_shaft": "shaft_hinge",
+      "crank_disk": "shaft_hinge",
+      "crank_pin": "shaft_hinge",
+      "connecting_rod": "crank_rod_hinge",
+      "piston_slider": "crosshead_vertical_slide",
+      "wrist_pin": "crosshead_vertical_slide",
+      "pump_rod": "crosshead_vertical_slide",
+      "pump_piston": "crosshead_vertical_slide",
+      "baseplate": null,
+      "front_pedestal": null,
+      "rear_pedestal": null,
+      "front_bearing": null,
+      "rear_bearing": null,
+      "left_guide": null,
+      "right_guide": null,
+      "front_guide": null,
+      "rear_guide": null,
+      "pump_cylinder": null,
+      "cylinder_foot": null,
+      "inlet_pipe": null,
+      "outlet_pipe": null,
+      "left_guide_cap": null,
+      "right_guide_cap": null
+    },
+    "tree_edges": [
+      [
+        "baseplate",
+        "front_pedestal"
+      ],
+      [
+        "baseplate",
+        "rear_pedestal"
+      ],
+      [
+        "front_pedestal",
+        "front_bearing"
+      ],
+      [
+        "rear_pedestal",
+        "rear_bearing"
+      ],
+      [
+        "baseplate",
+        "left_guide"
+      ],
+      [
+        "baseplate",
+        "right_guide"
+      ],
+      [
+        "baseplate",
+        "front_guide"
+      ],
+      [
+        "baseplate",
+        "rear_guide"
+      ],
+      [
+        "baseplate",
+        "pump_cylinder"
+      ],
+      [
+        "baseplate",
+        "cylinder_foot"
+      ],
+      [
+        "pump_cylinder",
+        "inlet_pipe"
+      ],
+      [
+        "pump_cylinder",
+        "outlet_pipe"
+      ],
+      [
+        "left_guide",
+        "left_guide_cap"
+      ],
+      [
+        "right_guide",
+        "right_guide_cap"
+      ],
+      [
+        "baseplate",
+        "rotor_shaft"
+      ],
+      [
+        "rotor_shaft",
+        "wind_rotor"
+      ],
+      [
+        "rotor_shaft",
+        "crank_disk"
+      ],
+      [
+        "crank_disk",
+        "crank_pin"
+      ],
+      [
+        "crank_pin",
+        "connecting_rod"
+      ],
+      [
+        "baseplate",
+        "piston_slider"
+      ],
+      [
+        "piston_slider",
+        "wrist_pin"
+      ],
+      [
+        "piston_slider",
+        "pump_rod"
+      ],
+      [
+        "pump_rod",
+        "pump_piston"
+      ]
+    ],
+    "closure_edges": [
+      {
+        "name": "wrist_rod_closure",
+        "pair": [
+          "connecting_rod",
+          "wrist_pin"
+        ]
+      }
+    ],
+    "rigid_carried": [
+      [
+        "rotor_shaft",
+        "wind_rotor"
+      ],
+      [
+        "rotor_shaft",
+        "crank_disk"
+      ],
+      [
+        "crank_disk",
+        "crank_pin"
+      ],
+      [
+        "piston_slider",
+        "wrist_pin"
+      ],
+      [
+        "piston_slider",
+        "pump_rod"
+      ],
+      [
+        "pump_rod",
+        "pump_piston"
+      ]
+    ],
+    "independent_coaxial": [],
+    "transmissions": [
+      {
+        "name": "rotor_shaft_lock",
+        "ratio": 1
+      },
+      {
+        "name": "shaft_crank_lock",
+        "ratio": 1
+      },
+      {
+        "name": "crosshead_pump_rod_lock",
+        "ratio": 1
+      },
+      {
+        "name": "pump_rod_piston_lock",
+        "ratio": 1
+      }
+    ],
+    "contact_decisions": [
+      {
+        "pair": [
+          "rotor_shaft",
+          "wind_rotor"
+        ],
+        "action": "exclude",
+        "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+        "source_entity_ids": [
+          "link/rotor_shaft",
+          "link/wind_rotor",
+          "relation/rotor_to_shaft_press_fit"
+        ],
+        "fact_ids": [
+          "pair/rotor_shaft/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "front_pedestal",
+          "wind_rotor"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/front_pedestal",
+          "link/wind_rotor"
+        ],
+        "fact_ids": [
+          "pair/front_pedestal/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "front_bearing",
+          "wind_rotor"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/front_bearing",
+          "link/wind_rotor"
+        ],
+        "fact_ids": [
+          "pair/front_bearing/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "rear_pedestal",
+          "wind_rotor"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/rear_pedestal",
+          "link/wind_rotor"
+        ],
+        "fact_ids": [
+          "pair/rear_pedestal/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "rear_bearing",
+          "wind_rotor"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/rear_bearing",
+          "link/wind_rotor"
+        ],
+        "fact_ids": [
+          "pair/rear_bearing/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "wind_rotor"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/wind_rotor"
+        ],
+        "fact_ids": [
+          "pair/baseplate/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "left_guide_cap",
+          "wind_rotor"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/left_guide_cap",
+          "link/wind_rotor"
+        ],
+        "fact_ids": [
+          "pair/left_guide_cap/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "right_guide_cap",
+          "wind_rotor"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/right_guide_cap",
+          "link/wind_rotor"
+        ],
+        "fact_ids": [
+          "pair/right_guide_cap/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "front_guide",
+          "wind_rotor"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/front_guide",
+          "link/wind_rotor"
+        ],
+        "fact_ids": [
+          "pair/front_guide/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "wind_rotor"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/wind_rotor"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "pump_cylinder",
+          "wind_rotor"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/pump_cylinder",
+          "link/wind_rotor"
+        ],
+        "fact_ids": [
+          "pair/pump_cylinder/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "piston_slider",
+          "wind_rotor"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/piston_slider",
+          "link/wind_rotor"
+        ],
+        "fact_ids": [
+          "pair/piston_slider/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "wind_rotor",
+          "wrist_pin"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/wind_rotor",
+          "link/wrist_pin"
+        ],
+        "fact_ids": [
+          "pair/wind_rotor/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "left_guide",
+          "wind_rotor"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/left_guide",
+          "link/wind_rotor"
+        ],
+        "fact_ids": [
+          "pair/left_guide/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "right_guide",
+          "wind_rotor"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/right_guide",
+          "link/wind_rotor"
+        ],
+        "fact_ids": [
+          "pair/right_guide/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "crank_pin",
+          "wind_rotor"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_pin",
+          "link/wind_rotor"
+        ],
+        "fact_ids": [
+          "pair/crank_pin/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "wind_rotor"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/wind_rotor"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "pump_rod",
+          "wind_rotor"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/pump_rod",
+          "link/wind_rotor"
+        ],
+        "fact_ids": [
+          "pair/pump_rod/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "cylinder_foot",
+          "wind_rotor"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/cylinder_foot",
+          "link/wind_rotor"
+        ],
+        "fact_ids": [
+          "pair/cylinder_foot/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "pump_piston",
+          "wind_rotor"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/pump_piston",
+          "link/wind_rotor"
+        ],
+        "fact_ids": [
+          "pair/pump_piston/wind_rotor"
+        ]
+      },
+      {
+        "pair": [
+          "front_bearing",
+          "rotor_shaft"
+        ],
+        "action": "exclude",
+        "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+        "source_entity_ids": [
+          "link/front_bearing",
+          "link/rotor_shaft",
+          "relation/front_shaft_journal"
+        ],
+        "fact_ids": [
+          "pair/front_bearing/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "rear_bearing",
+          "rotor_shaft"
+        ],
+        "action": "exclude",
+        "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+        "source_entity_ids": [
+          "link/rear_bearing",
+          "link/rotor_shaft",
+          "relation/rear_shaft_journal"
+        ],
+        "fact_ids": [
+          "pair/rear_bearing/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "rotor_shaft"
+        ],
+        "action": "exclude",
+        "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/rotor_shaft",
+          "relation/shaft_to_crank_press_fit"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "rotor_shaft"
+        ],
+        "action": "keep",
+        "reason": "retain real collision function or uncertain close geometry",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/rotor_shaft"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "front_pedestal",
+          "rotor_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/front_pedestal",
+          "link/rotor_shaft"
+        ],
+        "fact_ids": [
+          "pair/front_pedestal/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "rear_pedestal",
+          "rotor_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/rear_pedestal",
+          "link/rotor_shaft"
+        ],
+        "fact_ids": [
+          "pair/rear_pedestal/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "crank_pin",
+          "rotor_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_pin",
+          "link/rotor_shaft"
+        ],
+        "fact_ids": [
+          "pair/crank_pin/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "left_guide_cap",
+          "rotor_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/left_guide_cap",
+          "link/rotor_shaft"
+        ],
+        "fact_ids": [
+          "pair/left_guide_cap/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "right_guide_cap",
+          "rotor_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/right_guide_cap",
+          "link/rotor_shaft"
+        ],
+        "fact_ids": [
+          "pair/right_guide_cap/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "front_guide",
+          "rotor_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/front_guide",
+          "link/rotor_shaft"
+        ],
+        "fact_ids": [
+          "pair/front_guide/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "left_guide",
+          "rotor_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/left_guide",
+          "link/rotor_shaft"
+        ],
+        "fact_ids": [
+          "pair/left_guide/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "right_guide",
+          "rotor_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/right_guide",
+          "link/rotor_shaft"
+        ],
+        "fact_ids": [
+          "pair/right_guide/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "rear_guide",
+          "rotor_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/rear_guide",
+          "link/rotor_shaft"
+        ],
+        "fact_ids": [
+          "pair/rear_guide/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "piston_slider",
+          "rotor_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/piston_slider",
+          "link/rotor_shaft"
+        ],
+        "fact_ids": [
+          "pair/piston_slider/rotor_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "crank_pin"
+        ],
+        "action": "exclude",
+        "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/crank_pin",
+          "relation/eccentric_pin_press_fit"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/crank_pin"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "crank_disk"
+        ],
+        "action": "keep",
+        "reason": "retain real collision function or uncertain close geometry",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/crank_disk"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/crank_disk"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "rear_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/rear_pedestal"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/rear_pedestal"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "rear_bearing"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/rear_bearing"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/rear_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "left_guide_cap"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/left_guide_cap"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/left_guide_cap"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "right_guide_cap"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/right_guide_cap"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/right_guide_cap"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "left_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/left_guide"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/left_guide"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "right_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/right_guide"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/right_guide"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "front_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/front_guide"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/front_guide"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "piston_slider"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/piston_slider"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/piston_slider"
+        ]
+      },
+      {
+        "pair": [
+          "crank_disk",
+          "rear_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_disk",
+          "link/rear_guide"
+        ],
+        "fact_ids": [
+          "pair/crank_disk/rear_guide"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "crank_pin"
+        ],
+        "action": "exclude",
+        "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/crank_pin",
+          "relation/crank_rod_revolute"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/crank_pin"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "piston_slider"
+        ],
+        "action": "keep",
+        "reason": "retain real collision function or uncertain close geometry",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/piston_slider"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/piston_slider"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "wrist_pin"
+        ],
+        "action": "exclude",
+        "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/wrist_pin",
+          "relation/wrist_rod_revolute"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "pump_rod"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/pump_rod"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/pump_rod"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "right_guide_cap"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/right_guide_cap"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/right_guide_cap"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "left_guide_cap"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/left_guide_cap"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/left_guide_cap"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "left_guide"
+        ],
+        "action": "keep",
+        "reason": "retain real collision function or uncertain close geometry",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/left_guide"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/left_guide"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "right_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/right_guide"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/right_guide"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "rear_guide"
+        ],
+        "action": "keep",
+        "reason": "retain real collision function or uncertain close geometry",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/rear_guide"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/rear_guide"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "front_guide"
+        ],
+        "action": "keep",
+        "reason": "retain real collision function or uncertain close geometry",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/front_guide"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/front_guide"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "pump_cylinder"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/pump_cylinder"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/pump_cylinder"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "outlet_pipe"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/outlet_pipe"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/outlet_pipe"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "rear_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/rear_pedestal"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/rear_pedestal"
+        ]
+      },
+      {
+        "pair": [
+          "connecting_rod",
+          "rear_bearing"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/connecting_rod",
+          "link/rear_bearing"
+        ],
+        "fact_ids": [
+          "pair/connecting_rod/rear_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "piston_slider",
+          "wrist_pin"
+        ],
+        "action": "exclude",
+        "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+        "source_entity_ids": [
+          "link/piston_slider",
+          "link/wrist_pin",
+          "relation/wrist_pin_to_slider"
+        ],
+        "fact_ids": [
+          "pair/piston_slider/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "piston_slider",
+          "pump_rod"
+        ],
+        "action": "exclude",
+        "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+        "source_entity_ids": [
+          "link/piston_slider",
+          "link/pump_rod",
+          "relation/slider_to_pump_rod"
+        ],
+        "fact_ids": [
+          "pair/piston_slider/pump_rod"
+        ]
+      },
+      {
+        "pair": [
+          "piston_slider",
+          "rear_guide"
+        ],
+        "action": "keep",
+        "reason": "retain real collision function or uncertain close geometry",
+        "source_entity_ids": [
+          "link/piston_slider",
+          "link/rear_guide"
+        ],
+        "fact_ids": [
+          "pair/piston_slider/rear_guide"
+        ]
+      },
+      {
+        "pair": [
+          "left_guide",
+          "piston_slider"
+        ],
+        "action": "keep",
+        "reason": "retain real collision function or uncertain close geometry",
+        "source_entity_ids": [
+          "link/left_guide",
+          "link/piston_slider"
+        ],
+        "fact_ids": [
+          "pair/left_guide/piston_slider"
+        ]
+      },
+      {
+        "pair": [
+          "piston_slider",
+          "right_guide"
+        ],
+        "action": "keep",
+        "reason": "retain real collision function or uncertain close geometry",
+        "source_entity_ids": [
+          "link/piston_slider",
+          "link/right_guide"
+        ],
+        "fact_ids": [
+          "pair/piston_slider/right_guide"
+        ]
+      },
+      {
+        "pair": [
+          "front_guide",
+          "piston_slider"
+        ],
+        "action": "keep",
+        "reason": "retain real collision function or uncertain close geometry",
+        "source_entity_ids": [
+          "link/front_guide",
+          "link/piston_slider"
+        ],
+        "fact_ids": [
+          "pair/front_guide/piston_slider"
+        ]
+      },
+      {
+        "pair": [
+          "left_guide_cap",
+          "piston_slider"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/left_guide_cap",
+          "link/piston_slider"
+        ],
+        "fact_ids": [
+          "pair/left_guide_cap/piston_slider"
+        ]
+      },
+      {
+        "pair": [
+          "piston_slider",
+          "right_guide_cap"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/piston_slider",
+          "link/right_guide_cap"
+        ],
+        "fact_ids": [
+          "pair/piston_slider/right_guide_cap"
+        ]
+      },
+      {
+        "pair": [
+          "piston_slider",
+          "pump_cylinder"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/piston_slider",
+          "link/pump_cylinder"
+        ],
+        "fact_ids": [
+          "pair/piston_slider/pump_cylinder"
+        ]
+      },
+      {
+        "pair": [
+          "outlet_pipe",
+          "piston_slider"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/outlet_pipe",
+          "link/piston_slider"
+        ],
+        "fact_ids": [
+          "pair/outlet_pipe/piston_slider"
+        ]
+      },
+      {
+        "pair": [
+          "piston_slider",
+          "rear_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/piston_slider",
+          "link/rear_pedestal"
+        ],
+        "fact_ids": [
+          "pair/piston_slider/rear_pedestal"
+        ]
+      },
+      {
+        "pair": [
+          "rear_guide",
+          "wrist_pin"
+        ],
+        "action": "keep",
+        "reason": "retain real collision function or uncertain close geometry",
+        "source_entity_ids": [
+          "link/rear_guide",
+          "link/wrist_pin"
+        ],
+        "fact_ids": [
+          "pair/rear_guide/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "front_guide",
+          "wrist_pin"
+        ],
+        "action": "keep",
+        "reason": "retain real collision function or uncertain close geometry",
+        "source_entity_ids": [
+          "link/front_guide",
+          "link/wrist_pin"
+        ],
+        "fact_ids": [
+          "pair/front_guide/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "pump_rod",
+          "wrist_pin"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/pump_rod",
+          "link/wrist_pin"
+        ],
+        "fact_ids": [
+          "pair/pump_rod/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "left_guide",
+          "wrist_pin"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/left_guide",
+          "link/wrist_pin"
+        ],
+        "fact_ids": [
+          "pair/left_guide/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "right_guide",
+          "wrist_pin"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/right_guide",
+          "link/wrist_pin"
+        ],
+        "fact_ids": [
+          "pair/right_guide/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "pump_piston",
+          "pump_rod"
+        ],
+        "action": "exclude",
+        "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+        "source_entity_ids": [
+          "link/pump_piston",
+          "link/pump_rod",
+          "relation/pump_rod_to_piston"
+        ],
+        "fact_ids": [
+          "pair/pump_piston/pump_rod"
+        ]
+      },
+      {
+        "pair": [
+          "pump_cylinder",
+          "pump_rod"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/pump_cylinder",
+          "link/pump_rod"
+        ],
+        "fact_ids": [
+          "pair/pump_cylinder/pump_rod"
+        ]
+      },
+      {
+        "pair": [
+          "pump_rod",
+          "rear_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/pump_rod",
+          "link/rear_guide"
+        ],
+        "fact_ids": [
+          "pair/pump_rod/rear_guide"
+        ]
+      },
+      {
+        "pair": [
+          "front_guide",
+          "pump_rod"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/front_guide",
+          "link/pump_rod"
+        ],
+        "fact_ids": [
+          "pair/front_guide/pump_rod"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "pump_rod"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/pump_rod"
+        ],
+        "fact_ids": [
+          "pair/baseplate/pump_rod"
+        ]
+      },
+      {
+        "pair": [
+          "cylinder_foot",
+          "pump_rod"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/cylinder_foot",
+          "link/pump_rod"
+        ],
+        "fact_ids": [
+          "pair/cylinder_foot/pump_rod"
+        ]
+      },
+      {
+        "pair": [
+          "left_guide",
+          "pump_rod"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/left_guide",
+          "link/pump_rod"
+        ],
+        "fact_ids": [
+          "pair/left_guide/pump_rod"
+        ]
+      },
+      {
+        "pair": [
+          "pump_rod",
+          "right_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/pump_rod",
+          "link/right_guide"
+        ],
+        "fact_ids": [
+          "pair/pump_rod/right_guide"
+        ]
+      },
+      {
+        "pair": [
+          "outlet_pipe",
+          "pump_rod"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/outlet_pipe",
+          "link/pump_rod"
+        ],
+        "fact_ids": [
+          "pair/outlet_pipe/pump_rod"
+        ]
+      },
+      {
+        "pair": [
+          "inlet_pipe",
+          "pump_rod"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/inlet_pipe",
+          "link/pump_rod"
+        ],
+        "fact_ids": [
+          "pair/inlet_pipe/pump_rod"
+        ]
+      },
+      {
+        "pair": [
+          "front_guide",
+          "pump_piston"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/front_guide",
+          "link/pump_piston"
+        ],
+        "fact_ids": [
+          "pair/front_guide/pump_piston"
+        ]
+      },
+      {
+        "pair": [
+          "pump_piston",
+          "rear_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/pump_piston",
+          "link/rear_guide"
+        ],
+        "fact_ids": [
+          "pair/pump_piston/rear_guide"
+        ]
+      },
+      {
+        "pair": [
+          "pump_cylinder",
+          "pump_piston"
+        ],
+        "action": "exclude",
+        "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+        "source_entity_ids": [
+          "link/pump_cylinder",
+          "link/pump_piston",
+          "relation/piston_in_barrel"
+        ],
+        "fact_ids": [
+          "pair/pump_cylinder/pump_piston"
+        ]
+      },
+      {
+        "pair": [
+          "left_guide",
+          "pump_piston"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/left_guide",
+          "link/pump_piston"
+        ],
+        "fact_ids": [
+          "pair/left_guide/pump_piston"
+        ]
+      },
+      {
+        "pair": [
+          "pump_piston",
+          "right_guide"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/pump_piston",
+          "link/right_guide"
+        ],
+        "fact_ids": [
+          "pair/pump_piston/right_guide"
+        ]
+      },
+      {
+        "pair": [
+          "cylinder_foot",
+          "pump_piston"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/cylinder_foot",
+          "link/pump_piston"
+        ],
+        "fact_ids": [
+          "pair/cylinder_foot/pump_piston"
+        ]
+      },
+      {
+        "pair": [
+          "inlet_pipe",
+          "pump_piston"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/inlet_pipe",
+          "link/pump_piston"
+        ],
+        "fact_ids": [
+          "pair/inlet_pipe/pump_piston"
+        ]
+      },
+      {
+        "pair": [
+          "outlet_pipe",
+          "pump_piston"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/outlet_pipe",
+          "link/pump_piston"
+        ],
+        "fact_ids": [
+          "pair/outlet_pipe/pump_piston"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "pump_piston"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/pump_piston"
+        ],
+        "fact_ids": [
+          "pair/baseplate/pump_piston"
+        ]
+      },
+      {
+        "pair": [
+          "pump_piston",
+          "rear_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/pump_piston",
+          "link/rear_pedestal"
+        ],
+        "fact_ids": [
+          "pair/pump_piston/rear_pedestal"
+        ]
+      }
+    ],
+    "support_ground": [
+      "baseplate",
+      "cylinder_foot"
+    ],
+    "support_strategy": "fixed baseplate supports normal and gravity probes"
+  },
+  "decisions": [
+    {
+      "generated_kind": "constraint",
+      "generated_name": "wrist_rod_closure",
+      "constraint_type": "connect",
+      "reason": "authored wrist revolute closes the slider-crank",
+      "source_entity_ids": [
+        "relation/wrist_rod_revolute"
+      ],
+      "fact_ids": [
+        "fit/wrist_pin/rod_journal/connecting_rod/wrist_eye",
+        "pair/connecting_rod/wrist_pin"
+      ]
+    },
+    {
+      "entity_id": "link/baseplate",
+      "action": "emitted",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/baseplate"
+      ]
+    },
+    {
+      "entity_id": "link/front_pedestal",
+      "action": "emitted",
+      "generated_nodes": [
+        "front_pedestal"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/front_pedestal"
+      ]
+    },
+    {
+      "entity_id": "link/rear_pedestal",
+      "action": "emitted",
+      "generated_nodes": [
+        "rear_pedestal"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/rear_pedestal"
+      ]
+    },
+    {
+      "entity_id": "link/front_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "front_bearing"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/front_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/rear_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "rear_bearing"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/rear_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/rotor_shaft",
+      "action": "emitted",
+      "generated_nodes": [
+        "rotor_shaft"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/rotor_shaft"
+      ]
+    },
+    {
+      "entity_id": "link/wind_rotor",
+      "action": "emitted",
+      "generated_nodes": [
+        "wind_rotor"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/wind_rotor"
+      ]
+    },
+    {
+      "entity_id": "link/crank_disk",
+      "action": "emitted",
+      "generated_nodes": [
+        "crank_disk"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/crank_disk"
+      ]
+    },
+    {
+      "entity_id": "link/crank_pin",
+      "action": "emitted",
+      "generated_nodes": [
+        "crank_pin"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/crank_pin"
+      ]
+    },
+    {
+      "entity_id": "link/connecting_rod",
+      "action": "emitted",
+      "generated_nodes": [
+        "connecting_rod"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/connecting_rod"
+      ]
+    },
+    {
+      "entity_id": "link/piston_slider",
+      "action": "emitted",
+      "generated_nodes": [
+        "piston_slider"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/piston_slider"
+      ]
+    },
+    {
+      "entity_id": "link/wrist_pin",
+      "action": "emitted",
+      "generated_nodes": [
+        "wrist_pin"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/wrist_pin"
+      ]
+    },
+    {
+      "entity_id": "link/left_guide",
+      "action": "emitted",
+      "generated_nodes": [
+        "left_guide"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/left_guide"
+      ]
+    },
+    {
+      "entity_id": "link/right_guide",
+      "action": "emitted",
+      "generated_nodes": [
+        "right_guide"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/right_guide"
+      ]
+    },
+    {
+      "entity_id": "link/front_guide",
+      "action": "emitted",
+      "generated_nodes": [
+        "front_guide"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/front_guide"
+      ]
+    },
+    {
+      "entity_id": "link/rear_guide",
+      "action": "emitted",
+      "generated_nodes": [
+        "rear_guide"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/rear_guide"
+      ]
+    },
+    {
+      "entity_id": "link/pump_rod",
+      "action": "emitted",
+      "generated_nodes": [
+        "pump_rod"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/pump_rod"
+      ]
+    },
+    {
+      "entity_id": "link/pump_piston",
+      "action": "emitted",
+      "generated_nodes": [
+        "pump_piston"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/pump_piston"
+      ]
+    },
+    {
+      "entity_id": "link/pump_cylinder",
+      "action": "emitted",
+      "generated_nodes": [
+        "pump_cylinder"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/pump_cylinder"
+      ]
+    },
+    {
+      "entity_id": "link/cylinder_foot",
+      "action": "emitted",
+      "generated_nodes": [
+        "cylinder_foot"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/cylinder_foot"
+      ]
+    },
+    {
+      "entity_id": "link/inlet_pipe",
+      "action": "emitted",
+      "generated_nodes": [
+        "inlet_pipe"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/inlet_pipe"
+      ]
+    },
+    {
+      "entity_id": "link/outlet_pipe",
+      "action": "emitted",
+      "generated_nodes": [
+        "outlet_pipe"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/outlet_pipe"
+      ]
+    },
+    {
+      "entity_id": "link/left_guide_cap",
+      "action": "emitted",
+      "generated_nodes": [
+        "left_guide_cap"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/left_guide_cap"
+      ]
+    },
+    {
+      "entity_id": "link/right_guide_cap",
+      "action": "emitted",
+      "generated_nodes": [
+        "right_guide_cap"
+      ],
+      "reason": "link emitted once",
+      "fact_ids": [
+        "link/right_guide_cap"
+      ]
+    },
+    {
+      "entity_id": "pose/place_baseplate",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_baseplate"
+      ]
+    },
+    {
+      "entity_id": "pose/place_front_pedestal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_front_pedestal"
+      ]
+    },
+    {
+      "entity_id": "pose/place_rear_pedestal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_rear_pedestal"
+      ]
+    },
+    {
+      "entity_id": "pose/place_front_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_front_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_rear_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_rear_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_rotor_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_rotor_shaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_wind_rotor",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_wind_rotor"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crank_disk",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_crank_disk"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crank_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_crank_pin"
+      ]
+    },
+    {
+      "entity_id": "pose/place_connecting_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_connecting_rod"
+      ]
+    },
+    {
+      "entity_id": "pose/place_piston_slider",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_piston_slider"
+      ]
+    },
+    {
+      "entity_id": "pose/place_wrist_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_wrist_pin"
+      ]
+    },
+    {
+      "entity_id": "pose/place_left_guide",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_left_guide"
+      ]
+    },
+    {
+      "entity_id": "pose/place_right_guide",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_right_guide"
+      ]
+    },
+    {
+      "entity_id": "pose/place_front_guide",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_front_guide"
+      ]
+    },
+    {
+      "entity_id": "pose/place_rear_guide",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_rear_guide"
+      ]
+    },
+    {
+      "entity_id": "pose/place_pump_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_pump_rod"
+      ]
+    },
+    {
+      "entity_id": "pose/place_pump_piston",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_pump_piston"
+      ]
+    },
+    {
+      "entity_id": "pose/place_pump_cylinder",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_pump_cylinder"
+      ]
+    },
+    {
+      "entity_id": "pose/place_cylinder_foot",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_cylinder_foot"
+      ]
+    },
+    {
+      "entity_id": "pose/place_inlet_pipe",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_inlet_pipe"
+      ]
+    },
+    {
+      "entity_id": "pose/place_outlet_pipe",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_outlet_pipe"
+      ]
+    },
+    {
+      "entity_id": "pose/place_left_guide_cap",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_left_guide_cap"
+      ]
+    },
+    {
+      "entity_id": "pose/place_right_guide_cap",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "pose/place_right_guide_cap"
+      ]
+    },
+    {
+      "entity_id": "port/wind_rotor/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/wind_rotor/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/rotor_shaft/rotor_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/rotor_shaft/rotor_seat"
+      ]
+    },
+    {
+      "entity_id": "port/rotor_shaft/front_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/rotor_shaft/front_journal"
+      ]
+    },
+    {
+      "entity_id": "port/rotor_shaft/rear_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/rotor_shaft/rear_journal"
+      ]
+    },
+    {
+      "entity_id": "port/rotor_shaft/crank_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/rotor_shaft/crank_seat"
+      ]
+    },
+    {
+      "entity_id": "port/front_bearing/journal_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/front_bearing/journal_bore"
+      ]
+    },
+    {
+      "entity_id": "port/rear_bearing/journal_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/rear_bearing/journal_bore"
+      ]
+    },
+    {
+      "entity_id": "port/crank_disk/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/crank_disk/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/crank_disk/eccentric_pin_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/crank_disk/eccentric_pin_bore"
+      ]
+    },
+    {
+      "entity_id": "port/crank_pin/disk_press_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/crank_pin/disk_press_seat"
+      ]
+    },
+    {
+      "entity_id": "port/crank_pin/rod_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/crank_pin/rod_journal"
+      ]
+    },
+    {
+      "entity_id": "port/connecting_rod/crank_eye",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/connecting_rod/crank_eye"
+      ]
+    },
+    {
+      "entity_id": "port/connecting_rod/wrist_eye",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/connecting_rod/wrist_eye"
+      ]
+    },
+    {
+      "entity_id": "port/wrist_pin/slider_press_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/wrist_pin/slider_press_seat"
+      ]
+    },
+    {
+      "entity_id": "port/wrist_pin/rod_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/wrist_pin/rod_journal"
+      ]
+    },
+    {
+      "entity_id": "port/piston_slider/wrist_pin_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/piston_slider/wrist_pin_bore"
+      ]
+    },
+    {
+      "entity_id": "port/piston_slider/pump_rod_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/piston_slider/pump_rod_bore"
+      ]
+    },
+    {
+      "entity_id": "port/pump_rod/slider_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/pump_rod/slider_seat"
+      ]
+    },
+    {
+      "entity_id": "port/pump_rod/piston_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/pump_rod/piston_seat"
+      ]
+    },
+    {
+      "entity_id": "port/pump_piston/rod_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/pump_piston/rod_bore"
+      ]
+    },
+    {
+      "entity_id": "port/pump_piston/barrel_running_surface",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/pump_piston/barrel_running_surface"
+      ]
+    },
+    {
+      "entity_id": "port/pump_cylinder/piston_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "port/pump_cylinder/piston_bore"
+      ]
+    },
+    {
+      "entity_id": "relation/rotor_to_shaft_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "relation/rotor_to_shaft_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/front_shaft_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "relation/front_shaft_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/rear_shaft_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "relation/rear_shaft_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/shaft_to_crank_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "relation/shaft_to_crank_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/eccentric_pin_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "relation/eccentric_pin_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/crank_rod_revolute",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_rod_hinge"
+      ],
+      "reason": "represented by selected physical coordinate or closure",
+      "fact_ids": [
+        "relation/crank_rod_revolute"
+      ]
+    },
+    {
+      "entity_id": "relation/wrist_rod_revolute",
+      "action": "represented_by",
+      "generated_nodes": [
+        "wrist_rod_closure"
+      ],
+      "reason": "represented by selected physical coordinate or closure",
+      "fact_ids": [
+        "relation/wrist_rod_revolute"
+      ]
+    },
+    {
+      "entity_id": "relation/wrist_pin_to_slider",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "relation/wrist_pin_to_slider"
+      ]
+    },
+    {
+      "entity_id": "relation/slider_to_pump_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "relation/slider_to_pump_rod"
+      ]
+    },
+    {
+      "entity_id": "relation/pump_rod_to_piston",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "relation/pump_rod_to_piston"
+      ]
+    },
+    {
+      "entity_id": "relation/piston_in_barrel",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "consumed by emitted placement, fit topology, or exact-pair contact decision",
+      "fact_ids": [
+        "relation/piston_in_barrel"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/rotor_input_hinge",
+      "action": "represented_by",
+      "generated_nodes": [
+        "shaft_hinge"
+      ],
+      "reason": "represented by selected physical coordinate or closure",
+      "fact_ids": [
+        "motion_joint/rotor_input_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/shaft_hinge",
+      "action": "represented_by",
+      "generated_nodes": [
+        "shaft_hinge"
+      ],
+      "reason": "represented by selected physical coordinate or closure",
+      "fact_ids": [
+        "motion_joint/shaft_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/crank_hinge",
+      "action": "represented_by",
+      "generated_nodes": [
+        "shaft_hinge"
+      ],
+      "reason": "represented by selected physical coordinate or closure",
+      "fact_ids": [
+        "motion_joint/crank_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/crosshead_vertical_slide",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crosshead_vertical_slide"
+      ],
+      "reason": "represented by selected physical coordinate or closure",
+      "fact_ids": [
+        "motion_joint/crosshead_vertical_slide"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/pump_rod_vertical_slide",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crosshead_vertical_slide"
+      ],
+      "reason": "represented by selected physical coordinate or closure",
+      "fact_ids": [
+        "motion_joint/pump_rod_vertical_slide"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/piston_vertical_slide",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crosshead_vertical_slide"
+      ],
+      "reason": "represented by selected physical coordinate or closure",
+      "fact_ids": [
+        "motion_joint/piston_vertical_slide"
+      ]
+    },
+    {
+      "entity_id": "transmission/rotor_shaft_lock",
+      "action": "represented_by",
+      "generated_nodes": [
+        "shaft_hinge"
+      ],
+      "reason": "represented by selected physical coordinate or closure",
+      "fact_ids": [
+        "transmission/rotor_shaft_lock"
+      ]
+    },
+    {
+      "entity_id": "transmission/shaft_crank_lock",
+      "action": "represented_by",
+      "generated_nodes": [
+        "shaft_hinge"
+      ],
+      "reason": "represented by selected physical coordinate or closure",
+      "fact_ids": [
+        "transmission/shaft_crank_lock"
+      ]
+    },
+    {
+      "entity_id": "transmission/crosshead_pump_rod_lock",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crosshead_vertical_slide"
+      ],
+      "reason": "represented by selected physical coordinate or closure",
+      "fact_ids": [
+        "transmission/crosshead_pump_rod_lock"
+      ]
+    },
+    {
+      "entity_id": "transmission/pump_rod_piston_lock",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crosshead_vertical_slide"
+      ],
+      "reason": "represented by selected physical coordinate or closure",
+      "fact_ids": [
+        "transmission/pump_rod_piston_lock"
+      ]
+    },
+    {
+      "entity_id": "role/driver/wind_rotor",
+      "action": "represented_by",
+      "generated_nodes": [
+        "shaft_hinge"
+      ],
+      "reason": "represented by selected physical coordinate or closure",
+      "fact_ids": [
+        "role/driver/wind_rotor"
+      ]
+    },
+    {
+      "entity_id": "role/output/piston_slider",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crosshead_vertical_slide"
+      ],
+      "reason": "represented by selected physical coordinate or closure",
+      "fact_ids": [
+        "role/output/piston_slider"
+      ]
+    },
+    {
+      "entity_id": "role/watch/wind_rotor",
+      "action": "represented_by",
+      "generated_nodes": [
+        "shaft_hinge"
+      ],
+      "reason": "represented by selected physical coordinate or closure",
+      "fact_ids": [
+        "role/watch/wind_rotor"
+      ]
+    },
+    {
+      "entity_id": "role/watch/rotor_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "shaft_hinge"
+      ],
+      "reason": "represented by selected physical coordinate or closure",
+      "fact_ids": [
+        "role/watch/rotor_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/watch/crank_disk",
+      "action": "represented_by",
+      "generated_nodes": [
+        "shaft_hinge"
+      ],
+      "reason": "represented by selected physical coordinate or closure",
+      "fact_ids": [
+        "role/watch/crank_disk"
+      ]
+    },
+    {
+      "entity_id": "role/watch/connecting_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_rod_hinge"
+      ],
+      "reason": "represented by selected physical coordinate or closure",
+      "fact_ids": [
+        "role/watch/connecting_rod"
+      ]
+    },
+    {
+      "entity_id": "role/watch/piston_slider",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crosshead_vertical_slide"
+      ],
+      "reason": "represented by selected physical coordinate or closure",
+      "fact_ids": [
+        "role/watch/piston_slider"
+      ]
+    },
+    {
+      "entity_id": "role/watch/pump_rod",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crosshead_vertical_slide"
+      ],
+      "reason": "represented by selected physical coordinate or closure",
+      "fact_ids": [
+        "role/watch/pump_rod"
+      ]
+    },
+    {
+      "entity_id": "role/watch/pump_piston",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crosshead_vertical_slide"
+      ],
+      "reason": "represented by selected physical coordinate or closure",
+      "fact_ids": [
+        "role/watch/pump_piston"
+      ]
+    }
+  ],
+  "excludes": [
+    {
+      "pair": [
+        "rotor_shaft",
+        "wind_rotor"
+      ],
+      "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+      "source_entity_ids": [
+        "link/rotor_shaft",
+        "link/wind_rotor",
+        "relation/rotor_to_shaft_press_fit"
+      ],
+      "fact_ids": [
+        "pair/rotor_shaft/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "front_pedestal",
+        "wind_rotor"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/front_pedestal",
+        "link/wind_rotor"
+      ],
+      "fact_ids": [
+        "pair/front_pedestal/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "front_bearing",
+        "wind_rotor"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/front_bearing",
+        "link/wind_rotor"
+      ],
+      "fact_ids": [
+        "pair/front_bearing/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "rear_pedestal",
+        "wind_rotor"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/rear_pedestal",
+        "link/wind_rotor"
+      ],
+      "fact_ids": [
+        "pair/rear_pedestal/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "rear_bearing",
+        "wind_rotor"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/rear_bearing",
+        "link/wind_rotor"
+      ],
+      "fact_ids": [
+        "pair/rear_bearing/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "baseplate",
+        "wind_rotor"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/baseplate",
+        "link/wind_rotor"
+      ],
+      "fact_ids": [
+        "pair/baseplate/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "left_guide_cap",
+        "wind_rotor"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/left_guide_cap",
+        "link/wind_rotor"
+      ],
+      "fact_ids": [
+        "pair/left_guide_cap/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "right_guide_cap",
+        "wind_rotor"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/right_guide_cap",
+        "link/wind_rotor"
+      ],
+      "fact_ids": [
+        "pair/right_guide_cap/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "front_guide",
+        "wind_rotor"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/front_guide",
+        "link/wind_rotor"
+      ],
+      "fact_ids": [
+        "pair/front_guide/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "wind_rotor"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/wind_rotor"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "pump_cylinder",
+        "wind_rotor"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/pump_cylinder",
+        "link/wind_rotor"
+      ],
+      "fact_ids": [
+        "pair/pump_cylinder/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "piston_slider",
+        "wind_rotor"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/piston_slider",
+        "link/wind_rotor"
+      ],
+      "fact_ids": [
+        "pair/piston_slider/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "wind_rotor",
+        "wrist_pin"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/wind_rotor",
+        "link/wrist_pin"
+      ],
+      "fact_ids": [
+        "pair/wind_rotor/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "left_guide",
+        "wind_rotor"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/left_guide",
+        "link/wind_rotor"
+      ],
+      "fact_ids": [
+        "pair/left_guide/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "right_guide",
+        "wind_rotor"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/right_guide",
+        "link/wind_rotor"
+      ],
+      "fact_ids": [
+        "pair/right_guide/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "crank_pin",
+        "wind_rotor"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_pin",
+        "link/wind_rotor"
+      ],
+      "fact_ids": [
+        "pair/crank_pin/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "wind_rotor"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/wind_rotor"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "pump_rod",
+        "wind_rotor"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/pump_rod",
+        "link/wind_rotor"
+      ],
+      "fact_ids": [
+        "pair/pump_rod/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "cylinder_foot",
+        "wind_rotor"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/cylinder_foot",
+        "link/wind_rotor"
+      ],
+      "fact_ids": [
+        "pair/cylinder_foot/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "pump_piston",
+        "wind_rotor"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/pump_piston",
+        "link/wind_rotor"
+      ],
+      "fact_ids": [
+        "pair/pump_piston/wind_rotor"
+      ]
+    },
+    {
+      "pair": [
+        "front_bearing",
+        "rotor_shaft"
+      ],
+      "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+      "source_entity_ids": [
+        "link/front_bearing",
+        "link/rotor_shaft",
+        "relation/front_shaft_journal"
+      ],
+      "fact_ids": [
+        "pair/front_bearing/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "rear_bearing",
+        "rotor_shaft"
+      ],
+      "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+      "source_entity_ids": [
+        "link/rear_bearing",
+        "link/rotor_shaft",
+        "relation/rear_shaft_journal"
+      ],
+      "fact_ids": [
+        "pair/rear_bearing/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "rotor_shaft"
+      ],
+      "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/rotor_shaft",
+        "relation/shaft_to_crank_press_fit"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "front_pedestal",
+        "rotor_shaft"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/front_pedestal",
+        "link/rotor_shaft"
+      ],
+      "fact_ids": [
+        "pair/front_pedestal/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "rear_pedestal",
+        "rotor_shaft"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/rear_pedestal",
+        "link/rotor_shaft"
+      ],
+      "fact_ids": [
+        "pair/rear_pedestal/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "crank_pin",
+        "rotor_shaft"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_pin",
+        "link/rotor_shaft"
+      ],
+      "fact_ids": [
+        "pair/crank_pin/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "left_guide_cap",
+        "rotor_shaft"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/left_guide_cap",
+        "link/rotor_shaft"
+      ],
+      "fact_ids": [
+        "pair/left_guide_cap/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "right_guide_cap",
+        "rotor_shaft"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/right_guide_cap",
+        "link/rotor_shaft"
+      ],
+      "fact_ids": [
+        "pair/right_guide_cap/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "front_guide",
+        "rotor_shaft"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/front_guide",
+        "link/rotor_shaft"
+      ],
+      "fact_ids": [
+        "pair/front_guide/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "left_guide",
+        "rotor_shaft"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/left_guide",
+        "link/rotor_shaft"
+      ],
+      "fact_ids": [
+        "pair/left_guide/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "right_guide",
+        "rotor_shaft"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/right_guide",
+        "link/rotor_shaft"
+      ],
+      "fact_ids": [
+        "pair/right_guide/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "rear_guide",
+        "rotor_shaft"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/rear_guide",
+        "link/rotor_shaft"
+      ],
+      "fact_ids": [
+        "pair/rear_guide/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "piston_slider",
+        "rotor_shaft"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/piston_slider",
+        "link/rotor_shaft"
+      ],
+      "fact_ids": [
+        "pair/piston_slider/rotor_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "crank_pin"
+      ],
+      "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/crank_pin",
+        "relation/eccentric_pin_press_fit"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/crank_pin"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "rear_pedestal"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/rear_pedestal"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/rear_pedestal"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "rear_bearing"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/rear_bearing"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/rear_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "left_guide_cap"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/left_guide_cap"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/left_guide_cap"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "right_guide_cap"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/right_guide_cap"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/right_guide_cap"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "left_guide"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/left_guide"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/left_guide"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "right_guide"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/right_guide"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/right_guide"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "front_guide"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/front_guide"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/front_guide"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "piston_slider"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/piston_slider"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/piston_slider"
+      ]
+    },
+    {
+      "pair": [
+        "crank_disk",
+        "rear_guide"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_disk",
+        "link/rear_guide"
+      ],
+      "fact_ids": [
+        "pair/crank_disk/rear_guide"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "crank_pin"
+      ],
+      "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/crank_pin",
+        "relation/crank_rod_revolute"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/crank_pin"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "wrist_pin"
+      ],
+      "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/wrist_pin",
+        "relation/wrist_rod_revolute"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "pump_rod"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/pump_rod"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/pump_rod"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "right_guide_cap"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/right_guide_cap"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/right_guide_cap"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "left_guide_cap"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/left_guide_cap"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/left_guide_cap"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "right_guide"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/right_guide"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/right_guide"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "pump_cylinder"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/pump_cylinder"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/pump_cylinder"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "outlet_pipe"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/outlet_pipe"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/outlet_pipe"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "rear_pedestal"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/rear_pedestal"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/rear_pedestal"
+      ]
+    },
+    {
+      "pair": [
+        "connecting_rod",
+        "rear_bearing"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/connecting_rod",
+        "link/rear_bearing"
+      ],
+      "fact_ids": [
+        "pair/connecting_rod/rear_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "piston_slider",
+        "wrist_pin"
+      ],
+      "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+      "source_entity_ids": [
+        "link/piston_slider",
+        "link/wrist_pin",
+        "relation/wrist_pin_to_slider"
+      ],
+      "fact_ids": [
+        "pair/piston_slider/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "piston_slider",
+        "pump_rod"
+      ],
+      "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+      "source_entity_ids": [
+        "link/piston_slider",
+        "link/pump_rod",
+        "relation/slider_to_pump_rod"
+      ],
+      "fact_ids": [
+        "pair/piston_slider/pump_rod"
+      ]
+    },
+    {
+      "pair": [
+        "left_guide_cap",
+        "piston_slider"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/left_guide_cap",
+        "link/piston_slider"
+      ],
+      "fact_ids": [
+        "pair/left_guide_cap/piston_slider"
+      ]
+    },
+    {
+      "pair": [
+        "piston_slider",
+        "right_guide_cap"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/piston_slider",
+        "link/right_guide_cap"
+      ],
+      "fact_ids": [
+        "pair/piston_slider/right_guide_cap"
+      ]
+    },
+    {
+      "pair": [
+        "piston_slider",
+        "pump_cylinder"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/piston_slider",
+        "link/pump_cylinder"
+      ],
+      "fact_ids": [
+        "pair/piston_slider/pump_cylinder"
+      ]
+    },
+    {
+      "pair": [
+        "outlet_pipe",
+        "piston_slider"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/outlet_pipe",
+        "link/piston_slider"
+      ],
+      "fact_ids": [
+        "pair/outlet_pipe/piston_slider"
+      ]
+    },
+    {
+      "pair": [
+        "piston_slider",
+        "rear_pedestal"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/piston_slider",
+        "link/rear_pedestal"
+      ],
+      "fact_ids": [
+        "pair/piston_slider/rear_pedestal"
+      ]
+    },
+    {
+      "pair": [
+        "pump_rod",
+        "wrist_pin"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/pump_rod",
+        "link/wrist_pin"
+      ],
+      "fact_ids": [
+        "pair/pump_rod/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "left_guide",
+        "wrist_pin"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/left_guide",
+        "link/wrist_pin"
+      ],
+      "fact_ids": [
+        "pair/left_guide/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "right_guide",
+        "wrist_pin"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/right_guide",
+        "link/wrist_pin"
+      ],
+      "fact_ids": [
+        "pair/right_guide/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "pump_piston",
+        "pump_rod"
+      ],
+      "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+      "source_entity_ids": [
+        "link/pump_piston",
+        "link/pump_rod",
+        "relation/pump_rod_to_piston"
+      ],
+      "fact_ids": [
+        "pair/pump_piston/pump_rod"
+      ]
+    },
+    {
+      "pair": [
+        "pump_cylinder",
+        "pump_rod"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/pump_cylinder",
+        "link/pump_rod"
+      ],
+      "fact_ids": [
+        "pair/pump_cylinder/pump_rod"
+      ]
+    },
+    {
+      "pair": [
+        "pump_rod",
+        "rear_guide"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/pump_rod",
+        "link/rear_guide"
+      ],
+      "fact_ids": [
+        "pair/pump_rod/rear_guide"
+      ]
+    },
+    {
+      "pair": [
+        "front_guide",
+        "pump_rod"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/front_guide",
+        "link/pump_rod"
+      ],
+      "fact_ids": [
+        "pair/front_guide/pump_rod"
+      ]
+    },
+    {
+      "pair": [
+        "baseplate",
+        "pump_rod"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/baseplate",
+        "link/pump_rod"
+      ],
+      "fact_ids": [
+        "pair/baseplate/pump_rod"
+      ]
+    },
+    {
+      "pair": [
+        "cylinder_foot",
+        "pump_rod"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/cylinder_foot",
+        "link/pump_rod"
+      ],
+      "fact_ids": [
+        "pair/cylinder_foot/pump_rod"
+      ]
+    },
+    {
+      "pair": [
+        "left_guide",
+        "pump_rod"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/left_guide",
+        "link/pump_rod"
+      ],
+      "fact_ids": [
+        "pair/left_guide/pump_rod"
+      ]
+    },
+    {
+      "pair": [
+        "pump_rod",
+        "right_guide"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/pump_rod",
+        "link/right_guide"
+      ],
+      "fact_ids": [
+        "pair/pump_rod/right_guide"
+      ]
+    },
+    {
+      "pair": [
+        "outlet_pipe",
+        "pump_rod"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/outlet_pipe",
+        "link/pump_rod"
+      ],
+      "fact_ids": [
+        "pair/outlet_pipe/pump_rod"
+      ]
+    },
+    {
+      "pair": [
+        "inlet_pipe",
+        "pump_rod"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/inlet_pipe",
+        "link/pump_rod"
+      ],
+      "fact_ids": [
+        "pair/inlet_pipe/pump_rod"
+      ]
+    },
+    {
+      "pair": [
+        "front_guide",
+        "pump_piston"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/front_guide",
+        "link/pump_piston"
+      ],
+      "fact_ids": [
+        "pair/front_guide/pump_piston"
+      ]
+    },
+    {
+      "pair": [
+        "pump_piston",
+        "rear_guide"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/pump_piston",
+        "link/rear_guide"
+      ],
+      "fact_ids": [
+        "pair/pump_piston/rear_guide"
+      ]
+    },
+    {
+      "pair": [
+        "pump_cylinder",
+        "pump_piston"
+      ],
+      "reason": "exact authored fit or bearing is replaced by ideal coordinate topology",
+      "source_entity_ids": [
+        "link/pump_cylinder",
+        "link/pump_piston",
+        "relation/piston_in_barrel"
+      ],
+      "fact_ids": [
+        "pair/pump_cylinder/pump_piston"
+      ]
+    },
+    {
+      "pair": [
+        "left_guide",
+        "pump_piston"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/left_guide",
+        "link/pump_piston"
+      ],
+      "fact_ids": [
+        "pair/left_guide/pump_piston"
+      ]
+    },
+    {
+      "pair": [
+        "pump_piston",
+        "right_guide"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/pump_piston",
+        "link/right_guide"
+      ],
+      "fact_ids": [
+        "pair/pump_piston/right_guide"
+      ]
+    },
+    {
+      "pair": [
+        "cylinder_foot",
+        "pump_piston"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/cylinder_foot",
+        "link/pump_piston"
+      ],
+      "fact_ids": [
+        "pair/cylinder_foot/pump_piston"
+      ]
+    },
+    {
+      "pair": [
+        "inlet_pipe",
+        "pump_piston"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/inlet_pipe",
+        "link/pump_piston"
+      ],
+      "fact_ids": [
+        "pair/inlet_pipe/pump_piston"
+      ]
+    },
+    {
+      "pair": [
+        "outlet_pipe",
+        "pump_piston"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/outlet_pipe",
+        "link/pump_piston"
+      ],
+      "fact_ids": [
+        "pair/outlet_pipe/pump_piston"
+      ]
+    },
+    {
+      "pair": [
+        "baseplate",
+        "pump_piston"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/baseplate",
+        "link/pump_piston"
+      ],
+      "fact_ids": [
+        "pair/baseplate/pump_piston"
+      ]
+    },
+    {
+      "pair": [
+        "pump_piston",
+        "rear_pedestal"
+      ],
+      "reason": "measured positive surface separation or disjoint AABB is a collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/pump_piston",
+        "link/rear_pedestal"
+      ],
+      "fact_ids": [
+        "pair/pump_piston/rear_pedestal"
+      ]
+    }
+  ],
+  "ground_excludes": [],
+  "support_patches": [],
+  "bodies": [
+    "baseplate",
+    "connecting_rod",
+    "crank_disk",
+    "crank_pin",
+    "cylinder_foot",
+    "front_bearing",
+    "front_guide",
+    "front_pedestal",
+    "inlet_pipe",
+    "left_guide",
+    "left_guide_cap",
+    "outlet_pipe",
+    "piston_slider",
+    "pump_cylinder",
+    "pump_piston",
+    "pump_rod",
+    "rear_bearing",
+    "rear_guide",
+    "rear_pedestal",
+    "right_guide",
+    "right_guide_cap",
+    "rotor_shaft",
+    "wind_rotor",
+    "wrist_pin"
+  ],
+  "joints": [
+    "crank_rod_hinge",
+    "crosshead_vertical_slide",
+    "shaft_hinge"
+  ],
+  "constraints": [
+    "wrist_rod_closure"
+  ]
+}

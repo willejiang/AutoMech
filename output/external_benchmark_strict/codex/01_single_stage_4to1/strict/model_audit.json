@@ -1,0 +1,156 @@
+{
+  "active_closures": [
+    {
+      "name": "spur_mesh_12t_to_48t",
+      "type": "joint"
+    }
+  ],
+  "actuator_policy_ok": true,
+  "actuators": [
+    {
+      "is_registered_input": true,
+      "joint": "input_shaft_hinge",
+      "name": "hand_crank_velocity",
+      "type": "velocity"
+    }
+  ],
+  "analyzer_version": "external-model-audit/1.0",
+  "authored_transmissions": [
+    {
+      "driven": "output_shaft_hinge",
+      "driving": "input_shaft_hinge",
+      "name": "spur_mesh_12t_to_48t",
+      "ratio": -0.25
+    }
+  ],
+  "closure_ok": true,
+  "collision_coverage": [
+    {
+      "active_collision_geoms": [
+        "base_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 2,
+      "covered": true,
+      "link": "base"
+    },
+    {
+      "active_collision_geoms": [
+        "ifb_column_collision",
+        "ifb_ring_top_collision",
+        "ifb_ring_bottom_collision",
+        "ifb_ring_left_collision",
+        "ifb_ring_right_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 6,
+      "covered": true,
+      "link": "input_front_bearing"
+    },
+    {
+      "active_collision_geoms": [
+        "irb_column_collision",
+        "irb_ring_top_collision",
+        "irb_ring_bottom_collision",
+        "irb_ring_left_collision",
+        "irb_ring_right_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 6,
+      "covered": true,
+      "link": "input_rear_bearing"
+    },
+    {
+      "active_collision_geoms": [
+        "ofb_column_collision",
+        "ofb_ring_top_collision",
+        "ofb_ring_bottom_collision",
+        "ofb_ring_left_collision",
+        "ofb_ring_right_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 6,
+      "covered": true,
+      "link": "output_front_bearing"
+    },
+    {
+      "active_collision_geoms": [
+        "orb_column_collision",
+        "orb_ring_top_collision",
+        "orb_ring_bottom_collision",
+        "orb_ring_left_collision",
+        "orb_ring_right_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 6,
+      "covered": true,
+      "link": "output_rear_bearing"
+    },
+    {
+      "active_collision_geoms": [
+        "input_shaft_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 2,
+      "covered": true,
+      "link": "input_shaft"
+    },
+    {
+      "active_collision_geoms": [
+        "input_pinion_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 2,
+      "covered": true,
+      "link": "input_pinion"
+    },
+    {
+      "active_collision_geoms": [
+        "crank_hub_collision",
+        "crank_arm_collision",
+        "crank_handle_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 4,
+      "covered": true,
+      "link": "hand_crank"
+    },
+    {
+      "active_collision_geoms": [
+        "output_shaft_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 2,
+      "covered": true,
+      "link": "output_shaft"
+    },
+    {
+      "active_collision_geoms": [
+        "output_gear_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 2,
+      "covered": true,
+      "link": "output_gear"
+    }
+  ],
+  "collision_coverage_ok": true,
+  "equality_checks": [
+    {
+      "detail": "output_shaft_hinge=-0.25*input_shaft_hinge matches ratio -0.25",
+      "driven": "output_shaft_hinge",
+      "driving": "input_shaft_hinge",
+      "matched": true,
+      "name": "spur_mesh_12t_to_48t",
+      "ratio": -0.25
+    }
+  ],
+  "errors": [],
+  "passed": true,
+  "registered_input_joints": [
+    "input_shaft_hinge"
+  ],
+  "schema": "physcad-scorer-model-audit/1.0",
+  "task_id": "01_single_stage_4to1",
+  "transmission_binding_ok": true
+}

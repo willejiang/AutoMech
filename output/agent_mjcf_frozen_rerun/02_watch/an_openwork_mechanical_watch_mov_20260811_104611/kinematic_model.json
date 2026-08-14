@@ -1,0 +1,1884 @@
+{
+  "name": "an_openwork_mechanical_watch_mov",
+  "root_link": "baseplate",
+  "links": [
+    {
+      "name": "baseplate",
+      "description": "baseplate",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/baseplate.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": ""
+    },
+    {
+      "name": "central_lower_bearing",
+      "description": "central_lower_bearing",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/central_lower_bearing.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "baseplate"
+    },
+    {
+      "name": "intermediate_lower_bearing",
+      "description": "intermediate_lower_bearing",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/intermediate_lower_bearing.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "baseplate"
+    },
+    {
+      "name": "bridge_post_low",
+      "description": "bridge_post_low",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/bridge_post_low.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "baseplate"
+    },
+    {
+      "name": "bridge_post_high",
+      "description": "bridge_post_high",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/bridge_post_high.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "baseplate"
+    },
+    {
+      "name": "upper_bridge",
+      "description": "upper_bridge",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/upper_bridge.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "bridge_post_low",
+      "extra_mounts": [
+        "bridge_post_high"
+      ]
+    },
+    {
+      "name": "central_upper_bearing",
+      "description": "central_upper_bearing",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/central_upper_bearing.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "upper_bridge"
+    },
+    {
+      "name": "intermediate_upper_bearing",
+      "description": "intermediate_upper_bearing",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/intermediate_upper_bearing.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "upper_bridge"
+    },
+    {
+      "name": "minute_shaft",
+      "description": "minute_shaft",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/minute_shaft.stl",
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": true,
+      "material": "steel",
+      "mount": "central_lower_bearing",
+      "extra_mounts": [
+        "hour_pipe"
+      ]
+    },
+    {
+      "name": "intermediate_arbor",
+      "description": "intermediate_arbor",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/intermediate_arbor.stl",
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "intermediate_lower_bearing",
+      "extra_mounts": [
+        "intermediate_upper_bearing"
+      ]
+    },
+    {
+      "name": "minute_pinion",
+      "description": "minute_pinion",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/minute_pinion.stl",
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "minute_shaft"
+    },
+    {
+      "name": "intermediate_wheel",
+      "description": "intermediate_wheel",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/intermediate_wheel.stl",
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "intermediate_arbor"
+    },
+    {
+      "name": "hour_pipe",
+      "description": "hour_pipe",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/hour_pipe.stl",
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "central_upper_bearing",
+      "extra_mounts": [
+        "minute_shaft"
+      ]
+    },
+    {
+      "name": "intermediate_pinion",
+      "description": "intermediate_pinion",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/intermediate_pinion.stl",
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "intermediate_arbor"
+    },
+    {
+      "name": "hour_wheel",
+      "description": "hour_wheel",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/hour_wheel.stl",
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "hour_pipe"
+    },
+    {
+      "name": "dial_post_1",
+      "description": "dial_post_1",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/dial_post_1.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "baseplate"
+    },
+    {
+      "name": "dial_post_2",
+      "description": "dial_post_2",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/dial_post_2.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "baseplate"
+    },
+    {
+      "name": "dial_post_3",
+      "description": "dial_post_3",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/dial_post_3.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "baseplate"
+    },
+    {
+      "name": "dial_post_4",
+      "description": "dial_post_4",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/dial_post_4.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "baseplate"
+    },
+    {
+      "name": "chapter_ring",
+      "description": "chapter_ring",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/chapter_ring.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "dial_post_1",
+      "extra_mounts": [
+        "dial_post_2",
+        "dial_post_3",
+        "dial_post_4"
+      ]
+    },
+    {
+      "name": "hour_marker_1",
+      "description": "hour_marker_1",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/hour_marker_1.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "chapter_ring"
+    },
+    {
+      "name": "hour_marker_2",
+      "description": "hour_marker_2",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/hour_marker_2.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "chapter_ring"
+    },
+    {
+      "name": "hour_marker_3",
+      "description": "hour_marker_3",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/hour_marker_3.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "chapter_ring"
+    },
+    {
+      "name": "hour_marker_4",
+      "description": "hour_marker_4",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/hour_marker_4.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "chapter_ring"
+    },
+    {
+      "name": "hour_marker_5",
+      "description": "hour_marker_5",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/hour_marker_5.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "chapter_ring"
+    },
+    {
+      "name": "hour_marker_6",
+      "description": "hour_marker_6",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/hour_marker_6.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "chapter_ring"
+    },
+    {
+      "name": "hour_marker_7",
+      "description": "hour_marker_7",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/hour_marker_7.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "chapter_ring"
+    },
+    {
+      "name": "hour_marker_8",
+      "description": "hour_marker_8",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/hour_marker_8.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "chapter_ring"
+    },
+    {
+      "name": "hour_marker_9",
+      "description": "hour_marker_9",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/hour_marker_9.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "chapter_ring"
+    },
+    {
+      "name": "hour_marker_10",
+      "description": "hour_marker_10",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/hour_marker_10.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "chapter_ring"
+    },
+    {
+      "name": "hour_marker_11",
+      "description": "hour_marker_11",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/hour_marker_11.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "chapter_ring"
+    },
+    {
+      "name": "hour_marker_12",
+      "description": "hour_marker_12",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/hour_marker_12.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "chapter_ring"
+    },
+    {
+      "name": "hour_hand",
+      "description": "hour_hand",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/hour_hand.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "hour_pipe"
+    },
+    {
+      "name": "minute_hand",
+      "description": "minute_hand",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/minute_hand.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "minute_shaft"
+    }
+  ],
+  "poses": [
+    {
+      "name": "place_baseplate",
+      "parent": "",
+      "child": "baseplate",
+      "xyz_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_central_lower_bearing",
+      "parent": "baseplate",
+      "child": "central_lower_bearing",
+      "xyz_m": [
+        0.0,
+        0.0,
+        0.002
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_intermediate_lower_bearing",
+      "parent": "baseplate",
+      "child": "intermediate_lower_bearing",
+      "xyz_m": [
+        0.012,
+        0.0,
+        0.002
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_bridge_post_low",
+      "parent": "baseplate",
+      "child": "bridge_post_low",
+      "xyz_m": [
+        0.006,
+        -0.0132,
+        0.002
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_bridge_post_high",
+      "parent": "baseplate",
+      "child": "bridge_post_high",
+      "xyz_m": [
+        0.006,
+        0.0132,
+        0.002
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_upper_bridge",
+      "parent": "bridge_post_low",
+      "child": "upper_bridge",
+      "xyz_m": [
+        -0.006,
+        0.0132,
+        0.015
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_central_upper_bearing",
+      "parent": "upper_bridge",
+      "child": "central_upper_bearing",
+      "xyz_m": [
+        0.0,
+        0.0,
+        -0.0015
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_intermediate_upper_bearing",
+      "parent": "upper_bridge",
+      "child": "intermediate_upper_bearing",
+      "xyz_m": [
+        0.012,
+        0.0,
+        -0.0015
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_minute_shaft",
+      "parent": "central_lower_bearing",
+      "child": "minute_shaft",
+      "xyz_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_intermediate_arbor",
+      "parent": "intermediate_lower_bearing",
+      "child": "intermediate_arbor",
+      "xyz_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_minute_pinion",
+      "parent": "minute_shaft",
+      "child": "minute_pinion",
+      "xyz_m": [
+        0.0,
+        0.0,
+        0.0025
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_intermediate_wheel",
+      "parent": "intermediate_arbor",
+      "child": "intermediate_wheel",
+      "xyz_m": [
+        0.0,
+        0.0,
+        0.0025
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.10471975511965981
+      ]
+    },
+    {
+      "name": "place_hour_pipe",
+      "parent": "central_upper_bearing",
+      "child": "hour_pipe",
+      "xyz_m": [
+        0.0,
+        0.0,
+        -0.009
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_intermediate_pinion",
+      "parent": "intermediate_arbor",
+      "child": "intermediate_pinion",
+      "xyz_m": [
+        0.0,
+        0.0,
+        0.007
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.10471975511965981
+      ]
+    },
+    {
+      "name": "place_hour_wheel",
+      "parent": "hour_pipe",
+      "child": "hour_wheel",
+      "xyz_m": [
+        0.0,
+        0.0,
+        0.0025
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.2028945255443408
+      ]
+    },
+    {
+      "name": "place_dial_post_1",
+      "parent": "baseplate",
+      "child": "dial_post_1",
+      "xyz_m": [
+        0.026600000000000002,
+        0.0,
+        0.002
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_dial_post_2",
+      "parent": "baseplate",
+      "child": "dial_post_2",
+      "xyz_m": [
+        -0.026600000000000002,
+        0.0,
+        0.002
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_dial_post_3",
+      "parent": "baseplate",
+      "child": "dial_post_3",
+      "xyz_m": [
+        0.0,
+        0.026600000000000002,
+        0.002
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_dial_post_4",
+      "parent": "baseplate",
+      "child": "dial_post_4",
+      "xyz_m": [
+        0.0,
+        -0.026600000000000002,
+        0.002
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_chapter_ring",
+      "parent": "dial_post_1",
+      "child": "chapter_ring",
+      "xyz_m": [
+        -0.026600000000000002,
+        0.0,
+        0.018
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_hour_marker_1",
+      "parent": "chapter_ring",
+      "child": "hour_marker_1",
+      "xyz_m": [
+        0.0,
+        0.0258,
+        0.0008000000000000007
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_hour_marker_2",
+      "parent": "chapter_ring",
+      "child": "hour_marker_2",
+      "xyz_m": [
+        0.012899999999999998,
+        0.02234345541763852,
+        0.0008000000000000007
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        -0.5235987755982988
+      ]
+    },
+    {
+      "name": "place_hour_marker_3",
+      "parent": "chapter_ring",
+      "child": "hour_marker_3",
+      "xyz_m": [
+        0.022343455417638516,
+        0.012900000000000003,
+        0.0008000000000000007
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        -1.0471975511965976
+      ]
+    },
+    {
+      "name": "place_hour_marker_4",
+      "parent": "chapter_ring",
+      "child": "hour_marker_4",
+      "xyz_m": [
+        0.0258,
+        1.5797943709000856e-18,
+        0.0008000000000000007
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        -1.5707963267948966
+      ]
+    },
+    {
+      "name": "place_hour_marker_5",
+      "parent": "chapter_ring",
+      "child": "hour_marker_5",
+      "xyz_m": [
+        0.02234345541763852,
+        -0.012899999999999995,
+        0.0008000000000000007
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        -2.0943951023931953
+      ]
+    },
+    {
+      "name": "place_hour_marker_6",
+      "parent": "chapter_ring",
+      "child": "hour_marker_6",
+      "xyz_m": [
+        0.012899999999999998,
+        -0.02234345541763852,
+        0.0008000000000000007
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        -2.6179938779914944
+      ]
+    },
+    {
+      "name": "place_hour_marker_7",
+      "parent": "chapter_ring",
+      "child": "hour_marker_7",
+      "xyz_m": [
+        3.1595887418001713e-18,
+        -0.0258,
+        0.0008000000000000007
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        -3.141592653589793
+      ]
+    },
+    {
+      "name": "place_hour_marker_8",
+      "parent": "chapter_ring",
+      "child": "hour_marker_8",
+      "xyz_m": [
+        -0.012900000000000003,
+        -0.022343455417638516,
+        0.0008000000000000007
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        2.617993877991494
+      ]
+    },
+    {
+      "name": "place_hour_marker_9",
+      "parent": "chapter_ring",
+      "child": "hour_marker_9",
+      "xyz_m": [
+        -0.022343455417638512,
+        -0.01290000000000001,
+        0.0008000000000000007
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        2.094395102393196
+      ]
+    },
+    {
+      "name": "place_hour_marker_10",
+      "parent": "chapter_ring",
+      "child": "hour_marker_10",
+      "xyz_m": [
+        -0.0258,
+        -4.739383112700257e-18,
+        0.0008000000000000007
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        1.5707963267948968
+      ]
+    },
+    {
+      "name": "place_hour_marker_11",
+      "parent": "chapter_ring",
+      "child": "hour_marker_11",
+      "xyz_m": [
+        -0.022343455417638516,
+        0.012900000000000003,
+        0.0008000000000000007
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        1.0471975511965976
+      ]
+    },
+    {
+      "name": "place_hour_marker_12",
+      "parent": "chapter_ring",
+      "child": "hour_marker_12",
+      "xyz_m": [
+        -0.01290000000000001,
+        0.02234345541763851,
+        0.0008000000000000007
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.5235987755982994
+      ]
+    },
+    {
+      "name": "place_hour_hand",
+      "parent": "hour_pipe",
+      "child": "hour_hand",
+      "xyz_m": [
+        0.0,
+        0.0,
+        0.0145
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_minute_hand",
+      "parent": "minute_shaft",
+      "child": "minute_hand",
+      "xyz_m": [
+        0.0,
+        0.0,
+        0.02
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    }
+  ],
+  "mesh_pairs": [
+    [
+      "minute_pinion",
+      "intermediate_wheel"
+    ],
+    [
+      "intermediate_pinion",
+      "hour_wheel"
+    ]
+  ],
+  "ports_by_link": {
+    "central_lower_bearing": [
+      {
+        "name": "bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          0.75
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 2.1,
+        "depth_mm": 1.5
+      }
+    ],
+    "central_upper_bearing": [
+      {
+        "name": "bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          0.75
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 3.7,
+        "depth_mm": 1.5
+      }
+    ],
+    "intermediate_lower_bearing": [
+      {
+        "name": "bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          0.75
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 2.1,
+        "depth_mm": 1.5
+      }
+    ],
+    "intermediate_upper_bearing": [
+      {
+        "name": "bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          0.75
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 2.1,
+        "depth_mm": 1.5
+      }
+    ],
+    "minute_shaft": [
+      {
+        "name": "outer",
+        "type": "shaft",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          10.2
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 2.0,
+        "depth_mm": 20.4
+      },
+      {
+        "name": "minute_pinion_seat",
+        "type": "cylindrical",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          3.5
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 2.0,
+        "depth_mm": 2.0
+      },
+      {
+        "name": "minute_hand_seat",
+        "type": "cylindrical",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          20.2
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 2.0,
+        "depth_mm": 0.4
+      }
+    ],
+    "hour_pipe": [
+      {
+        "name": "inner_bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          7.449999999999999
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 2.1,
+        "depth_mm": 14.899999999999999
+      },
+      {
+        "name": "outer",
+        "type": "shaft",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          7.449999999999999
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 3.6,
+        "depth_mm": 14.899999999999999
+      },
+      {
+        "name": "hour_wheel_seat",
+        "type": "cylindrical",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          3.5
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 3.6,
+        "depth_mm": 2.0
+      },
+      {
+        "name": "hour_hand_seat",
+        "type": "cylindrical",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          14.7
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 3.6,
+        "depth_mm": 0.4
+      }
+    ],
+    "intermediate_arbor": [
+      {
+        "name": "outer",
+        "type": "shaft",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          8.5
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 2.0,
+        "depth_mm": 17.0
+      },
+      {
+        "name": "wheel_seat",
+        "type": "cylindrical",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          3.5
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 2.0,
+        "depth_mm": 2.0
+      },
+      {
+        "name": "pinion_seat",
+        "type": "cylindrical",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          8.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 2.0,
+        "depth_mm": 2.0
+      }
+    ],
+    "minute_pinion": [
+      {
+        "name": "bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 1.99,
+        "depth_mm": 2.0
+      },
+      {
+        "name": "mesh",
+        "type": "gear_mesh",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "depth_mm": 2.0,
+        "pitch_radius_mm": 3.0
+      }
+    ],
+    "intermediate_wheel": [
+      {
+        "name": "bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 1.99,
+        "depth_mm": 2.0
+      },
+      {
+        "name": "mesh",
+        "type": "gear_mesh",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "depth_mm": 2.0,
+        "pitch_radius_mm": 9.0
+      }
+    ],
+    "intermediate_pinion": [
+      {
+        "name": "bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 1.99,
+        "depth_mm": 2.0
+      },
+      {
+        "name": "mesh",
+        "type": "gear_mesh",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "depth_mm": 2.0,
+        "pitch_radius_mm": 2.4
+      }
+    ],
+    "hour_wheel": [
+      {
+        "name": "bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 3.5900000000000003,
+        "depth_mm": 2.0
+      },
+      {
+        "name": "mesh",
+        "type": "gear_mesh",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "depth_mm": 2.0,
+        "pitch_radius_mm": 9.6
+      }
+    ],
+    "hour_hand": [
+      {
+        "name": "hub_bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          0.2
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 3.5900000000000003,
+        "depth_mm": 0.4
+      }
+    ],
+    "minute_hand": [
+      {
+        "name": "hub_bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          0.2
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 1.99,
+        "depth_mm": 0.4
+      }
+    ]
+  },
+  "relations": [
+    {
+      "name": "minute_shaft_in_lower_bearing",
+      "mate_type": "journal_bearing",
+      "base_part": "central_lower_bearing",
+      "base_port": "bore",
+      "incoming_part": "minute_shaft",
+      "incoming_port": "outer"
+    },
+    {
+      "name": "hour_pipe_in_upper_bearing",
+      "mate_type": "journal_bearing",
+      "base_part": "central_upper_bearing",
+      "base_port": "bore",
+      "incoming_part": "hour_pipe",
+      "incoming_port": "outer"
+    },
+    {
+      "name": "minute_shaft_inside_hour_pipe",
+      "mate_type": "journal_bearing",
+      "base_part": "hour_pipe",
+      "base_port": "inner_bore",
+      "incoming_part": "minute_shaft",
+      "incoming_port": "outer"
+    },
+    {
+      "name": "intermediate_arbor_in_lower_bearing",
+      "mate_type": "journal_bearing",
+      "base_part": "intermediate_lower_bearing",
+      "base_port": "bore",
+      "incoming_part": "intermediate_arbor",
+      "incoming_port": "outer"
+    },
+    {
+      "name": "intermediate_arbor_in_upper_bearing",
+      "mate_type": "journal_bearing",
+      "base_part": "intermediate_upper_bearing",
+      "base_port": "bore",
+      "incoming_part": "intermediate_arbor",
+      "incoming_port": "outer"
+    },
+    {
+      "name": "minute_pinion_press_fit",
+      "mate_type": "press_fit",
+      "base_part": "minute_shaft",
+      "base_port": "minute_pinion_seat",
+      "incoming_part": "minute_pinion",
+      "incoming_port": "bore"
+    },
+    {
+      "name": "intermediate_wheel_press_fit",
+      "mate_type": "press_fit",
+      "base_part": "intermediate_arbor",
+      "base_port": "wheel_seat",
+      "incoming_part": "intermediate_wheel",
+      "incoming_port": "bore"
+    },
+    {
+      "name": "intermediate_pinion_press_fit",
+      "mate_type": "press_fit",
+      "base_part": "intermediate_arbor",
+      "base_port": "pinion_seat",
+      "incoming_part": "intermediate_pinion",
+      "incoming_port": "bore"
+    },
+    {
+      "name": "hour_wheel_press_fit",
+      "mate_type": "press_fit",
+      "base_part": "hour_pipe",
+      "base_port": "hour_wheel_seat",
+      "incoming_part": "hour_wheel",
+      "incoming_port": "bore"
+    },
+    {
+      "name": "hour_hand_press_fit",
+      "mate_type": "press_fit",
+      "base_part": "hour_pipe",
+      "base_port": "hour_hand_seat",
+      "incoming_part": "hour_hand",
+      "incoming_port": "hub_bore"
+    },
+    {
+      "name": "minute_hand_press_fit",
+      "mate_type": "press_fit",
+      "base_part": "minute_shaft",
+      "base_port": "minute_hand_seat",
+      "incoming_part": "minute_hand",
+      "incoming_port": "hub_bore"
+    },
+    {
+      "name": "minute_stage_mesh",
+      "mate_type": "gear_spur_external",
+      "base_part": "minute_pinion",
+      "base_port": "mesh",
+      "incoming_part": "intermediate_wheel",
+      "incoming_port": "mesh",
+      "separation_axis": [
+        1.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "hour_stage_mesh",
+      "mate_type": "gear_spur_external",
+      "base_part": "hour_wheel",
+      "base_port": "mesh",
+      "incoming_part": "intermediate_pinion",
+      "incoming_port": "mesh",
+      "separation_axis": [
+        1.0,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "transmissions": [
+    {
+      "name": "minute_to_intermediate",
+      "type": "gear_external",
+      "driving_link": "minute_pinion",
+      "driven_link": "intermediate_wheel"
+    },
+    {
+      "name": "compound_intermediate_arbor",
+      "type": "compound_1to1",
+      "driving_link": "intermediate_wheel",
+      "driven_link": "intermediate_pinion"
+    },
+    {
+      "name": "intermediate_to_hour",
+      "type": "gear_external",
+      "driving_link": "intermediate_pinion",
+      "driven_link": "hour_wheel"
+    }
+  ],
+  "output_link": "hour_hand",
+  "watch_links": [
+    "minute_hand",
+    "hour_hand",
+    "minute_pinion",
+    "intermediate_wheel",
+    "intermediate_pinion",
+    "hour_wheel"
+  ]
+}

@@ -1,0 +1,202 @@
+<mujoco model="design_this_as_an_open_demonstra">
+  <compiler angle="radian" coordinate="local" />
+  <option gravity="0 0 -9.81" timestep="0.0002" solver="Newton" iterations="100" cone="elliptic" />
+  <size memory="256M" />
+  <asset>
+    <mesh name="mesh_base" file="meshes/base.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_negative_shaft_pedestal" file="meshes/negative_shaft_pedestal.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_negative_shaft_bearing" file="meshes/negative_shaft_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_positive_shaft_pedestal" file="meshes/positive_shaft_pedestal.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_positive_shaft_bearing" file="meshes/positive_shaft_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_crankshaft" file="meshes/crankshaft.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_crank_disk" file="meshes/crank_disk.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_crank_pin" file="meshes/crank_pin.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_pitman" file="meshes/pitman.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_negative_beam_support" file="meshes/negative_beam_support.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_negative_pivot_bearing" file="meshes/negative_pivot_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_positive_beam_support" file="meshes/positive_beam_support.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_positive_pivot_bearing" file="meshes/positive_pivot_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_beam_pivot_pin" file="meshes/beam_pivot_pin.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_walking_beam" file="meshes/walking_beam.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_pitman_beam_pin" file="meshes/pitman_beam_pin.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_beam_output_pin" file="meshes/beam_output_pin.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_polished_output_rod" file="meshes/polished_output_rod.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_guide_post" file="meshes/output_guide_post.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_lower_output_guide" file="meshes/lower_output_guide.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_upper_output_guide" file="meshes/upper_output_guide.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hand_crank_arm" file="meshes/hand_crank_arm.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_handle_spindle" file="meshes/handle_spindle.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hand_grip" file="meshes/hand_grip.stl" scale=".001 .001 .001" />
+  </asset>
+  <worldbody>
+    <light pos="0 0 3" dir="0 0 -1" />
+    <geom name="ground" type="plane" size="5 5 .1" friction="1 .05 .005" contype="1" conaffinity="0" />
+    <body name="base" pos="0.01 0 0" quat="1 0 0 0">
+      <inertial pos="0 0 0.004" mass="0.95456" fullinertia="0.0005141896533 0.002876725653 0.003380733333 -0 -0 -0" />
+      <geom name="geom_base" type="sdf" mesh="mesh_base" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      <body name="negative_shaft_pedestal" pos="-0.055 -0.023 0.008" quat="1 0 0 0">
+        <inertial pos="0 0 0.0145" mass="0.0291392" fullinertia="2.197581333e-06 2.663808533e-06 7.770453333e-07 -0 -0 -0" />
+        <geom name="geom_negative_shaft_pedestal" type="sdf" mesh="mesh_negative_shaft_pedestal" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="negative_shaft_bearing" pos="0 0 0.037" quat="0.7071067812 0.7071067812 0 0">
+          <inertial pos="6.536404183e-20 1.184181653e-19 0" mass="0.009386715312" fullinertia="2.386631461e-07 2.386631442e-07 3.77201327e-07 7.232496084e-25 -1.427906682e-24 2.974769274e-25" />
+          <geom name="geom_negative_shaft_bearing" type="sdf" mesh="mesh_negative_shaft_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        </body>
+      </body>
+      <body name="positive_shaft_pedestal" pos="-0.055 0.023 0.008" quat="1 0 0 0">
+        <inertial pos="0 0 0.0145" mass="0.0291392" fullinertia="2.197581333e-06 2.663808533e-06 7.770453333e-07 -0 -0 -0" />
+        <geom name="geom_positive_shaft_pedestal" type="sdf" mesh="mesh_positive_shaft_pedestal" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="positive_shaft_bearing" pos="0 0 0.037" quat="0.7071067812 0.7071067812 0 0">
+          <inertial pos="6.536404183e-20 1.184181653e-19 0" mass="0.009386715312" fullinertia="2.386631461e-07 2.386631442e-07 3.77201327e-07 7.232496084e-25 -1.427906682e-24 2.974769274e-25" />
+          <geom name="geom_positive_shaft_bearing" type="sdf" mesh="mesh_positive_shaft_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        </body>
+      </body>
+      <body name="crankshaft" pos="-0.055 0 0.045" quat="0.7071067812 0.7071067812 0 0">
+        <inertial pos="3.142590863e-20 2.116415257e-19 0" mass="0.02839827757" fullinertia="1.238160195e-05 1.238160195e-05 2.270920825e-07 1.0114339e-24 -0 7.615967116e-24" />
+        <geom name="geom_crankshaft" type="sdf" mesh="mesh_crankshaft" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="hand_crank_arm" pos="0 0.012 -0.031" quat="0.5 -0.5 -0.5 0.5">
+          <inertial pos="0.001413406888 5.932233015e-20 -9.269114087e-20" mass="0.01002929446" fullinertia="1.349990071e-07 1.343695242e-06 1.23544102e-06 7.814260296e-25 -1.511703877e-23 -2.677325028e-25" />
+          <geom name="geom_hand_crank_arm" type="sdf" mesh="mesh_hand_crank_arm" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          <body name="handle_spindle" pos="0.012 0.008 6.938893904e-18" quat="0.5 0.5 0.5 -0.5">
+            <inertial pos="1.178471573e-20 2.201722099e-20 0" mass="0.001577682087" fullinertia="3.523424622e-08 3.523424621e-08 3.154056701e-09 -4.64813373e-27 -4.462208381e-26 7.436787008e-27" />
+            <geom name="geom_handle_spindle" type="sdf" mesh="mesh_handle_spindle" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+            <body name="hand_grip" pos="0 0 -0.0025" quat="1 -0 -0 0">
+              <inertial pos="0 2.28041809e-19 0" mass="0.005699862788" fullinertia="9.875204801e-08 9.875204544e-08 8.255686056e-08 5.93799084e-25 -0 -9.668118158e-26" />
+              <geom name="geom_hand_grip" type="sdf" mesh="mesh_hand_grip" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+            </body>
+          </body>
+        </body>
+        <joint name="driven_crankshaft_hinge" type="hinge" axis="0 6.123233996e-17 -1" pos="0.045 -0.045 -2.755455298e-18" />
+      </body>
+      <body name="crank_disk" pos="-0.055 0 0.045" quat="0.7071067812 0.7071067812 0 0">
+        <inertial pos="-0.0001522629053 -0.0001066156347 0" mass="0.1486016187" fullinertia="2.511855101e-05 2.494674414e-05 4.758860151e-05 2.360169785e-07 -1.218480368e-22 3.858229884e-23" />
+        <geom name="geom_crank_disk" type="sdf" mesh="mesh_crank_disk" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="crank_pin" pos="0.0147447368 0.01032437585 0.0095" quat="1 0 0 0">
+          <inertial pos="-1.097049898e-20 8.104670389e-21 0" mass="0.001694775685" fullinertia="1.973597797e-08 1.973597781e-08 5.293979479e-09 2.602954889e-26 1.487402794e-26 2.974805587e-26" />
+          <geom name="geom_crank_pin" type="sdf" mesh="mesh_crank_pin" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        </body>
+        <joint name="crank_disk_hinge" type="hinge" axis="0 6.123233996e-17 -1" pos="0.045 -0.045 -2.755455298e-18" />
+      </body>
+      <body name="negative_beam_support" pos="0.01 -0.018 0.008" quat="1 0 0 0">
+        <inertial pos="0 0 0.037" mass="0.0418248" fullinertia="1.92115248e-05 1.9587948e-05 6.27372e-07 -0 -0 -0" />
+        <geom name="geom_negative_beam_support" type="sdf" mesh="mesh_negative_beam_support" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="negative_pivot_bearing" pos="0 0 0.082" quat="0.7071067812 0.7071067812 0 0">
+          <inertial pos="-1.09162624e-19 8.465938537e-20 0" mass="0.008090181199" fullinertia="1.724667381e-07 1.724667367e-07 2.963923877e-07 1.20851477e-25 -1.487402794e-24 -5.205909777e-26" />
+          <geom name="geom_negative_pivot_bearing" type="sdf" mesh="mesh_negative_pivot_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          <body name="beam_pivot_pin" pos="0 0 -0.011" quat="1 0 0 0">
+            <inertial pos="-2.394354931e-20 7.428287424e-21 0" mass="0.006212123249" fullinertia="4.198302045e-07 4.198302047e-07 2.794297136e-08 -2.528584749e-25 -0 -3.867256342e-25" />
+            <geom name="geom_beam_pivot_pin" type="sdf" mesh="mesh_beam_pivot_pin" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          </body>
+        </body>
+      </body>
+      <body name="positive_beam_support" pos="0.01 0.004 0.008" quat="1 0 0 0">
+        <inertial pos="0 0 0.037" mass="0.0418248" fullinertia="1.92115248e-05 1.9587948e-05 6.27372e-07 -0 -0 -0" />
+        <geom name="geom_positive_beam_support" type="sdf" mesh="mesh_positive_beam_support" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="positive_pivot_bearing" pos="0 0 0.082" quat="0.7071067812 0.7071067812 0 0">
+          <inertial pos="-1.09162624e-19 8.465938537e-20 0" mass="0.008090181199" fullinertia="1.724667381e-07 1.724667367e-07 2.963923877e-07 1.20851477e-25 -1.487402794e-24 -5.205909777e-26" />
+          <geom name="geom_positive_pivot_bearing" type="sdf" mesh="mesh_positive_pivot_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        </body>
+      </body>
+      <body name="walking_beam" pos="0.01 -0.007 0.09" quat="0.9975640503 0 -0.06975647374 -3.330669074e-16">
+        <inertial pos="0.004907292211 1.225438558e-19 -6.127192788e-20" mass="0.03884069838" fullinertia="5.391170245e-07 4.53438947e-05 4.490835287e-05 2.25000686e-23 1.368237027e-22 1.427906682e-24" />
+        <geom name="geom_walking_beam" type="sdf" mesh="mesh_walking_beam" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="pitman_beam_pin" pos="-0.045 -0.0025 0" quat="0.7053843046 0.7053843046 0.04932527562 -0.04932527562">
+          <inertial pos="-1.097049898e-20 8.104670389e-21 0" mass="0.001694775685" fullinertia="1.973597797e-08 1.973597781e-08 5.293979479e-09 2.602954889e-26 1.487402794e-26 2.974805587e-26" />
+          <geom name="geom_pitman_beam_pin" type="sdf" mesh="mesh_pitman_beam_pin" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        </body>
+        <body name="beam_output_pin" pos="0.055 -0.0025 0" quat="0.7053843046 0.7053843046 0.04932527562 -0.04932527562">
+          <inertial pos="-1.097049898e-20 8.104670389e-21 0" mass="0.001694775685" fullinertia="1.973597797e-08 1.973597781e-08 5.293979479e-09 2.602954889e-26 1.487402794e-26 2.974805587e-26" />
+          <geom name="geom_beam_output_pin" type="sdf" mesh="mesh_beam_output_pin" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        </body>
+        <joint name="walking_beam_hinge" type="hinge" axis="8.521894631e-18 1 -5.959089233e-19" pos="-0.03233094046 0.007 -0.08634066417" />
+      </body>
+      <body name="polished_output_rod" pos="0.06446474378 -0.012 0" quat="1 0 0 0">
+        <inertial pos="8.827583744e-20 -9.931031712e-20 0.05936810288" mass="0.02695918315" fullinertia="1.979291261e-05 1.984417397e-05 2.022361182e-07 4.015987543e-25 -8.717821778e-23 -1.284856985e-22" />
+        <geom name="geom_polished_output_rod" type="sdf" mesh="mesh_polished_output_rod" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <joint name="vertical_guided_output" type="slide" axis="0 0 1" pos="-0.07446474378 0.012 0" />
+      </body>
+      <body name="output_guide_post" pos="0.06446474378 0.01 0.008" quat="1 0 0 0">
+        <inertial pos="0 0 0.033" mass="0.05181" fullinertia="1.923878e-05 1.923878e-05 8.635e-07 -0 -0 -0" />
+        <geom name="geom_output_guide_post" type="sdf" mesh="mesh_output_guide_post" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="lower_output_guide" pos="0 -0.022 0.016" quat="1 0 0 0">
+          <inertial pos="8.563097781e-20 0.007592437908 0" mass="0.02779186377" fullinertia="2.276672648e-06 7.839537861e-07 2.764179887e-06 1.806882137e-23 -0 -0" />
+          <geom name="geom_lower_output_guide" type="sdf" mesh="mesh_lower_output_guide" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        </body>
+        <body name="upper_output_guide" pos="0 -0.022 0.042" quat="1 0 0 0">
+          <inertial pos="8.563097781e-20 0.007592437908 0" mass="0.02779186377" fullinertia="2.276672648e-06 7.839537861e-07 2.764179887e-06 1.806882137e-23 -0 -0" />
+          <geom name="geom_upper_output_guide" type="sdf" mesh="mesh_upper_output_guide" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        </body>
+      </body>
+    </body>
+    <body name="pitman" pos="-0.02740866315 -0.012 0.06953079316" quat="0.7734561895 -0 -0.6338497637 -0">
+      <inertial pos="1.111341674e-19 0 -4.341178416e-20" mass="0.01070707832" fullinertia="1.15581012e-07 1.751833069e-06 1.664804266e-06 1.308914458e-24 -5.47364228e-24 -1.784883352e-25" />
+      <geom name="geom_pitman" type="sdf" mesh="mesh_pitman" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      <freejoint name="pitman_free" />
+    </body>
+  </worldbody>
+  <equality>
+    <joint name="shaft_to_crank_disk_press_drive" joint1="crank_disk_hinge" joint2="driven_crankshaft_hinge" polycoef="0 1 0 0 0" />
+    <connect name="crank_pin_to_pitman_closure" body1="crank_pin" body2="pitman" anchor="-0.0302552632 -0.01 0.0553243759" />
+    <connect name="pitman_to_walking_beam_closure" body1="pitman_beam_pin" body2="pitman" anchor="-0.0245620631 -0.01 0.0837372105" />
+    <connect name="beam_to_output_rod_closure" body1="beam_output_pin" body2="polished_output_rod" anchor="0.0744647438 -0.01 0.0976545206" />
+  </equality>
+  <contact>
+    <exclude body1="crankshaft" body2="negative_shaft_bearing" />
+    <exclude body1="crankshaft" body2="positive_shaft_bearing" />
+    <exclude body1="crankshaft" body2="crank_disk" />
+    <exclude body1="crank_disk" body2="crank_pin" />
+    <exclude body1="crank_pin" body2="pitman" />
+    <exclude body1="pitman" body2="pitman_beam_pin" />
+    <exclude body1="walking_beam" body2="beam_pivot_pin" />
+    <exclude body1="walking_beam" body2="pitman_beam_pin" />
+    <exclude body1="walking_beam" body2="beam_output_pin" />
+    <exclude body1="polished_output_rod" body2="beam_output_pin" />
+    <exclude body1="polished_output_rod" body2="lower_output_guide" />
+    <exclude body1="polished_output_rod" body2="upper_output_guide" />
+    <exclude body1="crankshaft" body2="pitman" />
+    <exclude body1="crankshaft" body2="negative_shaft_pedestal" />
+    <exclude body1="crankshaft" body2="positive_shaft_pedestal" />
+    <exclude body1="crankshaft" body2="crank_pin" />
+    <exclude body1="crankshaft" body2="hand_grip" />
+    <exclude body1="crankshaft" body2="handle_spindle" />
+    <exclude body1="crankshaft" body2="walking_beam" />
+    <exclude body1="crankshaft" body2="base" />
+    <exclude body1="crankshaft" body2="pitman_beam_pin" />
+    <exclude body1="crank_disk" body2="walking_beam" />
+    <exclude body1="crank_disk" body2="pitman" />
+    <exclude body1="crank_disk" body2="pitman_beam_pin" />
+    <exclude body1="crank_disk" body2="base" />
+    <exclude body1="crank_disk" body2="negative_shaft_pedestal" />
+    <exclude body1="crank_disk" body2="positive_shaft_pedestal" />
+    <exclude body1="crank_disk" body2="negative_shaft_bearing" />
+    <exclude body1="crank_disk" body2="positive_shaft_bearing" />
+    <exclude body1="crank_disk" body2="hand_crank_arm" />
+    <exclude body1="crank_disk" body2="handle_spindle" />
+    <exclude body1="crank_disk" body2="hand_grip" />
+    <exclude body1="crank_disk" body2="positive_beam_support" />
+    <exclude body1="crank_disk" body2="positive_pivot_bearing" />
+    <exclude body1="crank_disk" body2="negative_beam_support" />
+    <exclude body1="crank_disk" body2="negative_pivot_bearing" />
+    <exclude body1="crank_pin" body2="negative_shaft_bearing" />
+    <exclude body1="pitman" body2="walking_beam" />
+    <exclude body1="pitman" body2="negative_shaft_bearing" />
+    <exclude body1="pitman" body2="negative_shaft_pedestal" />
+    <exclude body1="walking_beam" body2="positive_beam_support" />
+    <exclude body1="walking_beam" body2="positive_pivot_bearing" />
+    <exclude body1="walking_beam" body2="negative_beam_support" />
+    <exclude body1="walking_beam" body2="negative_pivot_bearing" />
+    <exclude body1="walking_beam" body2="output_guide_post" />
+    <exclude body1="walking_beam" body2="crank_pin" />
+    <exclude body1="walking_beam" body2="upper_output_guide" />
+    <exclude body1="walking_beam" body2="hand_crank_arm" />
+    <exclude body1="walking_beam" body2="handle_spindle" />
+    <exclude body1="walking_beam" body2="hand_grip" />
+    <exclude body1="walking_beam" body2="lower_output_guide" />
+    <exclude body1="polished_output_rod" body2="base" />
+    <exclude body1="polished_output_rod" body2="output_guide_post" />
+    <exclude body1="polished_output_rod" body2="negative_pivot_bearing" />
+    <exclude body1="polished_output_rod" body2="positive_pivot_bearing" />
+    <exclude body1="polished_output_rod" body2="negative_beam_support" />
+    <exclude body1="polished_output_rod" body2="positive_beam_support" />
+    <exclude body1="polished_output_rod" body2="beam_pivot_pin" />
+  </contact>
+</mujoco>

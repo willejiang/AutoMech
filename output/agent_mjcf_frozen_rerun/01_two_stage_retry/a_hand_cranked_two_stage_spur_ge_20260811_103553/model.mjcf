@@ -1,0 +1,204 @@
+<mujoco model="a_hand_cranked_two_stage_spur_ge">
+  <compiler angle="radian" coordinate="local" />
+  <option gravity="0 0 -9.81" timestep="0.0002" solver="Newton" iterations="100" cone="elliptic" />
+  <size memory="256M" />
+  <asset>
+    <mesh name="mesh_baseplate" file="meshes/baseplate.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_front_left_post" file="meshes/front_left_post.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_rear_left_post" file="meshes/rear_left_post.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_front_right_post" file="meshes/front_right_post.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_rear_right_post" file="meshes/rear_right_post.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_upper_plate" file="meshes/upper_plate.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_lower_bearing" file="meshes/input_lower_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_layshaft_lower_bearing" file="meshes/layshaft_lower_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_lower_bearing" file="meshes/output_lower_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_upper_bearing" file="meshes/input_upper_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_layshaft_upper_bearing" file="meshes/layshaft_upper_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_upper_bearing" file="meshes/output_upper_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_shaft" file="meshes/input_shaft.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_stage1_input_pinion" file="meshes/stage1_input_pinion.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_crank" file="meshes/input_crank.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_crank_handle" file="meshes/crank_handle.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_layshaft" file="meshes/layshaft.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_stage1_wheel" file="meshes/stage1_wheel.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_stage2_pinion" file="meshes/stage2_pinion.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_shaft" file="meshes/output_shaft.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_stage2_output_wheel" file="meshes/stage2_output_wheel.stl" scale=".001 .001 .001" />
+  </asset>
+  <worldbody>
+    <light pos="0 0 3" dir="0 0 -1" />
+    <geom name="ground" type="plane" size="5 5 .1" friction="1 .05 .005" contype="1" conaffinity="0" />
+    <body name="baseplate" pos="0.048 0 0" quat="1 0 0 0">
+      <inertial pos="0 0 0.002" mass="0.5652" fullinertia="0.0004717536 0.0015267936 0.00199704 -0 -0 -0" />
+      <geom name="geom_baseplate" type="sdf" mesh="mesh_baseplate" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      <body name="front_left_post" pos="-0.082 -0.043 0.004" quat="1 0 0 0">
+        <inertial pos="0 0 0.029" mass="0.0655632" fullinertia="1.91663088e-05 1.91663088e-05 1.5735168e-06 -0 -0 -0" />
+        <geom name="geom_front_left_post" type="sdf" mesh="mesh_front_left_post" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="upper_plate" pos="0.082 0.043 0.058" quat="1 0 0 0">
+          <inertial pos="0 0 0.003" mass="0.8394036497" fullinertia="0.0007089785074 0.002278641713 0.002982583799 -2.47960755e-20 -3.015738912e-21 -9.519377879e-25" />
+          <geom name="geom_upper_plate" type="sdf" mesh="mesh_upper_plate" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          <body name="input_upper_bearing" pos="-0.048 0 0.006" quat="1 0 0 0">
+            <inertial pos="-3.496048933e-20 1.175246893e-19 0.004" mass="0.01648628476" fullinertia="5.674892641e-07 5.67489234e-07 9.59124794e-07 1.675187396e-24 1.292553028e-23 1.903863955e-23" />
+            <geom name="geom_input_upper_bearing" type="sdf" mesh="mesh_input_upper_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          </body>
+          <body name="layshaft_upper_bearing" pos="0 0 0.006" quat="1 0 0 0">
+            <inertial pos="-3.496048933e-20 1.175246893e-19 0.004" mass="0.01648628476" fullinertia="5.674892641e-07 5.67489234e-07 9.59124794e-07 1.675187396e-24 1.292553028e-23 1.903863955e-23" />
+            <geom name="geom_layshaft_upper_bearing" type="sdf" mesh="mesh_layshaft_upper_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          </body>
+          <body name="output_upper_bearing" pos="0.048 0 0.006" quat="1 0 0 0">
+            <inertial pos="-3.496048933e-20 1.175246893e-19 0.004" mass="0.01648628476" fullinertia="5.674892641e-07 5.67489234e-07 9.59124794e-07 1.675187396e-24 1.292553028e-23 1.903863955e-23" />
+            <geom name="geom_output_upper_bearing" type="sdf" mesh="mesh_output_upper_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          </body>
+        </body>
+      </body>
+      <body name="rear_left_post" pos="-0.082 0.043 0.004" quat="1 0 0 0">
+        <inertial pos="0 0 0.029" mass="0.0655632" fullinertia="1.91663088e-05 1.91663088e-05 1.5735168e-06 -0 -0 -0" />
+        <geom name="geom_rear_left_post" type="sdf" mesh="mesh_rear_left_post" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="front_right_post" pos="0.082 -0.043 0.004" quat="1 0 0 0">
+        <inertial pos="0 0 0.029" mass="0.0655632" fullinertia="1.91663088e-05 1.91663088e-05 1.5735168e-06 -0 -0 -0" />
+        <geom name="geom_front_right_post" type="sdf" mesh="mesh_front_right_post" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="rear_right_post" pos="0.082 0.043 0.004" quat="1 0 0 0">
+        <inertial pos="0 0 0.029" mass="0.0655632" fullinertia="1.91663088e-05 1.91663088e-05 1.5735168e-06 -0 -0 -0" />
+        <geom name="geom_rear_right_post" type="sdf" mesh="mesh_rear_right_post" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="input_lower_bearing" pos="-0.048 0 0.004" quat="1 0 0 0">
+        <inertial pos="-3.496048933e-20 1.175246893e-19 0.004" mass="0.01648628476" fullinertia="5.674892641e-07 5.67489234e-07 9.59124794e-07 1.675187396e-24 1.292553028e-23 1.903863955e-23" />
+        <geom name="geom_input_lower_bearing" type="sdf" mesh="mesh_input_lower_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="input_shaft" pos="0 0 0" quat="1 0 0 0">
+          <inertial pos="1.795766207e-20 -2.77957953e-20 0.042" mass="0.03313132383" fullinertia="1.96136888e-05 1.961368879e-05 2.649407629e-07 -5.949611174e-25 2.498836693e-23 -7.617593963e-24" />
+          <geom name="geom_input_shaft" type="sdf" mesh="mesh_input_shaft" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          <joint name="input_spin" type="hinge" axis="0 0 1" pos="0 0 0" />
+          <body name="stage1_input_pinion" pos="0 0 0.018" quat="1 0 0 0">
+            <inertial pos="0 1.388502448e-19 0.005" mass="0.03026219289" fullinertia="1.506648867e-06 1.506648867e-06 2.508927853e-06 2.213255357e-23 3.046200921e-23 3.076692678e-23" />
+            <geom name="geom_stage1_input_pinion" type="sdf" mesh="mesh_stage1_input_pinion" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          </body>
+          <body name="input_crank" pos="0 0 0.08" quat="1 0 0 0">
+            <inertial pos="0.01524865159 0 0.003" mass="0.01822446653" fullinertia="2.762854878e-07 1.870726624e-06 2.037665313e-06 -4.280931165e-24 -1.142325345e-22 -7.615502303e-24" />
+            <geom name="geom_input_crank" type="sdf" mesh="mesh_input_crank" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+            <body name="crank_handle" pos="0.027 0 0.006" quat="1 0 0 0">
+              <inertial pos="0 6.636268029e-20 0.014" mass="0.01725589788" fullinertia="1.235190004e-06 1.235189998e-06 2.15609346e-07 -4.164727822e-25 3.046200921e-23 1.71346042e-23" />
+              <geom name="geom_crank_handle" type="sdf" mesh="mesh_crank_handle" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="layshaft_lower_bearing" pos="0 0 0.004" quat="1 0 0 0">
+        <inertial pos="-3.496048933e-20 1.175246893e-19 0.004" mass="0.01648628476" fullinertia="5.674892641e-07 5.67489234e-07 9.59124794e-07 1.675187396e-24 1.292553028e-23 1.903863955e-23" />
+        <geom name="geom_layshaft_lower_bearing" type="sdf" mesh="mesh_layshaft_lower_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="layshaft" pos="0 0 0" quat="1 0 0 0">
+          <inertial pos="3.969588458e-20 -1.074919199e-19 0.038" mass="0.02997595966" fullinertia="1.454828274e-05 1.454828274e-05 2.397083093e-07 -6.544572292e-25 2.889131186e-22 8.255492216e-24" />
+          <geom name="geom_layshaft" type="sdf" mesh="mesh_layshaft" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          <joint name="layshaft_spin" type="hinge" axis="0 0 1" pos="0 0 0" />
+          <body name="stage1_wheel" pos="0 0 0.018" quat="0.9994645875 0 0 0.03271908282">
+            <inertial pos="-1.838968699e-19 2.383715287e-19 0.005" mass="0.3105885776" fullinertia="0.0001036463326 0.0001036463326 0.0002021161888 4.093332488e-22 -6.815874561e-22 4.149184463e-22" />
+            <geom name="geom_stage1_wheel" type="sdf" mesh="mesh_stage1_wheel" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          </body>
+          <body name="stage2_pinion" pos="0 0 0.038" quat="1 0 0 0">
+            <inertial pos="0 1.388502448e-19 0.005" mass="0.03026219289" fullinertia="1.506648867e-06 1.506648867e-06 2.508927853e-06 2.213255357e-23 3.046200921e-23 3.076692678e-23" />
+            <geom name="geom_stage2_pinion" type="sdf" mesh="mesh_stage2_pinion" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          </body>
+        </body>
+      </body>
+      <body name="output_lower_bearing" pos="0.048 0 0.004" quat="1 0 0 0">
+        <inertial pos="-3.496048933e-20 1.175246893e-19 0.004" mass="0.01648628476" fullinertia="5.674892641e-07 5.67489234e-07 9.59124794e-07 1.675187396e-24 1.292553028e-23 1.903863955e-23" />
+        <geom name="geom_output_lower_bearing" type="sdf" mesh="mesh_output_lower_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="output_shaft" pos="0 0 0" quat="1 0 0 0">
+          <inertial pos="1.795766207e-20 -2.77957953e-20 0.042" mass="0.03313132383" fullinertia="1.96136888e-05 1.961368879e-05 2.649407629e-07 -5.949611174e-25 2.498836693e-23 -7.617593963e-24" />
+          <geom name="geom_output_shaft" type="sdf" mesh="mesh_output_shaft" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          <joint name="output_spin" type="hinge" axis="0 0 1" pos="0 0 0" />
+          <body name="stage2_output_wheel" pos="0 0 0.038" quat="0.9994645875 0 0 0.03271908282">
+            <inertial pos="-1.838968699e-19 2.383715287e-19 0.005" mass="0.3105885776" fullinertia="0.0001036463326 0.0001036463326 0.0002021161888 4.093332488e-22 -6.815874561e-22 4.149184463e-22" />
+            <geom name="geom_stage2_output_wheel" type="sdf" mesh="mesh_stage2_output_wheel" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <equality>
+    <joint name="first_reduction" joint1="layshaft_spin" joint2="input_spin" polycoef="0 -0.3333333333 0 0 0" />
+    <joint name="second_reduction" joint1="output_spin" joint2="layshaft_spin" polycoef="0 -0.3333333333 0 0 0" />
+  </equality>
+  <contact>
+    <exclude body1="baseplate" body2="input_shaft" />
+    <exclude body1="input_shaft" body2="upper_plate" />
+    <exclude body1="input_lower_bearing" body2="input_shaft" />
+    <exclude body1="input_shaft" body2="input_upper_bearing" />
+    <exclude body1="input_shaft" body2="stage1_input_pinion" />
+    <exclude body1="input_crank" body2="input_shaft" />
+    <exclude body1="input_shaft" body2="stage1_wheel" />
+    <exclude body1="crank_handle" body2="input_shaft" />
+    <exclude body1="input_shaft" body2="stage2_pinion" />
+    <exclude body1="input_shaft" body2="layshaft_lower_bearing" />
+    <exclude body1="input_shaft" body2="layshaft_upper_bearing" />
+    <exclude body1="input_shaft" body2="layshaft" />
+    <exclude body1="front_left_post" body2="input_shaft" />
+    <exclude body1="input_shaft" body2="rear_left_post" />
+    <exclude body1="baseplate" body2="layshaft" />
+    <exclude body1="layshaft" body2="upper_plate" />
+    <exclude body1="layshaft" body2="layshaft_lower_bearing" />
+    <exclude body1="layshaft" body2="layshaft_upper_bearing" />
+    <exclude body1="layshaft" body2="stage1_wheel" />
+    <exclude body1="layshaft" body2="stage2_pinion" />
+    <exclude body1="layshaft" body2="stage2_output_wheel" />
+    <exclude body1="input_crank" body2="layshaft" />
+    <exclude body1="crank_handle" body2="layshaft" />
+    <exclude body1="layshaft" body2="stage1_input_pinion" />
+    <exclude body1="input_lower_bearing" body2="layshaft" />
+    <exclude body1="layshaft" body2="output_lower_bearing" />
+    <exclude body1="input_upper_bearing" body2="layshaft" />
+    <exclude body1="layshaft" body2="output_upper_bearing" />
+    <exclude body1="baseplate" body2="output_shaft" />
+    <exclude body1="output_shaft" body2="upper_plate" />
+    <exclude body1="output_lower_bearing" body2="output_shaft" />
+    <exclude body1="output_shaft" body2="output_upper_bearing" />
+    <exclude body1="output_shaft" body2="stage2_output_wheel" />
+    <exclude body1="output_shaft" body2="stage1_wheel" />
+    <exclude body1="output_shaft" body2="stage2_pinion" />
+    <exclude body1="layshaft_lower_bearing" body2="output_shaft" />
+    <exclude body1="layshaft_upper_bearing" body2="output_shaft" />
+    <exclude body1="layshaft" body2="output_shaft" />
+    <exclude body1="front_right_post" body2="output_shaft" />
+    <exclude body1="output_shaft" body2="rear_right_post" />
+    <exclude body1="stage1_input_pinion" body2="stage1_wheel" />
+    <exclude body1="input_lower_bearing" body2="stage1_input_pinion" />
+    <exclude body1="baseplate" body2="stage1_input_pinion" />
+    <exclude body1="stage1_wheel" body2="stage2_pinion" />
+    <exclude body1="stage1_wheel" body2="stage2_output_wheel" />
+    <exclude body1="input_lower_bearing" body2="stage1_wheel" />
+    <exclude body1="layshaft_lower_bearing" body2="stage1_wheel" />
+    <exclude body1="output_lower_bearing" body2="stage1_wheel" />
+    <exclude body1="baseplate" body2="stage1_wheel" />
+    <exclude body1="stage1_wheel" body2="upper_plate" />
+    <exclude body1="input_upper_bearing" body2="stage1_wheel" />
+    <exclude body1="layshaft_upper_bearing" body2="stage1_wheel" />
+    <exclude body1="output_upper_bearing" body2="stage1_wheel" />
+    <exclude body1="front_right_post" body2="stage1_wheel" />
+    <exclude body1="rear_right_post" body2="stage1_wheel" />
+    <exclude body1="front_left_post" body2="stage1_wheel" />
+    <exclude body1="rear_left_post" body2="stage1_wheel" />
+    <exclude body1="input_crank" body2="stage1_wheel" />
+    <exclude body1="stage2_output_wheel" body2="stage2_pinion" />
+    <exclude body1="stage2_pinion" body2="upper_plate" />
+    <exclude body1="layshaft_upper_bearing" body2="stage2_pinion" />
+    <exclude body1="front_right_post" body2="stage2_output_wheel" />
+    <exclude body1="rear_right_post" body2="stage2_output_wheel" />
+    <exclude body1="stage2_output_wheel" body2="upper_plate" />
+    <exclude body1="layshaft_upper_bearing" body2="stage2_output_wheel" />
+    <exclude body1="output_upper_bearing" body2="stage2_output_wheel" />
+    <exclude body1="layshaft_lower_bearing" body2="stage2_output_wheel" />
+    <exclude body1="output_lower_bearing" body2="stage2_output_wheel" />
+    <exclude body1="baseplate" body2="stage2_output_wheel" />
+    <exclude body1="input_crank" body2="stage2_output_wheel" />
+    <exclude body1="stage1_input_pinion" body2="stage2_output_wheel" />
+    <exclude body1="crank_handle" body2="stage2_output_wheel" />
+    <exclude body1="input_upper_bearing" body2="stage2_output_wheel" />
+    <exclude body1="input_shaft" body2="stage2_output_wheel" />
+    <exclude body1="crank_handle" body2="input_crank" />
+    <exclude body1="input_crank" body2="input_upper_bearing" />
+    <exclude body1="input_crank" body2="layshaft_upper_bearing" />
+    <exclude body1="input_crank" body2="upper_plate" />
+    <exclude body1="crank_handle" body2="layshaft_upper_bearing" />
+  </contact>
+</mujoco>

@@ -1,0 +1,5392 @@
+{
+  "manifest_version": 3,
+  "engine": "mujoco-agent",
+  "topology_plan": {
+    "coordinate_map": {
+      "baseplate": null,
+      "input_thrust_pad": null,
+      "lower_input_bearing": null,
+      "output_bearing_pedestal": null,
+      "output_bearing": null,
+      "ring_support": null,
+      "fixed_ring_gear": null,
+      "top_post_1": null,
+      "top_post_2": null,
+      "top_post_3": null,
+      "top_bridge": null,
+      "upper_input_bearing": null,
+      "input_shaft": "input_rotation",
+      "sun_gear": "input_rotation",
+      "crank_arm": "input_rotation",
+      "hand_grip": "input_rotation",
+      "output_carrier": "carrier_output_rotation",
+      "planet_pin_1": "carrier_output_rotation",
+      "planet_pin_2": "carrier_output_rotation",
+      "planet_pin_3": "carrier_output_rotation",
+      "planet_pin_4": "carrier_output_rotation",
+      "planet_gear_1": "planet_1_spin_on_carrier",
+      "planet_gear_2": "planet_2_spin_on_carrier",
+      "planet_gear_3": "planet_3_spin_on_carrier",
+      "planet_gear_4": "planet_4_spin_on_carrier"
+    },
+    "tree_edges": [
+      [
+        "baseplate",
+        "input_thrust_pad"
+      ],
+      [
+        "baseplate",
+        "lower_input_bearing"
+      ],
+      [
+        "baseplate",
+        "output_bearing_pedestal"
+      ],
+      [
+        "output_bearing_pedestal",
+        "output_bearing"
+      ],
+      [
+        "baseplate",
+        "ring_support"
+      ],
+      [
+        "ring_support",
+        "fixed_ring_gear"
+      ],
+      [
+        "baseplate",
+        "top_post_1"
+      ],
+      [
+        "baseplate",
+        "top_post_2"
+      ],
+      [
+        "baseplate",
+        "top_post_3"
+      ],
+      [
+        "top_post_1",
+        "top_bridge"
+      ],
+      [
+        "top_bridge",
+        "upper_input_bearing"
+      ],
+      [
+        "baseplate",
+        "input_shaft"
+      ],
+      [
+        "input_shaft",
+        "sun_gear"
+      ],
+      [
+        "input_shaft",
+        "crank_arm"
+      ],
+      [
+        "crank_arm",
+        "hand_grip"
+      ],
+      [
+        "baseplate",
+        "output_carrier"
+      ],
+      [
+        "output_carrier",
+        "planet_pin_1"
+      ],
+      [
+        "output_carrier",
+        "planet_pin_2"
+      ],
+      [
+        "output_carrier",
+        "planet_pin_3"
+      ],
+      [
+        "output_carrier",
+        "planet_pin_4"
+      ],
+      [
+        "planet_pin_1",
+        "planet_gear_1"
+      ],
+      [
+        "planet_pin_2",
+        "planet_gear_2"
+      ],
+      [
+        "planet_pin_3",
+        "planet_gear_3"
+      ],
+      [
+        "planet_pin_4",
+        "planet_gear_4"
+      ]
+    ],
+    "closure_edges": [],
+    "rigid_carried": [
+      [
+        "input_shaft",
+        "sun_gear"
+      ],
+      [
+        "input_shaft",
+        "crank_arm"
+      ],
+      [
+        "crank_arm",
+        "hand_grip"
+      ],
+      [
+        "output_carrier",
+        "planet_pin_1"
+      ],
+      [
+        "output_carrier",
+        "planet_pin_2"
+      ],
+      [
+        "output_carrier",
+        "planet_pin_3"
+      ],
+      [
+        "output_carrier",
+        "planet_pin_4"
+      ]
+    ],
+    "independent_coaxial": [
+      [
+        "input_shaft",
+        "output_carrier"
+      ]
+    ],
+    "transmissions": [
+      {
+        "name": "fixed_ring_stage",
+        "ratio": 0.25
+      },
+      {
+        "name": "planet_spins",
+        "ratio": -0.75
+      }
+    ],
+    "contact_decisions": [
+      {
+        "pair": [
+          "baseplate",
+          "input_shaft"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/baseplate/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "input_thrust_pad"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/input_thrust_pad"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/input_thrust_pad"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "lower_input_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Running journal hinge",
+        "source_entity_ids": [
+          "relation/lower_input_journal"
+        ],
+        "fact_ids": [
+          "fit/lower_input_bearing/bore/input_shaft/lower_journal"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "output_bearing_pedestal"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/output_bearing_pedestal"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/output_bearing_pedestal"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "output_bearing"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/output_bearing"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/output_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "ring_support"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/ring_support"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/ring_support"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring_gear",
+          "input_shaft"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/fixed_ring_gear",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/fixed_ring_gear/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "top_post_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/top_post_1"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/top_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "top_post_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/top_post_2"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/top_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "top_post_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/top_post_3"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/top_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "top_bridge"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/top_bridge"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/top_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "upper_input_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Running journal hinge",
+        "source_entity_ids": [
+          "relation/upper_input_journal"
+        ],
+        "fact_ids": [
+          "fit/upper_input_bearing/bore/input_shaft/upper_journal"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "sun_gear"
+        ],
+        "action": "exclude",
+        "reason": "Interference press fit rigid carrying",
+        "source_entity_ids": [
+          "relation/sun_on_input_shaft"
+        ],
+        "fact_ids": [
+          "fit/sun_gear/bore/input_shaft/sun_seat"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "Interference press fit rigid carrying",
+        "source_entity_ids": [
+          "relation/crank_on_input_shaft"
+        ],
+        "fact_ids": [
+          "fit/crank_arm/hub_bore/input_shaft/crank_seat"
+        ]
+      },
+      {
+        "pair": [
+          "hand_grip",
+          "input_shaft"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/hand_grip",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/hand_grip/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "output_carrier"
+        ],
+        "action": "exclude",
+        "reason": "Measured running clearance between independent coaxial members",
+        "source_entity_ids": [
+          "motion_joint/input_rotation",
+          "motion_joint/carrier_output_rotation"
+        ],
+        "fact_ids": [
+          "fit/output_carrier/central_running_bore/input_shaft/shaft_outer"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_pin_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_pin_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_pin_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_gear_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_gear_1"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/planet_gear_1"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_gear_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_gear_2"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/planet_gear_2"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_gear_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_gear_3"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/planet_gear_3"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "planet_gear_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/planet_gear_4"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/planet_gear_4"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/baseplate/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "input_thrust_pad",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_thrust_pad",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/input_thrust_pad/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "lower_input_bearing",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/lower_input_bearing",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/lower_input_bearing/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing_pedestal",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_bearing_pedestal",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/output_bearing_pedestal/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "ring_support",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/ring_support",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/ring_support/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring_gear",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/fixed_ring_gear",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/fixed_ring_gear/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "sun_gear",
+          "top_post_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/sun_gear",
+          "link/top_post_1"
+        ],
+        "fact_ids": [
+          "pair/sun_gear/top_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "sun_gear",
+          "top_post_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/sun_gear",
+          "link/top_post_2"
+        ],
+        "fact_ids": [
+          "pair/sun_gear/top_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "sun_gear",
+          "top_post_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/sun_gear",
+          "link/top_post_3"
+        ],
+        "fact_ids": [
+          "pair/sun_gear/top_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "sun_gear",
+          "top_bridge"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/sun_gear",
+          "link/top_bridge"
+        ],
+        "fact_ids": [
+          "pair/sun_gear/top_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "sun_gear",
+          "upper_input_bearing"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/sun_gear",
+          "link/upper_input_bearing"
+        ],
+        "fact_ids": [
+          "pair/sun_gear/upper_input_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "hand_grip",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/hand_grip",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/hand_grip/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_carrier",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_carrier",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/output_carrier/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_3",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_3/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_4",
+          "sun_gear"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_4",
+          "link/sun_gear"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_4/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_1",
+          "sun_gear"
+        ],
+        "action": "exclude",
+        "reason": "Ideal external gear mesh equality",
+        "source_entity_ids": [
+          "transmission/sun_to_planet_1"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_1/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_2",
+          "sun_gear"
+        ],
+        "action": "exclude",
+        "reason": "Ideal external gear mesh equality",
+        "source_entity_ids": [
+          "transmission/sun_to_planet_2"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_2/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_3",
+          "sun_gear"
+        ],
+        "action": "exclude",
+        "reason": "Ideal external gear mesh equality",
+        "source_entity_ids": [
+          "transmission/sun_to_planet_3"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_3/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_4",
+          "sun_gear"
+        ],
+        "action": "exclude",
+        "reason": "Ideal external gear mesh equality",
+        "source_entity_ids": [
+          "transmission/sun_to_planet_4"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_4/sun_gear"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "crank_arm"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/baseplate/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "input_thrust_pad"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/input_thrust_pad"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/input_thrust_pad"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "lower_input_bearing"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/lower_input_bearing"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/lower_input_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "output_bearing_pedestal"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/output_bearing_pedestal"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/output_bearing_pedestal"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "output_bearing"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/output_bearing"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/output_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "ring_support"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/ring_support"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/ring_support"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "fixed_ring_gear"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/fixed_ring_gear"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/fixed_ring_gear"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "top_post_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/top_post_1"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/top_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "top_post_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/top_post_2"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/top_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "top_post_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/top_post_3"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/top_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "top_bridge"
+        ],
+        "action": "exclude",
+        "reason": "Runtime high-impulse false contact at zero-thickness tangency stalls driver",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/top_bridge"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/top_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "upper_input_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Runtime high-impulse false contact at zero-thickness tangency stalls driver",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/upper_input_bearing"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/upper_input_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "hand_grip"
+        ],
+        "action": "exclude",
+        "reason": "Rigid face mount",
+        "source_entity_ids": [
+          "relation/grip_on_crank"
+        ],
+        "fact_ids": [
+          "fit/crank_arm/grip_face/hand_grip/bottom_face"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "output_carrier"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/output_carrier"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/output_carrier"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "planet_pin_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "planet_pin_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "planet_pin_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "planet_gear_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/planet_gear_1"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/planet_gear_1"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "planet_gear_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/planet_gear_2"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/planet_gear_2"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "planet_gear_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/planet_gear_3"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/planet_gear_3"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "planet_gear_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/planet_gear_4"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/planet_gear_4"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "hand_grip"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/hand_grip"
+        ],
+        "fact_ids": [
+          "pair/baseplate/hand_grip"
+        ]
+      },
+      {
+        "pair": [
+          "hand_grip",
+          "input_thrust_pad"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/hand_grip",
+          "link/input_thrust_pad"
+        ],
+        "fact_ids": [
+          "pair/hand_grip/input_thrust_pad"
+        ]
+      },
+      {
+        "pair": [
+          "hand_grip",
+          "lower_input_bearing"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/hand_grip",
+          "link/lower_input_bearing"
+        ],
+        "fact_ids": [
+          "pair/hand_grip/lower_input_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "hand_grip",
+          "output_bearing_pedestal"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/hand_grip",
+          "link/output_bearing_pedestal"
+        ],
+        "fact_ids": [
+          "pair/hand_grip/output_bearing_pedestal"
+        ]
+      },
+      {
+        "pair": [
+          "hand_grip",
+          "output_bearing"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/hand_grip",
+          "link/output_bearing"
+        ],
+        "fact_ids": [
+          "pair/hand_grip/output_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "hand_grip",
+          "ring_support"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/hand_grip",
+          "link/ring_support"
+        ],
+        "fact_ids": [
+          "pair/hand_grip/ring_support"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring_gear",
+          "hand_grip"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/fixed_ring_gear",
+          "link/hand_grip"
+        ],
+        "fact_ids": [
+          "pair/fixed_ring_gear/hand_grip"
+        ]
+      },
+      {
+        "pair": [
+          "hand_grip",
+          "top_post_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/hand_grip",
+          "link/top_post_1"
+        ],
+        "fact_ids": [
+          "pair/hand_grip/top_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "hand_grip",
+          "top_post_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/hand_grip",
+          "link/top_post_2"
+        ],
+        "fact_ids": [
+          "pair/hand_grip/top_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "hand_grip",
+          "top_post_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/hand_grip",
+          "link/top_post_3"
+        ],
+        "fact_ids": [
+          "pair/hand_grip/top_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "hand_grip",
+          "top_bridge"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/hand_grip",
+          "link/top_bridge"
+        ],
+        "fact_ids": [
+          "pair/hand_grip/top_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "hand_grip",
+          "upper_input_bearing"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/hand_grip",
+          "link/upper_input_bearing"
+        ],
+        "fact_ids": [
+          "pair/hand_grip/upper_input_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "hand_grip",
+          "output_carrier"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/hand_grip",
+          "link/output_carrier"
+        ],
+        "fact_ids": [
+          "pair/hand_grip/output_carrier"
+        ]
+      },
+      {
+        "pair": [
+          "hand_grip",
+          "planet_pin_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/hand_grip",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "pair/hand_grip/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "hand_grip",
+          "planet_pin_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/hand_grip",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "pair/hand_grip/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "hand_grip",
+          "planet_pin_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/hand_grip",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/hand_grip/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "hand_grip",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/hand_grip",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/hand_grip/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "hand_grip",
+          "planet_gear_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/hand_grip",
+          "link/planet_gear_1"
+        ],
+        "fact_ids": [
+          "pair/hand_grip/planet_gear_1"
+        ]
+      },
+      {
+        "pair": [
+          "hand_grip",
+          "planet_gear_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/hand_grip",
+          "link/planet_gear_2"
+        ],
+        "fact_ids": [
+          "pair/hand_grip/planet_gear_2"
+        ]
+      },
+      {
+        "pair": [
+          "hand_grip",
+          "planet_gear_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/hand_grip",
+          "link/planet_gear_3"
+        ],
+        "fact_ids": [
+          "pair/hand_grip/planet_gear_3"
+        ]
+      },
+      {
+        "pair": [
+          "hand_grip",
+          "planet_gear_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/hand_grip",
+          "link/planet_gear_4"
+        ],
+        "fact_ids": [
+          "pair/hand_grip/planet_gear_4"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "output_carrier"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/output_carrier"
+        ],
+        "fact_ids": [
+          "pair/baseplate/output_carrier"
+        ]
+      },
+      {
+        "pair": [
+          "input_thrust_pad",
+          "output_carrier"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_thrust_pad",
+          "link/output_carrier"
+        ],
+        "fact_ids": [
+          "pair/input_thrust_pad/output_carrier"
+        ]
+      },
+      {
+        "pair": [
+          "lower_input_bearing",
+          "output_carrier"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/lower_input_bearing",
+          "link/output_carrier"
+        ],
+        "fact_ids": [
+          "pair/lower_input_bearing/output_carrier"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing_pedestal",
+          "output_carrier"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_bearing_pedestal",
+          "link/output_carrier"
+        ],
+        "fact_ids": [
+          "pair/output_bearing_pedestal/output_carrier"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "output_carrier"
+        ],
+        "action": "exclude",
+        "reason": "Running journal hinge",
+        "source_entity_ids": [
+          "relation/carrier_output_journal"
+        ],
+        "fact_ids": [
+          "fit/output_bearing/bore/output_carrier/sleeve_journal"
+        ]
+      },
+      {
+        "pair": [
+          "output_carrier",
+          "ring_support"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_carrier",
+          "link/ring_support"
+        ],
+        "fact_ids": [
+          "pair/output_carrier/ring_support"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring_gear",
+          "output_carrier"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/fixed_ring_gear",
+          "link/output_carrier"
+        ],
+        "fact_ids": [
+          "pair/fixed_ring_gear/output_carrier"
+        ]
+      },
+      {
+        "pair": [
+          "output_carrier",
+          "top_post_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_carrier",
+          "link/top_post_1"
+        ],
+        "fact_ids": [
+          "pair/output_carrier/top_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "output_carrier",
+          "top_post_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_carrier",
+          "link/top_post_2"
+        ],
+        "fact_ids": [
+          "pair/output_carrier/top_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "output_carrier",
+          "top_post_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_carrier",
+          "link/top_post_3"
+        ],
+        "fact_ids": [
+          "pair/output_carrier/top_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "output_carrier",
+          "top_bridge"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_carrier",
+          "link/top_bridge"
+        ],
+        "fact_ids": [
+          "pair/output_carrier/top_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "output_carrier",
+          "upper_input_bearing"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_carrier",
+          "link/upper_input_bearing"
+        ],
+        "fact_ids": [
+          "pair/output_carrier/upper_input_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "output_carrier",
+          "planet_pin_1"
+        ],
+        "action": "exclude",
+        "reason": "Rigidly carried dedicated pin",
+        "source_entity_ids": [
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "pair/output_carrier/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "output_carrier",
+          "planet_pin_2"
+        ],
+        "action": "exclude",
+        "reason": "Rigidly carried dedicated pin",
+        "source_entity_ids": [
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "pair/output_carrier/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "output_carrier",
+          "planet_pin_3"
+        ],
+        "action": "exclude",
+        "reason": "Rigidly carried dedicated pin",
+        "source_entity_ids": [
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/output_carrier/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "output_carrier",
+          "planet_pin_4"
+        ],
+        "action": "exclude",
+        "reason": "Rigidly carried dedicated pin",
+        "source_entity_ids": [
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/output_carrier/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "output_carrier",
+          "planet_gear_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_carrier",
+          "link/planet_gear_1"
+        ],
+        "fact_ids": [
+          "pair/output_carrier/planet_gear_1"
+        ]
+      },
+      {
+        "pair": [
+          "output_carrier",
+          "planet_gear_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_carrier",
+          "link/planet_gear_2"
+        ],
+        "fact_ids": [
+          "pair/output_carrier/planet_gear_2"
+        ]
+      },
+      {
+        "pair": [
+          "output_carrier",
+          "planet_gear_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_carrier",
+          "link/planet_gear_3"
+        ],
+        "fact_ids": [
+          "pair/output_carrier/planet_gear_3"
+        ]
+      },
+      {
+        "pair": [
+          "output_carrier",
+          "planet_gear_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_carrier",
+          "link/planet_gear_4"
+        ],
+        "fact_ids": [
+          "pair/output_carrier/planet_gear_4"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "planet_pin_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "pair/baseplate/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "input_thrust_pad",
+          "planet_pin_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_thrust_pad",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "pair/input_thrust_pad/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "lower_input_bearing",
+          "planet_pin_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/lower_input_bearing",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "pair/lower_input_bearing/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing_pedestal",
+          "planet_pin_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_bearing_pedestal",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "pair/output_bearing_pedestal/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "planet_pin_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "ring_support"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/ring_support"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/ring_support"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring_gear",
+          "planet_pin_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/fixed_ring_gear",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "pair/fixed_ring_gear/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "top_post_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/top_post_1"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/top_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "top_post_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/top_post_2"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/top_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "top_post_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/top_post_3"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/top_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "top_bridge"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/top_bridge"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/top_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "upper_input_bearing"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/upper_input_bearing"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/upper_input_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "planet_pin_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "planet_pin_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_1",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_1",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_1/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_1",
+          "planet_pin_1"
+        ],
+        "action": "exclude",
+        "reason": "Clearance planet journal hinge",
+        "source_entity_ids": [
+          "relation/planet_1_journal"
+        ],
+        "fact_ids": [
+          "fit/planet_gear_1/bore/planet_pin_1/journal"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_2",
+          "planet_pin_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_2",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_2/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_3",
+          "planet_pin_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_3",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_3/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_4",
+          "planet_pin_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_4",
+          "link/planet_pin_1"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_4/planet_pin_1"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "planet_pin_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "pair/baseplate/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "input_thrust_pad",
+          "planet_pin_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_thrust_pad",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "pair/input_thrust_pad/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "lower_input_bearing",
+          "planet_pin_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/lower_input_bearing",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "pair/lower_input_bearing/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing_pedestal",
+          "planet_pin_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_bearing_pedestal",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "pair/output_bearing_pedestal/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "planet_pin_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "ring_support"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/ring_support"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/ring_support"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring_gear",
+          "planet_pin_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/fixed_ring_gear",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "pair/fixed_ring_gear/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "top_post_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/top_post_1"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/top_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "top_post_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/top_post_2"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/top_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "top_post_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/top_post_3"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/top_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "top_bridge"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/top_bridge"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/top_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "upper_input_bearing"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/upper_input_bearing"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/upper_input_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "planet_pin_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_2",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_2",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_2/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_1",
+          "planet_pin_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_1",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_1/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_2",
+          "planet_pin_2"
+        ],
+        "action": "exclude",
+        "reason": "Clearance planet journal hinge",
+        "source_entity_ids": [
+          "relation/planet_2_journal"
+        ],
+        "fact_ids": [
+          "fit/planet_gear_2/bore/planet_pin_2/journal"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_3",
+          "planet_pin_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_3",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_3/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_4",
+          "planet_pin_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_4",
+          "link/planet_pin_2"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_4/planet_pin_2"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "planet_pin_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/baseplate/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "input_thrust_pad",
+          "planet_pin_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_thrust_pad",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/input_thrust_pad/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "lower_input_bearing",
+          "planet_pin_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/lower_input_bearing",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/lower_input_bearing/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing_pedestal",
+          "planet_pin_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_bearing_pedestal",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/output_bearing_pedestal/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "planet_pin_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "ring_support"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_3",
+          "link/ring_support"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_3/ring_support"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring_gear",
+          "planet_pin_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/fixed_ring_gear",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/fixed_ring_gear/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "top_post_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_3",
+          "link/top_post_1"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_3/top_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "top_post_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_3",
+          "link/top_post_2"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_3/top_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "top_post_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_3",
+          "link/top_post_3"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_3/top_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "top_bridge"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_3",
+          "link/top_bridge"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_3/top_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "upper_input_bearing"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_3",
+          "link/upper_input_bearing"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_3/upper_input_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_3",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_3",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_3/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_1",
+          "planet_pin_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_1",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_1/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_2",
+          "planet_pin_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_2",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_2/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_3",
+          "planet_pin_3"
+        ],
+        "action": "exclude",
+        "reason": "Clearance planet journal hinge",
+        "source_entity_ids": [
+          "relation/planet_3_journal"
+        ],
+        "fact_ids": [
+          "fit/planet_gear_3/bore/planet_pin_3/journal"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_4",
+          "planet_pin_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_4",
+          "link/planet_pin_3"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_4/planet_pin_3"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/baseplate/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "input_thrust_pad",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_thrust_pad",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/input_thrust_pad/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "lower_input_bearing",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/lower_input_bearing",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/lower_input_bearing/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing_pedestal",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_bearing_pedestal",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/output_bearing_pedestal/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_4",
+          "ring_support"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_4",
+          "link/ring_support"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_4/ring_support"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring_gear",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/fixed_ring_gear",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/fixed_ring_gear/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_4",
+          "top_post_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_4",
+          "link/top_post_1"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_4/top_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_4",
+          "top_post_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_4",
+          "link/top_post_2"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_4/top_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_4",
+          "top_post_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_4",
+          "link/top_post_3"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_4/top_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_4",
+          "top_bridge"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_4",
+          "link/top_bridge"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_4/top_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "planet_pin_4",
+          "upper_input_bearing"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_pin_4",
+          "link/upper_input_bearing"
+        ],
+        "fact_ids": [
+          "pair/planet_pin_4/upper_input_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_1",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_1",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_1/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_2",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_2",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_2/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_3",
+          "planet_pin_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_3",
+          "link/planet_pin_4"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_3/planet_pin_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_4",
+          "planet_pin_4"
+        ],
+        "action": "exclude",
+        "reason": "Clearance planet journal hinge",
+        "source_entity_ids": [
+          "relation/planet_4_journal"
+        ],
+        "fact_ids": [
+          "fit/planet_gear_4/bore/planet_pin_4/journal"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "planet_gear_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/planet_gear_1"
+        ],
+        "fact_ids": [
+          "pair/baseplate/planet_gear_1"
+        ]
+      },
+      {
+        "pair": [
+          "input_thrust_pad",
+          "planet_gear_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_thrust_pad",
+          "link/planet_gear_1"
+        ],
+        "fact_ids": [
+          "pair/input_thrust_pad/planet_gear_1"
+        ]
+      },
+      {
+        "pair": [
+          "lower_input_bearing",
+          "planet_gear_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/lower_input_bearing",
+          "link/planet_gear_1"
+        ],
+        "fact_ids": [
+          "pair/lower_input_bearing/planet_gear_1"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing_pedestal",
+          "planet_gear_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_bearing_pedestal",
+          "link/planet_gear_1"
+        ],
+        "fact_ids": [
+          "pair/output_bearing_pedestal/planet_gear_1"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "planet_gear_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/planet_gear_1"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/planet_gear_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_1",
+          "ring_support"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_1",
+          "link/ring_support"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_1/ring_support"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring_gear",
+          "planet_gear_1"
+        ],
+        "action": "exclude",
+        "reason": "Ideal internal gear mesh equality",
+        "source_entity_ids": [
+          "transmission/planet_1_to_fixed_ring"
+        ],
+        "fact_ids": [
+          "pair/fixed_ring_gear/planet_gear_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_1",
+          "top_post_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_1",
+          "link/top_post_1"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_1/top_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_1",
+          "top_post_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_1",
+          "link/top_post_2"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_1/top_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_1",
+          "top_post_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_1",
+          "link/top_post_3"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_1/top_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_1",
+          "top_bridge"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_1",
+          "link/top_bridge"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_1/top_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_1",
+          "upper_input_bearing"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_1",
+          "link/upper_input_bearing"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_1/upper_input_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_1",
+          "planet_gear_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_1",
+          "link/planet_gear_2"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_1/planet_gear_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_1",
+          "planet_gear_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_1",
+          "link/planet_gear_3"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_1/planet_gear_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_1",
+          "planet_gear_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_1",
+          "link/planet_gear_4"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_1/planet_gear_4"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "planet_gear_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/planet_gear_2"
+        ],
+        "fact_ids": [
+          "pair/baseplate/planet_gear_2"
+        ]
+      },
+      {
+        "pair": [
+          "input_thrust_pad",
+          "planet_gear_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_thrust_pad",
+          "link/planet_gear_2"
+        ],
+        "fact_ids": [
+          "pair/input_thrust_pad/planet_gear_2"
+        ]
+      },
+      {
+        "pair": [
+          "lower_input_bearing",
+          "planet_gear_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/lower_input_bearing",
+          "link/planet_gear_2"
+        ],
+        "fact_ids": [
+          "pair/lower_input_bearing/planet_gear_2"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing_pedestal",
+          "planet_gear_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_bearing_pedestal",
+          "link/planet_gear_2"
+        ],
+        "fact_ids": [
+          "pair/output_bearing_pedestal/planet_gear_2"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "planet_gear_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/planet_gear_2"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/planet_gear_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_2",
+          "ring_support"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_2",
+          "link/ring_support"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_2/ring_support"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring_gear",
+          "planet_gear_2"
+        ],
+        "action": "exclude",
+        "reason": "Ideal internal gear mesh equality",
+        "source_entity_ids": [
+          "transmission/planet_2_to_fixed_ring"
+        ],
+        "fact_ids": [
+          "pair/fixed_ring_gear/planet_gear_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_2",
+          "top_post_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_2",
+          "link/top_post_1"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_2/top_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_2",
+          "top_post_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_2",
+          "link/top_post_2"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_2/top_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_2",
+          "top_post_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_2",
+          "link/top_post_3"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_2/top_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_2",
+          "top_bridge"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_2",
+          "link/top_bridge"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_2/top_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_2",
+          "upper_input_bearing"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_2",
+          "link/upper_input_bearing"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_2/upper_input_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_2",
+          "planet_gear_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_2",
+          "link/planet_gear_3"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_2/planet_gear_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_2",
+          "planet_gear_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_2",
+          "link/planet_gear_4"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_2/planet_gear_4"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "planet_gear_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/planet_gear_3"
+        ],
+        "fact_ids": [
+          "pair/baseplate/planet_gear_3"
+        ]
+      },
+      {
+        "pair": [
+          "input_thrust_pad",
+          "planet_gear_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_thrust_pad",
+          "link/planet_gear_3"
+        ],
+        "fact_ids": [
+          "pair/input_thrust_pad/planet_gear_3"
+        ]
+      },
+      {
+        "pair": [
+          "lower_input_bearing",
+          "planet_gear_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/lower_input_bearing",
+          "link/planet_gear_3"
+        ],
+        "fact_ids": [
+          "pair/lower_input_bearing/planet_gear_3"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing_pedestal",
+          "planet_gear_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_bearing_pedestal",
+          "link/planet_gear_3"
+        ],
+        "fact_ids": [
+          "pair/output_bearing_pedestal/planet_gear_3"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "planet_gear_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/planet_gear_3"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/planet_gear_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_3",
+          "ring_support"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_3",
+          "link/ring_support"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_3/ring_support"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring_gear",
+          "planet_gear_3"
+        ],
+        "action": "exclude",
+        "reason": "Ideal internal gear mesh equality",
+        "source_entity_ids": [
+          "transmission/planet_3_to_fixed_ring"
+        ],
+        "fact_ids": [
+          "pair/fixed_ring_gear/planet_gear_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_3",
+          "top_post_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_3",
+          "link/top_post_1"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_3/top_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_3",
+          "top_post_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_3",
+          "link/top_post_2"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_3/top_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_3",
+          "top_post_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_3",
+          "link/top_post_3"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_3/top_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_3",
+          "top_bridge"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_3",
+          "link/top_bridge"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_3/top_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_3",
+          "upper_input_bearing"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_3",
+          "link/upper_input_bearing"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_3/upper_input_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_3",
+          "planet_gear_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_3",
+          "link/planet_gear_4"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_3/planet_gear_4"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "planet_gear_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/planet_gear_4"
+        ],
+        "fact_ids": [
+          "pair/baseplate/planet_gear_4"
+        ]
+      },
+      {
+        "pair": [
+          "input_thrust_pad",
+          "planet_gear_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/input_thrust_pad",
+          "link/planet_gear_4"
+        ],
+        "fact_ids": [
+          "pair/input_thrust_pad/planet_gear_4"
+        ]
+      },
+      {
+        "pair": [
+          "lower_input_bearing",
+          "planet_gear_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/lower_input_bearing",
+          "link/planet_gear_4"
+        ],
+        "fact_ids": [
+          "pair/lower_input_bearing/planet_gear_4"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing_pedestal",
+          "planet_gear_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_bearing_pedestal",
+          "link/planet_gear_4"
+        ],
+        "fact_ids": [
+          "pair/output_bearing_pedestal/planet_gear_4"
+        ]
+      },
+      {
+        "pair": [
+          "output_bearing",
+          "planet_gear_4"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/output_bearing",
+          "link/planet_gear_4"
+        ],
+        "fact_ids": [
+          "pair/output_bearing/planet_gear_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_4",
+          "ring_support"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_4",
+          "link/ring_support"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_4/ring_support"
+        ]
+      },
+      {
+        "pair": [
+          "fixed_ring_gear",
+          "planet_gear_4"
+        ],
+        "action": "exclude",
+        "reason": "Ideal internal gear mesh equality",
+        "source_entity_ids": [
+          "transmission/planet_4_to_fixed_ring"
+        ],
+        "fact_ids": [
+          "pair/fixed_ring_gear/planet_gear_4"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_4",
+          "top_post_1"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_4",
+          "link/top_post_1"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_4/top_post_1"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_4",
+          "top_post_2"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_4",
+          "link/top_post_2"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_4/top_post_2"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_4",
+          "top_post_3"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_4",
+          "link/top_post_3"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_4/top_post_3"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_4",
+          "top_bridge"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_4",
+          "link/top_bridge"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_4/top_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "planet_gear_4",
+          "upper_input_bearing"
+        ],
+        "action": "keep",
+        "reason": "Potentially active pair kept because measurement is uncertain or real contact may be required.",
+        "source_entity_ids": [
+          "link/planet_gear_4",
+          "link/upper_input_bearing"
+        ],
+        "fact_ids": [
+          "pair/planet_gear_4/upper_input_bearing"
+        ]
+      }
+    ],
+    "support_ground": [
+      "baseplate"
+    ],
+    "support_strategy": "Fixed baseplate with global ground retained; no support patch."
+  },
+  "decisions": [
+    {
+      "generated_kind": "constraint",
+      "generated_name": "fixed_ring_carrier_ratio",
+      "constraint_type": "joint",
+      "reason": "Fixed-ring 20/60 planetary ratio",
+      "source_entity_ids": [
+        "planetary_stage/fixed_ring_stage"
+      ],
+      "fact_ids": [
+        "pair/fixed_ring_gear/planet_gear_1"
+      ]
+    },
+    {
+      "generated_kind": "constraint",
+      "generated_name": "planet_1_mesh",
+      "constraint_type": "joint",
+      "reason": "Planet spin in fixed-ring stage",
+      "source_entity_ids": [
+        "transmission/sun_to_planet_1",
+        "transmission/planet_1_to_fixed_ring"
+      ],
+      "fact_ids": [
+        "pair/planet_gear_1/sun_gear",
+        "pair/fixed_ring_gear/planet_gear_1"
+      ]
+    },
+    {
+      "generated_kind": "constraint",
+      "generated_name": "planet_2_mesh",
+      "constraint_type": "joint",
+      "reason": "Planet spin in fixed-ring stage",
+      "source_entity_ids": [
+        "transmission/sun_to_planet_2",
+        "transmission/planet_2_to_fixed_ring"
+      ],
+      "fact_ids": [
+        "pair/planet_gear_2/sun_gear",
+        "pair/fixed_ring_gear/planet_gear_2"
+      ]
+    },
+    {
+      "generated_kind": "constraint",
+      "generated_name": "planet_3_mesh",
+      "constraint_type": "joint",
+      "reason": "Planet spin in fixed-ring stage",
+      "source_entity_ids": [
+        "transmission/sun_to_planet_3",
+        "transmission/planet_3_to_fixed_ring"
+      ],
+      "fact_ids": [
+        "pair/planet_gear_3/sun_gear",
+        "pair/fixed_ring_gear/planet_gear_3"
+      ]
+    },
+    {
+      "generated_kind": "constraint",
+      "generated_name": "planet_4_mesh",
+      "constraint_type": "joint",
+      "reason": "Planet spin in fixed-ring stage",
+      "source_entity_ids": [
+        "transmission/sun_to_planet_4",
+        "transmission/planet_4_to_fixed_ring"
+      ],
+      "fact_ids": [
+        "pair/planet_gear_4/sun_gear",
+        "pair/fixed_ring_gear/planet_gear_4"
+      ]
+    },
+    {
+      "entity_id": "link/baseplate",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/baseplate"
+      ]
+    },
+    {
+      "entity_id": "link/input_thrust_pad",
+      "action": "represented_by",
+      "generated_nodes": [
+        "input_thrust_pad"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/input_thrust_pad"
+      ]
+    },
+    {
+      "entity_id": "link/lower_input_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "lower_input_bearing"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/lower_input_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/output_bearing_pedestal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "output_bearing_pedestal"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/output_bearing_pedestal"
+      ]
+    },
+    {
+      "entity_id": "link/output_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "output_bearing"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/output_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/output_carrier",
+      "action": "represented_by",
+      "generated_nodes": [
+        "output_carrier"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/output_carrier"
+      ]
+    },
+    {
+      "entity_id": "link/ring_support",
+      "action": "represented_by",
+      "generated_nodes": [
+        "ring_support"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/ring_support"
+      ]
+    },
+    {
+      "entity_id": "link/input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "input_shaft"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "link/sun_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "sun_gear"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/sun_gear"
+      ]
+    },
+    {
+      "entity_id": "link/planet_pin_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_pin_1"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/planet_pin_1"
+      ]
+    },
+    {
+      "entity_id": "link/planet_pin_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_pin_2"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/planet_pin_2"
+      ]
+    },
+    {
+      "entity_id": "link/planet_pin_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_pin_3"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/planet_pin_3"
+      ]
+    },
+    {
+      "entity_id": "link/planet_pin_4",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_pin_4"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/planet_pin_4"
+      ]
+    },
+    {
+      "entity_id": "link/planet_gear_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_gear_1"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/planet_gear_1"
+      ]
+    },
+    {
+      "entity_id": "link/planet_gear_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_gear_2"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/planet_gear_2"
+      ]
+    },
+    {
+      "entity_id": "link/planet_gear_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_gear_3"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/planet_gear_3"
+      ]
+    },
+    {
+      "entity_id": "link/planet_gear_4",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_gear_4"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/planet_gear_4"
+      ]
+    },
+    {
+      "entity_id": "link/fixed_ring_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "fixed_ring_gear"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/fixed_ring_gear"
+      ]
+    },
+    {
+      "entity_id": "link/top_post_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "top_post_1"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/top_post_1"
+      ]
+    },
+    {
+      "entity_id": "link/top_post_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "top_post_2"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/top_post_2"
+      ]
+    },
+    {
+      "entity_id": "link/top_post_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "top_post_3"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/top_post_3"
+      ]
+    },
+    {
+      "entity_id": "link/top_bridge",
+      "action": "represented_by",
+      "generated_nodes": [
+        "top_bridge"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/top_bridge"
+      ]
+    },
+    {
+      "entity_id": "link/upper_input_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "upper_input_bearing"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/upper_input_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/crank_arm",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_arm"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/crank_arm"
+      ]
+    },
+    {
+      "entity_id": "link/hand_grip",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hand_grip"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "link/hand_grip"
+      ]
+    },
+    {
+      "entity_id": "pose/place_baseplate",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_baseplate"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_thrust_pad",
+      "action": "represented_by",
+      "generated_nodes": [
+        "input_thrust_pad"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_input_thrust_pad"
+      ]
+    },
+    {
+      "entity_id": "pose/place_lower_input_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "lower_input_bearing"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_lower_input_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_bearing_pedestal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "output_bearing_pedestal"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_output_bearing_pedestal"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "output_bearing"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_output_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_carrier",
+      "action": "represented_by",
+      "generated_nodes": [
+        "output_carrier"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_output_carrier"
+      ]
+    },
+    {
+      "entity_id": "pose/place_ring_support",
+      "action": "represented_by",
+      "generated_nodes": [
+        "ring_support"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_ring_support"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "input_shaft"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_input_shaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_sun_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "sun_gear"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_sun_gear"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_pin_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_pin_1"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_planet_pin_1"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_pin_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_pin_2"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_planet_pin_2"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_pin_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_pin_3"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_planet_pin_3"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_pin_4",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_pin_4"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_planet_pin_4"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_gear_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_gear_1"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_planet_gear_1"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_gear_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_gear_2"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_planet_gear_2"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_gear_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_gear_3"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_planet_gear_3"
+      ]
+    },
+    {
+      "entity_id": "pose/place_planet_gear_4",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_gear_4"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_planet_gear_4"
+      ]
+    },
+    {
+      "entity_id": "pose/place_fixed_ring_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "fixed_ring_gear"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_fixed_ring_gear"
+      ]
+    },
+    {
+      "entity_id": "pose/place_top_post_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "top_post_1"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_top_post_1"
+      ]
+    },
+    {
+      "entity_id": "pose/place_top_post_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "top_post_2"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_top_post_2"
+      ]
+    },
+    {
+      "entity_id": "pose/place_top_post_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "top_post_3"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_top_post_3"
+      ]
+    },
+    {
+      "entity_id": "pose/place_top_bridge",
+      "action": "represented_by",
+      "generated_nodes": [
+        "top_bridge"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_top_bridge"
+      ]
+    },
+    {
+      "entity_id": "pose/place_upper_input_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "upper_input_bearing"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_upper_input_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crank_arm",
+      "action": "represented_by",
+      "generated_nodes": [
+        "crank_arm"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_crank_arm"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hand_grip",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hand_grip"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "pose/place_hand_grip"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/shaft_outer",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/input_shaft/shaft_outer"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/input_shaft/lower_journal"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/upper_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/input_shaft/upper_journal"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/sun_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/input_shaft/sun_seat"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/crank_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/input_shaft/crank_seat"
+      ]
+    },
+    {
+      "entity_id": "port/lower_input_bearing/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/lower_input_bearing/bore"
+      ]
+    },
+    {
+      "entity_id": "port/upper_input_bearing/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/upper_input_bearing/bore"
+      ]
+    },
+    {
+      "entity_id": "port/sun_gear/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/sun_gear/bore"
+      ]
+    },
+    {
+      "entity_id": "port/sun_gear/sun_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/sun_gear/sun_mesh"
+      ]
+    },
+    {
+      "entity_id": "port/fixed_ring_gear/ring_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/fixed_ring_gear/ring_mesh"
+      ]
+    },
+    {
+      "entity_id": "port/fixed_ring_gear/bottom_face",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/fixed_ring_gear/bottom_face"
+      ]
+    },
+    {
+      "entity_id": "port/ring_support/top_face",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/ring_support/top_face"
+      ]
+    },
+    {
+      "entity_id": "port/output_carrier/sleeve_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/output_carrier/sleeve_journal"
+      ]
+    },
+    {
+      "entity_id": "port/output_carrier/central_running_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/output_carrier/central_running_bore"
+      ]
+    },
+    {
+      "entity_id": "port/output_carrier/output_flange",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/output_carrier/output_flange"
+      ]
+    },
+    {
+      "entity_id": "port/output_bearing/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/output_bearing/bore"
+      ]
+    },
+    {
+      "entity_id": "port/crank_arm/hub_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/crank_arm/hub_bore"
+      ]
+    },
+    {
+      "entity_id": "port/crank_arm/grip_face",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/crank_arm/grip_face"
+      ]
+    },
+    {
+      "entity_id": "port/hand_grip/bottom_face",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/hand_grip/bottom_face"
+      ]
+    },
+    {
+      "entity_id": "port/planet_pin_1/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/planet_pin_1/journal"
+      ]
+    },
+    {
+      "entity_id": "port/planet_pin_2/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/planet_pin_2/journal"
+      ]
+    },
+    {
+      "entity_id": "port/planet_pin_3/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/planet_pin_3/journal"
+      ]
+    },
+    {
+      "entity_id": "port/planet_pin_4/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/planet_pin_4/journal"
+      ]
+    },
+    {
+      "entity_id": "port/planet_gear_1/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/planet_gear_1/bore"
+      ]
+    },
+    {
+      "entity_id": "port/planet_gear_1/planet_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/planet_gear_1/planet_mesh"
+      ]
+    },
+    {
+      "entity_id": "port/planet_gear_2/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/planet_gear_2/bore"
+      ]
+    },
+    {
+      "entity_id": "port/planet_gear_2/planet_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/planet_gear_2/planet_mesh"
+      ]
+    },
+    {
+      "entity_id": "port/planet_gear_3/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/planet_gear_3/bore"
+      ]
+    },
+    {
+      "entity_id": "port/planet_gear_3/planet_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/planet_gear_3/planet_mesh"
+      ]
+    },
+    {
+      "entity_id": "port/planet_gear_4/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/planet_gear_4/bore"
+      ]
+    },
+    {
+      "entity_id": "port/planet_gear_4/planet_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "port/planet_gear_4/planet_mesh"
+      ]
+    },
+    {
+      "entity_id": "relation/lower_input_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "relation/lower_input_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/upper_input_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "relation/upper_input_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/carrier_output_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "relation/carrier_output_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/sun_on_input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "relation/sun_on_input_shaft"
+      ]
+    },
+    {
+      "entity_id": "relation/crank_on_input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "relation/crank_on_input_shaft"
+      ]
+    },
+    {
+      "entity_id": "relation/grip_on_crank",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "relation/grip_on_crank"
+      ]
+    },
+    {
+      "entity_id": "relation/fixed_ring_on_support",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "relation/fixed_ring_on_support"
+      ]
+    },
+    {
+      "entity_id": "relation/planet_1_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "relation/planet_1_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/planet_2_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "relation/planet_2_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/planet_3_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "relation/planet_3_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/planet_4_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "relation/planet_4_journal"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/input_rotation",
+      "action": "represented_by",
+      "generated_nodes": [
+        "input_rotation"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "motion_joint/input_rotation"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/carrier_output_rotation",
+      "action": "represented_by",
+      "generated_nodes": [
+        "carrier_output_rotation"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "motion_joint/carrier_output_rotation"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/planet_1_spin_on_carrier",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_1_spin_on_carrier"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "motion_joint/planet_1_spin_on_carrier"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/planet_2_spin_on_carrier",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_2_spin_on_carrier"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "motion_joint/planet_2_spin_on_carrier"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/planet_3_spin_on_carrier",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_3_spin_on_carrier"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "motion_joint/planet_3_spin_on_carrier"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/planet_4_spin_on_carrier",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_4_spin_on_carrier"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "motion_joint/planet_4_spin_on_carrier"
+      ]
+    },
+    {
+      "entity_id": "transmission/sun_to_planet_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_1_mesh"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "transmission/sun_to_planet_1"
+      ]
+    },
+    {
+      "entity_id": "transmission/sun_to_planet_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_2_mesh"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "transmission/sun_to_planet_2"
+      ]
+    },
+    {
+      "entity_id": "transmission/sun_to_planet_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_3_mesh"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "transmission/sun_to_planet_3"
+      ]
+    },
+    {
+      "entity_id": "transmission/sun_to_planet_4",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_4_mesh"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "transmission/sun_to_planet_4"
+      ]
+    },
+    {
+      "entity_id": "transmission/planet_1_to_fixed_ring",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_1_mesh"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "transmission/planet_1_to_fixed_ring"
+      ]
+    },
+    {
+      "entity_id": "transmission/planet_2_to_fixed_ring",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_2_mesh"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "transmission/planet_2_to_fixed_ring"
+      ]
+    },
+    {
+      "entity_id": "transmission/planet_3_to_fixed_ring",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_3_mesh"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "transmission/planet_3_to_fixed_ring"
+      ]
+    },
+    {
+      "entity_id": "transmission/planet_4_to_fixed_ring",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_4_mesh"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "transmission/planet_4_to_fixed_ring"
+      ]
+    },
+    {
+      "entity_id": "planetary_stage/fixed_ring_stage",
+      "action": "represented_by",
+      "generated_nodes": [
+        "fixed_ring_carrier_ratio"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "planetary_stage/fixed_ring_stage"
+      ]
+    },
+    {
+      "entity_id": "role/driver/input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "input_rotation"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "role/driver/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/output/output_carrier",
+      "action": "represented_by",
+      "generated_nodes": [
+        "carrier_output_rotation"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "role/output/output_carrier"
+      ]
+    },
+    {
+      "entity_id": "role/watch/input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "input_rotation"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "role/watch/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/watch/sun_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "input_rotation"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "role/watch/sun_gear"
+      ]
+    },
+    {
+      "entity_id": "role/watch/planet_gear_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_1_spin_on_carrier"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "role/watch/planet_gear_1"
+      ]
+    },
+    {
+      "entity_id": "role/watch/planet_gear_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_2_spin_on_carrier"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "role/watch/planet_gear_2"
+      ]
+    },
+    {
+      "entity_id": "role/watch/planet_gear_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_3_spin_on_carrier"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "role/watch/planet_gear_3"
+      ]
+    },
+    {
+      "entity_id": "role/watch/planet_gear_4",
+      "action": "represented_by",
+      "generated_nodes": [
+        "planet_4_spin_on_carrier"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "role/watch/planet_gear_4"
+      ]
+    },
+    {
+      "entity_id": "role/watch/output_carrier",
+      "action": "represented_by",
+      "generated_nodes": [
+        "carrier_output_rotation"
+      ],
+      "reason": "Mapped to emitted topology.",
+      "fact_ids": [
+        "role/watch/output_carrier"
+      ]
+    }
+  ],
+  "excludes": [
+    {
+      "pair": [
+        "input_shaft",
+        "lower_input_bearing"
+      ],
+      "reason": "Running journal hinge",
+      "source_entity_ids": [
+        "relation/lower_input_journal"
+      ],
+      "fact_ids": [
+        "fit/lower_input_bearing/bore/input_shaft/lower_journal"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "upper_input_bearing"
+      ],
+      "reason": "Running journal hinge",
+      "source_entity_ids": [
+        "relation/upper_input_journal"
+      ],
+      "fact_ids": [
+        "fit/upper_input_bearing/bore/input_shaft/upper_journal"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "sun_gear"
+      ],
+      "reason": "Interference press fit rigid carrying",
+      "source_entity_ids": [
+        "relation/sun_on_input_shaft"
+      ],
+      "fact_ids": [
+        "fit/sun_gear/bore/input_shaft/sun_seat"
+      ]
+    },
+    {
+      "pair": [
+        "crank_arm",
+        "input_shaft"
+      ],
+      "reason": "Interference press fit rigid carrying",
+      "source_entity_ids": [
+        "relation/crank_on_input_shaft"
+      ],
+      "fact_ids": [
+        "fit/crank_arm/hub_bore/input_shaft/crank_seat"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "output_carrier"
+      ],
+      "reason": "Measured running clearance between independent coaxial members",
+      "source_entity_ids": [
+        "motion_joint/input_rotation",
+        "motion_joint/carrier_output_rotation"
+      ],
+      "fact_ids": [
+        "fit/output_carrier/central_running_bore/input_shaft/shaft_outer"
+      ]
+    },
+    {
+      "pair": [
+        "planet_gear_1",
+        "sun_gear"
+      ],
+      "reason": "Ideal external gear mesh equality",
+      "source_entity_ids": [
+        "transmission/sun_to_planet_1"
+      ],
+      "fact_ids": [
+        "pair/planet_gear_1/sun_gear"
+      ]
+    },
+    {
+      "pair": [
+        "planet_gear_2",
+        "sun_gear"
+      ],
+      "reason": "Ideal external gear mesh equality",
+      "source_entity_ids": [
+        "transmission/sun_to_planet_2"
+      ],
+      "fact_ids": [
+        "pair/planet_gear_2/sun_gear"
+      ]
+    },
+    {
+      "pair": [
+        "planet_gear_3",
+        "sun_gear"
+      ],
+      "reason": "Ideal external gear mesh equality",
+      "source_entity_ids": [
+        "transmission/sun_to_planet_3"
+      ],
+      "fact_ids": [
+        "pair/planet_gear_3/sun_gear"
+      ]
+    },
+    {
+      "pair": [
+        "planet_gear_4",
+        "sun_gear"
+      ],
+      "reason": "Ideal external gear mesh equality",
+      "source_entity_ids": [
+        "transmission/sun_to_planet_4"
+      ],
+      "fact_ids": [
+        "pair/planet_gear_4/sun_gear"
+      ]
+    },
+    {
+      "pair": [
+        "crank_arm",
+        "top_bridge"
+      ],
+      "reason": "Runtime high-impulse false contact at zero-thickness tangency stalls driver",
+      "source_entity_ids": [
+        "link/crank_arm",
+        "link/top_bridge"
+      ],
+      "fact_ids": [
+        "pair/crank_arm/top_bridge"
+      ]
+    },
+    {
+      "pair": [
+        "crank_arm",
+        "upper_input_bearing"
+      ],
+      "reason": "Runtime high-impulse false contact at zero-thickness tangency stalls driver",
+      "source_entity_ids": [
+        "link/crank_arm",
+        "link/upper_input_bearing"
+      ],
+      "fact_ids": [
+        "pair/crank_arm/upper_input_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "crank_arm",
+        "hand_grip"
+      ],
+      "reason": "Rigid face mount",
+      "source_entity_ids": [
+        "relation/grip_on_crank"
+      ],
+      "fact_ids": [
+        "fit/crank_arm/grip_face/hand_grip/bottom_face"
+      ]
+    },
+    {
+      "pair": [
+        "output_bearing",
+        "output_carrier"
+      ],
+      "reason": "Running journal hinge",
+      "source_entity_ids": [
+        "relation/carrier_output_journal"
+      ],
+      "fact_ids": [
+        "fit/output_bearing/bore/output_carrier/sleeve_journal"
+      ]
+    },
+    {
+      "pair": [
+        "output_carrier",
+        "planet_pin_1"
+      ],
+      "reason": "Rigidly carried dedicated pin",
+      "source_entity_ids": [
+        "link/planet_pin_1"
+      ],
+      "fact_ids": [
+        "pair/output_carrier/planet_pin_1"
+      ]
+    },
+    {
+      "pair": [
+        "output_carrier",
+        "planet_pin_2"
+      ],
+      "reason": "Rigidly carried dedicated pin",
+      "source_entity_ids": [
+        "link/planet_pin_2"
+      ],
+      "fact_ids": [
+        "pair/output_carrier/planet_pin_2"
+      ]
+    },
+    {
+      "pair": [
+        "output_carrier",
+        "planet_pin_3"
+      ],
+      "reason": "Rigidly carried dedicated pin",
+      "source_entity_ids": [
+        "link/planet_pin_3"
+      ],
+      "fact_ids": [
+        "pair/output_carrier/planet_pin_3"
+      ]
+    },
+    {
+      "pair": [
+        "output_carrier",
+        "planet_pin_4"
+      ],
+      "reason": "Rigidly carried dedicated pin",
+      "source_entity_ids": [
+        "link/planet_pin_4"
+      ],
+      "fact_ids": [
+        "pair/output_carrier/planet_pin_4"
+      ]
+    },
+    {
+      "pair": [
+        "planet_gear_1",
+        "planet_pin_1"
+      ],
+      "reason": "Clearance planet journal hinge",
+      "source_entity_ids": [
+        "relation/planet_1_journal"
+      ],
+      "fact_ids": [
+        "fit/planet_gear_1/bore/planet_pin_1/journal"
+      ]
+    },
+    {
+      "pair": [
+        "planet_gear_2",
+        "planet_pin_2"
+      ],
+      "reason": "Clearance planet journal hinge",
+      "source_entity_ids": [
+        "relation/planet_2_journal"
+      ],
+      "fact_ids": [
+        "fit/planet_gear_2/bore/planet_pin_2/journal"
+      ]
+    },
+    {
+      "pair": [
+        "planet_gear_3",
+        "planet_pin_3"
+      ],
+      "reason": "Clearance planet journal hinge",
+      "source_entity_ids": [
+        "relation/planet_3_journal"
+      ],
+      "fact_ids": [
+        "fit/planet_gear_3/bore/planet_pin_3/journal"
+      ]
+    },
+    {
+      "pair": [
+        "planet_gear_4",
+        "planet_pin_4"
+      ],
+      "reason": "Clearance planet journal hinge",
+      "source_entity_ids": [
+        "relation/planet_4_journal"
+      ],
+      "fact_ids": [
+        "fit/planet_gear_4/bore/planet_pin_4/journal"
+      ]
+    },
+    {
+      "pair": [
+        "fixed_ring_gear",
+        "planet_gear_1"
+      ],
+      "reason": "Ideal internal gear mesh equality",
+      "source_entity_ids": [
+        "transmission/planet_1_to_fixed_ring"
+      ],
+      "fact_ids": [
+        "pair/fixed_ring_gear/planet_gear_1"
+      ]
+    },
+    {
+      "pair": [
+        "fixed_ring_gear",
+        "planet_gear_2"
+      ],
+      "reason": "Ideal internal gear mesh equality",
+      "source_entity_ids": [
+        "transmission/planet_2_to_fixed_ring"
+      ],
+      "fact_ids": [
+        "pair/fixed_ring_gear/planet_gear_2"
+      ]
+    },
+    {
+      "pair": [
+        "fixed_ring_gear",
+        "planet_gear_3"
+      ],
+      "reason": "Ideal internal gear mesh equality",
+      "source_entity_ids": [
+        "transmission/planet_3_to_fixed_ring"
+      ],
+      "fact_ids": [
+        "pair/fixed_ring_gear/planet_gear_3"
+      ]
+    },
+    {
+      "pair": [
+        "fixed_ring_gear",
+        "planet_gear_4"
+      ],
+      "reason": "Ideal internal gear mesh equality",
+      "source_entity_ids": [
+        "transmission/planet_4_to_fixed_ring"
+      ],
+      "fact_ids": [
+        "pair/fixed_ring_gear/planet_gear_4"
+      ]
+    }
+  ],
+  "ground_excludes": [],
+  "support_patches": [],
+  "bodies": [
+    "baseplate",
+    "crank_arm",
+    "fixed_ring_gear",
+    "hand_grip",
+    "input_shaft",
+    "input_thrust_pad",
+    "lower_input_bearing",
+    "output_bearing",
+    "output_bearing_pedestal",
+    "output_carrier",
+    "planet_gear_1",
+    "planet_gear_2",
+    "planet_gear_3",
+    "planet_gear_4",
+    "planet_pin_1",
+    "planet_pin_2",
+    "planet_pin_3",
+    "planet_pin_4",
+    "ring_support",
+    "sun_gear",
+    "top_bridge",
+    "top_post_1",
+    "top_post_2",
+    "top_post_3",
+    "upper_input_bearing"
+  ],
+  "joints": [
+    "carrier_output_rotation",
+    "input_rotation",
+    "planet_1_spin_on_carrier",
+    "planet_2_spin_on_carrier",
+    "planet_3_spin_on_carrier",
+    "planet_4_spin_on_carrier"
+  ],
+  "constraints": [
+    "fixed_ring_carrier_ratio",
+    "planet_1_mesh",
+    "planet_2_mesh",
+    "planet_3_mesh",
+    "planet_4_mesh"
+  ]
+}

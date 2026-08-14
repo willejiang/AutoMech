@@ -1,0 +1,96 @@
+{
+  "task": "an open-frame four-degree-of-freedom serial robot arm benchmark with a rigid bolted base, a directly hinged base-yaw revolute joint, a directly hinged shoulder-pitch revolute joint, a directly hinged elbow-pitch revolute joint, and a directly hinged wrist-pitch revolute joint carrying a clearly visible end-effector pointer. Use explicit revolute hinge joints only: no gears, no gear teeth, no belts, no pulleys, no rack-and-pinion, no transmission equalities, and no decorative drivetrain. Build a true serial parent-child kinematic chain so every downstream link and the end effector are carried by upstream hinge motion. Keep the mechanism fully exposed with no housing, cover plate, bridge, shell, or panel blocking the joints. Place the four hinge axes, joint hubs, links, and end effector where a locked three-quarter camera can simultaneously see at least the shoulder, elbow, wrist, and end-effector motion. Give finite pin clearances and supported hinge brackets. The physics test must drive one authored hinge with finite effort and visually verify that the downstream arm chain remains attached, follows the serial hierarchy, and moves the visible end effector without any gear-based coupling.",
+  "spec": {
+    "duration_s": 7.0,
+    "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\agent_mjcf_frozen_rerun\\07_serial_robot_arm\\an_open_frame_four_degree_of_fre_20260811_132222",
+    "drive": {
+      "torque": 0.5,
+      "mode": "position_sweep",
+      "drive_method": "servo",
+      "target_velocity": 5.0,
+      "output_link": "end_effector_pointer"
+    },
+    "design": {
+      "input_joint": "shoulder_link",
+      "output_joint": "base_yaw_revolute",
+      "watch_joints": [],
+      "propagation_path": [
+        "base_yaw_revolute",
+        "yaw_carriage",
+        "shoulder_link",
+        "elbow_link",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "pass_criteria": null,
+      "environment": "Rigidly bench-mount base_frame and servo only base_yaw_revolute through a bounded sweep while leaving the exposed shoulder, elbow, wrist, and pointer visible. The downstream hinges are observed rather than driven so the locked camera can verify that the true serial hierarchy remains attached and follows the yaw carriage.",
+      "camera": {
+        "locked": true,
+        "target_link": "elbow_link",
+        "azimuth_deg": 40.0,
+        "elevation_deg": -22.0,
+        "distance_scale": 2.15
+      }
+    }
+  },
+  "metrics": {
+    "verdict": "FAIL",
+    "test_kind": "driven_mechanism",
+    "survive_s": 7.0,
+    "input_joint": "shoulder_pitch_revolute",
+    "input_part": "shoulder_link",
+    "input_travel": 0.0001,
+    "input_unit": "rad",
+    "moved_count": 0,
+    "watched_count": 3,
+    "output_reached": false,
+    "exploded": false,
+    "output_travel": 0.0,
+    "output_unit": "rad",
+    "ratio_in_out": null,
+    "displaced_parts": [],
+    "end_z": 0.0,
+    "max_tilt_deg": 0.0,
+    "max_drift": 0.0
+  },
+  "stability": {
+    "verdict": "PASS",
+    "exploded": false,
+    "max_disp_m": 0.1481,
+    "end_z": 0.0,
+    "displaced_parts": [
+      {
+        "part": "elbow_pin",
+        "disp_mm": 148.09
+      },
+      {
+        "part": "end_effector_pointer",
+        "disp_mm": 122.53
+      },
+      {
+        "part": "wrist_pin",
+        "disp_mm": 119.09
+      },
+      {
+        "part": "wrist_link",
+        "disp_mm": 101.74
+      },
+      {
+        "part": "elbow_link",
+        "disp_mm": 90.49
+      },
+      {
+        "part": "shoulder_link",
+        "disp_mm": 82.89
+      }
+    ]
+  },
+  "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\agent_mjcf_frozen_rerun\\07_serial_robot_arm\\an_open_frame_four_degree_of_fre_20260811_132222\\physics\\mujoco_1\\frames",
+  "n_frames": 40,
+  "log": [
+    "initial contacts: 0 interpenetrating pair(s)",
+    "stability(settle): PASS max_disp=0.148m exploded=False",
+    "camera: az=40.0 el=-22.0 dist=0.738 (designer)",
+    "drive: method=servo mode=position_sweep rate=5"
+  ]
+}

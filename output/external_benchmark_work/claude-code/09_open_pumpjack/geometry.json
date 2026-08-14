@@ -1,0 +1,67 @@
+{
+  "analyzer_version": "comfort-geometry/1.0",
+  "fail_closed": true,
+  "input_hashes": {
+    "meshes/base.stl": "9c0f729c849a40df8bc44ac385696addb1596847f954f78129ddbd78d08864a3",
+    "meshes/beam_pivot.stl": "c95d6b91c770e41929d743efadaa1d38899138666d53ddc9fd1ae659b35dd6e9",
+    "meshes/crank_disk.stl": "752a9866a084607a38a7416ab7b8dad1cbf087438f454e0210a63d58d2b4c727",
+    "meshes/crank_pin.stl": "7efda8b40f5cb506392533d4918d45f644b75c97c21571113f2c65f4d7efa236",
+    "meshes/crankshaft_input.stl": "11bf4bb45f6ad15189c5d0a81a54605a10c419cc1b53974abddf77b2f13e7fb8",
+    "meshes/hand_crank.stl": "442741c03b5e7b4807af09f6374b16bccfe84cdde7739016860f48412c929fe6",
+    "meshes/left_support.stl": "880bdfc460f0d11eafe2af7310d852bd70850a1c78a60503ed72ec798f99c00f",
+    "meshes/pitman_rod.stl": "b965810b9886cf66d0091655459fba63a668d2e046071f4c64a52d0429b4a356",
+    "meshes/polished_rod_output.stl": "c4a9c75e611d5c2f724c2cc5b411a3b90a99886db2c308caeefa0505f613849d",
+    "meshes/right_support.stl": "9dd11b35dc760d4a582de2737e6a688613c8aed1a8cd4904361b60a7d7c61533",
+    "meshes/vertical_guide.stl": "5b0659a25e30fa4eb1c6465cb45ff1eb94d5cf5df8a1f0a7ed74a15cbfbd8b51",
+    "meshes/walking_beam.stl": "d3159fce21fea0ec92546afad0d511c7cf4d8efe3d28d3fd7c7d5ff306821191"
+  },
+  "intersections": [
+    {
+      "evidence_id": "mount/base/left_support",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.057142857,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "base",
+        "left_support"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 3888.0
+    },
+    {
+      "evidence_id": null,
+      "exemption": null,
+      "exemption_source": "",
+      "fraction_smaller": 0.352941176,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "crank_disk",
+        "crank_pin"
+      ],
+      "status": "CONFLICT",
+      "volume_mm3": 2408.745538
+    },
+    {
+      "evidence_id": null,
+      "exemption": null,
+      "exemption_source": "",
+      "fraction_smaller": 0.022598006,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "hand_crank",
+        "right_support"
+      ],
+      "status": "CONFLICT",
+      "volume_mm3": 360.0
+    }
+  ],
+  "links_scanned": 12,
+  "manifest_only_exemption_count": 0,
+  "method": "final-pose watertight STL boolean intersection using manifold",
+  "non_exempt_conflict_count": 2,
+  "provenance_warnings": [],
+  "report_volume_mm3": 0.0001,
+  "scan_unavailable": [],
+  "schema": "physcad-scorer-geometry/1.0"
+}

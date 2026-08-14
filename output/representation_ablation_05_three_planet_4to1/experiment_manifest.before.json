@@ -1,0 +1,32 @@
+{
+  "schema": "physcad-representation-ablation/1.0",
+  "task_id": "05_three_planet_4to1",
+  "task_prompt": "Design this as an open demonstration mechanism: expose the complete mechanical structure and motion path, and avoid covers, housings, bridges, or plates that obstruct the gears, shafts, bearings, joints, pins, linkages, carrier, or output from the simulation camera. Build an open-frame hand-driven planetary reducer with a fixed ring gear, a sun gear input, exactly three equally spaced planet gears on a rigid carrier, and the carrier as output. Choose tooth counts that give an exact 4:1 sun-to-carrier reduction with the ring fixed. Every planet gear must be carried around the sun by the carrier while also spinning on its own dedicated carrier pin hinge. Expose the sun, all three planets, the ring, and the carrier; do not hide them behind a full cover. Include a stable base, a visible input crank, and complete planetary-stage semantics, meshes, bearings, driver, output, and watched links.",
+  "task_prompt_sha256": "c07c0576b0bb8de5860f094fe734feb28f9beefd324b902881518aaacf6c1af3",
+  "arm": "independent_values",
+  "model": "gpt-5.6-sol",
+  "engine": "mujoco",
+  "mjcf_compiler_mode": "agent",
+  "max_iters": 3,
+  "reference_tools": false,
+  "kb": false,
+  "production_prompt_sha256_before": "b1cfa6d81f3f93e1e73eb0120d6a7b7c620380cf6a0051b8ff556eafe434da32",
+  "overlay_prompt_sha256": "fb1df0026d22b11e73e9d8e44a8e161670f59f4109680e7c2e836b1ebcb1b6fe",
+  "overlay_changes": [
+    "removed parametric-script label",
+    "replaced compute-first/shared-root drivetrain block",
+    "removed hardpoint-first and formula-derived linkage geometry instructions",
+    "replaced embedded dependency-oriented modeling method",
+    "removed face-stacking and shaft-derived bore formulas",
+    "removed shell/envelope parameter reuse requirement"
+  ],
+  "production_file_hashes_before": {
+    "maker2/prompts/single_agent_prompt.py": "d440371bf2314dfd62f6ae12bfe1088e2f396c621456f015cb99b7d8fb728701",
+    "maker2/prompts/manager_prompt.py": "2d2f4df89755eea5e1d4c0dede2329646ccac68406705f3fa83fa888798ee83d",
+    "maker2/single_agent.py": "9fa4e34166832f2b89595a8f052a0a9830ad8c20fa069a179980ea9f1f45be82",
+    "maker2/config.py": "e4742bebbc5e51ee110baded3c1dc0111d4c1ff85adbe3323ef86a1f28036132",
+    "maker2/run.py": "a30f8a3dffed4ce7100a820897ed96588d6d721297f0b4bce8e4b3d6297f3334"
+  },
+  "normal_production_files_modified": false,
+  "pilot_only": true
+}

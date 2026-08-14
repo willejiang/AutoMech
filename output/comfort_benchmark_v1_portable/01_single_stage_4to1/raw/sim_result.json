@@ -1,0 +1,108 @@
+{
+  "task": "Design this as an open demonstration mechanism: expose the complete mechanical structure and motion path, and avoid covers, housings, bridges, or plates that obstruct the gears, shafts, bearings, joints, pins, linkages, carrier, or output from the simulation camera. Build an open-frame hand-cranked single-stage spur gear reducer with an exact 4:1 reduction. Use one input shaft with a visible hand crank and one parallel output shaft. Support both shafts in clearly visible running bearings, rigidly attach each gear to its own shaft, expose the complete tooth mesh, and include a stable bench-mounted base. The input must be the hand crank only; the output shaft must not be independently driven. Author complete mechanism semantics for the shaft hinges, press fits, running fits, gear mesh, driver, output, and watched links.",
+  "spec": {
+    "duration_s": 3.0,
+    "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\01_single_stage_4to1\\design_this_as_an_open_demonstra_20260811_162204",
+    "drive": {
+      "torque": 0.5,
+      "mode": "velocity",
+      "drive_method": "direct_qpos",
+      "target_velocity": 4.0,
+      "output_link": "output_shaft"
+    },
+    "design": {
+      "input_joint": "input_shaft",
+      "output_joint": "place_output_gear",
+      "watch_joints": [
+        "place_output_shaft",
+        "place_input_pinion",
+        "place_output_gear",
+        "place_hand_crank",
+        "place_crank_grip"
+      ],
+      "propagation_path": [
+        "place_input_shaft",
+        "place_output_shaft",
+        "place_input_pinion",
+        "place_hand_crank",
+        "place_crank_grip",
+        "place_output_gear"
+      ],
+      "pass_criteria": null,
+      "environment": "Bench-mounted and driven open-mechanism demonstration. The base is rigidly fixed while a locked three-quarter camera observes the hand crank, both supported shafts, exposed spur-gear mesh, bearings, and output.",
+      "camera": {
+        "mode": "locked",
+        "target_links": [
+          "input_pinion",
+          "output_gear",
+          "hand_crank",
+          "output_shaft"
+        ],
+        "azimuth_deg": 45.0,
+        "elevation_deg": -28.0,
+        "distance_scale": 2.5,
+        "roll_deg": 0.0
+      }
+    }
+  },
+  "metrics": {
+    "verdict": "PASS",
+    "test_kind": "driven_mechanism",
+    "survive_s": 3.0,
+    "input_joint": "input_shaft_hinge",
+    "input_part": "input_shaft",
+    "input_travel": 12.0,
+    "input_unit": "rad",
+    "moved_count": 4,
+    "watched_count": 4,
+    "output_reached": true,
+    "exploded": false,
+    "output_travel": 3.0,
+    "output_unit": "rad",
+    "ratio_in_out": 4.0,
+    "displaced_parts": [
+      {
+        "part": "crank_grip",
+        "disp_mm": 71.84
+      },
+      {
+        "part": "input_shaft",
+        "disp_mm": 45.0
+      },
+      {
+        "part": "input_pinion",
+        "disp_mm": 45.0
+      },
+      {
+        "part": "hand_crank",
+        "disp_mm": 45.0
+      },
+      {
+        "part": "output_shaft",
+        "disp_mm": 44.89
+      },
+      {
+        "part": "output_gear",
+        "disp_mm": 44.89
+      }
+    ],
+    "end_z": 0.0,
+    "max_tilt_deg": 0.0,
+    "max_drift": 0.0718
+  },
+  "stability": {
+    "verdict": "PASS",
+    "exploded": false,
+    "max_disp_m": 0.0,
+    "end_z": 0.0,
+    "displaced_parts": []
+  },
+  "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\01_single_stage_4to1\\design_this_as_an_open_demonstra_20260811_162204\\physics\\mujoco_0\\frames",
+  "n_frames": 40,
+  "log": [
+    "initial contacts: 0 interpenetrating pair(s)",
+    "stability(settle): PASS max_disp=0.000m exploded=False",
+    "camera: az=45.0 el=-28.0 dist=0.343 (designer)",
+    "drive: method=direct_qpos mode=velocity rate=4"
+  ]
+}

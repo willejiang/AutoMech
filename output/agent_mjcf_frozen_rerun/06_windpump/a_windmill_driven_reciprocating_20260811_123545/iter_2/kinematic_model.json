@@ -1,0 +1,1564 @@
+{
+  "name": "a_windmill_driven_reciprocating",
+  "root_link": "baseplate",
+  "links": [
+    {
+      "name": "baseplate",
+      "description": "baseplate",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/baseplate.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": ""
+    },
+    {
+      "name": "front_pedestal",
+      "description": "front_pedestal",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/front_pedestal.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "baseplate"
+    },
+    {
+      "name": "rear_pedestal",
+      "description": "rear_pedestal",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/rear_pedestal.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "baseplate"
+    },
+    {
+      "name": "front_bearing",
+      "description": "front_bearing",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/front_bearing.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "front_pedestal"
+    },
+    {
+      "name": "rear_bearing",
+      "description": "rear_bearing",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/rear_bearing.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "rear_pedestal"
+    },
+    {
+      "name": "rotor_shaft",
+      "description": "rotor_shaft",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/rotor_shaft.stl",
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "front_bearing",
+      "extra_mounts": [
+        "rear_bearing"
+      ]
+    },
+    {
+      "name": "wind_rotor",
+      "description": "wind_rotor",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/wind_rotor.stl",
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": true,
+      "material": "steel",
+      "mount": "rotor_shaft"
+    },
+    {
+      "name": "crank_disk",
+      "description": "crank_disk",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/crank_disk.stl",
+      "dof": "spin",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "rotor_shaft"
+    },
+    {
+      "name": "crank_pin",
+      "description": "crank_pin",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/crank_pin.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "crank_disk"
+    },
+    {
+      "name": "connecting_rod",
+      "description": "connecting_rod",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/connecting_rod.stl",
+      "dof": "free",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": ""
+    },
+    {
+      "name": "piston_slider",
+      "description": "piston_slider",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/piston_slider.stl",
+      "dof": "slide",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "left_guide",
+      "extra_mounts": [
+        "right_guide",
+        "front_guide",
+        "rear_guide"
+      ]
+    },
+    {
+      "name": "wrist_pin",
+      "description": "wrist_pin",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/wrist_pin.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "piston_slider"
+    },
+    {
+      "name": "left_guide",
+      "description": "left_guide",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/left_guide.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "baseplate",
+      "extra_mounts": [
+        "pump_cylinder"
+      ]
+    },
+    {
+      "name": "right_guide",
+      "description": "right_guide",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/right_guide.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "baseplate",
+      "extra_mounts": [
+        "pump_cylinder"
+      ]
+    },
+    {
+      "name": "front_guide",
+      "description": "front_guide",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/front_guide.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "baseplate",
+      "extra_mounts": [
+        "pump_cylinder"
+      ]
+    },
+    {
+      "name": "rear_guide",
+      "description": "rear_guide",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/rear_guide.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "baseplate",
+      "extra_mounts": [
+        "pump_cylinder"
+      ]
+    },
+    {
+      "name": "pump_rod",
+      "description": "pump_rod",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/pump_rod.stl",
+      "dof": "slide",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "piston_slider",
+      "extra_mounts": [
+        "pump_piston"
+      ]
+    },
+    {
+      "name": "pump_piston",
+      "description": "pump_piston",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/pump_piston.stl",
+      "dof": "slide",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "pump_rod",
+      "extra_mounts": [
+        "pump_cylinder"
+      ]
+    },
+    {
+      "name": "pump_cylinder",
+      "description": "pump_cylinder",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/pump_cylinder.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "baseplate"
+    },
+    {
+      "name": "cylinder_foot",
+      "description": "cylinder_foot",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/cylinder_foot.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "baseplate",
+      "extra_mounts": [
+        "pump_cylinder"
+      ]
+    },
+    {
+      "name": "inlet_pipe",
+      "description": "inlet_pipe",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/inlet_pipe.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "pump_cylinder"
+    },
+    {
+      "name": "outlet_pipe",
+      "description": "outlet_pipe",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/outlet_pipe.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "pump_cylinder"
+    },
+    {
+      "name": "left_guide_cap",
+      "description": "left_guide_cap",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/left_guide_cap.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "left_guide",
+      "extra_mounts": [
+        "front_guide",
+        "rear_guide"
+      ]
+    },
+    {
+      "name": "right_guide_cap",
+      "description": "right_guide_cap",
+      "shape_hint": "",
+      "size_mm": {},
+      "origin_note": "",
+      "color": [],
+      "mesh_filename": "meshes/right_guide_cap.stl",
+      "dof": "fixed",
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "slide_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "driver": false,
+      "material": "steel",
+      "mount": "right_guide",
+      "extra_mounts": [
+        "front_guide",
+        "rear_guide"
+      ]
+    }
+  ],
+  "poses": [
+    {
+      "name": "place_baseplate",
+      "parent": "",
+      "child": "baseplate",
+      "xyz_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_front_pedestal",
+      "parent": "baseplate",
+      "child": "front_pedestal",
+      "xyz_m": [
+        0.0,
+        -0.023,
+        0.004
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_rear_pedestal",
+      "parent": "baseplate",
+      "child": "rear_pedestal",
+      "xyz_m": [
+        0.0,
+        0.007,
+        0.004
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_front_bearing",
+      "parent": "front_pedestal",
+      "child": "front_bearing",
+      "xyz_m": [
+        0.0,
+        -0.005,
+        0.091
+      ],
+      "rpy_rad": [
+        -1.5707963267948966,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_rear_bearing",
+      "parent": "rear_pedestal",
+      "child": "rear_bearing",
+      "xyz_m": [
+        0.0,
+        -0.005,
+        0.091
+      ],
+      "rpy_rad": [
+        -1.5707963267948966,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_rotor_shaft",
+      "parent": "front_bearing",
+      "child": "rotor_shaft",
+      "xyz_m": [
+        0.0,
+        0.0,
+        -0.018
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_wind_rotor",
+      "parent": "rotor_shaft",
+      "child": "wind_rotor",
+      "xyz_m": [
+        0.0,
+        0.0,
+        0.002
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_crank_disk",
+      "parent": "rotor_shaft",
+      "child": "crank_disk",
+      "xyz_m": [
+        0.0,
+        0.0,
+        0.066
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_crank_pin",
+      "parent": "crank_disk",
+      "child": "crank_pin",
+      "xyz_m": [
+        0.0,
+        0.014,
+        0.006
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_connecting_rod",
+      "parent": "crank_pin",
+      "child": "connecting_rod",
+      "xyz_m": [
+        0.0,
+        0.0,
+        0.004
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_piston_slider",
+      "parent": "left_guide",
+      "child": "piston_slider",
+      "xyz_m": [
+        0.016050000000000002,
+        0.0,
+        0.031
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_wrist_pin",
+      "parent": "piston_slider",
+      "child": "wrist_pin",
+      "xyz_m": [
+        0.0,
+        -0.009,
+        0.013
+      ],
+      "rpy_rad": [
+        -1.5707963267948966,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_left_guide",
+      "parent": "baseplate",
+      "child": "left_guide",
+      "xyz_m": [
+        -0.016050000000000002,
+        0.033,
+        0.004
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_right_guide",
+      "parent": "baseplate",
+      "child": "right_guide",
+      "xyz_m": [
+        0.01205,
+        0.033,
+        0.004
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_front_guide",
+      "parent": "baseplate",
+      "child": "front_guide",
+      "xyz_m": [
+        0.0,
+        0.01995,
+        0.004
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_rear_guide",
+      "parent": "baseplate",
+      "child": "rear_guide",
+      "xyz_m": [
+        0.0,
+        0.04205,
+        0.004
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_pump_rod",
+      "parent": "piston_slider",
+      "child": "pump_rod",
+      "xyz_m": [
+        0.0,
+        0.0,
+        -0.024
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_pump_piston",
+      "parent": "pump_rod",
+      "child": "pump_piston",
+      "xyz_m": [
+        0.0,
+        0.0,
+        -0.001
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_pump_cylinder",
+      "parent": "baseplate",
+      "child": "pump_cylinder",
+      "xyz_m": [
+        0.0,
+        0.033,
+        0.004
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_cylinder_foot",
+      "parent": "baseplate",
+      "child": "cylinder_foot",
+      "xyz_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_inlet_pipe",
+      "parent": "pump_cylinder",
+      "child": "inlet_pipe",
+      "xyz_m": [
+        -0.026,
+        0.0,
+        0.006
+      ],
+      "rpy_rad": [
+        -0.0,
+        1.5707963267948966,
+        0.0
+      ]
+    },
+    {
+      "name": "place_outlet_pipe",
+      "parent": "pump_cylinder",
+      "child": "outlet_pipe",
+      "xyz_m": [
+        0.01285,
+        0.0,
+        0.018
+      ],
+      "rpy_rad": [
+        -0.0,
+        1.5707963267948966,
+        0.0
+      ]
+    },
+    {
+      "name": "place_left_guide_cap",
+      "parent": "left_guide",
+      "child": "left_guide_cap",
+      "xyz_m": [
+        0.002,
+        0.0,
+        0.057
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "place_right_guide_cap",
+      "parent": "right_guide",
+      "child": "right_guide_cap",
+      "xyz_m": [
+        0.002,
+        0.0,
+        0.057
+      ],
+      "rpy_rad": [
+        0.0,
+        -0.0,
+        0.0
+      ]
+    }
+  ],
+  "mesh_pairs": [],
+  "ports_by_link": {
+    "wind_rotor": [
+      {
+        "name": "shaft_bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          3.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 5.99,
+        "depth_mm": 6.0
+      }
+    ],
+    "rotor_shaft": [
+      {
+        "name": "rotor_seat",
+        "type": "shaft",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          5.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 6.0,
+        "depth_mm": 6.0
+      },
+      {
+        "name": "front_journal",
+        "type": "shaft",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          23.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 6.0,
+        "depth_mm": 10.0
+      },
+      {
+        "name": "rear_journal",
+        "type": "shaft",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          53.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 6.0,
+        "depth_mm": 10.0
+      },
+      {
+        "name": "crank_seat",
+        "type": "shaft",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          70.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 6.0,
+        "depth_mm": 8.0
+      }
+    ],
+    "front_bearing": [
+      {
+        "name": "journal_bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          5.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 6.1,
+        "depth_mm": 10.0
+      }
+    ],
+    "rear_bearing": [
+      {
+        "name": "journal_bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          5.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 6.1,
+        "depth_mm": 10.0
+      }
+    ],
+    "crank_disk": [
+      {
+        "name": "shaft_bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          4.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 5.99,
+        "depth_mm": 8.0
+      },
+      {
+        "name": "eccentric_pin_bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          14.0,
+          7.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 5.99,
+        "depth_mm": 2.0
+      }
+    ],
+    "crank_pin": [
+      {
+        "name": "disk_press_seat",
+        "type": "shaft",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 6.0,
+        "depth_mm": 2.0
+      },
+      {
+        "name": "rod_journal",
+        "type": "shaft",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          7.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 6.0,
+        "depth_mm": 6.0
+      }
+    ],
+    "connecting_rod": [
+      {
+        "name": "crank_eye",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          3.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 6.1,
+        "depth_mm": 6.0
+      },
+      {
+        "name": "wrist_eye",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          33.0,
+          3.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 6.1,
+        "depth_mm": 6.0
+      }
+    ],
+    "wrist_pin": [
+      {
+        "name": "slider_press_seat",
+        "type": "shaft",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          9.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 6.0,
+        "depth_mm": 18.0
+      },
+      {
+        "name": "rod_journal",
+        "type": "shaft",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          9.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 6.0,
+        "depth_mm": 6.0
+      }
+    ],
+    "piston_slider": [
+      {
+        "name": "wrist_pin_bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          13.0
+        ],
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "diameter_mm": 5.99,
+        "depth_mm": 18.0
+      },
+      {
+        "name": "pump_rod_bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          2.5
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 5.99,
+        "depth_mm": 5.0
+      }
+    ],
+    "pump_rod": [
+      {
+        "name": "slider_seat",
+        "type": "shaft",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          26.5
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 6.0,
+        "depth_mm": 3.0
+      },
+      {
+        "name": "piston_seat",
+        "type": "shaft",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          2.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 6.0,
+        "depth_mm": 6.0
+      }
+    ],
+    "pump_piston": [
+      {
+        "name": "rod_bore",
+        "type": "bore",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          3.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 5.99,
+        "depth_mm": 6.0
+      },
+      {
+        "name": "barrel_running_surface",
+        "type": "cylindrical",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          3.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 19.4,
+        "depth_mm": 6.0
+      }
+    ],
+    "pump_cylinder": [
+      {
+        "name": "piston_bore",
+        "type": "cylindrical",
+        "xyz_mm": [
+          0.0,
+          0.0,
+          12.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "diameter_mm": 19.7,
+        "depth_mm": 24.0
+      }
+    ]
+  },
+  "relations": [
+    {
+      "name": "rotor_to_shaft_press_fit",
+      "mate_type": "press_fit",
+      "base_part": "rotor_shaft",
+      "base_port": "rotor_seat",
+      "incoming_part": "wind_rotor",
+      "incoming_port": "shaft_bore"
+    },
+    {
+      "name": "front_shaft_journal",
+      "mate_type": "journal_bearing",
+      "base_part": "front_bearing",
+      "base_port": "journal_bore",
+      "incoming_part": "rotor_shaft",
+      "incoming_port": "front_journal"
+    },
+    {
+      "name": "rear_shaft_journal",
+      "mate_type": "journal_bearing",
+      "base_part": "rear_bearing",
+      "base_port": "journal_bore",
+      "incoming_part": "rotor_shaft",
+      "incoming_port": "rear_journal"
+    },
+    {
+      "name": "shaft_to_crank_press_fit",
+      "mate_type": "press_fit",
+      "base_part": "rotor_shaft",
+      "base_port": "crank_seat",
+      "incoming_part": "crank_disk",
+      "incoming_port": "shaft_bore"
+    },
+    {
+      "name": "eccentric_pin_press_fit",
+      "mate_type": "press_fit",
+      "base_part": "crank_disk",
+      "base_port": "eccentric_pin_bore",
+      "incoming_part": "crank_pin",
+      "incoming_port": "disk_press_seat"
+    },
+    {
+      "name": "crank_rod_revolute",
+      "mate_type": "revolute",
+      "base_part": "crank_pin",
+      "base_port": "rod_journal",
+      "incoming_part": "connecting_rod",
+      "incoming_port": "crank_eye"
+    },
+    {
+      "name": "wrist_rod_revolute",
+      "mate_type": "revolute",
+      "base_part": "wrist_pin",
+      "base_port": "rod_journal",
+      "incoming_part": "connecting_rod",
+      "incoming_port": "wrist_eye"
+    },
+    {
+      "name": "wrist_pin_to_slider",
+      "mate_type": "press_fit",
+      "base_part": "piston_slider",
+      "base_port": "wrist_pin_bore",
+      "incoming_part": "wrist_pin",
+      "incoming_port": "slider_press_seat"
+    },
+    {
+      "name": "slider_to_pump_rod",
+      "mate_type": "press_fit",
+      "base_part": "piston_slider",
+      "base_port": "pump_rod_bore",
+      "incoming_part": "pump_rod",
+      "incoming_port": "slider_seat"
+    },
+    {
+      "name": "pump_rod_to_piston",
+      "mate_type": "press_fit",
+      "base_part": "pump_rod",
+      "base_port": "piston_seat",
+      "incoming_part": "pump_piston",
+      "incoming_port": "rod_bore"
+    },
+    {
+      "name": "piston_in_barrel",
+      "mate_type": "cylindrical",
+      "base_part": "pump_cylinder",
+      "base_port": "piston_bore",
+      "incoming_part": "pump_piston",
+      "incoming_port": "barrel_running_surface"
+    }
+  ],
+  "motion_joints": [
+    {
+      "name": "rotor_input_hinge",
+      "parent": "",
+      "child": "wind_rotor",
+      "type": "hinge",
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "pos_mm": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "shaft_hinge",
+      "parent": "",
+      "child": "rotor_shaft",
+      "type": "hinge",
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "pos_mm": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "crank_hinge",
+      "parent": "",
+      "child": "crank_disk",
+      "type": "hinge",
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "pos_mm": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "crosshead_vertical_slide",
+      "parent": "",
+      "child": "piston_slider",
+      "type": "slide",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "pos_mm": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "pump_rod_vertical_slide",
+      "parent": "",
+      "child": "pump_rod",
+      "type": "slide",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "pos_mm": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "piston_vertical_slide",
+      "parent": "",
+      "child": "pump_piston",
+      "type": "slide",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "pos_mm": [
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "transmissions": [
+    {
+      "name": "rotor_shaft_lock",
+      "type": "compound_1to1",
+      "driving_link": "wind_rotor",
+      "driven_link": "rotor_shaft",
+      "ratio": 1.0
+    },
+    {
+      "name": "shaft_crank_lock",
+      "type": "compound_1to1",
+      "driving_link": "rotor_shaft",
+      "driven_link": "crank_disk",
+      "ratio": 1.0
+    },
+    {
+      "name": "crosshead_pump_rod_lock",
+      "type": "compound_1to1",
+      "driving_link": "piston_slider",
+      "driven_link": "pump_rod",
+      "ratio": 1.0
+    },
+    {
+      "name": "pump_rod_piston_lock",
+      "type": "compound_1to1",
+      "driving_link": "pump_rod",
+      "driven_link": "pump_piston",
+      "ratio": 1.0
+    }
+  ],
+  "output_link": "piston_slider",
+  "watch_links": [
+    "wind_rotor",
+    "rotor_shaft",
+    "crank_disk",
+    "connecting_rod",
+    "piston_slider",
+    "pump_rod",
+    "pump_piston"
+  ]
+}

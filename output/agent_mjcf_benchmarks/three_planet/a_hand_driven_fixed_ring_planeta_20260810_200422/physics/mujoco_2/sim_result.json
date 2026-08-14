@@ -1,0 +1,109 @@
+{
+  "task": "a hand-driven fixed-ring planetary gear reducer with exactly three planets and carrier output",
+  "spec": {
+    "duration_s": 3.0,
+    "run_dir": "output\\agent_mjcf_benchmarks\\three_planet\\a_hand_driven_fixed_ring_planeta_20260810_200422",
+    "drive": {
+      "torque": 0.5,
+      "mode": "velocity",
+      "drive_method": "direct_qpos",
+      "target_velocity": 4.0,
+      "output_link": "carrier_plate"
+    },
+    "design": {
+      "input_joint": "input_shaft",
+      "output_joint": "carrier_world_hinge",
+      "watch_joints": [
+        "place_output_shaft",
+        "place_carrier_plate",
+        "place_sun_gear",
+        "place_planet_1",
+        "place_planet_2",
+        "place_planet_3"
+      ],
+      "propagation_path": [
+        "sun_world_hinge",
+        "planet_1_carrier_hinge",
+        "planet_2_carrier_hinge",
+        "planet_3_carrier_hinge",
+        "carrier_world_hinge"
+      ],
+      "pass_criteria": null,
+      "environment": "Bench-mounted and driven: the baseplate is fixed while the single hand-crank input drives the fixed-ring planetary reducer. A top-down three-quarter view exposes the sun, all three planets, and the carrier.",
+      "camera": {
+        "target_link": "carrier_plate",
+        "azimuth_deg": 40.0,
+        "elevation_deg": -28.0,
+        "distance_scale": 2.3
+      }
+    }
+  },
+  "metrics": {
+    "verdict": "PASS",
+    "test_kind": "driven_mechanism",
+    "survive_s": 3.0,
+    "input_joint": "sun_world_hinge",
+    "input_part": "input_shaft",
+    "input_travel": 12.0,
+    "input_unit": "rad",
+    "moved_count": 6,
+    "watched_count": 6,
+    "output_reached": true,
+    "exploded": false,
+    "output_travel": 3.0,
+    "output_unit": "rad",
+    "ratio_in_out": 4.0,
+    "displaced_parts": [
+      {
+        "part": "planet_1",
+        "disp_mm": 105.32
+      },
+      {
+        "part": "planet_2",
+        "disp_mm": 105.32
+      },
+      {
+        "part": "planet_3",
+        "disp_mm": 105.32
+      },
+      {
+        "part": "hand_crank_grip",
+        "disp_mm": 54.0
+      },
+      {
+        "part": "planet_pin_1",
+        "disp_mm": 53.86
+      },
+      {
+        "part": "planet_thrust_washer_1",
+        "disp_mm": 53.86
+      },
+      {
+        "part": "planet_pin_2",
+        "disp_mm": 53.86
+      },
+      {
+        "part": "planet_thrust_washer_2",
+        "disp_mm": 53.86
+      }
+    ],
+    "end_z": 0.0,
+    "max_tilt_deg": 0.0,
+    "max_drift": 0.1053
+  },
+  "stability": {
+    "verdict": "PASS",
+    "exploded": false,
+    "max_disp_m": 0.0,
+    "end_z": 0.0,
+    "displaced_parts": []
+  },
+  "frames_dir": "output\\agent_mjcf_benchmarks\\three_planet\\a_hand_driven_fixed_ring_planeta_20260810_200422\\physics\\mujoco_2\\frames",
+  "n_frames": 40,
+  "log": [
+    "initial contacts: 0 interpenetrating pair(s)",
+    "stability(settle): PASS max_disp=0.000m exploded=False",
+    "camera: az=40.0 el=-28.0 dist=0.326 (designer)",
+    "drive: method=direct_qpos mode=velocity rate=4"
+  ]
+}

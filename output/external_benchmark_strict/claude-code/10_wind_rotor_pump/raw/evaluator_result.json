@@ -1,0 +1,34 @@
+{
+  "source_execution": "PASS",
+  "named_part_count": 12,
+  "mjcf_load": "PASS",
+  "simulation_mode": "imposed rotor position with analytically projected passive closure; ideal kinematic, not contact/load capacity",
+  "direct_output_actuation": false,
+  "ideal_equalities_disclosed": [],
+  "samples": 841,
+  "input_net_angle_rad": 6.542030581263661,
+  "vertical_stroke_mm": 40.0,
+  "vertical_reversals": 2,
+  "crosshead_lateral_drift_mm": 0.0,
+  "crank_pin_radius_mean_mm": 20.0,
+  "crank_pin_radius_max_error_mm": 1.4210854715202004e-14,
+  "closure_residual_max_abs_mm": 1.4210854715202004e-14,
+  "finite_state": true,
+  "measured_contacts": 0,
+  "checks": {
+    "input_at_least_2pi": true,
+    "stroke_at_least_15mm": true,
+    "at_least_two_reversals": true,
+    "vertical_output": true,
+    "closure_below_2pct_scale": true,
+    "circular_crank_pin": true
+  },
+  "overall_harness_check": "PASS",
+  "direct_output_qpos_projection": true,
+  "collision_model_disclosure": "Moving mesh geoms use contype=0/conaffinity=0; measured contacts are therefore not evidence of physical moving-part clearance.",
+  "compliance_caveats": [
+    "Passive slider and rod coordinates are analytically projected each step rather than solved by physical closure contact.",
+    "Moving mesh collision is broadly disabled in the selected MJCF.",
+    "The inactive zero-coefficient MJCF equality is a disclosed nonfunctional closure placeholder."
+  ]
+}

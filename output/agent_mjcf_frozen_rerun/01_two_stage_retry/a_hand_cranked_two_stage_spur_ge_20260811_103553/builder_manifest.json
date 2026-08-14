@@ -1,0 +1,3644 @@
+{
+  "manifest_version": 3,
+  "engine": "mujoco-agent",
+  "topology_plan": {
+    "coordinate_map": {
+      "baseplate": null,
+      "front_left_post": null,
+      "rear_left_post": null,
+      "front_right_post": null,
+      "rear_right_post": null,
+      "upper_plate": null,
+      "input_lower_bearing": null,
+      "layshaft_lower_bearing": null,
+      "output_lower_bearing": null,
+      "input_upper_bearing": null,
+      "layshaft_upper_bearing": null,
+      "output_upper_bearing": null,
+      "input_shaft": "input_spin",
+      "stage1_input_pinion": "input_spin",
+      "input_crank": "input_spin",
+      "crank_handle": "input_spin",
+      "layshaft": "layshaft_spin",
+      "stage1_wheel": "layshaft_spin",
+      "stage2_pinion": "layshaft_spin",
+      "output_shaft": "output_spin",
+      "stage2_output_wheel": "output_spin"
+    },
+    "tree_edges": [
+      [
+        "baseplate",
+        ""
+      ],
+      [
+        "front_left_post",
+        "baseplate"
+      ],
+      [
+        "rear_left_post",
+        "baseplate"
+      ],
+      [
+        "front_right_post",
+        "baseplate"
+      ],
+      [
+        "rear_right_post",
+        "baseplate"
+      ],
+      [
+        "upper_plate",
+        "front_left_post"
+      ],
+      [
+        "input_lower_bearing",
+        "baseplate"
+      ],
+      [
+        "layshaft_lower_bearing",
+        "baseplate"
+      ],
+      [
+        "output_lower_bearing",
+        "baseplate"
+      ],
+      [
+        "input_upper_bearing",
+        "upper_plate"
+      ],
+      [
+        "layshaft_upper_bearing",
+        "upper_plate"
+      ],
+      [
+        "output_upper_bearing",
+        "upper_plate"
+      ],
+      [
+        "input_shaft",
+        "input_lower_bearing"
+      ],
+      [
+        "stage1_input_pinion",
+        "input_shaft"
+      ],
+      [
+        "input_crank",
+        "input_shaft"
+      ],
+      [
+        "crank_handle",
+        "input_crank"
+      ],
+      [
+        "layshaft",
+        "layshaft_lower_bearing"
+      ],
+      [
+        "stage1_wheel",
+        "layshaft"
+      ],
+      [
+        "stage2_pinion",
+        "layshaft"
+      ],
+      [
+        "output_shaft",
+        "output_lower_bearing"
+      ],
+      [
+        "stage2_output_wheel",
+        "output_shaft"
+      ]
+    ],
+    "closure_edges": [],
+    "rigid_carried": [
+      [
+        "input_shaft",
+        "stage1_input_pinion"
+      ],
+      [
+        "input_shaft",
+        "input_crank"
+      ],
+      [
+        "input_crank",
+        "crank_handle"
+      ],
+      [
+        "layshaft",
+        "stage1_wheel"
+      ],
+      [
+        "layshaft",
+        "stage2_pinion"
+      ],
+      [
+        "output_shaft",
+        "stage2_output_wheel"
+      ]
+    ],
+    "independent_coaxial": [
+      [
+        "input_shaft",
+        "layshaft"
+      ],
+      [
+        "layshaft",
+        "output_shaft"
+      ]
+    ],
+    "transmissions": [
+      {
+        "driving_joint": "input_spin",
+        "driven_joint": "layshaft_spin",
+        "ratio": -0.3333333333333333
+      },
+      {
+        "driving_joint": "layshaft_spin",
+        "driven_joint": "output_spin",
+        "ratio": -0.3333333333333333
+      }
+    ],
+    "contact_decisions": [
+      {
+        "pair": [
+          "baseplate",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/baseplate/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "upper_plate"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/upper_plate"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/upper_plate"
+        ]
+      },
+      {
+        "pair": [
+          "input_lower_bearing",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "running journal clearance is represented ideally; exact-pair contact would fight the coordinate topology",
+        "source_entity_ids": [
+          "relation/input_lower_journal",
+          "link/input_lower_bearing",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "fit/input_lower_bearing/journal_bore/input_shaft/lower_journal",
+          "pair/input_lower_bearing/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "input_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "running journal clearance is represented ideally; exact-pair contact would fight the coordinate topology",
+        "source_entity_ids": [
+          "relation/input_upper_journal",
+          "link/input_shaft",
+          "link/input_upper_bearing"
+        ],
+        "fact_ids": [
+          "fit/input_upper_bearing/journal_bore/input_shaft/upper_journal",
+          "pair/input_shaft/input_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "stage1_input_pinion"
+        ],
+        "action": "exclude",
+        "reason": "press fit interference is represented ideally; exact-pair contact would fight the coordinate topology",
+        "source_entity_ids": [
+          "relation/input_pinion_press_fit",
+          "link/input_shaft",
+          "link/stage1_input_pinion"
+        ],
+        "fact_ids": [
+          "fit/input_shaft/stage1_seat/stage1_input_pinion/shaft_bore",
+          "pair/input_shaft/stage1_input_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "input_crank",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "press fit interference is represented ideally; exact-pair contact would fight the coordinate topology",
+        "source_entity_ids": [
+          "relation/crank_to_input_shaft",
+          "link/input_crank",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "fit/input_shaft/crank_seat/input_crank/shaft_press_bore",
+          "pair/input_crank/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "stage1_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/stage1_wheel"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/stage1_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "crank_handle",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_handle",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/crank_handle/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "stage2_pinion"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/stage2_pinion"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/stage2_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "layshaft_lower_bearing"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/layshaft_lower_bearing"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/layshaft_lower_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "layshaft_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/layshaft_upper_bearing"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/layshaft_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "layshaft"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/layshaft"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/layshaft"
+        ]
+      },
+      {
+        "pair": [
+          "front_left_post",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/front_left_post",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/front_left_post/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "rear_left_post"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/rear_left_post"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/rear_left_post"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "layshaft"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/layshaft"
+        ],
+        "fact_ids": [
+          "pair/baseplate/layshaft"
+        ]
+      },
+      {
+        "pair": [
+          "layshaft",
+          "upper_plate"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/layshaft",
+          "link/upper_plate"
+        ],
+        "fact_ids": [
+          "pair/layshaft/upper_plate"
+        ]
+      },
+      {
+        "pair": [
+          "layshaft",
+          "layshaft_lower_bearing"
+        ],
+        "action": "exclude",
+        "reason": "running journal clearance is represented ideally; exact-pair contact would fight the coordinate topology",
+        "source_entity_ids": [
+          "relation/layshaft_lower_journal",
+          "link/layshaft",
+          "link/layshaft_lower_bearing"
+        ],
+        "fact_ids": [
+          "fit/layshaft_lower_bearing/journal_bore/layshaft/lower_journal",
+          "pair/layshaft/layshaft_lower_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "layshaft",
+          "layshaft_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "running journal clearance is represented ideally; exact-pair contact would fight the coordinate topology",
+        "source_entity_ids": [
+          "relation/layshaft_upper_journal",
+          "link/layshaft",
+          "link/layshaft_upper_bearing"
+        ],
+        "fact_ids": [
+          "fit/layshaft_upper_bearing/journal_bore/layshaft/upper_journal",
+          "pair/layshaft/layshaft_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "layshaft",
+          "stage1_wheel"
+        ],
+        "action": "exclude",
+        "reason": "press fit interference is represented ideally; exact-pair contact would fight the coordinate topology",
+        "source_entity_ids": [
+          "relation/stage1_wheel_press_fit",
+          "link/layshaft",
+          "link/stage1_wheel"
+        ],
+        "fact_ids": [
+          "fit/layshaft/stage1_seat/stage1_wheel/shaft_bore",
+          "pair/layshaft/stage1_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "layshaft",
+          "stage2_pinion"
+        ],
+        "action": "exclude",
+        "reason": "press fit interference is represented ideally; exact-pair contact would fight the coordinate topology",
+        "source_entity_ids": [
+          "relation/stage2_pinion_press_fit",
+          "link/layshaft",
+          "link/stage2_pinion"
+        ],
+        "fact_ids": [
+          "fit/layshaft/stage2_seat/stage2_pinion/shaft_bore",
+          "pair/layshaft/stage2_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "layshaft",
+          "stage2_output_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/layshaft",
+          "link/stage2_output_wheel"
+        ],
+        "fact_ids": [
+          "pair/layshaft/stage2_output_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "input_crank",
+          "layshaft"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_crank",
+          "link/layshaft"
+        ],
+        "fact_ids": [
+          "pair/input_crank/layshaft"
+        ]
+      },
+      {
+        "pair": [
+          "crank_handle",
+          "layshaft"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_handle",
+          "link/layshaft"
+        ],
+        "fact_ids": [
+          "pair/crank_handle/layshaft"
+        ]
+      },
+      {
+        "pair": [
+          "layshaft",
+          "stage1_input_pinion"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/layshaft",
+          "link/stage1_input_pinion"
+        ],
+        "fact_ids": [
+          "pair/layshaft/stage1_input_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "input_lower_bearing",
+          "layshaft"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_lower_bearing",
+          "link/layshaft"
+        ],
+        "fact_ids": [
+          "pair/input_lower_bearing/layshaft"
+        ]
+      },
+      {
+        "pair": [
+          "layshaft",
+          "output_lower_bearing"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/layshaft",
+          "link/output_lower_bearing"
+        ],
+        "fact_ids": [
+          "pair/layshaft/output_lower_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "input_upper_bearing",
+          "layshaft"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_upper_bearing",
+          "link/layshaft"
+        ],
+        "fact_ids": [
+          "pair/input_upper_bearing/layshaft"
+        ]
+      },
+      {
+        "pair": [
+          "layshaft",
+          "output_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/layshaft",
+          "link/output_upper_bearing"
+        ],
+        "fact_ids": [
+          "pair/layshaft/output_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/output_shaft"
+        ],
+        "fact_ids": [
+          "pair/baseplate/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "output_shaft",
+          "upper_plate"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_shaft",
+          "link/upper_plate"
+        ],
+        "fact_ids": [
+          "pair/output_shaft/upper_plate"
+        ]
+      },
+      {
+        "pair": [
+          "output_lower_bearing",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "running journal clearance is represented ideally; exact-pair contact would fight the coordinate topology",
+        "source_entity_ids": [
+          "relation/output_lower_journal",
+          "link/output_lower_bearing",
+          "link/output_shaft"
+        ],
+        "fact_ids": [
+          "fit/output_lower_bearing/journal_bore/output_shaft/lower_journal",
+          "pair/output_lower_bearing/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "output_shaft",
+          "output_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "running journal clearance is represented ideally; exact-pair contact would fight the coordinate topology",
+        "source_entity_ids": [
+          "relation/output_upper_journal",
+          "link/output_shaft",
+          "link/output_upper_bearing"
+        ],
+        "fact_ids": [
+          "fit/output_upper_bearing/journal_bore/output_shaft/upper_journal",
+          "pair/output_shaft/output_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "output_shaft",
+          "stage2_output_wheel"
+        ],
+        "action": "exclude",
+        "reason": "press fit interference is represented ideally; exact-pair contact would fight the coordinate topology",
+        "source_entity_ids": [
+          "relation/output_wheel_press_fit",
+          "link/output_shaft",
+          "link/stage2_output_wheel"
+        ],
+        "fact_ids": [
+          "fit/output_shaft/stage2_seat/stage2_output_wheel/shaft_bore",
+          "pair/output_shaft/stage2_output_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "output_shaft",
+          "stage1_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_shaft",
+          "link/stage1_wheel"
+        ],
+        "fact_ids": [
+          "pair/output_shaft/stage1_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "output_shaft",
+          "stage2_pinion"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_shaft",
+          "link/stage2_pinion"
+        ],
+        "fact_ids": [
+          "pair/output_shaft/stage2_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "layshaft_lower_bearing",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/layshaft_lower_bearing",
+          "link/output_shaft"
+        ],
+        "fact_ids": [
+          "pair/layshaft_lower_bearing/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "layshaft_upper_bearing",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/layshaft_upper_bearing",
+          "link/output_shaft"
+        ],
+        "fact_ids": [
+          "pair/layshaft_upper_bearing/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "layshaft",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/layshaft",
+          "link/output_shaft"
+        ],
+        "fact_ids": [
+          "pair/layshaft/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "front_right_post",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/front_right_post",
+          "link/output_shaft"
+        ],
+        "fact_ids": [
+          "pair/front_right_post/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "output_shaft",
+          "rear_right_post"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_shaft",
+          "link/rear_right_post"
+        ],
+        "fact_ids": [
+          "pair/output_shaft/rear_right_post"
+        ]
+      },
+      {
+        "pair": [
+          "stage1_input_pinion",
+          "stage1_wheel"
+        ],
+        "action": "exclude",
+        "reason": "ideal external gear mesh is represented ideally; exact-pair contact would fight the coordinate topology",
+        "source_entity_ids": [
+          "relation/stage1_gear_mesh",
+          "link/stage1_input_pinion",
+          "link/stage1_wheel"
+        ],
+        "fact_ids": [
+          "fit/stage1_input_pinion/stage1_mesh/stage1_wheel/stage1_mesh",
+          "pair/stage1_input_pinion/stage1_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "input_lower_bearing",
+          "stage1_input_pinion"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_lower_bearing",
+          "link/stage1_input_pinion"
+        ],
+        "fact_ids": [
+          "pair/input_lower_bearing/stage1_input_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "stage1_input_pinion"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/stage1_input_pinion"
+        ],
+        "fact_ids": [
+          "pair/baseplate/stage1_input_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "stage1_wheel",
+          "stage2_pinion"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/stage1_wheel",
+          "link/stage2_pinion"
+        ],
+        "fact_ids": [
+          "pair/stage1_wheel/stage2_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "stage1_wheel",
+          "stage2_output_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/stage1_wheel",
+          "link/stage2_output_wheel"
+        ],
+        "fact_ids": [
+          "pair/stage1_wheel/stage2_output_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "input_lower_bearing",
+          "stage1_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_lower_bearing",
+          "link/stage1_wheel"
+        ],
+        "fact_ids": [
+          "pair/input_lower_bearing/stage1_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "layshaft_lower_bearing",
+          "stage1_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/layshaft_lower_bearing",
+          "link/stage1_wheel"
+        ],
+        "fact_ids": [
+          "pair/layshaft_lower_bearing/stage1_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "output_lower_bearing",
+          "stage1_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_lower_bearing",
+          "link/stage1_wheel"
+        ],
+        "fact_ids": [
+          "pair/output_lower_bearing/stage1_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "stage1_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/stage1_wheel"
+        ],
+        "fact_ids": [
+          "pair/baseplate/stage1_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "stage1_wheel",
+          "upper_plate"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/stage1_wheel",
+          "link/upper_plate"
+        ],
+        "fact_ids": [
+          "pair/stage1_wheel/upper_plate"
+        ]
+      },
+      {
+        "pair": [
+          "input_upper_bearing",
+          "stage1_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_upper_bearing",
+          "link/stage1_wheel"
+        ],
+        "fact_ids": [
+          "pair/input_upper_bearing/stage1_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "layshaft_upper_bearing",
+          "stage1_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/layshaft_upper_bearing",
+          "link/stage1_wheel"
+        ],
+        "fact_ids": [
+          "pair/layshaft_upper_bearing/stage1_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "output_upper_bearing",
+          "stage1_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_upper_bearing",
+          "link/stage1_wheel"
+        ],
+        "fact_ids": [
+          "pair/output_upper_bearing/stage1_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "front_right_post",
+          "stage1_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/front_right_post",
+          "link/stage1_wheel"
+        ],
+        "fact_ids": [
+          "pair/front_right_post/stage1_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "rear_right_post",
+          "stage1_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/rear_right_post",
+          "link/stage1_wheel"
+        ],
+        "fact_ids": [
+          "pair/rear_right_post/stage1_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "front_left_post",
+          "stage1_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/front_left_post",
+          "link/stage1_wheel"
+        ],
+        "fact_ids": [
+          "pair/front_left_post/stage1_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "rear_left_post",
+          "stage1_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/rear_left_post",
+          "link/stage1_wheel"
+        ],
+        "fact_ids": [
+          "pair/rear_left_post/stage1_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "input_crank",
+          "stage1_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_crank",
+          "link/stage1_wheel"
+        ],
+        "fact_ids": [
+          "pair/input_crank/stage1_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "stage2_output_wheel",
+          "stage2_pinion"
+        ],
+        "action": "exclude",
+        "reason": "ideal external gear mesh is represented ideally; exact-pair contact would fight the coordinate topology",
+        "source_entity_ids": [
+          "relation/stage2_gear_mesh",
+          "link/stage2_output_wheel",
+          "link/stage2_pinion"
+        ],
+        "fact_ids": [
+          "fit/stage2_pinion/stage2_mesh/stage2_output_wheel/stage2_mesh",
+          "pair/stage2_output_wheel/stage2_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "stage2_pinion",
+          "upper_plate"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/stage2_pinion",
+          "link/upper_plate"
+        ],
+        "fact_ids": [
+          "pair/stage2_pinion/upper_plate"
+        ]
+      },
+      {
+        "pair": [
+          "layshaft_upper_bearing",
+          "stage2_pinion"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/layshaft_upper_bearing",
+          "link/stage2_pinion"
+        ],
+        "fact_ids": [
+          "pair/layshaft_upper_bearing/stage2_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "front_right_post",
+          "stage2_output_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/front_right_post",
+          "link/stage2_output_wheel"
+        ],
+        "fact_ids": [
+          "pair/front_right_post/stage2_output_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "rear_right_post",
+          "stage2_output_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/rear_right_post",
+          "link/stage2_output_wheel"
+        ],
+        "fact_ids": [
+          "pair/rear_right_post/stage2_output_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "stage2_output_wheel",
+          "upper_plate"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/stage2_output_wheel",
+          "link/upper_plate"
+        ],
+        "fact_ids": [
+          "pair/stage2_output_wheel/upper_plate"
+        ]
+      },
+      {
+        "pair": [
+          "layshaft_upper_bearing",
+          "stage2_output_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/layshaft_upper_bearing",
+          "link/stage2_output_wheel"
+        ],
+        "fact_ids": [
+          "pair/layshaft_upper_bearing/stage2_output_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "output_upper_bearing",
+          "stage2_output_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_upper_bearing",
+          "link/stage2_output_wheel"
+        ],
+        "fact_ids": [
+          "pair/output_upper_bearing/stage2_output_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "layshaft_lower_bearing",
+          "stage2_output_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/layshaft_lower_bearing",
+          "link/stage2_output_wheel"
+        ],
+        "fact_ids": [
+          "pair/layshaft_lower_bearing/stage2_output_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "output_lower_bearing",
+          "stage2_output_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_lower_bearing",
+          "link/stage2_output_wheel"
+        ],
+        "fact_ids": [
+          "pair/output_lower_bearing/stage2_output_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "baseplate",
+          "stage2_output_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/baseplate",
+          "link/stage2_output_wheel"
+        ],
+        "fact_ids": [
+          "pair/baseplate/stage2_output_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "input_crank",
+          "stage2_output_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_crank",
+          "link/stage2_output_wheel"
+        ],
+        "fact_ids": [
+          "pair/input_crank/stage2_output_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "stage1_input_pinion",
+          "stage2_output_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/stage1_input_pinion",
+          "link/stage2_output_wheel"
+        ],
+        "fact_ids": [
+          "pair/stage1_input_pinion/stage2_output_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "crank_handle",
+          "stage2_output_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_handle",
+          "link/stage2_output_wheel"
+        ],
+        "fact_ids": [
+          "pair/crank_handle/stage2_output_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "input_upper_bearing",
+          "stage2_output_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_upper_bearing",
+          "link/stage2_output_wheel"
+        ],
+        "fact_ids": [
+          "pair/input_upper_bearing/stage2_output_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "stage2_output_wheel"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/stage2_output_wheel"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/stage2_output_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "crank_handle",
+          "input_crank"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_handle",
+          "link/input_crank"
+        ],
+        "fact_ids": [
+          "pair/crank_handle/input_crank"
+        ]
+      },
+      {
+        "pair": [
+          "input_crank",
+          "input_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_crank",
+          "link/input_upper_bearing"
+        ],
+        "fact_ids": [
+          "pair/input_crank/input_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "input_crank",
+          "layshaft_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_crank",
+          "link/layshaft_upper_bearing"
+        ],
+        "fact_ids": [
+          "pair/input_crank/layshaft_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "input_crank",
+          "upper_plate"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_crank",
+          "link/upper_plate"
+        ],
+        "fact_ids": [
+          "pair/input_crank/upper_plate"
+        ]
+      },
+      {
+        "pair": [
+          "crank_handle",
+          "layshaft_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/crank_handle",
+          "link/layshaft_upper_bearing"
+        ],
+        "fact_ids": [
+          "pair/crank_handle/layshaft_upper_bearing"
+        ]
+      }
+    ],
+    "support_ground": [
+      "baseplate"
+    ],
+    "support_strategy": "fixed authored frame rests on the global ground; no support-probe alteration is required"
+  },
+  "decisions": [
+    {
+      "generated_kind": "constraint",
+      "generated_name": "first_reduction",
+      "constraint_type": "joint",
+      "reason": "12 mm pinion drives 36 mm wheel externally",
+      "source_entity_ids": [
+        "relation/stage1_gear_mesh",
+        "transmission/first_reduction"
+      ],
+      "fact_ids": [
+        "fit/stage1_input_pinion/stage1_mesh/stage1_wheel/stage1_mesh"
+      ]
+    },
+    {
+      "generated_kind": "constraint",
+      "generated_name": "second_reduction",
+      "constraint_type": "joint",
+      "reason": "12 mm pinion drives 36 mm wheel externally",
+      "source_entity_ids": [
+        "relation/stage2_gear_mesh",
+        "transmission/second_reduction"
+      ],
+      "fact_ids": [
+        "fit/stage2_pinion/stage2_mesh/stage2_output_wheel/stage2_mesh"
+      ]
+    },
+    {
+      "entity_id": "link/baseplate",
+      "action": "emitted",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "body emitted exactly once in the selected tree",
+      "fact_ids": [
+        "link/baseplate"
+      ]
+    },
+    {
+      "entity_id": "link/front_left_post",
+      "action": "emitted",
+      "generated_nodes": [
+        "front_left_post"
+      ],
+      "reason": "body emitted exactly once in the selected tree",
+      "fact_ids": [
+        "link/front_left_post"
+      ]
+    },
+    {
+      "entity_id": "link/rear_left_post",
+      "action": "emitted",
+      "generated_nodes": [
+        "rear_left_post"
+      ],
+      "reason": "body emitted exactly once in the selected tree",
+      "fact_ids": [
+        "link/rear_left_post"
+      ]
+    },
+    {
+      "entity_id": "link/front_right_post",
+      "action": "emitted",
+      "generated_nodes": [
+        "front_right_post"
+      ],
+      "reason": "body emitted exactly once in the selected tree",
+      "fact_ids": [
+        "link/front_right_post"
+      ]
+    },
+    {
+      "entity_id": "link/rear_right_post",
+      "action": "emitted",
+      "generated_nodes": [
+        "rear_right_post"
+      ],
+      "reason": "body emitted exactly once in the selected tree",
+      "fact_ids": [
+        "link/rear_right_post"
+      ]
+    },
+    {
+      "entity_id": "link/upper_plate",
+      "action": "emitted",
+      "generated_nodes": [
+        "upper_plate"
+      ],
+      "reason": "body emitted exactly once in the selected tree",
+      "fact_ids": [
+        "link/upper_plate"
+      ]
+    },
+    {
+      "entity_id": "link/input_lower_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_lower_bearing"
+      ],
+      "reason": "body emitted exactly once in the selected tree",
+      "fact_ids": [
+        "link/input_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/layshaft_lower_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "layshaft_lower_bearing"
+      ],
+      "reason": "body emitted exactly once in the selected tree",
+      "fact_ids": [
+        "link/layshaft_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/output_lower_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_lower_bearing"
+      ],
+      "reason": "body emitted exactly once in the selected tree",
+      "fact_ids": [
+        "link/output_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/input_upper_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_upper_bearing"
+      ],
+      "reason": "body emitted exactly once in the selected tree",
+      "fact_ids": [
+        "link/input_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/layshaft_upper_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "layshaft_upper_bearing"
+      ],
+      "reason": "body emitted exactly once in the selected tree",
+      "fact_ids": [
+        "link/layshaft_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/output_upper_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_upper_bearing"
+      ],
+      "reason": "body emitted exactly once in the selected tree",
+      "fact_ids": [
+        "link/output_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/input_shaft",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_shaft"
+      ],
+      "reason": "body emitted exactly once in the selected tree",
+      "fact_ids": [
+        "link/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "link/layshaft",
+      "action": "emitted",
+      "generated_nodes": [
+        "layshaft"
+      ],
+      "reason": "body emitted exactly once in the selected tree",
+      "fact_ids": [
+        "link/layshaft"
+      ]
+    },
+    {
+      "entity_id": "link/output_shaft",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_shaft"
+      ],
+      "reason": "body emitted exactly once in the selected tree",
+      "fact_ids": [
+        "link/output_shaft"
+      ]
+    },
+    {
+      "entity_id": "link/stage1_input_pinion",
+      "action": "emitted",
+      "generated_nodes": [
+        "stage1_input_pinion"
+      ],
+      "reason": "body emitted exactly once in the selected tree",
+      "fact_ids": [
+        "link/stage1_input_pinion"
+      ]
+    },
+    {
+      "entity_id": "link/stage1_wheel",
+      "action": "emitted",
+      "generated_nodes": [
+        "stage1_wheel"
+      ],
+      "reason": "body emitted exactly once in the selected tree",
+      "fact_ids": [
+        "link/stage1_wheel"
+      ]
+    },
+    {
+      "entity_id": "link/stage2_pinion",
+      "action": "emitted",
+      "generated_nodes": [
+        "stage2_pinion"
+      ],
+      "reason": "body emitted exactly once in the selected tree",
+      "fact_ids": [
+        "link/stage2_pinion"
+      ]
+    },
+    {
+      "entity_id": "link/stage2_output_wheel",
+      "action": "emitted",
+      "generated_nodes": [
+        "stage2_output_wheel"
+      ],
+      "reason": "body emitted exactly once in the selected tree",
+      "fact_ids": [
+        "link/stage2_output_wheel"
+      ]
+    },
+    {
+      "entity_id": "link/input_crank",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_crank"
+      ],
+      "reason": "body emitted exactly once in the selected tree",
+      "fact_ids": [
+        "link/input_crank"
+      ]
+    },
+    {
+      "entity_id": "link/crank_handle",
+      "action": "emitted",
+      "generated_nodes": [
+        "crank_handle"
+      ],
+      "reason": "body emitted exactly once in the selected tree",
+      "fact_ids": [
+        "link/crank_handle"
+      ]
+    },
+    {
+      "entity_id": "pose/place_baseplate",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "pose/place_baseplate"
+      ]
+    },
+    {
+      "entity_id": "pose/place_front_left_post",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "pose/place_front_left_post"
+      ]
+    },
+    {
+      "entity_id": "pose/place_rear_left_post",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "pose/place_rear_left_post"
+      ]
+    },
+    {
+      "entity_id": "pose/place_front_right_post",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "pose/place_front_right_post"
+      ]
+    },
+    {
+      "entity_id": "pose/place_rear_right_post",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "pose/place_rear_right_post"
+      ]
+    },
+    {
+      "entity_id": "pose/place_upper_plate",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "pose/place_upper_plate"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_lower_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "pose/place_input_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_layshaft_lower_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "pose/place_layshaft_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_lower_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "pose/place_output_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_upper_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "pose/place_input_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_layshaft_upper_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "pose/place_layshaft_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_upper_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "pose/place_output_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "pose/place_input_shaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_layshaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "pose/place_layshaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "pose/place_output_shaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_stage1_input_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "pose/place_stage1_input_pinion"
+      ]
+    },
+    {
+      "entity_id": "pose/place_stage1_wheel",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "pose/place_stage1_wheel"
+      ]
+    },
+    {
+      "entity_id": "pose/place_stage2_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "pose/place_stage2_pinion"
+      ]
+    },
+    {
+      "entity_id": "pose/place_stage2_output_wheel",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "pose/place_stage2_output_wheel"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_crank",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "pose/place_input_crank"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crank_handle",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "pose/place_crank_handle"
+      ]
+    },
+    {
+      "entity_id": "port/input_crank/shaft_press_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/input_crank/shaft_press_bore"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/input_shaft/lower_journal"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/upper_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/input_shaft/upper_journal"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/stage1_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/input_shaft/stage1_seat"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/crank_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/input_shaft/crank_seat"
+      ]
+    },
+    {
+      "entity_id": "port/layshaft/lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/layshaft/lower_journal"
+      ]
+    },
+    {
+      "entity_id": "port/layshaft/upper_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/layshaft/upper_journal"
+      ]
+    },
+    {
+      "entity_id": "port/layshaft/stage1_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/layshaft/stage1_seat"
+      ]
+    },
+    {
+      "entity_id": "port/layshaft/stage2_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/layshaft/stage2_seat"
+      ]
+    },
+    {
+      "entity_id": "port/output_shaft/lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/output_shaft/lower_journal"
+      ]
+    },
+    {
+      "entity_id": "port/output_shaft/upper_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/output_shaft/upper_journal"
+      ]
+    },
+    {
+      "entity_id": "port/output_shaft/stage2_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/output_shaft/stage2_seat"
+      ]
+    },
+    {
+      "entity_id": "port/stage1_input_pinion/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/stage1_input_pinion/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/stage1_input_pinion/stage1_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/stage1_input_pinion/stage1_mesh"
+      ]
+    },
+    {
+      "entity_id": "port/stage1_wheel/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/stage1_wheel/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/stage1_wheel/stage1_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/stage1_wheel/stage1_mesh"
+      ]
+    },
+    {
+      "entity_id": "port/stage2_pinion/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/stage2_pinion/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/stage2_pinion/stage2_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/stage2_pinion/stage2_mesh"
+      ]
+    },
+    {
+      "entity_id": "port/stage2_output_wheel/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/stage2_output_wheel/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/stage2_output_wheel/stage2_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/stage2_output_wheel/stage2_mesh"
+      ]
+    },
+    {
+      "entity_id": "port/input_lower_bearing/journal_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/input_lower_bearing/journal_bore"
+      ]
+    },
+    {
+      "entity_id": "port/input_upper_bearing/journal_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/input_upper_bearing/journal_bore"
+      ]
+    },
+    {
+      "entity_id": "port/layshaft_lower_bearing/journal_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/layshaft_lower_bearing/journal_bore"
+      ]
+    },
+    {
+      "entity_id": "port/layshaft_upper_bearing/journal_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/layshaft_upper_bearing/journal_bore"
+      ]
+    },
+    {
+      "entity_id": "port/output_lower_bearing/journal_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/output_lower_bearing/journal_bore"
+      ]
+    },
+    {
+      "entity_id": "port/output_upper_bearing/journal_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "port/output_upper_bearing/journal_bore"
+      ]
+    },
+    {
+      "entity_id": "relation/crank_to_input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "relation/crank_to_input_shaft"
+      ]
+    },
+    {
+      "entity_id": "relation/input_pinion_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "relation/input_pinion_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/stage1_wheel_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "relation/stage1_wheel_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/stage2_pinion_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "relation/stage2_pinion_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/output_wheel_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "relation/output_wheel_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/stage1_gear_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "relation/stage1_gear_mesh"
+      ]
+    },
+    {
+      "entity_id": "relation/stage2_gear_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "relation/stage2_gear_mesh"
+      ]
+    },
+    {
+      "entity_id": "relation/input_lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "relation/input_lower_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/input_upper_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "relation/input_upper_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/layshaft_lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "relation/layshaft_lower_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/layshaft_upper_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "relation/layshaft_upper_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/output_lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "relation/output_lower_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/output_upper_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "relation/output_upper_journal"
+      ]
+    },
+    {
+      "entity_id": "transmission/crank_input_coupling",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "transmission/crank_input_coupling"
+      ]
+    },
+    {
+      "entity_id": "transmission/input_shaft_pinion_coupling",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "transmission/input_shaft_pinion_coupling"
+      ]
+    },
+    {
+      "entity_id": "transmission/first_reduction",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "transmission/first_reduction"
+      ]
+    },
+    {
+      "entity_id": "transmission/layshaft_compound_coupling",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "transmission/layshaft_compound_coupling"
+      ]
+    },
+    {
+      "entity_id": "transmission/second_reduction",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "transmission/second_reduction"
+      ]
+    },
+    {
+      "entity_id": "transmission/output_wheel_shaft_coupling",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "transmission/output_wheel_shaft_coupling"
+      ]
+    },
+    {
+      "entity_id": "role/driver/input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "role/driver/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/output/output_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "role/output/output_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/watch/input_crank",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "role/watch/input_crank"
+      ]
+    },
+    {
+      "entity_id": "role/watch/input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "role/watch/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/watch/layshaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "role/watch/layshaft"
+      ]
+    },
+    {
+      "entity_id": "role/watch/output_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "role/watch/output_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/watch/stage1_input_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "role/watch/stage1_input_pinion"
+      ]
+    },
+    {
+      "entity_id": "role/watch/stage1_wheel",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "role/watch/stage1_wheel"
+      ]
+    },
+    {
+      "entity_id": "role/watch/stage2_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "role/watch/stage2_pinion"
+      ]
+    },
+    {
+      "entity_id": "role/watch/stage2_output_wheel",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented by the emitted topology rooted at baseplate, including placement, coordinates, equalities and pair decisions",
+      "fact_ids": [
+        "role/watch/stage2_output_wheel"
+      ]
+    }
+  ],
+  "excludes": [
+    {
+      "pair": [
+        "baseplate",
+        "input_shaft"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/baseplate",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "pair/baseplate/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "upper_plate"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/upper_plate"
+      ],
+      "fact_ids": [
+        "pair/input_shaft/upper_plate"
+      ]
+    },
+    {
+      "pair": [
+        "input_lower_bearing",
+        "input_shaft"
+      ],
+      "reason": "running journal clearance is represented ideally; exact-pair contact would fight the coordinate topology",
+      "source_entity_ids": [
+        "relation/input_lower_journal",
+        "link/input_lower_bearing",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "fit/input_lower_bearing/journal_bore/input_shaft/lower_journal",
+        "pair/input_lower_bearing/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "input_upper_bearing"
+      ],
+      "reason": "running journal clearance is represented ideally; exact-pair contact would fight the coordinate topology",
+      "source_entity_ids": [
+        "relation/input_upper_journal",
+        "link/input_shaft",
+        "link/input_upper_bearing"
+      ],
+      "fact_ids": [
+        "fit/input_upper_bearing/journal_bore/input_shaft/upper_journal",
+        "pair/input_shaft/input_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "stage1_input_pinion"
+      ],
+      "reason": "press fit interference is represented ideally; exact-pair contact would fight the coordinate topology",
+      "source_entity_ids": [
+        "relation/input_pinion_press_fit",
+        "link/input_shaft",
+        "link/stage1_input_pinion"
+      ],
+      "fact_ids": [
+        "fit/input_shaft/stage1_seat/stage1_input_pinion/shaft_bore",
+        "pair/input_shaft/stage1_input_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "input_crank",
+        "input_shaft"
+      ],
+      "reason": "press fit interference is represented ideally; exact-pair contact would fight the coordinate topology",
+      "source_entity_ids": [
+        "relation/crank_to_input_shaft",
+        "link/input_crank",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "fit/input_shaft/crank_seat/input_crank/shaft_press_bore",
+        "pair/input_crank/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "stage1_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/stage1_wheel"
+      ],
+      "fact_ids": [
+        "pair/input_shaft/stage1_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "crank_handle",
+        "input_shaft"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_handle",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "pair/crank_handle/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "stage2_pinion"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/stage2_pinion"
+      ],
+      "fact_ids": [
+        "pair/input_shaft/stage2_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "layshaft_lower_bearing"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/layshaft_lower_bearing"
+      ],
+      "fact_ids": [
+        "pair/input_shaft/layshaft_lower_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "layshaft_upper_bearing"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/layshaft_upper_bearing"
+      ],
+      "fact_ids": [
+        "pair/input_shaft/layshaft_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "layshaft"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/layshaft"
+      ],
+      "fact_ids": [
+        "pair/input_shaft/layshaft"
+      ]
+    },
+    {
+      "pair": [
+        "front_left_post",
+        "input_shaft"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/front_left_post",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "pair/front_left_post/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "rear_left_post"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/rear_left_post"
+      ],
+      "fact_ids": [
+        "pair/input_shaft/rear_left_post"
+      ]
+    },
+    {
+      "pair": [
+        "baseplate",
+        "layshaft"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/baseplate",
+        "link/layshaft"
+      ],
+      "fact_ids": [
+        "pair/baseplate/layshaft"
+      ]
+    },
+    {
+      "pair": [
+        "layshaft",
+        "upper_plate"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/layshaft",
+        "link/upper_plate"
+      ],
+      "fact_ids": [
+        "pair/layshaft/upper_plate"
+      ]
+    },
+    {
+      "pair": [
+        "layshaft",
+        "layshaft_lower_bearing"
+      ],
+      "reason": "running journal clearance is represented ideally; exact-pair contact would fight the coordinate topology",
+      "source_entity_ids": [
+        "relation/layshaft_lower_journal",
+        "link/layshaft",
+        "link/layshaft_lower_bearing"
+      ],
+      "fact_ids": [
+        "fit/layshaft_lower_bearing/journal_bore/layshaft/lower_journal",
+        "pair/layshaft/layshaft_lower_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "layshaft",
+        "layshaft_upper_bearing"
+      ],
+      "reason": "running journal clearance is represented ideally; exact-pair contact would fight the coordinate topology",
+      "source_entity_ids": [
+        "relation/layshaft_upper_journal",
+        "link/layshaft",
+        "link/layshaft_upper_bearing"
+      ],
+      "fact_ids": [
+        "fit/layshaft_upper_bearing/journal_bore/layshaft/upper_journal",
+        "pair/layshaft/layshaft_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "layshaft",
+        "stage1_wheel"
+      ],
+      "reason": "press fit interference is represented ideally; exact-pair contact would fight the coordinate topology",
+      "source_entity_ids": [
+        "relation/stage1_wheel_press_fit",
+        "link/layshaft",
+        "link/stage1_wheel"
+      ],
+      "fact_ids": [
+        "fit/layshaft/stage1_seat/stage1_wheel/shaft_bore",
+        "pair/layshaft/stage1_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "layshaft",
+        "stage2_pinion"
+      ],
+      "reason": "press fit interference is represented ideally; exact-pair contact would fight the coordinate topology",
+      "source_entity_ids": [
+        "relation/stage2_pinion_press_fit",
+        "link/layshaft",
+        "link/stage2_pinion"
+      ],
+      "fact_ids": [
+        "fit/layshaft/stage2_seat/stage2_pinion/shaft_bore",
+        "pair/layshaft/stage2_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "layshaft",
+        "stage2_output_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/layshaft",
+        "link/stage2_output_wheel"
+      ],
+      "fact_ids": [
+        "pair/layshaft/stage2_output_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "input_crank",
+        "layshaft"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_crank",
+        "link/layshaft"
+      ],
+      "fact_ids": [
+        "pair/input_crank/layshaft"
+      ]
+    },
+    {
+      "pair": [
+        "crank_handle",
+        "layshaft"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_handle",
+        "link/layshaft"
+      ],
+      "fact_ids": [
+        "pair/crank_handle/layshaft"
+      ]
+    },
+    {
+      "pair": [
+        "layshaft",
+        "stage1_input_pinion"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/layshaft",
+        "link/stage1_input_pinion"
+      ],
+      "fact_ids": [
+        "pair/layshaft/stage1_input_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "input_lower_bearing",
+        "layshaft"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_lower_bearing",
+        "link/layshaft"
+      ],
+      "fact_ids": [
+        "pair/input_lower_bearing/layshaft"
+      ]
+    },
+    {
+      "pair": [
+        "layshaft",
+        "output_lower_bearing"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/layshaft",
+        "link/output_lower_bearing"
+      ],
+      "fact_ids": [
+        "pair/layshaft/output_lower_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "input_upper_bearing",
+        "layshaft"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_upper_bearing",
+        "link/layshaft"
+      ],
+      "fact_ids": [
+        "pair/input_upper_bearing/layshaft"
+      ]
+    },
+    {
+      "pair": [
+        "layshaft",
+        "output_upper_bearing"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/layshaft",
+        "link/output_upper_bearing"
+      ],
+      "fact_ids": [
+        "pair/layshaft/output_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "baseplate",
+        "output_shaft"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/baseplate",
+        "link/output_shaft"
+      ],
+      "fact_ids": [
+        "pair/baseplate/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "output_shaft",
+        "upper_plate"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_shaft",
+        "link/upper_plate"
+      ],
+      "fact_ids": [
+        "pair/output_shaft/upper_plate"
+      ]
+    },
+    {
+      "pair": [
+        "output_lower_bearing",
+        "output_shaft"
+      ],
+      "reason": "running journal clearance is represented ideally; exact-pair contact would fight the coordinate topology",
+      "source_entity_ids": [
+        "relation/output_lower_journal",
+        "link/output_lower_bearing",
+        "link/output_shaft"
+      ],
+      "fact_ids": [
+        "fit/output_lower_bearing/journal_bore/output_shaft/lower_journal",
+        "pair/output_lower_bearing/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "output_shaft",
+        "output_upper_bearing"
+      ],
+      "reason": "running journal clearance is represented ideally; exact-pair contact would fight the coordinate topology",
+      "source_entity_ids": [
+        "relation/output_upper_journal",
+        "link/output_shaft",
+        "link/output_upper_bearing"
+      ],
+      "fact_ids": [
+        "fit/output_upper_bearing/journal_bore/output_shaft/upper_journal",
+        "pair/output_shaft/output_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "output_shaft",
+        "stage2_output_wheel"
+      ],
+      "reason": "press fit interference is represented ideally; exact-pair contact would fight the coordinate topology",
+      "source_entity_ids": [
+        "relation/output_wheel_press_fit",
+        "link/output_shaft",
+        "link/stage2_output_wheel"
+      ],
+      "fact_ids": [
+        "fit/output_shaft/stage2_seat/stage2_output_wheel/shaft_bore",
+        "pair/output_shaft/stage2_output_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "output_shaft",
+        "stage1_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_shaft",
+        "link/stage1_wheel"
+      ],
+      "fact_ids": [
+        "pair/output_shaft/stage1_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "output_shaft",
+        "stage2_pinion"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_shaft",
+        "link/stage2_pinion"
+      ],
+      "fact_ids": [
+        "pair/output_shaft/stage2_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "layshaft_lower_bearing",
+        "output_shaft"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/layshaft_lower_bearing",
+        "link/output_shaft"
+      ],
+      "fact_ids": [
+        "pair/layshaft_lower_bearing/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "layshaft_upper_bearing",
+        "output_shaft"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/layshaft_upper_bearing",
+        "link/output_shaft"
+      ],
+      "fact_ids": [
+        "pair/layshaft_upper_bearing/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "layshaft",
+        "output_shaft"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/layshaft",
+        "link/output_shaft"
+      ],
+      "fact_ids": [
+        "pair/layshaft/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "front_right_post",
+        "output_shaft"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/front_right_post",
+        "link/output_shaft"
+      ],
+      "fact_ids": [
+        "pair/front_right_post/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "output_shaft",
+        "rear_right_post"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_shaft",
+        "link/rear_right_post"
+      ],
+      "fact_ids": [
+        "pair/output_shaft/rear_right_post"
+      ]
+    },
+    {
+      "pair": [
+        "stage1_input_pinion",
+        "stage1_wheel"
+      ],
+      "reason": "ideal external gear mesh is represented ideally; exact-pair contact would fight the coordinate topology",
+      "source_entity_ids": [
+        "relation/stage1_gear_mesh",
+        "link/stage1_input_pinion",
+        "link/stage1_wheel"
+      ],
+      "fact_ids": [
+        "fit/stage1_input_pinion/stage1_mesh/stage1_wheel/stage1_mesh",
+        "pair/stage1_input_pinion/stage1_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "input_lower_bearing",
+        "stage1_input_pinion"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_lower_bearing",
+        "link/stage1_input_pinion"
+      ],
+      "fact_ids": [
+        "pair/input_lower_bearing/stage1_input_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "baseplate",
+        "stage1_input_pinion"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/baseplate",
+        "link/stage1_input_pinion"
+      ],
+      "fact_ids": [
+        "pair/baseplate/stage1_input_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "stage1_wheel",
+        "stage2_pinion"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/stage1_wheel",
+        "link/stage2_pinion"
+      ],
+      "fact_ids": [
+        "pair/stage1_wheel/stage2_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "stage1_wheel",
+        "stage2_output_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/stage1_wheel",
+        "link/stage2_output_wheel"
+      ],
+      "fact_ids": [
+        "pair/stage1_wheel/stage2_output_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "input_lower_bearing",
+        "stage1_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_lower_bearing",
+        "link/stage1_wheel"
+      ],
+      "fact_ids": [
+        "pair/input_lower_bearing/stage1_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "layshaft_lower_bearing",
+        "stage1_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/layshaft_lower_bearing",
+        "link/stage1_wheel"
+      ],
+      "fact_ids": [
+        "pair/layshaft_lower_bearing/stage1_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "output_lower_bearing",
+        "stage1_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_lower_bearing",
+        "link/stage1_wheel"
+      ],
+      "fact_ids": [
+        "pair/output_lower_bearing/stage1_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "baseplate",
+        "stage1_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/baseplate",
+        "link/stage1_wheel"
+      ],
+      "fact_ids": [
+        "pair/baseplate/stage1_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "stage1_wheel",
+        "upper_plate"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/stage1_wheel",
+        "link/upper_plate"
+      ],
+      "fact_ids": [
+        "pair/stage1_wheel/upper_plate"
+      ]
+    },
+    {
+      "pair": [
+        "input_upper_bearing",
+        "stage1_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_upper_bearing",
+        "link/stage1_wheel"
+      ],
+      "fact_ids": [
+        "pair/input_upper_bearing/stage1_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "layshaft_upper_bearing",
+        "stage1_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/layshaft_upper_bearing",
+        "link/stage1_wheel"
+      ],
+      "fact_ids": [
+        "pair/layshaft_upper_bearing/stage1_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "output_upper_bearing",
+        "stage1_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_upper_bearing",
+        "link/stage1_wheel"
+      ],
+      "fact_ids": [
+        "pair/output_upper_bearing/stage1_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "front_right_post",
+        "stage1_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/front_right_post",
+        "link/stage1_wheel"
+      ],
+      "fact_ids": [
+        "pair/front_right_post/stage1_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "rear_right_post",
+        "stage1_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/rear_right_post",
+        "link/stage1_wheel"
+      ],
+      "fact_ids": [
+        "pair/rear_right_post/stage1_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "front_left_post",
+        "stage1_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/front_left_post",
+        "link/stage1_wheel"
+      ],
+      "fact_ids": [
+        "pair/front_left_post/stage1_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "rear_left_post",
+        "stage1_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/rear_left_post",
+        "link/stage1_wheel"
+      ],
+      "fact_ids": [
+        "pair/rear_left_post/stage1_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "input_crank",
+        "stage1_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_crank",
+        "link/stage1_wheel"
+      ],
+      "fact_ids": [
+        "pair/input_crank/stage1_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "stage2_output_wheel",
+        "stage2_pinion"
+      ],
+      "reason": "ideal external gear mesh is represented ideally; exact-pair contact would fight the coordinate topology",
+      "source_entity_ids": [
+        "relation/stage2_gear_mesh",
+        "link/stage2_output_wheel",
+        "link/stage2_pinion"
+      ],
+      "fact_ids": [
+        "fit/stage2_pinion/stage2_mesh/stage2_output_wheel/stage2_mesh",
+        "pair/stage2_output_wheel/stage2_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "stage2_pinion",
+        "upper_plate"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/stage2_pinion",
+        "link/upper_plate"
+      ],
+      "fact_ids": [
+        "pair/stage2_pinion/upper_plate"
+      ]
+    },
+    {
+      "pair": [
+        "layshaft_upper_bearing",
+        "stage2_pinion"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/layshaft_upper_bearing",
+        "link/stage2_pinion"
+      ],
+      "fact_ids": [
+        "pair/layshaft_upper_bearing/stage2_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "front_right_post",
+        "stage2_output_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/front_right_post",
+        "link/stage2_output_wheel"
+      ],
+      "fact_ids": [
+        "pair/front_right_post/stage2_output_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "rear_right_post",
+        "stage2_output_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/rear_right_post",
+        "link/stage2_output_wheel"
+      ],
+      "fact_ids": [
+        "pair/rear_right_post/stage2_output_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "stage2_output_wheel",
+        "upper_plate"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/stage2_output_wheel",
+        "link/upper_plate"
+      ],
+      "fact_ids": [
+        "pair/stage2_output_wheel/upper_plate"
+      ]
+    },
+    {
+      "pair": [
+        "layshaft_upper_bearing",
+        "stage2_output_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/layshaft_upper_bearing",
+        "link/stage2_output_wheel"
+      ],
+      "fact_ids": [
+        "pair/layshaft_upper_bearing/stage2_output_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "output_upper_bearing",
+        "stage2_output_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_upper_bearing",
+        "link/stage2_output_wheel"
+      ],
+      "fact_ids": [
+        "pair/output_upper_bearing/stage2_output_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "layshaft_lower_bearing",
+        "stage2_output_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/layshaft_lower_bearing",
+        "link/stage2_output_wheel"
+      ],
+      "fact_ids": [
+        "pair/layshaft_lower_bearing/stage2_output_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "output_lower_bearing",
+        "stage2_output_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_lower_bearing",
+        "link/stage2_output_wheel"
+      ],
+      "fact_ids": [
+        "pair/output_lower_bearing/stage2_output_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "baseplate",
+        "stage2_output_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/baseplate",
+        "link/stage2_output_wheel"
+      ],
+      "fact_ids": [
+        "pair/baseplate/stage2_output_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "input_crank",
+        "stage2_output_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_crank",
+        "link/stage2_output_wheel"
+      ],
+      "fact_ids": [
+        "pair/input_crank/stage2_output_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "stage1_input_pinion",
+        "stage2_output_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/stage1_input_pinion",
+        "link/stage2_output_wheel"
+      ],
+      "fact_ids": [
+        "pair/stage1_input_pinion/stage2_output_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "crank_handle",
+        "stage2_output_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_handle",
+        "link/stage2_output_wheel"
+      ],
+      "fact_ids": [
+        "pair/crank_handle/stage2_output_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "input_upper_bearing",
+        "stage2_output_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_upper_bearing",
+        "link/stage2_output_wheel"
+      ],
+      "fact_ids": [
+        "pair/input_upper_bearing/stage2_output_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "stage2_output_wheel"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/stage2_output_wheel"
+      ],
+      "fact_ids": [
+        "pair/input_shaft/stage2_output_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "crank_handle",
+        "input_crank"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_handle",
+        "link/input_crank"
+      ],
+      "fact_ids": [
+        "pair/crank_handle/input_crank"
+      ]
+    },
+    {
+      "pair": [
+        "input_crank",
+        "input_upper_bearing"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_crank",
+        "link/input_upper_bearing"
+      ],
+      "fact_ids": [
+        "pair/input_crank/input_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "input_crank",
+        "layshaft_upper_bearing"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_crank",
+        "link/layshaft_upper_bearing"
+      ],
+      "fact_ids": [
+        "pair/input_crank/layshaft_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "input_crank",
+        "upper_plate"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_crank",
+        "link/upper_plate"
+      ],
+      "fact_ids": [
+        "pair/input_crank/upper_plate"
+      ]
+    },
+    {
+      "pair": [
+        "crank_handle",
+        "layshaft_upper_bearing"
+      ],
+      "reason": "measured real meshes have no positive solid overlap; exclude this exact collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/crank_handle",
+        "link/layshaft_upper_bearing"
+      ],
+      "fact_ids": [
+        "pair/crank_handle/layshaft_upper_bearing"
+      ]
+    }
+  ],
+  "ground_excludes": [],
+  "support_patches": [],
+  "bodies": [
+    "baseplate",
+    "crank_handle",
+    "front_left_post",
+    "front_right_post",
+    "input_crank",
+    "input_lower_bearing",
+    "input_shaft",
+    "input_upper_bearing",
+    "layshaft",
+    "layshaft_lower_bearing",
+    "layshaft_upper_bearing",
+    "output_lower_bearing",
+    "output_shaft",
+    "output_upper_bearing",
+    "rear_left_post",
+    "rear_right_post",
+    "stage1_input_pinion",
+    "stage1_wheel",
+    "stage2_output_wheel",
+    "stage2_pinion",
+    "upper_plate"
+  ],
+  "joints": [
+    "input_spin",
+    "layshaft_spin",
+    "output_spin"
+  ],
+  "constraints": [
+    "first_reduction",
+    "second_reduction"
+  ]
+}

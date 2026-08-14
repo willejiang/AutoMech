@@ -1,0 +1,113 @@
+{
+  "task": "a hand-driven fixed-ring planetary gear reducer with one sun gear input, exactly four equally spaced planet gears mounted on a rotating carrier, a visible carrier output, supported coaxial shafts, and explicit planetary transmission semantics",
+  "spec": {
+    "duration_s": 4.0,
+    "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\agent_mjcf_benchmarks\\four_planet\\a_hand_driven_fixed_ring_planeta_20260810_202353",
+    "drive": {
+      "torque": 0.5,
+      "mode": "velocity",
+      "drive_method": "direct_qpos",
+      "target_velocity": 4.0,
+      "output_link": "carrier"
+    },
+    "design": {
+      "input_joint": "input_shaft",
+      "output_joint": "place_output_shaft",
+      "watch_joints": [
+        "place_output_shaft",
+        "place_carrier",
+        "place_sun_gear",
+        "place_planet_1",
+        "place_planet_2",
+        "place_planet_3",
+        "place_planet_4"
+      ],
+      "propagation_path": [
+        "place_input_shaft",
+        "place_carrier",
+        "place_sun_gear",
+        "place_planet_1",
+        "place_planet_2",
+        "place_planet_3",
+        "place_planet_4",
+        "place_output_shaft"
+      ],
+      "pass_criteria": null,
+      "environment": "Bench-mounted and driven with the baseplate fixed. The single hand-crank input is rotated steadily while a three-quarter top-down view exposes the sun, four planets, carrier, fixed ring, and visible output dial.",
+      "camera": {
+        "target_link": "carrier",
+        "azimuth": 35.0,
+        "elevation": -30.0,
+        "distance_scale": 2.0
+      }
+    }
+  },
+  "metrics": {
+    "verdict": "PASS",
+    "test_kind": "driven_mechanism",
+    "survive_s": 4.0,
+    "input_joint": "input_shaft_hinge",
+    "input_part": "input_shaft",
+    "input_travel": 16.0,
+    "input_unit": "rad",
+    "moved_count": 7,
+    "watched_count": 7,
+    "output_reached": true,
+    "exploded": false,
+    "output_travel": 4.0,
+    "output_unit": "rad",
+    "ratio_in_out": 4.0,
+    "displaced_parts": [
+      {
+        "part": "hand_handle",
+        "disp_mm": 44.0
+      },
+      {
+        "part": "planet_pin_1",
+        "disp_mm": 32.0
+      },
+      {
+        "part": "planet_1",
+        "disp_mm": 32.0
+      },
+      {
+        "part": "planet_pin_2",
+        "disp_mm": 32.0
+      },
+      {
+        "part": "planet_2",
+        "disp_mm": 32.0
+      },
+      {
+        "part": "planet_pin_3",
+        "disp_mm": 32.0
+      },
+      {
+        "part": "planet_3",
+        "disp_mm": 32.0
+      },
+      {
+        "part": "planet_pin_4",
+        "disp_mm": 32.0
+      }
+    ],
+    "end_z": 0.0,
+    "max_tilt_deg": 0.0,
+    "max_drift": 0.044
+  },
+  "stability": {
+    "verdict": "PASS",
+    "exploded": false,
+    "max_disp_m": 0.0,
+    "end_z": 0.0,
+    "displaced_parts": []
+  },
+  "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\agent_mjcf_benchmarks\\four_planet\\a_hand_driven_fixed_ring_planeta_20260810_202353\\physics\\mujoco_2\\frames",
+  "n_frames": 40,
+  "log": [
+    "initial contacts: 0 interpenetrating pair(s)",
+    "stability(settle): PASS max_disp=0.000m exploded=False",
+    "camera: az=35.0 el=-30.0 dist=0.188 (designer)",
+    "drive: method=direct_qpos mode=velocity rate=4"
+  ]
+}

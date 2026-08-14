@@ -1,0 +1,116 @@
+<mujoco model="open_three_planet_4to1">
+  <compiler angle="radian" meshdir="meshes" autolimits="true" fusestatic="false" />
+  <option timestep="0.005" gravity="0 0 0" integrator="implicitfast" iterations="100" />
+  <default>
+    <default class="visual"><geom contype="0" conaffinity="0" density="0" rgba="0.72 0.72 0.76 1" /></default>
+    <default class="collision"><geom contype="1" conaffinity="1" density="0" rgba="0 0 0 0" friction="0.6 0.02 0.002" /></default>
+  </default>
+  <asset>
+    <mesh name="base_mesh" file="base.stl" scale="0.001 0.001 0.001" />
+    <mesh name="carrier_mesh" file="carrier.stl" scale="0.001 0.001 0.001" />
+    <mesh name="hand_crank_mesh" file="hand_crank.stl" scale="0.001 0.001 0.001" />
+    <mesh name="lower_bearing_mesh" file="lower_bearing.stl" scale="0.001 0.001 0.001" />
+    <mesh name="planet_gear_1_mesh" file="planet_gear_1.stl" scale="0.001 0.001 0.001" />
+    <mesh name="planet_gear_2_mesh" file="planet_gear_2.stl" scale="0.001 0.001 0.001" />
+    <mesh name="planet_gear_3_mesh" file="planet_gear_3.stl" scale="0.001 0.001 0.001" />
+    <mesh name="planet_pin_1_mesh" file="planet_pin_1.stl" scale="0.001 0.001 0.001" />
+    <mesh name="planet_pin_2_mesh" file="planet_pin_2.stl" scale="0.001 0.001 0.001" />
+    <mesh name="planet_pin_3_mesh" file="planet_pin_3.stl" scale="0.001 0.001 0.001" />
+    <mesh name="ring_gear_mesh" file="ring_gear.stl" scale="0.001 0.001 0.001" />
+    <mesh name="ring_support_1_mesh" file="ring_support_1.stl" scale="0.001 0.001 0.001" />
+    <mesh name="ring_support_2_mesh" file="ring_support_2.stl" scale="0.001 0.001 0.001" />
+    <mesh name="ring_support_3_mesh" file="ring_support_3.stl" scale="0.001 0.001 0.001" />
+    <mesh name="sun_gear_mesh" file="sun_gear.stl" scale="0.001 0.001 0.001" />
+    <mesh name="sun_shaft_mesh" file="sun_shaft.stl" scale="0.001 0.001 0.001" />
+    <mesh name="upper_bearing_mesh" file="upper_bearing.stl" scale="0.001 0.001 0.001" />
+    <material name="gear_mat" rgba="0.78 0.62 0.20 1" />
+  </asset>
+  <worldbody>
+    <light pos="0 -0.15 0.22" dir="0 0.6 -1" />
+    <geom name="ground" type="plane" size="0.3 0.3 0.01" pos="0 0 -0.001" rgba="0.25 0.27 0.30 1" />
+    <body name="base" pos="0 0 0">
+      <geom name="base_visual" type="mesh" mesh="base_mesh" class="visual" />
+      <geom name="ring_visual" type="mesh" mesh="ring_gear_mesh" class="visual" pos="0 0 0.039" />
+      <geom name="upper_bearing_visual" type="mesh" mesh="upper_bearing_mesh" class="visual" pos="0 0 0.051" />
+      <geom name="lower_bearing_visual" type="mesh" mesh="lower_bearing_mesh" class="visual" pos="0 0 0.015" />
+      <geom name="ring_support_1_visual" type="mesh" mesh="ring_support_1_mesh" class="visual" pos="0.042000000 0.000000000 0.006" euler="0 0 0.000000000" />
+      <geom name="ring_support_2_visual" type="mesh" mesh="ring_support_2_mesh" class="visual" pos="-0.021000000 0.036373067 0.006" euler="0 0 2.094395102" />
+      <geom name="ring_support_3_visual" type="mesh" mesh="ring_support_3_mesh" class="visual" pos="-0.021000000 -0.036373067 0.006" euler="0 0 4.188790205" />
+      <geom name="base_collision" type="box" size="0.055 0.05 0.003" pos="0 0 0.003" class="collision" />
+      <body name="ring_gear" pos="0 0 0">
+      <geom name="ring_collision_0" type="box" size="0.006 0.012 0.004" pos="0.036000000 0.000000000 0.039" euler="0 0 0.000000000" class="collision" />
+      <geom name="ring_collision_1" type="box" size="0.006 0.012 0.004" pos="0.031176915 0.018000000 0.039" euler="0 0 0.523598776" class="collision" />
+      <geom name="ring_collision_2" type="box" size="0.006 0.012 0.004" pos="0.018000000 0.031176915 0.039" euler="0 0 1.047197551" class="collision" />
+      <geom name="ring_collision_3" type="box" size="0.006 0.012 0.004" pos="0.000000000 0.036000000 0.039" euler="0 0 1.570796327" class="collision" />
+      <geom name="ring_collision_4" type="box" size="0.006 0.012 0.004" pos="-0.018000000 0.031176915 0.039" euler="0 0 2.094395102" class="collision" />
+      <geom name="ring_collision_5" type="box" size="0.006 0.012 0.004" pos="-0.031176915 0.018000000 0.039" euler="0 0 2.617993878" class="collision" />
+      <geom name="ring_collision_6" type="box" size="0.006 0.012 0.004" pos="-0.036000000 0.000000000 0.039" euler="0 0 3.141592654" class="collision" />
+      <geom name="ring_collision_7" type="box" size="0.006 0.012 0.004" pos="-0.031176915 -0.018000000 0.039" euler="0 0 3.665191429" class="collision" />
+      <geom name="ring_collision_8" type="box" size="0.006 0.012 0.004" pos="-0.018000000 -0.031176915 0.039" euler="0 0 4.188790205" class="collision" />
+      <geom name="ring_collision_9" type="box" size="0.006 0.012 0.004" pos="-0.000000000 -0.036000000 0.039" euler="0 0 4.712388980" class="collision" />
+      <geom name="ring_collision_10" type="box" size="0.006 0.012 0.004" pos="0.018000000 -0.031176915 0.039" euler="0 0 5.235987756" class="collision" />
+      <geom name="ring_collision_11" type="box" size="0.006 0.012 0.004" pos="0.031176915 -0.018000000 0.039" euler="0 0 5.759586532" class="collision" />
+      </body>
+    </body>
+    <body name="sun_gear" pos="0 0 0.039">
+      <inertial pos="0 0 0.005" mass="0.22" diaginertia="0.00005 0.00005 0.00008" />
+      <joint name="sun_input_hinge" type="hinge" axis="0 0 1" damping="0.02" />
+      <geom name="sun_gear_visual" type="mesh" mesh="sun_gear_mesh" class="visual" material="gear_mat" />
+      <geom name="sun_gear_collision" type="cylinder" size="0.0135 0.004" class="collision" />
+      <geom name="sun_shaft_visual" type="mesh" mesh="sun_shaft_mesh" class="visual" pos="0 0 0.0085" />
+      <body name="hand_crank" pos="0 0 0">
+        <geom name="hand_crank_visual" type="mesh" mesh="hand_crank_mesh" class="visual" rgba="0.25 0.55 0.82 1" />
+      </body>
+    </body>
+    <body name="carrier" pos="0 0 0.0305">
+      <inertial pos="0 0 -0.004" mass="0.28" diaginertia="0.00012 0.00012 0.00018" />
+      <joint name="carrier_output_hinge" type="hinge" axis="0 0 1" damping="0.03" />
+      <geom name="carrier_visual" type="mesh" mesh="carrier_mesh" class="visual" rgba="0.28 0.62 0.45 1" />
+      <geom name="carrier_hub_collision" type="cylinder" size="0.008 0.002" class="collision" />
+      <body name="planet_pin_1" pos="0.024000000 0.000000000 0.0065">
+        <geom name="planet_pin_1_visual" type="mesh" mesh="planet_pin_1_mesh" class="visual" />
+      </body>
+      <body name="planet_pin_2" pos="-0.012000000 0.020784610 0.0065">
+        <geom name="planet_pin_2_visual" type="mesh" mesh="planet_pin_2_mesh" class="visual" />
+      </body>
+      <body name="planet_pin_3" pos="-0.012000000 -0.020784610 0.0065">
+        <geom name="planet_pin_3_visual" type="mesh" mesh="planet_pin_3_mesh" class="visual" />
+      </body>
+      <body name="planet_gear_1" pos="0.024000000 0.000000000 0.0085">
+        <inertial pos="0 0 0" mass="0.09" diaginertia="0.000012 0.000012 0.000020" />
+        <joint name="planet_pin_hinge_1" type="hinge" axis="0 0 1" damping="0.01" />
+        <geom name="planet_gear_1_visual" type="mesh" mesh="planet_gear_1_mesh" class="visual" />
+        <geom name="planet_gear_1_collision" type="cylinder" size="0.0135 0.004" class="collision" />
+      </body>
+      <body name="planet_gear_2" pos="-0.012000000 0.020784610 0.0085">
+        <inertial pos="0 0 0" mass="0.09" diaginertia="0.000012 0.000012 0.000020" />
+        <joint name="planet_pin_hinge_2" type="hinge" axis="0 0 1" damping="0.01" />
+        <geom name="planet_gear_2_visual" type="mesh" mesh="planet_gear_2_mesh" class="visual" />
+        <geom name="planet_gear_2_collision" type="cylinder" size="0.0135 0.004" class="collision" />
+      </body>
+      <body name="planet_gear_3" pos="-0.012000000 -0.020784610 0.0085">
+        <inertial pos="0 0 0" mass="0.09" diaginertia="0.000012 0.000012 0.000020" />
+        <joint name="planet_pin_hinge_3" type="hinge" axis="0 0 1" damping="0.01" />
+        <geom name="planet_gear_3_visual" type="mesh" mesh="planet_gear_3_mesh" class="visual" />
+        <geom name="planet_gear_3_collision" type="cylinder" size="0.0135 0.004" class="collision" />
+      </body>
+    </body>
+  </worldbody>
+  <contact>
+    <exclude body1="sun_gear" body2="planet_gear_1" />
+    <exclude body1="ring_gear" body2="planet_gear_1" />
+    <exclude body1="sun_gear" body2="planet_gear_2" />
+    <exclude body1="ring_gear" body2="planet_gear_2" />
+    <exclude body1="sun_gear" body2="planet_gear_3" />
+    <exclude body1="ring_gear" body2="planet_gear_3" />
+  </contact>
+  <equality>
+    <joint name="planetary_carrier" joint1="carrier_output_hinge" joint2="sun_input_hinge" polycoef="0 0.25 0 0 0" solref="0.002 1" />
+    <joint name="planetary_planet_1" joint1="planet_pin_hinge_1" joint2="sun_input_hinge" polycoef="0 -0.75 0 0 0" solref="0.002 1" />
+    <joint name="planetary_planet_2" joint1="planet_pin_hinge_2" joint2="sun_input_hinge" polycoef="0 -0.75 0 0 0" solref="0.002 1" />
+    <joint name="planetary_planet_3" joint1="planet_pin_hinge_3" joint2="sun_input_hinge" polycoef="0 -0.75 0 0 0" solref="0.002 1" />
+  </equality>
+  <actuator>
+    <position name="hand_crank_drive" joint="sun_input_hinge" kp="260" kv="28" />
+  </actuator>
+</mujoco>

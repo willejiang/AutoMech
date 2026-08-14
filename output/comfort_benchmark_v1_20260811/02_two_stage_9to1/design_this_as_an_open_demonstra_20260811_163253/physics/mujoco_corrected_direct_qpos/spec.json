@@ -1,0 +1,34 @@
+{
+  "duration_s": 3.0,
+  "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\02_two_stage_9to1\\design_this_as_an_open_demonstra_20260811_163253",
+  "drive": {
+    "torque": 0.5,
+    "mode": "velocity",
+    "drive_method": "direct_qpos",
+    "target_velocity": 4.0,
+    "output_link": "output_shaft"
+  },
+  "design": {
+    "input_joint": "input_spin",
+    "output_joint": "output_spin",
+    "watch_joints": [
+      "input_spin",
+      "intermediate_spin",
+      "output_spin"
+    ],
+    "propagation_path": [
+      "input_spin",
+      "intermediate_spin",
+      "output_spin"
+    ],
+    "pass_criteria": "Input travels at least 9 rad; output follows at the exact same-direction 9:1 reduction through two external gear equalities.",
+    "environment": "Evaluator-only exact-kinematic retest of the unchanged accepted MJCF. The base is fixed and all three exposed shafts and both gear meshes remain visible.",
+    "camera": {
+      "target_link": "base",
+      "azimuth_deg": 45.0,
+      "elevation_deg": -30.0,
+      "distance_scale": 2.5,
+      "locked": true
+    }
+  }
+}

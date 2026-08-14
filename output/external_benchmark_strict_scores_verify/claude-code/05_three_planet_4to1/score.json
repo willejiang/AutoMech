@@ -1,0 +1,357 @@
+{
+  "first_blocker": "non_exempt_conflicts: strict non-exempt conflicts=6; unavailable=0",
+  "layer_weights": [
+    10,
+    15,
+    15,
+    20,
+    40
+  ],
+  "layers": [
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "source_execution",
+              "path": "output/external_benchmark_work/claude-code/05_three_planet_4to1/source/source_execution.json",
+              "sha256": "054dd707249b7551762930620162fad83e066582a89699ed5c01b6edb5745084",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "scorer_owned_execution",
+          "points_awarded": 10,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "scorer-owned source build produced a nonempty part set; MJCF replay compiled, initialized, and stayed finite",
+          "status": "PASS"
+        }
+      ],
+      "index": 1,
+      "name": "execution",
+      "points_awarded": 10,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 10
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/claude-code/05_three_planet_4to1/assembly.json",
+              "sha256": "75fae5389c695f0ab94857f7b2ca9d1dbf0af2b177c103afe6ee585580ea83e6",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "assembly_model",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "assembly/simulation model is available",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/claude-code/05_three_planet_4to1/assembly.json",
+              "sha256": "75fae5389c695f0ab94857f7b2ca9d1dbf0af2b177c103afe6ee585580ea83e6",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "required_role_cardinalities",
+          "points_awarded": 7,
+          "points_possible": 7,
+          "raw_status": "PASS",
+          "reason": "all required roles are bound",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/claude-code/05_three_planet_4to1/assembly.json",
+              "sha256": "75fae5389c695f0ab94857f7b2ca9d1dbf0af2b177c103afe6ee585580ea83e6",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "input_output_independence",
+          "points_awarded": 3,
+          "points_possible": 3,
+          "raw_status": "PASS",
+          "reason": "input and output are distinct",
+          "status": "PASS"
+        }
+      ],
+      "index": 2,
+      "name": "assembly",
+      "points_awarded": 15,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "geometry",
+              "path": "output/external_benchmark_strict/claude-code/05_three_planet_4to1/strict/geometry.json",
+              "sha256": "774ca69c9cf859aab3f4d8de687b382da865b890db25823f9e933b6e6d606e41",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "mesh_inventory",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "strict geometry hashes every scanned usable mesh",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "geometry",
+              "path": "output/external_benchmark_strict/claude-code/05_three_planet_4to1/strict/geometry.json",
+              "sha256": "774ca69c9cf859aab3f4d8de687b382da865b890db25823f9e933b6e6d606e41",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "non_exempt_conflicts",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "FAIL",
+          "reason": "strict non-exempt conflicts=6; unavailable=0",
+          "status": "FAIL"
+        }
+      ],
+      "index": 3,
+      "name": "geometry",
+      "points_awarded": 5,
+      "status": "FAIL",
+      "strict_gate": null,
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/05_three_planet_4to1/replay/trajectory.json",
+              "sha256": "00d11c9dea7287facd664c5837d619964794d4dafb93ddbaee4af653a314082c",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=6; unavailable=0",
+          "name": "trajectory_shape",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "trajectory has time samples and joint series",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/05_three_planet_4to1/replay/trajectory.json",
+              "sha256": "00d11c9dea7287facd664c5837d619964794d4dafb93ddbaee4af653a314082c",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=6; unavailable=0",
+          "name": "sample_alignment",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "all joint series align with time",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/05_three_planet_4to1/replay/trajectory.json",
+              "sha256": "00d11c9dea7287facd664c5837d619964794d4dafb93ddbaee4af653a314082c",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=6; unavailable=0",
+          "name": "finite_health",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "finite sample fraction=1",
+          "status": "GATED"
+        }
+      ],
+      "index": 4,
+      "name": "physics_ready",
+      "points_awarded": 0,
+      "status": "GATED",
+      "strict_gate": {
+        "passed": false,
+        "reason": "collision_coverage_ok, one or more physical mesh links lack active collision coverage"
+      },
+      "weight": 20
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/05_three_planet_4to1/replay/trajectory.json",
+              "sha256": "00d11c9dea7287facd664c5837d619964794d4dafb93ddbaee4af653a314082c",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=6; unavailable=0",
+          "name": "input_motion",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "input travel=13 rad reaches minimum 12",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/05_three_planet_4to1/replay/trajectory.json",
+              "sha256": "00d11c9dea7287facd664c5837d619964794d4dafb93ddbaee4af653a314082c",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=6; unavailable=0",
+          "name": "motion_propagation",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "registered output exhibits motion",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/05_three_planet_4to1/replay/trajectory.json",
+              "sha256": "00d11c9dea7287facd664c5837d619964794d4dafb93ddbaee4af653a314082c",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=6; unavailable=0",
+          "name": "registered_output",
+          "points_awarded": 0,
+          "points_possible": 15,
+          "raw_status": "PASS",
+          "reason": "measured declared ratio=0.25, slope=0.25, R^2=1",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/05_three_planet_4to1/replay/trajectory.json",
+              "sha256": "00d11c9dea7287facd664c5837d619964794d4dafb93ddbaee4af653a314082c",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=6; unavailable=0",
+          "name": "registered_invariants",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "FAIL",
+          "reason": "failed invariants: planet_orbit",
+          "status": "GATED"
+        }
+      ],
+      "index": 5,
+      "name": "functional",
+      "points_awarded": 0,
+      "status": "GATED",
+      "strict_gate": null,
+      "weight": 40
+    }
+  ],
+  "method": "claude-code",
+  "points_possible": 100,
+  "provenance": {
+    "anchor_audit": {
+      "kind": "anchor_audit",
+      "path": "output/external_benchmark_strict/claude-code/05_three_planet_4to1/strict/anchor_audit.json",
+      "sha256": "43363dc3c4cf132d587a0bf00c4ae5df94ea9f6ccc809b8de05d9750abcdf2c1",
+      "source": "scorer_owned"
+    },
+    "assembly": {
+      "kind": "assembly",
+      "path": "output/external_benchmark_staged/claude-code/05_three_planet_4to1/assembly.json",
+      "sha256": "75fae5389c695f0ab94857f7b2ca9d1dbf0af2b177c103afe6ee585580ea83e6",
+      "source": "scorer_owned"
+    },
+    "bindings": {
+      "kind": "bindings",
+      "path": "output/external_benchmark_staged/claude-code/05_three_planet_4to1/task_bindings.json",
+      "sha256": "7b86bb4e2f85d3ef1f24154221eb33e8c30acac375b8c44c19bfc4cd6e9c5b1e",
+      "source": "scorer_owned"
+    },
+    "contacts": {
+      "kind": "contacts",
+      "path": "output/external_benchmark_staged/claude-code/05_three_planet_4to1/evidence/contacts.json",
+      "sha256": "391585d1949dc4b32f8442b1530db654a7e907ff8b2f1a76b1df3f188ed1bb2b",
+      "source": "scorer_owned"
+    },
+    "geometry": {
+      "kind": "geometry",
+      "path": "output/external_benchmark_strict/claude-code/05_three_planet_4to1/strict/geometry.json",
+      "sha256": "774ca69c9cf859aab3f4d8de687b382da865b890db25823f9e933b6e6d606e41",
+      "source": "scorer_owned"
+    },
+    "model_audit": {
+      "kind": "model_audit",
+      "path": "output/external_benchmark_strict/claude-code/05_three_planet_4to1/strict/model_audit.json",
+      "sha256": "41db282001f61c04b87364c3aeb445480fa8bc6258cfbb35422c355224b71a56",
+      "source": "scorer_owned"
+    },
+    "realization": {
+      "kind": "realization",
+      "path": "output/external_declared_realization_audit/claude-code/05_three_planet_4to1.json",
+      "sha256": "dc5efc3040baea3e23f2747a130af5ef978a7d79cf805a59682341dd5ca62851",
+      "source": "scorer_owned"
+    },
+    "replay_status": {
+      "kind": "replay_status",
+      "path": "output/external_benchmark_work/claude-code/05_three_planet_4to1/replay_status.json",
+      "sha256": "7e617f17143ca9c74d28e6828d1bdae447ca5852a845a5c8b58f073f70f7b9e0",
+      "source": "scorer_owned"
+    },
+    "source_execution": {
+      "kind": "source_execution",
+      "path": "output/external_benchmark_work/claude-code/05_three_planet_4to1/source/source_execution.json",
+      "sha256": "054dd707249b7551762930620162fad83e066582a89699ed5c01b6edb5745084",
+      "source": "scorer_owned"
+    },
+    "trajectory": {
+      "kind": "trajectory",
+      "path": "output/external_benchmark_work/claude-code/05_three_planet_4to1/replay/trajectory.json",
+      "sha256": "00d11c9dea7287facd664c5837d619964794d4dafb93ddbaee4af653a314082c",
+      "source": "scorer_owned"
+    }
+  },
+  "schema": "physcad-external-strict-score/1.0",
+  "scorer_version": "physcad-external-strict-scorer/1.0",
+  "strict_verdict": "FAIL",
+  "suite_id": "physcad-comfort-v1",
+  "summary_reason": "Six conflicts and unverified ring-tooth realization.",
+  "task_id": "05_three_planet_4to1",
+  "total_points": 30
+}

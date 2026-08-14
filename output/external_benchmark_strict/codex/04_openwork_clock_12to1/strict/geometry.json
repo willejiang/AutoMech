@@ -1,0 +1,82 @@
+{
+  "analyzer_version": "comfort-geometry/1.0",
+  "fail_closed": true,
+  "input_hashes": {
+    "meshes/base.stl": "4c17429621ca7827bfac2d1732475214bf1629f2da5669ccda87651a08fc36df",
+    "meshes/hour_hand.stl": "856e194eeb83394258f3ff45247b9e0dd09ea2606c64c06997a42506d9c4211e",
+    "meshes/hour_output_gear.stl": "8954d32eebeabbdea722d821726266740cac98eeeccd961e88ebd04ffe7c22fb",
+    "meshes/hour_output_sleeve.stl": "6dc41e8c9f811e41e27ecb7cfa3354b504ab309af83b0dca37c10af5f9b18fd5",
+    "meshes/intermediate_shaft.stl": "919652abc23333b6de95ade92d44f9985b77ecfa65d7ab2fafb899d2c068551a",
+    "meshes/minute_hand.stl": "182f01f580e7540e904d938ef03f389e7942f471aa0ac039578406095379d65b",
+    "meshes/minute_input_pinion.stl": "7a0f210e8a37d0d98e71c04af54b8905c3f202d6c750ad7aa801dd19b203384a",
+    "meshes/minute_input_shaft.stl": "8ea93b929acbd1c02a9646b9efd8269b0122412fbaa8a31f3b6b396ad3470f91",
+    "meshes/stage1_intermediate_gear.stl": "66245cdc0d0264624ac7d663c32d91f84898d3f0212133cd5218507c8cc423a3",
+    "meshes/stage2_intermediate_pinion.stl": "8fb8fd3cea9203ea7f4dd71bc559f1fc7027c74e33f5e77cfcf9af2c7eccb87b"
+  },
+  "intersections": [
+    {
+      "evidence_id": "relation/compound_gear_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.100000002,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "intermediate_shaft",
+        "stage1_intermediate_gear"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 627.943636
+    },
+    {
+      "evidence_id": "relation/compound_pinion_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.149526118,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "intermediate_shaft",
+        "stage2_intermediate_pinion"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 627.943636
+    },
+    {
+      "evidence_id": "relation/stage1_live_mesh",
+      "exemption": "ideal_gear_mesh",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.021890044,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "minute_input_pinion",
+        "stage1_intermediate_gear"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 119.16414
+    }
+  ],
+  "links_scanned": 10,
+  "manifest_only_exemption_count": 0,
+  "method": "final-pose watertight STL boolean intersection using manifold",
+  "non_exempt_conflict_count": 4,
+  "provenance_warnings": [],
+  "report_volume_mm3": 0.0001,
+  "scan_unavailable": [
+    {
+      "detail": "ValueError: not a usable watertight volume (watertight=False, volume=21735.99710967886)",
+      "link": "central_front_bearing"
+    },
+    {
+      "detail": "ValueError: not a usable watertight volume (watertight=False, volume=21735.99710967886)",
+      "link": "central_rear_bearing"
+    },
+    {
+      "detail": "ValueError: not a usable watertight volume (watertight=False, volume=21735.997109678858)",
+      "link": "intermediate_front_bearing"
+    },
+    {
+      "detail": "ValueError: not a usable watertight volume (watertight=False, volume=21735.997109678858)",
+      "link": "intermediate_rear_bearing"
+    }
+  ],
+  "schema": "physcad-scorer-geometry/1.0"
+}

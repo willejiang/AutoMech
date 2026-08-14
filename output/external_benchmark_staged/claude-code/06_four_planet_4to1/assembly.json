@@ -1,0 +1,877 @@
+{
+  "links": [
+    {
+      "dof": "fixed",
+      "mesh_file": "meshes/base.stl",
+      "mount": "",
+      "name": "base",
+      "rigid_mount": "world",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "dof": "fixed",
+      "mesh_file": "meshes/fixed_ring.stl",
+      "mount": "base",
+      "name": "fixed_ring",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "dof": "spin",
+      "driver": true,
+      "mesh_file": "meshes/sun_input.stl",
+      "mount": "",
+      "name": "sun_input",
+      "slide_axis": [
+        0,
+        0,
+        1
+      ],
+      "spin_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "dof": "spin",
+      "driver": false,
+      "mesh_file": "meshes/carrier_output.stl",
+      "mount": "",
+      "name": "carrier_output",
+      "slide_axis": [
+        0,
+        0,
+        1
+      ],
+      "spin_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "dof": "fixed",
+      "mesh_file": "meshes/hand_crank.stl",
+      "mount": "sun_input",
+      "name": "hand_crank",
+      "rigid_mount": "sun_input",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "dof": "spin",
+      "driver": false,
+      "mesh_file": "meshes/planet_gear_0.stl",
+      "mount": "",
+      "name": "planet_gear_0",
+      "parent": "carrier_output",
+      "slide_axis": [
+        0,
+        0,
+        1
+      ],
+      "spin_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "dof": "spin",
+      "driver": false,
+      "mesh_file": "meshes/planet_gear_1.stl",
+      "mount": "",
+      "name": "planet_gear_1",
+      "parent": "carrier_output",
+      "slide_axis": [
+        0,
+        0,
+        1
+      ],
+      "spin_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "dof": "spin",
+      "driver": false,
+      "mesh_file": "meshes/planet_gear_2.stl",
+      "mount": "",
+      "name": "planet_gear_2",
+      "parent": "carrier_output",
+      "slide_axis": [
+        0,
+        0,
+        1
+      ],
+      "spin_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "dof": "spin",
+      "driver": false,
+      "mesh_file": "meshes/planet_gear_3.stl",
+      "mount": "",
+      "name": "planet_gear_3",
+      "parent": "carrier_output",
+      "slide_axis": [
+        0,
+        0,
+        1
+      ],
+      "spin_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "dof": "fixed",
+      "mesh_file": "meshes/planet_pin_0.stl",
+      "mount": "carrier_output",
+      "name": "planet_pin_0",
+      "rigid_mount": "carrier_output",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "dof": "fixed",
+      "mesh_file": "meshes/planet_pin_1.stl",
+      "mount": "carrier_output",
+      "name": "planet_pin_1",
+      "rigid_mount": "carrier_output",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "dof": "fixed",
+      "mesh_file": "meshes/planet_pin_2.stl",
+      "mount": "carrier_output",
+      "name": "planet_pin_2",
+      "rigid_mount": "carrier_output",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "dof": "fixed",
+      "mesh_file": "meshes/planet_pin_3.stl",
+      "mount": "carrier_output",
+      "name": "planet_pin_3",
+      "rigid_mount": "carrier_output",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    }
+  ],
+  "mesh_pairs": [
+    [
+      "sun_input",
+      "planet_gear_0"
+    ],
+    [
+      "sun_input",
+      "planet_gear_1"
+    ],
+    [
+      "sun_input",
+      "planet_gear_2"
+    ],
+    [
+      "sun_input",
+      "planet_gear_3"
+    ],
+    [
+      "fixed_ring",
+      "planet_gear_0"
+    ],
+    [
+      "fixed_ring",
+      "planet_gear_1"
+    ],
+    [
+      "fixed_ring",
+      "planet_gear_2"
+    ],
+    [
+      "fixed_ring",
+      "planet_gear_3"
+    ]
+  ],
+  "motion_joints": [
+    {
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "child": "sun_input",
+      "kind": "revolute",
+      "name": "sun_hinge",
+      "parent": "base",
+      "pos_mm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "type": "revolute"
+    },
+    {
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "child": "carrier_output",
+      "kind": "revolute",
+      "name": "carrier_hinge",
+      "parent": "base",
+      "pos_mm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "type": "revolute"
+    },
+    {
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "child": "planet_gear_0",
+      "kind": "revolute",
+      "name": "planet_hinge_0",
+      "parent": "carrier_output",
+      "pin": "planet_pin_0",
+      "pos_mm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "type": "revolute"
+    },
+    {
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "child": "planet_gear_1",
+      "kind": "revolute",
+      "name": "planet_hinge_1",
+      "parent": "carrier_output",
+      "pin": "planet_pin_1",
+      "pos_mm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "type": "revolute"
+    },
+    {
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "child": "planet_gear_2",
+      "kind": "revolute",
+      "name": "planet_hinge_2",
+      "parent": "carrier_output",
+      "pin": "planet_pin_2",
+      "pos_mm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "type": "revolute"
+    },
+    {
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "child": "planet_gear_3",
+      "kind": "revolute",
+      "name": "planet_hinge_3",
+      "parent": "carrier_output",
+      "pin": "planet_pin_3",
+      "pos_mm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "type": "revolute"
+    }
+  ],
+  "name": "four_planet_4to1_open_reducer",
+  "output_link": "carrier_output",
+  "planetary_stages": [
+    {
+      "carrier": "carrier_output",
+      "carrier_to_sun_ratio": 0.25,
+      "name": "main_stage",
+      "pins": [
+        "planet_pin_0",
+        "planet_pin_1",
+        "planet_pin_2",
+        "planet_pin_3"
+      ],
+      "planet_spacing_deg": 90.0,
+      "planet_teeth": 24,
+      "planets": [
+        "planet_gear_0",
+        "planet_gear_1",
+        "planet_gear_2",
+        "planet_gear_3"
+      ],
+      "ring": "fixed_ring",
+      "ring_fixed": true,
+      "ring_teeth": 72,
+      "sun": "sun_input",
+      "sun_teeth": 24
+    }
+  ],
+  "ports_by_link": {
+    "base": [
+      "ring_mount",
+      "sun_rear_bearing",
+      "carrier_rear_bearing"
+    ],
+    "carrier_output": [
+      "carrier_hinge",
+      "pin_mount_0",
+      "pin_mount_1",
+      "pin_mount_2",
+      "pin_mount_3"
+    ],
+    "fixed_ring": [
+      "ring_mount",
+      "internal_mesh_0",
+      "internal_mesh_1",
+      "internal_mesh_2",
+      "internal_mesh_3"
+    ],
+    "hand_crank": [
+      "crank_mount"
+    ],
+    "planet_gear_0": [
+      "planet_hinge_0",
+      "sun_mesh_0",
+      "internal_mesh_0"
+    ],
+    "planet_gear_1": [
+      "planet_hinge_1",
+      "sun_mesh_1",
+      "internal_mesh_1"
+    ],
+    "planet_gear_2": [
+      "planet_hinge_2",
+      "sun_mesh_2",
+      "internal_mesh_2"
+    ],
+    "planet_gear_3": [
+      "planet_hinge_3",
+      "sun_mesh_3",
+      "internal_mesh_3"
+    ],
+    "planet_pin_0": [
+      "pin_mount_0",
+      "planet_hinge_0"
+    ],
+    "planet_pin_1": [
+      "pin_mount_1",
+      "planet_hinge_1"
+    ],
+    "planet_pin_2": [
+      "pin_mount_2",
+      "planet_hinge_2"
+    ],
+    "planet_pin_3": [
+      "pin_mount_3",
+      "planet_hinge_3"
+    ],
+    "sun_input": [
+      "sun_hinge",
+      "crank_mount",
+      "sun_mesh_0",
+      "sun_mesh_1",
+      "sun_mesh_2",
+      "sun_mesh_3"
+    ]
+  },
+  "poses": [
+    {
+      "child": "base",
+      "name": "place_base",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "fixed_ring",
+      "name": "place_fixed_ring",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "sun_input",
+      "name": "place_sun_input",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "carrier_output",
+      "name": "place_carrier_output",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "hand_crank",
+      "name": "place_hand_crank",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "planet_gear_0",
+      "name": "place_planet_gear_0",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "planet_pin_0",
+      "name": "place_planet_pin_0",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "planet_gear_1",
+      "name": "place_planet_gear_1",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "planet_pin_1",
+      "name": "place_planet_pin_1",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "planet_gear_2",
+      "name": "place_planet_gear_2",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "planet_pin_2",
+      "name": "place_planet_pin_2",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "planet_gear_3",
+      "name": "place_planet_gear_3",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "planet_pin_3",
+      "name": "place_planet_pin_3",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "base_part": "base",
+      "incoming_part": "fixed_ring",
+      "mate_type": "rigid_mount",
+      "name": "relation_0"
+    },
+    {
+      "base_part": "base",
+      "incoming_part": "sun_input",
+      "mate_type": "journal_bearing",
+      "name": "relation_1"
+    },
+    {
+      "base_part": "base",
+      "incoming_part": "carrier_output",
+      "mate_type": "journal_bearing",
+      "name": "relation_2"
+    },
+    {
+      "base_part": "sun_input",
+      "incoming_part": "hand_crank",
+      "mate_type": "rigid_mount",
+      "name": "relation_3"
+    },
+    {
+      "base_part": "carrier_output",
+      "incoming_part": "planet_pin_0",
+      "mate_type": "dedicated_pin_fit",
+      "name": "relation_4"
+    },
+    {
+      "base_part": "carrier_output",
+      "incoming_part": "planet_pin_1",
+      "mate_type": "dedicated_pin_fit",
+      "name": "relation_5"
+    },
+    {
+      "base_part": "carrier_output",
+      "incoming_part": "planet_pin_2",
+      "mate_type": "dedicated_pin_fit",
+      "name": "relation_6"
+    },
+    {
+      "base_part": "carrier_output",
+      "incoming_part": "planet_pin_3",
+      "mate_type": "dedicated_pin_fit",
+      "name": "relation_7"
+    },
+    {
+      "base_part": "planet_pin_0",
+      "incoming_part": "planet_gear_0",
+      "mate_type": "journal_bearing",
+      "name": "relation_8"
+    },
+    {
+      "base_part": "planet_pin_1",
+      "incoming_part": "planet_gear_1",
+      "mate_type": "journal_bearing",
+      "name": "relation_9"
+    },
+    {
+      "base_part": "planet_pin_2",
+      "incoming_part": "planet_gear_2",
+      "mate_type": "journal_bearing",
+      "name": "relation_10"
+    },
+    {
+      "base_part": "planet_pin_3",
+      "incoming_part": "planet_gear_3",
+      "mate_type": "journal_bearing",
+      "name": "relation_11"
+    },
+    {
+      "base_part": "sun_input",
+      "incoming_part": "planet_gear_0",
+      "mate_type": "gear_spur_external",
+      "name": "sun_planet_0"
+    },
+    {
+      "base_part": "sun_input",
+      "incoming_part": "planet_gear_1",
+      "mate_type": "gear_spur_external",
+      "name": "sun_planet_1"
+    },
+    {
+      "base_part": "sun_input",
+      "incoming_part": "planet_gear_2",
+      "mate_type": "gear_spur_external",
+      "name": "sun_planet_2"
+    },
+    {
+      "base_part": "sun_input",
+      "incoming_part": "planet_gear_3",
+      "mate_type": "gear_spur_external",
+      "name": "sun_planet_3"
+    },
+    {
+      "base_part": "fixed_ring",
+      "incoming_part": "planet_gear_0",
+      "mate_type": "gear_spur_internal",
+      "name": "ring_planet_0"
+    },
+    {
+      "base_part": "fixed_ring",
+      "incoming_part": "planet_gear_1",
+      "mate_type": "gear_spur_internal",
+      "name": "ring_planet_1"
+    },
+    {
+      "base_part": "fixed_ring",
+      "incoming_part": "planet_gear_2",
+      "mate_type": "gear_spur_internal",
+      "name": "ring_planet_2"
+    },
+    {
+      "base_part": "fixed_ring",
+      "incoming_part": "planet_gear_3",
+      "mate_type": "gear_spur_internal",
+      "name": "ring_planet_3"
+    }
+  ],
+  "root_link": "base",
+  "transmissions": [
+    {
+      "driven": "carrier_hinge",
+      "driven_link": "carrier_hinge",
+      "driving": "sun_hinge",
+      "driving_link": "sun_hinge",
+      "kind": "ideal_planetary",
+      "name": "ideal_carrier_from_sun",
+      "ratio": 0.25,
+      "type": "ideal_planetary"
+    },
+    {
+      "driven": "planet_hinge_0",
+      "driven_link": "planet_hinge_0",
+      "driving": "sun_hinge",
+      "driving_link": "sun_hinge",
+      "kind": "ideal_planetary_local_spin",
+      "name": "ideal_planet_spin_0",
+      "ratio": -0.75,
+      "type": "ideal_planetary_local_spin"
+    },
+    {
+      "driven": "planet_hinge_1",
+      "driven_link": "planet_hinge_1",
+      "driving": "sun_hinge",
+      "driving_link": "sun_hinge",
+      "kind": "ideal_planetary_local_spin",
+      "name": "ideal_planet_spin_1",
+      "ratio": -0.75,
+      "type": "ideal_planetary_local_spin"
+    },
+    {
+      "driven": "planet_hinge_2",
+      "driven_link": "planet_hinge_2",
+      "driving": "sun_hinge",
+      "driving_link": "sun_hinge",
+      "kind": "ideal_planetary_local_spin",
+      "name": "ideal_planet_spin_2",
+      "ratio": -0.75,
+      "type": "ideal_planetary_local_spin"
+    },
+    {
+      "driven": "planet_hinge_3",
+      "driven_link": "planet_hinge_3",
+      "driving": "sun_hinge",
+      "driving_link": "sun_hinge",
+      "kind": "ideal_planetary_local_spin",
+      "name": "ideal_planet_spin_3",
+      "ratio": -0.75,
+      "type": "ideal_planetary_local_spin"
+    }
+  ],
+  "watch_links": [
+    "sun_input",
+    "carrier_output",
+    "planet_gear_0",
+    "planet_gear_1",
+    "planet_gear_2",
+    "planet_gear_3"
+  ]
+}

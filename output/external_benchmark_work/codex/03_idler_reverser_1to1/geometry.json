@@ -1,0 +1,82 @@
+{
+  "analyzer_version": "comfort-geometry/1.0",
+  "fail_closed": true,
+  "input_hashes": {
+    "meshes/base.stl": "8040b746bbd9d67071cdf07399c93a362b1b583800c678e12bf1682fa9fc7fa6",
+    "meshes/hand_crank.stl": "bc4fc01c0411008ed6373d8f64793200a7456c29c3febe6c38fbbaa65b763e0a",
+    "meshes/idler_front_bearing.stl": "578b25d6c2c4ed468cda4fe53e0023ffa59a6767f1231522507696ac772d41db",
+    "meshes/idler_gear.stl": "61ed678ddd9883f94583dbf39bddab9e9278d862af4593bb73c8c9881b979f94",
+    "meshes/idler_rear_bearing.stl": "578b25d6c2c4ed468cda4fe53e0023ffa59a6767f1231522507696ac772d41db",
+    "meshes/idler_shaft.stl": "919652abc23333b6de95ade92d44f9985b77ecfa65d7ab2fafb899d2c068551a",
+    "meshes/input_front_bearing.stl": "578b25d6c2c4ed468cda4fe53e0023ffa59a6767f1231522507696ac772d41db",
+    "meshes/input_gear.stl": "0e342b4120dcf236dfacbe373df6b9872c7ec81b861a535d494cc32aeccd863b",
+    "meshes/input_rear_bearing.stl": "578b25d6c2c4ed468cda4fe53e0023ffa59a6767f1231522507696ac772d41db",
+    "meshes/input_shaft.stl": "9b2d475dfb76dcbc92cb07f4aeba282f374d291e701ee50cddccb9a795e57fb7",
+    "meshes/output_front_bearing.stl": "578b25d6c2c4ed468cda4fe53e0023ffa59a6767f1231522507696ac772d41db",
+    "meshes/output_gear.stl": "0e342b4120dcf236dfacbe373df6b9872c7ec81b861a535d494cc32aeccd863b",
+    "meshes/output_rear_bearing.stl": "578b25d6c2c4ed468cda4fe53e0023ffa59a6767f1231522507696ac772d41db",
+    "meshes/output_shaft.stl": "919652abc23333b6de95ade92d44f9985b77ecfa65d7ab2fafb899d2c068551a"
+  },
+  "intersections": [
+    {
+      "evidence_id": "relation/crank_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.074624115,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "hand_crank",
+        "input_shaft"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 470.957721
+    },
+    {
+      "evidence_id": "relation/idler_gear_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.150000001,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "idler_gear",
+        "idler_shaft"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 941.915441
+    },
+    {
+      "evidence_id": "relation/input_gear_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.120000001,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "input_gear",
+        "input_shaft"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 941.915442
+    },
+    {
+      "evidence_id": "relation/output_gear_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.150000002,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "output_gear",
+        "output_shaft"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 941.915442
+    }
+  ],
+  "links_scanned": 14,
+  "manifest_only_exemption_count": 0,
+  "method": "final-pose watertight STL boolean intersection using manifold",
+  "non_exempt_conflict_count": 0,
+  "provenance_warnings": [],
+  "report_volume_mm3": 0.0001,
+  "scan_unavailable": [],
+  "schema": "physcad-scorer-geometry/1.0"
+}

@@ -1,0 +1,78 @@
+{
+  "task": "an openwork mechanical watch movement with independently rotating hour and minute members and press-fit hands",
+  "spec": {
+    "duration_s": 6.0,
+    "run_dir": "output\\agent_mjcf_benchmarks\\watch\\an_openwork_mechanical_watch_mov_20260810_192416",
+    "drive": {
+      "torque": 0.5,
+      "mode": "velocity",
+      "drive_method": "servo",
+      "target_velocity": 4.0,
+      "output_link": "hour_hand"
+    },
+    "design": {
+      "input_joint": "minute_pipe",
+      "output_joint": "place_hour_wheel",
+      "watch_joints": [
+        "place_hour_pipe",
+        "place_intermediate_arbor",
+        "place_minute_pinion",
+        "place_intermediate_wheel",
+        "place_intermediate_pinion",
+        "place_hour_wheel"
+      ],
+      "propagation_path": [
+        "place_minute_pipe",
+        "place_hour_pipe",
+        "place_intermediate_arbor",
+        "place_minute_pinion",
+        "place_intermediate_wheel",
+        "place_intermediate_pinion",
+        "place_hour_wheel"
+      ],
+      "pass_criteria": null,
+      "environment": "Bench-mounted and driven openwork watch movement with its baseplate fixed. A locked three-quarter top-down camera frames the exposed train and both press-fit hands while the minute input is rotated.",
+      "camera": {
+        "target_link": "central_upper_bearing",
+        "azimuth": 35.0,
+        "elevation": -32.0,
+        "distance_scale": 2.2
+      }
+    }
+  },
+  "metrics": {
+    "verdict": "FAIL",
+    "test_kind": "driven_mechanism",
+    "survive_s": 6.0,
+    "input_joint": "minute_rotation",
+    "input_part": "minute_pipe",
+    "input_travel": 0.0021,
+    "input_unit": "rad",
+    "moved_count": 0,
+    "watched_count": 4,
+    "output_reached": false,
+    "exploded": false,
+    "output_travel": 0.0119,
+    "output_unit": "rad",
+    "ratio_in_out": 0.1751,
+    "displaced_parts": [],
+    "end_z": 0.0,
+    "max_tilt_deg": 0.0,
+    "max_drift": 0.0
+  },
+  "stability": {
+    "verdict": "PASS",
+    "exploded": false,
+    "max_disp_m": 0.0,
+    "end_z": 0.0,
+    "displaced_parts": []
+  },
+  "frames_dir": "output\\agent_mjcf_benchmarks\\watch\\an_openwork_mechanical_watch_mov_20260810_192416\\physics\\mujoco_2\\frames",
+  "n_frames": 40,
+  "log": [
+    "initial contacts: 5 interpenetrating pair(s)",
+    "stability(settle): PASS max_disp=0.000m exploded=False",
+    "camera: az=35.0 el=-32.0 dist=0.145 (designer)",
+    "drive: method=servo mode=velocity rate=4"
+  ]
+}

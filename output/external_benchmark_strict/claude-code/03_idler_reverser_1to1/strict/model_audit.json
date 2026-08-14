@@ -1,0 +1,157 @@
+{
+  "active_closures": [
+    {
+      "name": "input_idler_mesh_eq",
+      "type": "joint"
+    },
+    {
+      "name": "idler_output_mesh_eq",
+      "type": "joint"
+    }
+  ],
+  "actuator_policy_ok": true,
+  "actuators": [
+    {
+      "is_registered_input": true,
+      "joint": "input_shaft_hinge",
+      "name": "hand_crank_motor",
+      "type": "velocity"
+    }
+  ],
+  "analyzer_version": "external-model-audit/1.0",
+  "authored_transmissions": [
+    {
+      "driven": "idler_shaft_hinge",
+      "driving": "input_shaft_hinge",
+      "name": "input_to_idler",
+      "ratio": null
+    },
+    {
+      "driven": "output_shaft_hinge",
+      "driving": "idler_shaft_hinge",
+      "name": "idler_to_output",
+      "ratio": null
+    }
+  ],
+  "closure_ok": true,
+  "collision_coverage": [
+    {
+      "active_collision_geoms": [
+        "base_geom",
+        "input_support_geom",
+        "idler_support_geom",
+        "output_support_geom"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 4,
+      "covered": true,
+      "link": "base"
+    },
+    {
+      "active_collision_geoms": [
+        "input_support_geom"
+      ],
+      "body_present": false,
+      "candidate_geom_count": 1,
+      "covered": true,
+      "link": "input_support"
+    },
+    {
+      "active_collision_geoms": [
+        "idler_support_geom"
+      ],
+      "body_present": false,
+      "candidate_geom_count": 1,
+      "covered": true,
+      "link": "idler_support"
+    },
+    {
+      "active_collision_geoms": [
+        "output_support_geom"
+      ],
+      "body_present": false,
+      "candidate_geom_count": 1,
+      "covered": true,
+      "link": "output_support"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 3,
+      "covered": false,
+      "link": "input_shaft"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": false,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "input_gear"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": false,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "hand_crank"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 2,
+      "covered": false,
+      "link": "idler_shaft"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": false,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "idler_gear"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 2,
+      "covered": false,
+      "link": "output_shaft"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": false,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "output_gear"
+    }
+  ],
+  "collision_coverage_ok": false,
+  "equality_checks": [
+    {
+      "detail": "authored transmission ratio is missing, non-finite, or zero",
+      "driven": "idler_shaft_hinge",
+      "driving": "input_shaft_hinge",
+      "matched": false,
+      "name": "input_to_idler",
+      "ratio": null
+    },
+    {
+      "detail": "authored transmission ratio is missing, non-finite, or zero",
+      "driven": "output_shaft_hinge",
+      "driving": "idler_shaft_hinge",
+      "matched": false,
+      "name": "idler_to_output",
+      "ratio": null
+    }
+  ],
+  "errors": [
+    "one or more physical mesh links lack active collision coverage",
+    "authored transmission/closure is not represented by a valid active constraint"
+  ],
+  "passed": false,
+  "registered_input_joints": [
+    "input_shaft_hinge"
+  ],
+  "schema": "physcad-scorer-model-audit/1.0",
+  "task_id": "03_idler_reverser_1to1",
+  "transmission_binding_ok": false
+}

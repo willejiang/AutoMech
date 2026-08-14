@@ -1,0 +1,1215 @@
+{
+  "rounds": 15,
+  "executions": [
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "index",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"sections\": {\n    \"model\": 5,\n    \"links\": 18,\n    \"ports\": 13,\n    \"poses\": 18,\n    \"relations\": 13,\n    \"motion_joints\": 0,\n    \"transmissions\": 3,\n    \"planetary_stages\": 0,\n    \"entity_ids\": 86,\n    \"simulation\": 5\n  }\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "model",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"model\",\n  \"offset\": 0,\n  \"returned\": 5,\n  \"total\": 5,\n  \"next_offset\": null,\n  \"items\": {\n    \"name\": \"design_this_as_an_open_demonstra\",\n    \"root_link\": \"base\",\n    \"mesh_pairs\": [\n      [\n        \"minute_gear\",\n        \"compound_big_gear\"\n      ],\n      [\n        \"compound_pinion\",\n        \"hour_gear\"\n      ]\n    ],\n    \"output_link\": \"hour_hand\",\n    \"watch_links\": [\n      \"minute_gear\",\n      \"compound_big_gear\",\n      \"compound_pinion\",\n      \"hour_gear\",\n      \"minute_hand\",\n      \"hour_hand\"\n    ]\n  }\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "links",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"links\",\n  \"offset\": 0,\n  \"returned\": 18,\n  \"total\": 18,\n  \"next_offset\": null,\n  \"items\": {\n    \"base\": {\n      \"entity_id\": \"link/base\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.11714963039013658,\n      \"world_xyz_m\": [\n        0.011399999999999999,\n        -0.002,\n        0.0\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"minute_input_bearing\": {\n      \"entity_id\": \"link/minute_input_bearing\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"base\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.0011867743850000796,\n      \"world_xyz_m\": [\n        0.0,\n        0.0,\n        0.004\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"intermediate_bearing\": {\n      \"entity_id\": \"link/intermediate_bearing\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"base\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.0011867743850000796,\n      \"world_xyz_m\": [\n        0.024,\n        0.0,\n        0.004\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"rear_mast\": {\n      \"entity_id\": \"link/rear_mast\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"base\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.0015543,\n      \"world_xyz_m\": [\n        0.0,\n        -0.0252,\n        0.004\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"lower_sleeve_bracket\": {\n      \"entity_id\": \"link/lower_sleeve_bracket\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"rear_mast\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.0014412599730491639,\n      \"world_xyz_m\": [\n        0.0,\n        -0.015,\n        0.0131\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"upper_sleeve_bracket\": {\n      \"entity_id\": \"link/upper_sleeve_bracket\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"rear_mast\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.0014412599730491639,\n      \"world_xyz_m\": [\n        0.0,\n        -0.015,\n        0.022\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"sleeve_thrust_washer\": {\n      \"entity_id\": \"link/sleeve_thrust_washer\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"lower_sleeve_bracket\",\n      \"extra_mounts\": [],\n      \"mass_kg\": 0.00014285418303674384,\n      \"world_xyz_m\": [\n        0.0,\n        1.734723475976807e-18,\n        0.0121\n      ],\n      \"world_quat_wxyz\": [\n        1.0,\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"lower_sleeve_bearing\": {\n      \"entity_id\": \"link/lower_sleeve_bearing\",\n      \"dof\": \"fixed\",\n      \"spin_axis\": [\n        0.0,\n        0.0,\n        1.0\n      ],\n      \"slide_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ],\n      \"driver\": false,\n      \"mount\": \"lower_sleeve_"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "ports",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"ports\",\n  \"offset\": 0,\n  \"returned\": 13,\n  \"total\": 13,\n  \"next_offset\": null,\n  \"items\": {\n    \"minute_gear\": {\n      \"shaft_bore\": {\n        \"entity_id\": \"port/minute_gear/shaft_bore\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 3.99,\n        \"depth_mm\": 4.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0,\n          0.0,\n          0.0095\n        ]\n      },\n      \"stage1_mesh\": {\n        \"entity_id\": \"port/minute_gear/stage1_mesh\",\n        \"type\": \"gear_mesh\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 0.0,\n        \"depth_mm\": 4.0,\n        \"pitch_radius_mm\": 6.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.006,\n          0.0,\n          0.0095\n        ]\n      }\n    },\n    \"compound_big_gear\": {\n      \"shaft_bore\": {\n        \"entity_id\": \"port/compound_big_gear/shaft_bore\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 3.99,\n        \"depth_mm\": 4.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.024,\n          0.0,\n          0.0095\n        ]\n      },\n      \"stage1_mesh\": {\n        \"entity_id\": \"port/compound_big_gear/stage1_mesh\",\n        \"type\": \"gear_mesh\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 0.0,\n        \"depth_mm\": 4.0,\n        \"pitch_radius_mm\": 18.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0060438470953231675,\n          -0.0012556165273942554,\n          0.0095\n        ]\n      }\n    },\n    \"compound_pinion\": {\n      \"shaft_bore\": {\n        \"entity_id\": \"port/compound_pinion/shaft_bore\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 3.99,\n        \"depth_mm\": 4.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.024,\n          0.0,\n          0.019000000000000003\n        ]\n      },\n      \"stage2_mesh\": {\n        \"entity_id\": \"port/compound_pinion/stage2_mesh\",\n        \"type\": \"gear_mesh\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 0.0,\n        \"depth_mm\": 4.0,\n        \"pitch_radius_mm\": 4.800000000000001,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.019200000000000002,\n          0.0,\n          0.019000000000000003\n        ]\n      }\n    },\n    \"hour_gear\": {\n      \"sleeve_bore\": {\n        \"entity_id\": \"port/hour_gear/sleeve_bore\",\n        \"type\": \"bore\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 5.99,\n        \"depth_mm\": 4.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0,\n          1.734723475976807e-18,\n          0.019000000000000003\n        ]\n      },\n      \"stage2_mesh\": {\n        \"entity_id\": \"port/hour_gear/stage2_mesh\",\n        \"type\": \"gear_mesh\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 0.0,\n        \"depth_mm\": 4.0,\n        \"pitch_radius_mm\": 19.200000000000003,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.019158891326181187,\n          0.0012557400812187487,\n          0.019000000000000003\n        ]\n      }\n    },\n    \"minute_shaft\": {\n      \"minute_gear_seat\": {\n        \"entity_id\": \"port/minute_shaft/minute_gear_seat\",\n        \"type\": \"shaft\",\n        \"axis\": [\n          0.0,\n          0.0,\n          1.0\n        ],\n        \"diameter_mm\": 4.0,\n        \"depth_mm\": 4.0,\n        \"pitch_radius_mm\": 0.0,\n        \"normal_sign\": 1.0,\n        \"world_xyz_m\": [\n          0.0,\n          0.0,\n          0.0095\n        ]\n      },\n      \"lower_journal\": {\n        \"entity_id\": \"port/minute_shaft/lower_journal\",\n        \"type\": \"shaft\",\n        \"a"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "entity_ids",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"entity_ids\",\n  \"offset\": 0,\n  \"returned\": 25,\n  \"total\": 86,\n  \"next_offset\": 25,\n  \"items\": [\n    \"link/base\",\n    \"link/minute_input_bearing\",\n    \"link/intermediate_bearing\",\n    \"link/rear_mast\",\n    \"link/lower_sleeve_bracket\",\n    \"link/upper_sleeve_bracket\",\n    \"link/sleeve_thrust_washer\",\n    \"link/lower_sleeve_bearing\",\n    \"link/upper_sleeve_bearing\",\n    \"link/minute_shaft\",\n    \"link/intermediate_shaft\",\n    \"link/hour_sleeve\",\n    \"link/minute_gear\",\n    \"link/compound_big_gear\",\n    \"link/compound_pinion\",\n    \"link/hour_gear\",\n    \"link/hour_hand\",\n    \"link/minute_hand\",\n    \"pose/place_base\",\n    \"pose/place_minute_input_bearing\",\n    \"pose/place_intermediate_bearing\",\n    \"pose/place_rear_mast\",\n    \"pose/place_lower_sleeve_bracket\",\n    \"pose/place_upper_sleeve_bracket\",\n    \"pose/place_sleeve_thrust_washer\"\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "simulation",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"simulation\",\n  \"offset\": 0,\n  \"returned\": 5,\n  \"total\": 5,\n  \"next_offset\": null,\n  \"items\": {\n    \"gravity\": [\n      0.0,\n      0.0,\n      -9.81\n    ],\n    \"timestep\": 0.0002,\n    \"solver\": \"Newton\",\n    \"iterations\": 100,\n    \"base_rests_on_plane\": true\n  }\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "relations",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"relations\",\n  \"offset\": 0,\n  \"returned\": 13,\n  \"total\": 13,\n  \"next_offset\": null,\n  \"items\": [\n    {\n      \"name\": \"stage1_tooth_contact\",\n      \"mate_type\": \"gear_spur_external\",\n      \"base_part\": \"minute_gear\",\n      \"base_port\": \"stage1_mesh\",\n      \"incoming_part\": \"compound_big_gear\",\n      \"incoming_port\": \"stage1_mesh\",\n      \"separation_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"stage2_tooth_contact\",\n      \"mate_type\": \"gear_spur_external\",\n      \"base_part\": \"hour_gear\",\n      \"base_port\": \"stage2_mesh\",\n      \"incoming_part\": \"compound_pinion\",\n      \"incoming_port\": \"stage2_mesh\",\n      \"separation_axis\": [\n        1.0,\n        0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"minute_gear_press_fit\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"minute_shaft\",\n      \"base_port\": \"minute_gear_seat\",\n      \"incoming_part\": \"minute_gear\",\n      \"incoming_port\": \"shaft_bore\"\n    },\n    {\n      \"name\": \"compound_big_press_fit\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"intermediate_shaft\",\n      \"base_port\": \"big_gear_seat\",\n      \"incoming_part\": \"compound_big_gear\",\n      \"incoming_port\": \"shaft_bore\"\n    },\n    {\n      \"name\": \"compound_pinion_press_fit\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"intermediate_shaft\",\n      \"base_port\": \"pinion_seat\",\n      \"incoming_part\": \"compound_pinion\",\n      \"incoming_port\": \"shaft_bore\"\n    },\n    {\n      \"name\": \"hour_gear_press_fit\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"hour_sleeve\",\n      \"base_port\": \"hour_gear_seat\",\n      \"incoming_part\": \"hour_gear\",\n      \"incoming_port\": \"sleeve_bore\"\n    },\n    {\n      \"name\": \"minute_hand_press_fit\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"minute_shaft\",\n      \"base_port\": \"minute_hand_seat\",\n      \"incoming_part\": \"minute_hand\",\n      \"incoming_port\": \"hub_bore\"\n    },\n    {\n      \"name\": \"hour_hand_press_fit\",\n      \"mate_type\": \"press_fit\",\n      \"base_part\": \"hour_sleeve\",\n      \"base_port\": \"hour_hand_seat\",\n      \"incoming_part\": \"hour_hand\",\n      \"incoming_port\": \"hub_bore\"\n    },\n    {\n      \"name\": \"minute_lower_journal\",\n      \"mate_type\": \"journal_bearing\",\n      \"base_part\": \"minute_input_bearing\",\n      \"base_port\": \"journal_bore\",\n      \"incoming_part\": \"minute_shaft\",\n      \"incoming_port\": \"lower_journal\"\n    },\n    {\n      \"name\": \"intermediate_lower_journal\",\n      \"mate_type\": \"journal_bearing\",\n      \"base_part\": \"intermediate_bearing\",\n      \"base_port\": \"journal_bore\",\n      \"incoming_part\": \"intermediate_shaft\",\n      \"incoming_port\": \"lower_journal\"\n    },\n    {\n      \"name\": \"hour_sleeve_lower_journal\",\n      \"mate_type\": \"journal_bearing\",\n      \"base_part\": \"lower_sleeve_bearing\",\n      \"base_port\": \"journal_bore\",\n      \"incoming_part\": \"hour_sleeve\",\n      \"incoming_port\": \"lower_outer_journal\"\n    },\n    {\n      \"name\": \"hour_sleeve_upper_journal\",\n      \"mate_type\": \"journal_bearing\",\n      \"base_part\": \"upper_sleeve_bearing\",\n      \"base_port\": \"journal_bore\",\n      \"incoming_part\": \"hour_sleeve\",\n      \"incoming_port\": \"upper_outer_journal\"\n    },\n    {\n      \"name\": \"independent_coaxial_handshaft_journal\",\n      \"mate_type\": \"journal_bearing\",\n      \"base_part\": \"hour_sleeve\",\n      \"base_port\": \"inner_journal\",\n      \"incoming_part\": \"minute_shaft\",\n      \"incoming_port\": \"sleeve_journal\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "transmissions",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"transmissions\",\n  \"offset\": 0,\n  \"returned\": 3,\n  \"total\": 3,\n  \"next_offset\": null,\n  \"items\": [\n    {\n      \"name\": \"minute_to_compound_reduction\",\n      \"type\": \"gear_external\",\n      \"driving_link\": \"minute_gear\",\n      \"driven_link\": \"compound_big_gear\"\n    },\n    {\n      \"name\": \"rigid_compound_pair\",\n      \"type\": \"compound_1to1\",\n      \"driving_link\": \"compound_big_gear\",\n      \"driven_link\": \"compound_pinion\",\n      \"ratio\": 1.0\n    },\n    {\n      \"name\": \"compound_to_hour_reduction\",\n      \"type\": \"gear_external\",\n      \"driving_link\": \"compound_pinion\",\n      \"driven_link\": \"hour_gear\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "motion_joints",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"motion_joints\",\n  \"offset\": 0,\n  \"returned\": 0,\n  \"total\": 0,\n  \"next_offset\": null,\n  \"items\": []\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "poses",
+        "offset": 0,
+        "limit": 200
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"poses\",\n  \"offset\": 0,\n  \"returned\": 18,\n  \"total\": 18,\n  \"next_offset\": null,\n  \"items\": [\n    {\n      \"name\": \"place_base\",\n      \"parent\": \"\",\n      \"child\": \"base\",\n      \"xyz_m\": [\n        0.011399999999999999,\n        -0.002,\n        0.0\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_minute_input_bearing\",\n      \"parent\": \"base\",\n      \"child\": \"minute_input_bearing\",\n      \"xyz_m\": [\n        -0.011399999999999999,\n        0.002,\n        0.004\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_intermediate_bearing\",\n      \"parent\": \"base\",\n      \"child\": \"intermediate_bearing\",\n      \"xyz_m\": [\n        0.012600000000000002,\n        0.002,\n        0.004\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_rear_mast\",\n      \"parent\": \"base\",\n      \"child\": \"rear_mast\",\n      \"xyz_m\": [\n        -0.011399999999999999,\n        -0.023200000000000002,\n        0.004\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_lower_sleeve_bracket\",\n      \"parent\": \"rear_mast\",\n      \"child\": \"lower_sleeve_bracket\",\n      \"xyz_m\": [\n        0.0,\n        0.0102,\n        0.0091\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_upper_sleeve_bracket\",\n      \"parent\": \"rear_mast\",\n      \"child\": \"upper_sleeve_bracket\",\n      \"xyz_m\": [\n        0.0,\n        0.0102,\n        0.018\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_sleeve_thrust_washer\",\n      \"parent\": \"lower_sleeve_bracket\",\n      \"child\": \"sleeve_thrust_washer\",\n      \"xyz_m\": [\n        0.0,\n        0.015000000000000001,\n        -0.001\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_lower_sleeve_bearing\",\n      \"parent\": \"lower_sleeve_bracket\",\n      \"child\": \"lower_sleeve_bearing\",\n      \"xyz_m\": [\n        0.0,\n        0.015000000000000001,\n        0.0\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_upper_sleeve_bearing\",\n      \"parent\": \"upper_sleeve_bracket\",\n      \"child\": \"upper_sleeve_bearing\",\n      \"xyz_m\": [\n        0.0,\n        0.015000000000000001,\n        0.0\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_minute_shaft\",\n      \"parent\": \"minute_input_bearing\",\n      \"child\": \"minute_shaft\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.0\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_intermediate_shaft\",\n      \"parent\": \"intermediate_bearing\",\n      \"child\": \"intermediate_shaft\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.0\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_hour_sleeve\",\n      \"parent\": \"lower_sleeve_bearing\",\n      \"child\": \"hour_sleeve\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        -0.0005\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_minute_gear\",\n      \"parent\": \"minute_shaft\",\n      \"child\": \"minute_gear\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.0035\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.0\n      ]\n    },\n    {\n      \"name\": \"place_compound_big_gear\",\n      \"parent\": \"intermediate_shaft\",\n      \"child\": \"compound_big_gear\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.0035\n      ],\n      \"rpy_rad\": [\n        0.0,\n        -0.0,\n        0.06981317007977318\n      ]\n    },\n    {\n      \"name\": \"place_compound_pinion\",\n      \"parent\": \"intermediate_shaft\",\n      \"child\": \"compound_pinion\",\n      \"xyz_m\": [\n        0.0,\n        0.0,\n        0.013\n      ],\n      \"rp"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "entity_ids",
+        "offset": 25,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"entity_ids\",\n  \"offset\": 25,\n  \"returned\": 25,\n  \"total\": 86,\n  \"next_offset\": 50,\n  \"items\": [\n    \"pose/place_lower_sleeve_bearing\",\n    \"pose/place_upper_sleeve_bearing\",\n    \"pose/place_minute_shaft\",\n    \"pose/place_intermediate_shaft\",\n    \"pose/place_hour_sleeve\",\n    \"pose/place_minute_gear\",\n    \"pose/place_compound_big_gear\",\n    \"pose/place_compound_pinion\",\n    \"pose/place_hour_gear\",\n    \"pose/place_hour_hand\",\n    \"pose/place_minute_hand\",\n    \"port/minute_gear/shaft_bore\",\n    \"port/minute_gear/stage1_mesh\",\n    \"port/compound_big_gear/shaft_bore\",\n    \"port/compound_big_gear/stage1_mesh\",\n    \"port/compound_pinion/shaft_bore\",\n    \"port/compound_pinion/stage2_mesh\",\n    \"port/hour_gear/sleeve_bore\",\n    \"port/hour_gear/stage2_mesh\",\n    \"port/minute_shaft/minute_gear_seat\",\n    \"port/minute_shaft/lower_journal\",\n    \"port/minute_shaft/sleeve_journal\",\n    \"port/minute_shaft/minute_hand_seat\",\n    \"port/intermediate_shaft/big_gear_seat\",\n    \"port/intermediate_shaft/pinion_seat\"\n  ]\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "minute_gear",
+        "port_a": "stage1_mesh",
+        "b": "compound_big_gear",
+        "port_b": "stage1_mesh"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/minute_gear/stage1_mesh/compound_big_gear/stage1_mesh\",\n  \"radial_offset_mm\": 1.2563818812900351,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": null,\n  \"fit_sign\": \"not_shaft_bore\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "hour_gear",
+        "port_a": "stage2_mesh",
+        "b": "compound_pinion",
+        "port_b": "stage2_mesh"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/hour_gear/stage2_mesh/compound_pinion/stage2_mesh\",\n  \"radial_offset_mm\": 1.2564127803562057,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": null,\n  \"fit_sign\": \"not_shaft_bore\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "minute_shaft",
+        "port_a": "minute_gear_seat",
+        "b": "minute_gear",
+        "port_b": "shaft_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/minute_shaft/minute_gear_seat/minute_gear/shaft_bore\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": -0.009999999999999787,\n  \"fit_sign\": \"interference\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "intermediate_shaft",
+        "port_a": "big_gear_seat",
+        "b": "compound_big_gear",
+        "port_b": "shaft_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/intermediate_shaft/big_gear_seat/compound_big_gear/shaft_bore\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": -0.009999999999999787,\n  \"fit_sign\": \"interference\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "intermediate_shaft",
+        "port_a": "pinion_seat",
+        "b": "compound_pinion",
+        "port_b": "shaft_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/intermediate_shaft/pinion_seat/compound_pinion/shaft_bore\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 3.469446951953614e-15,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": -0.009999999999999787,\n  \"fit_sign\": \"interference\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "hour_sleeve",
+        "port_a": "hour_gear_seat",
+        "b": "hour_gear",
+        "port_b": "sleeve_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/hour_sleeve/hour_gear_seat/hour_gear/sleeve_bore\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 3.469446951953614e-15,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": -0.009999999999999787,\n  \"fit_sign\": \"interference\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "minute_shaft",
+        "port_a": "minute_hand_seat",
+        "b": "minute_hand",
+        "port_b": "hub_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/minute_shaft/minute_hand_seat/minute_hand/hub_bore\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": -0.009999999999999787,\n  \"fit_sign\": \"interference\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "hour_sleeve",
+        "port_a": "hour_hand_seat",
+        "b": "hour_hand",
+        "port_b": "hub_bore"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/hour_sleeve/hour_hand_seat/hour_hand/hub_bore\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": -0.009999999999999787,\n  \"fit_sign\": \"interference\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "minute_input_bearing",
+        "port_a": "journal_bore",
+        "b": "minute_shaft",
+        "port_b": "lower_journal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/minute_input_bearing/journal_bore/minute_shaft/lower_journal\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.09999999999999964,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "intermediate_bearing",
+        "port_a": "journal_bore",
+        "b": "intermediate_shaft",
+        "port_b": "lower_journal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/intermediate_bearing/journal_bore/intermediate_shaft/lower_journal\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.09999999999999964,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "lower_sleeve_bearing",
+        "port_a": "journal_bore",
+        "b": "hour_sleeve",
+        "port_b": "lower_outer_journal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/lower_sleeve_bearing/journal_bore/hour_sleeve/lower_outer_journal\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.09999999999999964,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "upper_sleeve_bearing",
+        "port_a": "journal_bore",
+        "b": "hour_sleeve",
+        "port_b": "upper_outer_journal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/upper_sleeve_bearing/journal_bore/hour_sleeve/upper_outer_journal\",\n  \"radial_offset_mm\": 0.0,\n  \"axial_offset_mm\": 0.0,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.09999999999999964,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "query_port_fit",
+      "arguments": {
+        "a": "hour_sleeve",
+        "port_a": "inner_journal",
+        "b": "minute_shaft",
+        "port_b": "sleeve_journal"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"fit/hour_sleeve/inner_journal/minute_shaft/sleeve_journal\",\n  \"radial_offset_mm\": 1.734723475976807e-15,\n  \"axial_offset_mm\": 3.469446951953614e-15,\n  \"axis_cos\": 1.0,\n  \"diametral_clearance_mm\": 0.09999999999999964,\n  \"fit_sign\": \"clearance\"\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "entity_ids",
+        "offset": 50,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"entity_ids\",\n  \"offset\": 50,\n  \"returned\": 25,\n  \"total\": 86,\n  \"next_offset\": 75,\n  \"items\": [\n    \"port/intermediate_shaft/lower_journal\",\n    \"port/hour_sleeve/inner_journal\",\n    \"port/hour_sleeve/lower_outer_journal\",\n    \"port/hour_sleeve/upper_outer_journal\",\n    \"port/hour_sleeve/hour_gear_seat\",\n    \"port/hour_sleeve/hour_hand_seat\",\n    \"port/minute_input_bearing/journal_bore\",\n    \"port/intermediate_bearing/journal_bore\",\n    \"port/lower_sleeve_bearing/journal_bore\",\n    \"port/upper_sleeve_bearing/journal_bore\",\n    \"port/minute_hand/hub_bore\",\n    \"port/hour_hand/hub_bore\",\n    \"relation/stage1_tooth_contact\",\n    \"relation/stage2_tooth_contact\",\n    \"relation/minute_gear_press_fit\",\n    \"relation/compound_big_press_fit\",\n    \"relation/compound_pinion_press_fit\",\n    \"relation/hour_gear_press_fit\",\n    \"relation/minute_hand_press_fit\",\n    \"relation/hour_hand_press_fit\",\n    \"relation/minute_lower_journal\",\n    \"relation/intermediate_lower_journal\",\n    \"relation/hour_sleeve_lower_journal\",\n    \"relation/hour_sleeve_upper_journal\",\n    \"relation/independent_coaxial_handshaft_journal\"\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "minute_shaft",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"minute_shaft\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 14.380804026136646,\n  \"items\": [\n    {\n      \"part\": \"base\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/base/minute_shaft\"\n    },\n    {\n      \"part\": \"minute_input_bearing\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/minute_input_bearing/minute_shaft\"\n    },\n    {\n      \"part\": \"sleeve_thrust_washer\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/minute_shaft/sleeve_thrust_washer\"\n    },\n    {\n      \"part\": \"lower_sleeve_bearing\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/lower_sleeve_bearing/minute_shaft\"\n    },\n    {\n      \"part\": \"upper_sleeve_bearing\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/minute_shaft/upper_sleeve_bearing\"\n    },\n    {\n      \"part\": \"hour_sleeve\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_sleeve/minute_shaft\"\n    },\n    {\n      \"part\": \"minute_gear\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/minute_gear/minute_shaft\"\n    },\n    {\n      \"part\": \"hour_gear\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_gear/minute_shaft\"\n    },\n    {\n      \"part\": \"hour_hand\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_hand/minute_shaft\"\n    },\n    {\n      \"part\": \"minute_hand\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/minute_hand/minute_shaft\"\n    },\n    {\n      \"part\": \"compound_big_gear\",\n      \"aabb_surface_distance_mm\": 1.9552921246747594,\n      \"fact_id\": \"nearby/compound_big_gear/minute_shaft\"\n    },\n    {\n      \"part\": \"lower_sleeve_bracket\",\n      \"aabb_surface_distance_mm\": 2.8006218671798706,\n      \"fact_id\": \"nearby/lower_sleeve_bracket/minute_shaft\"\n    },\n    {\n      \"part\": \"upper_sleeve_bracket\",\n      \"aabb_surface_distance_mm\": 2.8006218671798706,\n      \"fact_id\": \"nearby/minute_shaft/upper_sleeve_bracket\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "intermediate_shaft",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"intermediate_shaft\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 9.433849356477003,\n  \"items\": [\n    {\n      \"part\": \"base\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/base/intermediate_shaft\"\n    },\n    {\n      \"part\": \"intermediate_bearing\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/intermediate_bearing/intermediate_shaft\"\n    },\n    {\n      \"part\": \"compound_big_gear\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/compound_big_gear/intermediate_shaft\"\n    },\n    {\n      \"part\": \"compound_pinion\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/compound_pinion/intermediate_shaft\"\n    },\n    {\n      \"part\": \"hour_gear\",\n      \"aabb_surface_distance_mm\": 0.7395693937182841,\n      \"fact_id\": \"nearby/hour_gear/intermediate_shaft\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "hour_sleeve",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"hour_sleeve\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 9.679070348969919,\n  \"items\": [\n    {\n      \"part\": \"sleeve_thrust_washer\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_sleeve/sleeve_thrust_washer\"\n    },\n    {\n      \"part\": \"lower_sleeve_bearing\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_sleeve/lower_sleeve_bearing\"\n    },\n    {\n      \"part\": \"upper_sleeve_bearing\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_sleeve/upper_sleeve_bearing\"\n    },\n    {\n      \"part\": \"minute_shaft\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_sleeve/minute_shaft\"\n    },\n    {\n      \"part\": \"hour_gear\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_gear/hour_sleeve\"\n    },\n    {\n      \"part\": \"hour_hand\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_hand/hour_sleeve\"\n    },\n    {\n      \"part\": \"minute_hand\",\n      \"aabb_surface_distance_mm\": 0.20000038146972443,\n      \"fact_id\": \"nearby/hour_sleeve/minute_hand\"\n    },\n    {\n      \"part\": \"minute_gear\",\n      \"aabb_surface_distance_mm\": 1.0999999999999996,\n      \"fact_id\": \"nearby/hour_sleeve/minute_gear\"\n    },\n    {\n      \"part\": \"compound_big_gear\",\n      \"aabb_surface_distance_mm\": 1.4569087285981972,\n      \"fact_id\": \"nearby/compound_big_gear/hour_sleeve\"\n    },\n    {\n      \"part\": \"lower_sleeve_bracket\",\n      \"aabb_surface_distance_mm\": 1.8009326457977313,\n      \"fact_id\": \"nearby/hour_sleeve/lower_sleeve_bracket\"\n    },\n    {\n      \"part\": \"upper_sleeve_bracket\",\n      \"aabb_surface_distance_mm\": 1.8009326457977313,\n      \"fact_id\": \"nearby/hour_sleeve/upper_sleeve_bracket\"\n    },\n    {\n      \"part\": \"minute_input_bearing\",\n      \"aabb_surface_distance_mm\": 5.6,\n      \"fact_id\": \"nearby/hour_sleeve/minute_input_bearing\"\n    },\n    {\n      \"part\": \"base\",\n      \"aabb_surface_distance_mm\": 8.6,\n      \"fact_id\": \"nearby/base/hour_sleeve\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "minute_gear",
+        "target": "compound_big_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"minute_gear\",\n    \"compound_big_gear\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "compound_big_gear",
+        "target": "compound_pinion"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"compound_big_gear\",\n    \"intermediate_shaft\",\n    \"compound_pinion\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "compound_pinion",
+        "target": "hour_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"compound_pinion\",\n    \"hour_gear\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "minute_shaft",
+        "target": "minute_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"minute_shaft\",\n    \"minute_gear\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "intermediate_shaft",
+        "target": "compound_big_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"intermediate_shaft\",\n    \"compound_big_gear\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "intermediate_shaft",
+        "target": "compound_pinion"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"intermediate_shaft\",\n    \"compound_pinion\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "hour_sleeve",
+        "target": "hour_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"hour_sleeve\",\n    \"hour_gear\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "minute_shaft",
+        "target": "minute_hand"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"minute_shaft\",\n    \"minute_hand\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "hour_sleeve",
+        "target": "hour_hand"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"hour_sleeve\",\n    \"hour_hand\"\n  ]\n}"
+    },
+    {
+      "name": "query_motion_path",
+      "arguments": {
+        "source": "minute_shaft",
+        "target": "hour_sleeve"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"path\": [\n    \"minute_shaft\",\n    \"hour_sleeve\"\n  ]\n}"
+    },
+    {
+      "name": "read_mjcf_facts",
+      "arguments": {
+        "section": "entity_ids",
+        "offset": 75,
+        "limit": 100
+      },
+      "is_error": false,
+      "result": "{\n  \"section\": \"entity_ids\",\n  \"offset\": 75,\n  \"returned\": 11,\n  \"total\": 86,\n  \"next_offset\": null,\n  \"items\": [\n    \"transmission/minute_to_compound_reduction\",\n    \"transmission/rigid_compound_pair\",\n    \"transmission/compound_to_hour_reduction\",\n    \"role/driver/minute_gear\",\n    \"role/output/hour_hand\",\n    \"role/watch/minute_gear\",\n    \"role/watch/compound_big_gear\",\n    \"role/watch/compound_pinion\",\n    \"role/watch/hour_gear\",\n    \"role/watch/minute_hand\",\n    \"role/watch/hour_hand\"\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "minute_gear",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"minute_gear\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 9.790366348339107,\n  \"items\": [\n    {\n      \"part\": \"minute_shaft\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/minute_gear/minute_shaft\"\n    },\n    {\n      \"part\": \"compound_big_gear\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/compound_big_gear/minute_gear\"\n    },\n    {\n      \"part\": \"minute_input_bearing\",\n      \"aabb_surface_distance_mm\": 0.5,\n      \"fact_id\": \"nearby/minute_gear/minute_input_bearing\"\n    },\n    {\n      \"part\": \"sleeve_thrust_washer\",\n      \"aabb_surface_distance_mm\": 0.5999999999999996,\n      \"fact_id\": \"nearby/minute_gear/sleeve_thrust_washer\"\n    },\n    {\n      \"part\": \"hour_sleeve\",\n      \"aabb_surface_distance_mm\": 1.0999999999999996,\n      \"fact_id\": \"nearby/hour_sleeve/minute_gear\"\n    },\n    {\n      \"part\": \"lower_sleeve_bracket\",\n      \"aabb_surface_distance_mm\": 1.6000000000000014,\n      \"fact_id\": \"nearby/lower_sleeve_bracket/minute_gear\"\n    },\n    {\n      \"part\": \"lower_sleeve_bearing\",\n      \"aabb_surface_distance_mm\": 1.6000000000000014,\n      \"fact_id\": \"nearby/lower_sleeve_bearing/minute_gear\"\n    },\n    {\n      \"part\": \"base\",\n      \"aabb_surface_distance_mm\": 3.5,\n      \"fact_id\": \"nearby/base/minute_gear\"\n    },\n    {\n      \"part\": \"hour_gear\",\n      \"aabb_surface_distance_mm\": 5.5,\n      \"fact_id\": \"nearby/hour_gear/minute_gear\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "compound_big_gear",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"compound_big_gear\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 26.652280696135144,\n  \"items\": [\n    {\n      \"part\": \"intermediate_shaft\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/compound_big_gear/intermediate_shaft\"\n    },\n    {\n      \"part\": \"minute_gear\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/compound_big_gear/minute_gear\"\n    },\n    {\n      \"part\": \"minute_input_bearing\",\n      \"aabb_surface_distance_mm\": 0.5,\n      \"fact_id\": \"nearby/compound_big_gear/minute_input_bearing\"\n    },\n    {\n      \"part\": \"intermediate_bearing\",\n      \"aabb_surface_distance_mm\": 0.5,\n      \"fact_id\": \"nearby/compound_big_gear/intermediate_bearing\"\n    },\n    {\n      \"part\": \"sleeve_thrust_washer\",\n      \"aabb_surface_distance_mm\": 0.5999999999999996,\n      \"fact_id\": \"nearby/compound_big_gear/sleeve_thrust_washer\"\n    },\n    {\n      \"part\": \"hour_sleeve\",\n      \"aabb_surface_distance_mm\": 1.4569087285981972,\n      \"fact_id\": \"nearby/compound_big_gear/hour_sleeve\"\n    },\n    {\n      \"part\": \"lower_sleeve_bearing\",\n      \"aabb_surface_distance_mm\": 1.6000000000000014,\n      \"fact_id\": \"nearby/compound_big_gear/lower_sleeve_bearing\"\n    },\n    {\n      \"part\": \"minute_shaft\",\n      \"aabb_surface_distance_mm\": 1.9552921246747594,\n      \"fact_id\": \"nearby/compound_big_gear/minute_shaft\"\n    },\n    {\n      \"part\": \"lower_sleeve_bracket\",\n      \"aabb_surface_distance_mm\": 2.930607346180975,\n      \"fact_id\": \"nearby/compound_big_gear/lower_sleeve_bracket\"\n    },\n    {\n      \"part\": \"base\",\n      \"aabb_surface_distance_mm\": 3.5,\n      \"fact_id\": \"nearby/base/compound_big_gear\"\n    },\n    {\n      \"part\": \"rear_mast\",\n      \"aabb_surface_distance_mm\": 4.388381964179629,\n      \"fact_id\": \"nearby/compound_big_gear/rear_mast\"\n    },\n    {\n      \"part\": \"compound_pinion\",\n      \"aabb_surface_distance_mm\": 5.5,\n      \"fact_id\": \"nearby/compound_big_gear/compound_pinion\"\n    },\n    {\n      \"part\": \"hour_gear\",\n      \"aabb_surface_distance_mm\": 5.5,\n      \"fact_id\": \"nearby/compound_big_gear/hour_gear\"\n    },\n    {\n      \"part\": \"upper_sleeve_bearing\",\n      \"aabb_surface_distance_mm\": 10.5,\n      \"fact_id\": \"nearby/compound_big_gear/upper_sleeve_bearing\"\n    },\n    {\n      \"part\": \"upper_sleeve_bracket\",\n      \"aabb_surface_distance_mm\": 10.783249019543687,\n      \"fact_id\": \"nearby/compound_big_gear/upper_sleeve_bracket\"\n    },\n    {\n      \"part\": \"hour_hand\",\n      \"aabb_surface_distance_mm\": 14.500000000000004,\n      \"fact_id\": \"nearby/compound_big_gear/hour_hand\"\n    },\n    {\n      \"part\": \"minute_hand\",\n      \"aabb_surface_distance_mm\": 18.700036518070867,\n      \"fact_id\": \"nearby/compound_big_gear/minute_hand\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "compound_pinion",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"compound_pinion\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 8.140457024294644,\n  \"items\": [\n    {\n      \"part\": \"intermediate_shaft\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/compound_pinion/intermediate_shaft\"\n    },\n    {\n      \"part\": \"hour_gear\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/compound_pinion/hour_gear\"\n    },\n    {\n      \"part\": \"compound_big_gear\",\n      \"aabb_surface_distance_mm\": 5.5,\n      \"fact_id\": \"nearby/compound_big_gear/compound_pinion\"\n    },\n    {\n      \"part\": \"hour_hand\",\n      \"aabb_surface_distance_mm\": 8.04047668572285,\n      \"fact_id\": \"nearby/compound_pinion/hour_hand\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "hour_gear",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"hour_gear\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 28.348511468166524,\n  \"items\": [\n    {\n      \"part\": \"minute_shaft\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_gear/minute_shaft\"\n    },\n    {\n      \"part\": \"hour_sleeve\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_gear/hour_sleeve\"\n    },\n    {\n      \"part\": \"compound_pinion\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/compound_pinion/hour_gear\"\n    },\n    {\n      \"part\": \"intermediate_shaft\",\n      \"aabb_surface_distance_mm\": 0.7395693937182841,\n      \"fact_id\": \"nearby/hour_gear/intermediate_shaft\"\n    },\n    {\n      \"part\": \"lower_sleeve_bracket\",\n      \"aabb_surface_distance_mm\": 0.8999999999999986,\n      \"fact_id\": \"nearby/hour_gear/lower_sleeve_bracket\"\n    },\n    {\n      \"part\": \"lower_sleeve_bearing\",\n      \"aabb_surface_distance_mm\": 0.8999999999999986,\n      \"fact_id\": \"nearby/hour_gear/lower_sleeve_bearing\"\n    },\n    {\n      \"part\": \"upper_sleeve_bracket\",\n      \"aabb_surface_distance_mm\": 1.0,\n      \"fact_id\": \"nearby/hour_gear/upper_sleeve_bracket\"\n    },\n    {\n      \"part\": \"upper_sleeve_bearing\",\n      \"aabb_surface_distance_mm\": 1.0,\n      \"fact_id\": \"nearby/hour_gear/upper_sleeve_bearing\"\n    },\n    {\n      \"part\": \"rear_mast\",\n      \"aabb_surface_distance_mm\": 2.4395693937182834,\n      \"fact_id\": \"nearby/hour_gear/rear_mast\"\n    },\n    {\n      \"part\": \"sleeve_thrust_washer\",\n      \"aabb_surface_distance_mm\": 4.4,\n      \"fact_id\": \"nearby/hour_gear/sleeve_thrust_washer\"\n    },\n    {\n      \"part\": \"hour_hand\",\n      \"aabb_surface_distance_mm\": 5.0000000000000036,\n      \"fact_id\": \"nearby/hour_gear/hour_hand\"\n    },\n    {\n      \"part\": \"minute_gear\",\n      \"aabb_surface_distance_mm\": 5.5,\n      \"fact_id\": \"nearby/hour_gear/minute_gear\"\n    },\n    {\n      \"part\": \"compound_big_gear\",\n      \"aabb_surface_distance_mm\": 5.5,\n      \"fact_id\": \"nearby/compound_big_gear/hour_gear\"\n    },\n    {\n      \"part\": \"minute_hand\",\n      \"aabb_surface_distance_mm\": 9.2,\n      \"fact_id\": \"nearby/hour_gear/minute_hand\"\n    },\n    {\n      \"part\": \"minute_input_bearing\",\n      \"aabb_surface_distance_mm\": 10.0,\n      \"fact_id\": \"nearby/hour_gear/minute_input_bearing\"\n    },\n    {\n      \"part\": \"intermediate_bearing\",\n      \"aabb_surface_distance_mm\": 10.0,\n      \"fact_id\": \"nearby/hour_gear/intermediate_bearing\"\n    },\n    {\n      \"part\": \"base\",\n      \"aabb_surface_distance_mm\": 13.0,\n      \"fact_id\": \"nearby/base/hour_gear\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "minute_hand",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"minute_hand\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 11.083518543090904,\n  \"items\": [\n    {\n      \"part\": \"minute_shaft\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/minute_hand/minute_shaft\"\n    },\n    {\n      \"part\": \"hour_sleeve\",\n      \"aabb_surface_distance_mm\": 0.20000038146972443,\n      \"fact_id\": \"nearby/hour_sleeve/minute_hand\"\n    },\n    {\n      \"part\": \"hour_hand\",\n      \"aabb_surface_distance_mm\": 3.1999999999999957,\n      \"fact_id\": \"nearby/hour_hand/minute_hand\"\n    },\n    {\n      \"part\": \"upper_sleeve_bearing\",\n      \"aabb_surface_distance_mm\": 5.199999999999999,\n      \"fact_id\": \"nearby/minute_hand/upper_sleeve_bearing\"\n    },\n    {\n      \"part\": \"upper_sleeve_bracket\",\n      \"aabb_surface_distance_mm\": 5.274110170397913,\n      \"fact_id\": \"nearby/minute_hand/upper_sleeve_bracket\"\n    },\n    {\n      \"part\": \"hour_gear\",\n      \"aabb_surface_distance_mm\": 9.2,\n      \"fact_id\": \"nearby/hour_gear/minute_hand\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_nearby_parts",
+      "arguments": {
+        "part": "hour_hand",
+        "radius_mm": 1
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"part\": \"hour_hand\",\n  \"requested_radius_mm\": 1.0,\n  \"effective_radius_mm\": 8.95773943740244,\n  \"items\": [\n    {\n      \"part\": \"minute_shaft\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_hand/minute_shaft\"\n    },\n    {\n      \"part\": \"hour_sleeve\",\n      \"aabb_surface_distance_mm\": 0.0,\n      \"fact_id\": \"nearby/hour_hand/hour_sleeve\"\n    },\n    {\n      \"part\": \"upper_sleeve_bracket\",\n      \"aabb_surface_distance_mm\": 1.0000000000000036,\n      \"fact_id\": \"nearby/hour_hand/upper_sleeve_bracket\"\n    },\n    {\n      \"part\": \"upper_sleeve_bearing\",\n      \"aabb_surface_distance_mm\": 1.0000000000000036,\n      \"fact_id\": \"nearby/hour_hand/upper_sleeve_bearing\"\n    },\n    {\n      \"part\": \"minute_hand\",\n      \"aabb_surface_distance_mm\": 3.1999999999999957,\n      \"fact_id\": \"nearby/hour_hand/minute_hand\"\n    },\n    {\n      \"part\": \"hour_gear\",\n      \"aabb_surface_distance_mm\": 5.0000000000000036,\n      \"fact_id\": \"nearby/hour_gear/hour_hand\"\n    },\n    {\n      \"part\": \"compound_pinion\",\n      \"aabb_surface_distance_mm\": 8.04047668572285,\n      \"fact_id\": \"nearby/compound_pinion/hour_hand\"\n    }\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_gear",
+        "b": "compound_big_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/compound_big_gear/minute_gear\",\n  \"origin_distance_mm\": 24.0,\n  \"surface_distance_mm\": 0.0,\n  \"aabb_overlap_extents_mm\": [\n    1.5794135568493601,\n    13.590866088867188,\n    4.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9975640502598242,\n      -0.0697564737441253,\n      0.0,\n      0.024\n    ],\n    [\n      0.0697564737441253,\n      0.9975640502598242,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    13.516414165496826,\n    13.590866088867188,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    37.574289321899414,\n    37.59719467163086,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "compound_pinion",
+        "b": "hour_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/compound_pinion/hour_gear\",\n  \"origin_distance_mm\": 24.0,\n  \"surface_distance_mm\": 0.0,\n  \"aabb_overlap_extents_mm\": [\n    1.5602278375683696,\n    11.159483909606934,\n    4.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9978589232386035,\n      -0.06540312923014306,\n      0.0,\n      -0.024\n    ],\n    [\n      0.06540312923014306,\n      0.9978589232386035,\n      0.0,\n      1.734723475976807e-18\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    11.159483909606934,\n    11.159483909606934,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    39.99095153808594,\n    39.99095153808594,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "hour_sleeve"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_sleeve/minute_shaft\",\n  \"origin_distance_mm\": 8.6,\n  \"surface_distance_mm\": 0.04999991922200206,\n  \"aabb_overlap_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    17.399999618530273\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      1.734723475976807e-18\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0086\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    28.200000762939453\n  ],\n  \"b_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    17.399999618530273\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "base"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/base/minute_shaft\",\n  \"origin_distance_mm\": 12.245815611873306,\n  \"surface_distance_mm\": 0.0,\n  \"aabb_overlap_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.011399999999999999\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.002\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.004\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    28.200000762939453\n  ],\n  \"b_extents_mm\": [\n    71.19999694824219,\n    52.400001525878906,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "minute_input_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/minute_input_bearing/minute_shaft\",\n  \"origin_distance_mm\": 0.0,\n  \"surface_distance_mm\": 0.04998437825982048,\n  \"aabb_overlap_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    3.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    28.200000762939453\n  ],\n  \"b_extents_mm\": [\n    9.0,\n    8.99720287322998,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "sleeve_thrust_washer"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/minute_shaft/sleeve_thrust_washer\",\n  \"origin_distance_mm\": 8.1,\n  \"surface_distance_mm\": 0.09999986123853849,\n  \"aabb_overlap_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    0.5\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      1.734723475976807e-18\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0081\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    28.200000762939453\n  ],\n  \"b_extents_mm\": [\n    8.0,\n    7.997513294219971,\n    0.5\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "lower_sleeve_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/lower_sleeve_bearing/minute_shaft\",\n  \"origin_distance_mm\": 9.1,\n  \"surface_distance_mm\": 1.0499998417316407,\n  \"aabb_overlap_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    3.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      1.734723475976807e-18\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0091\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    28.200000762939453\n  ],\n  \"b_extents_mm\": [\n    9.600000381469727,\n    9.597016334533691,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "upper_sleeve_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/minute_shaft/upper_sleeve_bearing\",\n  \"origin_distance_mm\": 18.0,\n  \"surface_distance_mm\": 1.0499998417316407,\n  \"aabb_overlap_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    3.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      1.734723475976807e-18\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.018\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    28.200000762939453\n  ],\n  \"b_extents_mm\": [\n    9.600000381469727,\n    9.597016334533691,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "minute_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/minute_gear/minute_shaft\",\n  \"origin_distance_mm\": 3.4999999999999996,\n  \"surface_distance_mm\": 0.004998346897654556,\n  \"aabb_overlap_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    4.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0034999999999999996\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    28.200000762939453\n  ],\n  \"b_extents_mm\": [\n    13.516414165496826,\n    13.590866088867188,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "hour_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_gear/minute_shaft\",\n  \"origin_distance_mm\": 13.000000000000002,\n  \"surface_distance_mm\": 0.9954905771342325,\n  \"aabb_overlap_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    4.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9978589232386035,\n      -0.06540312923014306,\n      0.0,\n      0.0\n    ],\n    [\n      0.06540312923014306,\n      0.9978589232386035,\n      0.0,\n      1.734723475976807e-18\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.013000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    28.200000762939453\n  ],\n  \"b_extents_mm\": [\n    39.99095153808594,\n    39.99095153808594,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "hour_hand"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_hand/minute_shaft\",\n  \"origin_distance_mm\": 22.000000000000004,\n  \"surface_distance_mm\": 0.9953887530375587,\n  \"aabb_overlap_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    1.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.573576436351046,\n      0.8191520442889918,\n      0.0,\n      0.0\n    ],\n    [\n      -0.8191520442889918,\n      0.573576436351046,\n      0.0,\n      1.734723475976807e-18\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.022000000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    28.200000762939453\n  ],\n  \"b_extents_mm\": [\n    7.99777364730835,\n    16.0,\n    1.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "minute_hand"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/minute_hand/minute_shaft\",\n  \"origin_distance_mm\": 26.2,\n  \"surface_distance_mm\": 0.00453328425958872,\n  \"aabb_overlap_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    1.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9659258262890683,\n      -0.25881904510252074,\n      0.0,\n      0.0\n    ],\n    [\n      0.25881904510252074,\n      0.9659258262890683,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.026199999999999998\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    28.200000762939453\n  ],\n  \"b_extents_mm\": [\n    6.398244380950928,\n    21.200000047683716,\n    1.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "compound_big_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/compound_big_gear/minute_shaft\",\n  \"origin_distance_mm\": 24.253865671269807,\n  \"surface_distance_mm\": 3.7622969681180134,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    3.9987566471099854,\n    4.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9975640502598242,\n      -0.0697564737441253,\n      0.0,\n      0.024\n    ],\n    [\n      0.0697564737441253,\n      0.9975640502598242,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0034999999999999996\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    28.200000762939453\n  ],\n  \"b_extents_mm\": [\n    37.574289321899414,\n    37.59719467163086,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "lower_sleeve_bracket"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/lower_sleeve_bracket/minute_shaft\",\n  \"origin_distance_mm\": 17.5445148123281,\n  \"surface_distance_mm\": 3.0295040282901353,\n  \"aabb_overlap_extents_mm\": [\n    3.0,\n    0.0,\n    3.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.015\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0091\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    28.200000762939453\n  ],\n  \"b_extents_mm\": [\n    3.0,\n    20.399999618530273,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_shaft",
+        "b": "upper_sleeve_bracket"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/minute_shaft/upper_sleeve_bracket\",\n  \"origin_distance_mm\": 23.430749027719962,\n  \"surface_distance_mm\": 3.0295040282901353,\n  \"aabb_overlap_extents_mm\": [\n    3.0,\n    0.0,\n    3.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.015\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.018\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    28.200000762939453\n  ],\n  \"b_extents_mm\": [\n    3.0,\n    20.399999618530273,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_shaft",
+        "b": "base"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/base/intermediate_shaft\",\n  \"origin_distance_mm\": 13.370115930686616,\n  \"surface_distance_mm\": 0.0,\n  \"aabb_overlap_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      -0.012600000000000002\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.002\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.004\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    18.0\n  ],\n  \"b_extents_mm\": [\n    71.19999694824219,\n    52.400001525878906,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_shaft",
+        "b": "intermediate_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/intermediate_bearing/intermediate_shaft\",\n  \"origin_distance_mm\": 0.0,\n  \"surface_distance_mm\": 0.04998437825982164,\n  \"aabb_overlap_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    3.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    18.0\n  ],\n  \"b_extents_mm\": [\n    9.0,\n    8.99720287322998,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_shaft",
+        "b": "compound_big_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/compound_big_gear/intermediate_shaft\",\n  \"origin_distance_mm\": 3.4999999999999996,\n  \"surface_distance_mm\": 0.004403065778859757,\n  \"aabb_overlap_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    4.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9975640502598242,\n      -0.0697564737441253,\n      0.0,\n      0.0\n    ],\n    [\n      0.0697564737441253,\n      0.9975640502598242,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0034999999999999996\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    18.0\n  ],\n  \"b_extents_mm\": [\n    37.574289321899414,\n    37.59719467163086,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_shaft",
+        "b": "compound_pinion"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/compound_pinion/intermediate_shaft\",\n  \"origin_distance_mm\": 13.000000000000002,\n  \"surface_distance_mm\": 0.004998346477073418,\n  \"aabb_overlap_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    4.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.013000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    18.0\n  ],\n  \"b_extents_mm\": [\n    11.159483909606934,\n    11.159483909606934,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "intermediate_shaft",
+        "b": "hour_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_gear/intermediate_shaft\",\n  \"origin_distance_mm\": 27.294688127912362,\n  \"surface_distance_mm\": 2.1159076246159514,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    3.9987566471099854,\n    4.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9978589232386035,\n      -0.06540312923014306,\n      0.0,\n      -0.024\n    ],\n    [\n      0.06540312923014306,\n      0.9978589232386035,\n      0.0,\n      1.734723475976807e-18\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.013000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    4.0,\n    3.9987566471099854,\n    18.0\n  ],\n  \"b_extents_mm\": [\n    39.99095153808594,\n    39.99095153808594,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_sleeve",
+        "b": "sleeve_thrust_washer"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_sleeve/sleeve_thrust_washer\",\n  \"origin_distance_mm\": 0.5000000000000004,\n  \"surface_distance_mm\": 0.0,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0005000000000000004\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    17.399999618530273\n  ],\n  \"b_extents_mm\": [\n    8.0,\n    7.997513294219971,\n    0.5\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_sleeve",
+        "b": "lower_sleeve_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_sleeve/lower_sleeve_bearing\",\n  \"origin_distance_mm\": 0.5000000000000004,\n  \"surface_distance_mm\": 0.04999978864447265,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    3.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0005000000000000004\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    17.399999618530273\n  ],\n  \"b_extents_mm\": [\n    9.600000381469727,\n    9.597016334533691,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_sleeve",
+        "b": "upper_sleeve_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_sleeve/upper_sleeve_bearing\",\n  \"origin_distance_mm\": 9.399999999999999,\n  \"surface_distance_mm\": 0.04999978864447265,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    3.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.009399999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    17.399999618530273\n  ],\n  \"b_extents_mm\": [\n    9.600000381469727,\n    9.597016334533691,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_sleeve",
+        "b": "hour_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_gear/hour_sleeve\",\n  \"origin_distance_mm\": 4.400000000000001,\n  \"surface_distance_mm\": 0.004198288428899603,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    4.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9978589232386035,\n      -0.06540312923014306,\n      0.0,\n      0.0\n    ],\n    [\n      0.06540312923014306,\n      0.9978589232386035,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.004400000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    17.399999618530273\n  ],\n  \"b_extents_mm\": [\n    39.99095153808594,\n    39.99095153808594,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_sleeve",
+        "b": "hour_hand"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_hand/hour_sleeve\",\n  \"origin_distance_mm\": 13.400000000000002,\n  \"surface_distance_mm\": 0.004300102324439357,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    1.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.573576436351046,\n      0.8191520442889918,\n      0.0,\n      0.0\n    ],\n    [\n      -0.8191520442889918,\n      0.573576436351046,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.013400000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    17.399999618530273\n  ],\n  \"b_extents_mm\": [\n    7.99777364730835,\n    16.0,\n    1.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_sleeve",
+        "b": "minute_hand"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_sleeve/minute_hand\",\n  \"origin_distance_mm\": 17.599999999999998,\n  \"surface_distance_mm\": 0.20000038146972443,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9659258262890683,\n      -0.25881904510252074,\n      0.0,\n      0.0\n    ],\n    [\n      0.25881904510252074,\n      0.9659258262890683,\n      0.0,\n      -1.734723475976807e-18\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.017599999999999998\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    17.399999618530273\n  ],\n  \"b_extents_mm\": [\n    6.398244380950928,\n    21.200000047683716,\n    1.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_sleeve",
+        "b": "minute_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_sleeve/minute_gear\",\n  \"origin_distance_mm\": 5.1000000000000005,\n  \"surface_distance_mm\": 1.0999999999999996,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -1.734723475976807e-18\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0051\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    17.399999618530273\n  ],\n  \"b_extents_mm\": [\n    13.516414165496826,\n    13.590866088867188,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_sleeve",
+        "b": "compound_big_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/compound_big_gear/hour_sleeve\",\n  \"origin_distance_mm\": 24.535892076710805,\n  \"surface_distance_mm\": 2.4640044261950527,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    5.998135089874268,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9975640502598242,\n      -0.0697564737441253,\n      0.0,\n      0.024\n    ],\n    [\n      0.0697564737441253,\n      0.9975640502598242,\n      0.0,\n      -1.734723475976807e-18\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0051\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    17.399999618530273\n  ],\n  \"b_extents_mm\": [\n    37.574289321899414,\n    37.59719467163086,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_sleeve",
+        "b": "lower_sleeve_bracket"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_sleeve/lower_sleeve_bracket\",\n  \"origin_distance_mm\": 15.008331019803636,\n  \"surface_distance_mm\": 2.02981493610798,\n  \"aabb_overlap_extents_mm\": [\n    3.0,\n    0.0,\n    3.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.015000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0005000000000000004\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    17.399999618530273\n  ],\n  \"b_extents_mm\": [\n    3.0,\n    20.399999618530273,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_sleeve",
+        "b": "upper_sleeve_bracket"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_sleeve/upper_sleeve_bracket\",\n  \"origin_distance_mm\": 17.70197729068705,\n  \"surface_distance_mm\": 2.02981493610798,\n  \"aabb_overlap_extents_mm\": [\n    3.0,\n    0.0,\n    3.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.015000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.009399999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    17.399999618530273\n  ],\n  \"b_extents_mm\": [\n    3.0,\n    20.399999618530273,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_sleeve",
+        "b": "minute_input_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_sleeve/minute_input_bearing\",\n  \"origin_distance_mm\": 8.6,\n  \"surface_distance_mm\": 5.6,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -1.734723475976807e-18\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0086\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    17.399999618530273\n  ],\n  \"b_extents_mm\": [\n    9.0,\n    8.99720287322998,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_sleeve",
+        "b": "base"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/base/hour_sleeve\",\n  \"origin_distance_mm\": 17.109061926359377,\n  \"surface_distance_mm\": 8.6,\n  \"aabb_overlap_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.011399999999999999\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.0020000000000000018\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0126\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.0,\n    5.998135089874268,\n    17.399999618530273\n  ],\n  \"b_extents_mm\": [\n    71.19999694824219,\n    52.400001525878906,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_gear",
+        "b": "minute_input_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/minute_gear/minute_input_bearing\",\n  \"origin_distance_mm\": 3.4999999999999996,\n  \"surface_distance_mm\": 0.5,\n  \"aabb_overlap_extents_mm\": [\n    9.0,\n    8.99720287322998,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0034999999999999996\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    13.516414165496826,\n    13.590866088867188,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    9.0,\n    8.99720287322998,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_gear",
+        "b": "sleeve_thrust_washer"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/minute_gear/sleeve_thrust_washer\",\n  \"origin_distance_mm\": 4.6,\n  \"surface_distance_mm\": 0.5999999999999996,\n  \"aabb_overlap_extents_mm\": [\n    8.0,\n    7.997513294219971,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      1.734723475976807e-18\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0046\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    13.516414165496826,\n    13.590866088867188,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    8.0,\n    7.997513294219971,\n    0.5\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_gear",
+        "b": "lower_sleeve_bracket"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/lower_sleeve_bracket/minute_gear\",\n  \"origin_distance_mm\": 16.011246047700347,\n  \"surface_distance_mm\": 1.6000000000000014,\n  \"aabb_overlap_extents_mm\": [\n    3.0,\n    1.9954328536987305,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.015\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.005600000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    13.516414165496826,\n    13.590866088867188,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    3.0,\n    20.399999618530273,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_gear",
+        "b": "lower_sleeve_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/lower_sleeve_bearing/minute_gear\",\n  \"origin_distance_mm\": 5.6000000000000005,\n  \"surface_distance_mm\": 1.6000000000000014,\n  \"aabb_overlap_extents_mm\": [\n    9.600000381469727,\n    9.597016334533691,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      1.734723475976807e-18\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.005600000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    13.516414165496826,\n    13.590866088867188,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    9.600000381469727,\n    9.597016334533691,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_gear",
+        "b": "base"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/base/minute_gear\",\n  \"origin_distance_mm\": 13.791664149043072,\n  \"surface_distance_mm\": 3.5,\n  \"aabb_overlap_extents_mm\": [\n    13.516414165496826,\n    13.590866088867188,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      1.0,\n      0.0,\n      0.0,\n      0.011399999999999999\n    ],\n    [\n      0.0,\n      1.0,\n      0.0,\n      -0.002\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0075\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    13.516414165496826,\n    13.590866088867188,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    71.19999694824219,\n    52.400001525878906,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_gear",
+        "b": "hour_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_gear/minute_gear\",\n  \"origin_distance_mm\": 9.500000000000002,\n  \"surface_distance_mm\": 5.5,\n  \"aabb_overlap_extents_mm\": [\n    13.516414165496826,\n    13.590866088867188,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9978589232386035,\n      -0.06540312923014306,\n      0.0,\n      0.0\n    ],\n    [\n      0.06540312923014306,\n      0.9978589232386035,\n      0.0,\n      1.734723475976807e-18\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.009500000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    13.516414165496826,\n    13.590866088867188,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    39.99095153808594,\n    39.99095153808594,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "compound_big_gear",
+        "b": "minute_input_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/compound_big_gear/minute_input_bearing\",\n  \"origin_distance_mm\": 24.253865671269807,\n  \"surface_distance_mm\": 0.8641752772820875,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    8.99720287322998,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9975640502598244,\n      0.06975647374412532,\n      0.0,\n      -0.023941537206235788\n    ],\n    [\n      -0.06975647374412532,\n      0.9975640502598243,\n      0.0,\n      0.0016741553698590077\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0034999999999999996\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    37.574289321899414,\n    37.59719467163086,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    9.0,\n    8.99720287322998,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "compound_big_gear",
+        "b": "intermediate_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/compound_big_gear/intermediate_bearing\",\n  \"origin_distance_mm\": 3.4999999999999996,\n  \"surface_distance_mm\": 0.5,\n  \"aabb_overlap_extents_mm\": [\n    9.0,\n    8.99720287322998,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9975640502598244,\n      0.06975647374412532,\n      0.0,\n      0.0\n    ],\n    [\n      -0.06975647374412532,\n      0.9975640502598243,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0034999999999999996\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    37.574289321899414,\n    37.59719467163086,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    9.0,\n    8.99720287322998,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "compound_big_gear",
+        "b": "sleeve_thrust_washer"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/compound_big_gear/sleeve_thrust_washer\",\n  \"origin_distance_mm\": 24.436857408431226,\n  \"surface_distance_mm\": 1.3459712270376853,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    7.997513294219971,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9975640502598244,\n      0.06975647374412532,\n      0.0,\n      -0.023941537206235788\n    ],\n    [\n      -0.06975647374412532,\n      0.9975640502598243,\n      0.0,\n      0.0016741553698590094\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0046\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    37.574289321899414,\n    37.59719467163086,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    8.0,\n    7.997513294219971,\n    0.5\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "compound_big_gear",
+        "b": "lower_sleeve_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/compound_big_gear/lower_sleeve_bearing\",\n  \"origin_distance_mm\": 24.64467488119898,\n  \"surface_distance_mm\": 1.6518964908887934,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    9.597016334533691,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9975640502598244,\n      0.06975647374412532,\n      0.0,\n      -0.023941537206235788\n    ],\n    [\n      -0.06975647374412532,\n      0.9975640502598243,\n      0.0,\n      0.0016741553698590094\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.005600000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    37.574289321899414,\n    37.59719467163086,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    9.600000381469727,\n    9.597016334533691,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "compound_big_gear",
+        "b": "lower_sleeve_bracket"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/compound_big_gear/lower_sleeve_bracket\",\n  \"origin_distance_mm\": 28.85064990602465,\n  \"surface_distance_mm\": 4.602526976506634,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    13.998595966403165,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9975640502598244,\n      0.06975647374412532,\n      0.0,\n      -0.02498788431239767\n    ],\n    [\n      -0.06975647374412532,\n      0.9975640502598243,\n      0.0,\n      -0.013289305384038356\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.005600000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    37.574289321899414,\n    37.59719467163086,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    3.0,\n    20.399999618530273,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "compound_big_gear",
+        "b": "base"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/base/compound_big_gear\",\n  \"origin_distance_mm\": 14.798986451781083,\n  \"surface_distance_mm\": 3.5,\n  \"aabb_overlap_extents_mm\": [\n    37.57428985050868,\n    37.59719248965085,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9975640502598244,\n      0.06975647374412532,\n      0.0,\n      -0.01270881998076204\n    ],\n    [\n      -0.06975647374412532,\n      0.9975640502598243,\n      0.0,\n      -0.0011161965313436694\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0075\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    37.574289321899414,\n    37.59719467163086,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    71.19999694824219,\n    52.400001525878906,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "compound_big_gear",
+        "b": "rear_mast"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/compound_big_gear/rear_mast\",\n  \"origin_distance_mm\": 34.97556289754319,\n  \"surface_distance_mm\": 13.87965418629693,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    0.0,\n    4.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9975640502598244,\n      0.06975647374412532,\n      0.0,\n      -0.025699400344587744\n    ],\n    [\n      -0.06975647374412532,\n      0.9975640502598243,\n      0.0,\n      -0.023464458696688565\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0034999999999999996\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    37.574289321899414,\n    37.59719467163086,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    3.0,\n    3.0,\n    22.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "compound_big_gear",
+        "b": "compound_pinion"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/compound_big_gear/compound_pinion\",\n  \"origin_distance_mm\": 9.500000000000002,\n  \"surface_distance_mm\": 5.5,\n  \"aabb_overlap_extents_mm\": [\n    11.159483909606934,\n    11.159483909606934,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9975640502598244,\n      0.06975647374412532,\n      0.0,\n      0.0\n    ],\n    [\n      -0.06975647374412532,\n      0.9975640502598243,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.009500000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    37.574289321899414,\n    37.59719467163086,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    11.159483909606934,\n    11.159483909606934,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "compound_big_gear",
+        "b": "hour_gear"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/compound_big_gear/hour_gear\",\n  \"origin_distance_mm\": 25.811818998280614,\n  \"surface_distance_mm\": 5.5,\n  \"aabb_overlap_extents_mm\": [\n    14.7756463191919,\n    37.59719248965085,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9999904807207346,\n      0.004363309284746575,\n      0.0,\n      -0.023941537206235788\n    ],\n    [\n      -0.004363309284746579,\n      0.9999904807207345,\n      0.0,\n      0.0016741553698590094\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.009500000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    37.574289321899414,\n    37.59719467163086,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    39.99095153808594,\n    39.99095153808594,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "compound_big_gear",
+        "b": "upper_sleeve_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/compound_big_gear/upper_sleeve_bearing\",\n  \"origin_distance_mm\": 28.040149785619903,\n  \"surface_distance_mm\": 10.508033213528147,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    9.597016334533691,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9975640502598244,\n      0.06975647374412532,\n      0.0,\n      -0.023941537206235788\n    ],\n    [\n      -0.06975647374412532,\n      0.9975640502598243,\n      0.0,\n      0.0016741553698590094\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.014499999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    37.574289321899414,\n    37.59719467163086,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    9.600000381469727,\n    9.597016334533691,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "compound_big_gear",
+        "b": "upper_sleeve_bracket"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/compound_big_gear/upper_sleeve_bracket\",\n  \"origin_distance_mm\": 31.80015723231569,\n  \"surface_distance_mm\": 11.352235663932955,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    13.998595966403165,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9975640502598244,\n      0.06975647374412532,\n      0.0,\n      -0.02498788431239767\n    ],\n    [\n      -0.06975647374412532,\n      0.9975640502598243,\n      0.0,\n      -0.013289305384038356\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.014499999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    37.574289321899414,\n    37.59719467163086,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    3.0,\n    20.399999618530273,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "compound_big_gear",
+        "b": "hour_hand"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/compound_big_gear/hour_hand\",\n  \"origin_distance_mm\": 30.30264014900352,\n  \"surface_distance_mm\": 14.500000000000004,\n  \"aabb_overlap_extents_mm\": [\n    4.624984967894898,\n    10.882565407819492,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.5150380749100543,\n      0.8571673007021124,\n      0.0,\n      -0.023941537206235788\n    ],\n    [\n      -0.8571673007021123,\n      0.5150380749100542,\n      0.0,\n      0.0016741553698590094\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.018500000000000003\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    37.574289321899414,\n    37.59719467163086,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    7.99777364730835,\n    16.0,\n    1.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "compound_big_gear",
+        "b": "minute_hand"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/compound_big_gear/minute_hand\",\n  \"origin_distance_mm\": 33.03467874824879,\n  \"surface_distance_mm\": 18.807184443912533,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    20.586425783278123,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9816271834476642,\n      -0.19080899537654483,\n      0.0,\n      -0.023941537206235788\n    ],\n    [\n      0.19080899537654478,\n      0.9816271834476641,\n      0.0,\n      0.0016741553698590077\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.022699999999999998\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    37.574289321899414,\n    37.59719467163086,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    6.398244380950928,\n    21.200000047683716,\n    1.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "compound_pinion",
+        "b": "hour_hand"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/compound_pinion/hour_hand\",\n  \"origin_distance_mm\": 25.632011235952593,\n  \"surface_distance_mm\": 11.412600081780871,\n  \"aabb_overlap_extents_mm\": [\n    0.0,\n    9.579390126410404,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.573576436351046,\n      0.8191520442889918,\n      0.0,\n      -0.024\n    ],\n    [\n      -0.8191520442889918,\n      0.573576436351046,\n      0.0,\n      1.734723475976807e-18\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.009000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    11.159483909606934,\n    11.159483909606934,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    7.99777364730835,\n    16.0,\n    1.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_gear",
+        "b": "lower_sleeve_bracket"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_gear/lower_sleeve_bracket\",\n  \"origin_distance_mm\": 15.49870962370739,\n  \"surface_distance_mm\": 0.8999999999999986,\n  \"aabb_overlap_extents_mm\": [\n    3.0,\n    15.18048569203004,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9978589232386035,\n      0.06540312923014306,\n      0.0,\n      -0.000981046938452146\n    ],\n    [\n      -0.06540312923014306,\n      0.9978589232386036,\n      0.0,\n      -0.014967883848579056\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0039000000000000007\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    39.99095153808594,\n    39.99095153808594,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    3.0,\n    20.399999618530273,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_gear",
+        "b": "lower_sleeve_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_gear/lower_sleeve_bearing\",\n  \"origin_distance_mm\": 3.900000000000001,\n  \"surface_distance_mm\": 0.8999999999999986,\n  \"aabb_overlap_extents_mm\": [\n    9.600000381469727,\n    9.597016334533691,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9978589232386035,\n      0.06540312923014306,\n      0.0,\n      0.0\n    ],\n    [\n      -0.06540312923014306,\n      0.9978589232386036,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0039000000000000007\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    39.99095153808594,\n    39.99095153808594,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    9.600000381469727,\n    9.597016334533691,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_gear",
+        "b": "upper_sleeve_bracket"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_gear/upper_sleeve_bracket\",\n  \"origin_distance_mm\": 15.811388300841896,\n  \"surface_distance_mm\": 1.0,\n  \"aabb_overlap_extents_mm\": [\n    3.0,\n    15.18048569203004,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9978589232386035,\n      0.06540312923014306,\n      0.0,\n      -0.000981046938452146\n    ],\n    [\n      -0.06540312923014306,\n      0.9978589232386036,\n      0.0,\n      -0.014967883848579056\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0049999999999999975\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    39.99095153808594,\n    39.99095153808594,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    3.0,\n    20.399999618530273,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_gear",
+        "b": "upper_sleeve_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_gear/upper_sleeve_bearing\",\n  \"origin_distance_mm\": 4.999999999999997,\n  \"surface_distance_mm\": 1.0,\n  \"aabb_overlap_extents_mm\": [\n    9.600000381469727,\n    9.597016334533691,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9978589232386035,\n      0.06540312923014306,\n      0.0,\n      0.0\n    ],\n    [\n      -0.06540312923014306,\n      0.9978589232386036,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.0049999999999999975\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    39.99095153808594,\n    39.99095153808594,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    9.600000381469727,\n    9.597016334533691,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_gear",
+        "b": "rear_mast"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_gear/rear_mast\",\n  \"origin_distance_mm\": 28.355599094358773,\n  \"surface_distance_mm\": 3.7195141172350965,\n  \"aabb_overlap_extents_mm\": [\n    3.0,\n    0.0,\n    4.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9978589232386035,\n      0.06540312923014306,\n      0.0,\n      -0.0016481588565996053\n    ],\n    [\n      -0.06540312923014306,\n      0.9978589232386036,\n      0.0,\n      -0.02514604486561281\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.013000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    39.99095153808594,\n    39.99095153808594,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    3.0,\n    3.0,\n    22.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_gear",
+        "b": "sleeve_thrust_washer"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_gear/sleeve_thrust_washer\",\n  \"origin_distance_mm\": 4.900000000000001,\n  \"surface_distance_mm\": 4.4,\n  \"aabb_overlap_extents_mm\": [\n    8.0,\n    7.997513294219971,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9978589232386035,\n      0.06540312923014306,\n      0.0,\n      0.0\n    ],\n    [\n      -0.06540312923014306,\n      0.9978589232386036,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.004900000000000002\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    39.99095153808594,\n    39.99095153808594,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    8.0,\n    7.997513294219971,\n    0.5\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_gear",
+        "b": "hour_hand"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_gear/hour_hand\",\n  \"origin_distance_mm\": 9.000000000000002,\n  \"surface_distance_mm\": 5.0000000000000036,\n  \"aabb_overlap_extents_mm\": [\n    13.82948801230972,\n    10.882565407819492,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.5187732581605213,\n      0.8549118706729466,\n      0.0,\n      0.0\n    ],\n    [\n      -0.8549118706729467,\n      0.5187732581605214,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.009000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    39.99095153808594,\n    39.99095153808594,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    7.99777364730835,\n    16.0,\n    1.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_gear",
+        "b": "minute_hand"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_gear/minute_hand\",\n  \"origin_distance_mm\": 13.199999999999996,\n  \"surface_distance_mm\": 9.2,\n  \"aabb_overlap_extents_mm\": [\n    7.963751861273009,\n    20.586425783278123,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9807852804032304,\n      -0.19509032201612825,\n      0.0,\n      -1.1345634367787409e-19\n    ],\n    [\n      0.19509032201612828,\n      0.9807852804032305,\n      0.0,\n      -1.7310092998549443e-18\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      0.013199999999999996\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    39.99095153808594,\n    39.99095153808594,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    6.398244380950928,\n    21.200000047683716,\n    1.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_gear",
+        "b": "minute_input_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_gear/minute_input_bearing\",\n  \"origin_distance_mm\": 13.000000000000002,\n  \"surface_distance_mm\": 10.0,\n  \"aabb_overlap_extents_mm\": [\n    9.0,\n    8.99720287322998,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9978589232386035,\n      0.06540312923014306,\n      0.0,\n      -1.1345634367787409e-19\n    ],\n    [\n      -0.06540312923014306,\n      0.9978589232386036,\n      0.0,\n      -1.7310092998549443e-18\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.013000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    39.99095153808594,\n    39.99095153808594,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    9.0,\n    8.99720287322998,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_gear",
+        "b": "intermediate_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_gear/intermediate_bearing\",\n  \"origin_distance_mm\": 27.294688127912362,\n  \"surface_distance_mm\": 10.0,\n  \"aabb_overlap_extents_mm\": [\n    0.4804858827649028,\n    8.99720287322998,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9978589232386035,\n      0.06540312923014306,\n      0.0,\n      0.023948614157726485\n    ],\n    [\n      -0.06540312923014306,\n      0.9978589232386036,\n      0.0,\n      -0.0015696751015234353\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.013000000000000001\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    39.99095153808594,\n    39.99095153808594,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    9.0,\n    8.99720287322998,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_gear",
+        "b": "base"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/base/hour_gear\",\n  \"origin_distance_mm\": 20.565991344936425,\n  \"surface_distance_mm\": 13.0,\n  \"aabb_overlap_extents_mm\": [\n    39.960971765529806,\n    39.960971765529806,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9978589232386035,\n      0.06540312923014306,\n      0.0,\n      0.011244785466459791\n    ],\n    [\n      -0.06540312923014306,\n      0.9978589232386036,\n      0.0,\n      -0.0027413135197008397\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.017\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    39.99095153808594,\n    39.99095153808594,\n    4.0\n  ],\n  \"b_extents_mm\": [\n    71.19999694824219,\n    52.400001525878906,\n    4.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_hand",
+        "b": "hour_hand"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_hand/minute_hand\",\n  \"origin_distance_mm\": 4.199999999999996,\n  \"surface_distance_mm\": 3.1999999999999957,\n  \"aabb_overlap_extents_mm\": [\n    7.199462783443431,\n    10.082678146287446,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.34202014332566866,\n      0.9396926207859083,\n      0.0,\n      4.489794735692428e-19\n    ],\n    [\n      -0.9396926207859084,\n      0.34202014332566877,\n      0.0,\n      1.6756142069159423e-18\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.004199999999999995\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.398244380950928,\n    21.200000047683716,\n    1.0\n  ],\n  \"b_extents_mm\": [\n    7.99777364730835,\n    16.0,\n    1.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_hand",
+        "b": "upper_sleeve_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/minute_hand/upper_sleeve_bearing\",\n  \"origin_distance_mm\": 8.2,\n  \"surface_distance_mm\": 5.199999999999999,\n  \"aabb_overlap_extents_mm\": [\n    7.963751861273009,\n    7.99826907734174,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9659258262890682,\n      0.25881904510252074,\n      0.0,\n      4.489794735692428e-19\n    ],\n    [\n      -0.25881904510252074,\n      0.9659258262890684,\n      0.0,\n      1.6756142069159423e-18\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.008199999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.398244380950928,\n    21.200000047683716,\n    1.0\n  ],\n  \"b_extents_mm\": [\n    9.600000381469727,\n    9.597016334533691,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "minute_hand",
+        "b": "upper_sleeve_bracket"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/minute_hand/upper_sleeve_bracket\",\n  \"origin_distance_mm\": 17.09502851708648,\n  \"surface_distance_mm\": 5.440658577356893,\n  \"aabb_overlap_extents_mm\": [\n    3.0,\n    0.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.9659258262890682,\n      0.25881904510252074,\n      0.0,\n      -0.003882285676537811\n    ],\n    [\n      -0.25881904510252074,\n      0.9659258262890684,\n      0.0,\n      -0.014488887394336026\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.008199999999999999\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    6.398244380950928,\n    21.200000047683716,\n    1.0\n  ],\n  \"b_extents_mm\": [\n    3.0,\n    20.399999618530273,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_hand",
+        "b": "upper_sleeve_bracket"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_hand/upper_sleeve_bracket\",\n  \"origin_distance_mm\": 15.524174696260028,\n  \"surface_distance_mm\": 1.2808447815883686,\n  \"aabb_overlap_extents_mm\": [\n    3.0,\n    0.0,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.573576436351046,\n      -0.8191520442889919,\n      0.0,\n      0.01228728066433488\n    ],\n    [\n      0.8191520442889918,\n      0.573576436351046,\n      0.0,\n      -0.008603646545265691\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0040000000000000036\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    7.99777364730835,\n    16.0,\n    1.0\n  ],\n  \"b_extents_mm\": [\n    3.0,\n    20.399999618530273,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "query_pair_geometry",
+      "arguments": {
+        "a": "hour_hand",
+        "b": "upper_sleeve_bearing"
+      },
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"fact_id\": \"pair/hour_hand/upper_sleeve_bearing\",\n  \"origin_distance_mm\": 4.0000000000000036,\n  \"surface_distance_mm\": 1.0000000000000036,\n  \"aabb_overlap_extents_mm\": [\n    8.799663671576683,\n    8.798156338873785,\n    0.0\n  ],\n  \"solid_overlap_mm3\": null,\n  \"relative_transform\": [\n    [\n      0.573576436351046,\n      -0.8191520442889919,\n      0.0,\n      0.0\n    ],\n    [\n      0.8191520442889918,\n      0.573576436351046,\n      0.0,\n      0.0\n    ],\n    [\n      0.0,\n      0.0,\n      1.0,\n      -0.0040000000000000036\n    ],\n    [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  ],\n  \"a_extents_mm\": [\n    7.99777364730835,\n    16.0,\n    1.0\n  ],\n  \"b_extents_mm\": [\n    9.600000381469727,\n    9.597016334533691,\n    3.0\n  ]\n}"
+    },
+    {
+      "name": "read_current_compiler",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\"revision\": 0, \"source\": \"\"}"
+    },
+    {
+      "name": "submit_compiler_source",
+      "arguments": {
+        "source": "def compile_mjcf(facts, out):\n    cm = {\n        'base':None,'minute_input_bearing':None,'intermediate_bearing':None,'rear_mast':None,\n        'lower_sleeve_bracket':None,'upper_sleeve_bracket':None,'sleeve_thrust_washer':None,\n        'lower_sleeve_bearing':None,'upper_sleeve_bearing':None,\n        'minute_shaft':'minute_spin','minute_gear':'minute_spin','minute_hand':'minute_spin',\n        'intermediate_shaft':'intermediate_spin','compound_big_gear':'intermediate_spin','compound_pinion':'intermediate_spin',\n        'hour_sleeve':'hour_spin','hour_gear':'hour_spin','hour_hand':'hour_spin'\n    }\n    tree = [\n        ['base',''],['minute_input_bearing','base'],['intermediate_bearing','base'],['rear_mast','base'],\n        ['lower_sleeve_bracket','rear_mast'],['upper_sleeve_bracket','rear_mast'],\n        ['sleeve_thrust_washer','lower_sleeve_bracket'],['lower_sleeve_bearing','lower_sleeve_bracket'],\n        ['upper_sleeve_bearing','upper_sleeve_bracket'],['minute_shaft','minute_input_bearing'],\n        ['minute_gear','minute_shaft'],['minute_hand','minute_shaft'],\n        ['intermediate_shaft','intermediate_bearing'],['compound_big_gear','intermediate_shaft'],\n        ['compound_pinion','intermediate_shaft'],['hour_sleeve','lower_sleeve_bearing'],\n        ['hour_gear','hour_sleeve'],['hour_hand','hour_sleeve']\n    ]\n    rel = {\n      ('minute_gear','compound_big_gear'):('relation/stage1_tooth_contact','fit/minute_gear/stage1_mesh/compound_big_gear/stage1_mesh','ideal external gear equality'),\n      ('compound_pinion','hour_gear'):('relation/stage2_tooth_contact','fit/hour_gear/stage2_mesh/compound_pinion/stage2_mesh','ideal external gear equality'),\n      ('minute_shaft','minute_gear'):('relation/minute_gear_press_fit','fit/minute_shaft/minute_gear_seat/minute_gear/shaft_bore','measured interference press fit'),\n      ('intermediate_shaft','compound_big_gear'):('relation/compound_big_press_fit','fit/intermediate_shaft/big_gear_seat/compound_big_gear/shaft_bore','measured interference press fit'),\n      ('intermediate_shaft','compound_pinion'):('relation/compound_pinion_press_fit','fit/intermediate_shaft/pinion_seat/compound_pinion/shaft_bore','measured interference press fit'),\n      ('hour_sleeve','hour_gear'):('relation/hour_gear_press_fit','fit/hour_sleeve/hour_gear_seat/hour_gear/sleeve_bore','measured interference press fit'),\n      ('minute_shaft','minute_hand'):('relation/minute_hand_press_fit','fit/minute_shaft/minute_hand_seat/minute_hand/hub_bore','measured interference press fit'),\n      ('hour_sleeve','hour_hand'):('relation/hour_hand_press_fit','fit/hour_sleeve/hour_hand_seat/hour_hand/hub_bore','measured interference press fit'),\n      ('minute_input_bearing','minute_shaft'):('relation/minute_lower_journal','fit/minute_input_bearing/journal_bore/minute_shaft/lower_journal','measured-clearance running journal represented by hinge'),\n      ('intermediate_bearing','intermediate_shaft'):('relation/intermediate_lower_journal','fit/intermediate_bearing/journal_bore/intermediate_shaft/lower_journal','measured-clearance running journal represented by hinge'),\n      ('lower_sleeve_bearing','hour_sleeve'):('relation/hour_sleeve_lower_journal','fit/lower_sleeve_bearing/journal_bore/hour_sleeve/lower_outer_journal','measured-clearance running journal represented by hinge'),\n      ('upper_sleeve_bearing','hour_sleeve'):('relation/hour_sleeve_upper_journal','fit/upper_sleeve_bearing/journal_bore/hour_sleeve/upper_outer_journal','measured-clearance running journal represented by hinge'),\n      ('minute_shaft','hour_sleeve'):('relation/independent_coaxial_handshaft_journal','fit/hour_sleeve/inner_journal/minute_shaft/sleeve_journal','measured-clearance independent coaxial journal')\n    }\n    raw = [\n      ('minute_shaft','base'),('minute_shaft','minute_input_bearing'),('minute_shaft','sleeve_thrust_washer'),\n      ('minute_shaft','lower_sleeve_bearing'),('minute_shaft','upper_sleeve_bearing'),('minute_shaft','hour_sleeve'),\n      ('minute_shaft','minute_gear'),('minute_shaft','hour_gear'),('minute_shaft','hour_hand'),('minute_shaft','minute_hand'),\n      ('minute_shaft','compound_big_gear'),('minute_shaft','lower_sleeve_bracket'),('minute_shaft','upper_sleeve_bracket'),\n      ('intermediate_shaft','base'),('intermediate_shaft','intermediate_bearing'),('intermediate_shaft','compound_big_gear'),\n      ('intermediate_shaft','compound_pinion'),('intermediate_shaft','hour_gear'),\n      ('hour_sleeve','sleeve_thrust_washer'),('hour_sleeve','lower_sleeve_bearing'),('hour_sleeve','upper_sleeve_bearing'),\n      ('hour_sleeve','hour_gear'),('hour_sleeve','hour_hand'),('hour_sleeve','minute_hand'),('hour_sleeve','minute_gear'),\n      ('hour_sleeve','compound_big_gear'),('hour_sleeve','lower_sleeve_bracket'),('hour_sleeve','upper_sleeve_bracket'),\n      ('hour_sleeve','minute_input_bearing'),('hour_sleeve','base'),\n      ('minute_gear','compound_big_gear'),('minute_gear','minute_input_bearing'),('minute_gear','sleeve_thrust_washer'),\n      ('minute_gear','lower_sleeve_bracket'),('minute_gear','lower_sleeve_bearing'),('minute_gear','base'),('minute_gear','hour_gear'),\n      ('compound_big_gear','minute_input_bearing'),('compound_big_gear','intermediate_bearing'),('compound_big_gear','sleeve_thrust_washer'),\n      ('compound_big_gear','lower_sleeve_bearing'),('compound_big_gear','lower_sleeve_bracket'),('compound_big_gear','base'),\n      ('compound_big_gear','rear_mast'),('compound_big_gear','compound_pinion'),('compound_big_gear','hour_gear'),\n      ('compound_big_gear','upper_sleeve_bearing'),('compound_big_gear','upper_sleeve_bracket'),('compound_big_gear','hour_hand'),\n      ('compound_big_gear','minute_hand'),('compound_pinion','hour_gear'),('compound_pinion','hour_hand'),\n      ('hour_gear','lower_sleeve_bracket'),('hour_gear','lower_sleeve_bearing'),('hour_gear','upper_sleeve_bracket'),\n      ('hour_gear','upper_sleeve_bearing'),('hour_gear','rear_mast'),('hour_gear','sleeve_thrust_washer'),('hour_gear','hour_hand'),\n      ('hour_gear','minute_hand'),('hour_gear','minute_input_bearing'),('hour_gear','intermediate_bearing'),('hour_gear','base'),\n      ('minute_hand','hour_hand'),('minute_hand','upper_sleeve_bearing'),('minute_hand','upper_sleeve_bracket'),\n      ('hour_hand','upper_sleeve_bracket'),('hour_hand','upper_sleeve_bearing')\n    ]\n    contacts=[]\n    seen=[]\n    for a,b in raw:\n        k=tuple(sorted([a,b]))\n        if k in seen: continue\n        seen.append(k)\n        rs=rel.get((a,b),rel.get((b,a)))\n        pf='pair/'+k[0]+'/'+k[1]\n        nf='nearby/'+k[0]+'/'+k[1]\n        if rs:\n            action='exclude'; reason=rs[2]; src=['link/'+a,'link/'+b,rs[0]]; fids=[rs[1],pf]\n        elif k==tuple(sorted(['hour_sleeve','sleeve_thrust_washer'])):\n            action='keep'; reason='real axial thrust interface is the accessory contact function'; src=['link/'+a,'link/'+b]; fids=[pf,nf]\n        else:\n            action='exclude'; reason='measured positive separation or disjoint AABB extent: collision-proxy false-contact risk with no contact function'; src=['link/'+a,'link/'+b]; fids=[pf,nf]\n        contacts.append({'pair':[a,b],'action':action,'reason':reason,'source_entity_ids':src,'fact_ids':fids})\n    plan={'coordinate_map':cm,'tree_edges':tree,'closure_edges':[],\n      'rigid_carried':[['minute_shaft','minute_gear'],['minute_shaft','minute_hand'],['intermediate_shaft','compound_big_gear'],['intermediate_shaft','compound_pinion'],['hour_sleeve','hour_gear'],['hour_sleeve','hour_hand']],\n      'independent_coaxial':[['minute_shaft','hour_sleeve']],\n      'transmissions':[{'name':'minute_to_compound_reduction','driving_joint':'minute_spin','driven_joint':'intermediate_spin','ratio':-0.3333333333333333},{'name':'rigid_compound_pair','coordinate':'intermediate_spin','ratio':1.0},{'name':'compound_to_hour_reduction','driving_joint':'intermediate_spin','driven_joint':'hour_spin','ratio':-0.25}],\n      'contact_decisions':contacts,'support_ground':['base'],'support_strategy':'fixed base and authored fixed support frame; three bearing-supported coaxial hinge coordinates; no support-probe alteration required'}\n    out.topology_plan(plan)\n    for b,p in tree: out.body(b,p)\n    out.joint('minute_shaft','minute_spin','hinge',(0,0,1),(0,0,5.5),'world')\n    out.joint('intermediate_shaft','intermediate_spin','hinge',(0,0,1),(24,0,5.5),'world')\n    out.joint('hour_sleeve','hour_spin','hinge',(0,0,1),(0,0,14.6),'world')\n    out.joint_equality('minute_to_compound_reduction','minute_spin','intermediate_spin',-0.3333333333333333,0.0,'6 mm to 18 mm external pitch-radius mesh',['transmission/minute_to_compound_reduction','relation/stage1_tooth_contact'],['fit/minute_gear/stage1_mesh/compound_big_gear/stage1_mesh'])\n    out.joint_equality('compound_to_hour_reduction','intermediate_spin','hour_spin',-0.25,0.0,'4.8 mm to 19.2 mm external pitch-radius mesh',['transmission/compound_to_hour_reduction','relation/stage2_tooth_contact'],['fit/hour_gear/stage2_mesh/compound_pinion/stage2_mesh'])\n    for c in contacts:\n        if c['action']=='exclude': out.exclude(c['pair'][0],c['pair'][1],c['reason'],c['source_entity_ids'],c['fact_ids'])\n    generated={'minute_spin':['minute_spin'],'intermediate_spin':['intermediate_spin'],'hour_spin':['hour_spin']}\n    ids=[]\n    for sec in ['links','poses','ports','relations','transmissions','entity_ids']:\n        v=facts.get(sec)\n        if sec=='entity_ids' and isinstance(v,list): ids=v\n    if not ids:\n        ids = ['link/'+b for b,p in tree]\n    for eid in ids:\n        nodes=[]\n        reason='authored fact represented by emitted body, coordinate, transmission, contact decision, or immutable placement metadata'\n        if eid.startswith('link/'):\n            n=eid[5:]; nodes=[n]+generated.get(cm.get(n),[])\n        elif eid=='transmission/minute_to_compound_reduction': nodes=['minute_to_compound_reduction']\n        elif eid=='transmission/compound_to_hour_reduction': nodes=['compound_to_hour_reduction']\n        elif eid=='transmission/rigid_compound_pair': nodes=['intermediate_spin']\n        out.decision(eid,'emitted' if eid.startswith('link/') else 'represented_by',nodes,reason,[eid])\n",
+        "expected_revision": 0
+      },
+      "is_error": false,
+      "result": "{\"accepted\": false, \"errors\": [\"forbidden call: isinstance\"]}"
+    },
+    {
+      "name": "submit_compiler_source",
+      "arguments": {
+        "source": "def compile_mjcf(facts, out):\n    cm={'base':None,'minute_input_bearing':None,'intermediate_bearing':None,'rear_mast':None,'lower_sleeve_bracket':None,'upper_sleeve_bracket':None,'sleeve_thrust_washer':None,'lower_sleeve_bearing':None,'upper_sleeve_bearing':None,'minute_shaft':'minute_spin','minute_gear':'minute_spin','minute_hand':'minute_spin','intermediate_shaft':'intermediate_spin','compound_big_gear':'intermediate_spin','compound_pinion':'intermediate_spin','hour_sleeve':'hour_spin','hour_gear':'hour_spin','hour_hand':'hour_spin'}\n    tree=[['base',''],['minute_input_bearing','base'],['intermediate_bearing','base'],['rear_mast','base'],['lower_sleeve_bracket','rear_mast'],['upper_sleeve_bracket','rear_mast'],['sleeve_thrust_washer','lower_sleeve_bracket'],['lower_sleeve_bearing','lower_sleeve_bracket'],['upper_sleeve_bearing','upper_sleeve_bracket'],['minute_shaft','minute_input_bearing'],['minute_gear','minute_shaft'],['minute_hand','minute_shaft'],['intermediate_shaft','intermediate_bearing'],['compound_big_gear','intermediate_shaft'],['compound_pinion','intermediate_shaft'],['hour_sleeve','lower_sleeve_bearing'],['hour_gear','hour_sleeve'],['hour_hand','hour_sleeve']]\n    rel={\n      ('minute_gear','compound_big_gear'):('relation/stage1_tooth_contact','fit/minute_gear/stage1_mesh/compound_big_gear/stage1_mesh','ideal external gear equality'),('compound_pinion','hour_gear'):('relation/stage2_tooth_contact','fit/hour_gear/stage2_mesh/compound_pinion/stage2_mesh','ideal external gear equality'),\n      ('minute_shaft','minute_gear'):('relation/minute_gear_press_fit','fit/minute_shaft/minute_gear_seat/minute_gear/shaft_bore','measured interference press fit'),('intermediate_shaft','compound_big_gear'):('relation/compound_big_press_fit','fit/intermediate_shaft/big_gear_seat/compound_big_gear/shaft_bore','measured interference press fit'),('intermediate_shaft','compound_pinion'):('relation/compound_pinion_press_fit','fit/intermediate_shaft/pinion_seat/compound_pinion/shaft_bore','measured interference press fit'),('hour_sleeve','hour_gear'):('relation/hour_gear_press_fit','fit/hour_sleeve/hour_gear_seat/hour_gear/sleeve_bore','measured interference press fit'),('minute_shaft','minute_hand'):('relation/minute_hand_press_fit','fit/minute_shaft/minute_hand_seat/minute_hand/hub_bore','measured interference press fit'),('hour_sleeve','hour_hand'):('relation/hour_hand_press_fit','fit/hour_sleeve/hour_hand_seat/hour_hand/hub_bore','measured interference press fit'),\n      ('minute_input_bearing','minute_shaft'):('relation/minute_lower_journal','fit/minute_input_bearing/journal_bore/minute_shaft/lower_journal','measured-clearance running journal represented by hinge'),('intermediate_bearing','intermediate_shaft'):('relation/intermediate_lower_journal','fit/intermediate_bearing/journal_bore/intermediate_shaft/lower_journal','measured-clearance running journal represented by hinge'),('lower_sleeve_bearing','hour_sleeve'):('relation/hour_sleeve_lower_journal','fit/lower_sleeve_bearing/journal_bore/hour_sleeve/lower_outer_journal','measured-clearance running journal represented by hinge'),('upper_sleeve_bearing','hour_sleeve'):('relation/hour_sleeve_upper_journal','fit/upper_sleeve_bearing/journal_bore/hour_sleeve/upper_outer_journal','measured-clearance running journal represented by hinge'),('minute_shaft','hour_sleeve'):('relation/independent_coaxial_handshaft_journal','fit/hour_sleeve/inner_journal/minute_shaft/sleeve_journal','measured-clearance independent coaxial journal')}\n    raw=[('minute_shaft','base'),('minute_shaft','minute_input_bearing'),('minute_shaft','sleeve_thrust_washer'),('minute_shaft','lower_sleeve_bearing'),('minute_shaft','upper_sleeve_bearing'),('minute_shaft','hour_sleeve'),('minute_shaft','minute_gear'),('minute_shaft','hour_gear'),('minute_shaft','hour_hand'),('minute_shaft','minute_hand'),('minute_shaft','compound_big_gear'),('minute_shaft','lower_sleeve_bracket'),('minute_shaft','upper_sleeve_bracket'),('intermediate_shaft','base'),('intermediate_shaft','intermediate_bearing'),('intermediate_shaft','compound_big_gear'),('intermediate_shaft','compound_pinion'),('intermediate_shaft','hour_gear'),('hour_sleeve','sleeve_thrust_washer'),('hour_sleeve','lower_sleeve_bearing'),('hour_sleeve','upper_sleeve_bearing'),('hour_sleeve','hour_gear'),('hour_sleeve','hour_hand'),('hour_sleeve','minute_hand'),('hour_sleeve','minute_gear'),('hour_sleeve','compound_big_gear'),('hour_sleeve','lower_sleeve_bracket'),('hour_sleeve','upper_sleeve_bracket'),('hour_sleeve','minute_input_bearing'),('hour_sleeve','base'),('minute_gear','compound_big_gear'),('minute_gear','minute_input_bearing'),('minute_gear','sleeve_thrust_washer'),('minute_gear','lower_sleeve_bracket'),('minute_gear','lower_sleeve_bearing'),('minute_gear','base'),('minute_gear','hour_gear'),('compound_big_gear','minute_input_bearing'),('compound_big_gear','intermediate_bearing'),('compound_big_gear','sleeve_thrust_washer'),('compound_big_gear','lower_sleeve_bearing'),('compound_big_gear','lower_sleeve_bracket'),('compound_big_gear','base'),('compound_big_gear','rear_mast'),('compound_big_gear','compound_pinion'),('compound_big_gear','hour_gear'),('compound_big_gear','upper_sleeve_bearing'),('compound_big_gear','upper_sleeve_bracket'),('compound_big_gear','hour_hand'),('compound_big_gear','minute_hand'),('compound_pinion','hour_gear'),('compound_pinion','hour_hand'),('hour_gear','lower_sleeve_bracket'),('hour_gear','lower_sleeve_bearing'),('hour_gear','upper_sleeve_bracket'),('hour_gear','upper_sleeve_bearing'),('hour_gear','rear_mast'),('hour_gear','sleeve_thrust_washer'),('hour_gear','hour_hand'),('hour_gear','minute_hand'),('hour_gear','minute_input_bearing'),('hour_gear','intermediate_bearing'),('hour_gear','base'),('minute_hand','hour_hand'),('minute_hand','upper_sleeve_bearing'),('minute_hand','upper_sleeve_bracket'),('hour_hand','upper_sleeve_bracket'),('hour_hand','upper_sleeve_bearing')]\n    contacts=[]; seen=[]\n    for a,b in raw:\n        k=tuple(sorted([a,b]))\n        if k in seen: continue\n        seen.append(k); rs=rel.get((a,b),rel.get((b,a))); pf='pair/'+k[0]+'/'+k[1]; nf='nearby/'+k[0]+'/'+k[1]\n        if rs: action='exclude'; reason=rs[2]; src=['link/'+a,'link/'+b,rs[0]]; fids=[rs[1],pf]\n        elif k==tuple(sorted(['hour_sleeve','sleeve_thrust_washer'])): action='keep'; reason='real axial thrust interface is the accessory contact function'; src=['link/'+a,'link/'+b]; fids=[pf,nf]\n        else: action='exclude'; reason='measured positive separation or disjoint AABB extent: collision-proxy false-contact risk with no contact function'; src=['link/'+a,'link/'+b]; fids=[pf,nf]\n        contacts.append({'pair':[a,b],'action':action,'reason':reason,'source_entity_ids':src,'fact_ids':fids})\n    plan={'coordinate_map':cm,'tree_edges':tree,'closure_edges':[],'rigid_carried':[['minute_shaft','minute_gear'],['minute_shaft','minute_hand'],['intermediate_shaft','compound_big_gear'],['intermediate_shaft','compound_pinion'],['hour_sleeve','hour_gear'],['hour_sleeve','hour_hand']],'independent_coaxial':[['minute_shaft','hour_sleeve']],'transmissions':[{'name':'minute_to_compound_reduction','driving_joint':'minute_spin','driven_joint':'intermediate_spin','ratio':-0.3333333333333333},{'name':'rigid_compound_pair','coordinate':'intermediate_spin','ratio':1.0},{'name':'compound_to_hour_reduction','driving_joint':'intermediate_spin','driven_joint':'hour_spin','ratio':-0.25}],'contact_decisions':contacts,'support_ground':['base'],'support_strategy':'fixed base and fixed support frame with three bearing-supported hinge coordinates; no support patch required'}\n    out.topology_plan(plan)\n    for b,p in tree: out.body(b,p)\n    out.joint('minute_shaft','minute_spin','hinge',(0,0,1),(0,0,5.5),'world'); out.joint('intermediate_shaft','intermediate_spin','hinge',(0,0,1),(24,0,5.5),'world'); out.joint('hour_sleeve','hour_spin','hinge',(0,0,1),(0,0,14.6),'world')\n    out.joint_equality('minute_to_compound_reduction','minute_spin','intermediate_spin',-0.3333333333333333,0.0,'6 mm to 18 mm external pitch-radius mesh',['transmission/minute_to_compound_reduction','relation/stage1_tooth_contact'],['fit/minute_gear/stage1_mesh/compound_big_gear/stage1_mesh'])\n    out.joint_equality('compound_to_hour_reduction','intermediate_spin','hour_spin',-0.25,0.0,'4.8 mm to 19.2 mm external pitch-radius mesh',['transmission/compound_to_hour_reduction','relation/stage2_tooth_contact'],['fit/hour_gear/stage2_mesh/compound_pinion/stage2_mesh'])\n    for c in contacts:\n        if c['action']=='exclude': out.exclude(c['pair'][0],c['pair'][1],c['reason'],c['source_entity_ids'],c['fact_ids'])\n    ids=facts['entity_ids']\n    for eid in ids:\n        nodes=[]; reason='authored fact represented by emitted body, coordinate, transmission, pair decision, or immutable placement metadata'\n        if eid.startswith('link/'):\n            n=eid[5:]; nodes=[n]\n            if cm[n]: nodes.append(cm[n])\n        elif eid=='transmission/minute_to_compound_reduction': nodes=['minute_to_compound_reduction']\n        elif eid=='transmission/compound_to_hour_reduction': nodes=['compound_to_hour_reduction']\n        elif eid=='transmission/rigid_compound_pair': nodes=['intermediate_spin']\n        out.decision(eid,'emitted' if eid.startswith('link/') else 'represented_by',nodes,reason,[eid])\n",
+        "expected_revision": 0
+      },
+      "is_error": false,
+      "result": "{\"accepted\": true, \"revision\": 1}"
+    },
+    {
+      "name": "run_mjcf_gate",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\n  \"ok\": false,\n  \"errors\": [\n    \"decision 'pose/place_base' does not resolve to a generated node\",\n    \"decision 'pose/place_minute_input_bearing' does not resolve to a generated node\",\n    \"decision 'pose/place_intermediate_bearing' does not resolve to a generated node\",\n    \"decision 'pose/place_rear_mast' does not resolve to a generated node\",\n    \"decision 'pose/place_lower_sleeve_bracket' does not resolve to a generated node\",\n    \"decision 'pose/place_upper_sleeve_bracket' does not resolve to a generated node\",\n    \"decision 'pose/place_sleeve_thrust_washer' does not resolve to a generated node\",\n    \"decision 'pose/place_lower_sleeve_bearing' does not resolve to a generated node\",\n    \"decision 'pose/place_upper_sleeve_bearing' does not resolve to a generated node\",\n    \"decision 'pose/place_minute_shaft' does not resolve to a generated node\",\n    \"decision 'pose/place_intermediate_shaft' does not resolve to a generated node\",\n    \"decision 'pose/place_hour_sleeve' does not resolve to a generated node\",\n    \"decision 'pose/place_minute_gear' does not resolve to a generated node\",\n    \"decision 'pose/place_compound_big_gear' does not resolve to a generated node\",\n    \"decision 'pose/place_compound_pinion' does not resolve to a generated node\",\n    \"decision 'pose/place_hour_gear' does not resolve to a generated node\",\n    \"decision 'pose/place_hour_hand' does not resolve to a generated node\",\n    \"decision 'pose/place_minute_hand' does not resolve to a generated node\",\n    \"decision 'port/minute_gear/shaft_bore' does not resolve to a generated node\",\n    \"decision 'port/minute_gear/stage1_mesh' does not resolve to a generated node\",\n    \"decision 'port/compound_big_gear/shaft_bore' does not resolve to a generated node\",\n    \"decision 'port/compound_big_gear/stage1_mesh' does not resolve to a generated node\",\n    \"decision 'port/compound_pinion/shaft_bore' does not resolve to a generated node\",\n    \"decision 'port/compound_pinion/stage2_mesh' does not resolve to a generated node\",\n    \"decision 'port/hour_gear/sleeve_bore' does not resolve to a generated node\",\n    \"decision 'port/hour_gear/stage2_mesh' does not resolve to a generated node\",\n    \"decision 'port/minute_shaft/minute_gear_seat' does not resolve to a generated node\",\n    \"decision 'port/minute_shaft/lower_journal' does not resolve to a generated node\",\n    \"decision 'port/minute_shaft/sleeve_journal' does not resolve to a generated node\",\n    \"decision 'port/minute_shaft/minute_hand_seat' does not resolve to a generated node\",\n    \"decision 'port/intermediate_shaft/big_gear_seat' does not resolve to a generated node\",\n    \"decision 'port/intermediate_shaft/pinion_seat' does not resolve to a generated node\",\n    \"decision 'port/intermediate_shaft/lower_journal' does not resolve to a generated node\",\n    \"decision 'port/hour_sleeve/inner_journal' does not resolve to a generated node\",\n    \"decision 'port/hour_sleeve/lower_outer_journal' does not resolve to a generated node\",\n    \"decision 'port/hour_sleeve/upper_outer_journal' does not resolve to a generated node\",\n    \"decision 'port/hour_sleeve/hour_gear_seat' does not resolve to a generated node\",\n    \"decision 'port/hour_sleeve/hour_hand_seat' does not resolve to a generated node\",\n    \"decision 'port/minute_input_bearing/journal_bore' does not resolve to a generated node\",\n    \"decision 'port/intermediate_bearing/journal_bore' does not resolve to a generated node\",\n    \"decision 'port/lower_sleeve_bearing/journal_bore' does not resolve to a generated node\",\n    \"decision 'port/upper_sleeve_bearing/journal_bore' does not resolve to a generated node\",\n    \"decision 'port/minute_hand/hub_bore' does not resolve to a generated node\",\n    \"decision 'port/hour_hand/hub_bore' does not resolve to a generated node\",\n    \"decision 'relation/stage1_tooth_contact' does not resolve to a generated node\",\n    \"decision 'relation/stage2_tooth_contact' does not resolve to a generated node\",\n    \"decision 'relation/minute"
+    },
+    {
+      "name": "read_current_compiler",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\"revision\": 1, \"source\": \"def compile_mjcf(facts, out):\\n    cm={'base':None,'minute_input_bearing':None,'intermediate_bearing':None,'rear_mast':None,'lower_sleeve_bracket':None,'upper_sleeve_bracket':None,'sleeve_thrust_washer':None,'lower_sleeve_bearing':None,'upper_sleeve_bearing':None,'minute_shaft':'minute_spin','minute_gear':'minute_spin','minute_hand':'minute_spin','intermediate_shaft':'intermediate_spin','compound_big_gear':'intermediate_spin','compound_pinion':'intermediate_spin','hour_sleeve':'hour_spin','hour_gear':'hour_spin','hour_hand':'hour_spin'}\\n    tree=[['base',''],['minute_input_bearing','base'],['intermediate_bearing','base'],['rear_mast','base'],['lower_sleeve_bracket','rear_mast'],['upper_sleeve_bracket','rear_mast'],['sleeve_thrust_washer','lower_sleeve_bracket'],['lower_sleeve_bearing','lower_sleeve_bracket'],['upper_sleeve_bearing','upper_sleeve_bracket'],['minute_shaft','minute_input_bearing'],['minute_gear','minute_shaft'],['minute_hand','minute_shaft'],['intermediate_shaft','intermediate_bearing'],['compound_big_gear','intermediate_shaft'],['compound_pinion','intermediate_shaft'],['hour_sleeve','lower_sleeve_bearing'],['hour_gear','hour_sleeve'],['hour_hand','hour_sleeve']]\\n    rel={\\n      ('minute_gear','compound_big_gear'):('relation/stage1_tooth_contact','fit/minute_gear/stage1_mesh/compound_big_gear/stage1_mesh','ideal external gear equality'),('compound_pinion','hour_gear'):('relation/stage2_tooth_contact','fit/hour_gear/stage2_mesh/compound_pinion/stage2_mesh','ideal external gear equality'),\\n      ('minute_shaft','minute_gear'):('relation/minute_gear_press_fit','fit/minute_shaft/minute_gear_seat/minute_gear/shaft_bore','measured interference press fit'),('intermediate_shaft','compound_big_gear'):('relation/compound_big_press_fit','fit/intermediate_shaft/big_gear_seat/compound_big_gear/shaft_bore','measured interference press fit'),('intermediate_shaft','compound_pinion'):('relation/compound_pinion_press_fit','fit/intermediate_shaft/pinion_seat/compound_pinion/shaft_bore','measured interference press fit'),('hour_sleeve','hour_gear'):('relation/hour_gear_press_fit','fit/hour_sleeve/hour_gear_seat/hour_gear/sleeve_bore','measured interference press fit'),('minute_shaft','minute_hand'):('relation/minute_hand_press_fit','fit/minute_shaft/minute_hand_seat/minute_hand/hub_bore','measured interference press fit'),('hour_sleeve','hour_hand'):('relation/hour_hand_press_fit','fit/hour_sleeve/hour_hand_seat/hour_hand/hub_bore','measured interference press fit'),\\n      ('minute_input_bearing','minute_shaft'):('relation/minute_lower_journal','fit/minute_input_bearing/journal_bore/minute_shaft/lower_journal','measured-clearance running journal represented by hinge'),('intermediate_bearing','intermediate_shaft'):('relation/intermediate_lower_journal','fit/intermediate_bearing/journal_bore/intermediate_shaft/lower_journal','measured-clearance running journal represented by hinge'),('lower_sleeve_bearing','hour_sleeve'):('relation/hour_sleeve_lower_journal','fit/lower_sleeve_bearing/journal_bore/hour_sleeve/lower_outer_journal','measured-clearance running journal represented by hinge'),('upper_sleeve_bearing','hour_sleeve'):('relation/hour_sleeve_upper_journal','fit/upper_sleeve_bearing/journal_bore/hour_sleeve/upper_outer_journal','measured-clearance running journal represented by hinge'),('minute_shaft','hour_sleeve'):('relation/independent_coaxial_handshaft_journal','fit/hour_sleeve/inner_journal/minute_shaft/sleeve_journal','measured-clearance independent coaxial journal')}\\n    raw=[('minute_shaft','base'),('minute_shaft','minute_input_bearing'),('minute_shaft','sleeve_thrust_washer'),('minute_shaft','lower_sleeve_bearing'),('minute_shaft','upper_sleeve_bearing'),('minute_shaft','hour_sleeve'),('minute_shaft','minute_gear'),('minute_shaft','hour_gear'),('minute_shaft','hour_hand'),('minute_shaft','minute_hand'),('minute_shaft','compound_big_gear'),('minute_shaft','lower_sleeve_bracket'),('minute_s"
+    },
+    {
+      "name": "submit_compiler_source",
+      "arguments": {
+        "source": "def compile_mjcf(facts,out):\n    names=['base','minute_input_bearing','intermediate_bearing','rear_mast','lower_sleeve_bracket','upper_sleeve_bracket','sleeve_thrust_washer','lower_sleeve_bearing','upper_sleeve_bearing','minute_shaft','intermediate_shaft','hour_sleeve','minute_gear','compound_big_gear','compound_pinion','hour_gear','hour_hand','minute_hand']\n    fixed=['base','minute_input_bearing','intermediate_bearing','rear_mast','lower_sleeve_bracket','upper_sleeve_bracket','sleeve_thrust_washer','lower_sleeve_bearing','upper_sleeve_bearing']\n    cm={}\n    for n in fixed: cm[n]=None\n    for n in ['minute_shaft','minute_gear','minute_hand']: cm[n]='minute_spin'\n    for n in ['intermediate_shaft','compound_big_gear','compound_pinion']: cm[n]='intermediate_spin'\n    for n in ['hour_sleeve','hour_gear','hour_hand']: cm[n]='hour_spin'\n    tree=[['base',''],['minute_input_bearing','base'],['intermediate_bearing','base'],['rear_mast','base'],['lower_sleeve_bracket','rear_mast'],['upper_sleeve_bracket','rear_mast'],['sleeve_thrust_washer','lower_sleeve_bracket'],['lower_sleeve_bearing','lower_sleeve_bracket'],['upper_sleeve_bearing','upper_sleeve_bracket'],['minute_shaft','minute_input_bearing'],['minute_gear','minute_shaft'],['minute_hand','minute_shaft'],['intermediate_shaft','intermediate_bearing'],['compound_big_gear','intermediate_shaft'],['compound_pinion','intermediate_shaft'],['hour_sleeve','lower_sleeve_bearing'],['hour_gear','hour_sleeve'],['hour_hand','hour_sleeve']]\n    rel={\n      ('compound_big_gear','minute_gear'):('relation/stage1_tooth_contact','fit/minute_gear/stage1_mesh/compound_big_gear/stage1_mesh','ideal external gear mesh replaced by equality'),\n      ('compound_pinion','hour_gear'):('relation/stage2_tooth_contact','fit/hour_gear/stage2_mesh/compound_pinion/stage2_mesh','ideal external gear mesh replaced by equality'),\n      ('minute_gear','minute_shaft'):('relation/minute_gear_press_fit','fit/minute_shaft/minute_gear_seat/minute_gear/shaft_bore','measured interference press fit rigidly carried'),\n      ('compound_big_gear','intermediate_shaft'):('relation/compound_big_press_fit','fit/intermediate_shaft/big_gear_seat/compound_big_gear/shaft_bore','measured interference press fit rigidly carried'),\n      ('compound_pinion','intermediate_shaft'):('relation/compound_pinion_press_fit','fit/intermediate_shaft/pinion_seat/compound_pinion/shaft_bore','measured interference press fit rigidly carried'),\n      ('hour_gear','hour_sleeve'):('relation/hour_gear_press_fit','fit/hour_sleeve/hour_gear_seat/hour_gear/sleeve_bore','measured interference press fit rigidly carried'),\n      ('minute_hand','minute_shaft'):('relation/minute_hand_press_fit','fit/minute_shaft/minute_hand_seat/minute_hand/hub_bore','measured interference press fit rigidly carried'),\n      ('hour_hand','hour_sleeve'):('relation/hour_hand_press_fit','fit/hour_sleeve/hour_hand_seat/hour_hand/hub_bore','measured interference press fit rigidly carried'),\n      ('minute_input_bearing','minute_shaft'):('relation/minute_lower_journal','fit/minute_input_bearing/journal_bore/minute_shaft/lower_journal','positive-clearance running journal represented by hinge'),\n      ('intermediate_bearing','intermediate_shaft'):('relation/intermediate_lower_journal','fit/intermediate_bearing/journal_bore/intermediate_shaft/lower_journal','positive-clearance running journal represented by hinge'),\n      ('hour_sleeve','lower_sleeve_bearing'):('relation/hour_sleeve_lower_journal','fit/lower_sleeve_bearing/journal_bore/hour_sleeve/lower_outer_journal','positive-clearance running journal represented by hinge'),\n      ('hour_sleeve','upper_sleeve_bearing'):('relation/hour_sleeve_upper_journal','fit/upper_sleeve_bearing/journal_bore/hour_sleeve/upper_outer_journal','positive-clearance running journal represented by hinge'),\n      ('hour_sleeve','minute_shaft'):('relation/independent_coaxial_handshaft_journal','fit/hour_sleeve/inner_journal/minute_shaft/sleeve_journal','positive-clearance independent coaxial journal')}\n    contacts=[]\n    for i in range(len(names)):\n        for j in range(i+1,len(names)):\n            a=names[i]; b=names[j]\n            if a in fixed and b in fixed: continue\n            k=tuple(sorted([a,b])); r=rel.get(k)\n            if r: contacts.append({'pair':[a,b],'action':'exclude','reason':r[2],'source_entity_ids':['link/'+a,'link/'+b,r[0]],'fact_ids':[r[1],'pair/'+k[0]+'/'+k[1]]})\n            else: contacts.append({'pair':[a,b],'action':'keep','reason':'no ideal constraint or measured fit replaces contact; unavailable or uncertain overlap is conservatively kept','source_entity_ids':['link/'+a,'link/'+b],'fact_ids':['link/'+a,'link/'+b]})\n    plan={'coordinate_map':cm,'tree_edges':tree,'closure_edges':[],'rigid_carried':[['minute_shaft','minute_gear'],['minute_shaft','minute_hand'],['intermediate_shaft','compound_big_gear'],['intermediate_shaft','compound_pinion'],['hour_sleeve','hour_gear'],['hour_sleeve','hour_hand']],'independent_coaxial':[['minute_shaft','hour_sleeve']],'transmissions':[{'name':'minute_to_compound_reduction','driving_joint':'minute_spin','driven_joint':'intermediate_spin','ratio':-0.3333333333333333},{'name':'rigid_compound_pair','coordinate':'intermediate_spin','ratio':1.0},{'name':'compound_to_hour_reduction','driving_joint':'intermediate_spin','driven_joint':'hour_spin','ratio':-0.25}],'contact_decisions':contacts,'support_ground':['base'],'support_strategy':'fixed authored base and support frame carry three bearing-supported hinge coordinates; no support-probe alteration required'}\n    out.topology_plan(plan)\n    for b,p in tree: out.body(b,p)\n    out.joint('minute_shaft','minute_spin','hinge',(0,0,1),(0,0,5.5),'world')\n    out.joint('intermediate_shaft','intermediate_spin','hinge',(0,0,1),(24,0,5.5),'world')\n    out.joint('hour_sleeve','hour_spin','hinge',(0,0,1),(0,0,14.6),'world')\n    out.joint_equality('minute_to_compound_reduction','minute_spin','intermediate_spin',-0.3333333333333333,0.0,'6 mm driving and 18 mm driven external pitch radii',['transmission/minute_to_compound_reduction','relation/stage1_tooth_contact'],['fit/minute_gear/stage1_mesh/compound_big_gear/stage1_mesh'])\n    out.joint_equality('compound_to_hour_reduction','intermediate_spin','hour_spin',-0.25,0.0,'4.8 mm driving and 19.2 mm driven external pitch radii',['transmission/compound_to_hour_reduction','relation/stage2_tooth_contact'],['fit/hour_gear/stage2_mesh/compound_pinion/stage2_mesh'])\n    for c in contacts:\n        if c['action']=='exclude': out.exclude(c['pair'][0],c['pair'][1],c['reason'],c['source_entity_ids'],c['fact_ids'])\n    for eid in facts['entity_ids']:\n        nodes=['base']\n        if eid.startswith('link/'):\n            n=eid[5:]; nodes=[n]\n            if cm[n]: nodes.append(cm[n])\n        elif eid=='transmission/minute_to_compound_reduction': nodes=['minute_to_compound_reduction']\n        elif eid=='transmission/compound_to_hour_reduction': nodes=['compound_to_hour_reduction']\n        elif eid=='transmission/rigid_compound_pair': nodes=['intermediate_spin']\n        elif eid=='role/driver/minute_gear': nodes=['minute_spin']\n        elif eid=='role/output/hour_hand': nodes=['hour_spin']\n        out.decision(eid,'emitted' if eid.startswith('link/') else 'represented_by',nodes,'authored entity represented by the emitted topology, coordinate, equality, contact classification, or placement on its emitted body',[eid])\n",
+        "expected_revision": 1
+      },
+      "is_error": false,
+      "result": "{\"accepted\": true, \"revision\": 2}"
+    },
+    {
+      "name": "run_mjcf_gate",
+      "arguments": {},
+      "is_error": false,
+      "result": "{\n  \"ok\": true,\n  \"errors\": [],\n  \"policy_version\": 4,\n  \"bodies\": [\n    \"base\",\n    \"compound_big_gear\",\n    \"compound_pinion\",\n    \"hour_gear\",\n    \"hour_hand\",\n    \"hour_sleeve\",\n    \"intermediate_bearing\",\n    \"intermediate_shaft\",\n    \"lower_sleeve_bearing\",\n    \"lower_sleeve_bracket\",\n    \"minute_gear\",\n    \"minute_hand\",\n    \"minute_input_bearing\",\n    \"minute_shaft\",\n    \"rear_mast\",\n    \"sleeve_thrust_washer\",\n    \"upper_sleeve_bearing\",\n    \"upper_sleeve_bracket\"\n  ],\n  \"joints\": [\n    \"compound_to_hour_reduction\",\n    \"hour_spin\",\n    \"intermediate_spin\",\n    \"minute_spin\",\n    \"minute_to_compound_reduction\"\n  ],\n  \"nq\": 3,\n  \"nv\": 3,\n  \"finite\": true,\n  \"dynamic_transmission_probe\": {\n    \"ran\": true,\n    \"ok\": true,\n    \"errors\": [],\n    \"warnings\": [],\n    \"contact_on\": {\n      \"ok\": true,\n      \"driver_travel\": 7.158946726308619,\n      \"commanded_travel\": 1.0494,\n      \"joint_deltas\": {\n        \"minute_spin\": -7.158946726308619,\n        \"intermediate_spin\": 2.3884009300760853,\n        \"hour_spin\": -0.5960337369731336\n      },\n      \"transmission_residuals\": [\n        {\n          \"name\": \"minute_to_compound_reduction\",\n          \"driving_joint\": \"minute_spin\",\n          \"driven_joint\": \"intermediate_spin\",\n          \"ratio\": -0.3333333333333333,\n          \"driving_delta\": -7.158946726308619,\n          \"driven_delta\": 2.3884009300760853,\n          \"normalized_residual\": 0.000873880496504811\n        },\n        {\n          \"name\": \"compound_to_hour_reduction\",\n          \"driving_joint\": \"intermediate_spin\",\n          \"driven_joint\": \"hour_spin\",\n          \"ratio\": -0.25,\n          \"driving_delta\": 2.3884009300760853,\n          \"driven_delta\": -0.5960337369731336,\n          \"normalized_residual\": 0.0017861248209341562\n        }\n      ],\n      \"active_contacts\": []\n    },\n    \"contact_off\": {\n      \"ok\": true,\n      \"driver_travel\": 7.158946726308619,\n      \"commanded_travel\": 1.0494,\n      \"joint_deltas\": {\n        \"minute_spin\": -7.158946726308619,\n        \"intermediate_spin\": 2.3884009300760853,\n        \"hour_spin\": -0.5960337369731336\n      },\n      \"transmission_residuals\": [\n        {\n          \"name\": \"minute_to_compound_reduction\",\n          \"driving_joint\": \"minute_spin\",\n          \"driven_joint\": \"intermediate_spin\",\n          \"ratio\": -0.3333333333333333,\n          \"driving_delta\": -7.158946726308619,\n          \"driven_delta\": 2.3884009300760853,\n          \"normalized_residual\": 0.000873880496504811\n        },\n        {\n          \"name\": \"compound_to_hour_reduction\",\n          \"driving_joint\": \"intermediate_spin\",\n          \"driven_joint\": \"hour_spin\",\n          \"ratio\": -0.25,\n          \"driving_delta\": 2.3884009300760853,\n          \"driven_delta\": -0.5960337369731336,\n          \"normalized_residual\": 0.0017861248209341562\n        }\n      ],\n      \"active_contacts\": []\n    }\n  }\n}"
+    }
+  ],
+  "report": {
+    "ok": true,
+    "errors": [],
+    "policy_version": 4,
+    "bodies": [
+      "base",
+      "compound_big_gear",
+      "compound_pinion",
+      "hour_gear",
+      "hour_hand",
+      "hour_sleeve",
+      "intermediate_bearing",
+      "intermediate_shaft",
+      "lower_sleeve_bearing",
+      "lower_sleeve_bracket",
+      "minute_gear",
+      "minute_hand",
+      "minute_input_bearing",
+      "minute_shaft",
+      "rear_mast",
+      "sleeve_thrust_washer",
+      "upper_sleeve_bearing",
+      "upper_sleeve_bracket"
+    ],
+    "joints": [
+      "compound_to_hour_reduction",
+      "hour_spin",
+      "intermediate_spin",
+      "minute_spin",
+      "minute_to_compound_reduction"
+    ],
+    "nq": 3,
+    "nv": 3,
+    "finite": true,
+    "dynamic_transmission_probe": {
+      "ran": true,
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "contact_on": {
+        "ok": true,
+        "driver_travel": 7.158946726308619,
+        "commanded_travel": 1.0494,
+        "joint_deltas": {
+          "minute_spin": -7.158946726308619,
+          "intermediate_spin": 2.3884009300760853,
+          "hour_spin": -0.5960337369731336
+        },
+        "transmission_residuals": [
+          {
+            "name": "minute_to_compound_reduction",
+            "driving_joint": "minute_spin",
+            "driven_joint": "intermediate_spin",
+            "ratio": -0.3333333333333333,
+            "driving_delta": -7.158946726308619,
+            "driven_delta": 2.3884009300760853,
+            "normalized_residual": 0.000873880496504811
+          },
+          {
+            "name": "compound_to_hour_reduction",
+            "driving_joint": "intermediate_spin",
+            "driven_joint": "hour_spin",
+            "ratio": -0.25,
+            "driving_delta": 2.3884009300760853,
+            "driven_delta": -0.5960337369731336,
+            "normalized_residual": 0.0017861248209341562
+          }
+        ],
+        "active_contacts": []
+      },
+      "contact_off": {
+        "ok": true,
+        "driver_travel": 7.158946726308619,
+        "commanded_travel": 1.0494,
+        "joint_deltas": {
+          "minute_spin": -7.158946726308619,
+          "intermediate_spin": 2.3884009300760853,
+          "hour_spin": -0.5960337369731336
+        },
+        "transmission_residuals": [
+          {
+            "name": "minute_to_compound_reduction",
+            "driving_joint": "minute_spin",
+            "driven_joint": "intermediate_spin",
+            "ratio": -0.3333333333333333,
+            "driving_delta": -7.158946726308619,
+            "driven_delta": 2.3884009300760853,
+            "normalized_residual": 0.000873880496504811
+          },
+          {
+            "name": "compound_to_hour_reduction",
+            "driving_joint": "intermediate_spin",
+            "driven_joint": "hour_spin",
+            "ratio": -0.25,
+            "driving_delta": 2.3884009300760853,
+            "driven_delta": -0.5960337369731336,
+            "normalized_residual": 0.0017861248209341562
+          }
+        ],
+        "active_contacts": []
+      }
+    }
+  }
+}

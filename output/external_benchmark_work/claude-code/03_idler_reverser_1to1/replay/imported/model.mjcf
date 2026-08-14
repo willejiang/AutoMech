@@ -1,0 +1,72 @@
+<mujoco model="open_idler_reverser_1to1">
+  <compiler angle="radian" meshdir="meshes" autolimits="true" />
+  <option timestep="0.005" gravity="0 0 -9.81" integrator="implicitfast" iterations="80" />
+  <size njmax="1000" nconmax="500" />
+  <default>
+    <joint damping="0.08" armature="0.002" />
+    <geom density="780" friction="0.6 0.05 0.001" condim="3" contype="1" conaffinity="1" />
+  </default>
+  <asset>
+    <mesh name="base_mesh" file="base.stl" scale="0.001 0.001 0.001" />
+    <mesh name="input_support_mesh" file="input_support.stl" scale="0.001 0.001 0.001" />
+    <mesh name="idler_support_mesh" file="idler_support.stl" scale="0.001 0.001 0.001" />
+    <mesh name="output_support_mesh" file="output_support.stl" scale="0.001 0.001 0.001" />
+    <mesh name="input_shaft_mesh" file="input_shaft.stl" scale="0.001 0.001 0.001" />
+    <mesh name="idler_shaft_mesh" file="idler_shaft.stl" scale="0.001 0.001 0.001" />
+    <mesh name="output_shaft_mesh" file="output_shaft.stl" scale="0.001 0.001 0.001" />
+    <mesh name="input_gear_mesh" file="input_gear.stl" scale="0.001 0.001 0.001" />
+    <mesh name="idler_gear_mesh" file="idler_gear.stl" scale="0.001 0.001 0.001" />
+    <mesh name="output_gear_mesh" file="output_gear.stl" scale="0.001 0.001 0.001" />
+    <mesh name="hand_crank_mesh" file="hand_crank.stl" scale="0.001 0.001 0.001" />
+    <material name="frame_mat" rgba="0.20 0.23 0.27 1" />
+    <material name="input_mat" rgba="0.85 0.25 0.12 1" />
+    <material name="idler_mat" rgba="0.95 0.65 0.12 1" />
+    <material name="output_mat" rgba="0.15 0.48 0.80 1" />
+  </asset>
+  <worldbody>
+    <light pos="0 -1 1.2" dir="0 1 -0.7" diffuse="0.9 0.9 0.9" />
+    <geom name="ground" type="plane" size="0.5 0.35 0.01" rgba="0.12 0.14 0.16 1" contype="1" conaffinity="1" />
+    <body name="base" pos="0 0 0">
+      <geom name="base_geom" type="mesh" mesh="base_mesh" material="frame_mat" contype="1" conaffinity="1" />
+      <geom name="input_support_geom" type="mesh" mesh="input_support_mesh" material="frame_mat" contype="1" conaffinity="1" />
+      <geom name="idler_support_geom" type="mesh" mesh="idler_support_mesh" material="frame_mat" contype="1" conaffinity="1" />
+      <geom name="output_support_geom" type="mesh" mesh="output_support_mesh" material="frame_mat" contype="1" conaffinity="1" />
+    </body>
+    <body name="input_shaft" pos="0 0 0">
+      <joint name="input_shaft_hinge" type="hinge" pos="-0.060 0 0.070" axis="0 1 0" limited="false" />
+      <geom name="input_shaft_geom" type="mesh" mesh="input_shaft_mesh" material="input_mat" contype="0" conaffinity="0" />
+      <geom name="input_gear_geom" type="mesh" mesh="input_gear_mesh" material="input_mat" contype="0" conaffinity="0" />
+      <geom name="hand_crank_geom" type="mesh" mesh="hand_crank_mesh" material="input_mat" contype="0" conaffinity="0" />
+      <site name="input_axis_site" pos="-0.060 0 0.070" size="0.003" />
+    </body>
+    <body name="idler_shaft" pos="0 0 0">
+      <joint name="idler_shaft_hinge" type="hinge" pos="0 0 0.070" axis="0 1 0" limited="false" />
+      <geom name="idler_shaft_geom" type="mesh" mesh="idler_shaft_mesh" material="idler_mat" contype="0" conaffinity="0" />
+      <geom name="idler_gear_geom" type="mesh" mesh="idler_gear_mesh" material="idler_mat" contype="0" conaffinity="0" />
+      <site name="idler_axis_site" pos="0 0 0.070" size="0.003" />
+    </body>
+    <body name="output_shaft" pos="0 0 0">
+      <joint name="output_shaft_hinge" type="hinge" pos="0.060 0 0.070" axis="0 1 0" limited="false" />
+      <geom name="output_shaft_geom" type="mesh" mesh="output_shaft_mesh" material="output_mat" contype="0" conaffinity="0" />
+      <geom name="output_gear_geom" type="mesh" mesh="output_gear_mesh" material="output_mat" contype="0" conaffinity="0" />
+      <site name="output_axis_site" pos="0.060 0 0.070" size="0.003" />
+    </body>
+  </worldbody>
+  <equality>
+    
+    <joint name="input_idler_mesh_eq" joint1="input_shaft_hinge" joint2="idler_shaft_hinge" polycoef="0 -1 0 0 0" solref="0.001 1" />
+    
+    <joint name="idler_output_mesh_eq" joint1="idler_shaft_hinge" joint2="output_shaft_hinge" polycoef="0 -1 0 0 0" solref="0.001 1" />
+  </equality>
+  <actuator>
+    <velocity name="hand_crank_motor" joint="input_shaft_hinge" kv="20" ctrlrange="-4 4" forcerange="-20 20" />
+  </actuator>
+  <sensor>
+    <jointpos name="input_angle" joint="input_shaft_hinge" />
+    <jointpos name="idler_angle" joint="idler_shaft_hinge" />
+    <jointpos name="output_angle" joint="output_shaft_hinge" />
+    <jointvel name="input_speed" joint="input_shaft_hinge" />
+    <jointvel name="idler_speed" joint="idler_shaft_hinge" />
+    <jointvel name="output_speed" joint="output_shaft_hinge" />
+  </sensor>
+</mujoco>

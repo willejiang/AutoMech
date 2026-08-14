@@ -1,0 +1,610 @@
+{
+  "links": [
+    {
+      "axis": null,
+      "degree_of_freedom": "fixed",
+      "dof": "fixed",
+      "driver": false,
+      "mesh_file": "meshes/base_frame.stl",
+      "mount": "",
+      "name": "base_frame",
+      "rigid_mount": "world",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "degree_of_freedom": "spin",
+      "dof": "fixed",
+      "driver": true,
+      "mesh_file": "meshes/minute_shaft.stl",
+      "mount": "",
+      "name": "minute_shaft",
+      "rigid_mount": null,
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "degree_of_freedom": "rigid_carried",
+      "dof": "fixed",
+      "driver": false,
+      "mesh_file": "meshes/minute_pinion_15t.stl",
+      "mount": "minute_shaft",
+      "name": "minute_pinion_15t",
+      "rigid_mount": "minute_shaft",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "degree_of_freedom": "rigid_carried",
+      "dof": "fixed",
+      "driver": false,
+      "mesh_file": "meshes/minute_hand.stl",
+      "mount": "minute_shaft",
+      "name": "minute_hand",
+      "rigid_mount": "minute_shaft",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "degree_of_freedom": "spin",
+      "dof": "fixed",
+      "driver": false,
+      "mesh_file": "meshes/intermediate_shaft.stl",
+      "mount": "",
+      "name": "intermediate_shaft",
+      "rigid_mount": null,
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "degree_of_freedom": "rigid_carried",
+      "dof": "fixed",
+      "driver": false,
+      "mesh_file": "meshes/intermediate_gear_45t.stl",
+      "mount": "intermediate_shaft",
+      "name": "intermediate_gear_45t",
+      "rigid_mount": "intermediate_shaft",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "degree_of_freedom": "rigid_carried",
+      "dof": "fixed",
+      "driver": false,
+      "mesh_file": "meshes/intermediate_pinion_12t.stl",
+      "mount": "intermediate_shaft",
+      "name": "intermediate_pinion_12t",
+      "rigid_mount": "intermediate_shaft",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "degree_of_freedom": "spin",
+      "dof": "fixed",
+      "driver": false,
+      "mesh_file": "meshes/hour_sleeve.stl",
+      "mount": "",
+      "name": "hour_sleeve",
+      "rigid_mount": null,
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "degree_of_freedom": "rigid_carried",
+      "dof": "fixed",
+      "driver": false,
+      "mesh_file": "meshes/hour_gear_48t.stl",
+      "mount": "hour_sleeve",
+      "name": "hour_gear_48t",
+      "rigid_mount": "hour_sleeve",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "degree_of_freedom": "rigid_carried",
+      "dof": "fixed",
+      "driver": false,
+      "mesh_file": "meshes/hour_hand.stl",
+      "mount": "hour_sleeve",
+      "name": "hour_hand",
+      "rigid_mount": "hour_sleeve",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    }
+  ],
+  "mesh_pairs": [
+    [
+      "minute_pinion_15t",
+      "intermediate_gear_45t"
+    ],
+    [
+      "intermediate_pinion_12t",
+      "hour_gear_48t"
+    ]
+  ],
+  "motion_joints": [
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "child": "minute_shaft",
+      "kind": "revolute",
+      "name": "minute_input_hinge",
+      "origin_m": [
+        0,
+        0,
+        0.112
+      ],
+      "parent": "base_frame",
+      "pos_mm": [
+        0.0,
+        0.0,
+        112.0
+      ],
+      "type": "revolute"
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "child": "intermediate_shaft",
+      "kind": "revolute",
+      "name": "intermediate_hinge",
+      "origin_m": [
+        0.06,
+        0,
+        0.112
+      ],
+      "parent": "base_frame",
+      "pos_mm": [
+        60.0,
+        0.0,
+        112.0
+      ],
+      "type": "revolute"
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "child": "hour_sleeve",
+      "kind": "revolute",
+      "name": "hour_output_hinge",
+      "origin_m": [
+        0,
+        0,
+        0.112
+      ],
+      "parent": "base_frame",
+      "pos_mm": [
+        0.0,
+        0.0,
+        112.0
+      ],
+      "type": "revolute"
+    }
+  ],
+  "name": "openwork_clock_12to1",
+  "output_link": "hour_sleeve",
+  "planetary_stages": [],
+  "ports_by_link": {
+    "base_frame": [
+      "minute_rear_bearing",
+      "minute_front_sleeve_bearing",
+      "intermediate_rear_bearing",
+      "intermediate_front_bearing"
+    ],
+    "hour_sleeve": [
+      "hour_axis",
+      "hour_gear_seat",
+      "hour_hand_seat"
+    ],
+    "intermediate_shaft": [
+      "intermediate_axis",
+      "driven_gear_seat",
+      "second_pinion_seat"
+    ],
+    "minute_shaft": [
+      "minute_axis",
+      "minute_pinion_seat",
+      "minute_hand_seat"
+    ]
+  },
+  "poses": [
+    {
+      "child": "base_frame",
+      "name": "place_base_frame",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "minute_shaft",
+      "name": "place_minute_shaft",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "minute_pinion_15t",
+      "name": "place_minute_pinion_15t",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "minute_hand",
+      "name": "place_minute_hand",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "intermediate_shaft",
+      "name": "place_intermediate_shaft",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "intermediate_gear_45t",
+      "name": "place_intermediate_gear_45t",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "intermediate_pinion_12t",
+      "name": "place_intermediate_pinion_12t",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "hour_sleeve",
+      "name": "place_hour_sleeve",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "hour_gear_48t",
+      "name": "place_hour_gear_48t",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "child": "hour_hand",
+      "name": "place_hour_hand",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "base_part": "base_frame.minute_rear_bearing",
+      "incoming_part": "minute_shaft.minute_axis",
+      "mate_type": "journal_bearing",
+      "name": "relation_0"
+    },
+    {
+      "base_part": "base_frame.minute_front_sleeve_bearing",
+      "incoming_part": "hour_sleeve.hour_axis",
+      "mate_type": "journal_bearing",
+      "name": "relation_1"
+    },
+    {
+      "base_part": "hour_sleeve.hour_axis",
+      "incoming_part": "minute_shaft.minute_axis",
+      "mate_type": "running_clearance",
+      "name": "relation_2"
+    },
+    {
+      "base_part": "base_frame.intermediate_rear_bearing",
+      "incoming_part": "intermediate_shaft.intermediate_axis",
+      "mate_type": "journal_bearing",
+      "name": "relation_3"
+    },
+    {
+      "base_part": "base_frame.intermediate_front_bearing",
+      "incoming_part": "intermediate_shaft.intermediate_axis",
+      "mate_type": "journal_bearing",
+      "name": "relation_4"
+    },
+    {
+      "base_part": "minute_shaft.minute_pinion_seat",
+      "incoming_part": "minute_pinion_15t",
+      "mate_type": "press_fit",
+      "name": "relation_5"
+    },
+    {
+      "base_part": "minute_shaft.minute_hand_seat",
+      "incoming_part": "minute_hand",
+      "mate_type": "press_fit",
+      "name": "relation_6"
+    },
+    {
+      "base_part": "intermediate_shaft.driven_gear_seat",
+      "incoming_part": "intermediate_gear_45t",
+      "mate_type": "press_fit",
+      "name": "relation_7"
+    },
+    {
+      "base_part": "intermediate_shaft.second_pinion_seat",
+      "incoming_part": "intermediate_pinion_12t",
+      "mate_type": "press_fit",
+      "name": "relation_8"
+    },
+    {
+      "base_part": "hour_sleeve.hour_gear_seat",
+      "incoming_part": "hour_gear_48t",
+      "mate_type": "press_fit",
+      "name": "relation_9"
+    },
+    {
+      "base_part": "hour_sleeve.hour_hand_seat",
+      "incoming_part": "hour_hand",
+      "mate_type": "press_fit",
+      "name": "relation_10"
+    },
+    {
+      "base_part": "minute_pinion_15t",
+      "incoming_part": "intermediate_gear_45t",
+      "mate_type": "gear_spur_external",
+      "name": "relation_11"
+    },
+    {
+      "base_part": "intermediate_pinion_12t",
+      "incoming_part": "hour_gear_48t",
+      "mate_type": "gear_spur_external",
+      "name": "relation_12"
+    }
+  ],
+  "root_link": "base_frame",
+  "transmissions": [
+    {
+      "driven": "intermediate_hinge",
+      "driven_link": "intermediate_hinge",
+      "driven_teeth": 45,
+      "driving": "minute_input_hinge",
+      "driving_link": "minute_input_hinge",
+      "driving_teeth": 15,
+      "name": "stage_1",
+      "ratio": -0.3333333333333333,
+      "ratio_driven_over_driving": -0.3333333333333333,
+      "type": "transmission"
+    },
+    {
+      "driven": "hour_output_hinge",
+      "driven_link": "hour_output_hinge",
+      "driven_teeth": 48,
+      "driving": "intermediate_hinge",
+      "driving_link": "intermediate_hinge",
+      "driving_teeth": 12,
+      "name": "stage_2",
+      "ratio": -0.25,
+      "ratio_driven_over_driving": -0.25,
+      "type": "transmission"
+    }
+  ],
+  "watch_links": [
+    "minute_hand",
+    "hour_hand",
+    "minute_shaft",
+    "hour_sleeve",
+    "intermediate_shaft"
+  ]
+}

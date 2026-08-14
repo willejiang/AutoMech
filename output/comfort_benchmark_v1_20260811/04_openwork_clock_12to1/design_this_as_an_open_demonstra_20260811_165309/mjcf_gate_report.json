@@ -1,0 +1,103 @@
+{
+  "ok": true,
+  "errors": [],
+  "policy_version": 4,
+  "bodies": [
+    "base",
+    "compound_big_gear",
+    "compound_pinion",
+    "hour_gear",
+    "hour_hand",
+    "hour_sleeve",
+    "intermediate_bearing",
+    "intermediate_shaft",
+    "lower_sleeve_bearing",
+    "lower_sleeve_bracket",
+    "minute_gear",
+    "minute_hand",
+    "minute_input_bearing",
+    "minute_shaft",
+    "rear_mast",
+    "sleeve_thrust_washer",
+    "upper_sleeve_bearing",
+    "upper_sleeve_bracket"
+  ],
+  "joints": [
+    "compound_to_hour_reduction",
+    "hour_spin",
+    "intermediate_spin",
+    "minute_spin",
+    "minute_to_compound_reduction"
+  ],
+  "nq": 3,
+  "nv": 3,
+  "finite": true,
+  "dynamic_transmission_probe": {
+    "ran": true,
+    "ok": true,
+    "errors": [],
+    "warnings": [],
+    "contact_on": {
+      "ok": true,
+      "driver_travel": 7.158946726308619,
+      "commanded_travel": 1.0494,
+      "joint_deltas": {
+        "minute_spin": -7.158946726308619,
+        "intermediate_spin": 2.3884009300760853,
+        "hour_spin": -0.5960337369731336
+      },
+      "transmission_residuals": [
+        {
+          "name": "minute_to_compound_reduction",
+          "driving_joint": "minute_spin",
+          "driven_joint": "intermediate_spin",
+          "ratio": -0.3333333333333333,
+          "driving_delta": -7.158946726308619,
+          "driven_delta": 2.3884009300760853,
+          "normalized_residual": 0.000873880496504811
+        },
+        {
+          "name": "compound_to_hour_reduction",
+          "driving_joint": "intermediate_spin",
+          "driven_joint": "hour_spin",
+          "ratio": -0.25,
+          "driving_delta": 2.3884009300760853,
+          "driven_delta": -0.5960337369731336,
+          "normalized_residual": 0.0017861248209341562
+        }
+      ],
+      "active_contacts": []
+    },
+    "contact_off": {
+      "ok": true,
+      "driver_travel": 7.158946726308619,
+      "commanded_travel": 1.0494,
+      "joint_deltas": {
+        "minute_spin": -7.158946726308619,
+        "intermediate_spin": 2.3884009300760853,
+        "hour_spin": -0.5960337369731336
+      },
+      "transmission_residuals": [
+        {
+          "name": "minute_to_compound_reduction",
+          "driving_joint": "minute_spin",
+          "driven_joint": "intermediate_spin",
+          "ratio": -0.3333333333333333,
+          "driving_delta": -7.158946726308619,
+          "driven_delta": 2.3884009300760853,
+          "normalized_residual": 0.000873880496504811
+        },
+        {
+          "name": "compound_to_hour_reduction",
+          "driving_joint": "intermediate_spin",
+          "driven_joint": "hour_spin",
+          "ratio": -0.25,
+          "driving_delta": 2.3884009300760853,
+          "driven_delta": -0.5960337369731336,
+          "normalized_residual": 0.0017861248209341562
+        }
+      ],
+      "active_contacts": []
+    }
+  }
+}

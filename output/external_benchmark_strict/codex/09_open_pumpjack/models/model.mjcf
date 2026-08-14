@@ -1,0 +1,33 @@
+<mujoco model="open_hand_cranked_pumpjack">
+  <compiler angle="radian" meshdir="meshes" />
+  <option timestep=".002" integrator="implicitfast" gravity="0 0 0" iterations="100" />
+  <default><joint damping=".08" armature=".001" /><geom friction=".8 .01 .001" condim="3" /></default>
+  <asset>
+    <mesh name="base_m" file="base.stl" scale=".001 .001 .001" /><mesh name="cpf_m" file="crank_pedestal_front.stl" scale=".001 .001 .001" /><mesh name="cpr_m" file="crank_pedestal_rear.stl" scale=".001 .001 .001" />
+    <mesh name="cbf_m" file="crank_bearing_front.stl" scale=".001 .001 .001" /><mesh name="cbr_m" file="crank_bearing_rear.stl" scale=".001 .001 .001" /><mesh name="bsl_m" file="beam_support_left.stl" scale=".001 .001 .001" /><mesh name="bsr_m" file="beam_support_right.stl" scale=".001 .001 .001" /><mesh name="bp_m" file="beam_pivot.stl" scale=".001 .001 .001" /><mesh name="guide_m" file="vertical_guide.stl" scale=".001 .001 .001" />
+    <mesh name="shaft_m" file="crankshaft_input.stl" scale=".001 .001 .001" /><mesh name="hand_m" file="hand_crank.stl" scale=".001 .001 .001" /><mesh name="disk_m" file="crank_disk.stl" scale=".001 .001 .001" /><mesh name="pin_m" file="crank_pin.stl" scale=".001 .001 .001" /><mesh name="pitman_m" file="pitman_rod.stl" scale=".001 .001 .001" /><mesh name="beam_m" file="walking_beam.stl" scale=".001 .001 .001" /><mesh name="rod_m" file="polished_rod_output.stl" scale=".001 .001 .001" />
+  </asset>
+  <worldbody>
+    <geom name="ground" type="plane" size=".5 .5 .01" />
+    <body name="base" pos="0 0 .005"><geom name="base_visual" type="mesh" mesh="base_m" contype="0" conaffinity="0" /><geom name="base_collision" type="box" size=".125 .06 .005" />
+      <body name="crank_pedestal_front" pos="-.08 -.028 .0325"><geom type="mesh" mesh="cpf_m" contype="0" conaffinity="0" /></body><body name="crank_pedestal_rear" pos="-.08 .028 .0325"><geom type="mesh" mesh="cpr_m" contype="0" conaffinity="0" /></body>
+      <body name="crank_bearing_front" pos="-.08 0 .065"><geom type="mesh" mesh="cbf_m" contype="0" conaffinity="0" /></body><body name="crank_bearing_rear" pos="-.08 0 .065"><geom type="mesh" mesh="cbr_m" contype="0" conaffinity="0" /></body>
+      <body name="beam_support_left" pos="0 -.025 .071"><geom type="mesh" mesh="bsl_m" contype="0" conaffinity="0" /></body><body name="beam_support_right" pos="0 .025 .071"><geom type="mesh" mesh="bsr_m" contype="0" conaffinity="0" /></body><body name="beam_pivot" pos="0 0 .140"><geom type="mesh" mesh="bp_m" contype="0" conaffinity="0" /></body><body name="vertical_guide" pos=".072 0 .100"><geom type="mesh" mesh="guide_m" contype="0" conaffinity="0" /><geom name="guide_left_collision" type="box" pos="-.013 0 0" size=".006 .004 .0525" /><geom name="guide_right_collision" type="box" pos=".013 0 0" size=".006 .004 .0525" /></body>
+    </body>
+    <body name="crankshaft_input" pos="-.08 0 .07"><joint name="crankshaft_input_hinge" type="hinge" axis="0 1 0" /><geom type="mesh" mesh="shaft_m" contype="0" conaffinity="0" /><geom name="shaft_collision" type="capsule" fromto="0 -.044 0 0 .044 0" size=".006" />
+      <body name="hand_crank"><geom type="mesh" mesh="hand_m" contype="0" conaffinity="0" /></body>
+      <body name="crank_disk"><geom type="mesh" mesh="disk_m" contype="0" conaffinity="0" /><geom name="disk_collision" type="cylinder" size=".028 .005" quat=".7071068 .7071068 0 0" />
+        <body name="crank_pin" pos=".02 0 0"><geom type="mesh" mesh="pin_m" contype="0" conaffinity="0" /><geom name="pin_collision" type="capsule" fromto="0 -.012 0 0 .012 0" size=".005" /><site name="crank_pin_site" pos="0 -.012 0" size=".003" /></body>
+      </body>
+    </body>
+    <body name="walking_beam" pos="0 0 .145"><joint name="beam_pivot_hinge" type="hinge" axis="0 1 0" range="-.8 .8" /><geom type="mesh" mesh="beam_m" contype="0" conaffinity="0" /><geom name="beam_collision" type="capsule" fromto="-.06 0 0 .072 0 0" size=".0075" /><site name="beam_rear_site" pos="-.06 -.012 0" size=".003" /><site name="beam_output_site" pos=".072 0 0" size=".003" /></body>
+    <body name="pitman_rod" pos="-.06 -.012 .1075"><joint name="pitman_x" type="slide" axis="1 0 0" /><joint name="pitman_z" type="slide" axis="0 0 1" /><joint name="pitman_hinge" type="hinge" axis="0 1 0" /><geom type="mesh" mesh="pitman_m" contype="0" conaffinity="0" /><geom name="pitman_collision" type="capsule" fromto="0 0 -.0375 0 0 .0375" size=".006" /><site name="pitman_big_site" pos="0 0 -.0375" size=".003" /><site name="pitman_beam_site" pos="0 0 .0375" size=".003" /></body>
+    <body name="polished_rod_output" pos=".072 0 .0925"><joint name="polished_rod_slide" type="slide" axis="0 0 1" range="-.065 .065" /><geom type="mesh" mesh="rod_m" contype="0" conaffinity="0" /><geom name="rod_collision" type="capsule" fromto="0 0 -.0525 0 0 .0525" size=".005" /><site name="polished_rod_site" pos="0 0 .0525" size=".003" /></body>
+  </worldbody>
+  <equality>
+    <connect name="pitman_crank_closure" body1="pitman_rod" body2="crank_pin" anchor="-.06 -.012 .07" solref="-.002 -1" solimp=".999 .999 .001" />
+    <connect name="pitman_beam_closure" body1="pitman_rod" body2="walking_beam" anchor="-.06 -.012 .145" solref="-.002 -1" solimp=".999 .999 .001" />
+    <connect name="beam_output_closure" body1="walking_beam" body2="polished_rod_output" anchor=".072 0 .145" solref="-.002 -1" solimp=".999 .999 .001" />
+  </equality>
+  <actuator><motor name="hand_crank_motor" joint="crankshaft_input_hinge" gear="1" ctrllimited="true" ctrlrange="-30 30" forcelimited="true" forcerange="-30 30" /></actuator>
+</mujoco>

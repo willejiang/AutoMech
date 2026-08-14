@@ -1,0 +1,363 @@
+{
+  "first_blocker": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+  "layer_weights": [
+    10,
+    15,
+    15,
+    20,
+    40
+  ],
+  "layers": [
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "source_execution",
+              "path": "output/external_benchmark_work/codex/07_horizontal_slider_crank/source/source_execution.json",
+              "sha256": "f16b2da6412de10e3eb7b95c402bd879a454e572a9ae684f516bbe3ae93278b6",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "scorer_owned_execution",
+          "points_awarded": 10,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "scorer-owned source build produced a nonempty part set; MJCF replay compiled, initialized, and stayed finite",
+          "status": "PASS"
+        }
+      ],
+      "index": 1,
+      "name": "execution",
+      "points_awarded": 10,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 10
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/codex/07_horizontal_slider_crank/assembly.json",
+              "sha256": "79d362234ec7549a3eacc028ae53e7617b9e1ba153534da222a1aafe837ffdb3",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "assembly_model",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "assembly/simulation model is available",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/codex/07_horizontal_slider_crank/assembly.json",
+              "sha256": "79d362234ec7549a3eacc028ae53e7617b9e1ba153534da222a1aafe837ffdb3",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "required_role_cardinalities",
+          "points_awarded": 7,
+          "points_possible": 7,
+          "raw_status": "PASS",
+          "reason": "all required roles are bound",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/codex/07_horizontal_slider_crank/assembly.json",
+              "sha256": "79d362234ec7549a3eacc028ae53e7617b9e1ba153534da222a1aafe837ffdb3",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "input_output_independence",
+          "points_awarded": 3,
+          "points_possible": 3,
+          "raw_status": "PASS",
+          "reason": "input and output are distinct",
+          "status": "PASS"
+        }
+      ],
+      "index": 2,
+      "name": "assembly",
+      "points_awarded": 15,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "geometry",
+              "path": "output/external_benchmark_strict/codex/07_horizontal_slider_crank/strict/geometry.json",
+              "sha256": "8e683b609f2f91c18ad4ccb139e2fa3e92b08060ee808e41375ac8c8e8328c3a",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "mesh_inventory",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "strict geometry hashes every scanned usable mesh",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "geometry",
+              "path": "output/external_benchmark_strict/codex/07_horizontal_slider_crank/strict/geometry.json",
+              "sha256": "8e683b609f2f91c18ad4ccb139e2fa3e92b08060ee808e41375ac8c8e8328c3a",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "non_exempt_conflicts",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "FAIL",
+          "reason": "strict non-exempt conflicts=2; unavailable=0",
+          "status": "FAIL"
+        }
+      ],
+      "index": 3,
+      "name": "geometry",
+      "points_awarded": 5,
+      "status": "FAIL",
+      "strict_gate": null,
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/07_horizontal_slider_crank/replay/trajectory.json",
+              "sha256": "df5094187688a49bbd0cae54150b0b78947ddaa681321c3a7aff3003a5968327",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+          "name": "trajectory_shape",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "trajectory has time samples and joint series",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/07_horizontal_slider_crank/replay/trajectory.json",
+              "sha256": "df5094187688a49bbd0cae54150b0b78947ddaa681321c3a7aff3003a5968327",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+          "name": "sample_alignment",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "all joint series align with time",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/07_horizontal_slider_crank/replay/trajectory.json",
+              "sha256": "df5094187688a49bbd0cae54150b0b78947ddaa681321c3a7aff3003a5968327",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+          "name": "finite_health",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "finite sample fraction=1",
+          "status": "GATED"
+        }
+      ],
+      "index": 4,
+      "name": "physics_ready",
+      "points_awarded": 0,
+      "status": "GATED",
+      "strict_gate": {
+        "passed": false,
+        "reason": "collision_coverage_ok, transmission_binding_ok, one or more physical mesh links lack active collision coverage"
+      },
+      "weight": 20
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/07_horizontal_slider_crank/replay/trajectory.json",
+              "sha256": "df5094187688a49bbd0cae54150b0b78947ddaa681321c3a7aff3003a5968327",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+          "name": "input_motion",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "input travel=7.75752 rad reaches minimum 6.28319",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/07_horizontal_slider_crank/replay/trajectory.json",
+              "sha256": "df5094187688a49bbd0cae54150b0b78947ddaa681321c3a7aff3003a5968327",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+          "name": "motion_propagation",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "registered output exhibits motion",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/07_horizontal_slider_crank/replay/trajectory.json",
+              "sha256": "df5094187688a49bbd0cae54150b0b78947ddaa681321c3a7aff3003a5968327",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+          "name": "registered_output",
+          "points_awarded": 0,
+          "points_possible": 15,
+          "raw_status": "PASS",
+          "reason": "output span=55.8589 mm, reversals=2",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/07_horizontal_slider_crank/replay/trajectory.json",
+              "sha256": "df5094187688a49bbd0cae54150b0b78947ddaa681321c3a7aff3003a5968327",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+          "name": "registered_invariants",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "FAIL",
+          "reason": "failed invariants: lateral_drift_le_2pct_span",
+          "status": "GATED"
+        }
+      ],
+      "index": 5,
+      "name": "functional",
+      "points_awarded": 0,
+      "status": "GATED",
+      "strict_gate": null,
+      "weight": 40
+    }
+  ],
+  "method": "codex",
+  "points_possible": 100,
+  "provenance": {
+    "anchor_audit": {
+      "kind": "anchor_audit",
+      "path": "output/external_benchmark_strict/codex/07_horizontal_slider_crank/strict/anchor_audit.json",
+      "sha256": "7d84b2396897863e7c034275bf76e3fc31b2af3d7e84490074a49180c8ad6bf7",
+      "source": "scorer_owned"
+    },
+    "assembly": {
+      "kind": "assembly",
+      "path": "output/external_benchmark_staged/codex/07_horizontal_slider_crank/assembly.json",
+      "sha256": "79d362234ec7549a3eacc028ae53e7617b9e1ba153534da222a1aafe837ffdb3",
+      "source": "scorer_owned"
+    },
+    "bindings": {
+      "kind": "bindings",
+      "path": "output/external_benchmark_staged/codex/07_horizontal_slider_crank/task_bindings.json",
+      "sha256": "75f5c5f3ff0654736a581daa44551bbe87ecab3642a9df0f3ae34c57a9d31113",
+      "source": "scorer_owned"
+    },
+    "contacts": {
+      "kind": "contacts",
+      "path": "output/external_benchmark_staged/codex/07_horizontal_slider_crank/evidence/contacts.json",
+      "sha256": "3d418b4a2b95d176aeaaf1c3816a957e848f401f09e8f979c4d0cdcc98e636cf",
+      "source": "scorer_owned"
+    },
+    "geometry": {
+      "kind": "geometry",
+      "path": "output/external_benchmark_strict/codex/07_horizontal_slider_crank/strict/geometry.json",
+      "sha256": "8e683b609f2f91c18ad4ccb139e2fa3e92b08060ee808e41375ac8c8e8328c3a",
+      "source": "scorer_owned"
+    },
+    "model_audit": {
+      "kind": "model_audit",
+      "path": "output/external_benchmark_strict/codex/07_horizontal_slider_crank/strict/model_audit.json",
+      "sha256": "2a64182910deaf2c1b0ff73d30a60ce0fde21f001de1401901e797dd34e4527d",
+      "source": "scorer_owned"
+    },
+    "realization": {
+      "kind": "realization",
+      "path": "output/external_declared_realization_audit/codex/07_horizontal_slider_crank.json",
+      "sha256": "81a08da92a763cef982fb0609bb180aa1efb2d0d2d1dd0d3dd3691969cb6f43e",
+      "source": "scorer_owned"
+    },
+    "replay_status": {
+      "kind": "replay_status",
+      "path": "output/external_benchmark_work/codex/07_horizontal_slider_crank/replay_status.json",
+      "sha256": "27621a4d75cdad945970b285725e840eee905f1089aac6b96d707c2deaa33eca",
+      "source": "scorer_owned"
+    },
+    "source_execution": {
+      "kind": "source_execution",
+      "path": "output/external_benchmark_work/codex/07_horizontal_slider_crank/source/source_execution.json",
+      "sha256": "f16b2da6412de10e3eb7b95c402bd879a454e572a9ae684f516bbe3ae93278b6",
+      "source": "scorer_owned"
+    },
+    "strict_evidence_summary": {
+      "kind": "strict_evidence_summary",
+      "path": "output/external_benchmark_strict_scores_v1/codex/07_horizontal_slider_crank/evidence.json",
+      "sha256": "70f8384d874d9c62ac1b434db6e957214a1f15101233838dcca096d656cc5740",
+      "source": "scorer_owned"
+    },
+    "trajectory": {
+      "kind": "trajectory",
+      "path": "output/external_benchmark_work/codex/07_horizontal_slider_crank/replay/trajectory.json",
+      "sha256": "df5094187688a49bbd0cae54150b0b78947ddaa681321c3a7aff3003a5968327",
+      "source": "scorer_owned"
+    }
+  },
+  "schema": "physcad-external-strict-score/1.0",
+  "scorer_version": "physcad-external-strict-scorer/1.0",
+  "strict_verdict": "FAIL",
+  "suite_id": "physcad-comfort-v1",
+  "summary_reason": "Collision conflicts and a persistent geometrically detached link.",
+  "task_id": "07_horizontal_slider_crank",
+  "total_points": 30
+}

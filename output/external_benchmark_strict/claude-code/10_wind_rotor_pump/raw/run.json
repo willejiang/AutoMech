@@ -1,0 +1,47 @@
+{
+  "task_id": "10_wind_rotor_pump",
+  "prompt_sha256": "433b8ecd2d77f39e0b289f685c100c9a95e6f29cce382845be7f600472d2a10a",
+  "method": "claude-code",
+  "model": "gpt-5.6-sol[1m]",
+  "cli_version": "2.1.198 (Claude Code)",
+  "text_to_cad_skill_version": "0.3.9",
+  "started_at": "2026-08-12T09:42:00Z",
+  "finished_at": "2026-08-12T09:58:24.434419Z",
+  "wall_clock_seconds": 984.434,
+  "iterations_used": 3,
+  "operational_pass_at_1": false,
+  "selected_iteration": 1,
+  "selected_physics_attempt": "final",
+  "llm_usage": {
+    "requests": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "cache_read_tokens": null,
+    "reasoning_tokens": null
+  },
+  "tool_calls": null,
+  "cache": {
+    "project_artifact_hits": 0,
+    "provider_cache_disclosed": true
+  },
+  "final_status_claimed_by_harness": "FAIL",
+  "failure_summary": "Functional ideal-kinematic checks pass, but selected MJCF broadly disables moving collisions and analytically projects passive output qpos; strict anti-cheating/physical-contact compliance is not established.",
+  "viewer_status": "unavailable: installed viewer package lacks agent:start npm script",
+  "iteration_summary": [
+    {
+      "iteration": 0,
+      "status": "FAIL",
+      "reason": "measured rotor net angle below 2*pi due servo lag"
+    },
+    {
+      "iteration": 1,
+      "status": "PASS",
+      "selected": true
+    },
+    {
+      "iteration": 2,
+      "status": "FAIL",
+      "reason": "CAD source TypeError during attempted visual geometry repair; failure preserved, rolled back to selected iteration 1"
+    }
+  ]
+}

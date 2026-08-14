@@ -1,0 +1,91 @@
+<mujoco model="open_three_planet_4to1">
+  <compiler angle="radian" meshdir="meshes" />
+  <option timestep=".002" integrator="implicitfast" />
+  <default>
+    <joint damping=".02" armature=".0001" />
+  </default>
+  <asset>
+    <mesh name="base_m" file="base.stl" scale=".001 .001 .001" />
+    <mesh name="ls_m" file="left_support.stl" scale=".001 .001 .001" />
+    <mesh name="rs_m" file="right_support.stl" scale=".001 .001 .001" />
+    <mesh name="ring_m" file="fixed_ring.stl" scale=".001 .001 .001" />
+    <mesh name="sun_m" file="sun_input.stl" scale=".001 .001 .001" />
+    <mesh name="carrier_m" file="carrier_output.stl" scale=".001 .001 .001" />
+    <mesh name="shaft_m" file="input_shaft.stl" scale=".001 .001 .001" />
+    <mesh name="crank_m" file="hand_crank.stl" scale=".001 .001 .001" />
+    <mesh name="p1_m" file="planet_1.stl" scale=".001 .001 .001" />
+    <mesh name="p2_m" file="planet_2.stl" scale=".001 .001 .001" />
+    <mesh name="p3_m" file="planet_3.stl" scale=".001 .001 .001" />
+    <mesh name="pin1_m" file="planet_pin_1.stl" scale=".001 .001 .001" />
+    <mesh name="pin2_m" file="planet_pin_2.stl" scale=".001 .001 .001" />
+    <mesh name="pin3_m" file="planet_pin_3.stl" scale=".001 .001 .001" />
+  </asset>
+  <worldbody>
+    <geom name="ground" type="plane" size=".5 .5 .01" />
+    <body name="base" pos="0 0 .004">
+      <geom name="base_visual" type="mesh" mesh="base_m" contype="0" conaffinity="0" />
+      <geom name="base_collision" type="box" size=".105 .055 .004" />
+      <body name="left_support" pos="-.09 0 .052">
+        <geom name="ls_visual" type="mesh" mesh="ls_m" contype="0" conaffinity="0" />
+      </body>
+      <body name="right_support" pos=".09 0 .052">
+        <geom name="rs_visual" type="mesh" mesh="rs_m" contype="0" conaffinity="0" />
+      </body>
+      <body name="fixed_ring" pos="0 0 .101">
+        <geom name="ring_visual" type="mesh" mesh="ring_m" contype="0" conaffinity="0" />
+      </body>
+      <body name="sun_input" pos="0 0 .101">
+        <joint name="sun_input_hinge" type="hinge" axis="0 1 0" />
+        <geom name="sun_visual" type="mesh" mesh="sun_m" contype="0" conaffinity="0" />
+        <body name="input_shaft">
+          <geom name="shaft_visual" type="mesh" mesh="shaft_m" contype="0" conaffinity="0" />
+        </body>
+        <body name="hand_crank">
+          <geom name="crank_visual" type="mesh" mesh="crank_m" contype="0" conaffinity="0" />
+        </body>
+      </body>
+      <body name="carrier_output" pos="0 0 .101">
+        <joint name="carrier_output_hinge" type="hinge" axis="0 1 0" />
+        <geom name="carrier_visual" type="mesh" mesh="carrier_m" contype="0" conaffinity="0" />
+        <body name="planet_pin_1" pos="0 0 .048">
+          <geom name="pin1_visual" type="mesh" mesh="pin1_m" contype="0" conaffinity="0" />
+          <body name="planet_1">
+            <joint name="planet_pin_1_hinge" type="hinge" axis="0 1 0" />
+            <geom name="planet1_visual" type="mesh" mesh="p1_m" contype="0" conaffinity="0" />
+          </body>
+        </body>
+        <body name="planet_pin_2" pos="-.041569 0 -.024">
+          <geom name="pin2_visual" type="mesh" mesh="pin2_m" contype="0" conaffinity="0" />
+          <body name="planet_2">
+            <joint name="planet_pin_2_hinge" type="hinge" axis="0 1 0" />
+            <geom name="planet2_visual" type="mesh" mesh="p2_m" contype="0" conaffinity="0" />
+          </body>
+        </body>
+        <body name="planet_pin_3" pos=".041569 0 -.024">
+          <geom name="pin3_visual" type="mesh" mesh="pin3_m" contype="0" conaffinity="0" />
+          <body name="planet_3">
+            <joint name="planet_pin_3_hinge" type="hinge" axis="0 1 0" />
+            <geom name="planet3_visual" type="mesh" mesh="p3_m" contype="0" conaffinity="0" />
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <contact>
+    <exclude name="sun_p1" body1="sun_input" body2="planet_1" />
+    <exclude name="sun_p2" body1="sun_input" body2="planet_2" />
+    <exclude name="sun_p3" body1="sun_input" body2="planet_3" />
+    <exclude name="ring_p1" body1="fixed_ring" body2="planet_1" />
+    <exclude name="ring_p2" body1="fixed_ring" body2="planet_2" />
+    <exclude name="ring_p3" body1="fixed_ring" body2="planet_3" />
+  </contact>
+  <equality>
+    <joint name="ring_fixed_4to1" joint1="carrier_output_hinge" joint2="sun_input_hinge" polycoef="0 .25 0 0 0" solref=".002 1" />
+    <joint name="planet1_spin" joint1="planet_pin_1_hinge" joint2="sun_input_hinge" polycoef="0 -1.5 0 0 0" />
+    <joint name="planet2_spin" joint1="planet_pin_2_hinge" joint2="sun_input_hinge" polycoef="0 -1.5 0 0 0" />
+    <joint name="planet3_spin" joint1="planet_pin_3_hinge" joint2="sun_input_hinge" polycoef="0 -1.5 0 0 0" />
+  </equality>
+  <actuator>
+    <velocity name="hand_crank_velocity" joint="sun_input_hinge" kv="4" ctrlrange="-8 8" />
+  </actuator>
+</mujoco>

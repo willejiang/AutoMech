@@ -1,0 +1,120 @@
+{
+  "ok": true,
+  "errors": [],
+  "policy_version": 4,
+  "bodies": [
+    "base",
+    "beam_output_pin",
+    "beam_pivot_pin",
+    "crank_disk",
+    "crank_pin",
+    "crankshaft",
+    "hand_crank_arm",
+    "hand_grip",
+    "handle_spindle",
+    "lower_output_guide",
+    "negative_beam_support",
+    "negative_pivot_bearing",
+    "negative_shaft_bearing",
+    "negative_shaft_pedestal",
+    "output_guide_post",
+    "pitman",
+    "pitman_beam_pin",
+    "polished_output_rod",
+    "positive_beam_support",
+    "positive_pivot_bearing",
+    "positive_shaft_bearing",
+    "positive_shaft_pedestal",
+    "upper_output_guide",
+    "walking_beam"
+  ],
+  "joints": [
+    "crank_disk_hinge",
+    "driven_crankshaft_hinge",
+    "shaft_to_crank_disk_press_drive",
+    "vertical_guided_output",
+    "walking_beam_hinge"
+  ],
+  "nq": 11,
+  "nv": 10,
+  "finite": true,
+  "dynamic_transmission_probe": {
+    "ran": true,
+    "ok": true,
+    "errors": [],
+    "warnings": [],
+    "contact_on": {
+      "ok": true,
+      "driver_travel": 1.0103703716623837,
+      "commanded_travel": 1.0494,
+      "joint_deltas": {
+        "driven_crankshaft_hinge": 1.0103703716623837,
+        "crank_disk_hinge": 0.9827077484318325
+      },
+      "transmission_residuals": [
+        {
+          "name": "shaft_to_crank_disk_press_drive",
+          "driving_joint": "driven_crankshaft_hinge",
+          "driven_joint": "crank_disk_hinge",
+          "ratio": 1.0,
+          "driving_delta": 1.0103703716623837,
+          "driven_delta": 0.9827077484318325,
+          "normalized_residual": 0.02737869597763179
+        }
+      ],
+      "active_contacts": [
+        {
+          "pair": [
+            "pitman",
+            "world"
+          ],
+          "count": 618,
+          "max_penetration_mm": 1.850798947506534,
+          "max_force_n": 3.1088110967466545,
+          "impulse_ns": 0.1970582884509527
+        },
+        {
+          "pair": [
+            "crankshaft",
+            "negative_beam_support"
+          ],
+          "count": 81,
+          "max_penetration_mm": 0.024145239157353338,
+          "max_force_n": 18.544331417824335,
+          "impulse_ns": 0.07537954374400595
+        },
+        {
+          "pair": [
+            "crankshaft",
+            "positive_beam_support"
+          ],
+          "count": 81,
+          "max_penetration_mm": 0.024145239157319517,
+          "max_force_n": 18.54433141781218,
+          "impulse_ns": 0.0753795437255721
+        }
+      ]
+    },
+    "contact_off": {
+      "ok": true,
+      "driver_travel": 1.0405938549178486,
+      "commanded_travel": 1.0494,
+      "joint_deltas": {
+        "driven_crankshaft_hinge": 1.0405938549178486,
+        "crank_disk_hinge": 1.01079015895966
+      },
+      "transmission_residuals": [
+        {
+          "name": "shaft_to_crank_disk_press_drive",
+          "driving_joint": "driven_crankshaft_hinge",
+          "driven_joint": "crank_disk_hinge",
+          "ratio": 1.0,
+          "driving_delta": 1.0405938549178486,
+          "driven_delta": 1.01079015895966,
+          "normalized_residual": 0.028641045511979848
+        }
+      ],
+      "active_contacts": []
+    }
+  }
+}

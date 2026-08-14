@@ -1,0 +1,82 @@
+<mujoco model="open_vertical_piston_pump">
+  <compiler angle="radian" meshdir="meshes" />
+  <option timestep="0.002" integrator="implicitfast" gravity="0 0 -9.81" />
+  <default>
+    <joint damping="0.03" armature="0.0002" />
+    <geom friction="0.8 0.05 0.001" condim="3" />
+  </default>
+  <asset>
+    <mesh name="base_m" file="base.stl" scale=".001 .001 .001" />
+    <mesh name="lcs_m" file="left_crank_support.stl" scale=".001 .001 .001" />
+    <mesh name="rcs_m" file="right_crank_support.stl" scale=".001 .001 .001" />
+    <mesh name="fcb_m" file="front_crank_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="rcb_m" file="rear_crank_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="shaft_m" file="crankshaft_input.stl" scale=".001 .001 .001" />
+    <mesh name="web_m" file="crank_web.stl" scale=".001 .001 .001" />
+    <mesh name="pin_m" file="eccentric_pin.stl" scale=".001 .001 .001" />
+    <mesh name="rod_m" file="connecting_rod.stl" scale=".001 .001 .001" />
+    <mesh name="crosshead_m" file="vertical_crosshead.stl" scale=".001 .001 .001" />
+    <mesh name="lg_m" file="left_vertical_guide.stl" scale=".001 .001 .001" />
+    <mesh name="rg_m" file="right_vertical_guide.stl" scale=".001 .001 .001" />
+    <mesh name="pump_rod_m" file="pump_rod.stl" scale=".001 .001 .001" />
+    <mesh name="piston_m" file="piston_output.stl" scale=".001 .001 .001" />
+    <mesh name="lower_m" file="lower_cylinder_frame.stl" scale=".001 .001 .001" />
+    <mesh name="upper_m" file="upper_cylinder_frame.stl" scale=".001 .001 .001" />
+    <mesh name="hand_m" file="hand_crank.stl" scale=".001 .001 .001" />
+  </asset>
+  <worldbody>
+    <geom name="ground" type="plane" size=".5 .5 .01" />
+    <body name="base" pos="0 0 .004">
+      <geom name="base_visual" type="mesh" mesh="base_m" contype="0" conaffinity="0" />
+      <geom name="base_collision" type="box" size=".115 .055 .004" />
+      <body name="left_crank_support" pos="-.045 -.029 .0375"><geom name="lcs_visual" type="mesh" mesh="lcs_m" contype="0" conaffinity="0" /></body>
+      <body name="right_crank_support" pos="-.045 .029 .0375"><geom name="rcs_visual" type="mesh" mesh="rcs_m" contype="0" conaffinity="0" /></body>
+      <body name="front_crank_bearing" pos="-.045 -.029 .071"><geom name="fcb_visual" type="mesh" mesh="fcb_m" contype="0" conaffinity="0" /></body>
+      <body name="rear_crank_bearing" pos="-.045 .029 .071"><geom name="rcb_visual" type="mesh" mesh="rcb_m" contype="0" conaffinity="0" /></body>
+      <body name="left_vertical_guide" pos="0 -.023 .15"><geom name="lg_visual" type="mesh" mesh="lg_m" contype="0" conaffinity="0" /></body>
+      <body name="right_vertical_guide" pos="0 .023 .15"><geom name="rg_visual" type="mesh" mesh="rg_m" contype="0" conaffinity="0" /></body>
+      <body name="lower_cylinder_frame" pos="0 0 .08"><geom name="lower_visual" type="mesh" mesh="lower_m" contype="0" conaffinity="0" /></body>
+      <body name="upper_cylinder_frame" pos="0 0 .206"><geom name="upper_visual" type="mesh" mesh="upper_m" contype="0" conaffinity="0" /></body>
+      <body name="crankshaft_input" pos="-.045 0 .071" quat=".965925826 0 -.258819045 0">
+        <joint name="crankshaft_input_hinge" type="hinge" axis="0 1 0" />
+        <geom name="shaft_visual" type="mesh" mesh="shaft_m" contype="0" conaffinity="0" />
+        <geom name="shaft_collision" type="capsule" size=".006 .043" quat=".70710678 .70710678 0 0" contype="0" conaffinity="0" />
+        <body name="crank_web"><geom name="web_visual" type="mesh" mesh="web_m" contype="0" conaffinity="0" /></body>
+        <body name="hand_crank"><geom name="hand_visual" type="mesh" mesh="hand_m" contype="0" conaffinity="0" /></body>
+        <body name="eccentric_pin" pos=".02 0 0">
+          <geom name="pin_visual" type="mesh" mesh="pin_m" contype="0" conaffinity="0" />
+          <geom name="pin_collision" type="capsule" size=".005 .010" quat=".70710678 .70710678 0 0" contype="0" conaffinity="0" />
+          <site name="crank_pin_site" size=".002" />
+        </body>
+      </body>
+      <body name="vertical_crosshead" pos="0 0 .160058948">
+        <joint name="vertical_crosshead_slide" type="slide" axis="0 0 1" range="-.055 .02" />
+        <geom name="crosshead_visual" type="mesh" mesh="crosshead_m" contype="0" conaffinity="0" />
+        <geom name="crosshead_collision" type="box" size=".015 .014 .012" contype="0" conaffinity="0" />
+        <site name="crosshead_pin_site" pos="0 0 -.004" size=".002" />
+        <body name="pump_rod">
+          <geom name="pump_rod_visual" type="mesh" mesh="pump_rod_m" contype="0" conaffinity="0" />
+          <geom name="pump_rod_collision" type="capsule" pos="0 0 -.029" size=".004 .029" contype="0" conaffinity="0" />
+          <body name="piston_output">
+            <geom name="piston_visual" type="mesh" mesh="piston_m" contype="0" conaffinity="0" />
+            <geom name="piston_collision" type="cylinder" pos="0 0 -.058" size=".013 .006" contype="0" conaffinity="0" />
+          </body>
+        </body>
+      </body>
+    </body>
+    <body name="connecting_rod" pos="-.013839746 0 .122529474" quat=".820251 0 -.572004 0">
+      <joint name="connecting_rod_free" type="free" />
+      <geom name="rod_visual" type="mesh" mesh="rod_m" contype="0" conaffinity="0" />
+      <geom name="rod_collision" type="capsule" size=".006 .034" quat=".70710678 0 .70710678 0" />
+      <site name="rod_big_end_site" pos="-.04 0 0" size=".002" />
+      <site name="rod_small_end_site" pos=".04 0 0" size=".002" />
+    </body>
+  </worldbody>
+  <equality>
+    <connect name="rod_crank_pin_closure" site1="rod_big_end_site" site2="crank_pin_site" solref="0.00002 1" solimp=".99999 .99999 .00001" />
+    <connect name="rod_crosshead_closure" site1="rod_small_end_site" site2="crosshead_pin_site" solref="0.0002 1" solimp=".9999 .9999 .0001" />
+  </equality>
+  <actuator>
+    <velocity name="hand_crank_velocity" joint="crankshaft_input_hinge" kv="4" ctrlrange="-6 6" forcerange="-25 25" />
+  </actuator>
+</mujoco>

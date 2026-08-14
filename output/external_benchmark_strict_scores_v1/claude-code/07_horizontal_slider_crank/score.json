@@ -1,0 +1,363 @@
+{
+  "first_blocker": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=0",
+  "layer_weights": [
+    10,
+    15,
+    15,
+    20,
+    40
+  ],
+  "layers": [
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "source_execution",
+              "path": "output/external_benchmark_work/claude-code/07_horizontal_slider_crank/source/source_execution.json",
+              "sha256": "c07c9185aec7cfbc96d68445b2717a97375779c8075792128be7231eb588061c",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "scorer_owned_execution",
+          "points_awarded": 10,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "scorer-owned source build produced a nonempty part set; MJCF replay compiled, initialized, and stayed finite",
+          "status": "PASS"
+        }
+      ],
+      "index": 1,
+      "name": "execution",
+      "points_awarded": 10,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 10
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/claude-code/07_horizontal_slider_crank/assembly.json",
+              "sha256": "af3a8d2706a4a56fc1d9f085f5ef56ae75a8abe5a284f2064706bf3022439810",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "assembly_model",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "assembly/simulation model is available",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/claude-code/07_horizontal_slider_crank/assembly.json",
+              "sha256": "af3a8d2706a4a56fc1d9f085f5ef56ae75a8abe5a284f2064706bf3022439810",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "required_role_cardinalities",
+          "points_awarded": 7,
+          "points_possible": 7,
+          "raw_status": "PASS",
+          "reason": "all required roles are bound",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/claude-code/07_horizontal_slider_crank/assembly.json",
+              "sha256": "af3a8d2706a4a56fc1d9f085f5ef56ae75a8abe5a284f2064706bf3022439810",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "input_output_independence",
+          "points_awarded": 3,
+          "points_possible": 3,
+          "raw_status": "PASS",
+          "reason": "input and output are distinct",
+          "status": "PASS"
+        }
+      ],
+      "index": 2,
+      "name": "assembly",
+      "points_awarded": 15,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "geometry",
+              "path": "output/external_benchmark_strict/claude-code/07_horizontal_slider_crank/strict/geometry.json",
+              "sha256": "ae94db9c4235c3d3556d5630ae10936e99e296d2081afe469e1f4d0dd6eeebe3",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "mesh_inventory",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "strict geometry hashes every scanned usable mesh",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "geometry",
+              "path": "output/external_benchmark_strict/claude-code/07_horizontal_slider_crank/strict/geometry.json",
+              "sha256": "ae94db9c4235c3d3556d5630ae10936e99e296d2081afe469e1f4d0dd6eeebe3",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "non_exempt_conflicts",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "FAIL",
+          "reason": "strict non-exempt conflicts=3; unavailable=0",
+          "status": "FAIL"
+        }
+      ],
+      "index": 3,
+      "name": "geometry",
+      "points_awarded": 5,
+      "status": "FAIL",
+      "strict_gate": null,
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/07_horizontal_slider_crank/replay/trajectory.json",
+              "sha256": "559bdf5fc4fec76cc454ef2060ca33aacaa80bc3a7aaa934c44e629978b9cafb",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=0",
+          "name": "trajectory_shape",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "trajectory has time samples and joint series",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/07_horizontal_slider_crank/replay/trajectory.json",
+              "sha256": "559bdf5fc4fec76cc454ef2060ca33aacaa80bc3a7aaa934c44e629978b9cafb",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=0",
+          "name": "sample_alignment",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "all joint series align with time",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/07_horizontal_slider_crank/replay/trajectory.json",
+              "sha256": "559bdf5fc4fec76cc454ef2060ca33aacaa80bc3a7aaa934c44e629978b9cafb",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=0",
+          "name": "finite_health",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "finite sample fraction=1",
+          "status": "GATED"
+        }
+      ],
+      "index": 4,
+      "name": "physics_ready",
+      "points_awarded": 0,
+      "status": "GATED",
+      "strict_gate": {
+        "passed": false,
+        "reason": "collision_coverage_ok, transmission_binding_ok, one or more physical mesh links lack active collision coverage"
+      },
+      "weight": 20
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/07_horizontal_slider_crank/replay/trajectory.json",
+              "sha256": "559bdf5fc4fec76cc454ef2060ca33aacaa80bc3a7aaa934c44e629978b9cafb",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=0",
+          "name": "input_motion",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "FAIL",
+          "reason": "input travel=0.778198 rad is below minimum 6.28319",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/07_horizontal_slider_crank/replay/trajectory.json",
+              "sha256": "559bdf5fc4fec76cc454ef2060ca33aacaa80bc3a7aaa934c44e629978b9cafb",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=0",
+          "name": "motion_propagation",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "FAIL",
+          "reason": "input minimum not reached",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/07_horizontal_slider_crank/replay/trajectory.json",
+              "sha256": "559bdf5fc4fec76cc454ef2060ca33aacaa80bc3a7aaa934c44e629978b9cafb",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=0",
+          "name": "registered_output",
+          "points_awarded": 0,
+          "points_possible": 15,
+          "raw_status": "FAIL",
+          "reason": "input minimum not reached",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/07_horizontal_slider_crank/replay/trajectory.json",
+              "sha256": "559bdf5fc4fec76cc454ef2060ca33aacaa80bc3a7aaa934c44e629978b9cafb",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=0",
+          "name": "registered_invariants",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "FAIL",
+          "reason": "input minimum not reached",
+          "status": "GATED"
+        }
+      ],
+      "index": 5,
+      "name": "functional",
+      "points_awarded": 0,
+      "status": "GATED",
+      "strict_gate": null,
+      "weight": 40
+    }
+  ],
+  "method": "claude-code",
+  "points_possible": 100,
+  "provenance": {
+    "anchor_audit": {
+      "kind": "anchor_audit",
+      "path": "output/external_benchmark_strict/claude-code/07_horizontal_slider_crank/strict/anchor_audit.json",
+      "sha256": "b2b5a57bab97f3e259acc5279b483c5461099e26ca4a4670b1da565f893cd502",
+      "source": "scorer_owned"
+    },
+    "assembly": {
+      "kind": "assembly",
+      "path": "output/external_benchmark_staged/claude-code/07_horizontal_slider_crank/assembly.json",
+      "sha256": "af3a8d2706a4a56fc1d9f085f5ef56ae75a8abe5a284f2064706bf3022439810",
+      "source": "scorer_owned"
+    },
+    "bindings": {
+      "kind": "bindings",
+      "path": "output/external_benchmark_staged/claude-code/07_horizontal_slider_crank/task_bindings.json",
+      "sha256": "41b17e651a0d4693449a4a5dc5ac9efbb6390f53ba24647f3939c1a2d9a2c1ea",
+      "source": "scorer_owned"
+    },
+    "contacts": {
+      "kind": "contacts",
+      "path": "output/external_benchmark_staged/claude-code/07_horizontal_slider_crank/evidence/contacts.json",
+      "sha256": "634594043282ccc8742285a37cd4cf08b2eb66e89894db135b65a56e8c2fe371",
+      "source": "scorer_owned"
+    },
+    "geometry": {
+      "kind": "geometry",
+      "path": "output/external_benchmark_strict/claude-code/07_horizontal_slider_crank/strict/geometry.json",
+      "sha256": "ae94db9c4235c3d3556d5630ae10936e99e296d2081afe469e1f4d0dd6eeebe3",
+      "source": "scorer_owned"
+    },
+    "model_audit": {
+      "kind": "model_audit",
+      "path": "output/external_benchmark_strict/claude-code/07_horizontal_slider_crank/strict/model_audit.json",
+      "sha256": "661b35079d7f68af48b2da80ad0ac3d9ec98213ddf92207b7b363131ed000f9f",
+      "source": "scorer_owned"
+    },
+    "realization": {
+      "kind": "realization",
+      "path": "output/external_declared_realization_audit/claude-code/07_horizontal_slider_crank.json",
+      "sha256": "b436f33cfcc1ee841b0134e6b72e3d13341858e399c84199096ca02cb3b6cb17",
+      "source": "scorer_owned"
+    },
+    "replay_status": {
+      "kind": "replay_status",
+      "path": "output/external_benchmark_work/claude-code/07_horizontal_slider_crank/replay_status.json",
+      "sha256": "2ea4dcf84ed12e423dd7c7630c00f2bccf9caaf985be48dec656add199932448",
+      "source": "scorer_owned"
+    },
+    "source_execution": {
+      "kind": "source_execution",
+      "path": "output/external_benchmark_work/claude-code/07_horizontal_slider_crank/source/source_execution.json",
+      "sha256": "c07c9185aec7cfbc96d68445b2717a97375779c8075792128be7231eb588061c",
+      "source": "scorer_owned"
+    },
+    "strict_evidence_summary": {
+      "kind": "strict_evidence_summary",
+      "path": "output/external_benchmark_strict_scores_v1/claude-code/07_horizontal_slider_crank/evidence.json",
+      "sha256": "dacae5810650664c3906a470e2e79238f644111eac9d681d061f43b15646bbff",
+      "source": "scorer_owned"
+    },
+    "trajectory": {
+      "kind": "trajectory",
+      "path": "output/external_benchmark_work/claude-code/07_horizontal_slider_crank/replay/trajectory.json",
+      "sha256": "559bdf5fc4fec76cc454ef2060ca33aacaa80bc3a7aaa934c44e629978b9cafb",
+      "source": "scorer_owned"
+    }
+  },
+  "schema": "physcad-external-strict-score/1.0",
+  "scorer_version": "physcad-external-strict-scorer/1.0",
+  "strict_verdict": "FAIL",
+  "suite_id": "physcad-comfort-v1",
+  "summary_reason": "Three conflicts and five detached physical links.",
+  "task_id": "07_horizontal_slider_crank",
+  "total_points": 30
+}

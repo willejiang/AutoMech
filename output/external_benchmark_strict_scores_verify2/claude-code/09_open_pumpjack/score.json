@@ -1,0 +1,357 @@
+{
+  "first_blocker": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+  "layer_weights": [
+    10,
+    15,
+    15,
+    20,
+    40
+  ],
+  "layers": [
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "source_execution",
+              "path": "output/external_benchmark_work/claude-code/09_open_pumpjack/source/source_execution.json",
+              "sha256": "1778350b434355f8c9773c503cbe2d123085ffbb2ef47ce11cca41ff370786a5",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "scorer_owned_execution",
+          "points_awarded": 10,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "scorer-owned source build produced a nonempty part set; MJCF replay compiled, initialized, and stayed finite",
+          "status": "PASS"
+        }
+      ],
+      "index": 1,
+      "name": "execution",
+      "points_awarded": 10,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 10
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/claude-code/09_open_pumpjack/assembly.json",
+              "sha256": "3c1bac5004e5c79a1246e3082d1ee5aafff2a23ee622bbccd9d6dd8400a63123",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "assembly_model",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "assembly/simulation model is available",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/claude-code/09_open_pumpjack/assembly.json",
+              "sha256": "3c1bac5004e5c79a1246e3082d1ee5aafff2a23ee622bbccd9d6dd8400a63123",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "required_role_cardinalities",
+          "points_awarded": 7,
+          "points_possible": 7,
+          "raw_status": "PASS",
+          "reason": "all required roles are bound",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/claude-code/09_open_pumpjack/assembly.json",
+              "sha256": "3c1bac5004e5c79a1246e3082d1ee5aafff2a23ee622bbccd9d6dd8400a63123",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "input_output_independence",
+          "points_awarded": 3,
+          "points_possible": 3,
+          "raw_status": "PASS",
+          "reason": "input and output are distinct",
+          "status": "PASS"
+        }
+      ],
+      "index": 2,
+      "name": "assembly",
+      "points_awarded": 15,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "geometry",
+              "path": "output/external_benchmark_strict/claude-code/09_open_pumpjack/strict/geometry.json",
+              "sha256": "e6b92cb2b99c4b75fa0460568d58d99ab2ac9344c63d45a9bb6c4d68b8236efe",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "mesh_inventory",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "strict geometry hashes every scanned usable mesh",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "geometry",
+              "path": "output/external_benchmark_strict/claude-code/09_open_pumpjack/strict/geometry.json",
+              "sha256": "e6b92cb2b99c4b75fa0460568d58d99ab2ac9344c63d45a9bb6c4d68b8236efe",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "non_exempt_conflicts",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "FAIL",
+          "reason": "strict non-exempt conflicts=2; unavailable=0",
+          "status": "FAIL"
+        }
+      ],
+      "index": 3,
+      "name": "geometry",
+      "points_awarded": 5,
+      "status": "FAIL",
+      "strict_gate": null,
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/09_open_pumpjack/replay/trajectory.json",
+              "sha256": "790ec452de0686ed9f69eb48df15d0adfb62fb8d0a716d5abf15e8bef4225525",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+          "name": "trajectory_shape",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "trajectory has time samples and joint series",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/09_open_pumpjack/replay/trajectory.json",
+              "sha256": "790ec452de0686ed9f69eb48df15d0adfb62fb8d0a716d5abf15e8bef4225525",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+          "name": "sample_alignment",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "all joint series align with time",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/09_open_pumpjack/replay/trajectory.json",
+              "sha256": "790ec452de0686ed9f69eb48df15d0adfb62fb8d0a716d5abf15e8bef4225525",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+          "name": "finite_health",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "finite sample fraction=1",
+          "status": "GATED"
+        }
+      ],
+      "index": 4,
+      "name": "physics_ready",
+      "points_awarded": 0,
+      "status": "GATED",
+      "strict_gate": {
+        "passed": false,
+        "reason": "collision_coverage_ok, transmission_binding_ok, one or more physical mesh links lack active collision coverage"
+      },
+      "weight": 20
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/09_open_pumpjack/replay/trajectory.json",
+              "sha256": "790ec452de0686ed9f69eb48df15d0adfb62fb8d0a716d5abf15e8bef4225525",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+          "name": "input_motion",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "FAIL",
+          "reason": "input travel=0.00086086 rad is below minimum 6.28319",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/09_open_pumpjack/replay/trajectory.json",
+              "sha256": "790ec452de0686ed9f69eb48df15d0adfb62fb8d0a716d5abf15e8bef4225525",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+          "name": "motion_propagation",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "FAIL",
+          "reason": "input minimum not reached",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/09_open_pumpjack/replay/trajectory.json",
+              "sha256": "790ec452de0686ed9f69eb48df15d0adfb62fb8d0a716d5abf15e8bef4225525",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+          "name": "registered_output",
+          "points_awarded": 0,
+          "points_possible": 15,
+          "raw_status": "FAIL",
+          "reason": "input minimum not reached",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/09_open_pumpjack/replay/trajectory.json",
+              "sha256": "790ec452de0686ed9f69eb48df15d0adfb62fb8d0a716d5abf15e8bef4225525",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=2; unavailable=0",
+          "name": "registered_invariants",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "FAIL",
+          "reason": "input minimum not reached",
+          "status": "GATED"
+        }
+      ],
+      "index": 5,
+      "name": "functional",
+      "points_awarded": 0,
+      "status": "GATED",
+      "strict_gate": null,
+      "weight": 40
+    }
+  ],
+  "method": "claude-code",
+  "points_possible": 100,
+  "provenance": {
+    "anchor_audit": {
+      "kind": "anchor_audit",
+      "path": "output/external_benchmark_strict/claude-code/09_open_pumpjack/strict/anchor_audit.json",
+      "sha256": "71dc3360fe6fea682a265ac64b778722125ac8354c29583cd86d51029ee3dfd2",
+      "source": "scorer_owned"
+    },
+    "assembly": {
+      "kind": "assembly",
+      "path": "output/external_benchmark_staged/claude-code/09_open_pumpjack/assembly.json",
+      "sha256": "3c1bac5004e5c79a1246e3082d1ee5aafff2a23ee622bbccd9d6dd8400a63123",
+      "source": "scorer_owned"
+    },
+    "bindings": {
+      "kind": "bindings",
+      "path": "output/external_benchmark_staged/claude-code/09_open_pumpjack/task_bindings.json",
+      "sha256": "156155e896bd2b8794a00aee684d38c92434c14014e149619aff0da031db1d8f",
+      "source": "scorer_owned"
+    },
+    "contacts": {
+      "kind": "contacts",
+      "path": "output/external_benchmark_staged/claude-code/09_open_pumpjack/evidence/contacts.json",
+      "sha256": "ae696d6220493aad1df055eb3ef5d2f955d801dd014da1d006ee58142dbd6c8a",
+      "source": "scorer_owned"
+    },
+    "geometry": {
+      "kind": "geometry",
+      "path": "output/external_benchmark_strict/claude-code/09_open_pumpjack/strict/geometry.json",
+      "sha256": "e6b92cb2b99c4b75fa0460568d58d99ab2ac9344c63d45a9bb6c4d68b8236efe",
+      "source": "scorer_owned"
+    },
+    "model_audit": {
+      "kind": "model_audit",
+      "path": "output/external_benchmark_strict/claude-code/09_open_pumpjack/strict/model_audit.json",
+      "sha256": "1397f244c21e0d7510bc8424706fd730965c3f60c9608255b0dcdb682fb41aa1",
+      "source": "scorer_owned"
+    },
+    "realization": {
+      "kind": "realization",
+      "path": "output/external_declared_realization_audit/claude-code/09_open_pumpjack.json",
+      "sha256": "d41e3090c0ac9445d74f45dbb3e731771251c38b519ca9dfa94ca408519995d5",
+      "source": "scorer_owned"
+    },
+    "replay_status": {
+      "kind": "replay_status",
+      "path": "output/external_benchmark_work/claude-code/09_open_pumpjack/replay_status.json",
+      "sha256": "f84434e3f6a2678d12e36d93841011fcefccf372811f81802eca6e7da91f4bb1",
+      "source": "scorer_owned"
+    },
+    "source_execution": {
+      "kind": "source_execution",
+      "path": "output/external_benchmark_work/claude-code/09_open_pumpjack/source/source_execution.json",
+      "sha256": "1778350b434355f8c9773c503cbe2d123085ffbb2ef47ce11cca41ff370786a5",
+      "source": "scorer_owned"
+    },
+    "trajectory": {
+      "kind": "trajectory",
+      "path": "output/external_benchmark_work/claude-code/09_open_pumpjack/replay/trajectory.json",
+      "sha256": "790ec452de0686ed9f69eb48df15d0adfb62fb8d0a716d5abf15e8bef4225525",
+      "source": "scorer_owned"
+    }
+  },
+  "schema": "physcad-external-strict-score/1.0",
+  "scorer_version": "physcad-external-strict-scorer/1.0",
+  "strict_verdict": "FAIL",
+  "suite_id": "physcad-comfort-v1",
+  "summary_reason": "Two conflicts and ten detached physical links.",
+  "task_id": "09_open_pumpjack",
+  "total_points": 30
+}

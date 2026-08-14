@@ -1,0 +1,2610 @@
+[
+  {
+    "index": 1,
+    "name": "01_single_stage_4to1",
+    "returncode": 0,
+    "duration_s": 649.549,
+    "log": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\01_single_stage_4to1.log",
+    "result": {
+      "ok": true,
+      "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\01_single_stage_4to1\\design_this_as_an_open_demonstra_20260811_162204",
+      "render_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\01_single_stage_4to1\\design_this_as_an_open_demonstra_20260811_162204",
+      "iterations": 1,
+      "hierarchy": false,
+      "single_agent": true,
+      "physics": {
+        "passed": true,
+        "verdict": "PASS",
+        "summary": "drive: PASS \u2014 input moved 12.0 rad, 4/4 downstream joints moved reached output",
+        "metrics": {
+          "verdict": "PASS",
+          "test_kind": "driven_mechanism",
+          "survive_s": 3.0,
+          "input_joint": "input_shaft_hinge",
+          "input_part": "input_shaft",
+          "input_travel": 12.0,
+          "input_unit": "rad",
+          "moved_count": 4,
+          "watched_count": 4,
+          "output_reached": true,
+          "exploded": false,
+          "output_travel": 3.0,
+          "output_unit": "rad",
+          "ratio_in_out": 4.0,
+          "displaced_parts": [
+            {
+              "part": "crank_grip",
+              "disp_mm": 71.84
+            },
+            {
+              "part": "input_shaft",
+              "disp_mm": 45.0
+            },
+            {
+              "part": "input_pinion",
+              "disp_mm": 45.0
+            },
+            {
+              "part": "hand_crank",
+              "disp_mm": 45.0
+            },
+            {
+              "part": "output_shaft",
+              "disp_mm": 44.89
+            },
+            {
+              "part": "output_gear",
+              "disp_mm": 44.89
+            }
+          ],
+          "end_z": 0.0,
+          "max_tilt_deg": 0.0,
+          "max_drift": 0.0718,
+          "functional_checks": [
+            {
+              "name": "output_shaft_4_to_1_reduction",
+              "value": -0.25,
+              "expected": -0.25,
+              "passed": true,
+              "detail": "Signed output-shaft travel divided by hand-crank input travel; -0.25 means opposite rotation at an exact 4:1 reduction within 5% simulation tolerance."
+            }
+          ],
+          "functional_ok": true
+        },
+        "stability": {
+          "verdict": "PASS",
+          "exploded": false,
+          "max_disp_m": 0.0,
+          "end_z": 0.0,
+          "displaced_parts": []
+        },
+        "cause": "none",
+        "reason": "No fault domain survived deterministic verification.",
+        "design": {
+          "input_joint": "input_shaft",
+          "output_joint": "place_output_gear",
+          "watch_joints": [
+            "place_output_shaft",
+            "place_input_pinion",
+            "place_output_gear",
+            "place_hand_crank",
+            "place_crank_grip"
+          ],
+          "propagation_path": [
+            "place_input_shaft",
+            "place_output_shaft",
+            "place_input_pinion",
+            "place_hand_crank",
+            "place_crank_grip",
+            "place_output_gear"
+          ],
+          "pass_criteria": null,
+          "environment": "Bench-mounted and driven open-mechanism demonstration. The base is rigidly fixed while a locked three-quarter camera observes the hand crank, both supported shafts, exposed spur-gear mesh, bearings, and output.",
+          "camera": {
+            "mode": "locked",
+            "target_links": [
+              "input_pinion",
+              "output_gear",
+              "hand_crank",
+              "output_shaft"
+            ],
+            "azimuth_deg": 45.0,
+            "elevation_deg": -28.0,
+            "distance_scale": 2.5,
+            "roll_deg": 0.0
+          }
+        },
+        "diagnosis": {
+          "verdict": "pass",
+          "cause": "none",
+          "reason": "No fault domain survived deterministic verification.",
+          "culprit_part": "",
+          "culprit_sub": "",
+          "evidence": [],
+          "fault_domain": "evaluator",
+          "fault_code": "insufficient_verified_evidence",
+          "verified": false,
+          "confidence": 1.0,
+          "culprit_entities": [],
+          "routing": {
+            "action": "halt_harness",
+            "allow_agent_refinement": false
+          },
+          "diagnosis_version": 2,
+          "persistence": {},
+          "legacy": {
+            "cause": "structure"
+          }
+        },
+        "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\01_single_stage_4to1\\design_this_as_an_open_demonstra_20260811_162204\\physics\\mujoco_0\\frames",
+        "video": "physics/mujoco_0/model.mp4",
+        "tests": [
+          {
+            "name": "drive",
+            "strategy": "driven_mechanism",
+            "verdict": "PASS",
+            "metrics": {
+              "verdict": "PASS",
+              "test_kind": "driven_mechanism",
+              "survive_s": 3.0,
+              "input_joint": "input_shaft_hinge",
+              "input_part": "input_shaft",
+              "input_travel": 12.0,
+              "input_unit": "rad",
+              "moved_count": 4,
+              "watched_count": 4,
+              "output_reached": true,
+              "exploded": false,
+              "output_travel": 3.0,
+              "output_unit": "rad",
+              "ratio_in_out": 4.0,
+              "displaced_parts": [
+                {
+                  "part": "crank_grip",
+                  "disp_mm": 71.84
+                },
+                {
+                  "part": "input_shaft",
+                  "disp_mm": 45.0
+                },
+                {
+                  "part": "input_pinion",
+                  "disp_mm": 45.0
+                },
+                {
+                  "part": "hand_crank",
+                  "disp_mm": 45.0
+                },
+                {
+                  "part": "output_shaft",
+                  "disp_mm": 44.89
+                },
+                {
+                  "part": "output_gear",
+                  "disp_mm": 44.89
+                }
+              ],
+              "end_z": 0.0,
+              "max_tilt_deg": 0.0,
+              "max_drift": 0.0718,
+              "functional_checks": [
+                {
+                  "name": "output_shaft_4_to_1_reduction",
+                  "value": -0.25,
+                  "expected": -0.25,
+                  "passed": true,
+                  "detail": "Signed output-shaft travel divided by hand-crank input travel; -0.25 means opposite rotation at an exact 4:1 reduction within 5% simulation tolerance."
+                }
+              ],
+              "functional_ok": true
+            },
+            "stability": {
+              "verdict": "PASS",
+              "exploded": false,
+              "max_disp_m": 0.0,
+              "end_z": 0.0,
+              "displaced_parts": []
+            },
+            "summary": "drive: PASS \u2014 input moved 12.0 rad, 4/4 downstream joints moved reached output",
+            "cause": "none",
+            "evidence": [],
+            "reason": "No fault domain survived deterministic verification.",
+            "design": {
+              "input_joint": "input_shaft",
+              "output_joint": "place_output_gear",
+              "watch_joints": [
+                "place_output_shaft",
+                "place_input_pinion",
+                "place_output_gear",
+                "place_hand_crank",
+                "place_crank_grip"
+              ],
+              "propagation_path": [
+                "place_input_shaft",
+                "place_output_shaft",
+                "place_input_pinion",
+                "place_hand_crank",
+                "place_crank_grip",
+                "place_output_gear"
+              ],
+              "pass_criteria": null,
+              "environment": "Bench-mounted and driven open-mechanism demonstration. The base is rigidly fixed while a locked three-quarter camera observes the hand crank, both supported shafts, exposed spur-gear mesh, bearings, and output.",
+              "camera": {
+                "mode": "locked",
+                "target_links": [
+                  "input_pinion",
+                  "output_gear",
+                  "hand_crank",
+                  "output_shaft"
+                ],
+                "azimuth_deg": 45.0,
+                "elevation_deg": -28.0,
+                "distance_scale": 2.5,
+                "roll_deg": 0.0
+              }
+            },
+            "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\01_single_stage_4to1\\design_this_as_an_open_demonstra_20260811_162204\\physics\\mujoco_0\\frames",
+            "video": "physics/mujoco_0/model.mp4"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "index": 2,
+    "name": "02_two_stage_9to1",
+    "returncode": 1,
+    "duration_s": 704.69,
+    "log": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\02_two_stage_9to1.log",
+    "result": {
+      "ok": false,
+      "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\02_two_stage_9to1\\design_this_as_an_open_demonstra_20260811_163253",
+      "render_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\02_two_stage_9to1\\design_this_as_an_open_demonstra_20260811_163253",
+      "iterations": 2,
+      "hierarchy": false,
+      "single_agent": true,
+      "physics": {
+        "passed": false,
+        "verdict": "FAIL",
+        "summary": "the machine runs (drive: FAIL \u2014 input moved 0.0036 rad, 0/6 downstream joints moved but output DEAD) but does NOT do its job: overall_reduction: None vs expected 9:1 input-to-output angular travel",
+        "metrics": {
+          "verdict": "FAIL",
+          "test_kind": "driven_mechanism",
+          "survive_s": 3.0,
+          "input_joint": "input_spin",
+          "input_part": "input_shaft",
+          "input_travel": 0.0036,
+          "input_unit": "rad",
+          "moved_count": 0,
+          "watched_count": 6,
+          "output_reached": false,
+          "exploded": false,
+          "output_travel": 0.0002,
+          "output_unit": "rad",
+          "ratio_in_out": 20.9068,
+          "displaced_parts": [],
+          "end_z": 0.0,
+          "max_tilt_deg": 0.0,
+          "max_drift": 0.0015,
+          "functional_checks": [
+            {
+              "name": "overall_reduction",
+              "value": null,
+              "expected": "9:1 input-to-output angular travel",
+              "passed": false,
+              "detail": "Insufficient transmitted motion to measure the reducer ratio."
+            }
+          ],
+          "functional_ok": false
+        },
+        "stability": {
+          "verdict": "PASS",
+          "exploded": false,
+          "max_disp_m": 0.0201,
+          "end_z": 0.0,
+          "displaced_parts": [
+            {
+              "part": "crank_grip",
+              "disp_mm": 20.11
+            },
+            {
+              "part": "crank_handle_spindle",
+              "disp_mm": 15.18
+            }
+          ]
+        },
+        "cause": "structure",
+        "reason": "No fault domain survived deterministic verification.",
+        "design": {
+          "input_joint": "input_shaft",
+          "output_joint": "place_output_gear",
+          "watch_joints": [
+            "place_output_shaft",
+            "place_input_pinion",
+            "place_output_gear",
+            "place_crank_arm"
+          ],
+          "propagation_path": [
+            "place_input_shaft",
+            "place_output_shaft",
+            "place_input_pinion",
+            "place_crank_arm",
+            "place_output_gear"
+          ],
+          "pass_criteria": null,
+          "environment": "Bench-mounted and driven open-mechanism demonstration. The base is fixed while a locked three-quarter top-down camera observes the crank, all three supported shafts, both exposed gear meshes, and the output.",
+          "camera": {
+            "target_link": "base",
+            "azimuth_deg": 45.0,
+            "elevation_deg": -30.0,
+            "distance_scale": 2.5,
+            "locked": true
+          }
+        },
+        "diagnosis": {
+          "verdict": "fail",
+          "cause": "structure",
+          "reason": "No fault domain survived deterministic verification.",
+          "culprit_part": "input_spin",
+          "culprit_sub": "input",
+          "evidence": [],
+          "fault_domain": "evaluator",
+          "fault_code": "insufficient_verified_evidence",
+          "verified": false,
+          "confidence": 1.0,
+          "culprit_entities": [],
+          "routing": {
+            "action": "halt_harness",
+            "allow_agent_refinement": false
+          },
+          "diagnosis_version": 2,
+          "persistence": {},
+          "legacy": {
+            "cause": "structure"
+          }
+        },
+        "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\02_two_stage_9to1\\design_this_as_an_open_demonstra_20260811_163253\\physics\\mujoco_1\\frames",
+        "video": "physics/mujoco_1/model.mp4",
+        "tests": [
+          {
+            "name": "drive",
+            "strategy": "driven_mechanism",
+            "verdict": "FAIL",
+            "metrics": {
+              "verdict": "FAIL",
+              "test_kind": "driven_mechanism",
+              "survive_s": 3.0,
+              "input_joint": "input_spin",
+              "input_part": "input_shaft",
+              "input_travel": 0.0036,
+              "input_unit": "rad",
+              "moved_count": 0,
+              "watched_count": 6,
+              "output_reached": false,
+              "exploded": false,
+              "output_travel": 0.0002,
+              "output_unit": "rad",
+              "ratio_in_out": 20.9068,
+              "displaced_parts": [],
+              "end_z": 0.0,
+              "max_tilt_deg": 0.0,
+              "max_drift": 0.0015,
+              "functional_checks": [
+                {
+                  "name": "overall_reduction",
+                  "value": null,
+                  "expected": "9:1 input-to-output angular travel",
+                  "passed": false,
+                  "detail": "Insufficient transmitted motion to measure the reducer ratio."
+                }
+              ],
+              "functional_ok": false
+            },
+            "stability": {
+              "verdict": "PASS",
+              "exploded": false,
+              "max_disp_m": 0.0201,
+              "end_z": 0.0,
+              "displaced_parts": [
+                {
+                  "part": "crank_grip",
+                  "disp_mm": 20.11
+                },
+                {
+                  "part": "crank_handle_spindle",
+                  "disp_mm": 15.18
+                }
+              ]
+            },
+            "summary": "the machine runs (drive: FAIL \u2014 input moved 0.0036 rad, 0/6 downstream joints moved but output DEAD) but does NOT do its job: overall_reduction: None vs expected 9:1 input-to-output angular travel",
+            "cause": "structure",
+            "evidence": [],
+            "reason": "No fault domain survived deterministic verification.",
+            "design": {
+              "input_joint": "input_shaft",
+              "output_joint": "place_output_gear",
+              "watch_joints": [
+                "place_output_shaft",
+                "place_input_pinion",
+                "place_output_gear",
+                "place_crank_arm"
+              ],
+              "propagation_path": [
+                "place_input_shaft",
+                "place_output_shaft",
+                "place_input_pinion",
+                "place_crank_arm",
+                "place_output_gear"
+              ],
+              "pass_criteria": null,
+              "environment": "Bench-mounted and driven open-mechanism demonstration. The base is fixed while a locked three-quarter top-down camera observes the crank, all three supported shafts, both exposed gear meshes, and the output.",
+              "camera": {
+                "target_link": "base",
+                "azimuth_deg": 45.0,
+                "elevation_deg": -30.0,
+                "distance_scale": 2.5,
+                "locked": true
+              }
+            },
+            "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\02_two_stage_9to1\\design_this_as_an_open_demonstra_20260811_163253\\physics\\mujoco_1\\frames",
+            "video": "physics/mujoco_1/model.mp4"
+          }
+        ]
+      },
+      "diagnosis": {
+        "verdict": "fail",
+        "cause": "structure",
+        "reason": "No fault domain survived deterministic verification.",
+        "culprit_part": "input_spin",
+        "culprit_sub": "input",
+        "evidence": [],
+        "fault_domain": "evaluator",
+        "fault_code": "insufficient_verified_evidence",
+        "verified": false,
+        "confidence": 1.0,
+        "culprit_entities": [],
+        "routing": {
+          "action": "halt_harness",
+          "allow_agent_refinement": false
+        },
+        "diagnosis_version": 2,
+        "persistence": {},
+        "legacy": {
+          "cause": "structure"
+        }
+      },
+      "error": "No fault domain survived deterministic verification."
+    }
+  },
+  {
+    "index": 3,
+    "name": "03_idler_reverser_1to1",
+    "returncode": 0,
+    "duration_s": 511.528,
+    "log": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\03_idler_reverser_1to1.log",
+    "result": {
+      "ok": true,
+      "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\03_idler_reverser_1to1\\design_this_as_an_open_demonstra_20260811_164438",
+      "render_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\03_idler_reverser_1to1\\design_this_as_an_open_demonstra_20260811_164438",
+      "iterations": 2,
+      "hierarchy": false,
+      "single_agent": true,
+      "physics": {
+        "passed": true,
+        "verdict": "PASS",
+        "summary": "drive: PASS \u2014 input moved 11.9336 rad, 5/5 downstream joints moved reached output",
+        "metrics": {
+          "verdict": "PASS",
+          "test_kind": "driven_mechanism",
+          "survive_s": 3.0,
+          "input_joint": "input_shaft_hinge",
+          "input_part": "input_shaft",
+          "input_travel": 11.9336,
+          "input_unit": "rad",
+          "moved_count": 5,
+          "watched_count": 5,
+          "output_reached": true,
+          "exploded": false,
+          "output_travel": 11.9317,
+          "output_unit": "rad",
+          "ratio_in_out": 1.0002,
+          "displaced_parts": [
+            {
+              "part": "crank_handle",
+              "disp_mm": 36.0
+            }
+          ],
+          "end_z": 0.0,
+          "max_tilt_deg": 0.0,
+          "max_drift": 0.036,
+          "functional_checks": [
+            {
+              "name": "signed_output_input_ratio",
+              "value": 0.999869,
+              "expected": "+1.0 within [0.92, 1.08] with observable output motion",
+              "passed": true,
+              "detail": "input_shaft_hinge=11.8734 rad, idler_shaft_hinge=-11.8727 rad, output_shaft_hinge=11.8719 rad; signed output/input ratio=0.9999. Two external meshes should make the idler oppose the input while the output returns to the input direction."
+            }
+          ],
+          "functional_ok": true
+        },
+        "stability": {
+          "verdict": "PASS",
+          "exploded": false,
+          "max_disp_m": 0.0,
+          "end_z": 0.0,
+          "displaced_parts": []
+        },
+        "cause": "none",
+        "reason": "No fault domain survived deterministic verification.",
+        "design": {
+          "input_joint": "input_shaft",
+          "output_joint": "place_output_gear",
+          "watch_joints": [
+            "place_idler_shaft",
+            "place_output_shaft",
+            "place_input_gear",
+            "place_idler_gear",
+            "place_output_gear"
+          ],
+          "propagation_path": [
+            "place_input_shaft",
+            "place_idler_shaft",
+            "place_output_shaft",
+            "place_input_gear",
+            "place_idler_gear",
+            "place_output_gear"
+          ],
+          "pass_criteria": null,
+          "environment": "Bench-mounted and driven rigid-body demonstration with the base fixed in the world. Use an unobstructed three-quarter view that exposes all three parallel shafts, both spur-gear meshes, the crank, bearings, idler, and output.",
+          "camera": {
+            "target_link": "idler_gear",
+            "azimuth": 35.0,
+            "elevation": -28.0,
+            "distance_scale": 2.5,
+            "locked": true
+          }
+        },
+        "diagnosis": {
+          "verdict": "pass",
+          "cause": "none",
+          "reason": "No fault domain survived deterministic verification.",
+          "culprit_part": "",
+          "culprit_sub": "",
+          "evidence": [],
+          "fault_domain": "evaluator",
+          "fault_code": "insufficient_verified_evidence",
+          "verified": false,
+          "confidence": 1.0,
+          "culprit_entities": [],
+          "routing": {
+            "action": "halt_harness",
+            "allow_agent_refinement": false
+          },
+          "diagnosis_version": 2,
+          "persistence": {},
+          "legacy": {
+            "cause": "structure"
+          }
+        },
+        "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\03_idler_reverser_1to1\\design_this_as_an_open_demonstra_20260811_164438\\physics\\mujoco_1\\frames",
+        "video": "physics/mujoco_1/model.mp4",
+        "tests": [
+          {
+            "name": "drive",
+            "strategy": "driven_mechanism",
+            "verdict": "PASS",
+            "metrics": {
+              "verdict": "PASS",
+              "test_kind": "driven_mechanism",
+              "survive_s": 3.0,
+              "input_joint": "input_shaft_hinge",
+              "input_part": "input_shaft",
+              "input_travel": 11.9336,
+              "input_unit": "rad",
+              "moved_count": 5,
+              "watched_count": 5,
+              "output_reached": true,
+              "exploded": false,
+              "output_travel": 11.9317,
+              "output_unit": "rad",
+              "ratio_in_out": 1.0002,
+              "displaced_parts": [
+                {
+                  "part": "crank_handle",
+                  "disp_mm": 36.0
+                }
+              ],
+              "end_z": 0.0,
+              "max_tilt_deg": 0.0,
+              "max_drift": 0.036,
+              "functional_checks": [
+                {
+                  "name": "signed_output_input_ratio",
+                  "value": 0.999869,
+                  "expected": "+1.0 within [0.92, 1.08] with observable output motion",
+                  "passed": true,
+                  "detail": "input_shaft_hinge=11.8734 rad, idler_shaft_hinge=-11.8727 rad, output_shaft_hinge=11.8719 rad; signed output/input ratio=0.9999. Two external meshes should make the idler oppose the input while the output returns to the input direction."
+                }
+              ],
+              "functional_ok": true
+            },
+            "stability": {
+              "verdict": "PASS",
+              "exploded": false,
+              "max_disp_m": 0.0,
+              "end_z": 0.0,
+              "displaced_parts": []
+            },
+            "summary": "drive: PASS \u2014 input moved 11.9336 rad, 5/5 downstream joints moved reached output",
+            "cause": "none",
+            "evidence": [],
+            "reason": "No fault domain survived deterministic verification.",
+            "design": {
+              "input_joint": "input_shaft",
+              "output_joint": "place_output_gear",
+              "watch_joints": [
+                "place_idler_shaft",
+                "place_output_shaft",
+                "place_input_gear",
+                "place_idler_gear",
+                "place_output_gear"
+              ],
+              "propagation_path": [
+                "place_input_shaft",
+                "place_idler_shaft",
+                "place_output_shaft",
+                "place_input_gear",
+                "place_idler_gear",
+                "place_output_gear"
+              ],
+              "pass_criteria": null,
+              "environment": "Bench-mounted and driven rigid-body demonstration with the base fixed in the world. Use an unobstructed three-quarter view that exposes all three parallel shafts, both spur-gear meshes, the crank, bearings, idler, and output.",
+              "camera": {
+                "target_link": "idler_gear",
+                "azimuth": 35.0,
+                "elevation": -28.0,
+                "distance_scale": 2.5,
+                "locked": true
+              }
+            },
+            "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\03_idler_reverser_1to1\\design_this_as_an_open_demonstra_20260811_164438\\physics\\mujoco_1\\frames",
+            "video": "physics/mujoco_1/model.mp4"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "index": 4,
+    "name": "04_openwork_clock_12to1",
+    "returncode": 0,
+    "duration_s": 674.317,
+    "log": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\04_openwork_clock_12to1.log",
+    "result": {
+      "ok": true,
+      "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\04_openwork_clock_12to1\\design_this_as_an_open_demonstra_20260811_165309",
+      "render_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\04_openwork_clock_12to1\\design_this_as_an_open_demonstra_20260811_165309",
+      "iterations": 1,
+      "hierarchy": false,
+      "single_agent": true,
+      "physics": {
+        "passed": true,
+        "verdict": "PASS",
+        "summary": "drive: PASS \u2014 input moved 12.0 rad, 5/5 downstream joints moved reached output",
+        "metrics": {
+          "verdict": "PASS",
+          "test_kind": "driven_mechanism",
+          "survive_s": 3.0,
+          "input_joint": "minute_spin",
+          "input_part": "minute_gear",
+          "input_travel": 12.0,
+          "input_unit": "rad",
+          "moved_count": 5,
+          "watched_count": 5,
+          "output_reached": true,
+          "exploded": false,
+          "output_travel": 1.0,
+          "output_unit": "rad",
+          "ratio_in_out": 12.0,
+          "displaced_parts": [],
+          "end_z": 0.0,
+          "max_tilt_deg": 0.0,
+          "max_drift": 0.0,
+          "functional_checks": [
+            {
+              "name": "hand_angular_speed_ratio",
+              "value": 12.0,
+              "expected": "minute_hand/hour_hand angular-speed ratio = 12:1 within 3%, with both hands moving independently",
+              "passed": true,
+              "detail": "Measured from the carriers of minute_hand and hour_hand after settling."
+            }
+          ],
+          "functional_ok": true
+        },
+        "stability": {
+          "verdict": "PASS",
+          "exploded": false,
+          "max_disp_m": 0.0,
+          "end_z": 0.0,
+          "displaced_parts": []
+        },
+        "cause": "none",
+        "reason": "No fault domain survived deterministic verification.",
+        "design": {
+          "input_joint": "minute_gear",
+          "output_joint": "place_hour_gear",
+          "watch_joints": [
+            "place_minute_shaft",
+            "place_intermediate_shaft",
+            "place_hour_sleeve",
+            "place_compound_big_gear",
+            "place_compound_pinion",
+            "place_hour_gear"
+          ],
+          "propagation_path": [
+            "place_minute_gear",
+            "place_minute_shaft",
+            "place_intermediate_shaft",
+            "place_hour_sleeve",
+            "place_compound_big_gear",
+            "place_compound_pinion",
+            "place_hour_gear"
+          ],
+          "pass_criteria": null,
+          "environment": "Bench-mounted and driven openwork clock demonstration, with base rigidly fixed and the exposed gear train and coaxial hands facing the camera. The minute-side input is the sole actuator, and successful transmission is judged at the hour hand.",
+          "camera": {
+            "target_link": "base",
+            "azimuth": 35.0,
+            "elevation": -28.0,
+            "roll": 0.0,
+            "distance_scale": 2.5,
+            "locked": true
+          }
+        },
+        "diagnosis": {
+          "verdict": "pass",
+          "cause": "none",
+          "reason": "No fault domain survived deterministic verification.",
+          "culprit_part": "",
+          "culprit_sub": "",
+          "evidence": [],
+          "fault_domain": "evaluator",
+          "fault_code": "insufficient_verified_evidence",
+          "verified": false,
+          "confidence": 1.0,
+          "culprit_entities": [],
+          "routing": {
+            "action": "halt_harness",
+            "allow_agent_refinement": false
+          },
+          "diagnosis_version": 2,
+          "persistence": {},
+          "legacy": {
+            "cause": "structure"
+          }
+        },
+        "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\04_openwork_clock_12to1\\design_this_as_an_open_demonstra_20260811_165309\\physics\\mujoco_0\\frames",
+        "video": "physics/mujoco_0/model.mp4",
+        "tests": [
+          {
+            "name": "drive",
+            "strategy": "driven_mechanism",
+            "verdict": "PASS",
+            "metrics": {
+              "verdict": "PASS",
+              "test_kind": "driven_mechanism",
+              "survive_s": 3.0,
+              "input_joint": "minute_spin",
+              "input_part": "minute_gear",
+              "input_travel": 12.0,
+              "input_unit": "rad",
+              "moved_count": 5,
+              "watched_count": 5,
+              "output_reached": true,
+              "exploded": false,
+              "output_travel": 1.0,
+              "output_unit": "rad",
+              "ratio_in_out": 12.0,
+              "displaced_parts": [],
+              "end_z": 0.0,
+              "max_tilt_deg": 0.0,
+              "max_drift": 0.0,
+              "functional_checks": [
+                {
+                  "name": "hand_angular_speed_ratio",
+                  "value": 12.0,
+                  "expected": "minute_hand/hour_hand angular-speed ratio = 12:1 within 3%, with both hands moving independently",
+                  "passed": true,
+                  "detail": "Measured from the carriers of minute_hand and hour_hand after settling."
+                }
+              ],
+              "functional_ok": true
+            },
+            "stability": {
+              "verdict": "PASS",
+              "exploded": false,
+              "max_disp_m": 0.0,
+              "end_z": 0.0,
+              "displaced_parts": []
+            },
+            "summary": "drive: PASS \u2014 input moved 12.0 rad, 5/5 downstream joints moved reached output",
+            "cause": "none",
+            "evidence": [],
+            "reason": "No fault domain survived deterministic verification.",
+            "design": {
+              "input_joint": "minute_gear",
+              "output_joint": "place_hour_gear",
+              "watch_joints": [
+                "place_minute_shaft",
+                "place_intermediate_shaft",
+                "place_hour_sleeve",
+                "place_compound_big_gear",
+                "place_compound_pinion",
+                "place_hour_gear"
+              ],
+              "propagation_path": [
+                "place_minute_gear",
+                "place_minute_shaft",
+                "place_intermediate_shaft",
+                "place_hour_sleeve",
+                "place_compound_big_gear",
+                "place_compound_pinion",
+                "place_hour_gear"
+              ],
+              "pass_criteria": null,
+              "environment": "Bench-mounted and driven openwork clock demonstration, with base rigidly fixed and the exposed gear train and coaxial hands facing the camera. The minute-side input is the sole actuator, and successful transmission is judged at the hour hand.",
+              "camera": {
+                "target_link": "base",
+                "azimuth": 35.0,
+                "elevation": -28.0,
+                "roll": 0.0,
+                "distance_scale": 2.5,
+                "locked": true
+              }
+            },
+            "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\04_openwork_clock_12to1\\design_this_as_an_open_demonstra_20260811_165309\\physics\\mujoco_0\\frames",
+            "video": "physics/mujoco_0/model.mp4"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "index": 5,
+    "name": "05_three_planet_4to1",
+    "returncode": 0,
+    "duration_s": 734.139,
+    "log": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\05_three_planet_4to1.log",
+    "result": {
+      "ok": true,
+      "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\05_three_planet_4to1\\design_this_as_an_open_demonstra_20260811_170424",
+      "render_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\05_three_planet_4to1\\design_this_as_an_open_demonstra_20260811_170424",
+      "iterations": 1,
+      "hierarchy": false,
+      "single_agent": true,
+      "physics": {
+        "passed": true,
+        "verdict": "PASS",
+        "summary": "drive: PASS \u2014 input moved 12.0 rad, 6/6 downstream joints moved reached output",
+        "metrics": {
+          "verdict": "PASS",
+          "test_kind": "driven_mechanism",
+          "survive_s": 3.0,
+          "input_joint": "sun_input_hinge",
+          "input_part": "input_shaft",
+          "input_travel": 12.0,
+          "input_unit": "rad",
+          "moved_count": 6,
+          "watched_count": 6,
+          "output_reached": true,
+          "exploded": false,
+          "output_travel": 3.0,
+          "output_unit": "rad",
+          "ratio_in_out": 4.0,
+          "displaced_parts": [
+            {
+              "part": "planet_pin_1",
+              "disp_mm": 35.91
+            },
+            {
+              "part": "planet_pin_2",
+              "disp_mm": 35.91
+            },
+            {
+              "part": "planet_pin_3",
+              "disp_mm": 35.91
+            },
+            {
+              "part": "planet_1",
+              "disp_mm": 35.91
+            },
+            {
+              "part": "planet_2",
+              "disp_mm": 35.91
+            },
+            {
+              "part": "planet_3",
+              "disp_mm": 35.91
+            },
+            {
+              "part": "crank_grip",
+              "disp_mm": 30.0
+            }
+          ],
+          "end_z": 0.0,
+          "max_tilt_deg": 0.0,
+          "max_drift": 0.0359,
+          "functional_checks": [
+            {
+              "name": "planetary_4_to_1_semantics",
+              "value": "{'sun_to_carrier_ratio': 4.0, 'carrier_gain': 0.25, 'planet_relative_gains': [-0.75, -0.75, -0.75]}",
+              "expected": "{'sun_to_carrier_ratio': 4.0, 'carrier_gain': 0.25, 'each_planet_relative_gain': -0.75}",
+              "passed": true,
+              "detail": "Carrier must rotate with the sun at one quarter speed; all three dedicated planet hinges must spin consistently relative to the carrier."
+            }
+          ],
+          "functional_ok": true
+        },
+        "stability": {
+          "verdict": "PASS",
+          "exploded": false,
+          "max_disp_m": 0.0,
+          "end_z": 0.0,
+          "displaced_parts": []
+        },
+        "cause": "none",
+        "reason": "No fault domain survived deterministic verification.",
+        "design": {
+          "input_joint": "input_shaft",
+          "output_joint": "place_planet_1",
+          "watch_joints": [
+            "place_carrier",
+            "place_fixed_ring",
+            "place_sun_gear",
+            "place_planet_1",
+            "place_planet_2",
+            "place_planet_3"
+          ],
+          "propagation_path": [
+            "place_input_shaft",
+            "place_carrier",
+            "place_fixed_ring",
+            "place_sun_gear",
+            "place_planet_2",
+            "place_planet_3",
+            "place_planet_1"
+          ],
+          "pass_criteria": null,
+          "environment": "Bench-mounted and driven open-frame demonstration with the base fixed and the complete planetary stage exposed to the camera. The sun input is driven steadily while the fixed ring, three planets, carrier, crank, pins, and output remain visible.",
+          "camera": {
+            "target_link": "carrier",
+            "azimuth_deg": 45.0,
+            "elevation_deg": -30.0,
+            "distance_scale": 2.6,
+            "locked": true
+          }
+        },
+        "diagnosis": {
+          "verdict": "pass",
+          "cause": "none",
+          "reason": "No fault domain survived deterministic verification.",
+          "culprit_part": "",
+          "culprit_sub": "",
+          "evidence": [],
+          "fault_domain": "evaluator",
+          "fault_code": "insufficient_verified_evidence",
+          "verified": false,
+          "confidence": 1.0,
+          "culprit_entities": [],
+          "routing": {
+            "action": "halt_harness",
+            "allow_agent_refinement": false
+          },
+          "diagnosis_version": 2,
+          "persistence": {},
+          "legacy": {
+            "cause": "structure"
+          }
+        },
+        "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\05_three_planet_4to1\\design_this_as_an_open_demonstra_20260811_170424\\physics\\mujoco_0\\frames",
+        "video": "physics/mujoco_0/model.mp4",
+        "tests": [
+          {
+            "name": "drive",
+            "strategy": "driven_mechanism",
+            "verdict": "PASS",
+            "metrics": {
+              "verdict": "PASS",
+              "test_kind": "driven_mechanism",
+              "survive_s": 3.0,
+              "input_joint": "sun_input_hinge",
+              "input_part": "input_shaft",
+              "input_travel": 12.0,
+              "input_unit": "rad",
+              "moved_count": 6,
+              "watched_count": 6,
+              "output_reached": true,
+              "exploded": false,
+              "output_travel": 3.0,
+              "output_unit": "rad",
+              "ratio_in_out": 4.0,
+              "displaced_parts": [
+                {
+                  "part": "planet_pin_1",
+                  "disp_mm": 35.91
+                },
+                {
+                  "part": "planet_pin_2",
+                  "disp_mm": 35.91
+                },
+                {
+                  "part": "planet_pin_3",
+                  "disp_mm": 35.91
+                },
+                {
+                  "part": "planet_1",
+                  "disp_mm": 35.91
+                },
+                {
+                  "part": "planet_2",
+                  "disp_mm": 35.91
+                },
+                {
+                  "part": "planet_3",
+                  "disp_mm": 35.91
+                },
+                {
+                  "part": "crank_grip",
+                  "disp_mm": 30.0
+                }
+              ],
+              "end_z": 0.0,
+              "max_tilt_deg": 0.0,
+              "max_drift": 0.0359,
+              "functional_checks": [
+                {
+                  "name": "planetary_4_to_1_semantics",
+                  "value": "{'sun_to_carrier_ratio': 4.0, 'carrier_gain': 0.25, 'planet_relative_gains': [-0.75, -0.75, -0.75]}",
+                  "expected": "{'sun_to_carrier_ratio': 4.0, 'carrier_gain': 0.25, 'each_planet_relative_gain': -0.75}",
+                  "passed": true,
+                  "detail": "Carrier must rotate with the sun at one quarter speed; all three dedicated planet hinges must spin consistently relative to the carrier."
+                }
+              ],
+              "functional_ok": true
+            },
+            "stability": {
+              "verdict": "PASS",
+              "exploded": false,
+              "max_disp_m": 0.0,
+              "end_z": 0.0,
+              "displaced_parts": []
+            },
+            "summary": "drive: PASS \u2014 input moved 12.0 rad, 6/6 downstream joints moved reached output",
+            "cause": "none",
+            "evidence": [],
+            "reason": "No fault domain survived deterministic verification.",
+            "design": {
+              "input_joint": "input_shaft",
+              "output_joint": "place_planet_1",
+              "watch_joints": [
+                "place_carrier",
+                "place_fixed_ring",
+                "place_sun_gear",
+                "place_planet_1",
+                "place_planet_2",
+                "place_planet_3"
+              ],
+              "propagation_path": [
+                "place_input_shaft",
+                "place_carrier",
+                "place_fixed_ring",
+                "place_sun_gear",
+                "place_planet_2",
+                "place_planet_3",
+                "place_planet_1"
+              ],
+              "pass_criteria": null,
+              "environment": "Bench-mounted and driven open-frame demonstration with the base fixed and the complete planetary stage exposed to the camera. The sun input is driven steadily while the fixed ring, three planets, carrier, crank, pins, and output remain visible.",
+              "camera": {
+                "target_link": "carrier",
+                "azimuth_deg": 45.0,
+                "elevation_deg": -30.0,
+                "distance_scale": 2.6,
+                "locked": true
+              }
+            },
+            "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\05_three_planet_4to1\\design_this_as_an_open_demonstra_20260811_170424\\physics\\mujoco_0\\frames",
+            "video": "physics/mujoco_0/model.mp4"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "index": 6,
+    "name": "06_four_planet_4to1",
+    "returncode": 0,
+    "duration_s": 982.244,
+    "log": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\06_four_planet_4to1.log",
+    "result": {
+      "ok": true,
+      "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\06_four_planet_4to1\\design_this_as_an_open_demonstra_20260811_171638",
+      "render_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\06_four_planet_4to1\\design_this_as_an_open_demonstra_20260811_171638",
+      "iterations": 1,
+      "hierarchy": false,
+      "single_agent": true,
+      "physics": {
+        "passed": true,
+        "verdict": "PASS",
+        "summary": "drive: PASS \u2014 input moved 12.0 rad, 7/7 downstream joints moved reached output",
+        "metrics": {
+          "verdict": "PASS",
+          "test_kind": "driven_mechanism",
+          "survive_s": 3.0,
+          "input_joint": "input_shaft_hinge",
+          "input_part": "input_shaft",
+          "input_travel": 12.0,
+          "input_unit": "rad",
+          "moved_count": 7,
+          "watched_count": 7,
+          "output_reached": true,
+          "exploded": false,
+          "output_travel": 3.0,
+          "output_unit": "rad",
+          "ratio_in_out": 4.0,
+          "displaced_parts": [
+            {
+              "part": "crank_handle",
+              "disp_mm": 36.0
+            },
+            {
+              "part": "planet_pin_1",
+              "disp_mm": 31.92
+            },
+            {
+              "part": "planet_1",
+              "disp_mm": 31.92
+            },
+            {
+              "part": "planet_pin_2",
+              "disp_mm": 31.92
+            },
+            {
+              "part": "planet_2",
+              "disp_mm": 31.92
+            },
+            {
+              "part": "planet_pin_3",
+              "disp_mm": 31.92
+            },
+            {
+              "part": "planet_3",
+              "disp_mm": 31.92
+            },
+            {
+              "part": "planet_pin_4",
+              "disp_mm": 31.92
+            }
+          ],
+          "end_z": 0.0,
+          "max_tilt_deg": 0.0,
+          "max_drift": 0.036,
+          "functional_checks": [
+            {
+              "name": "planetary_reduction_ratio",
+              "value": 4.0,
+              "expected": "4.0 +/- 0.08 input-to-carrier, same direction",
+              "passed": true,
+              "detail": "Computed from total input_shaft_hinge travel divided by total output_sleeve_hinge travel."
+            }
+          ],
+          "functional_ok": true
+        },
+        "stability": {
+          "verdict": "PASS",
+          "exploded": false,
+          "max_disp_m": 0.0,
+          "end_z": 0.0,
+          "displaced_parts": []
+        },
+        "cause": "none",
+        "reason": "No fault domain survived deterministic verification.",
+        "design": {
+          "input_joint": "input_shaft",
+          "output_joint": "place_output_sleeve",
+          "watch_joints": [
+            "place_output_sleeve",
+            "place_carrier",
+            "place_sun_gear",
+            "place_planet_1",
+            "place_planet_2",
+            "place_planet_3",
+            "place_planet_4"
+          ],
+          "propagation_path": [
+            "place_input_shaft",
+            "place_carrier",
+            "place_sun_gear",
+            "place_planet_1",
+            "place_planet_2",
+            "place_planet_3",
+            "place_planet_4",
+            "place_output_sleeve"
+          ],
+          "pass_criteria": null,
+          "environment": "Bench-mounted and driven on a stable open demonstration stand. The locked camera uses an unobstructed three-quarter view so the fixed_ring_gear, sun_gear, all four exposed planets and pins, carrier, crank, bearings, and output remain visible.",
+          "camera": {
+            "target_link": "carrier",
+            "azimuth_deg": 40.0,
+            "elevation_deg": -28.0,
+            "distance_scale": 2.5,
+            "locked": true
+          }
+        },
+        "diagnosis": {
+          "verdict": "pass",
+          "cause": "none",
+          "reason": "No fault domain survived deterministic verification.",
+          "culprit_part": "",
+          "culprit_sub": "",
+          "evidence": [],
+          "fault_domain": "evaluator",
+          "fault_code": "insufficient_verified_evidence",
+          "verified": false,
+          "confidence": 1.0,
+          "culprit_entities": [],
+          "routing": {
+            "action": "halt_harness",
+            "allow_agent_refinement": false
+          },
+          "diagnosis_version": 2,
+          "persistence": {},
+          "legacy": {
+            "cause": "structure"
+          }
+        },
+        "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\06_four_planet_4to1\\design_this_as_an_open_demonstra_20260811_171638\\physics\\mujoco_0\\frames",
+        "video": "physics/mujoco_0/model.mp4",
+        "tests": [
+          {
+            "name": "drive",
+            "strategy": "driven_mechanism",
+            "verdict": "PASS",
+            "metrics": {
+              "verdict": "PASS",
+              "test_kind": "driven_mechanism",
+              "survive_s": 3.0,
+              "input_joint": "input_shaft_hinge",
+              "input_part": "input_shaft",
+              "input_travel": 12.0,
+              "input_unit": "rad",
+              "moved_count": 7,
+              "watched_count": 7,
+              "output_reached": true,
+              "exploded": false,
+              "output_travel": 3.0,
+              "output_unit": "rad",
+              "ratio_in_out": 4.0,
+              "displaced_parts": [
+                {
+                  "part": "crank_handle",
+                  "disp_mm": 36.0
+                },
+                {
+                  "part": "planet_pin_1",
+                  "disp_mm": 31.92
+                },
+                {
+                  "part": "planet_1",
+                  "disp_mm": 31.92
+                },
+                {
+                  "part": "planet_pin_2",
+                  "disp_mm": 31.92
+                },
+                {
+                  "part": "planet_2",
+                  "disp_mm": 31.92
+                },
+                {
+                  "part": "planet_pin_3",
+                  "disp_mm": 31.92
+                },
+                {
+                  "part": "planet_3",
+                  "disp_mm": 31.92
+                },
+                {
+                  "part": "planet_pin_4",
+                  "disp_mm": 31.92
+                }
+              ],
+              "end_z": 0.0,
+              "max_tilt_deg": 0.0,
+              "max_drift": 0.036,
+              "functional_checks": [
+                {
+                  "name": "planetary_reduction_ratio",
+                  "value": 4.0,
+                  "expected": "4.0 +/- 0.08 input-to-carrier, same direction",
+                  "passed": true,
+                  "detail": "Computed from total input_shaft_hinge travel divided by total output_sleeve_hinge travel."
+                }
+              ],
+              "functional_ok": true
+            },
+            "stability": {
+              "verdict": "PASS",
+              "exploded": false,
+              "max_disp_m": 0.0,
+              "end_z": 0.0,
+              "displaced_parts": []
+            },
+            "summary": "drive: PASS \u2014 input moved 12.0 rad, 7/7 downstream joints moved reached output",
+            "cause": "none",
+            "evidence": [],
+            "reason": "No fault domain survived deterministic verification.",
+            "design": {
+              "input_joint": "input_shaft",
+              "output_joint": "place_output_sleeve",
+              "watch_joints": [
+                "place_output_sleeve",
+                "place_carrier",
+                "place_sun_gear",
+                "place_planet_1",
+                "place_planet_2",
+                "place_planet_3",
+                "place_planet_4"
+              ],
+              "propagation_path": [
+                "place_input_shaft",
+                "place_carrier",
+                "place_sun_gear",
+                "place_planet_1",
+                "place_planet_2",
+                "place_planet_3",
+                "place_planet_4",
+                "place_output_sleeve"
+              ],
+              "pass_criteria": null,
+              "environment": "Bench-mounted and driven on a stable open demonstration stand. The locked camera uses an unobstructed three-quarter view so the fixed_ring_gear, sun_gear, all four exposed planets and pins, carrier, crank, bearings, and output remain visible.",
+              "camera": {
+                "target_link": "carrier",
+                "azimuth_deg": 40.0,
+                "elevation_deg": -28.0,
+                "distance_scale": 2.5,
+                "locked": true
+              }
+            },
+            "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\06_four_planet_4to1\\design_this_as_an_open_demonstra_20260811_171638\\physics\\mujoco_0\\frames",
+            "video": "physics/mujoco_0/model.mp4"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "index": 7,
+    "name": "07_horizontal_slider_crank",
+    "returncode": 0,
+    "duration_s": 475.739,
+    "log": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\07_horizontal_slider_crank.log",
+    "result": {
+      "ok": true,
+      "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\07_horizontal_slider_crank\\design_this_as_an_open_demonstra_20260811_173301",
+      "render_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\07_horizontal_slider_crank\\design_this_as_an_open_demonstra_20260811_173301",
+      "iterations": 1,
+      "hierarchy": false,
+      "single_agent": true,
+      "physics": {
+        "passed": true,
+        "verdict": "PASS",
+        "summary": "drive: PASS \u2014 input moved 12.1555 rad, 3/3 downstream joints moved reached output",
+        "metrics": {
+          "verdict": "PASS",
+          "test_kind": "driven_mechanism",
+          "survive_s": 3.0,
+          "input_joint": "input_crankshaft_hinge",
+          "input_part": "crankshaft",
+          "input_travel": 12.1555,
+          "input_unit": "rad",
+          "moved_count": 3,
+          "watched_count": 3,
+          "output_reached": true,
+          "exploded": false,
+          "output_travel": 0.0024,
+          "output_unit": "m",
+          "ratio_in_out": null,
+          "displaced_parts": [
+            {
+              "part": "crank_pin",
+              "disp_mm": 24.0
+            },
+            {
+              "part": "connecting_rod",
+              "disp_mm": 24.0
+            },
+            {
+              "part": "slider",
+              "disp_mm": 21.28
+            },
+            {
+              "part": "wrist_pin",
+              "disp_mm": 21.28
+            }
+          ],
+          "end_z": 0.0,
+          "max_tilt_deg": 0.0,
+          "max_drift": 0.024,
+          "functional_checks": [
+            {
+              "name": "slider_crank_reciprocation",
+              "value": 0.024006,
+              "expected": "nonzero cyclic slider stroke with both travel directions during at least one complete input revolution",
+              "passed": true,
+              "detail": "crank_travel_rad=12.1009, slider_stroke_m=0.024006, forward=True, backward=True"
+            }
+          ],
+          "functional_ok": true
+        },
+        "stability": {
+          "verdict": "PASS",
+          "exploded": false,
+          "max_disp_m": 0.0,
+          "end_z": 0.0,
+          "displaced_parts": []
+        },
+        "cause": "none",
+        "reason": "No fault domain survived deterministic verification.",
+        "design": {
+          "input_joint": "crankshaft",
+          "output_joint": "place_slider",
+          "watch_joints": [
+            "place_crank_disk",
+            "place_slider",
+            "place_connecting_rod"
+          ],
+          "propagation_path": [
+            "place_crankshaft",
+            "place_crank_disk",
+            "place_connecting_rod",
+            "place_slider"
+          ],
+          "pass_criteria": null,
+          "environment": "Bench-mounted and driven open-frame demonstration. The base is rigidly fixed while the camera views the exposed crank disk, eccentric crank pin, both connecting-rod ends, guide rails, slider, and wrist pin.",
+          "camera": {
+            "target_link": "connecting_rod",
+            "azimuth_deg": 135.0,
+            "elevation_deg": -30.0,
+            "distance_scale": 2.5,
+            "lock_camera": true
+          }
+        },
+        "diagnosis": {
+          "verdict": "pass",
+          "cause": "none",
+          "reason": "No fault domain survived deterministic verification.",
+          "culprit_part": "",
+          "culprit_sub": "",
+          "evidence": [],
+          "fault_domain": "evaluator",
+          "fault_code": "insufficient_verified_evidence",
+          "verified": false,
+          "confidence": 1.0,
+          "culprit_entities": [],
+          "routing": {
+            "action": "halt_harness",
+            "allow_agent_refinement": false
+          },
+          "diagnosis_version": 2,
+          "persistence": {},
+          "legacy": {
+            "cause": "structure"
+          }
+        },
+        "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\07_horizontal_slider_crank\\design_this_as_an_open_demonstra_20260811_173301\\physics\\mujoco_0\\frames",
+        "video": "physics/mujoco_0/model.mp4",
+        "tests": [
+          {
+            "name": "drive",
+            "strategy": "driven_mechanism",
+            "verdict": "PASS",
+            "metrics": {
+              "verdict": "PASS",
+              "test_kind": "driven_mechanism",
+              "survive_s": 3.0,
+              "input_joint": "input_crankshaft_hinge",
+              "input_part": "crankshaft",
+              "input_travel": 12.1555,
+              "input_unit": "rad",
+              "moved_count": 3,
+              "watched_count": 3,
+              "output_reached": true,
+              "exploded": false,
+              "output_travel": 0.0024,
+              "output_unit": "m",
+              "ratio_in_out": null,
+              "displaced_parts": [
+                {
+                  "part": "crank_pin",
+                  "disp_mm": 24.0
+                },
+                {
+                  "part": "connecting_rod",
+                  "disp_mm": 24.0
+                },
+                {
+                  "part": "slider",
+                  "disp_mm": 21.28
+                },
+                {
+                  "part": "wrist_pin",
+                  "disp_mm": 21.28
+                }
+              ],
+              "end_z": 0.0,
+              "max_tilt_deg": 0.0,
+              "max_drift": 0.024,
+              "functional_checks": [
+                {
+                  "name": "slider_crank_reciprocation",
+                  "value": 0.024006,
+                  "expected": "nonzero cyclic slider stroke with both travel directions during at least one complete input revolution",
+                  "passed": true,
+                  "detail": "crank_travel_rad=12.1009, slider_stroke_m=0.024006, forward=True, backward=True"
+                }
+              ],
+              "functional_ok": true
+            },
+            "stability": {
+              "verdict": "PASS",
+              "exploded": false,
+              "max_disp_m": 0.0,
+              "end_z": 0.0,
+              "displaced_parts": []
+            },
+            "summary": "drive: PASS \u2014 input moved 12.1555 rad, 3/3 downstream joints moved reached output",
+            "cause": "none",
+            "evidence": [],
+            "reason": "No fault domain survived deterministic verification.",
+            "design": {
+              "input_joint": "crankshaft",
+              "output_joint": "place_slider",
+              "watch_joints": [
+                "place_crank_disk",
+                "place_slider",
+                "place_connecting_rod"
+              ],
+              "propagation_path": [
+                "place_crankshaft",
+                "place_crank_disk",
+                "place_connecting_rod",
+                "place_slider"
+              ],
+              "pass_criteria": null,
+              "environment": "Bench-mounted and driven open-frame demonstration. The base is rigidly fixed while the camera views the exposed crank disk, eccentric crank pin, both connecting-rod ends, guide rails, slider, and wrist pin.",
+              "camera": {
+                "target_link": "connecting_rod",
+                "azimuth_deg": 135.0,
+                "elevation_deg": -30.0,
+                "distance_scale": 2.5,
+                "lock_camera": true
+              }
+            },
+            "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\07_horizontal_slider_crank\\design_this_as_an_open_demonstra_20260811_173301\\physics\\mujoco_0\\frames",
+            "video": "physics/mujoco_0/model.mp4"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "index": 8,
+    "name": "08_vertical_piston_pump",
+    "returncode": 1,
+    "duration_s": 1060.276,
+    "log": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\08_vertical_piston_pump.log",
+    "result": {
+      "ok": false,
+      "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\08_vertical_piston_pump\\design_this_as_an_open_demonstra_20260811_174056",
+      "render_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\08_vertical_piston_pump\\design_this_as_an_open_demonstra_20260811_174056",
+      "iterations": 2,
+      "hierarchy": false,
+      "single_agent": true,
+      "physics": {
+        "passed": false,
+        "verdict": "FAIL",
+        "summary": "drive: PASS \u2014 input moved 12.3644 rad, 3/7 downstream joints moved but output DEAD",
+        "metrics": {
+          "verdict": "PASS",
+          "test_kind": "driven_mechanism",
+          "survive_s": 3.0,
+          "input_joint": "crankshaft_revolute",
+          "input_part": "crankshaft",
+          "input_travel": 12.3644,
+          "input_unit": "rad",
+          "moved_count": 3,
+          "watched_count": 7,
+          "output_reached": false,
+          "exploded": false,
+          "output_travel": 0.0007,
+          "output_unit": "m",
+          "ratio_in_out": null,
+          "displaced_parts": [
+            {
+              "part": "handle_pin",
+              "disp_mm": 28.0
+            },
+            {
+              "part": "hand_grip",
+              "disp_mm": 28.0
+            },
+            {
+              "part": "crank_pin",
+              "disp_mm": 20.0
+            },
+            {
+              "part": "connecting_rod",
+              "disp_mm": 20.0
+            },
+            {
+              "part": "crosshead",
+              "disp_mm": 19.47
+            },
+            {
+              "part": "wrist_pin",
+              "disp_mm": 19.47
+            },
+            {
+              "part": "pump_rod",
+              "disp_mm": 19.47
+            },
+            {
+              "part": "pump_piston",
+              "disp_mm": 19.47
+            }
+          ],
+          "end_z": 0.0,
+          "max_tilt_deg": 0.0,
+          "max_drift": 0.028,
+          "functional_checks": [
+            {
+              "name": "crosshead_reciprocation",
+              "value": "{'output_span_m': 0.020368, 'reversals': 26}",
+              "expected": "at least one crank revolution reaches the crosshead and causes nonzero vertical travel with a direction reversal",
+              "passed": true,
+              "detail": "input travel 12.2694 rad; output span 0.020368 m; direction reversals 26"
+            }
+          ],
+          "functional_ok": true
+        },
+        "stability": {
+          "verdict": "PASS",
+          "exploded": false,
+          "max_disp_m": 0.0274,
+          "end_z": 0.0,
+          "displaced_parts": [
+            {
+              "part": "handle_pin",
+              "disp_mm": 27.42
+            },
+            {
+              "part": "hand_grip",
+              "disp_mm": 27.42
+            },
+            {
+              "part": "crank_pin",
+              "disp_mm": 19.58
+            },
+            {
+              "part": "connecting_rod",
+              "disp_mm": 19.58
+            },
+            {
+              "part": "crosshead",
+              "disp_mm": 7.82
+            },
+            {
+              "part": "wrist_pin",
+              "disp_mm": 7.82
+            },
+            {
+              "part": "pump_rod",
+              "disp_mm": 7.82
+            },
+            {
+              "part": "pump_piston",
+              "disp_mm": 7.82
+            }
+          ]
+        },
+        "cause": "structure",
+        "reason": "Evaluator verdict contradicts deterministic metrics.",
+        "design": {
+          "input_joint": "crankshaft",
+          "output_joint": "place_crosshead",
+          "watch_joints": [
+            "place_connecting_rod",
+            "place_crosshead"
+          ],
+          "propagation_path": [
+            "place_crankshaft",
+            "place_connecting_rod",
+            "place_crosshead"
+          ],
+          "pass_criteria": null,
+          "environment": "Bench-mounted, open-frame, and driven above a ground plane, with the bench base fixed and the exposed crank, connecting rod, crosshead, pump rod, and piston visible. This is a rigid-body motion-transmission demonstration only; no fluid or pressure is simulated.",
+          "camera": {
+            "locked": true,
+            "target_body": "connecting_rod",
+            "target_links": [
+              "crank_web",
+              "crank_pin",
+              "connecting_rod",
+              "crosshead",
+              "pump_rod",
+              "pump_piston"
+            ],
+            "azimuth_degrees": 35.0,
+            "elevation_degrees": -22.0,
+            "distance_scale": 2.5,
+            "framing": "Three-quarter front view centered on the exposed crank-to-crosshead working region, with the full hand crank, linkage, guide rails, and open cylinder frame in view."
+          }
+        },
+        "diagnosis": {
+          "verdict": "fail",
+          "cause": "structure",
+          "reason": "Evaluator verdict contradicts deterministic metrics.",
+          "culprit_part": "place_crosshead",
+          "culprit_sub": "place_crosshead",
+          "evidence": [
+            {
+              "kind": "hard_metric_comparison",
+              "expected": true,
+              "actual": false
+            }
+          ],
+          "fault_domain": "evaluator",
+          "fault_code": "verdict_contradicts_hard_metrics",
+          "verified": true,
+          "confidence": 1.0,
+          "culprit_entities": [],
+          "routing": {
+            "action": "halt_harness",
+            "allow_agent_refinement": false
+          },
+          "diagnosis_version": 2,
+          "persistence": {},
+          "legacy": {
+            "cause": "structure"
+          }
+        },
+        "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\08_vertical_piston_pump\\design_this_as_an_open_demonstra_20260811_174056\\physics\\mujoco_1\\frames",
+        "video": "physics/mujoco_1/model.mp4",
+        "tests": [
+          {
+            "name": "drive",
+            "strategy": "driven_mechanism",
+            "verdict": "FAIL",
+            "metrics": {
+              "verdict": "PASS",
+              "test_kind": "driven_mechanism",
+              "survive_s": 3.0,
+              "input_joint": "crankshaft_revolute",
+              "input_part": "crankshaft",
+              "input_travel": 12.3644,
+              "input_unit": "rad",
+              "moved_count": 3,
+              "watched_count": 7,
+              "output_reached": false,
+              "exploded": false,
+              "output_travel": 0.0007,
+              "output_unit": "m",
+              "ratio_in_out": null,
+              "displaced_parts": [
+                {
+                  "part": "handle_pin",
+                  "disp_mm": 28.0
+                },
+                {
+                  "part": "hand_grip",
+                  "disp_mm": 28.0
+                },
+                {
+                  "part": "crank_pin",
+                  "disp_mm": 20.0
+                },
+                {
+                  "part": "connecting_rod",
+                  "disp_mm": 20.0
+                },
+                {
+                  "part": "crosshead",
+                  "disp_mm": 19.47
+                },
+                {
+                  "part": "wrist_pin",
+                  "disp_mm": 19.47
+                },
+                {
+                  "part": "pump_rod",
+                  "disp_mm": 19.47
+                },
+                {
+                  "part": "pump_piston",
+                  "disp_mm": 19.47
+                }
+              ],
+              "end_z": 0.0,
+              "max_tilt_deg": 0.0,
+              "max_drift": 0.028,
+              "functional_checks": [
+                {
+                  "name": "crosshead_reciprocation",
+                  "value": "{'output_span_m': 0.020368, 'reversals': 26}",
+                  "expected": "at least one crank revolution reaches the crosshead and causes nonzero vertical travel with a direction reversal",
+                  "passed": true,
+                  "detail": "input travel 12.2694 rad; output span 0.020368 m; direction reversals 26"
+                }
+              ],
+              "functional_ok": true
+            },
+            "stability": {
+              "verdict": "PASS",
+              "exploded": false,
+              "max_disp_m": 0.0274,
+              "end_z": 0.0,
+              "displaced_parts": [
+                {
+                  "part": "handle_pin",
+                  "disp_mm": 27.42
+                },
+                {
+                  "part": "hand_grip",
+                  "disp_mm": 27.42
+                },
+                {
+                  "part": "crank_pin",
+                  "disp_mm": 19.58
+                },
+                {
+                  "part": "connecting_rod",
+                  "disp_mm": 19.58
+                },
+                {
+                  "part": "crosshead",
+                  "disp_mm": 7.82
+                },
+                {
+                  "part": "wrist_pin",
+                  "disp_mm": 7.82
+                },
+                {
+                  "part": "pump_rod",
+                  "disp_mm": 7.82
+                },
+                {
+                  "part": "pump_piston",
+                  "disp_mm": 7.82
+                }
+              ]
+            },
+            "summary": "drive: PASS \u2014 input moved 12.3644 rad, 3/7 downstream joints moved but output DEAD",
+            "cause": "structure",
+            "evidence": [
+              {
+                "kind": "hard_metric_comparison",
+                "expected": true,
+                "actual": false
+              }
+            ],
+            "reason": "Evaluator verdict contradicts deterministic metrics.",
+            "design": {
+              "input_joint": "crankshaft",
+              "output_joint": "place_crosshead",
+              "watch_joints": [
+                "place_connecting_rod",
+                "place_crosshead"
+              ],
+              "propagation_path": [
+                "place_crankshaft",
+                "place_connecting_rod",
+                "place_crosshead"
+              ],
+              "pass_criteria": null,
+              "environment": "Bench-mounted, open-frame, and driven above a ground plane, with the bench base fixed and the exposed crank, connecting rod, crosshead, pump rod, and piston visible. This is a rigid-body motion-transmission demonstration only; no fluid or pressure is simulated.",
+              "camera": {
+                "locked": true,
+                "target_body": "connecting_rod",
+                "target_links": [
+                  "crank_web",
+                  "crank_pin",
+                  "connecting_rod",
+                  "crosshead",
+                  "pump_rod",
+                  "pump_piston"
+                ],
+                "azimuth_degrees": 35.0,
+                "elevation_degrees": -22.0,
+                "distance_scale": 2.5,
+                "framing": "Three-quarter front view centered on the exposed crank-to-crosshead working region, with the full hand crank, linkage, guide rails, and open cylinder frame in view."
+              }
+            },
+            "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\08_vertical_piston_pump\\design_this_as_an_open_demonstra_20260811_174056\\physics\\mujoco_1\\frames",
+            "video": "physics/mujoco_1/model.mp4"
+          }
+        ]
+      },
+      "diagnosis": {
+        "verdict": "fail",
+        "cause": "structure",
+        "reason": "Evaluator verdict contradicts deterministic metrics.",
+        "culprit_part": "place_crosshead",
+        "culprit_sub": "place_crosshead",
+        "evidence": [
+          {
+            "kind": "hard_metric_comparison",
+            "expected": true,
+            "actual": false
+          }
+        ],
+        "fault_domain": "evaluator",
+        "fault_code": "verdict_contradicts_hard_metrics",
+        "verified": true,
+        "confidence": 1.0,
+        "culprit_entities": [],
+        "routing": {
+          "action": "halt_harness",
+          "allow_agent_refinement": false
+        },
+        "diagnosis_version": 2,
+        "persistence": {},
+        "legacy": {
+          "cause": "structure"
+        }
+      },
+      "error": "Evaluator verdict contradicts deterministic metrics."
+    }
+  },
+  {
+    "index": 9,
+    "name": "09_open_pumpjack",
+    "returncode": 1,
+    "duration_s": 564.417,
+    "log": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\09_open_pumpjack.log",
+    "result": {
+      "ok": false,
+      "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\09_open_pumpjack\\design_this_as_an_open_demonstra_20260811_175836",
+      "render_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\09_open_pumpjack\\design_this_as_an_open_demonstra_20260811_175836",
+      "iterations": 1,
+      "hierarchy": false,
+      "single_agent": true,
+      "physics": {
+        "passed": false,
+        "verdict": "FAIL",
+        "summary": "drive: PASS \u2014 input moved 1.0438 rad, 3/4 downstream joints moved reached output",
+        "metrics": {
+          "verdict": "PASS",
+          "test_kind": "driven_mechanism",
+          "survive_s": 3.0,
+          "input_joint": "driven_crankshaft_hinge",
+          "input_part": "crankshaft",
+          "input_travel": 1.0438,
+          "input_unit": "rad",
+          "moved_count": 3,
+          "watched_count": 4,
+          "output_reached": true,
+          "exploded": false,
+          "output_travel": 0.0032,
+          "output_unit": "m",
+          "ratio_in_out": null,
+          "displaced_parts": [
+            {
+              "part": "handle_spindle",
+              "disp_mm": 82.24
+            },
+            {
+              "part": "hand_grip",
+              "disp_mm": 82.24
+            },
+            {
+              "part": "hand_crank_arm",
+              "disp_mm": 72.5
+            },
+            {
+              "part": "crankshaft",
+              "disp_mm": 63.53
+            },
+            {
+              "part": "crank_disk",
+              "disp_mm": 61.98
+            },
+            {
+              "part": "crank_pin",
+              "disp_mm": 61.42
+            },
+            {
+              "part": "pitman",
+              "disp_mm": 46.21
+            },
+            {
+              "part": "polished_output_rod",
+              "disp_mm": 3.48
+            }
+          ],
+          "end_z": -0.0028,
+          "max_tilt_deg": 0.0,
+          "max_drift": 0.0822,
+          "functional_checks": [
+            {
+              "name": "polished_rod_reciprocation",
+              "value": 0.003463,
+              "expected": "travel span > 0.0001 in the joint's declared unit and motion in both directions",
+              "passed": true,
+              "detail": "Measured only at the delivered output vertical_guided_output; direction reversal proves reciprocation."
+            }
+          ],
+          "functional_ok": true
+        },
+        "stability": {
+          "verdict": "PASS",
+          "exploded": false,
+          "max_disp_m": 0.0568,
+          "end_z": 0.0,
+          "displaced_parts": [
+            {
+              "part": "pitman",
+              "disp_mm": 56.82
+            },
+            {
+              "part": "handle_spindle",
+              "disp_mm": 11.78
+            },
+            {
+              "part": "hand_grip",
+              "disp_mm": 11.78
+            },
+            {
+              "part": "hand_crank_arm",
+              "disp_mm": 10.38
+            },
+            {
+              "part": "crankshaft",
+              "disp_mm": 9.1
+            },
+            {
+              "part": "crank_disk",
+              "disp_mm": 8.89
+            },
+            {
+              "part": "crank_pin",
+              "disp_mm": 8.81
+            }
+          ]
+        },
+        "cause": "structure",
+        "reason": "Evaluator verdict contradicts deterministic metrics.",
+        "design": {
+          "input_joint": "crankshaft",
+          "output_joint": "place_polished_output_rod",
+          "watch_joints": [
+            "place_crank_disk",
+            "place_pitman",
+            "place_walking_beam",
+            "place_polished_output_rod"
+          ],
+          "propagation_path": [
+            "place_crankshaft",
+            "place_crank_disk",
+            "place_pitman",
+            "place_walking_beam",
+            "place_polished_output_rod"
+          ],
+          "pass_criteria": {
+            "primary_observable": "vertical_guided_output completes visible reciprocating motion and reverses direction while the crankshaft rotates",
+            "base_translation_tolerance_m": 0.005,
+            "base_rotation_tolerance_rad": 0.03,
+            "require_no_detached_parts": true
+          },
+          "environment": "Bench-mounted and driven open-frame demonstration with the base fixed and the complete crank-to-pitman-to-walking-beam-to-polished-rod motion path visible. Only the crankshaft input is actuated; all transmission joints are observed passively.",
+          "camera": {
+            "target_link": "walking_beam",
+            "azimuth_deg": 35.0,
+            "elevation_deg": -25.0,
+            "distance_scale": 2.6,
+            "roll_deg": 0.0,
+            "locked": true
+          }
+        },
+        "diagnosis": {
+          "verdict": "fail",
+          "cause": "structure",
+          "reason": "Evaluator verdict contradicts deterministic metrics.",
+          "culprit_part": "driven_crankshaft_hinge",
+          "culprit_sub": "driven",
+          "evidence": [
+            {
+              "kind": "hard_metric_comparison",
+              "expected": true,
+              "actual": false
+            }
+          ],
+          "fault_domain": "evaluator",
+          "fault_code": "verdict_contradicts_hard_metrics",
+          "verified": true,
+          "confidence": 1.0,
+          "culprit_entities": [],
+          "routing": {
+            "action": "halt_harness",
+            "allow_agent_refinement": false
+          },
+          "diagnosis_version": 2,
+          "persistence": {},
+          "legacy": {
+            "cause": "structure"
+          }
+        },
+        "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\09_open_pumpjack\\design_this_as_an_open_demonstra_20260811_175836\\physics\\mujoco_0\\frames",
+        "video": "physics/mujoco_0/model.mp4",
+        "tests": [
+          {
+            "name": "drive",
+            "strategy": "driven_mechanism",
+            "verdict": "FAIL",
+            "metrics": {
+              "verdict": "PASS",
+              "test_kind": "driven_mechanism",
+              "survive_s": 3.0,
+              "input_joint": "driven_crankshaft_hinge",
+              "input_part": "crankshaft",
+              "input_travel": 1.0438,
+              "input_unit": "rad",
+              "moved_count": 3,
+              "watched_count": 4,
+              "output_reached": true,
+              "exploded": false,
+              "output_travel": 0.0032,
+              "output_unit": "m",
+              "ratio_in_out": null,
+              "displaced_parts": [
+                {
+                  "part": "handle_spindle",
+                  "disp_mm": 82.24
+                },
+                {
+                  "part": "hand_grip",
+                  "disp_mm": 82.24
+                },
+                {
+                  "part": "hand_crank_arm",
+                  "disp_mm": 72.5
+                },
+                {
+                  "part": "crankshaft",
+                  "disp_mm": 63.53
+                },
+                {
+                  "part": "crank_disk",
+                  "disp_mm": 61.98
+                },
+                {
+                  "part": "crank_pin",
+                  "disp_mm": 61.42
+                },
+                {
+                  "part": "pitman",
+                  "disp_mm": 46.21
+                },
+                {
+                  "part": "polished_output_rod",
+                  "disp_mm": 3.48
+                }
+              ],
+              "end_z": -0.0028,
+              "max_tilt_deg": 0.0,
+              "max_drift": 0.0822,
+              "functional_checks": [
+                {
+                  "name": "polished_rod_reciprocation",
+                  "value": 0.003463,
+                  "expected": "travel span > 0.0001 in the joint's declared unit and motion in both directions",
+                  "passed": true,
+                  "detail": "Measured only at the delivered output vertical_guided_output; direction reversal proves reciprocation."
+                }
+              ],
+              "functional_ok": true
+            },
+            "stability": {
+              "verdict": "PASS",
+              "exploded": false,
+              "max_disp_m": 0.0568,
+              "end_z": 0.0,
+              "displaced_parts": [
+                {
+                  "part": "pitman",
+                  "disp_mm": 56.82
+                },
+                {
+                  "part": "handle_spindle",
+                  "disp_mm": 11.78
+                },
+                {
+                  "part": "hand_grip",
+                  "disp_mm": 11.78
+                },
+                {
+                  "part": "hand_crank_arm",
+                  "disp_mm": 10.38
+                },
+                {
+                  "part": "crankshaft",
+                  "disp_mm": 9.1
+                },
+                {
+                  "part": "crank_disk",
+                  "disp_mm": 8.89
+                },
+                {
+                  "part": "crank_pin",
+                  "disp_mm": 8.81
+                }
+              ]
+            },
+            "summary": "drive: PASS \u2014 input moved 1.0438 rad, 3/4 downstream joints moved reached output",
+            "cause": "structure",
+            "evidence": [
+              {
+                "kind": "hard_metric_comparison",
+                "expected": true,
+                "actual": false
+              }
+            ],
+            "reason": "Evaluator verdict contradicts deterministic metrics.",
+            "design": {
+              "input_joint": "crankshaft",
+              "output_joint": "place_polished_output_rod",
+              "watch_joints": [
+                "place_crank_disk",
+                "place_pitman",
+                "place_walking_beam",
+                "place_polished_output_rod"
+              ],
+              "propagation_path": [
+                "place_crankshaft",
+                "place_crank_disk",
+                "place_pitman",
+                "place_walking_beam",
+                "place_polished_output_rod"
+              ],
+              "pass_criteria": {
+                "primary_observable": "vertical_guided_output completes visible reciprocating motion and reverses direction while the crankshaft rotates",
+                "base_translation_tolerance_m": 0.005,
+                "base_rotation_tolerance_rad": 0.03,
+                "require_no_detached_parts": true
+              },
+              "environment": "Bench-mounted and driven open-frame demonstration with the base fixed and the complete crank-to-pitman-to-walking-beam-to-polished-rod motion path visible. Only the crankshaft input is actuated; all transmission joints are observed passively.",
+              "camera": {
+                "target_link": "walking_beam",
+                "azimuth_deg": 35.0,
+                "elevation_deg": -25.0,
+                "distance_scale": 2.6,
+                "roll_deg": 0.0,
+                "locked": true
+              }
+            },
+            "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\09_open_pumpjack\\design_this_as_an_open_demonstra_20260811_175836\\physics\\mujoco_0\\frames",
+            "video": "physics/mujoco_0/model.mp4"
+          }
+        ]
+      },
+      "diagnosis": {
+        "verdict": "fail",
+        "cause": "structure",
+        "reason": "Evaluator verdict contradicts deterministic metrics.",
+        "culprit_part": "driven_crankshaft_hinge",
+        "culprit_sub": "driven",
+        "evidence": [
+          {
+            "kind": "hard_metric_comparison",
+            "expected": true,
+            "actual": false
+          }
+        ],
+        "fault_domain": "evaluator",
+        "fault_code": "verdict_contradicts_hard_metrics",
+        "verified": true,
+        "confidence": 1.0,
+        "culprit_entities": [],
+        "routing": {
+          "action": "halt_harness",
+          "allow_agent_refinement": false
+        },
+        "diagnosis_version": 2,
+        "persistence": {},
+        "legacy": {
+          "cause": "structure"
+        }
+      },
+      "error": "Evaluator verdict contradicts deterministic metrics."
+    }
+  },
+  {
+    "index": 10,
+    "name": "10_wind_rotor_pump",
+    "returncode": 1,
+    "duration_s": 573.842,
+    "log": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\10_wind_rotor_pump.log",
+    "result": {
+      "ok": false,
+      "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\10_wind_rotor_pump\\design_this_as_an_open_demonstra_20260811_180801",
+      "render_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\10_wind_rotor_pump\\design_this_as_an_open_demonstra_20260811_180801",
+      "iterations": 1,
+      "hierarchy": false,
+      "single_agent": true,
+      "physics": {
+        "passed": false,
+        "verdict": "FAIL",
+        "summary": "the machine runs (drive: FAIL \u2014 input moved 0.0035 rad, 0/6 downstream joints moved but output DEAD) but does NOT do its job: piston_vertical_reciprocation: 0.000177 vs expected after at least about one rotor revolution, the pump piston has nonzero vertical stroke and reverses direction",
+        "metrics": {
+          "verdict": "FAIL",
+          "test_kind": "driven_mechanism",
+          "survive_s": 3.0,
+          "input_joint": "world_rotor_shaft_hinge",
+          "input_part": "rotor_shaft",
+          "input_travel": 0.0035,
+          "input_unit": "rad",
+          "moved_count": 0,
+          "watched_count": 6,
+          "output_reached": false,
+          "exploded": false,
+          "output_travel": 0.0002,
+          "output_unit": "m",
+          "ratio_in_out": null,
+          "displaced_parts": [],
+          "end_z": -0.0282,
+          "max_tilt_deg": 0.0,
+          "max_drift": 0.0003,
+          "functional_checks": [
+            {
+              "name": "piston_vertical_reciprocation",
+              "value": 0.000177,
+              "expected": "after at least about one rotor revolution, the pump piston has nonzero vertical stroke and reverses direction",
+              "passed": false,
+              "detail": "input_travel=0.003548 rad, piston_stroke=0.000177 m, upward=False, downward=True"
+            }
+          ],
+          "functional_ok": false
+        },
+        "stability": {
+          "verdict": "PASS",
+          "exploded": false,
+          "max_disp_m": 0.0787,
+          "end_z": -0.028,
+          "displaced_parts": [
+            {
+              "part": "crank_pin",
+              "disp_mm": 78.66
+            },
+            {
+              "part": "rotor_shaft",
+              "disp_mm": 77.53
+            },
+            {
+              "part": "crank_disk",
+              "disp_mm": 77.53
+            },
+            {
+              "part": "wind_rotor",
+              "disp_mm": 77.53
+            },
+            {
+              "part": "connecting_rod",
+              "disp_mm": 34.43
+            },
+            {
+              "part": "crosshead",
+              "disp_mm": 25.35
+            },
+            {
+              "part": "wrist_pin",
+              "disp_mm": 25.35
+            },
+            {
+              "part": "pump_rod",
+              "disp_mm": 25.35
+            }
+          ]
+        },
+        "cause": "structure",
+        "reason": "No fault domain survived deterministic verification.",
+        "design": {
+          "input_joint": "rotor_shaft",
+          "output_joint": "place_crosshead",
+          "watch_joints": [
+            "place_connecting_rod",
+            "place_crosshead"
+          ],
+          "propagation_path": [
+            "place_rotor_shaft",
+            "place_connecting_rod",
+            "place_crosshead"
+          ],
+          "pass_criteria": null,
+          "environment": "Bench-mounted and driven open-frame mechanism with the base fixed in world so the complete exposed rotor-to-crank-to-connecting-rod-to-crosshead-to-pump-piston motion path remains visible. This is a rigid-body mechanical-transmission test without aerodynamic wind loading or fluid pressure.",
+          "camera": {
+            "target_links": [
+              "crank_disk",
+              "crank_pin",
+              "connecting_rod",
+              "crosshead",
+              "pump_piston"
+            ],
+            "azimuth_deg": 45.0,
+            "elevation_deg": -25.0,
+            "distance_scale": 2.5,
+            "locked": true
+          }
+        },
+        "diagnosis": {
+          "verdict": "fail",
+          "cause": "structure",
+          "reason": "No fault domain survived deterministic verification.",
+          "culprit_part": "world_rotor_shaft_hinge",
+          "culprit_sub": "world",
+          "evidence": [],
+          "fault_domain": "evaluator",
+          "fault_code": "insufficient_verified_evidence",
+          "verified": false,
+          "confidence": 1.0,
+          "culprit_entities": [],
+          "routing": {
+            "action": "halt_harness",
+            "allow_agent_refinement": false
+          },
+          "diagnosis_version": 2,
+          "persistence": {},
+          "legacy": {
+            "cause": "structure"
+          }
+        },
+        "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\10_wind_rotor_pump\\design_this_as_an_open_demonstra_20260811_180801\\physics\\mujoco_0\\frames",
+        "video": "physics/mujoco_0/model.mp4",
+        "tests": [
+          {
+            "name": "drive",
+            "strategy": "driven_mechanism",
+            "verdict": "FAIL",
+            "metrics": {
+              "verdict": "FAIL",
+              "test_kind": "driven_mechanism",
+              "survive_s": 3.0,
+              "input_joint": "world_rotor_shaft_hinge",
+              "input_part": "rotor_shaft",
+              "input_travel": 0.0035,
+              "input_unit": "rad",
+              "moved_count": 0,
+              "watched_count": 6,
+              "output_reached": false,
+              "exploded": false,
+              "output_travel": 0.0002,
+              "output_unit": "m",
+              "ratio_in_out": null,
+              "displaced_parts": [],
+              "end_z": -0.0282,
+              "max_tilt_deg": 0.0,
+              "max_drift": 0.0003,
+              "functional_checks": [
+                {
+                  "name": "piston_vertical_reciprocation",
+                  "value": 0.000177,
+                  "expected": "after at least about one rotor revolution, the pump piston has nonzero vertical stroke and reverses direction",
+                  "passed": false,
+                  "detail": "input_travel=0.003548 rad, piston_stroke=0.000177 m, upward=False, downward=True"
+                }
+              ],
+              "functional_ok": false
+            },
+            "stability": {
+              "verdict": "PASS",
+              "exploded": false,
+              "max_disp_m": 0.0787,
+              "end_z": -0.028,
+              "displaced_parts": [
+                {
+                  "part": "crank_pin",
+                  "disp_mm": 78.66
+                },
+                {
+                  "part": "rotor_shaft",
+                  "disp_mm": 77.53
+                },
+                {
+                  "part": "crank_disk",
+                  "disp_mm": 77.53
+                },
+                {
+                  "part": "wind_rotor",
+                  "disp_mm": 77.53
+                },
+                {
+                  "part": "connecting_rod",
+                  "disp_mm": 34.43
+                },
+                {
+                  "part": "crosshead",
+                  "disp_mm": 25.35
+                },
+                {
+                  "part": "wrist_pin",
+                  "disp_mm": 25.35
+                },
+                {
+                  "part": "pump_rod",
+                  "disp_mm": 25.35
+                }
+              ]
+            },
+            "summary": "the machine runs (drive: FAIL \u2014 input moved 0.0035 rad, 0/6 downstream joints moved but output DEAD) but does NOT do its job: piston_vertical_reciprocation: 0.000177 vs expected after at least about one rotor revolution, the pump piston has nonzero vertical stroke and reverses direction",
+            "cause": "structure",
+            "evidence": [],
+            "reason": "No fault domain survived deterministic verification.",
+            "design": {
+              "input_joint": "rotor_shaft",
+              "output_joint": "place_crosshead",
+              "watch_joints": [
+                "place_connecting_rod",
+                "place_crosshead"
+              ],
+              "propagation_path": [
+                "place_rotor_shaft",
+                "place_connecting_rod",
+                "place_crosshead"
+              ],
+              "pass_criteria": null,
+              "environment": "Bench-mounted and driven open-frame mechanism with the base fixed in world so the complete exposed rotor-to-crank-to-connecting-rod-to-crosshead-to-pump-piston motion path remains visible. This is a rigid-body mechanical-transmission test without aerodynamic wind loading or fluid pressure.",
+              "camera": {
+                "target_links": [
+                  "crank_disk",
+                  "crank_pin",
+                  "connecting_rod",
+                  "crosshead",
+                  "pump_piston"
+                ],
+                "azimuth_deg": 45.0,
+                "elevation_deg": -25.0,
+                "distance_scale": 2.5,
+                "locked": true
+              }
+            },
+            "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\10_wind_rotor_pump\\design_this_as_an_open_demonstra_20260811_180801\\physics\\mujoco_0\\frames",
+            "video": "physics/mujoco_0/model.mp4"
+          }
+        ]
+      },
+      "diagnosis": {
+        "verdict": "fail",
+        "cause": "structure",
+        "reason": "No fault domain survived deterministic verification.",
+        "culprit_part": "world_rotor_shaft_hinge",
+        "culprit_sub": "world",
+        "evidence": [],
+        "fault_domain": "evaluator",
+        "fault_code": "insufficient_verified_evidence",
+        "verified": false,
+        "confidence": 1.0,
+        "culprit_entities": [],
+        "routing": {
+          "action": "halt_harness",
+          "allow_agent_refinement": false
+        },
+        "diagnosis_version": 2,
+        "persistence": {},
+        "legacy": {
+          "cause": "structure"
+        }
+      },
+      "error": "No fault domain survived deterministic verification."
+    }
+  }
+]

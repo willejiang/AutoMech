@@ -1,0 +1,1942 @@
+{
+  "manifest_version": 3,
+  "engine": "mujoco-agent",
+  "topology_plan": {
+    "coordinate_map": {
+      "baseplate": null,
+      "central_lower_bearing": null,
+      "intermediate_lower_bearing": null,
+      "bridge_post_low": null,
+      "bridge_post_high": null,
+      "upper_bridge": null,
+      "central_upper_bearing": null,
+      "intermediate_upper_bearing": null,
+      "minute_shaft": "minute_shaft_spin",
+      "intermediate_arbor": "intermediate_arbor_spin",
+      "minute_pinion": "minute_shaft_spin",
+      "intermediate_wheel": "intermediate_arbor_spin",
+      "hour_pipe": "hour_pipe_spin",
+      "intermediate_pinion": "intermediate_arbor_spin",
+      "hour_wheel": "hour_pipe_spin",
+      "dial_post_1": null,
+      "dial_post_2": null,
+      "dial_post_3": null,
+      "dial_post_4": null,
+      "chapter_ring": null,
+      "hour_marker_1": null,
+      "hour_marker_2": null,
+      "hour_marker_3": null,
+      "hour_marker_4": null,
+      "hour_marker_5": null,
+      "hour_marker_6": null,
+      "hour_marker_7": null,
+      "hour_marker_8": null,
+      "hour_marker_9": null,
+      "hour_marker_10": null,
+      "hour_marker_11": null,
+      "hour_marker_12": null,
+      "hour_hand": "hour_pipe_spin",
+      "minute_hand": "minute_shaft_spin"
+    },
+    "tree_edges": [
+      [
+        "",
+        "baseplate"
+      ],
+      [
+        "baseplate",
+        "central_lower_bearing"
+      ],
+      [
+        "baseplate",
+        "intermediate_lower_bearing"
+      ],
+      [
+        "baseplate",
+        "bridge_post_low"
+      ],
+      [
+        "baseplate",
+        "bridge_post_high"
+      ],
+      [
+        "baseplate",
+        "upper_bridge"
+      ],
+      [
+        "baseplate",
+        "central_upper_bearing"
+      ],
+      [
+        "baseplate",
+        "intermediate_upper_bearing"
+      ],
+      [
+        "baseplate",
+        "dial_post_1"
+      ],
+      [
+        "baseplate",
+        "dial_post_2"
+      ],
+      [
+        "baseplate",
+        "dial_post_3"
+      ],
+      [
+        "baseplate",
+        "dial_post_4"
+      ],
+      [
+        "baseplate",
+        "chapter_ring"
+      ],
+      [
+        "baseplate",
+        "hour_marker_1"
+      ],
+      [
+        "baseplate",
+        "hour_marker_2"
+      ],
+      [
+        "baseplate",
+        "hour_marker_3"
+      ],
+      [
+        "baseplate",
+        "hour_marker_4"
+      ],
+      [
+        "baseplate",
+        "hour_marker_5"
+      ],
+      [
+        "baseplate",
+        "hour_marker_6"
+      ],
+      [
+        "baseplate",
+        "hour_marker_7"
+      ],
+      [
+        "baseplate",
+        "hour_marker_8"
+      ],
+      [
+        "baseplate",
+        "hour_marker_9"
+      ],
+      [
+        "baseplate",
+        "hour_marker_10"
+      ],
+      [
+        "baseplate",
+        "hour_marker_11"
+      ],
+      [
+        "baseplate",
+        "hour_marker_12"
+      ],
+      [
+        "baseplate",
+        "minute_shaft"
+      ],
+      [
+        "baseplate",
+        "intermediate_arbor"
+      ],
+      [
+        "baseplate",
+        "hour_pipe"
+      ],
+      [
+        "minute_shaft",
+        "minute_pinion"
+      ],
+      [
+        "minute_shaft",
+        "minute_hand"
+      ],
+      [
+        "intermediate_arbor",
+        "intermediate_wheel"
+      ],
+      [
+        "intermediate_arbor",
+        "intermediate_pinion"
+      ],
+      [
+        "hour_pipe",
+        "hour_wheel"
+      ],
+      [
+        "hour_pipe",
+        "hour_hand"
+      ]
+    ],
+    "closure_edges": [],
+    "rigid_carried": {
+      "minute_pinion": "minute_shaft",
+      "minute_hand": "minute_shaft",
+      "intermediate_wheel": "intermediate_arbor",
+      "intermediate_pinion": "intermediate_arbor",
+      "hour_wheel": "hour_pipe",
+      "hour_hand": "hour_pipe"
+    },
+    "independent_coaxial": [
+      [
+        "minute_shaft",
+        "hour_pipe"
+      ]
+    ],
+    "transmissions": [
+      {
+        "driving_joint": "minute_shaft_spin",
+        "driven_joint": "intermediate_arbor_spin",
+        "ratio": -0.3333333333333333
+      },
+      {
+        "driving_joint": "intermediate_arbor_spin",
+        "driven_joint": "hour_pipe_spin",
+        "ratio": -0.25
+      }
+    ],
+    "contact_decisions": [
+      {
+        "pair": [
+          "central_lower_bearing",
+          "minute_shaft"
+        ],
+        "action": "exclude",
+        "reason": "running journal represented by minute shaft hinge",
+        "source_entity_ids": [
+          "relation/minute_shaft_in_lower_bearing"
+        ],
+        "fact_ids": [
+          "fit/central_lower_bearing/bore/minute_shaft/outer",
+          "pair/central_lower_bearing/minute_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "central_upper_bearing",
+          "hour_pipe"
+        ],
+        "action": "exclude",
+        "reason": "running journal represented by hour pipe hinge",
+        "source_entity_ids": [
+          "relation/hour_pipe_in_upper_bearing"
+        ],
+        "fact_ids": [
+          "fit/central_upper_bearing/bore/hour_pipe/outer",
+          "pair/central_upper_bearing/hour_pipe"
+        ]
+      },
+      {
+        "pair": [
+          "hour_pipe",
+          "minute_shaft"
+        ],
+        "action": "exclude",
+        "reason": "running coaxial clearance fit; coordinates remain independent",
+        "source_entity_ids": [
+          "relation/minute_shaft_inside_hour_pipe"
+        ],
+        "fact_ids": [
+          "fit/hour_pipe/inner_bore/minute_shaft/outer",
+          "pair/hour_pipe/minute_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_lower_bearing",
+          "intermediate_arbor"
+        ],
+        "action": "exclude",
+        "reason": "running journal represented by arbor hinge",
+        "source_entity_ids": [
+          "relation/intermediate_arbor_in_lower_bearing"
+        ],
+        "fact_ids": [
+          "fit/intermediate_lower_bearing/bore/intermediate_arbor/outer",
+          "pair/intermediate_arbor/intermediate_lower_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_upper_bearing",
+          "intermediate_arbor"
+        ],
+        "action": "exclude",
+        "reason": "running journal represented by arbor hinge",
+        "source_entity_ids": [
+          "relation/intermediate_arbor_in_upper_bearing"
+        ],
+        "fact_ids": [
+          "fit/intermediate_upper_bearing/bore/intermediate_arbor/outer",
+          "pair/intermediate_arbor/intermediate_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "minute_shaft",
+          "minute_pinion"
+        ],
+        "action": "exclude",
+        "reason": "declared press fit rigidly carried",
+        "source_entity_ids": [
+          "relation/minute_pinion_press_fit"
+        ],
+        "fact_ids": [
+          "fit/minute_shaft/minute_pinion_seat/minute_pinion/bore",
+          "pair/minute_pinion/minute_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_arbor",
+          "intermediate_wheel"
+        ],
+        "action": "exclude",
+        "reason": "declared press fit rigidly carried",
+        "source_entity_ids": [
+          "relation/intermediate_wheel_press_fit"
+        ],
+        "fact_ids": [
+          "fit/intermediate_arbor/wheel_seat/intermediate_wheel/bore",
+          "pair/intermediate_arbor/intermediate_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_arbor",
+          "intermediate_pinion"
+        ],
+        "action": "exclude",
+        "reason": "declared press fit rigidly carried",
+        "source_entity_ids": [
+          "relation/intermediate_pinion_press_fit"
+        ],
+        "fact_ids": [
+          "fit/intermediate_arbor/pinion_seat/intermediate_pinion/bore",
+          "pair/intermediate_arbor/intermediate_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "hour_pipe",
+          "hour_wheel"
+        ],
+        "action": "exclude",
+        "reason": "declared press fit rigidly carried",
+        "source_entity_ids": [
+          "relation/hour_wheel_press_fit"
+        ],
+        "fact_ids": [
+          "fit/hour_pipe/hour_wheel_seat/hour_wheel/bore",
+          "pair/hour_pipe/hour_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "hour_pipe",
+          "hour_hand"
+        ],
+        "action": "exclude",
+        "reason": "declared press fit rigidly carried",
+        "source_entity_ids": [
+          "relation/hour_hand_press_fit"
+        ],
+        "fact_ids": [
+          "fit/hour_pipe/hour_hand_seat/hour_hand/hub_bore",
+          "pair/hour_hand/hour_pipe"
+        ]
+      },
+      {
+        "pair": [
+          "minute_shaft",
+          "minute_hand"
+        ],
+        "action": "exclude",
+        "reason": "declared press fit rigidly carried",
+        "source_entity_ids": [
+          "relation/minute_hand_press_fit"
+        ],
+        "fact_ids": [
+          "fit/minute_shaft/minute_hand_seat/minute_hand/hub_bore",
+          "pair/minute_hand/minute_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "minute_pinion",
+          "intermediate_wheel"
+        ],
+        "action": "exclude",
+        "reason": "ideal external gear equality replaces tooth contact",
+        "source_entity_ids": [
+          "relation/minute_stage_mesh"
+        ],
+        "fact_ids": [
+          "fit/minute_pinion/mesh/intermediate_wheel/mesh",
+          "pair/intermediate_wheel/minute_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "hour_wheel",
+          "intermediate_pinion"
+        ],
+        "action": "exclude",
+        "reason": "ideal external gear equality replaces tooth contact",
+        "source_entity_ids": [
+          "relation/hour_stage_mesh"
+        ],
+        "fact_ids": [
+          "fit/hour_wheel/mesh/intermediate_pinion/mesh",
+          "pair/hour_wheel/intermediate_pinion"
+        ]
+      }
+    ],
+    "support_ground": "baseplate rests on global plane",
+    "support_strategy": "fixed baseplate is the structural gravity support; no support patch required"
+  },
+  "decisions": [
+    {
+      "generated_kind": "constraint",
+      "generated_name": "minute_to_intermediate_eq",
+      "constraint_type": "joint",
+      "reason": "external 3 mm to 9 mm pitch-radius mesh",
+      "source_entity_ids": [
+        "relation/minute_stage_mesh",
+        "transmission/minute_to_intermediate"
+      ],
+      "fact_ids": [
+        "fit/minute_pinion/mesh/intermediate_wheel/mesh"
+      ]
+    },
+    {
+      "generated_kind": "constraint",
+      "generated_name": "intermediate_to_hour_eq",
+      "constraint_type": "joint",
+      "reason": "rigid compound arbor drives external 2.4 mm to 9.6 mm mesh",
+      "source_entity_ids": [
+        "relation/hour_stage_mesh",
+        "transmission/compound_intermediate_arbor",
+        "transmission/intermediate_to_hour"
+      ],
+      "fact_ids": [
+        "fit/hour_wheel/mesh/intermediate_pinion/mesh"
+      ]
+    },
+    {
+      "entity_id": "link/baseplate",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/baseplate"
+      ]
+    },
+    {
+      "entity_id": "link/central_lower_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "central_lower_bearing"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/central_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/intermediate_lower_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_lower_bearing"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/intermediate_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/bridge_post_low",
+      "action": "represented_by",
+      "generated_nodes": [
+        "bridge_post_low"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/bridge_post_low"
+      ]
+    },
+    {
+      "entity_id": "link/bridge_post_high",
+      "action": "represented_by",
+      "generated_nodes": [
+        "bridge_post_high"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/bridge_post_high"
+      ]
+    },
+    {
+      "entity_id": "link/upper_bridge",
+      "action": "represented_by",
+      "generated_nodes": [
+        "upper_bridge"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/upper_bridge"
+      ]
+    },
+    {
+      "entity_id": "link/central_upper_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "central_upper_bearing"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/central_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/intermediate_upper_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_upper_bearing"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/intermediate_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/minute_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_shaft"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/minute_shaft"
+      ]
+    },
+    {
+      "entity_id": "link/intermediate_arbor",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_arbor"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/intermediate_arbor"
+      ]
+    },
+    {
+      "entity_id": "link/minute_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_pinion"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/minute_pinion"
+      ]
+    },
+    {
+      "entity_id": "link/intermediate_wheel",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_wheel"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/intermediate_wheel"
+      ]
+    },
+    {
+      "entity_id": "link/hour_pipe",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_pipe"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/hour_pipe"
+      ]
+    },
+    {
+      "entity_id": "link/intermediate_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_pinion"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/intermediate_pinion"
+      ]
+    },
+    {
+      "entity_id": "link/hour_wheel",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_wheel"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/hour_wheel"
+      ]
+    },
+    {
+      "entity_id": "link/dial_post_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "dial_post_1"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/dial_post_1"
+      ]
+    },
+    {
+      "entity_id": "link/dial_post_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "dial_post_2"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/dial_post_2"
+      ]
+    },
+    {
+      "entity_id": "link/dial_post_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "dial_post_3"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/dial_post_3"
+      ]
+    },
+    {
+      "entity_id": "link/dial_post_4",
+      "action": "represented_by",
+      "generated_nodes": [
+        "dial_post_4"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/dial_post_4"
+      ]
+    },
+    {
+      "entity_id": "link/chapter_ring",
+      "action": "represented_by",
+      "generated_nodes": [
+        "chapter_ring"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/chapter_ring"
+      ]
+    },
+    {
+      "entity_id": "link/hour_marker_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_1"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/hour_marker_1"
+      ]
+    },
+    {
+      "entity_id": "link/hour_marker_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_2"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/hour_marker_2"
+      ]
+    },
+    {
+      "entity_id": "link/hour_marker_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_3"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/hour_marker_3"
+      ]
+    },
+    {
+      "entity_id": "link/hour_marker_4",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_4"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/hour_marker_4"
+      ]
+    },
+    {
+      "entity_id": "link/hour_marker_5",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_5"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/hour_marker_5"
+      ]
+    },
+    {
+      "entity_id": "link/hour_marker_6",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_6"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/hour_marker_6"
+      ]
+    },
+    {
+      "entity_id": "link/hour_marker_7",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_7"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/hour_marker_7"
+      ]
+    },
+    {
+      "entity_id": "link/hour_marker_8",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_8"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/hour_marker_8"
+      ]
+    },
+    {
+      "entity_id": "link/hour_marker_9",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_9"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/hour_marker_9"
+      ]
+    },
+    {
+      "entity_id": "link/hour_marker_10",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_10"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/hour_marker_10"
+      ]
+    },
+    {
+      "entity_id": "link/hour_marker_11",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_11"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/hour_marker_11"
+      ]
+    },
+    {
+      "entity_id": "link/hour_marker_12",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_12"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/hour_marker_12"
+      ]
+    },
+    {
+      "entity_id": "link/hour_hand",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_hand"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/hour_hand"
+      ]
+    },
+    {
+      "entity_id": "link/minute_hand",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_hand"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "link/minute_hand"
+      ]
+    },
+    {
+      "entity_id": "pose/place_baseplate",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_baseplate"
+      ]
+    },
+    {
+      "entity_id": "pose/place_central_lower_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "central_lower_bearing"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_central_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_intermediate_lower_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_lower_bearing"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_intermediate_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_bridge_post_low",
+      "action": "represented_by",
+      "generated_nodes": [
+        "bridge_post_low"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_bridge_post_low"
+      ]
+    },
+    {
+      "entity_id": "pose/place_bridge_post_high",
+      "action": "represented_by",
+      "generated_nodes": [
+        "bridge_post_high"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_bridge_post_high"
+      ]
+    },
+    {
+      "entity_id": "pose/place_upper_bridge",
+      "action": "represented_by",
+      "generated_nodes": [
+        "upper_bridge"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_upper_bridge"
+      ]
+    },
+    {
+      "entity_id": "pose/place_central_upper_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "central_upper_bearing"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_central_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_intermediate_upper_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_upper_bearing"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_intermediate_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_minute_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_shaft"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_minute_shaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_intermediate_arbor",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_arbor"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_intermediate_arbor"
+      ]
+    },
+    {
+      "entity_id": "pose/place_minute_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_pinion"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_minute_pinion"
+      ]
+    },
+    {
+      "entity_id": "pose/place_intermediate_wheel",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_wheel"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_intermediate_wheel"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hour_pipe",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_pipe"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_hour_pipe"
+      ]
+    },
+    {
+      "entity_id": "pose/place_intermediate_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_pinion"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_intermediate_pinion"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hour_wheel",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_wheel"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_hour_wheel"
+      ]
+    },
+    {
+      "entity_id": "pose/place_dial_post_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "dial_post_1"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_dial_post_1"
+      ]
+    },
+    {
+      "entity_id": "pose/place_dial_post_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "dial_post_2"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_dial_post_2"
+      ]
+    },
+    {
+      "entity_id": "pose/place_dial_post_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "dial_post_3"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_dial_post_3"
+      ]
+    },
+    {
+      "entity_id": "pose/place_dial_post_4",
+      "action": "represented_by",
+      "generated_nodes": [
+        "dial_post_4"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_dial_post_4"
+      ]
+    },
+    {
+      "entity_id": "pose/place_chapter_ring",
+      "action": "represented_by",
+      "generated_nodes": [
+        "chapter_ring"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_chapter_ring"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hour_marker_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_1"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_hour_marker_1"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hour_marker_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_2"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_hour_marker_2"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hour_marker_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_3"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_hour_marker_3"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hour_marker_4",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_4"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_hour_marker_4"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hour_marker_5",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_5"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_hour_marker_5"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hour_marker_6",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_6"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_hour_marker_6"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hour_marker_7",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_7"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_hour_marker_7"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hour_marker_8",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_8"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_hour_marker_8"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hour_marker_9",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_9"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_hour_marker_9"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hour_marker_10",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_10"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_hour_marker_10"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hour_marker_11",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_11"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_hour_marker_11"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hour_marker_12",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_marker_12"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_hour_marker_12"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hour_hand",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_hand"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_hour_hand"
+      ]
+    },
+    {
+      "entity_id": "pose/place_minute_hand",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_hand"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "pose/place_minute_hand"
+      ]
+    },
+    {
+      "entity_id": "port/central_lower_bearing/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "central_lower_bearing"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/central_lower_bearing/bore"
+      ]
+    },
+    {
+      "entity_id": "port/central_upper_bearing/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "central_upper_bearing"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/central_upper_bearing/bore"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_lower_bearing/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_lower_bearing"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/intermediate_lower_bearing/bore"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_upper_bearing/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_upper_bearing"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/intermediate_upper_bearing/bore"
+      ]
+    },
+    {
+      "entity_id": "port/minute_shaft/outer",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_shaft"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/minute_shaft/outer"
+      ]
+    },
+    {
+      "entity_id": "port/minute_shaft/minute_pinion_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_shaft"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/minute_shaft/minute_pinion_seat"
+      ]
+    },
+    {
+      "entity_id": "port/minute_shaft/minute_hand_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_shaft"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/minute_shaft/minute_hand_seat"
+      ]
+    },
+    {
+      "entity_id": "port/hour_pipe/inner_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_pipe"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/hour_pipe/inner_bore"
+      ]
+    },
+    {
+      "entity_id": "port/hour_pipe/outer",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_pipe"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/hour_pipe/outer"
+      ]
+    },
+    {
+      "entity_id": "port/hour_pipe/hour_wheel_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_pipe"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/hour_pipe/hour_wheel_seat"
+      ]
+    },
+    {
+      "entity_id": "port/hour_pipe/hour_hand_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_pipe"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/hour_pipe/hour_hand_seat"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_arbor/outer",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_arbor"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/intermediate_arbor/outer"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_arbor/wheel_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_arbor"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/intermediate_arbor/wheel_seat"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_arbor/pinion_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_arbor"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/intermediate_arbor/pinion_seat"
+      ]
+    },
+    {
+      "entity_id": "port/minute_pinion/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_pinion"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/minute_pinion/bore"
+      ]
+    },
+    {
+      "entity_id": "port/minute_pinion/mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_pinion"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/minute_pinion/mesh"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_wheel/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_wheel"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/intermediate_wheel/bore"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_wheel/mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_wheel"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/intermediate_wheel/mesh"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_pinion/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_pinion"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/intermediate_pinion/bore"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_pinion/mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_pinion"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/intermediate_pinion/mesh"
+      ]
+    },
+    {
+      "entity_id": "port/hour_wheel/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_wheel"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/hour_wheel/bore"
+      ]
+    },
+    {
+      "entity_id": "port/hour_wheel/mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_wheel"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/hour_wheel/mesh"
+      ]
+    },
+    {
+      "entity_id": "port/hour_hand/hub_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_hand"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/hour_hand/hub_bore"
+      ]
+    },
+    {
+      "entity_id": "port/minute_hand/hub_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_hand"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "port/minute_hand/hub_bore"
+      ]
+    },
+    {
+      "entity_id": "relation/minute_shaft_in_lower_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_shaft"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "relation/minute_shaft_in_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "relation/hour_pipe_in_upper_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_pipe"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "relation/hour_pipe_in_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "relation/minute_shaft_inside_hour_pipe",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_shaft"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "relation/minute_shaft_inside_hour_pipe"
+      ]
+    },
+    {
+      "entity_id": "relation/intermediate_arbor_in_lower_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_arbor"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "relation/intermediate_arbor_in_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "relation/intermediate_arbor_in_upper_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_arbor"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "relation/intermediate_arbor_in_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "relation/minute_pinion_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_pinion"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "relation/minute_pinion_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/intermediate_wheel_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_wheel"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "relation/intermediate_wheel_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/intermediate_pinion_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_pinion"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "relation/intermediate_pinion_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/hour_wheel_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_wheel"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "relation/hour_wheel_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/hour_hand_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_hand"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "relation/hour_hand_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/minute_hand_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_hand"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "relation/minute_hand_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/minute_stage_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_to_intermediate_eq"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "relation/minute_stage_mesh"
+      ]
+    },
+    {
+      "entity_id": "relation/hour_stage_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_to_hour_eq"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "relation/hour_stage_mesh"
+      ]
+    },
+    {
+      "entity_id": "transmission/minute_to_intermediate",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_to_intermediate_eq"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "transmission/minute_to_intermediate"
+      ]
+    },
+    {
+      "entity_id": "transmission/compound_intermediate_arbor",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_arbor_spin"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "transmission/compound_intermediate_arbor"
+      ]
+    },
+    {
+      "entity_id": "transmission/intermediate_to_hour",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_to_hour_eq"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "transmission/intermediate_to_hour"
+      ]
+    },
+    {
+      "entity_id": "role/driver/minute_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_shaft_spin"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "role/driver/minute_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/output/hour_hand",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_pipe_spin"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "role/output/hour_hand"
+      ]
+    },
+    {
+      "entity_id": "role/watch/minute_hand",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_shaft_spin"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "role/watch/minute_hand"
+      ]
+    },
+    {
+      "entity_id": "role/watch/hour_hand",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_pipe_spin"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "role/watch/hour_hand"
+      ]
+    },
+    {
+      "entity_id": "role/watch/minute_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "minute_shaft_spin"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "role/watch/minute_pinion"
+      ]
+    },
+    {
+      "entity_id": "role/watch/intermediate_wheel",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_arbor_spin"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "role/watch/intermediate_wheel"
+      ]
+    },
+    {
+      "entity_id": "role/watch/intermediate_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "intermediate_arbor_spin"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "role/watch/intermediate_pinion"
+      ]
+    },
+    {
+      "entity_id": "role/watch/hour_wheel",
+      "action": "represented_by",
+      "generated_nodes": [
+        "hour_pipe_spin"
+      ],
+      "reason": "represented in emitted body tree, rigid carrying, bearing coordinate, or ideal transmission",
+      "fact_ids": [
+        "role/watch/hour_wheel"
+      ]
+    }
+  ],
+  "excludes": [
+    {
+      "pair": [
+        "central_lower_bearing",
+        "minute_shaft"
+      ],
+      "reason": "running journal represented by minute shaft hinge",
+      "source_entity_ids": [
+        "relation/minute_shaft_in_lower_bearing"
+      ],
+      "fact_ids": [
+        "fit/central_lower_bearing/bore/minute_shaft/outer",
+        "pair/central_lower_bearing/minute_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "central_upper_bearing",
+        "hour_pipe"
+      ],
+      "reason": "running journal represented by hour pipe hinge",
+      "source_entity_ids": [
+        "relation/hour_pipe_in_upper_bearing"
+      ],
+      "fact_ids": [
+        "fit/central_upper_bearing/bore/hour_pipe/outer",
+        "pair/central_upper_bearing/hour_pipe"
+      ]
+    },
+    {
+      "pair": [
+        "hour_pipe",
+        "minute_shaft"
+      ],
+      "reason": "running coaxial clearance fit; coordinates remain independent",
+      "source_entity_ids": [
+        "relation/minute_shaft_inside_hour_pipe"
+      ],
+      "fact_ids": [
+        "fit/hour_pipe/inner_bore/minute_shaft/outer",
+        "pair/hour_pipe/minute_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_arbor",
+        "intermediate_lower_bearing"
+      ],
+      "reason": "running journal represented by arbor hinge",
+      "source_entity_ids": [
+        "relation/intermediate_arbor_in_lower_bearing"
+      ],
+      "fact_ids": [
+        "fit/intermediate_lower_bearing/bore/intermediate_arbor/outer",
+        "pair/intermediate_arbor/intermediate_lower_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_arbor",
+        "intermediate_upper_bearing"
+      ],
+      "reason": "running journal represented by arbor hinge",
+      "source_entity_ids": [
+        "relation/intermediate_arbor_in_upper_bearing"
+      ],
+      "fact_ids": [
+        "fit/intermediate_upper_bearing/bore/intermediate_arbor/outer",
+        "pair/intermediate_arbor/intermediate_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "minute_pinion",
+        "minute_shaft"
+      ],
+      "reason": "declared press fit rigidly carried",
+      "source_entity_ids": [
+        "relation/minute_pinion_press_fit"
+      ],
+      "fact_ids": [
+        "fit/minute_shaft/minute_pinion_seat/minute_pinion/bore",
+        "pair/minute_pinion/minute_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_arbor",
+        "intermediate_wheel"
+      ],
+      "reason": "declared press fit rigidly carried",
+      "source_entity_ids": [
+        "relation/intermediate_wheel_press_fit"
+      ],
+      "fact_ids": [
+        "fit/intermediate_arbor/wheel_seat/intermediate_wheel/bore",
+        "pair/intermediate_arbor/intermediate_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_arbor",
+        "intermediate_pinion"
+      ],
+      "reason": "declared press fit rigidly carried",
+      "source_entity_ids": [
+        "relation/intermediate_pinion_press_fit"
+      ],
+      "fact_ids": [
+        "fit/intermediate_arbor/pinion_seat/intermediate_pinion/bore",
+        "pair/intermediate_arbor/intermediate_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "hour_pipe",
+        "hour_wheel"
+      ],
+      "reason": "declared press fit rigidly carried",
+      "source_entity_ids": [
+        "relation/hour_wheel_press_fit"
+      ],
+      "fact_ids": [
+        "fit/hour_pipe/hour_wheel_seat/hour_wheel/bore",
+        "pair/hour_pipe/hour_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "hour_hand",
+        "hour_pipe"
+      ],
+      "reason": "declared press fit rigidly carried",
+      "source_entity_ids": [
+        "relation/hour_hand_press_fit"
+      ],
+      "fact_ids": [
+        "fit/hour_pipe/hour_hand_seat/hour_hand/hub_bore",
+        "pair/hour_hand/hour_pipe"
+      ]
+    },
+    {
+      "pair": [
+        "minute_hand",
+        "minute_shaft"
+      ],
+      "reason": "declared press fit rigidly carried",
+      "source_entity_ids": [
+        "relation/minute_hand_press_fit"
+      ],
+      "fact_ids": [
+        "fit/minute_shaft/minute_hand_seat/minute_hand/hub_bore",
+        "pair/minute_hand/minute_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_wheel",
+        "minute_pinion"
+      ],
+      "reason": "ideal external gear equality replaces tooth contact",
+      "source_entity_ids": [
+        "relation/minute_stage_mesh"
+      ],
+      "fact_ids": [
+        "fit/minute_pinion/mesh/intermediate_wheel/mesh",
+        "pair/intermediate_wheel/minute_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "hour_wheel",
+        "intermediate_pinion"
+      ],
+      "reason": "ideal external gear equality replaces tooth contact",
+      "source_entity_ids": [
+        "relation/hour_stage_mesh"
+      ],
+      "fact_ids": [
+        "fit/hour_wheel/mesh/intermediate_pinion/mesh",
+        "pair/hour_wheel/intermediate_pinion"
+      ]
+    }
+  ],
+  "ground_excludes": [],
+  "support_patches": [],
+  "bodies": [
+    "baseplate",
+    "bridge_post_high",
+    "bridge_post_low",
+    "central_lower_bearing",
+    "central_upper_bearing",
+    "chapter_ring",
+    "dial_post_1",
+    "dial_post_2",
+    "dial_post_3",
+    "dial_post_4",
+    "hour_hand",
+    "hour_marker_1",
+    "hour_marker_10",
+    "hour_marker_11",
+    "hour_marker_12",
+    "hour_marker_2",
+    "hour_marker_3",
+    "hour_marker_4",
+    "hour_marker_5",
+    "hour_marker_6",
+    "hour_marker_7",
+    "hour_marker_8",
+    "hour_marker_9",
+    "hour_pipe",
+    "hour_wheel",
+    "intermediate_arbor",
+    "intermediate_lower_bearing",
+    "intermediate_pinion",
+    "intermediate_upper_bearing",
+    "intermediate_wheel",
+    "minute_hand",
+    "minute_pinion",
+    "minute_shaft",
+    "upper_bridge"
+  ],
+  "joints": [
+    "hour_pipe_spin",
+    "intermediate_arbor_spin",
+    "minute_shaft_spin"
+  ],
+  "constraints": [
+    "intermediate_to_hour_eq",
+    "minute_to_intermediate_eq"
+  ]
+}

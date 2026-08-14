@@ -1,0 +1,375 @@
+{
+  "first_blocker": "non_exempt_conflicts: strict non-exempt conflicts=11; unavailable=0",
+  "layer_weights": [
+    10,
+    15,
+    15,
+    20,
+    40
+  ],
+  "layers": [
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "source_execution",
+              "path": "output/external_benchmark_work/codex/09_open_pumpjack/source/source_execution.json",
+              "sha256": "52feb6969b77e7441ca9363346608cc2bcaad27de05fe47875ad096eaaf4857a",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "scorer_owned_execution",
+          "points_awarded": 10,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "scorer-owned source build produced a nonempty part set; MJCF replay compiled, initialized, and stayed finite",
+          "status": "PASS"
+        }
+      ],
+      "index": 1,
+      "name": "execution",
+      "points_awarded": 10,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 10
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/codex/09_open_pumpjack/assembly.json",
+              "sha256": "b5a3bb25c7f6dee0edbb60b1fd48af2df1aca5579f92c07302312a1bafe406df",
+              "source": "normalized_submission"
+            }
+          ],
+          "gate": null,
+          "name": "assembly_model",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "assembly/simulation model is available",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/codex/09_open_pumpjack/assembly.json",
+              "sha256": "b5a3bb25c7f6dee0edbb60b1fd48af2df1aca5579f92c07302312a1bafe406df",
+              "source": "normalized_submission"
+            }
+          ],
+          "gate": null,
+          "name": "required_role_cardinalities",
+          "points_awarded": 7,
+          "points_possible": 7,
+          "raw_status": "PASS",
+          "reason": "all required roles are bound",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/codex/09_open_pumpjack/assembly.json",
+              "sha256": "b5a3bb25c7f6dee0edbb60b1fd48af2df1aca5579f92c07302312a1bafe406df",
+              "source": "normalized_submission"
+            }
+          ],
+          "gate": null,
+          "name": "input_output_independence",
+          "points_awarded": 3,
+          "points_possible": 3,
+          "raw_status": "PASS",
+          "reason": "input and output are distinct",
+          "status": "PASS"
+        }
+      ],
+      "index": 2,
+      "name": "assembly",
+      "points_awarded": 15,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "geometry",
+              "path": "output/external_benchmark_strict/codex/09_open_pumpjack/strict/geometry.json",
+              "sha256": "3970cc5e70e53a4d6c53a8dc2a6c041c73029c009628e6cb685282fa353b16aa",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "mesh_inventory",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "strict geometry hashes every scanned usable mesh",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "geometry",
+              "path": "output/external_benchmark_strict/codex/09_open_pumpjack/strict/geometry.json",
+              "sha256": "3970cc5e70e53a4d6c53a8dc2a6c041c73029c009628e6cb685282fa353b16aa",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "non_exempt_conflicts",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "FAIL",
+          "reason": "strict non-exempt conflicts=11; unavailable=0",
+          "status": "FAIL"
+        }
+      ],
+      "index": 3,
+      "name": "geometry",
+      "points_awarded": 5,
+      "status": "FAIL",
+      "strict_gate": null,
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/09_open_pumpjack/replay/trajectory.json",
+              "sha256": "729513452f3b710596d26e78dab3a0fba9cc71da45cc83d23f8ea4ac5bc52726",
+              "source": "scorer_owned"
+            },
+            {
+              "kind": "model_audit",
+              "path": "output/external_benchmark_strict/codex/09_open_pumpjack/strict/model_audit.json",
+              "sha256": "1937503ccbf98b4cb480eafa8c0d459873c49001672e5871c5388bdff2273d91",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=11; unavailable=0",
+          "name": "trajectory_shape",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "trajectory has time samples and joint series",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/09_open_pumpjack/replay/trajectory.json",
+              "sha256": "729513452f3b710596d26e78dab3a0fba9cc71da45cc83d23f8ea4ac5bc52726",
+              "source": "scorer_owned"
+            },
+            {
+              "kind": "model_audit",
+              "path": "output/external_benchmark_strict/codex/09_open_pumpjack/strict/model_audit.json",
+              "sha256": "1937503ccbf98b4cb480eafa8c0d459873c49001672e5871c5388bdff2273d91",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=11; unavailable=0",
+          "name": "sample_alignment",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "all joint series align with time",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/09_open_pumpjack/replay/trajectory.json",
+              "sha256": "729513452f3b710596d26e78dab3a0fba9cc71da45cc83d23f8ea4ac5bc52726",
+              "source": "scorer_owned"
+            },
+            {
+              "kind": "model_audit",
+              "path": "output/external_benchmark_strict/codex/09_open_pumpjack/strict/model_audit.json",
+              "sha256": "1937503ccbf98b4cb480eafa8c0d459873c49001672e5871c5388bdff2273d91",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=11; unavailable=0",
+          "name": "finite_health",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "finite sample fraction=1",
+          "status": "GATED"
+        }
+      ],
+      "index": 4,
+      "name": "physics_ready",
+      "points_awarded": 0,
+      "status": "GATED",
+      "strict_gate": {
+        "passed": false,
+        "reason": "collision_coverage_ok, transmission_binding_ok, one or more physical mesh links lack active collision coverage"
+      },
+      "weight": 20
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/09_open_pumpjack/replay/trajectory.json",
+              "sha256": "729513452f3b710596d26e78dab3a0fba9cc71da45cc83d23f8ea4ac5bc52726",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=11; unavailable=0",
+          "name": "input_motion",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "input travel=7.78309 rad reaches minimum 6.28319",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/09_open_pumpjack/replay/trajectory.json",
+              "sha256": "729513452f3b710596d26e78dab3a0fba9cc71da45cc83d23f8ea4ac5bc52726",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=11; unavailable=0",
+          "name": "motion_propagation",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "registered output exhibits motion",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/09_open_pumpjack/replay/trajectory.json",
+              "sha256": "729513452f3b710596d26e78dab3a0fba9cc71da45cc83d23f8ea4ac5bc52726",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=11; unavailable=0",
+          "name": "registered_output",
+          "points_awarded": 0,
+          "points_possible": 15,
+          "raw_status": "PASS",
+          "reason": "output span=40.7476 mm, reversals=4",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/codex/09_open_pumpjack/replay/trajectory.json",
+              "sha256": "729513452f3b710596d26e78dab3a0fba9cc71da45cc83d23f8ea4ac5bc52726",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=11; unavailable=0",
+          "name": "registered_invariants",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "FAIL",
+          "reason": "failed invariants: beam_pivots, closures_below_2pct_scale",
+          "status": "GATED"
+        }
+      ],
+      "index": 5,
+      "name": "functional",
+      "points_awarded": 0,
+      "status": "GATED",
+      "strict_gate": null,
+      "weight": 40
+    }
+  ],
+  "method": "codex",
+  "points_possible": 100,
+  "provenance": {
+    "anchor_audit": {
+      "kind": "anchor_audit",
+      "path": "output/external_benchmark_strict/codex/09_open_pumpjack/strict/anchor_audit.json",
+      "sha256": "c279e4b477ac9c8bf3796e8ce7399c6f75e0883837829f22b8ac62ff63ade10e",
+      "source": "scorer_owned"
+    },
+    "assembly": {
+      "kind": "assembly",
+      "path": "output/external_benchmark_staged/codex/09_open_pumpjack/assembly.json",
+      "sha256": "b5a3bb25c7f6dee0edbb60b1fd48af2df1aca5579f92c07302312a1bafe406df",
+      "source": "normalized_submission"
+    },
+    "bindings": {
+      "kind": "bindings",
+      "path": "output/external_benchmark_staged/codex/09_open_pumpjack/task_bindings.json",
+      "sha256": "8f927685ad057f7778d7adc422d145815e52637e84ce92a7e49a0b840df10369",
+      "source": "normalized_submission"
+    },
+    "contacts": {
+      "kind": "contacts",
+      "path": "output/external_benchmark_staged/codex/09_open_pumpjack/evidence/contacts.json",
+      "sha256": "560e1bbc89f0cf3c0d6c1c53384719d1d4812c883de34a8e96ae22a2ce689981",
+      "source": "normalized_submission"
+    },
+    "geometry": {
+      "kind": "geometry",
+      "path": "output/external_benchmark_strict/codex/09_open_pumpjack/strict/geometry.json",
+      "sha256": "3970cc5e70e53a4d6c53a8dc2a6c041c73029c009628e6cb685282fa353b16aa",
+      "source": "scorer_owned"
+    },
+    "model_audit": {
+      "kind": "model_audit",
+      "path": "output/external_benchmark_strict/codex/09_open_pumpjack/strict/model_audit.json",
+      "sha256": "1937503ccbf98b4cb480eafa8c0d459873c49001672e5871c5388bdff2273d91",
+      "source": "scorer_owned"
+    },
+    "realization": {
+      "kind": "realization",
+      "path": "output/external_declared_realization_audit/codex/09_open_pumpjack.json",
+      "sha256": "2116d548be5eb4e00cd703e969590bdf0a6079f3ef890161e3084ef818f4f49a",
+      "source": "scorer_owned"
+    },
+    "replay_status": {
+      "kind": "replay_status",
+      "path": "output/external_benchmark_work/codex/09_open_pumpjack/replay_status.json",
+      "sha256": "ab5cf5cdd3300a7d996a9a8d5a7b138a3ef3b36e7a21c1229d86a8aee14e5faf",
+      "source": "scorer_owned"
+    },
+    "source_execution": {
+      "kind": "source_execution",
+      "path": "output/external_benchmark_work/codex/09_open_pumpjack/source/source_execution.json",
+      "sha256": "52feb6969b77e7441ca9363346608cc2bcaad27de05fe47875ad096eaaf4857a",
+      "source": "scorer_owned"
+    },
+    "trajectory": {
+      "kind": "trajectory",
+      "path": "output/external_benchmark_work/codex/09_open_pumpjack/replay/trajectory.json",
+      "sha256": "729513452f3b710596d26e78dab3a0fba9cc71da45cc83d23f8ea4ac5bc52726",
+      "source": "scorer_owned"
+    }
+  },
+  "schema": "physcad-external-strict-score/1.0",
+  "scorer_version": "physcad-external-strict-scorer/1.0",
+  "strict_verdict": "FAIL",
+  "suite_id": "physcad-comfort-v1",
+  "summary_reason": "Eleven non-exempt conflicts and eleven detached physical links.",
+  "task_id": "09_open_pumpjack",
+  "total_points": 30
+}

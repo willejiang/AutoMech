@@ -1,0 +1,424 @@
+<?xml version='1.0' encoding='ASCII'?>
+<robot name="a_hand_cranked_two_stage_spur_ge">
+  <link name="world"/>
+  <link name="baseplate">
+    <visual name="baseplate_visual">
+      <geometry>
+        <mesh filename="meshes/baseplate.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="baseplate_mat">
+        <color rgba="0.82 0.27 0.24 1.0"/>
+      </material>
+    </visual>
+    <collision name="baseplate_collision">
+      <geometry>
+        <mesh filename="meshes/baseplate.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="front_left_post">
+    <visual name="front_left_post_visual">
+      <geometry>
+        <mesh filename="meshes/front_left_post.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="front_left_post_mat">
+        <color rgba="0.27 0.51 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="front_left_post_collision">
+      <geometry>
+        <mesh filename="meshes/front_left_post.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="rear_left_post">
+    <visual name="rear_left_post_visual">
+      <geometry>
+        <mesh filename="meshes/rear_left_post.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="rear_left_post_mat">
+        <color rgba="0.35 0.71 0.35 1.0"/>
+      </material>
+    </visual>
+    <collision name="rear_left_post_collision">
+      <geometry>
+        <mesh filename="meshes/rear_left_post.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="front_right_post">
+    <visual name="front_right_post_visual">
+      <geometry>
+        <mesh filename="meshes/front_right_post.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="front_right_post_mat">
+        <color rgba="0.9 0.67 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision name="front_right_post_collision">
+      <geometry>
+        <mesh filename="meshes/front_right_post.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="rear_right_post">
+    <visual name="rear_right_post_visual">
+      <geometry>
+        <mesh filename="meshes/rear_right_post.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="rear_right_post_mat">
+        <color rgba="0.59 0.39 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="rear_right_post_collision">
+      <geometry>
+        <mesh filename="meshes/rear_right_post.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="upper_plate">
+    <visual name="upper_plate_visual">
+      <geometry>
+        <mesh filename="meshes/upper_plate.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="upper_plate_mat">
+        <color rgba="0.24 0.75 0.75 1.0"/>
+      </material>
+    </visual>
+    <collision name="upper_plate_collision">
+      <geometry>
+        <mesh filename="meshes/upper_plate.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="input_lower_bearing">
+    <visual name="input_lower_bearing_visual">
+      <geometry>
+        <mesh filename="meshes/input_lower_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="input_lower_bearing_mat">
+        <color rgba="0.86 0.47 0.67 1.0"/>
+      </material>
+    </visual>
+    <collision name="input_lower_bearing_collision">
+      <geometry>
+        <mesh filename="meshes/input_lower_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="layshaft_lower_bearing">
+    <visual name="layshaft_lower_bearing_visual">
+      <geometry>
+        <mesh filename="meshes/layshaft_lower_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="layshaft_lower_bearing_mat">
+        <color rgba="0.63 0.63 0.31 1.0"/>
+      </material>
+    </visual>
+    <collision name="layshaft_lower_bearing_collision">
+      <geometry>
+        <mesh filename="meshes/layshaft_lower_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="output_lower_bearing">
+    <visual name="output_lower_bearing_visual">
+      <geometry>
+        <mesh filename="meshes/output_lower_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="output_lower_bearing_mat">
+        <color rgba="0.47 0.43 0.39 1.0"/>
+      </material>
+    </visual>
+    <collision name="output_lower_bearing_collision">
+      <geometry>
+        <mesh filename="meshes/output_lower_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="input_upper_bearing">
+    <visual name="input_upper_bearing_visual">
+      <geometry>
+        <mesh filename="meshes/input_upper_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="input_upper_bearing_mat">
+        <color rgba="0.78 0.78 0.82 1.0"/>
+      </material>
+    </visual>
+    <collision name="input_upper_bearing_collision">
+      <geometry>
+        <mesh filename="meshes/input_upper_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="layshaft_upper_bearing">
+    <visual name="layshaft_upper_bearing_visual">
+      <geometry>
+        <mesh filename="meshes/layshaft_upper_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="layshaft_upper_bearing_mat">
+        <color rgba="0.71 0.35 0.24 1.0"/>
+      </material>
+    </visual>
+    <collision name="layshaft_upper_bearing_collision">
+      <geometry>
+        <mesh filename="meshes/layshaft_upper_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="output_upper_bearing">
+    <visual name="output_upper_bearing_visual">
+      <geometry>
+        <mesh filename="meshes/output_upper_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="output_upper_bearing_mat">
+        <color rgba="0.31 0.59 0.47 1.0"/>
+      </material>
+    </visual>
+    <collision name="output_upper_bearing_collision">
+      <geometry>
+        <mesh filename="meshes/output_upper_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="input_shaft">
+    <visual name="input_shaft_visual">
+      <geometry>
+        <mesh filename="meshes/input_shaft.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="input_shaft_mat">
+        <color rgba="0.82 0.27 0.24 1.0"/>
+      </material>
+    </visual>
+    <collision name="input_shaft_collision">
+      <geometry>
+        <mesh filename="meshes/input_shaft.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="layshaft">
+    <visual name="layshaft_visual">
+      <geometry>
+        <mesh filename="meshes/layshaft.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="layshaft_mat">
+        <color rgba="0.27 0.51 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="layshaft_collision">
+      <geometry>
+        <mesh filename="meshes/layshaft.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="output_shaft">
+    <visual name="output_shaft_visual">
+      <geometry>
+        <mesh filename="meshes/output_shaft.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="output_shaft_mat">
+        <color rgba="0.35 0.71 0.35 1.0"/>
+      </material>
+    </visual>
+    <collision name="output_shaft_collision">
+      <geometry>
+        <mesh filename="meshes/output_shaft.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="stage1_input_pinion">
+    <visual name="stage1_input_pinion_visual">
+      <geometry>
+        <mesh filename="meshes/stage1_input_pinion.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="stage1_input_pinion_mat">
+        <color rgba="0.9 0.67 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision name="stage1_input_pinion_collision">
+      <geometry>
+        <mesh filename="meshes/stage1_input_pinion.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="stage1_wheel">
+    <visual name="stage1_wheel_visual">
+      <geometry>
+        <mesh filename="meshes/stage1_wheel.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="stage1_wheel_mat">
+        <color rgba="0.59 0.39 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="stage1_wheel_collision">
+      <geometry>
+        <mesh filename="meshes/stage1_wheel.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="stage2_pinion">
+    <visual name="stage2_pinion_visual">
+      <geometry>
+        <mesh filename="meshes/stage2_pinion.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="stage2_pinion_mat">
+        <color rgba="0.24 0.75 0.75 1.0"/>
+      </material>
+    </visual>
+    <collision name="stage2_pinion_collision">
+      <geometry>
+        <mesh filename="meshes/stage2_pinion.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="stage2_output_wheel">
+    <visual name="stage2_output_wheel_visual">
+      <geometry>
+        <mesh filename="meshes/stage2_output_wheel.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="stage2_output_wheel_mat">
+        <color rgba="0.86 0.47 0.67 1.0"/>
+      </material>
+    </visual>
+    <collision name="stage2_output_wheel_collision">
+      <geometry>
+        <mesh filename="meshes/stage2_output_wheel.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="input_crank">
+    <visual name="input_crank_visual">
+      <geometry>
+        <mesh filename="meshes/input_crank.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="input_crank_mat">
+        <color rgba="0.63 0.63 0.31 1.0"/>
+      </material>
+    </visual>
+    <collision name="input_crank_collision">
+      <geometry>
+        <mesh filename="meshes/input_crank.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="crank_handle">
+    <visual name="crank_handle_visual">
+      <geometry>
+        <mesh filename="meshes/crank_handle.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="crank_handle_mat">
+        <color rgba="0.47 0.43 0.39 1.0"/>
+      </material>
+    </visual>
+    <collision name="crank_handle_collision">
+      <geometry>
+        <mesh filename="meshes/crank_handle.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="place_front_left_post" type="fixed">
+    <parent link="baseplate"/>
+    <child link="front_left_post"/>
+    <origin xyz="-0.082 -0.043 0.004" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_rear_left_post" type="fixed">
+    <parent link="baseplate"/>
+    <child link="rear_left_post"/>
+    <origin xyz="-0.082 0.043 0.004" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_front_right_post" type="fixed">
+    <parent link="baseplate"/>
+    <child link="front_right_post"/>
+    <origin xyz="0.082 -0.043 0.004" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_rear_right_post" type="fixed">
+    <parent link="baseplate"/>
+    <child link="rear_right_post"/>
+    <origin xyz="0.082 0.043 0.004" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_upper_plate" type="fixed">
+    <parent link="front_left_post"/>
+    <child link="upper_plate"/>
+    <origin xyz="0.082 0.043 0.058" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_input_lower_bearing" type="fixed">
+    <parent link="baseplate"/>
+    <child link="input_lower_bearing"/>
+    <origin xyz="-0.048 0.0 0.004" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_layshaft_lower_bearing" type="fixed">
+    <parent link="baseplate"/>
+    <child link="layshaft_lower_bearing"/>
+    <origin xyz="0.0 0.0 0.004" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_output_lower_bearing" type="fixed">
+    <parent link="baseplate"/>
+    <child link="output_lower_bearing"/>
+    <origin xyz="0.048 0.0 0.004" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_input_upper_bearing" type="fixed">
+    <parent link="upper_plate"/>
+    <child link="input_upper_bearing"/>
+    <origin xyz="-0.048 0.0 0.006" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_layshaft_upper_bearing" type="fixed">
+    <parent link="upper_plate"/>
+    <child link="layshaft_upper_bearing"/>
+    <origin xyz="0.0 0.0 0.006" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_output_upper_bearing" type="fixed">
+    <parent link="upper_plate"/>
+    <child link="output_upper_bearing"/>
+    <origin xyz="0.048 0.0 0.006" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_input_shaft" type="fixed">
+    <parent link="input_lower_bearing"/>
+    <child link="input_shaft"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_layshaft" type="fixed">
+    <parent link="layshaft_lower_bearing"/>
+    <child link="layshaft"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_output_shaft" type="fixed">
+    <parent link="output_lower_bearing"/>
+    <child link="output_shaft"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_stage1_input_pinion" type="fixed">
+    <parent link="input_shaft"/>
+    <child link="stage1_input_pinion"/>
+    <origin xyz="0.0 0.0 0.018" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_stage1_wheel" type="fixed">
+    <parent link="layshaft"/>
+    <child link="stage1_wheel"/>
+    <origin xyz="0.0 0.0 0.018" rpy="0.0 -0.0 0.06544984694978735"/>
+  </joint>
+  <joint name="place_stage2_pinion" type="fixed">
+    <parent link="layshaft"/>
+    <child link="stage2_pinion"/>
+    <origin xyz="0.0 0.0 0.038" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_stage2_output_wheel" type="fixed">
+    <parent link="output_shaft"/>
+    <child link="stage2_output_wheel"/>
+    <origin xyz="0.0 0.0 0.038" rpy="0.0 -0.0 0.06544984694978735"/>
+  </joint>
+  <joint name="place_input_crank" type="fixed">
+    <parent link="input_shaft"/>
+    <child link="input_crank"/>
+    <origin xyz="0.0 0.0 0.08" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_crank_handle" type="fixed">
+    <parent link="input_crank"/>
+    <child link="crank_handle"/>
+    <origin xyz="0.027 0.0 0.006" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="world_to_baseplate" type="fixed">
+    <parent link="world"/>
+    <child link="baseplate"/>
+    <origin xyz="0.048 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+</robot>

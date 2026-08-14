@@ -1,0 +1,108 @@
+{
+  "task": "Design this as an open demonstration mechanism: expose the complete mechanical structure and motion path, and avoid covers, housings, bridges, or plates that obstruct the gears, shafts, bearings, joints, pins, linkages, carrier, or output from the simulation camera. Build an open-frame hand-driven planetary reducer with a fixed ring gear, a sun gear input, exactly three equally spaced planet gears on a rigid carrier, and the carrier as output. Choose tooth counts that give an exact 4:1 sun-to-carrier reduction with the ring fixed. Every planet gear must be carried around the sun by the carrier while also spinning on its own dedicated carrier pin hinge. Expose the sun, all three planets, the ring, and the carrier; do not hide them behind a full cover. Include a stable base, a visible input crank, and complete planetary-stage semantics, meshes, bearings, driver, output, and watched links.",
+  "spec": {
+    "duration_s": 3.0,
+    "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\05_three_planet_4to1\\design_this_as_an_open_demonstra_20260811_170424",
+    "drive": {
+      "torque": 0.5,
+      "mode": "velocity",
+      "drive_method": "direct_qpos",
+      "target_velocity": 4.0,
+      "output_link": "carrier"
+    },
+    "design": {
+      "input_joint": "input_shaft",
+      "output_joint": "place_planet_1",
+      "watch_joints": [
+        "place_carrier",
+        "place_fixed_ring",
+        "place_sun_gear",
+        "place_planet_1",
+        "place_planet_2",
+        "place_planet_3"
+      ],
+      "propagation_path": [
+        "place_input_shaft",
+        "place_carrier",
+        "place_fixed_ring",
+        "place_sun_gear",
+        "place_planet_2",
+        "place_planet_3",
+        "place_planet_1"
+      ],
+      "pass_criteria": null,
+      "environment": "Bench-mounted and driven open-frame demonstration with the base fixed and the complete planetary stage exposed to the camera. The sun input is driven steadily while the fixed ring, three planets, carrier, crank, pins, and output remain visible.",
+      "camera": {
+        "target_link": "carrier",
+        "azimuth_deg": 45.0,
+        "elevation_deg": -30.0,
+        "distance_scale": 2.6,
+        "locked": true
+      }
+    }
+  },
+  "metrics": {
+    "verdict": "PASS",
+    "test_kind": "driven_mechanism",
+    "survive_s": 3.0,
+    "input_joint": "sun_input_hinge",
+    "input_part": "input_shaft",
+    "input_travel": 12.0,
+    "input_unit": "rad",
+    "moved_count": 6,
+    "watched_count": 6,
+    "output_reached": true,
+    "exploded": false,
+    "output_travel": 3.0,
+    "output_unit": "rad",
+    "ratio_in_out": 4.0,
+    "displaced_parts": [
+      {
+        "part": "planet_pin_1",
+        "disp_mm": 35.91
+      },
+      {
+        "part": "planet_pin_2",
+        "disp_mm": 35.91
+      },
+      {
+        "part": "planet_pin_3",
+        "disp_mm": 35.91
+      },
+      {
+        "part": "planet_1",
+        "disp_mm": 35.91
+      },
+      {
+        "part": "planet_2",
+        "disp_mm": 35.91
+      },
+      {
+        "part": "planet_3",
+        "disp_mm": 35.91
+      },
+      {
+        "part": "crank_grip",
+        "disp_mm": 30.0
+      }
+    ],
+    "end_z": 0.0,
+    "max_tilt_deg": 0.0,
+    "max_drift": 0.0359
+  },
+  "stability": {
+    "verdict": "PASS",
+    "exploded": false,
+    "max_disp_m": 0.0,
+    "end_z": 0.0,
+    "displaced_parts": []
+  },
+  "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\05_three_planet_4to1\\design_this_as_an_open_demonstra_20260811_170424\\physics\\mujoco_0\\frames",
+  "n_frames": 40,
+  "log": [
+    "initial contacts: 0 interpenetrating pair(s)",
+    "stability(settle): PASS max_disp=0.000m exploded=False",
+    "camera: az=45.0 el=-30.0 dist=0.197 (designer)",
+    "drive: method=direct_qpos mode=velocity rate=4"
+  ]
+}

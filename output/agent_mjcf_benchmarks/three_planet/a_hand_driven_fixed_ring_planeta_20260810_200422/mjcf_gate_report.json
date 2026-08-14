@@ -1,0 +1,171 @@
+{
+  "ok": true,
+  "errors": [],
+  "policy_version": 2,
+  "bodies": [
+    "baseplate",
+    "carrier_plate",
+    "fixed_ring_gear",
+    "hand_crank_arm",
+    "hand_crank_grip",
+    "input_lower_bearing",
+    "input_lower_bridge",
+    "input_shaft",
+    "input_support_post_1",
+    "input_support_post_2",
+    "input_support_post_3",
+    "input_upper_bearing",
+    "input_upper_bridge",
+    "output_bearing_spacer",
+    "output_lower_bearing",
+    "output_shaft",
+    "output_upper_bearing",
+    "planet_1",
+    "planet_2",
+    "planet_3",
+    "planet_pin_1",
+    "planet_pin_2",
+    "planet_pin_3",
+    "planet_thrust_washer_1",
+    "planet_thrust_washer_2",
+    "planet_thrust_washer_3",
+    "ring_support_post_1",
+    "ring_support_post_2",
+    "ring_support_post_3",
+    "sun_gear",
+    "upper_bridge_spacer_1",
+    "upper_bridge_spacer_2",
+    "upper_bridge_spacer_3"
+  ],
+  "joints": [
+    "carrier_world_hinge",
+    "fixed_ring_reduction",
+    "planet_1_carrier_hinge",
+    "planet_2_carrier_hinge",
+    "planet_3_carrier_hinge",
+    "planet_spin_1",
+    "planet_spin_2",
+    "planet_spin_3",
+    "sun_world_hinge"
+  ],
+  "nq": 5,
+  "nv": 5,
+  "finite": true,
+  "dynamic_transmission_probe": {
+    "ran": true,
+    "ok": true,
+    "errors": [],
+    "warnings": [],
+    "contact_on": {
+      "ok": true,
+      "driver_travel": 1.0906404508202419,
+      "joint_deltas": {
+        "planet_2_carrier_hinge": -0.806934709211263,
+        "carrier_world_hinge": 0.2681649812699207,
+        "planet_1_carrier_hinge": -0.8088643471413444,
+        "planet_3_carrier_hinge": -0.806934709211263,
+        "sun_world_hinge": 1.0906404508202419
+      },
+      "transmission_residuals": [
+        {
+          "name": "fixed_ring_reduction_stage",
+          "driving_joint": "sun_world_hinge",
+          "driven_joint": "carrier_world_hinge",
+          "ratio": 0.25,
+          "driving_delta": 1.0906404508202419,
+          "driven_delta": 0.2681649812699207,
+          "normalized_residual": 0.016486208380622865
+        },
+        {
+          "name": "planet_spin_1",
+          "driving_joint": "carrier_world_hinge",
+          "driven_joint": "planet_1_carrier_hinge",
+          "ratio": -3.0,
+          "driving_delta": 0.2681649812699207,
+          "driven_delta": -0.8088643471413444,
+          "normalized_residual": 0.005431237778686931
+        },
+        {
+          "name": "planet_spin_2",
+          "driving_joint": "carrier_world_hinge",
+          "driven_joint": "planet_2_carrier_hinge",
+          "ratio": -3.0,
+          "driving_delta": 0.2681649812699207,
+          "driven_delta": -0.806934709211263,
+          "normalized_residual": 0.00303266716624355
+        },
+        {
+          "name": "planet_spin_3",
+          "driving_joint": "carrier_world_hinge",
+          "driven_joint": "planet_3_carrier_hinge",
+          "ratio": -3.0,
+          "driving_delta": 0.2681649812699207,
+          "driven_delta": -0.806934709211263,
+          "normalized_residual": 0.00303266716624355
+        }
+      ],
+      "active_contacts": [
+        {
+          "pair": [
+            "input_support_post_1",
+            "planet_1"
+          ],
+          "count": 18,
+          "max_penetration_mm": 0.005266680239604762,
+          "max_force_n": 18.36724378200894,
+          "impulse_ns": 0.04141045920768431
+        }
+      ]
+    },
+    "contact_off": {
+      "ok": true,
+      "driver_travel": 1.0997652490879066,
+      "joint_deltas": {
+        "planet_2_carrier_hinge": -0.8211168454683679,
+        "carrier_world_hinge": 0.273774880636447,
+        "planet_1_carrier_hinge": -0.821116845468284,
+        "planet_3_carrier_hinge": -0.8211168454683679,
+        "sun_world_hinge": 1.0997652490879066
+      },
+      "transmission_residuals": [
+        {
+          "name": "fixed_ring_reduction_stage",
+          "driving_joint": "sun_world_hinge",
+          "driven_joint": "carrier_world_hinge",
+          "ratio": 0.25,
+          "driving_delta": 1.0997652490879066,
+          "driven_delta": 0.273774880636447,
+          "normalized_residual": 0.004242474969988497
+        },
+        {
+          "name": "planet_spin_1",
+          "driving_joint": "carrier_world_hinge",
+          "driven_joint": "planet_1_carrier_hinge",
+          "ratio": -3.0,
+          "driving_delta": 0.273774880636447,
+          "driven_delta": -0.821116845468284,
+          "normalized_residual": 0.0002530015909103674
+        },
+        {
+          "name": "planet_spin_2",
+          "driving_joint": "carrier_world_hinge",
+          "driven_joint": "planet_2_carrier_hinge",
+          "ratio": -3.0,
+          "driving_delta": 0.273774880636447,
+          "driven_delta": -0.8211168454683679,
+          "normalized_residual": 0.0002530015908081753
+        },
+        {
+          "name": "planet_spin_3",
+          "driving_joint": "carrier_world_hinge",
+          "driven_joint": "planet_3_carrier_hinge",
+          "ratio": -3.0,
+          "driving_delta": 0.273774880636447,
+          "driven_delta": -0.8211168454683679,
+          "normalized_residual": 0.0002530015908081753
+        }
+      ],
+      "active_contacts": []
+    }
+  }
+}

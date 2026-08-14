@@ -1,0 +1,2844 @@
+{
+  "manifest_version": 3,
+  "engine": "mujoco-agent",
+  "topology_plan": {
+    "coordinate_map": {
+      "base": null,
+      "input_low_bearing": null,
+      "input_high_bearing": null,
+      "intermediate_low_bearing": null,
+      "intermediate_high_bearing": null,
+      "output_low_bearing": null,
+      "output_high_bearing": null,
+      "input_shaft": "input_spin",
+      "crank_arm": "input_spin",
+      "crank_handle_spindle": "input_spin",
+      "crank_grip": "input_spin",
+      "input_pinion": "input_spin",
+      "intermediate_shaft": "intermediate_spin",
+      "intermediate_driven_gear": "intermediate_spin",
+      "intermediate_stage2_pinion": "intermediate_spin",
+      "output_shaft": "output_spin",
+      "output_gear": "output_spin"
+    },
+    "tree_edges": [
+      [
+        "",
+        "base"
+      ],
+      [
+        "base",
+        "input_low_bearing"
+      ],
+      [
+        "base",
+        "input_high_bearing"
+      ],
+      [
+        "base",
+        "intermediate_low_bearing"
+      ],
+      [
+        "base",
+        "intermediate_high_bearing"
+      ],
+      [
+        "base",
+        "output_low_bearing"
+      ],
+      [
+        "base",
+        "output_high_bearing"
+      ],
+      [
+        "input_low_bearing",
+        "input_shaft"
+      ],
+      [
+        "input_shaft",
+        "input_pinion"
+      ],
+      [
+        "input_shaft",
+        "crank_arm"
+      ],
+      [
+        "crank_arm",
+        "crank_handle_spindle"
+      ],
+      [
+        "crank_handle_spindle",
+        "crank_grip"
+      ],
+      [
+        "intermediate_low_bearing",
+        "intermediate_shaft"
+      ],
+      [
+        "intermediate_shaft",
+        "intermediate_driven_gear"
+      ],
+      [
+        "intermediate_shaft",
+        "intermediate_stage2_pinion"
+      ],
+      [
+        "output_low_bearing",
+        "output_shaft"
+      ],
+      [
+        "output_shaft",
+        "output_gear"
+      ]
+    ],
+    "closure_edges": [],
+    "rigid_carried": [
+      [
+        "input_shaft",
+        "input_pinion"
+      ],
+      [
+        "input_shaft",
+        "crank_arm"
+      ],
+      [
+        "crank_arm",
+        "crank_handle_spindle"
+      ],
+      [
+        "crank_handle_spindle",
+        "crank_grip"
+      ],
+      [
+        "intermediate_shaft",
+        "intermediate_driven_gear"
+      ],
+      [
+        "intermediate_shaft",
+        "intermediate_stage2_pinion"
+      ],
+      [
+        "output_shaft",
+        "output_gear"
+      ]
+    ],
+    "independent_coaxial": [],
+    "transmissions": [
+      {
+        "driving_joint": "input_spin",
+        "driven_joint": "intermediate_spin",
+        "ratio": -0.3333333333333333
+      },
+      {
+        "driving_joint": "intermediate_spin",
+        "driven_joint": "output_spin",
+        "ratio": -0.3333333333333333
+      }
+    ],
+    "contact_decisions": [
+      {
+        "pair": [
+          "input_shaft",
+          "crank_arm"
+        ],
+        "action": "exclude",
+        "reason": "Measured interference press fit is rigidly carried by one coordinate.",
+        "source_entity_ids": [
+          "relation/crank_to_input_shaft_press_fit",
+          "link/input_shaft",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "fit/input_shaft/shaft_axis/crank_arm/input_hub_bore",
+          "pair/crank_arm/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "crank_handle_spindle"
+        ],
+        "action": "exclude",
+        "reason": "Measured interference press fit is rigidly carried by one coordinate.",
+        "source_entity_ids": [
+          "relation/handle_spindle_to_crank_press_fit",
+          "link/crank_arm",
+          "link/crank_handle_spindle"
+        ],
+        "fact_ids": [
+          "fit/crank_arm/handle_bore/crank_handle_spindle/spindle_axis",
+          "pair/crank_arm/crank_handle_spindle"
+        ]
+      },
+      {
+        "pair": [
+          "crank_handle_spindle",
+          "crank_grip"
+        ],
+        "action": "exclude",
+        "reason": "Measured interference press fit is rigidly carried by one coordinate.",
+        "source_entity_ids": [
+          "relation/grip_to_spindle_press_fit",
+          "link/crank_handle_spindle",
+          "link/crank_grip"
+        ],
+        "fact_ids": [
+          "fit/crank_handle_spindle/spindle_axis/crank_grip/grip_bore",
+          "pair/crank_grip/crank_handle_spindle"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "input_pinion"
+        ],
+        "action": "exclude",
+        "reason": "Measured interference press fit is rigidly carried by one coordinate.",
+        "source_entity_ids": [
+          "relation/input_pinion_press_fit",
+          "link/input_shaft",
+          "link/input_pinion"
+        ],
+        "fact_ids": [
+          "fit/input_shaft/shaft_axis/input_pinion/shaft_bore",
+          "pair/input_pinion/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_shaft",
+          "intermediate_driven_gear"
+        ],
+        "action": "exclude",
+        "reason": "Measured interference press fit is rigidly carried by one coordinate.",
+        "source_entity_ids": [
+          "relation/intermediate_driven_gear_press_fit",
+          "link/intermediate_shaft",
+          "link/intermediate_driven_gear"
+        ],
+        "fact_ids": [
+          "fit/intermediate_shaft/shaft_axis/intermediate_driven_gear/shaft_bore",
+          "pair/intermediate_driven_gear/intermediate_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_shaft",
+          "intermediate_stage2_pinion"
+        ],
+        "action": "exclude",
+        "reason": "Measured interference press fit is rigidly carried by one coordinate.",
+        "source_entity_ids": [
+          "relation/intermediate_pinion_press_fit",
+          "link/intermediate_shaft",
+          "link/intermediate_stage2_pinion"
+        ],
+        "fact_ids": [
+          "fit/intermediate_shaft/shaft_axis/intermediate_stage2_pinion/shaft_bore",
+          "pair/intermediate_shaft/intermediate_stage2_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "output_shaft",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "Measured interference press fit is rigidly carried by one coordinate.",
+        "source_entity_ids": [
+          "relation/output_gear_press_fit",
+          "link/output_shaft",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "fit/output_shaft/shaft_axis/output_gear/shaft_bore",
+          "pair/output_gear/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_pinion",
+          "intermediate_driven_gear"
+        ],
+        "action": "exclude",
+        "reason": "Tooth contact is replaced by an ideal gear equality.",
+        "source_entity_ids": [
+          "relation/stage1_physical_mesh",
+          "link/input_pinion",
+          "link/intermediate_driven_gear"
+        ],
+        "fact_ids": [
+          "fit/input_pinion/stage1_mesh/intermediate_driven_gear/stage1_mesh",
+          "pair/input_pinion/intermediate_driven_gear"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_stage2_pinion",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "Tooth contact is replaced by an ideal gear equality.",
+        "source_entity_ids": [
+          "relation/stage2_physical_mesh",
+          "link/intermediate_stage2_pinion",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "fit/intermediate_stage2_pinion/stage2_mesh/output_gear/stage2_mesh",
+          "pair/intermediate_stage2_pinion/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "input_low_bearing",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "Journal support is represented by the emitted hinge and must not resist spin.",
+        "source_entity_ids": [
+          "link/input_low_bearing",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/input_low_bearing/input_shaft",
+          "nearby/input_low_bearing/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_high_bearing",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "Journal support is represented by the emitted hinge and must not resist spin.",
+        "source_entity_ids": [
+          "link/input_high_bearing",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/input_high_bearing/input_shaft",
+          "nearby/input_high_bearing/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_low_bearing",
+          "intermediate_shaft"
+        ],
+        "action": "exclude",
+        "reason": "Journal support is represented by the emitted hinge and must not resist spin.",
+        "source_entity_ids": [
+          "link/intermediate_low_bearing",
+          "link/intermediate_shaft"
+        ],
+        "fact_ids": [
+          "pair/intermediate_low_bearing/intermediate_shaft",
+          "nearby/intermediate_low_bearing/intermediate_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_high_bearing",
+          "intermediate_shaft"
+        ],
+        "action": "exclude",
+        "reason": "Journal support is represented by the emitted hinge and must not resist spin.",
+        "source_entity_ids": [
+          "link/intermediate_high_bearing",
+          "link/intermediate_shaft"
+        ],
+        "fact_ids": [
+          "pair/intermediate_high_bearing/intermediate_shaft",
+          "nearby/intermediate_high_bearing/intermediate_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "output_low_bearing",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "Journal support is represented by the emitted hinge and must not resist spin.",
+        "source_entity_ids": [
+          "link/output_low_bearing",
+          "link/output_shaft"
+        ],
+        "fact_ids": [
+          "pair/output_low_bearing/output_shaft",
+          "nearby/output_low_bearing/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "output_high_bearing",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "Journal support is represented by the emitted hinge and must not resist spin.",
+        "source_entity_ids": [
+          "link/output_high_bearing",
+          "link/output_shaft"
+        ],
+        "fact_ids": [
+          "pair/output_high_bearing/output_shaft",
+          "nearby/output_high_bearing/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "intermediate_driven_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/intermediate_driven_gear"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/intermediate_driven_gear",
+          "nearby/input_shaft/intermediate_driven_gear"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "crank_grip"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/crank_grip"
+        ],
+        "fact_ids": [
+          "pair/crank_grip/input_shaft",
+          "nearby/crank_grip/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "intermediate_stage2_pinion"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/intermediate_stage2_pinion"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/intermediate_stage2_pinion",
+          "nearby/input_shaft/intermediate_stage2_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "crank_handle_spindle"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/crank_handle_spindle"
+        ],
+        "fact_ids": [
+          "pair/crank_handle_spindle/input_shaft",
+          "nearby/crank_handle_spindle/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "intermediate_shaft"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/intermediate_shaft"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/intermediate_shaft",
+          "nearby/crank_arm/intermediate_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "crank_handle_spindle",
+          "intermediate_shaft"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/crank_handle_spindle",
+          "link/intermediate_shaft"
+        ],
+        "fact_ids": [
+          "pair/crank_handle_spindle/intermediate_shaft",
+          "nearby/crank_handle_spindle/intermediate_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_shaft",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/intermediate_shaft",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/intermediate_shaft/output_gear",
+          "nearby/intermediate_shaft/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "crank_grip",
+          "intermediate_shaft"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/crank_grip",
+          "link/intermediate_shaft"
+        ],
+        "fact_ids": [
+          "pair/crank_grip/intermediate_shaft",
+          "nearby/crank_grip/intermediate_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_driven_gear",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/intermediate_driven_gear",
+          "link/output_shaft"
+        ],
+        "fact_ids": [
+          "pair/intermediate_driven_gear/output_shaft",
+          "nearby/intermediate_driven_gear/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_low_bearing",
+          "input_pinion"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/input_low_bearing",
+          "link/input_pinion"
+        ],
+        "fact_ids": [
+          "pair/input_low_bearing/input_pinion",
+          "nearby/input_low_bearing/input_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "input_high_bearing",
+          "input_pinion"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/input_high_bearing",
+          "link/input_pinion"
+        ],
+        "fact_ids": [
+          "pair/input_high_bearing/input_pinion",
+          "nearby/input_high_bearing/input_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "input_pinion"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/input_pinion"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/input_pinion",
+          "nearby/crank_arm/input_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "input_pinion",
+          "intermediate_stage2_pinion"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/input_pinion",
+          "link/intermediate_stage2_pinion"
+        ],
+        "fact_ids": [
+          "pair/input_pinion/intermediate_stage2_pinion",
+          "nearby/input_pinion/intermediate_stage2_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "intermediate_driven_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/base",
+          "link/intermediate_driven_gear"
+        ],
+        "fact_ids": [
+          "pair/base/intermediate_driven_gear",
+          "nearby/base/intermediate_driven_gear"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_driven_gear",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/intermediate_driven_gear",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/intermediate_driven_gear/output_gear",
+          "nearby/intermediate_driven_gear/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_driven_gear",
+          "intermediate_stage2_pinion"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/intermediate_driven_gear",
+          "link/intermediate_stage2_pinion"
+        ],
+        "fact_ids": [
+          "pair/intermediate_driven_gear/intermediate_stage2_pinion",
+          "nearby/intermediate_driven_gear/intermediate_stage2_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "input_low_bearing",
+          "intermediate_driven_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/input_low_bearing",
+          "link/intermediate_driven_gear"
+        ],
+        "fact_ids": [
+          "pair/input_low_bearing/intermediate_driven_gear",
+          "nearby/input_low_bearing/intermediate_driven_gear"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_low_bearing",
+          "intermediate_driven_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/intermediate_low_bearing",
+          "link/intermediate_driven_gear"
+        ],
+        "fact_ids": [
+          "pair/intermediate_driven_gear/intermediate_low_bearing",
+          "nearby/intermediate_driven_gear/intermediate_low_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "output_low_bearing",
+          "intermediate_driven_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/output_low_bearing",
+          "link/intermediate_driven_gear"
+        ],
+        "fact_ids": [
+          "pair/intermediate_driven_gear/output_low_bearing",
+          "nearby/intermediate_driven_gear/output_low_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "input_high_bearing",
+          "intermediate_driven_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/input_high_bearing",
+          "link/intermediate_driven_gear"
+        ],
+        "fact_ids": [
+          "pair/input_high_bearing/intermediate_driven_gear",
+          "nearby/input_high_bearing/intermediate_driven_gear"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_high_bearing",
+          "intermediate_driven_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/intermediate_high_bearing",
+          "link/intermediate_driven_gear"
+        ],
+        "fact_ids": [
+          "pair/intermediate_driven_gear/intermediate_high_bearing",
+          "nearby/intermediate_driven_gear/intermediate_high_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "output_high_bearing",
+          "intermediate_driven_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/output_high_bearing",
+          "link/intermediate_driven_gear"
+        ],
+        "fact_ids": [
+          "pair/intermediate_driven_gear/output_high_bearing",
+          "nearby/intermediate_driven_gear/output_high_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "intermediate_driven_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/intermediate_driven_gear"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/intermediate_driven_gear",
+          "nearby/crank_arm/intermediate_driven_gear"
+        ]
+      },
+      {
+        "pair": [
+          "crank_handle_spindle",
+          "intermediate_driven_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/crank_handle_spindle",
+          "link/intermediate_driven_gear"
+        ],
+        "fact_ids": [
+          "pair/crank_handle_spindle/intermediate_driven_gear",
+          "nearby/crank_handle_spindle/intermediate_driven_gear"
+        ]
+      },
+      {
+        "pair": [
+          "crank_grip",
+          "intermediate_driven_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/crank_grip",
+          "link/intermediate_driven_gear"
+        ],
+        "fact_ids": [
+          "pair/crank_grip/intermediate_driven_gear",
+          "nearby/crank_grip/intermediate_driven_gear"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_high_bearing",
+          "intermediate_stage2_pinion"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/intermediate_high_bearing",
+          "link/intermediate_stage2_pinion"
+        ],
+        "fact_ids": [
+          "pair/intermediate_high_bearing/intermediate_stage2_pinion",
+          "nearby/intermediate_high_bearing/intermediate_stage2_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_high_bearing",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/intermediate_high_bearing",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/intermediate_high_bearing/output_gear",
+          "nearby/intermediate_high_bearing/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/base",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/base/output_gear",
+          "nearby/base/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_high_bearing",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/output_high_bearing",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/output_gear/output_high_bearing",
+          "nearby/output_gear/output_high_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_low_bearing",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/intermediate_low_bearing",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/intermediate_low_bearing/output_gear",
+          "nearby/intermediate_low_bearing/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_low_bearing",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/output_low_bearing",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/output_gear/output_low_bearing",
+          "nearby/output_gear/output_low_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/output_gear",
+          "nearby/crank_arm/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "crank_handle_spindle",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/crank_handle_spindle",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/crank_handle_spindle/output_gear",
+          "nearby/crank_handle_spindle/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "crank_grip",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/crank_grip",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/crank_grip/output_gear",
+          "nearby/crank_grip/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "input_pinion",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/input_pinion",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/input_pinion/output_gear",
+          "nearby/input_pinion/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "input_high_bearing",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/input_high_bearing",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/input_high_bearing/output_gear",
+          "nearby/input_high_bearing/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/output_gear",
+          "nearby/input_shaft/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "input_low_bearing",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/input_low_bearing",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/input_low_bearing/output_gear",
+          "nearby/input_low_bearing/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "input_low_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/input_low_bearing"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/input_low_bearing",
+          "nearby/crank_arm/input_low_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "intermediate_low_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/intermediate_low_bearing"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/intermediate_low_bearing",
+          "nearby/crank_arm/intermediate_low_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "crank_grip"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/crank_grip"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/crank_grip",
+          "nearby/crank_arm/crank_grip"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "crank_arm"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/base",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/base/crank_arm",
+          "nearby/base/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "crank_handle_spindle",
+          "intermediate_low_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/crank_handle_spindle",
+          "link/intermediate_low_bearing"
+        ],
+        "fact_ids": [
+          "pair/crank_handle_spindle/intermediate_low_bearing",
+          "nearby/crank_handle_spindle/intermediate_low_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_grip",
+          "intermediate_low_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+        "source_entity_ids": [
+          "link/crank_grip",
+          "link/intermediate_low_bearing"
+        ],
+        "fact_ids": [
+          "pair/crank_grip/intermediate_low_bearing",
+          "nearby/crank_grip/intermediate_low_bearing"
+        ]
+      }
+    ],
+    "support_ground": true,
+    "support_strategy": "Fixed base and bearing housings support three hinge coordinates; global ground remains enabled."
+  },
+  "decisions": [
+    {
+      "generated_kind": "constraint",
+      "generated_name": "stage1_gear",
+      "constraint_type": "joint",
+      "reason": "External 4.8 to 14.4 mm pitch-radius mesh.",
+      "source_entity_ids": [
+        "transmission/stage1_three_to_one",
+        "relation/stage1_physical_mesh"
+      ],
+      "fact_ids": [
+        "fit/input_pinion/stage1_mesh/intermediate_driven_gear/stage1_mesh",
+        "pair/input_pinion/intermediate_driven_gear"
+      ]
+    },
+    {
+      "generated_kind": "constraint",
+      "generated_name": "stage2_gear",
+      "constraint_type": "joint",
+      "reason": "External 4.8 to 14.4 mm pitch-radius mesh.",
+      "source_entity_ids": [
+        "transmission/stage2_three_to_one",
+        "relation/stage2_physical_mesh"
+      ],
+      "fact_ids": [
+        "fit/intermediate_stage2_pinion/stage2_mesh/output_gear/stage2_mesh",
+        "pair/intermediate_stage2_pinion/output_gear"
+      ]
+    },
+    {
+      "entity_id": "link/base",
+      "action": "emitted",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Link mesh is emitted exactly once in the selected body tree.",
+      "fact_ids": [
+        "link/base"
+      ]
+    },
+    {
+      "entity_id": "link/input_low_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_low_bearing"
+      ],
+      "reason": "Link mesh is emitted exactly once in the selected body tree.",
+      "fact_ids": [
+        "link/input_low_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/input_high_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_high_bearing"
+      ],
+      "reason": "Link mesh is emitted exactly once in the selected body tree.",
+      "fact_ids": [
+        "link/input_high_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/intermediate_low_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "intermediate_low_bearing"
+      ],
+      "reason": "Link mesh is emitted exactly once in the selected body tree.",
+      "fact_ids": [
+        "link/intermediate_low_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/intermediate_high_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "intermediate_high_bearing"
+      ],
+      "reason": "Link mesh is emitted exactly once in the selected body tree.",
+      "fact_ids": [
+        "link/intermediate_high_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/output_low_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_low_bearing"
+      ],
+      "reason": "Link mesh is emitted exactly once in the selected body tree.",
+      "fact_ids": [
+        "link/output_low_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/output_high_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_high_bearing"
+      ],
+      "reason": "Link mesh is emitted exactly once in the selected body tree.",
+      "fact_ids": [
+        "link/output_high_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/input_shaft",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_shaft"
+      ],
+      "reason": "Link mesh is emitted exactly once in the selected body tree.",
+      "fact_ids": [
+        "link/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "link/intermediate_shaft",
+      "action": "emitted",
+      "generated_nodes": [
+        "intermediate_shaft"
+      ],
+      "reason": "Link mesh is emitted exactly once in the selected body tree.",
+      "fact_ids": [
+        "link/intermediate_shaft"
+      ]
+    },
+    {
+      "entity_id": "link/output_shaft",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_shaft"
+      ],
+      "reason": "Link mesh is emitted exactly once in the selected body tree.",
+      "fact_ids": [
+        "link/output_shaft"
+      ]
+    },
+    {
+      "entity_id": "link/input_pinion",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_pinion"
+      ],
+      "reason": "Link mesh is emitted exactly once in the selected body tree.",
+      "fact_ids": [
+        "link/input_pinion"
+      ]
+    },
+    {
+      "entity_id": "link/intermediate_driven_gear",
+      "action": "emitted",
+      "generated_nodes": [
+        "intermediate_driven_gear"
+      ],
+      "reason": "Link mesh is emitted exactly once in the selected body tree.",
+      "fact_ids": [
+        "link/intermediate_driven_gear"
+      ]
+    },
+    {
+      "entity_id": "link/intermediate_stage2_pinion",
+      "action": "emitted",
+      "generated_nodes": [
+        "intermediate_stage2_pinion"
+      ],
+      "reason": "Link mesh is emitted exactly once in the selected body tree.",
+      "fact_ids": [
+        "link/intermediate_stage2_pinion"
+      ]
+    },
+    {
+      "entity_id": "link/output_gear",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_gear"
+      ],
+      "reason": "Link mesh is emitted exactly once in the selected body tree.",
+      "fact_ids": [
+        "link/output_gear"
+      ]
+    },
+    {
+      "entity_id": "link/crank_arm",
+      "action": "emitted",
+      "generated_nodes": [
+        "crank_arm"
+      ],
+      "reason": "Link mesh is emitted exactly once in the selected body tree.",
+      "fact_ids": [
+        "link/crank_arm"
+      ]
+    },
+    {
+      "entity_id": "link/crank_handle_spindle",
+      "action": "emitted",
+      "generated_nodes": [
+        "crank_handle_spindle"
+      ],
+      "reason": "Link mesh is emitted exactly once in the selected body tree.",
+      "fact_ids": [
+        "link/crank_handle_spindle"
+      ]
+    },
+    {
+      "entity_id": "link/crank_grip",
+      "action": "emitted",
+      "generated_nodes": [
+        "crank_grip"
+      ],
+      "reason": "Link mesh is emitted exactly once in the selected body tree.",
+      "fact_ids": [
+        "link/crank_grip"
+      ]
+    },
+    {
+      "entity_id": "pose/place_base",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "pose/place_base"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_low_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "pose/place_input_low_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_high_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "pose/place_input_high_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_intermediate_low_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "pose/place_intermediate_low_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_intermediate_high_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "pose/place_intermediate_high_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_low_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "pose/place_output_low_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_high_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "pose/place_output_high_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "pose/place_input_shaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_intermediate_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "pose/place_intermediate_shaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "pose/place_output_shaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "pose/place_input_pinion"
+      ]
+    },
+    {
+      "entity_id": "pose/place_intermediate_driven_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "pose/place_intermediate_driven_gear"
+      ]
+    },
+    {
+      "entity_id": "pose/place_intermediate_stage2_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "pose/place_intermediate_stage2_pinion"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "pose/place_output_gear"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crank_arm",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "pose/place_crank_arm"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crank_handle_spindle",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "pose/place_crank_handle_spindle"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crank_grip",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "pose/place_crank_grip"
+      ]
+    },
+    {
+      "entity_id": "port/crank_arm/input_hub_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "port/crank_arm/input_hub_bore"
+      ]
+    },
+    {
+      "entity_id": "port/crank_arm/handle_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "port/crank_arm/handle_bore"
+      ]
+    },
+    {
+      "entity_id": "port/crank_handle_spindle/spindle_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "port/crank_handle_spindle/spindle_axis"
+      ]
+    },
+    {
+      "entity_id": "port/crank_grip/grip_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "port/crank_grip/grip_bore"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/shaft_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "port/input_shaft/shaft_axis"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_shaft/shaft_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "port/intermediate_shaft/shaft_axis"
+      ]
+    },
+    {
+      "entity_id": "port/output_shaft/shaft_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "port/output_shaft/shaft_axis"
+      ]
+    },
+    {
+      "entity_id": "port/input_pinion/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "port/input_pinion/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/input_pinion/stage1_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "port/input_pinion/stage1_mesh"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_driven_gear/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "port/intermediate_driven_gear/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_driven_gear/stage1_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "port/intermediate_driven_gear/stage1_mesh"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_stage2_pinion/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "port/intermediate_stage2_pinion/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_stage2_pinion/stage2_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "port/intermediate_stage2_pinion/stage2_mesh"
+      ]
+    },
+    {
+      "entity_id": "port/output_gear/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "port/output_gear/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/output_gear/stage2_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "port/output_gear/stage2_mesh"
+      ]
+    },
+    {
+      "entity_id": "relation/crank_to_input_shaft_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "relation/crank_to_input_shaft_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/handle_spindle_to_crank_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "relation/handle_spindle_to_crank_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/grip_to_spindle_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "relation/grip_to_spindle_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/input_pinion_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "relation/input_pinion_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/intermediate_driven_gear_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "relation/intermediate_driven_gear_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/intermediate_pinion_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "relation/intermediate_pinion_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/output_gear_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "relation/output_gear_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/stage1_physical_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "relation/stage1_physical_mesh"
+      ]
+    },
+    {
+      "entity_id": "relation/stage2_physical_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "relation/stage2_physical_mesh"
+      ]
+    },
+    {
+      "entity_id": "transmission/crank_rigidly_carries_input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "transmission/crank_rigidly_carries_input_shaft"
+      ]
+    },
+    {
+      "entity_id": "transmission/input_shaft_rigidly_carries_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "transmission/input_shaft_rigidly_carries_pinion"
+      ]
+    },
+    {
+      "entity_id": "transmission/stage1_three_to_one",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "transmission/stage1_three_to_one"
+      ]
+    },
+    {
+      "entity_id": "transmission/compound_intermediate_rigid_carry",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "transmission/compound_intermediate_rigid_carry"
+      ]
+    },
+    {
+      "entity_id": "transmission/stage2_three_to_one",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "transmission/stage2_three_to_one"
+      ]
+    },
+    {
+      "entity_id": "transmission/output_gear_rigidly_carries_output_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "transmission/output_gear_rigidly_carries_output_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/driver/input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "role/driver/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/output/output_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "role/output/output_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/watch/crank_arm",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "role/watch/crank_arm"
+      ]
+    },
+    {
+      "entity_id": "role/watch/input_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "role/watch/input_pinion"
+      ]
+    },
+    {
+      "entity_id": "role/watch/intermediate_driven_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "role/watch/intermediate_driven_gear"
+      ]
+    },
+    {
+      "entity_id": "role/watch/intermediate_stage2_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "role/watch/intermediate_stage2_pinion"
+      ]
+    },
+    {
+      "entity_id": "role/watch/output_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "role/watch/output_gear"
+      ]
+    },
+    {
+      "entity_id": "role/watch/output_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "Authored placement, interface, port, transmission, or role is represented by the emitted machine topology.",
+      "fact_ids": [
+        "role/watch/output_shaft"
+      ]
+    }
+  ],
+  "excludes": [
+    {
+      "pair": [
+        "crank_arm",
+        "input_shaft"
+      ],
+      "reason": "Measured interference press fit is rigidly carried by one coordinate.",
+      "source_entity_ids": [
+        "relation/crank_to_input_shaft_press_fit",
+        "link/input_shaft",
+        "link/crank_arm"
+      ],
+      "fact_ids": [
+        "fit/input_shaft/shaft_axis/crank_arm/input_hub_bore",
+        "pair/crank_arm/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "crank_arm",
+        "crank_handle_spindle"
+      ],
+      "reason": "Measured interference press fit is rigidly carried by one coordinate.",
+      "source_entity_ids": [
+        "relation/handle_spindle_to_crank_press_fit",
+        "link/crank_arm",
+        "link/crank_handle_spindle"
+      ],
+      "fact_ids": [
+        "fit/crank_arm/handle_bore/crank_handle_spindle/spindle_axis",
+        "pair/crank_arm/crank_handle_spindle"
+      ]
+    },
+    {
+      "pair": [
+        "crank_grip",
+        "crank_handle_spindle"
+      ],
+      "reason": "Measured interference press fit is rigidly carried by one coordinate.",
+      "source_entity_ids": [
+        "relation/grip_to_spindle_press_fit",
+        "link/crank_handle_spindle",
+        "link/crank_grip"
+      ],
+      "fact_ids": [
+        "fit/crank_handle_spindle/spindle_axis/crank_grip/grip_bore",
+        "pair/crank_grip/crank_handle_spindle"
+      ]
+    },
+    {
+      "pair": [
+        "input_pinion",
+        "input_shaft"
+      ],
+      "reason": "Measured interference press fit is rigidly carried by one coordinate.",
+      "source_entity_ids": [
+        "relation/input_pinion_press_fit",
+        "link/input_shaft",
+        "link/input_pinion"
+      ],
+      "fact_ids": [
+        "fit/input_shaft/shaft_axis/input_pinion/shaft_bore",
+        "pair/input_pinion/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_driven_gear",
+        "intermediate_shaft"
+      ],
+      "reason": "Measured interference press fit is rigidly carried by one coordinate.",
+      "source_entity_ids": [
+        "relation/intermediate_driven_gear_press_fit",
+        "link/intermediate_shaft",
+        "link/intermediate_driven_gear"
+      ],
+      "fact_ids": [
+        "fit/intermediate_shaft/shaft_axis/intermediate_driven_gear/shaft_bore",
+        "pair/intermediate_driven_gear/intermediate_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_shaft",
+        "intermediate_stage2_pinion"
+      ],
+      "reason": "Measured interference press fit is rigidly carried by one coordinate.",
+      "source_entity_ids": [
+        "relation/intermediate_pinion_press_fit",
+        "link/intermediate_shaft",
+        "link/intermediate_stage2_pinion"
+      ],
+      "fact_ids": [
+        "fit/intermediate_shaft/shaft_axis/intermediate_stage2_pinion/shaft_bore",
+        "pair/intermediate_shaft/intermediate_stage2_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "output_gear",
+        "output_shaft"
+      ],
+      "reason": "Measured interference press fit is rigidly carried by one coordinate.",
+      "source_entity_ids": [
+        "relation/output_gear_press_fit",
+        "link/output_shaft",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "fit/output_shaft/shaft_axis/output_gear/shaft_bore",
+        "pair/output_gear/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "input_pinion",
+        "intermediate_driven_gear"
+      ],
+      "reason": "Tooth contact is replaced by an ideal gear equality.",
+      "source_entity_ids": [
+        "relation/stage1_physical_mesh",
+        "link/input_pinion",
+        "link/intermediate_driven_gear"
+      ],
+      "fact_ids": [
+        "fit/input_pinion/stage1_mesh/intermediate_driven_gear/stage1_mesh",
+        "pair/input_pinion/intermediate_driven_gear"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_stage2_pinion",
+        "output_gear"
+      ],
+      "reason": "Tooth contact is replaced by an ideal gear equality.",
+      "source_entity_ids": [
+        "relation/stage2_physical_mesh",
+        "link/intermediate_stage2_pinion",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "fit/intermediate_stage2_pinion/stage2_mesh/output_gear/stage2_mesh",
+        "pair/intermediate_stage2_pinion/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "input_low_bearing",
+        "input_shaft"
+      ],
+      "reason": "Journal support is represented by the emitted hinge and must not resist spin.",
+      "source_entity_ids": [
+        "link/input_low_bearing",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "pair/input_low_bearing/input_shaft",
+        "nearby/input_low_bearing/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "input_high_bearing",
+        "input_shaft"
+      ],
+      "reason": "Journal support is represented by the emitted hinge and must not resist spin.",
+      "source_entity_ids": [
+        "link/input_high_bearing",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "pair/input_high_bearing/input_shaft",
+        "nearby/input_high_bearing/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_low_bearing",
+        "intermediate_shaft"
+      ],
+      "reason": "Journal support is represented by the emitted hinge and must not resist spin.",
+      "source_entity_ids": [
+        "link/intermediate_low_bearing",
+        "link/intermediate_shaft"
+      ],
+      "fact_ids": [
+        "pair/intermediate_low_bearing/intermediate_shaft",
+        "nearby/intermediate_low_bearing/intermediate_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_high_bearing",
+        "intermediate_shaft"
+      ],
+      "reason": "Journal support is represented by the emitted hinge and must not resist spin.",
+      "source_entity_ids": [
+        "link/intermediate_high_bearing",
+        "link/intermediate_shaft"
+      ],
+      "fact_ids": [
+        "pair/intermediate_high_bearing/intermediate_shaft",
+        "nearby/intermediate_high_bearing/intermediate_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "output_low_bearing",
+        "output_shaft"
+      ],
+      "reason": "Journal support is represented by the emitted hinge and must not resist spin.",
+      "source_entity_ids": [
+        "link/output_low_bearing",
+        "link/output_shaft"
+      ],
+      "fact_ids": [
+        "pair/output_low_bearing/output_shaft",
+        "nearby/output_low_bearing/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "output_high_bearing",
+        "output_shaft"
+      ],
+      "reason": "Journal support is represented by the emitted hinge and must not resist spin.",
+      "source_entity_ids": [
+        "link/output_high_bearing",
+        "link/output_shaft"
+      ],
+      "fact_ids": [
+        "pair/output_high_bearing/output_shaft",
+        "nearby/output_high_bearing/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "intermediate_driven_gear"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/intermediate_driven_gear"
+      ],
+      "fact_ids": [
+        "pair/input_shaft/intermediate_driven_gear",
+        "nearby/input_shaft/intermediate_driven_gear"
+      ]
+    },
+    {
+      "pair": [
+        "crank_grip",
+        "input_shaft"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/crank_grip"
+      ],
+      "fact_ids": [
+        "pair/crank_grip/input_shaft",
+        "nearby/crank_grip/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "intermediate_stage2_pinion"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/intermediate_stage2_pinion"
+      ],
+      "fact_ids": [
+        "pair/input_shaft/intermediate_stage2_pinion",
+        "nearby/input_shaft/intermediate_stage2_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "crank_handle_spindle",
+        "input_shaft"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/crank_handle_spindle"
+      ],
+      "fact_ids": [
+        "pair/crank_handle_spindle/input_shaft",
+        "nearby/crank_handle_spindle/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "crank_arm",
+        "intermediate_shaft"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/crank_arm",
+        "link/intermediate_shaft"
+      ],
+      "fact_ids": [
+        "pair/crank_arm/intermediate_shaft",
+        "nearby/crank_arm/intermediate_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "crank_handle_spindle",
+        "intermediate_shaft"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/crank_handle_spindle",
+        "link/intermediate_shaft"
+      ],
+      "fact_ids": [
+        "pair/crank_handle_spindle/intermediate_shaft",
+        "nearby/crank_handle_spindle/intermediate_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_shaft",
+        "output_gear"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/intermediate_shaft",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/intermediate_shaft/output_gear",
+        "nearby/intermediate_shaft/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "crank_grip",
+        "intermediate_shaft"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/crank_grip",
+        "link/intermediate_shaft"
+      ],
+      "fact_ids": [
+        "pair/crank_grip/intermediate_shaft",
+        "nearby/crank_grip/intermediate_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_driven_gear",
+        "output_shaft"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/intermediate_driven_gear",
+        "link/output_shaft"
+      ],
+      "fact_ids": [
+        "pair/intermediate_driven_gear/output_shaft",
+        "nearby/intermediate_driven_gear/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "input_low_bearing",
+        "input_pinion"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/input_low_bearing",
+        "link/input_pinion"
+      ],
+      "fact_ids": [
+        "pair/input_low_bearing/input_pinion",
+        "nearby/input_low_bearing/input_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "input_high_bearing",
+        "input_pinion"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/input_high_bearing",
+        "link/input_pinion"
+      ],
+      "fact_ids": [
+        "pair/input_high_bearing/input_pinion",
+        "nearby/input_high_bearing/input_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "crank_arm",
+        "input_pinion"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/crank_arm",
+        "link/input_pinion"
+      ],
+      "fact_ids": [
+        "pair/crank_arm/input_pinion",
+        "nearby/crank_arm/input_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "input_pinion",
+        "intermediate_stage2_pinion"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/input_pinion",
+        "link/intermediate_stage2_pinion"
+      ],
+      "fact_ids": [
+        "pair/input_pinion/intermediate_stage2_pinion",
+        "nearby/input_pinion/intermediate_stage2_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "intermediate_driven_gear"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/base",
+        "link/intermediate_driven_gear"
+      ],
+      "fact_ids": [
+        "pair/base/intermediate_driven_gear",
+        "nearby/base/intermediate_driven_gear"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_driven_gear",
+        "output_gear"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/intermediate_driven_gear",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/intermediate_driven_gear/output_gear",
+        "nearby/intermediate_driven_gear/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_driven_gear",
+        "intermediate_stage2_pinion"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/intermediate_driven_gear",
+        "link/intermediate_stage2_pinion"
+      ],
+      "fact_ids": [
+        "pair/intermediate_driven_gear/intermediate_stage2_pinion",
+        "nearby/intermediate_driven_gear/intermediate_stage2_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "input_low_bearing",
+        "intermediate_driven_gear"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/input_low_bearing",
+        "link/intermediate_driven_gear"
+      ],
+      "fact_ids": [
+        "pair/input_low_bearing/intermediate_driven_gear",
+        "nearby/input_low_bearing/intermediate_driven_gear"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_driven_gear",
+        "intermediate_low_bearing"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/intermediate_low_bearing",
+        "link/intermediate_driven_gear"
+      ],
+      "fact_ids": [
+        "pair/intermediate_driven_gear/intermediate_low_bearing",
+        "nearby/intermediate_driven_gear/intermediate_low_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_driven_gear",
+        "output_low_bearing"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/output_low_bearing",
+        "link/intermediate_driven_gear"
+      ],
+      "fact_ids": [
+        "pair/intermediate_driven_gear/output_low_bearing",
+        "nearby/intermediate_driven_gear/output_low_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "input_high_bearing",
+        "intermediate_driven_gear"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/input_high_bearing",
+        "link/intermediate_driven_gear"
+      ],
+      "fact_ids": [
+        "pair/input_high_bearing/intermediate_driven_gear",
+        "nearby/input_high_bearing/intermediate_driven_gear"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_driven_gear",
+        "intermediate_high_bearing"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/intermediate_high_bearing",
+        "link/intermediate_driven_gear"
+      ],
+      "fact_ids": [
+        "pair/intermediate_driven_gear/intermediate_high_bearing",
+        "nearby/intermediate_driven_gear/intermediate_high_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_driven_gear",
+        "output_high_bearing"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/output_high_bearing",
+        "link/intermediate_driven_gear"
+      ],
+      "fact_ids": [
+        "pair/intermediate_driven_gear/output_high_bearing",
+        "nearby/intermediate_driven_gear/output_high_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "crank_arm",
+        "intermediate_driven_gear"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/crank_arm",
+        "link/intermediate_driven_gear"
+      ],
+      "fact_ids": [
+        "pair/crank_arm/intermediate_driven_gear",
+        "nearby/crank_arm/intermediate_driven_gear"
+      ]
+    },
+    {
+      "pair": [
+        "crank_handle_spindle",
+        "intermediate_driven_gear"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/crank_handle_spindle",
+        "link/intermediate_driven_gear"
+      ],
+      "fact_ids": [
+        "pair/crank_handle_spindle/intermediate_driven_gear",
+        "nearby/crank_handle_spindle/intermediate_driven_gear"
+      ]
+    },
+    {
+      "pair": [
+        "crank_grip",
+        "intermediate_driven_gear"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/crank_grip",
+        "link/intermediate_driven_gear"
+      ],
+      "fact_ids": [
+        "pair/crank_grip/intermediate_driven_gear",
+        "nearby/crank_grip/intermediate_driven_gear"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_high_bearing",
+        "intermediate_stage2_pinion"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/intermediate_high_bearing",
+        "link/intermediate_stage2_pinion"
+      ],
+      "fact_ids": [
+        "pair/intermediate_high_bearing/intermediate_stage2_pinion",
+        "nearby/intermediate_high_bearing/intermediate_stage2_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_high_bearing",
+        "output_gear"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/intermediate_high_bearing",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/intermediate_high_bearing/output_gear",
+        "nearby/intermediate_high_bearing/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "output_gear"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/base",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/base/output_gear",
+        "nearby/base/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "output_gear",
+        "output_high_bearing"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/output_high_bearing",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/output_gear/output_high_bearing",
+        "nearby/output_gear/output_high_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_low_bearing",
+        "output_gear"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/intermediate_low_bearing",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/intermediate_low_bearing/output_gear",
+        "nearby/intermediate_low_bearing/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "output_gear",
+        "output_low_bearing"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/output_low_bearing",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/output_gear/output_low_bearing",
+        "nearby/output_gear/output_low_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "crank_arm",
+        "output_gear"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/crank_arm",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/crank_arm/output_gear",
+        "nearby/crank_arm/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "crank_handle_spindle",
+        "output_gear"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/crank_handle_spindle",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/crank_handle_spindle/output_gear",
+        "nearby/crank_handle_spindle/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "crank_grip",
+        "output_gear"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/crank_grip",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/crank_grip/output_gear",
+        "nearby/crank_grip/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "input_pinion",
+        "output_gear"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/input_pinion",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/input_pinion/output_gear",
+        "nearby/input_pinion/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "input_high_bearing",
+        "output_gear"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/input_high_bearing",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/input_high_bearing/output_gear",
+        "nearby/input_high_bearing/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "output_gear"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/input_shaft/output_gear",
+        "nearby/input_shaft/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "input_low_bearing",
+        "output_gear"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/input_low_bearing",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/input_low_bearing/output_gear",
+        "nearby/input_low_bearing/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "crank_arm",
+        "input_low_bearing"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/crank_arm",
+        "link/input_low_bearing"
+      ],
+      "fact_ids": [
+        "pair/crank_arm/input_low_bearing",
+        "nearby/crank_arm/input_low_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "crank_arm",
+        "intermediate_low_bearing"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/crank_arm",
+        "link/intermediate_low_bearing"
+      ],
+      "fact_ids": [
+        "pair/crank_arm/intermediate_low_bearing",
+        "nearby/crank_arm/intermediate_low_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "crank_arm",
+        "crank_grip"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/crank_arm",
+        "link/crank_grip"
+      ],
+      "fact_ids": [
+        "pair/crank_arm/crank_grip",
+        "nearby/crank_arm/crank_grip"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "crank_arm"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/base",
+        "link/crank_arm"
+      ],
+      "fact_ids": [
+        "pair/base/crank_arm",
+        "nearby/base/crank_arm"
+      ]
+    },
+    {
+      "pair": [
+        "crank_handle_spindle",
+        "intermediate_low_bearing"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/crank_handle_spindle",
+        "link/intermediate_low_bearing"
+      ],
+      "fact_ids": [
+        "pair/crank_handle_spindle/intermediate_low_bearing",
+        "nearby/crank_handle_spindle/intermediate_low_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "crank_grip",
+        "intermediate_low_bearing"
+      ],
+      "reason": "Positive real-mesh separation or disjoint AABB extent proves proxy false-contact risk without contact function.",
+      "source_entity_ids": [
+        "link/crank_grip",
+        "link/intermediate_low_bearing"
+      ],
+      "fact_ids": [
+        "pair/crank_grip/intermediate_low_bearing",
+        "nearby/crank_grip/intermediate_low_bearing"
+      ]
+    }
+  ],
+  "ground_excludes": [],
+  "support_patches": [],
+  "bodies": [
+    "base",
+    "crank_arm",
+    "crank_grip",
+    "crank_handle_spindle",
+    "input_high_bearing",
+    "input_low_bearing",
+    "input_pinion",
+    "input_shaft",
+    "intermediate_driven_gear",
+    "intermediate_high_bearing",
+    "intermediate_low_bearing",
+    "intermediate_shaft",
+    "intermediate_stage2_pinion",
+    "output_gear",
+    "output_high_bearing",
+    "output_low_bearing",
+    "output_shaft"
+  ],
+  "joints": [
+    "input_spin",
+    "intermediate_spin",
+    "output_spin"
+  ],
+  "constraints": [
+    "stage1_gear",
+    "stage2_gear"
+  ]
+}

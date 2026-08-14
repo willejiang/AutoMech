@@ -1,0 +1,106 @@
+{
+  "ok": true,
+  "errors": [],
+  "policy_version": 4,
+  "bodies": [
+    "baseplate",
+    "crank_handle",
+    "front_left_post",
+    "front_right_post",
+    "input_crank",
+    "input_lower_bearing",
+    "input_shaft",
+    "input_upper_bearing",
+    "layshaft",
+    "layshaft_lower_bearing",
+    "layshaft_upper_bearing",
+    "output_lower_bearing",
+    "output_shaft",
+    "output_upper_bearing",
+    "rear_left_post",
+    "rear_right_post",
+    "stage1_input_pinion",
+    "stage1_wheel",
+    "stage2_output_wheel",
+    "stage2_pinion",
+    "upper_plate"
+  ],
+  "joints": [
+    "first_reduction",
+    "input_spin",
+    "layshaft_spin",
+    "output_spin",
+    "second_reduction"
+  ],
+  "nq": 3,
+  "nv": 3,
+  "finite": true,
+  "dynamic_transmission_probe": {
+    "ran": true,
+    "ok": true,
+    "errors": [],
+    "warnings": [],
+    "contact_on": {
+      "ok": true,
+      "driver_travel": 1.016609805964591,
+      "commanded_travel": 1.0494,
+      "joint_deltas": {
+        "input_spin": 1.016609805964591,
+        "layshaft_spin": -0.3378747309265269,
+        "output_spin": 0.11262194264109096
+      },
+      "transmission_residuals": [
+        {
+          "name": "input_spin->layshaft_spin",
+          "driving_joint": "input_spin",
+          "driven_joint": "layshaft_spin",
+          "ratio": -0.3333333333333333,
+          "driving_delta": 1.016609805964591,
+          "driven_delta": -0.3378747309265269,
+          "normalized_residual": 0.0029368329594040552
+        },
+        {
+          "name": "layshaft_spin->output_spin",
+          "driving_joint": "layshaft_spin",
+          "driven_joint": "output_spin",
+          "ratio": -0.3333333333333333,
+          "driving_delta": -0.3378747309265269,
+          "driven_delta": 0.11262194264109096,
+          "normalized_residual": 2.6350012117291162e-05
+        }
+      ],
+      "active_contacts": []
+    },
+    "contact_off": {
+      "ok": true,
+      "driver_travel": 1.016609805964591,
+      "commanded_travel": 1.0494,
+      "joint_deltas": {
+        "input_spin": 1.016609805964591,
+        "layshaft_spin": -0.3378747309265269,
+        "output_spin": 0.11262194264109096
+      },
+      "transmission_residuals": [
+        {
+          "name": "input_spin->layshaft_spin",
+          "driving_joint": "input_spin",
+          "driven_joint": "layshaft_spin",
+          "ratio": -0.3333333333333333,
+          "driving_delta": 1.016609805964591,
+          "driven_delta": -0.3378747309265269,
+          "normalized_residual": 0.0029368329594040552
+        },
+        {
+          "name": "layshaft_spin->output_spin",
+          "driving_joint": "layshaft_spin",
+          "driven_joint": "output_spin",
+          "ratio": -0.3333333333333333,
+          "driving_delta": -0.3378747309265269,
+          "driven_delta": 0.11262194264109096,
+          "normalized_residual": 2.6350012117291162e-05
+        }
+      ],
+      "active_contacts": []
+    }
+  }
+}

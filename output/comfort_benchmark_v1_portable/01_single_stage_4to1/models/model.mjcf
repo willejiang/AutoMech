@@ -1,0 +1,155 @@
+<mujoco model="design_this_as_an_open_demonstra">
+  <compiler angle="radian" coordinate="local" />
+  <option gravity="0 0 -9.81" timestep="0.0002" solver="Newton" iterations="100" cone="elliptic" />
+  <size memory="256M" />
+  <asset>
+    <mesh name="mesh_base" file="meshes/base.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_bench_bolt_1" file="meshes/bench_bolt_1.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_bench_bolt_2" file="meshes/bench_bolt_2.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_bench_bolt_3" file="meshes/bench_bolt_3.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_bench_bolt_4" file="meshes/bench_bolt_4.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_thrust_washer" file="meshes/input_thrust_washer.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_thrust_washer" file="meshes/output_thrust_washer.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_bearing_pedestal" file="meshes/input_bearing_pedestal.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_bearing_pedestal" file="meshes/output_bearing_pedestal.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_lower_bearing" file="meshes/input_lower_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_upper_bearing" file="meshes/input_upper_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_lower_bearing" file="meshes/output_lower_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_upper_bearing" file="meshes/output_upper_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_shaft" file="meshes/input_shaft.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_pinion" file="meshes/input_pinion.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hand_crank" file="meshes/hand_crank.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_crank_grip" file="meshes/crank_grip.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_shaft" file="meshes/output_shaft.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_gear" file="meshes/output_gear.stl" scale=".001 .001 .001" />
+  </asset>
+  <worldbody>
+    <light pos="0 0 3" dir="0 0 -1" />
+    <geom name="ground" type="plane" size="5 5 .1" friction="1 .05 .005" contype="1" conaffinity="0" />
+    <body name="base" pos="0 0 0" quat="1 0 0 0">
+      <inertial pos="2.396467265e-18 -1.12334403e-19 0.003" mass="0.5084485761" fullinertia="0.000270980743 0.0007774497789 0.00104537983 -1.608394086e-20 5.02623152e-21 -1.713488018e-22" />
+      <geom name="geom_base" type="sdf" mesh="mesh_base" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      <body name="bench_bolt_1" pos="-0.059 -0.031 0" quat="1 0 0 0">
+        <inertial pos="9.595697213e-21 2.934071839e-19 0.005782442757" mass="0.002421988536" fullinertia="2.449323425e-08 2.449323418e-08 1.804419242e-08 -1.859253492e-26 -2.304952745e-24 5.844529505e-24" />
+        <geom name="geom_bench_bolt_1" type="sdf" mesh="mesh_bench_bolt_1" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="bench_bolt_2" pos="-0.059 0.031 0" quat="1 0 0 0">
+        <inertial pos="9.595697213e-21 2.934071839e-19 0.005782442757" mass="0.002421988536" fullinertia="2.449323425e-08 2.449323418e-08 1.804419242e-08 -1.859253492e-26 -2.304952745e-24 5.844529505e-24" />
+        <geom name="geom_bench_bolt_2" type="sdf" mesh="mesh_bench_bolt_2" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="bench_bolt_3" pos="0.059 -0.031 0" quat="1 0 0 0">
+        <inertial pos="9.595697213e-21 2.934071839e-19 0.005782442757" mass="0.002421988536" fullinertia="2.449323425e-08 2.449323418e-08 1.804419242e-08 -1.859253492e-26 -2.304952745e-24 5.844529505e-24" />
+        <geom name="geom_bench_bolt_3" type="sdf" mesh="mesh_bench_bolt_3" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="bench_bolt_4" pos="0.059 0.031 0" quat="1 0 0 0">
+        <inertial pos="9.595697213e-21 2.934071839e-19 0.005782442757" mass="0.002421988536" fullinertia="2.449323425e-08 2.449323418e-08 1.804419242e-08 -1.859253492e-26 -2.304952745e-24 5.844529505e-24" />
+        <geom name="geom_bench_bolt_4" type="sdf" mesh="mesh_bench_bolt_4" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="input_thrust_washer" pos="-0.0225 0 0.006" quat="1 0 0 0">
+        <inertial pos="-5.291771896e-20 -3.868292772e-20 0.0005" mass="0.0004831035052" fullinertia="6.366594016e-09 6.366594092e-09 1.265267086e-08 6.065814517e-26 4.671374398e-26 -6.693357963e-26" />
+        <geom name="geom_input_thrust_washer" type="sdf" mesh="mesh_input_thrust_washer" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="output_thrust_washer" pos="0.0225 0 0.006" quat="1 0 0 0">
+        <inertial pos="-5.291771896e-20 -3.868292772e-20 0.0005" mass="0.0004831035052" fullinertia="6.366594016e-09 6.366594092e-09 1.265267086e-08 6.065814517e-26 4.671374398e-26 -6.693357963e-26" />
+        <geom name="geom_output_thrust_washer" type="sdf" mesh="mesh_output_thrust_washer" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="input_bearing_pedestal" pos="-0.0225 0 0.006" quat="1 0 0 0">
+        <inertial pos="7.750623501e-20 2.694552701e-20 0.001" mass="0.002158959395" fullinertia="6.44958635e-08 6.449586322e-08 1.275524205e-07 5.001391893e-25 1.673328143e-25 1.18993676e-24" />
+        <geom name="geom_input_bearing_pedestal" type="sdf" mesh="mesh_input_bearing_pedestal" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="input_lower_bearing" pos="0 0 0.002" quat="1 0 0 0">
+          <inertial pos="-6.496789612e-20 1.184166178e-19 0.0025" mass="0.00586669707" fullinertia="1.300977008e-07 1.300976996e-07 2.357508294e-07 6.284276803e-25 -9.528674146e-25 4.758635846e-25" />
+          <geom name="geom_input_lower_bearing" type="sdf" mesh="mesh_input_lower_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          <body name="input_upper_bearing" pos="0 0 0.005" quat="1 0 0 0">
+            <inertial pos="-6.496789612e-20 1.184166178e-19 0.0025" mass="0.00586669707" fullinertia="1.300977008e-07 1.300976996e-07 2.357508294e-07 6.284276803e-25 -9.528674146e-25 4.758635846e-25" />
+            <geom name="geom_input_upper_bearing" type="sdf" mesh="mesh_input_upper_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          </body>
+        </body>
+      </body>
+      <body name="output_bearing_pedestal" pos="0.0225 0 0.006" quat="1 0 0 0">
+        <inertial pos="7.750623501e-20 2.694552701e-20 0.001" mass="0.002158959395" fullinertia="6.44958635e-08 6.449586322e-08 1.275524205e-07 5.001391893e-25 1.673328143e-25 1.18993676e-24" />
+        <geom name="geom_output_bearing_pedestal" type="sdf" mesh="mesh_output_bearing_pedestal" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <body name="output_lower_bearing" pos="0 0 0.002" quat="1 0 0 0">
+          <inertial pos="-6.496789612e-20 1.184166178e-19 0.0025" mass="0.00586669707" fullinertia="1.300977008e-07 1.300976996e-07 2.357508294e-07 6.284276803e-25 -9.528674146e-25 4.758635846e-25" />
+          <geom name="geom_output_lower_bearing" type="sdf" mesh="mesh_output_lower_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          <body name="output_upper_bearing" pos="0 0 0.005" quat="1 0 0 0">
+            <inertial pos="-6.496789612e-20 1.184166178e-19 0.0025" mass="0.00586669707" fullinertia="1.300977008e-07 1.300976996e-07 2.357508294e-07 6.284276803e-25 -9.528674146e-25 4.758635846e-25" />
+            <geom name="geom_output_upper_bearing" type="sdf" mesh="mesh_output_upper_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          </body>
+        </body>
+      </body>
+      <body name="input_shaft" pos="-0.0225 0 0.007" quat="1 0 0 0">
+        <inertial pos="-1.052128477e-20 -1.092970379e-19 0.01258659324" mass="0.01060281248" fullinertia="6.764484512e-07 6.76448451e-07 9.063625116e-08 2.677325028e-25 1.035240535e-24 -1.665098248e-23" />
+        <geom name="geom_input_shaft" type="sdf" mesh="mesh_input_shaft" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <joint name="input_shaft_hinge" type="hinge" axis="0 0 1" pos="0.0225 0 -0.007" />
+        <body name="input_pinion" pos="0 0 0.012" quat="1 0 0 0">
+          <inertial pos="-6.526045244e-20 -6.118167416e-21 0.003" mass="0.009116717632" fullinertia="2.685339552e-07 2.685339551e-07 4.823676045e-07 4.343216157e-24 -9.400385655e-24 2.628984438e-24" />
+          <geom name="geom_input_pinion" type="sdf" mesh="mesh_input_pinion" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        </body>
+        <body name="hand_crank" pos="0 0 0.021" quat="1 0 0 0">
+          <inertial pos="-2.98694565e-19 0.01584867508 0.004579158236" mass="0.01792684128" fullinertia="3.326929818e-06 6.027479771e-07 3.090580225e-06 -6.963310433e-23 -2.261591433e-23 -4.529131705e-07" />
+          <geom name="geom_hand_crank" type="sdf" mesh="mesh_hand_crank" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+          <body name="crank_grip" pos="0 0.028 0.005" quat="1 0 0 0">
+            <inertial pos="1.800266812e-20 -6.338732414e-20 0.008" mass="0.008262124166" fullinertia="2.579217151e-07 2.579217131e-07 1.633261305e-07 1.20851477e-26 -1.404108237e-23 -1.142313725e-23" />
+            <geom name="geom_crank_grip" type="sdf" mesh="mesh_crank_grip" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+            <joint name="crank_grip_hinge" type="hinge" axis="0 0 1" pos="0.0225 -0.028 -0.033" />
+          </body>
+        </body>
+      </body>
+      <body name="output_shaft" pos="0.0225 0 0.007" quat="1 0 0 0">
+        <inertial pos="6.202052454e-20 5.306299606e-20 0.01358468249" mass="0.01139165352" fullinertia="8.323960968e-07 8.323960966e-07 9.694436456e-08 3.748987308e-41 1.203714055e-23 2.680692836e-23" />
+        <geom name="geom_output_shaft" type="sdf" mesh="mesh_output_shaft" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <joint name="output_shaft_hinge" type="hinge" axis="0 0 1" pos="-0.0225 0 -0.007" />
+        <body name="output_gear" pos="0 0 0.012" quat="0.9994645875 0 0 0.03271908282">
+          <inertial pos="3.064947832e-19 -1.80484721e-19 0.003" mass="0.1863531466" fullinertia="6.119391609e-05 6.119391608e-05 0.0001212697133 2.665425806e-23 -1.865798064e-22 -1.95965318e-24" />
+          <geom name="geom_output_gear" type="sdf" mesh="mesh_output_gear" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <equality>
+    <joint name="spur_reduction_eq" joint1="output_shaft_hinge" joint2="input_shaft_hinge" polycoef="0 -0.25 0 0 0" />
+  </equality>
+  <contact>
+    <exclude body1="input_lower_bearing" body2="input_shaft" />
+    <exclude body1="input_upper_bearing" body2="input_shaft" />
+    <exclude body1="output_lower_bearing" body2="output_shaft" />
+    <exclude body1="output_upper_bearing" body2="output_shaft" />
+    <exclude body1="input_shaft" body2="input_pinion" />
+    <exclude body1="output_shaft" body2="output_gear" />
+    <exclude body1="input_shaft" body2="hand_crank" />
+    <exclude body1="hand_crank" body2="crank_grip" />
+    <exclude body1="input_pinion" body2="output_gear" />
+    <exclude body1="input_shaft" body2="input_bearing_pedestal" />
+    <exclude body1="input_shaft" body2="output_gear" />
+    <exclude body1="input_shaft" body2="base" />
+    <exclude body1="output_shaft" body2="output_bearing_pedestal" />
+    <exclude body1="output_shaft" body2="base" />
+    <exclude body1="input_pinion" body2="input_upper_bearing" />
+    <exclude body1="input_pinion" body2="hand_crank" />
+    <exclude body1="input_pinion" body2="input_lower_bearing" />
+    <exclude body1="input_pinion" body2="input_bearing_pedestal" />
+    <exclude body1="input_pinion" body2="input_thrust_washer" />
+    <exclude body1="input_pinion" body2="base" />
+    <exclude body1="input_pinion" body2="crank_grip" />
+    <exclude body1="output_gear" body2="input_upper_bearing" />
+    <exclude body1="output_gear" body2="output_upper_bearing" />
+    <exclude body1="output_gear" body2="hand_crank" />
+    <exclude body1="output_gear" body2="input_lower_bearing" />
+    <exclude body1="output_gear" body2="output_lower_bearing" />
+    <exclude body1="output_gear" body2="crank_grip" />
+    <exclude body1="output_gear" body2="bench_bolt_3" />
+    <exclude body1="output_gear" body2="bench_bolt_4" />
+    <exclude body1="output_gear" body2="input_bearing_pedestal" />
+    <exclude body1="output_gear" body2="output_bearing_pedestal" />
+    <exclude body1="output_gear" body2="input_thrust_washer" />
+    <exclude body1="output_gear" body2="output_thrust_washer" />
+    <exclude body1="output_gear" body2="base" />
+    <exclude body1="output_gear" body2="bench_bolt_1" />
+    <exclude body1="output_gear" body2="bench_bolt_2" />
+    <exclude body1="hand_crank" body2="input_upper_bearing" />
+    <exclude body1="hand_crank" body2="input_lower_bearing" />
+    <exclude body1="hand_crank" body2="input_bearing_pedestal" />
+    <exclude body1="hand_crank" body2="input_thrust_washer" />
+    <exclude body1="hand_crank" body2="base" />
+  </contact>
+</mujoco>

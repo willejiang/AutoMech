@@ -1,0 +1,248 @@
+{
+  "active_closures": [
+    {
+      "name": "planetary_carrier",
+      "type": "joint"
+    },
+    {
+      "name": "planetary_planet_1",
+      "type": "joint"
+    },
+    {
+      "name": "planetary_planet_2",
+      "type": "joint"
+    },
+    {
+      "name": "planetary_planet_3",
+      "type": "joint"
+    }
+  ],
+  "actuator_policy_ok": true,
+  "actuators": [
+    {
+      "is_registered_input": true,
+      "joint": "sun_input_hinge",
+      "name": "hand_crank_drive",
+      "type": "position"
+    }
+  ],
+  "analyzer_version": "external-model-audit/1.0",
+  "authored_transmissions": [
+    {
+      "driven": "carrier_output_hinge",
+      "driving": "sun_input_hinge",
+      "name": "sun_to_carrier",
+      "ratio": 0.25
+    },
+    {
+      "driven": "planet_pin_hinge_1",
+      "driving": "sun_input_hinge",
+      "name": "sun_to_planet_local_1",
+      "ratio": -0.75
+    },
+    {
+      "driven": "planet_pin_hinge_2",
+      "driving": "sun_input_hinge",
+      "name": "sun_to_planet_local_2",
+      "ratio": -0.75
+    },
+    {
+      "driven": "planet_pin_hinge_3",
+      "driving": "sun_input_hinge",
+      "name": "sun_to_planet_local_3",
+      "ratio": -0.75
+    }
+  ],
+  "closure_ok": true,
+  "collision_coverage": [
+    {
+      "active_collision_geoms": [
+        "base_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 8,
+      "covered": true,
+      "link": "base"
+    },
+    {
+      "active_collision_geoms": [
+        "ring_collision_0",
+        "ring_collision_1",
+        "ring_collision_2",
+        "ring_collision_3",
+        "ring_collision_4",
+        "ring_collision_5",
+        "ring_collision_6",
+        "ring_collision_7",
+        "ring_collision_8",
+        "ring_collision_9",
+        "ring_collision_10",
+        "ring_collision_11"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 13,
+      "covered": true,
+      "link": "ring_gear"
+    },
+    {
+      "active_collision_geoms": [
+        "sun_gear_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 3,
+      "covered": true,
+      "link": "sun_gear"
+    },
+    {
+      "active_collision_geoms": [
+        "carrier_hub_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 2,
+      "covered": true,
+      "link": "carrier"
+    },
+    {
+      "active_collision_geoms": [
+        "planet_gear_1_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 2,
+      "covered": true,
+      "link": "planet_gear_1"
+    },
+    {
+      "active_collision_geoms": [
+        "planet_gear_2_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 2,
+      "covered": true,
+      "link": "planet_gear_2"
+    },
+    {
+      "active_collision_geoms": [
+        "planet_gear_3_collision"
+      ],
+      "body_present": true,
+      "candidate_geom_count": 2,
+      "covered": true,
+      "link": "planet_gear_3"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "planet_pin_1"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "planet_pin_2"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "planet_pin_3"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": false,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "sun_shaft"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": true,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "hand_crank"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": false,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "upper_bearing"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": false,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "lower_bearing"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": false,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "ring_support_1"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": false,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "ring_support_2"
+    },
+    {
+      "active_collision_geoms": [],
+      "body_present": false,
+      "candidate_geom_count": 1,
+      "covered": false,
+      "link": "ring_support_3"
+    }
+  ],
+  "collision_coverage_ok": false,
+  "equality_checks": [
+    {
+      "detail": "carrier_output_hinge=0.25*sun_input_hinge matches ratio 0.25",
+      "driven": "carrier_output_hinge",
+      "driving": "sun_input_hinge",
+      "matched": true,
+      "name": "sun_to_carrier",
+      "ratio": 0.25
+    },
+    {
+      "detail": "planet_pin_hinge_1=-0.75*sun_input_hinge matches ratio -0.75",
+      "driven": "planet_pin_hinge_1",
+      "driving": "sun_input_hinge",
+      "matched": true,
+      "name": "sun_to_planet_local_1",
+      "ratio": -0.75
+    },
+    {
+      "detail": "planet_pin_hinge_2=-0.75*sun_input_hinge matches ratio -0.75",
+      "driven": "planet_pin_hinge_2",
+      "driving": "sun_input_hinge",
+      "matched": true,
+      "name": "sun_to_planet_local_2",
+      "ratio": -0.75
+    },
+    {
+      "detail": "planet_pin_hinge_3=-0.75*sun_input_hinge matches ratio -0.75",
+      "driven": "planet_pin_hinge_3",
+      "driving": "sun_input_hinge",
+      "matched": true,
+      "name": "sun_to_planet_local_3",
+      "ratio": -0.75
+    }
+  ],
+  "errors": [
+    "one or more physical mesh links lack active collision coverage"
+  ],
+  "passed": false,
+  "registered_input_joints": [
+    "sun_input_hinge"
+  ],
+  "schema": "physcad-scorer-model-audit/1.0",
+  "task_id": "05_three_planet_4to1",
+  "transmission_binding_ok": true
+}

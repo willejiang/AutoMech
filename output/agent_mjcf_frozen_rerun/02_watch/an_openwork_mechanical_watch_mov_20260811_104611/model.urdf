@@ -1,0 +1,684 @@
+<?xml version='1.0' encoding='ASCII'?>
+<robot name="an_openwork_mechanical_watch_mov">
+  <link name="world"/>
+  <link name="baseplate">
+    <visual name="baseplate_visual">
+      <geometry>
+        <mesh filename="meshes/baseplate.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="baseplate_mat">
+        <color rgba="0.82 0.27 0.24 1.0"/>
+      </material>
+    </visual>
+    <collision name="baseplate_collision">
+      <geometry>
+        <mesh filename="meshes/baseplate.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="central_lower_bearing">
+    <visual name="central_lower_bearing_visual">
+      <geometry>
+        <mesh filename="meshes/central_lower_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="central_lower_bearing_mat">
+        <color rgba="0.27 0.51 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="central_lower_bearing_collision">
+      <geometry>
+        <mesh filename="meshes/central_lower_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="intermediate_lower_bearing">
+    <visual name="intermediate_lower_bearing_visual">
+      <geometry>
+        <mesh filename="meshes/intermediate_lower_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="intermediate_lower_bearing_mat">
+        <color rgba="0.35 0.71 0.35 1.0"/>
+      </material>
+    </visual>
+    <collision name="intermediate_lower_bearing_collision">
+      <geometry>
+        <mesh filename="meshes/intermediate_lower_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="bridge_post_low">
+    <visual name="bridge_post_low_visual">
+      <geometry>
+        <mesh filename="meshes/bridge_post_low.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="bridge_post_low_mat">
+        <color rgba="0.9 0.67 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision name="bridge_post_low_collision">
+      <geometry>
+        <mesh filename="meshes/bridge_post_low.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="bridge_post_high">
+    <visual name="bridge_post_high_visual">
+      <geometry>
+        <mesh filename="meshes/bridge_post_high.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="bridge_post_high_mat">
+        <color rgba="0.59 0.39 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="bridge_post_high_collision">
+      <geometry>
+        <mesh filename="meshes/bridge_post_high.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="upper_bridge">
+    <visual name="upper_bridge_visual">
+      <geometry>
+        <mesh filename="meshes/upper_bridge.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="upper_bridge_mat">
+        <color rgba="0.24 0.75 0.75 1.0"/>
+      </material>
+    </visual>
+    <collision name="upper_bridge_collision">
+      <geometry>
+        <mesh filename="meshes/upper_bridge.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="central_upper_bearing">
+    <visual name="central_upper_bearing_visual">
+      <geometry>
+        <mesh filename="meshes/central_upper_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="central_upper_bearing_mat">
+        <color rgba="0.86 0.47 0.67 1.0"/>
+      </material>
+    </visual>
+    <collision name="central_upper_bearing_collision">
+      <geometry>
+        <mesh filename="meshes/central_upper_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="intermediate_upper_bearing">
+    <visual name="intermediate_upper_bearing_visual">
+      <geometry>
+        <mesh filename="meshes/intermediate_upper_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="intermediate_upper_bearing_mat">
+        <color rgba="0.63 0.63 0.31 1.0"/>
+      </material>
+    </visual>
+    <collision name="intermediate_upper_bearing_collision">
+      <geometry>
+        <mesh filename="meshes/intermediate_upper_bearing.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="minute_shaft">
+    <visual name="minute_shaft_visual">
+      <geometry>
+        <mesh filename="meshes/minute_shaft.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="minute_shaft_mat">
+        <color rgba="0.47 0.43 0.39 1.0"/>
+      </material>
+    </visual>
+    <collision name="minute_shaft_collision">
+      <geometry>
+        <mesh filename="meshes/minute_shaft.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="intermediate_arbor">
+    <visual name="intermediate_arbor_visual">
+      <geometry>
+        <mesh filename="meshes/intermediate_arbor.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="intermediate_arbor_mat">
+        <color rgba="0.78 0.78 0.82 1.0"/>
+      </material>
+    </visual>
+    <collision name="intermediate_arbor_collision">
+      <geometry>
+        <mesh filename="meshes/intermediate_arbor.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="minute_pinion">
+    <visual name="minute_pinion_visual">
+      <geometry>
+        <mesh filename="meshes/minute_pinion.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="minute_pinion_mat">
+        <color rgba="0.71 0.35 0.24 1.0"/>
+      </material>
+    </visual>
+    <collision name="minute_pinion_collision">
+      <geometry>
+        <mesh filename="meshes/minute_pinion.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="intermediate_wheel">
+    <visual name="intermediate_wheel_visual">
+      <geometry>
+        <mesh filename="meshes/intermediate_wheel.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="intermediate_wheel_mat">
+        <color rgba="0.31 0.59 0.47 1.0"/>
+      </material>
+    </visual>
+    <collision name="intermediate_wheel_collision">
+      <geometry>
+        <mesh filename="meshes/intermediate_wheel.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="hour_pipe">
+    <visual name="hour_pipe_visual">
+      <geometry>
+        <mesh filename="meshes/hour_pipe.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="hour_pipe_mat">
+        <color rgba="0.82 0.27 0.24 1.0"/>
+      </material>
+    </visual>
+    <collision name="hour_pipe_collision">
+      <geometry>
+        <mesh filename="meshes/hour_pipe.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="intermediate_pinion">
+    <visual name="intermediate_pinion_visual">
+      <geometry>
+        <mesh filename="meshes/intermediate_pinion.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="intermediate_pinion_mat">
+        <color rgba="0.27 0.51 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="intermediate_pinion_collision">
+      <geometry>
+        <mesh filename="meshes/intermediate_pinion.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="hour_wheel">
+    <visual name="hour_wheel_visual">
+      <geometry>
+        <mesh filename="meshes/hour_wheel.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="hour_wheel_mat">
+        <color rgba="0.35 0.71 0.35 1.0"/>
+      </material>
+    </visual>
+    <collision name="hour_wheel_collision">
+      <geometry>
+        <mesh filename="meshes/hour_wheel.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="dial_post_1">
+    <visual name="dial_post_1_visual">
+      <geometry>
+        <mesh filename="meshes/dial_post_1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="dial_post_1_mat">
+        <color rgba="0.9 0.67 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision name="dial_post_1_collision">
+      <geometry>
+        <mesh filename="meshes/dial_post_1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="dial_post_2">
+    <visual name="dial_post_2_visual">
+      <geometry>
+        <mesh filename="meshes/dial_post_2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="dial_post_2_mat">
+        <color rgba="0.59 0.39 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="dial_post_2_collision">
+      <geometry>
+        <mesh filename="meshes/dial_post_2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="dial_post_3">
+    <visual name="dial_post_3_visual">
+      <geometry>
+        <mesh filename="meshes/dial_post_3.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="dial_post_3_mat">
+        <color rgba="0.24 0.75 0.75 1.0"/>
+      </material>
+    </visual>
+    <collision name="dial_post_3_collision">
+      <geometry>
+        <mesh filename="meshes/dial_post_3.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="dial_post_4">
+    <visual name="dial_post_4_visual">
+      <geometry>
+        <mesh filename="meshes/dial_post_4.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="dial_post_4_mat">
+        <color rgba="0.86 0.47 0.67 1.0"/>
+      </material>
+    </visual>
+    <collision name="dial_post_4_collision">
+      <geometry>
+        <mesh filename="meshes/dial_post_4.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="chapter_ring">
+    <visual name="chapter_ring_visual">
+      <geometry>
+        <mesh filename="meshes/chapter_ring.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="chapter_ring_mat">
+        <color rgba="0.63 0.63 0.31 1.0"/>
+      </material>
+    </visual>
+    <collision name="chapter_ring_collision">
+      <geometry>
+        <mesh filename="meshes/chapter_ring.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="hour_marker_1">
+    <visual name="hour_marker_1_visual">
+      <geometry>
+        <mesh filename="meshes/hour_marker_1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="hour_marker_1_mat">
+        <color rgba="0.47 0.43 0.39 1.0"/>
+      </material>
+    </visual>
+    <collision name="hour_marker_1_collision">
+      <geometry>
+        <mesh filename="meshes/hour_marker_1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="hour_marker_2">
+    <visual name="hour_marker_2_visual">
+      <geometry>
+        <mesh filename="meshes/hour_marker_2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="hour_marker_2_mat">
+        <color rgba="0.78 0.78 0.82 1.0"/>
+      </material>
+    </visual>
+    <collision name="hour_marker_2_collision">
+      <geometry>
+        <mesh filename="meshes/hour_marker_2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="hour_marker_3">
+    <visual name="hour_marker_3_visual">
+      <geometry>
+        <mesh filename="meshes/hour_marker_3.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="hour_marker_3_mat">
+        <color rgba="0.71 0.35 0.24 1.0"/>
+      </material>
+    </visual>
+    <collision name="hour_marker_3_collision">
+      <geometry>
+        <mesh filename="meshes/hour_marker_3.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="hour_marker_4">
+    <visual name="hour_marker_4_visual">
+      <geometry>
+        <mesh filename="meshes/hour_marker_4.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="hour_marker_4_mat">
+        <color rgba="0.31 0.59 0.47 1.0"/>
+      </material>
+    </visual>
+    <collision name="hour_marker_4_collision">
+      <geometry>
+        <mesh filename="meshes/hour_marker_4.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="hour_marker_5">
+    <visual name="hour_marker_5_visual">
+      <geometry>
+        <mesh filename="meshes/hour_marker_5.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="hour_marker_5_mat">
+        <color rgba="0.82 0.27 0.24 1.0"/>
+      </material>
+    </visual>
+    <collision name="hour_marker_5_collision">
+      <geometry>
+        <mesh filename="meshes/hour_marker_5.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="hour_marker_6">
+    <visual name="hour_marker_6_visual">
+      <geometry>
+        <mesh filename="meshes/hour_marker_6.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="hour_marker_6_mat">
+        <color rgba="0.27 0.51 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="hour_marker_6_collision">
+      <geometry>
+        <mesh filename="meshes/hour_marker_6.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="hour_marker_7">
+    <visual name="hour_marker_7_visual">
+      <geometry>
+        <mesh filename="meshes/hour_marker_7.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="hour_marker_7_mat">
+        <color rgba="0.35 0.71 0.35 1.0"/>
+      </material>
+    </visual>
+    <collision name="hour_marker_7_collision">
+      <geometry>
+        <mesh filename="meshes/hour_marker_7.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="hour_marker_8">
+    <visual name="hour_marker_8_visual">
+      <geometry>
+        <mesh filename="meshes/hour_marker_8.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="hour_marker_8_mat">
+        <color rgba="0.9 0.67 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision name="hour_marker_8_collision">
+      <geometry>
+        <mesh filename="meshes/hour_marker_8.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="hour_marker_9">
+    <visual name="hour_marker_9_visual">
+      <geometry>
+        <mesh filename="meshes/hour_marker_9.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="hour_marker_9_mat">
+        <color rgba="0.59 0.39 0.78 1.0"/>
+      </material>
+    </visual>
+    <collision name="hour_marker_9_collision">
+      <geometry>
+        <mesh filename="meshes/hour_marker_9.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="hour_marker_10">
+    <visual name="hour_marker_10_visual">
+      <geometry>
+        <mesh filename="meshes/hour_marker_10.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="hour_marker_10_mat">
+        <color rgba="0.24 0.75 0.75 1.0"/>
+      </material>
+    </visual>
+    <collision name="hour_marker_10_collision">
+      <geometry>
+        <mesh filename="meshes/hour_marker_10.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="hour_marker_11">
+    <visual name="hour_marker_11_visual">
+      <geometry>
+        <mesh filename="meshes/hour_marker_11.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="hour_marker_11_mat">
+        <color rgba="0.86 0.47 0.67 1.0"/>
+      </material>
+    </visual>
+    <collision name="hour_marker_11_collision">
+      <geometry>
+        <mesh filename="meshes/hour_marker_11.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="hour_marker_12">
+    <visual name="hour_marker_12_visual">
+      <geometry>
+        <mesh filename="meshes/hour_marker_12.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="hour_marker_12_mat">
+        <color rgba="0.63 0.63 0.31 1.0"/>
+      </material>
+    </visual>
+    <collision name="hour_marker_12_collision">
+      <geometry>
+        <mesh filename="meshes/hour_marker_12.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="hour_hand">
+    <visual name="hour_hand_visual">
+      <geometry>
+        <mesh filename="meshes/hour_hand.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="hour_hand_mat">
+        <color rgba="0.47 0.43 0.39 1.0"/>
+      </material>
+    </visual>
+    <collision name="hour_hand_collision">
+      <geometry>
+        <mesh filename="meshes/hour_hand.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="minute_hand">
+    <visual name="minute_hand_visual">
+      <geometry>
+        <mesh filename="meshes/minute_hand.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="minute_hand_mat">
+        <color rgba="0.78 0.78 0.82 1.0"/>
+      </material>
+    </visual>
+    <collision name="minute_hand_collision">
+      <geometry>
+        <mesh filename="meshes/minute_hand.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="place_central_lower_bearing" type="fixed">
+    <parent link="baseplate"/>
+    <child link="central_lower_bearing"/>
+    <origin xyz="0.0 0.0 0.002" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_intermediate_lower_bearing" type="fixed">
+    <parent link="baseplate"/>
+    <child link="intermediate_lower_bearing"/>
+    <origin xyz="0.012 0.0 0.002" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_bridge_post_low" type="fixed">
+    <parent link="baseplate"/>
+    <child link="bridge_post_low"/>
+    <origin xyz="0.006 -0.0132 0.002" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_bridge_post_high" type="fixed">
+    <parent link="baseplate"/>
+    <child link="bridge_post_high"/>
+    <origin xyz="0.006 0.0132 0.002" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_upper_bridge" type="fixed">
+    <parent link="bridge_post_low"/>
+    <child link="upper_bridge"/>
+    <origin xyz="-0.006 0.0132 0.015" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_central_upper_bearing" type="fixed">
+    <parent link="upper_bridge"/>
+    <child link="central_upper_bearing"/>
+    <origin xyz="0.0 0.0 -0.0015" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_intermediate_upper_bearing" type="fixed">
+    <parent link="upper_bridge"/>
+    <child link="intermediate_upper_bearing"/>
+    <origin xyz="0.012 0.0 -0.0015" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_minute_shaft" type="fixed">
+    <parent link="central_lower_bearing"/>
+    <child link="minute_shaft"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_intermediate_arbor" type="fixed">
+    <parent link="intermediate_lower_bearing"/>
+    <child link="intermediate_arbor"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_minute_pinion" type="fixed">
+    <parent link="minute_shaft"/>
+    <child link="minute_pinion"/>
+    <origin xyz="0.0 0.0 0.0025" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_intermediate_wheel" type="fixed">
+    <parent link="intermediate_arbor"/>
+    <child link="intermediate_wheel"/>
+    <origin xyz="0.0 0.0 0.0025" rpy="0.0 -0.0 0.10471975511965981"/>
+  </joint>
+  <joint name="place_hour_pipe" type="fixed">
+    <parent link="central_upper_bearing"/>
+    <child link="hour_pipe"/>
+    <origin xyz="0.0 0.0 -0.009" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_intermediate_pinion" type="fixed">
+    <parent link="intermediate_arbor"/>
+    <child link="intermediate_pinion"/>
+    <origin xyz="0.0 0.0 0.007" rpy="0.0 -0.0 0.10471975511965981"/>
+  </joint>
+  <joint name="place_hour_wheel" type="fixed">
+    <parent link="hour_pipe"/>
+    <child link="hour_wheel"/>
+    <origin xyz="0.0 0.0 0.0025" rpy="0.0 -0.0 0.2028945255443408"/>
+  </joint>
+  <joint name="place_dial_post_1" type="fixed">
+    <parent link="baseplate"/>
+    <child link="dial_post_1"/>
+    <origin xyz="0.026600000000000002 0.0 0.002" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_dial_post_2" type="fixed">
+    <parent link="baseplate"/>
+    <child link="dial_post_2"/>
+    <origin xyz="-0.026600000000000002 0.0 0.002" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_dial_post_3" type="fixed">
+    <parent link="baseplate"/>
+    <child link="dial_post_3"/>
+    <origin xyz="0.0 0.026600000000000002 0.002" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_dial_post_4" type="fixed">
+    <parent link="baseplate"/>
+    <child link="dial_post_4"/>
+    <origin xyz="0.0 -0.026600000000000002 0.002" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_chapter_ring" type="fixed">
+    <parent link="dial_post_1"/>
+    <child link="chapter_ring"/>
+    <origin xyz="-0.026600000000000002 0.0 0.018" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_hour_marker_1" type="fixed">
+    <parent link="chapter_ring"/>
+    <child link="hour_marker_1"/>
+    <origin xyz="0.0 0.0258 0.0008000000000000007" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_hour_marker_2" type="fixed">
+    <parent link="chapter_ring"/>
+    <child link="hour_marker_2"/>
+    <origin xyz="0.012899999999999998 0.02234345541763852 0.0008000000000000007" rpy="0.0 -0.0 -0.5235987755982988"/>
+  </joint>
+  <joint name="place_hour_marker_3" type="fixed">
+    <parent link="chapter_ring"/>
+    <child link="hour_marker_3"/>
+    <origin xyz="0.022343455417638516 0.012900000000000003 0.0008000000000000007" rpy="0.0 -0.0 -1.0471975511965976"/>
+  </joint>
+  <joint name="place_hour_marker_4" type="fixed">
+    <parent link="chapter_ring"/>
+    <child link="hour_marker_4"/>
+    <origin xyz="0.0258 1.5797943709000856e-18 0.0008000000000000007" rpy="0.0 -0.0 -1.5707963267948966"/>
+  </joint>
+  <joint name="place_hour_marker_5" type="fixed">
+    <parent link="chapter_ring"/>
+    <child link="hour_marker_5"/>
+    <origin xyz="0.02234345541763852 -0.012899999999999995 0.0008000000000000007" rpy="0.0 -0.0 -2.0943951023931953"/>
+  </joint>
+  <joint name="place_hour_marker_6" type="fixed">
+    <parent link="chapter_ring"/>
+    <child link="hour_marker_6"/>
+    <origin xyz="0.012899999999999998 -0.02234345541763852 0.0008000000000000007" rpy="0.0 -0.0 -2.6179938779914944"/>
+  </joint>
+  <joint name="place_hour_marker_7" type="fixed">
+    <parent link="chapter_ring"/>
+    <child link="hour_marker_7"/>
+    <origin xyz="3.1595887418001713e-18 -0.0258 0.0008000000000000007" rpy="0.0 -0.0 -3.141592653589793"/>
+  </joint>
+  <joint name="place_hour_marker_8" type="fixed">
+    <parent link="chapter_ring"/>
+    <child link="hour_marker_8"/>
+    <origin xyz="-0.012900000000000003 -0.022343455417638516 0.0008000000000000007" rpy="0.0 -0.0 2.617993877991494"/>
+  </joint>
+  <joint name="place_hour_marker_9" type="fixed">
+    <parent link="chapter_ring"/>
+    <child link="hour_marker_9"/>
+    <origin xyz="-0.022343455417638512 -0.01290000000000001 0.0008000000000000007" rpy="0.0 -0.0 2.094395102393196"/>
+  </joint>
+  <joint name="place_hour_marker_10" type="fixed">
+    <parent link="chapter_ring"/>
+    <child link="hour_marker_10"/>
+    <origin xyz="-0.0258 -4.739383112700257e-18 0.0008000000000000007" rpy="0.0 -0.0 1.5707963267948968"/>
+  </joint>
+  <joint name="place_hour_marker_11" type="fixed">
+    <parent link="chapter_ring"/>
+    <child link="hour_marker_11"/>
+    <origin xyz="-0.022343455417638516 0.012900000000000003 0.0008000000000000007" rpy="0.0 -0.0 1.0471975511965976"/>
+  </joint>
+  <joint name="place_hour_marker_12" type="fixed">
+    <parent link="chapter_ring"/>
+    <child link="hour_marker_12"/>
+    <origin xyz="-0.01290000000000001 0.02234345541763851 0.0008000000000000007" rpy="0.0 -0.0 0.5235987755982994"/>
+  </joint>
+  <joint name="place_hour_hand" type="fixed">
+    <parent link="hour_pipe"/>
+    <child link="hour_hand"/>
+    <origin xyz="0.0 0.0 0.0145" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="place_minute_hand" type="fixed">
+    <parent link="minute_shaft"/>
+    <child link="minute_hand"/>
+    <origin xyz="0.0 0.0 0.02" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="world_to_baseplate" type="fixed">
+    <parent link="world"/>
+    <child link="baseplate"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+</robot>

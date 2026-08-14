@@ -1,0 +1,61 @@
+<mujoco model="openwork_clock_12to1">
+  <compiler angle="radian" meshdir="meshes" autolimits="true" balanceinertia="true" />
+  <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast" />
+  <size njmax="500" nconmax="200" />
+  <default>
+    <joint damping="0.02" armature="0.00002" />
+    <geom contype="1" conaffinity="1" friction="0.5 0.02 0.002" density="780" rgba="0.65 0.67 0.70 1" />
+  </default>
+  <asset>
+    <mesh name="base_frame_mesh" file="base_frame.stl" scale="0.001 0.001 0.001" />
+    <mesh name="minute_shaft_mesh" file="minute_shaft.stl" scale="0.001 0.001 0.001" />
+    <mesh name="minute_pinion_15t_mesh" file="minute_pinion_15t.stl" scale="0.001 0.001 0.001" />
+    <mesh name="minute_hand_mesh" file="minute_hand.stl" scale="0.001 0.001 0.001" />
+    <mesh name="intermediate_shaft_mesh" file="intermediate_shaft.stl" scale="0.001 0.001 0.001" />
+    <mesh name="intermediate_gear_45t_mesh" file="intermediate_gear_45t.stl" scale="0.001 0.001 0.001" />
+    <mesh name="intermediate_pinion_12t_mesh" file="intermediate_pinion_12t.stl" scale="0.001 0.001 0.001" />
+    <mesh name="hour_sleeve_mesh" file="hour_sleeve.stl" scale="0.001 0.001 0.001" />
+    <mesh name="hour_gear_48t_mesh" file="hour_gear_48t.stl" scale="0.001 0.001 0.001" />
+    <mesh name="hour_hand_mesh" file="hour_hand.stl" scale="0.001 0.001 0.001" />
+    <material name="frame_mat" rgba="0.18 0.22 0.28 1" />
+    <material name="minute_mat" rgba="0.15 0.48 0.88 1" />
+    <material name="intermediate_mat" rgba="0.88 0.52 0.12 1" />
+    <material name="hour_mat" rgba="0.82 0.18 0.18 1" />
+  </asset>
+  <worldbody>
+    <light pos="0 -0.5 0.5" dir="0 1 -0.4" diffuse="0.9 0.9 0.9" />
+    <geom name="ground" type="plane" size="0.5 0.5 0.01" material="frame_mat" contype="1" conaffinity="1" />
+    <body name="base_frame">
+      <geom name="base_frame_geom" type="mesh" mesh="base_frame_mesh" material="frame_mat" contype="1" conaffinity="1" />
+    </body>
+    <body name="minute_shaft" pos="0 0 0.112">
+      <joint name="minute_input_hinge" type="hinge" pos="0 0 0" axis="0 1 0" />
+      <geom name="minute_shaft_geom" type="mesh" mesh="minute_shaft_mesh" pos="0 0 -0.112" material="minute_mat" contype="0" conaffinity="0" />
+      <geom name="minute_pinion_15t" type="mesh" mesh="minute_pinion_15t_mesh" pos="0 0 -0.112" material="minute_mat" contype="0" conaffinity="0" />
+      <body name="minute_hand">
+        <geom name="minute_hand_geom" type="mesh" mesh="minute_hand_mesh" pos="0 0 -0.112" material="minute_mat" contype="0" conaffinity="0" />
+      </body>
+    </body>
+    <body name="intermediate_shaft" pos="0.060 0 0.112">
+      <joint name="intermediate_hinge" type="hinge" pos="0 0 0" axis="0 1 0" />
+      <geom name="intermediate_shaft_geom" type="mesh" mesh="intermediate_shaft_mesh" pos="-0.060 0 -0.112" material="intermediate_mat" contype="0" conaffinity="0" />
+      <geom name="intermediate_gear_45t" type="mesh" mesh="intermediate_gear_45t_mesh" pos="-0.060 0 -0.112" material="intermediate_mat" contype="0" conaffinity="0" />
+      <geom name="intermediate_pinion_12t" type="mesh" mesh="intermediate_pinion_12t_mesh" pos="-0.060 0 -0.112" material="intermediate_mat" contype="0" conaffinity="0" />
+    </body>
+    <body name="hour_sleeve" pos="0 0 0.112">
+      <joint name="hour_output_hinge" type="hinge" pos="0 0 0" axis="0 1 0" />
+      <geom name="hour_sleeve_geom" type="mesh" mesh="hour_sleeve_mesh" pos="0 0 -0.112" material="hour_mat" contype="0" conaffinity="0" />
+      <geom name="hour_gear_48t" type="mesh" mesh="hour_gear_48t_mesh" pos="0 0 -0.112" material="hour_mat" contype="0" conaffinity="0" />
+      <body name="hour_hand">
+        <geom name="hour_hand_geom" type="mesh" mesh="hour_hand_mesh" pos="0 0 -0.112" material="hour_mat" contype="0" conaffinity="0" />
+      </body>
+    </body>
+  </worldbody>
+  <equality>
+    <joint name="stage_1_ideal_mesh" joint1="intermediate_hinge" joint2="minute_input_hinge" polycoef="0 -0.3333333333333333 0 0 0" solref="0.001 1" />
+    <joint name="stage_2_ideal_mesh" joint1="hour_output_hinge" joint2="intermediate_hinge" polycoef="0 -0.25 0 0 0" solref="0.001 1" />
+  </equality>
+  <actuator>
+    <velocity name="minute_input_motor" joint="minute_input_hinge" kv="20" ctrlrange="-4 4" />
+  </actuator>
+</mujoco>

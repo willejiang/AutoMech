@@ -1,0 +1,2362 @@
+{
+  "manifest_version": 3,
+  "engine": "mujoco-agent",
+  "topology_plan": {
+    "coordinate_map": {
+      "base_frame": null,
+      "base_bolt_1": null,
+      "base_bolt_2": null,
+      "base_bolt_3": null,
+      "base_bolt_4": null,
+      "yaw_pin": null,
+      "yaw_thrust_bearing": null,
+      "yaw_carriage": "base_yaw_revolute",
+      "shoulder_pin": "base_yaw_revolute",
+      "shoulder_link": "shoulder_pitch_revolute",
+      "elbow_pin": "shoulder_pitch_revolute",
+      "elbow_link": "elbow_pitch_revolute",
+      "wrist_pin": "elbow_pitch_revolute",
+      "wrist_link": "wrist_pitch_revolute",
+      "end_effector_pointer": "wrist_pitch_revolute"
+    },
+    "tree_edges": [
+      [
+        "base_frame",
+        "yaw_carriage",
+        "base_yaw_revolute"
+      ],
+      [
+        "yaw_carriage",
+        "shoulder_link",
+        "shoulder_pitch_revolute"
+      ],
+      [
+        "shoulder_link",
+        "elbow_link",
+        "elbow_pitch_revolute"
+      ],
+      [
+        "elbow_link",
+        "wrist_link",
+        "wrist_pitch_revolute"
+      ]
+    ],
+    "closure_edges": [],
+    "rigid_carried": [
+      [
+        "base_frame",
+        "base_bolt_1"
+      ],
+      [
+        "base_frame",
+        "base_bolt_2"
+      ],
+      [
+        "base_frame",
+        "base_bolt_3"
+      ],
+      [
+        "base_frame",
+        "base_bolt_4"
+      ],
+      [
+        "base_frame",
+        "yaw_pin"
+      ],
+      [
+        "base_frame",
+        "yaw_thrust_bearing"
+      ],
+      [
+        "yaw_carriage",
+        "shoulder_pin"
+      ],
+      [
+        "shoulder_link",
+        "elbow_pin"
+      ],
+      [
+        "elbow_link",
+        "wrist_pin"
+      ],
+      [
+        "wrist_link",
+        "end_effector_pointer"
+      ]
+    ],
+    "independent_coaxial": [
+      [
+        "yaw_pin",
+        "yaw_carriage"
+      ],
+      [
+        "shoulder_pin",
+        "shoulder_link"
+      ],
+      [
+        "elbow_pin",
+        "elbow_link"
+      ],
+      [
+        "wrist_pin",
+        "wrist_link"
+      ]
+    ],
+    "transmissions": [],
+    "contact_decisions": [
+      {
+        "pair": [
+          "base_frame",
+          "yaw_pin"
+        ],
+        "action": "exclude",
+        "reason": "interference press fit rigidly fixes yaw pin",
+        "source_entity_ids": [
+          "port/base_frame/yaw_axis",
+          "port/yaw_pin/yaw_shaft"
+        ],
+        "fact_ids": [
+          "fit/base_frame/yaw_axis/yaw_pin/yaw_shaft",
+          "pair/base_frame/yaw_pin"
+        ]
+      },
+      {
+        "pair": [
+          "yaw_carriage",
+          "yaw_pin"
+        ],
+        "action": "exclude",
+        "reason": "clearance running fit represented by yaw hinge",
+        "source_entity_ids": [
+          "port/yaw_carriage/yaw_bore",
+          "port/yaw_pin/yaw_shaft",
+          "motion_joint/base_yaw_revolute"
+        ],
+        "fact_ids": [
+          "fit/yaw_pin/yaw_shaft/yaw_carriage/yaw_bore",
+          "pair/yaw_carriage/yaw_pin",
+          "nearby/yaw_carriage/yaw_pin"
+        ]
+      },
+      {
+        "pair": [
+          "yaw_carriage",
+          "yaw_thrust_bearing"
+        ],
+        "action": "exclude",
+        "reason": "thrust bearing interface represented by yaw hinge",
+        "source_entity_ids": [
+          "link/yaw_thrust_bearing",
+          "motion_joint/base_yaw_revolute"
+        ],
+        "fact_ids": [
+          "pair/yaw_carriage/yaw_thrust_bearing",
+          "nearby/yaw_carriage/yaw_thrust_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "yaw_carriage",
+          "shoulder_pin"
+        ],
+        "action": "exclude",
+        "reason": "dedicated pin rigidly carried by carriage clevis",
+        "source_entity_ids": [
+          "port/yaw_carriage/shoulder_clevis",
+          "port/shoulder_pin/shaft"
+        ],
+        "fact_ids": [
+          "fit/yaw_carriage/shoulder_clevis/shoulder_pin/shaft",
+          "pair/shoulder_pin/yaw_carriage",
+          "nearby/shoulder_pin/yaw_carriage"
+        ]
+      },
+      {
+        "pair": [
+          "yaw_carriage",
+          "shoulder_link"
+        ],
+        "action": "keep",
+        "reason": "independent adjacent structures may collide; overlap uncertain",
+        "source_entity_ids": [
+          "motion_joint/shoulder_pitch_revolute"
+        ],
+        "fact_ids": [
+          "pair/shoulder_link/yaw_carriage",
+          "nearby/shoulder_link/yaw_carriage"
+        ]
+      },
+      {
+        "pair": [
+          "shoulder_link",
+          "shoulder_pin"
+        ],
+        "action": "exclude",
+        "reason": "clearance running fit represented by shoulder hinge",
+        "source_entity_ids": [
+          "port/shoulder_link/shoulder_eye",
+          "port/shoulder_pin/shaft",
+          "motion_joint/shoulder_pitch_revolute"
+        ],
+        "fact_ids": [
+          "fit/shoulder_pin/shaft/shoulder_link/shoulder_eye",
+          "pair/shoulder_link/shoulder_pin",
+          "nearby/shoulder_link/shoulder_pin"
+        ]
+      },
+      {
+        "pair": [
+          "shoulder_link",
+          "elbow_pin"
+        ],
+        "action": "exclude",
+        "reason": "dedicated pin rigidly carried by shoulder clevis",
+        "source_entity_ids": [
+          "port/shoulder_link/elbow_clevis",
+          "port/elbow_pin/shaft"
+        ],
+        "fact_ids": [
+          "fit/shoulder_link/elbow_clevis/elbow_pin/shaft",
+          "pair/elbow_pin/shoulder_link",
+          "nearby/elbow_pin/shoulder_link"
+        ]
+      },
+      {
+        "pair": [
+          "shoulder_link",
+          "elbow_link"
+        ],
+        "action": "keep",
+        "reason": "independent adjacent structures may collide; overlap uncertain",
+        "source_entity_ids": [
+          "motion_joint/elbow_pitch_revolute"
+        ],
+        "fact_ids": [
+          "pair/elbow_link/shoulder_link",
+          "nearby/elbow_link/shoulder_link"
+        ]
+      },
+      {
+        "pair": [
+          "elbow_link",
+          "elbow_pin"
+        ],
+        "action": "exclude",
+        "reason": "clearance running fit represented by elbow hinge",
+        "source_entity_ids": [
+          "port/elbow_link/elbow_eye",
+          "port/elbow_pin/shaft",
+          "motion_joint/elbow_pitch_revolute"
+        ],
+        "fact_ids": [
+          "fit/elbow_pin/shaft/elbow_link/elbow_eye",
+          "pair/elbow_link/elbow_pin",
+          "nearby/elbow_link/elbow_pin"
+        ]
+      },
+      {
+        "pair": [
+          "elbow_link",
+          "wrist_pin"
+        ],
+        "action": "exclude",
+        "reason": "dedicated pin rigidly carried by elbow clevis",
+        "source_entity_ids": [
+          "port/elbow_link/wrist_clevis",
+          "port/wrist_pin/shaft"
+        ],
+        "fact_ids": [
+          "fit/elbow_link/wrist_clevis/wrist_pin/shaft",
+          "pair/elbow_link/wrist_pin",
+          "nearby/elbow_link/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "elbow_link",
+          "wrist_link"
+        ],
+        "action": "keep",
+        "reason": "independent adjacent structures may collide; overlap uncertain",
+        "source_entity_ids": [
+          "motion_joint/wrist_pitch_revolute"
+        ],
+        "fact_ids": [
+          "pair/elbow_link/wrist_link",
+          "nearby/elbow_link/wrist_link"
+        ]
+      },
+      {
+        "pair": [
+          "wrist_link",
+          "wrist_pin"
+        ],
+        "action": "exclude",
+        "reason": "clearance running fit represented by wrist hinge",
+        "source_entity_ids": [
+          "port/wrist_link/wrist_eye",
+          "port/wrist_pin/shaft",
+          "motion_joint/wrist_pitch_revolute"
+        ],
+        "fact_ids": [
+          "fit/wrist_pin/shaft/wrist_link/wrist_eye",
+          "pair/wrist_link/wrist_pin",
+          "nearby/wrist_link/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "wrist_link",
+          "end_effector_pointer"
+        ],
+        "action": "exclude",
+        "reason": "coincident mounting faces rigidly carry pointer",
+        "source_entity_ids": [
+          "port/wrist_link/tool_mount",
+          "port/end_effector_pointer/mount_face"
+        ],
+        "fact_ids": [
+          "fit/wrist_link/tool_mount/end_effector_pointer/mount_face",
+          "pair/end_effector_pointer/wrist_link",
+          "nearby/end_effector_pointer/wrist_link"
+        ]
+      },
+      {
+        "pair": [
+          "base_frame",
+          "yaw_carriage"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+        "source_entity_ids": [
+          "link/base_frame",
+          "link/yaw_carriage"
+        ],
+        "fact_ids": [
+          "pair/base_frame/yaw_carriage",
+          "nearby/base_frame/yaw_carriage"
+        ]
+      },
+      {
+        "pair": [
+          "base_bolt_1",
+          "yaw_carriage"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+        "source_entity_ids": [
+          "link/base_bolt_1",
+          "link/yaw_carriage"
+        ],
+        "fact_ids": [
+          "pair/base_bolt_1/yaw_carriage",
+          "nearby/base_bolt_1/yaw_carriage"
+        ]
+      },
+      {
+        "pair": [
+          "base_bolt_2",
+          "yaw_carriage"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+        "source_entity_ids": [
+          "link/base_bolt_2",
+          "link/yaw_carriage"
+        ],
+        "fact_ids": [
+          "pair/base_bolt_2/yaw_carriage",
+          "nearby/base_bolt_2/yaw_carriage"
+        ]
+      },
+      {
+        "pair": [
+          "base_bolt_3",
+          "yaw_carriage"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+        "source_entity_ids": [
+          "link/base_bolt_3",
+          "link/yaw_carriage"
+        ],
+        "fact_ids": [
+          "pair/base_bolt_3/yaw_carriage",
+          "nearby/base_bolt_3/yaw_carriage"
+        ]
+      },
+      {
+        "pair": [
+          "base_bolt_4",
+          "yaw_carriage"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+        "source_entity_ids": [
+          "link/base_bolt_4",
+          "link/yaw_carriage"
+        ],
+        "fact_ids": [
+          "pair/base_bolt_4/yaw_carriage",
+          "nearby/base_bolt_4/yaw_carriage"
+        ]
+      },
+      {
+        "pair": [
+          "elbow_link",
+          "yaw_carriage"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+        "source_entity_ids": [
+          "link/elbow_link",
+          "link/yaw_carriage"
+        ],
+        "fact_ids": [
+          "pair/elbow_link/yaw_carriage",
+          "nearby/elbow_link/yaw_carriage"
+        ]
+      },
+      {
+        "pair": [
+          "elbow_pin",
+          "yaw_carriage"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+        "source_entity_ids": [
+          "link/elbow_pin",
+          "link/yaw_carriage"
+        ],
+        "fact_ids": [
+          "pair/elbow_pin/yaw_carriage",
+          "nearby/elbow_pin/yaw_carriage"
+        ]
+      },
+      {
+        "pair": [
+          "shoulder_link",
+          "yaw_pin"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+        "source_entity_ids": [
+          "link/shoulder_link",
+          "link/yaw_pin"
+        ],
+        "fact_ids": [
+          "pair/shoulder_link/yaw_pin",
+          "nearby/shoulder_link/yaw_pin"
+        ]
+      },
+      {
+        "pair": [
+          "shoulder_link",
+          "wrist_link"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+        "source_entity_ids": [
+          "link/shoulder_link",
+          "link/wrist_link"
+        ],
+        "fact_ids": [
+          "pair/shoulder_link/wrist_link",
+          "nearby/shoulder_link/wrist_link"
+        ]
+      },
+      {
+        "pair": [
+          "shoulder_link",
+          "yaw_thrust_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+        "source_entity_ids": [
+          "link/shoulder_link",
+          "link/yaw_thrust_bearing"
+        ],
+        "fact_ids": [
+          "pair/shoulder_link/yaw_thrust_bearing",
+          "nearby/shoulder_link/yaw_thrust_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "base_bolt_3",
+          "shoulder_link"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+        "source_entity_ids": [
+          "link/base_bolt_3",
+          "link/shoulder_link"
+        ],
+        "fact_ids": [
+          "pair/base_bolt_3/shoulder_link",
+          "nearby/base_bolt_3/shoulder_link"
+        ]
+      },
+      {
+        "pair": [
+          "base_bolt_4",
+          "shoulder_link"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+        "source_entity_ids": [
+          "link/base_bolt_4",
+          "link/shoulder_link"
+        ],
+        "fact_ids": [
+          "pair/base_bolt_4/shoulder_link",
+          "nearby/base_bolt_4/shoulder_link"
+        ]
+      },
+      {
+        "pair": [
+          "shoulder_link",
+          "wrist_pin"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+        "source_entity_ids": [
+          "link/shoulder_link",
+          "link/wrist_pin"
+        ],
+        "fact_ids": [
+          "pair/shoulder_link/wrist_pin",
+          "nearby/shoulder_link/wrist_pin"
+        ]
+      },
+      {
+        "pair": [
+          "base_frame",
+          "shoulder_link"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+        "source_entity_ids": [
+          "link/base_frame",
+          "link/shoulder_link"
+        ],
+        "fact_ids": [
+          "pair/base_frame/shoulder_link",
+          "nearby/base_frame/shoulder_link"
+        ]
+      },
+      {
+        "pair": [
+          "elbow_link",
+          "end_effector_pointer"
+        ],
+        "action": "exclude",
+        "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+        "source_entity_ids": [
+          "link/elbow_link",
+          "link/end_effector_pointer"
+        ],
+        "fact_ids": [
+          "pair/elbow_link/end_effector_pointer",
+          "nearby/elbow_link/end_effector_pointer"
+        ]
+      }
+    ],
+    "support_ground": [
+      "base_frame"
+    ],
+    "support_strategy": "fixed base rests on global ground; no support patch required"
+  },
+  "decisions": [
+    {
+      "entity_id": "link/base_frame",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "link/base_frame"
+      ]
+    },
+    {
+      "entity_id": "link/base_bolt_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "link/base_bolt_1"
+      ]
+    },
+    {
+      "entity_id": "link/base_bolt_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "link/base_bolt_2"
+      ]
+    },
+    {
+      "entity_id": "link/base_bolt_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "link/base_bolt_3"
+      ]
+    },
+    {
+      "entity_id": "link/base_bolt_4",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "link/base_bolt_4"
+      ]
+    },
+    {
+      "entity_id": "link/yaw_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "link/yaw_pin"
+      ]
+    },
+    {
+      "entity_id": "link/yaw_thrust_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "link/yaw_thrust_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/yaw_carriage",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "link/yaw_carriage"
+      ]
+    },
+    {
+      "entity_id": "link/shoulder_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "link/shoulder_pin"
+      ]
+    },
+    {
+      "entity_id": "link/shoulder_link",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "link/shoulder_link"
+      ]
+    },
+    {
+      "entity_id": "link/elbow_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "link/elbow_pin"
+      ]
+    },
+    {
+      "entity_id": "link/elbow_link",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "link/elbow_link"
+      ]
+    },
+    {
+      "entity_id": "link/wrist_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "link/wrist_pin"
+      ]
+    },
+    {
+      "entity_id": "link/wrist_link",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "link/wrist_link"
+      ]
+    },
+    {
+      "entity_id": "link/end_effector_pointer",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "link/end_effector_pointer"
+      ]
+    },
+    {
+      "entity_id": "pose/place_base_frame",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "pose/place_base_frame"
+      ]
+    },
+    {
+      "entity_id": "pose/place_base_bolt_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "pose/place_base_bolt_1"
+      ]
+    },
+    {
+      "entity_id": "pose/place_base_bolt_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "pose/place_base_bolt_2"
+      ]
+    },
+    {
+      "entity_id": "pose/place_base_bolt_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "pose/place_base_bolt_3"
+      ]
+    },
+    {
+      "entity_id": "pose/place_base_bolt_4",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "pose/place_base_bolt_4"
+      ]
+    },
+    {
+      "entity_id": "pose/place_yaw_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "pose/place_yaw_pin"
+      ]
+    },
+    {
+      "entity_id": "pose/place_yaw_thrust_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "pose/place_yaw_thrust_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_yaw_carriage",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "pose/place_yaw_carriage"
+      ]
+    },
+    {
+      "entity_id": "pose/place_shoulder_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "pose/place_shoulder_pin"
+      ]
+    },
+    {
+      "entity_id": "pose/place_shoulder_link",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "pose/place_shoulder_link"
+      ]
+    },
+    {
+      "entity_id": "pose/place_elbow_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "pose/place_elbow_pin"
+      ]
+    },
+    {
+      "entity_id": "pose/place_elbow_link",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "pose/place_elbow_link"
+      ]
+    },
+    {
+      "entity_id": "pose/place_wrist_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "pose/place_wrist_pin"
+      ]
+    },
+    {
+      "entity_id": "pose/place_wrist_link",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "pose/place_wrist_link"
+      ]
+    },
+    {
+      "entity_id": "pose/place_end_effector_pointer",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "pose/place_end_effector_pointer"
+      ]
+    },
+    {
+      "entity_id": "port/base_frame/yaw_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "port/base_frame/yaw_axis"
+      ]
+    },
+    {
+      "entity_id": "port/yaw_pin/yaw_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "port/yaw_pin/yaw_shaft"
+      ]
+    },
+    {
+      "entity_id": "port/yaw_carriage/yaw_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "port/yaw_carriage/yaw_bore"
+      ]
+    },
+    {
+      "entity_id": "port/yaw_carriage/shoulder_clevis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "port/yaw_carriage/shoulder_clevis"
+      ]
+    },
+    {
+      "entity_id": "port/shoulder_pin/shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "port/shoulder_pin/shaft"
+      ]
+    },
+    {
+      "entity_id": "port/shoulder_link/shoulder_eye",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "port/shoulder_link/shoulder_eye"
+      ]
+    },
+    {
+      "entity_id": "port/shoulder_link/elbow_clevis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "port/shoulder_link/elbow_clevis"
+      ]
+    },
+    {
+      "entity_id": "port/elbow_pin/shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "port/elbow_pin/shaft"
+      ]
+    },
+    {
+      "entity_id": "port/elbow_link/elbow_eye",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "port/elbow_link/elbow_eye"
+      ]
+    },
+    {
+      "entity_id": "port/elbow_link/wrist_clevis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "port/elbow_link/wrist_clevis"
+      ]
+    },
+    {
+      "entity_id": "port/wrist_pin/shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "port/wrist_pin/shaft"
+      ]
+    },
+    {
+      "entity_id": "port/wrist_link/wrist_eye",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "port/wrist_link/wrist_eye"
+      ]
+    },
+    {
+      "entity_id": "port/wrist_link/tool_mount",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "port/wrist_link/tool_mount"
+      ]
+    },
+    {
+      "entity_id": "port/end_effector_pointer/mount_face",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "port/end_effector_pointer/mount_face"
+      ]
+    },
+    {
+      "entity_id": "port/end_effector_pointer/pointer_tip",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "port/end_effector_pointer/pointer_tip"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/base_yaw_revolute",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "motion_joint/base_yaw_revolute"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/shoulder_pitch_revolute",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "motion_joint/shoulder_pitch_revolute"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/elbow_pitch_revolute",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "motion_joint/elbow_pitch_revolute"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/wrist_pitch_revolute",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "motion_joint/wrist_pitch_revolute"
+      ]
+    },
+    {
+      "entity_id": "role/driver/shoulder_link",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "role/driver/shoulder_link"
+      ]
+    },
+    {
+      "entity_id": "role/output/end_effector_pointer",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "role/output/end_effector_pointer"
+      ]
+    },
+    {
+      "entity_id": "role/watch/shoulder_link",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "role/watch/shoulder_link"
+      ]
+    },
+    {
+      "entity_id": "role/watch/elbow_link",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "role/watch/elbow_link"
+      ]
+    },
+    {
+      "entity_id": "role/watch/wrist_link",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "role/watch/wrist_link"
+      ]
+    },
+    {
+      "entity_id": "role/watch/end_effector_pointer",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base_frame",
+        "base_bolt_1",
+        "base_bolt_2",
+        "base_bolt_3",
+        "base_bolt_4",
+        "yaw_pin",
+        "yaw_thrust_bearing",
+        "yaw_carriage",
+        "shoulder_pin",
+        "shoulder_link",
+        "elbow_pin",
+        "elbow_link",
+        "wrist_pin",
+        "wrist_link",
+        "end_effector_pointer"
+      ],
+      "reason": "represented by emitted bodies, joints, placement, ports, roles, and topology plan",
+      "fact_ids": [
+        "role/watch/end_effector_pointer"
+      ]
+    }
+  ],
+  "excludes": [
+    {
+      "pair": [
+        "base_frame",
+        "yaw_pin"
+      ],
+      "reason": "interference press fit rigidly fixes yaw pin",
+      "source_entity_ids": [
+        "port/base_frame/yaw_axis",
+        "port/yaw_pin/yaw_shaft"
+      ],
+      "fact_ids": [
+        "fit/base_frame/yaw_axis/yaw_pin/yaw_shaft",
+        "pair/base_frame/yaw_pin"
+      ]
+    },
+    {
+      "pair": [
+        "yaw_carriage",
+        "yaw_pin"
+      ],
+      "reason": "clearance running fit represented by yaw hinge",
+      "source_entity_ids": [
+        "port/yaw_carriage/yaw_bore",
+        "port/yaw_pin/yaw_shaft",
+        "motion_joint/base_yaw_revolute"
+      ],
+      "fact_ids": [
+        "fit/yaw_pin/yaw_shaft/yaw_carriage/yaw_bore",
+        "pair/yaw_carriage/yaw_pin",
+        "nearby/yaw_carriage/yaw_pin"
+      ]
+    },
+    {
+      "pair": [
+        "yaw_carriage",
+        "yaw_thrust_bearing"
+      ],
+      "reason": "thrust bearing interface represented by yaw hinge",
+      "source_entity_ids": [
+        "link/yaw_thrust_bearing",
+        "motion_joint/base_yaw_revolute"
+      ],
+      "fact_ids": [
+        "pair/yaw_carriage/yaw_thrust_bearing",
+        "nearby/yaw_carriage/yaw_thrust_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "shoulder_pin",
+        "yaw_carriage"
+      ],
+      "reason": "dedicated pin rigidly carried by carriage clevis",
+      "source_entity_ids": [
+        "port/yaw_carriage/shoulder_clevis",
+        "port/shoulder_pin/shaft"
+      ],
+      "fact_ids": [
+        "fit/yaw_carriage/shoulder_clevis/shoulder_pin/shaft",
+        "pair/shoulder_pin/yaw_carriage",
+        "nearby/shoulder_pin/yaw_carriage"
+      ]
+    },
+    {
+      "pair": [
+        "shoulder_link",
+        "shoulder_pin"
+      ],
+      "reason": "clearance running fit represented by shoulder hinge",
+      "source_entity_ids": [
+        "port/shoulder_link/shoulder_eye",
+        "port/shoulder_pin/shaft",
+        "motion_joint/shoulder_pitch_revolute"
+      ],
+      "fact_ids": [
+        "fit/shoulder_pin/shaft/shoulder_link/shoulder_eye",
+        "pair/shoulder_link/shoulder_pin",
+        "nearby/shoulder_link/shoulder_pin"
+      ]
+    },
+    {
+      "pair": [
+        "elbow_pin",
+        "shoulder_link"
+      ],
+      "reason": "dedicated pin rigidly carried by shoulder clevis",
+      "source_entity_ids": [
+        "port/shoulder_link/elbow_clevis",
+        "port/elbow_pin/shaft"
+      ],
+      "fact_ids": [
+        "fit/shoulder_link/elbow_clevis/elbow_pin/shaft",
+        "pair/elbow_pin/shoulder_link",
+        "nearby/elbow_pin/shoulder_link"
+      ]
+    },
+    {
+      "pair": [
+        "elbow_link",
+        "elbow_pin"
+      ],
+      "reason": "clearance running fit represented by elbow hinge",
+      "source_entity_ids": [
+        "port/elbow_link/elbow_eye",
+        "port/elbow_pin/shaft",
+        "motion_joint/elbow_pitch_revolute"
+      ],
+      "fact_ids": [
+        "fit/elbow_pin/shaft/elbow_link/elbow_eye",
+        "pair/elbow_link/elbow_pin",
+        "nearby/elbow_link/elbow_pin"
+      ]
+    },
+    {
+      "pair": [
+        "elbow_link",
+        "wrist_pin"
+      ],
+      "reason": "dedicated pin rigidly carried by elbow clevis",
+      "source_entity_ids": [
+        "port/elbow_link/wrist_clevis",
+        "port/wrist_pin/shaft"
+      ],
+      "fact_ids": [
+        "fit/elbow_link/wrist_clevis/wrist_pin/shaft",
+        "pair/elbow_link/wrist_pin",
+        "nearby/elbow_link/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "wrist_link",
+        "wrist_pin"
+      ],
+      "reason": "clearance running fit represented by wrist hinge",
+      "source_entity_ids": [
+        "port/wrist_link/wrist_eye",
+        "port/wrist_pin/shaft",
+        "motion_joint/wrist_pitch_revolute"
+      ],
+      "fact_ids": [
+        "fit/wrist_pin/shaft/wrist_link/wrist_eye",
+        "pair/wrist_link/wrist_pin",
+        "nearby/wrist_link/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "end_effector_pointer",
+        "wrist_link"
+      ],
+      "reason": "coincident mounting faces rigidly carry pointer",
+      "source_entity_ids": [
+        "port/wrist_link/tool_mount",
+        "port/end_effector_pointer/mount_face"
+      ],
+      "fact_ids": [
+        "fit/wrist_link/tool_mount/end_effector_pointer/mount_face",
+        "pair/end_effector_pointer/wrist_link",
+        "nearby/end_effector_pointer/wrist_link"
+      ]
+    },
+    {
+      "pair": [
+        "base_frame",
+        "yaw_carriage"
+      ],
+      "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+      "source_entity_ids": [
+        "link/base_frame",
+        "link/yaw_carriage"
+      ],
+      "fact_ids": [
+        "pair/base_frame/yaw_carriage",
+        "nearby/base_frame/yaw_carriage"
+      ]
+    },
+    {
+      "pair": [
+        "base_bolt_1",
+        "yaw_carriage"
+      ],
+      "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+      "source_entity_ids": [
+        "link/base_bolt_1",
+        "link/yaw_carriage"
+      ],
+      "fact_ids": [
+        "pair/base_bolt_1/yaw_carriage",
+        "nearby/base_bolt_1/yaw_carriage"
+      ]
+    },
+    {
+      "pair": [
+        "base_bolt_2",
+        "yaw_carriage"
+      ],
+      "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+      "source_entity_ids": [
+        "link/base_bolt_2",
+        "link/yaw_carriage"
+      ],
+      "fact_ids": [
+        "pair/base_bolt_2/yaw_carriage",
+        "nearby/base_bolt_2/yaw_carriage"
+      ]
+    },
+    {
+      "pair": [
+        "base_bolt_3",
+        "yaw_carriage"
+      ],
+      "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+      "source_entity_ids": [
+        "link/base_bolt_3",
+        "link/yaw_carriage"
+      ],
+      "fact_ids": [
+        "pair/base_bolt_3/yaw_carriage",
+        "nearby/base_bolt_3/yaw_carriage"
+      ]
+    },
+    {
+      "pair": [
+        "base_bolt_4",
+        "yaw_carriage"
+      ],
+      "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+      "source_entity_ids": [
+        "link/base_bolt_4",
+        "link/yaw_carriage"
+      ],
+      "fact_ids": [
+        "pair/base_bolt_4/yaw_carriage",
+        "nearby/base_bolt_4/yaw_carriage"
+      ]
+    },
+    {
+      "pair": [
+        "elbow_link",
+        "yaw_carriage"
+      ],
+      "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+      "source_entity_ids": [
+        "link/elbow_link",
+        "link/yaw_carriage"
+      ],
+      "fact_ids": [
+        "pair/elbow_link/yaw_carriage",
+        "nearby/elbow_link/yaw_carriage"
+      ]
+    },
+    {
+      "pair": [
+        "elbow_pin",
+        "yaw_carriage"
+      ],
+      "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+      "source_entity_ids": [
+        "link/elbow_pin",
+        "link/yaw_carriage"
+      ],
+      "fact_ids": [
+        "pair/elbow_pin/yaw_carriage",
+        "nearby/elbow_pin/yaw_carriage"
+      ]
+    },
+    {
+      "pair": [
+        "shoulder_link",
+        "yaw_pin"
+      ],
+      "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+      "source_entity_ids": [
+        "link/shoulder_link",
+        "link/yaw_pin"
+      ],
+      "fact_ids": [
+        "pair/shoulder_link/yaw_pin",
+        "nearby/shoulder_link/yaw_pin"
+      ]
+    },
+    {
+      "pair": [
+        "shoulder_link",
+        "wrist_link"
+      ],
+      "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+      "source_entity_ids": [
+        "link/shoulder_link",
+        "link/wrist_link"
+      ],
+      "fact_ids": [
+        "pair/shoulder_link/wrist_link",
+        "nearby/shoulder_link/wrist_link"
+      ]
+    },
+    {
+      "pair": [
+        "shoulder_link",
+        "yaw_thrust_bearing"
+      ],
+      "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+      "source_entity_ids": [
+        "link/shoulder_link",
+        "link/yaw_thrust_bearing"
+      ],
+      "fact_ids": [
+        "pair/shoulder_link/yaw_thrust_bearing",
+        "nearby/shoulder_link/yaw_thrust_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "base_bolt_3",
+        "shoulder_link"
+      ],
+      "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+      "source_entity_ids": [
+        "link/base_bolt_3",
+        "link/shoulder_link"
+      ],
+      "fact_ids": [
+        "pair/base_bolt_3/shoulder_link",
+        "nearby/base_bolt_3/shoulder_link"
+      ]
+    },
+    {
+      "pair": [
+        "base_bolt_4",
+        "shoulder_link"
+      ],
+      "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+      "source_entity_ids": [
+        "link/base_bolt_4",
+        "link/shoulder_link"
+      ],
+      "fact_ids": [
+        "pair/base_bolt_4/shoulder_link",
+        "nearby/base_bolt_4/shoulder_link"
+      ]
+    },
+    {
+      "pair": [
+        "shoulder_link",
+        "wrist_pin"
+      ],
+      "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+      "source_entity_ids": [
+        "link/shoulder_link",
+        "link/wrist_pin"
+      ],
+      "fact_ids": [
+        "pair/shoulder_link/wrist_pin",
+        "nearby/shoulder_link/wrist_pin"
+      ]
+    },
+    {
+      "pair": [
+        "base_frame",
+        "shoulder_link"
+      ],
+      "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+      "source_entity_ids": [
+        "link/base_frame",
+        "link/shoulder_link"
+      ],
+      "fact_ids": [
+        "pair/base_frame/shoulder_link",
+        "nearby/base_frame/shoulder_link"
+      ]
+    },
+    {
+      "pair": [
+        "elbow_link",
+        "end_effector_pointer"
+      ],
+      "reason": "positive separation and disjoint AABB extent show proxy false-contact risk",
+      "source_entity_ids": [
+        "link/elbow_link",
+        "link/end_effector_pointer"
+      ],
+      "fact_ids": [
+        "pair/elbow_link/end_effector_pointer",
+        "nearby/elbow_link/end_effector_pointer"
+      ]
+    }
+  ],
+  "ground_excludes": [],
+  "support_patches": [],
+  "bodies": [
+    "base_bolt_1",
+    "base_bolt_2",
+    "base_bolt_3",
+    "base_bolt_4",
+    "base_frame",
+    "elbow_link",
+    "elbow_pin",
+    "end_effector_pointer",
+    "shoulder_link",
+    "shoulder_pin",
+    "wrist_link",
+    "wrist_pin",
+    "yaw_carriage",
+    "yaw_pin",
+    "yaw_thrust_bearing"
+  ],
+  "joints": [
+    "base_yaw_revolute",
+    "elbow_pitch_revolute",
+    "shoulder_pitch_revolute",
+    "wrist_pitch_revolute"
+  ],
+  "constraints": []
+}

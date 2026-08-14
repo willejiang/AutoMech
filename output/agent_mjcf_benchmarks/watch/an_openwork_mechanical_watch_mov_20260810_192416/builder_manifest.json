@@ -1,0 +1,3026 @@
+{
+  "manifest_version": 3,
+  "engine": "mujoco-agent",
+  "topology_plan": {
+    "coordinate_map": {
+      "baseplate": null,
+      "pillar_01": null,
+      "pillar_02": null,
+      "pillar_03": null,
+      "pillar_04": null,
+      "upper_bridge": null,
+      "central_lower_bearing": null,
+      "intermediate_lower_bearing": null,
+      "central_upper_bearing": null,
+      "intermediate_upper_bearing": null,
+      "dial_marker_01": null,
+      "dial_marker_02": null,
+      "dial_marker_03": null,
+      "dial_marker_04": null,
+      "dial_marker_05": null,
+      "dial_marker_06": null,
+      "dial_marker_07": null,
+      "dial_marker_08": null,
+      "dial_marker_09": null,
+      "dial_marker_10": null,
+      "dial_marker_11": null,
+      "dial_marker_12": null,
+      "minute_pipe": "minute_rotation",
+      "minute_pinion": "minute_rotation",
+      "minute_hand": "minute_rotation",
+      "intermediate_arbor": "intermediate_rotation",
+      "intermediate_wheel": "intermediate_rotation",
+      "intermediate_pinion": "intermediate_rotation",
+      "hour_pipe": "hour_rotation",
+      "hour_wheel": "hour_rotation",
+      "hour_hand": "hour_rotation"
+    },
+    "tree_edges": [
+      [
+        "",
+        "baseplate"
+      ],
+      [
+        "baseplate",
+        "pillar_01"
+      ],
+      [
+        "baseplate",
+        "pillar_02"
+      ],
+      [
+        "baseplate",
+        "pillar_03"
+      ],
+      [
+        "baseplate",
+        "pillar_04"
+      ],
+      [
+        "pillar_01",
+        "upper_bridge"
+      ],
+      [
+        "baseplate",
+        "central_lower_bearing"
+      ],
+      [
+        "baseplate",
+        "intermediate_lower_bearing"
+      ],
+      [
+        "upper_bridge",
+        "central_upper_bearing"
+      ],
+      [
+        "upper_bridge",
+        "intermediate_upper_bearing"
+      ],
+      [
+        "central_lower_bearing",
+        "minute_pipe"
+      ],
+      [
+        "intermediate_lower_bearing",
+        "intermediate_arbor"
+      ],
+      [
+        "central_upper_bearing",
+        "hour_pipe"
+      ],
+      [
+        "minute_pipe",
+        "minute_pinion"
+      ],
+      [
+        "minute_pipe",
+        "minute_hand"
+      ],
+      [
+        "intermediate_arbor",
+        "intermediate_wheel"
+      ],
+      [
+        "intermediate_arbor",
+        "intermediate_pinion"
+      ],
+      [
+        "hour_pipe",
+        "hour_wheel"
+      ],
+      [
+        "hour_pipe",
+        "hour_hand"
+      ],
+      [
+        "upper_bridge",
+        "dial_marker_01"
+      ],
+      [
+        "upper_bridge",
+        "dial_marker_02"
+      ],
+      [
+        "upper_bridge",
+        "dial_marker_03"
+      ],
+      [
+        "upper_bridge",
+        "dial_marker_04"
+      ],
+      [
+        "upper_bridge",
+        "dial_marker_05"
+      ],
+      [
+        "upper_bridge",
+        "dial_marker_06"
+      ],
+      [
+        "upper_bridge",
+        "dial_marker_07"
+      ],
+      [
+        "upper_bridge",
+        "dial_marker_08"
+      ],
+      [
+        "upper_bridge",
+        "dial_marker_09"
+      ],
+      [
+        "upper_bridge",
+        "dial_marker_10"
+      ],
+      [
+        "upper_bridge",
+        "dial_marker_11"
+      ],
+      [
+        "upper_bridge",
+        "dial_marker_12"
+      ]
+    ],
+    "closure_edges": [],
+    "rigid_carried": [
+      [
+        "minute_pipe",
+        "minute_pinion"
+      ],
+      [
+        "minute_pipe",
+        "minute_hand"
+      ],
+      [
+        "intermediate_arbor",
+        "intermediate_wheel"
+      ],
+      [
+        "intermediate_arbor",
+        "intermediate_pinion"
+      ],
+      [
+        "hour_pipe",
+        "hour_wheel"
+      ],
+      [
+        "hour_pipe",
+        "hour_hand"
+      ]
+    ],
+    "independent_coaxial": [
+      [
+        "minute_pipe",
+        "hour_pipe"
+      ]
+    ],
+    "transmissions": [
+      {
+        "name": "stage_1_external_mesh",
+        "driving_joint": "minute_rotation",
+        "driven_joint": "intermediate_rotation",
+        "ratio": -0.25
+      },
+      {
+        "name": "stage_2_external_mesh",
+        "driving_joint": "intermediate_rotation",
+        "driven_joint": "hour_rotation",
+        "ratio": -0.3333333333333333
+      }
+    ],
+    "contact_decisions": [
+      {
+        "pair": [
+          "central_lower_bearing",
+          "minute_pipe"
+        ],
+        "action": "exclude",
+        "reason": "Measured journal is represented ideally and exact-pair contact must not fight it.",
+        "source_entity_ids": [
+          "link/central_lower_bearing",
+          "link/minute_pipe",
+          "relation/minute_lower_journal"
+        ],
+        "fact_ids": [
+          "fit/central_lower_bearing/journal/minute_pipe/shaft_axis",
+          "pair/central_lower_bearing/minute_pipe"
+        ]
+      },
+      {
+        "pair": [
+          "central_upper_bearing",
+          "hour_pipe"
+        ],
+        "action": "exclude",
+        "reason": "Measured journal is represented ideally and exact-pair contact must not fight it.",
+        "source_entity_ids": [
+          "link/central_upper_bearing",
+          "link/hour_pipe",
+          "relation/hour_upper_journal"
+        ],
+        "fact_ids": [
+          "fit/central_upper_bearing/journal/hour_pipe/outer_shaft",
+          "pair/central_upper_bearing/hour_pipe"
+        ]
+      },
+      {
+        "pair": [
+          "hour_pipe",
+          "minute_pipe"
+        ],
+        "action": "exclude",
+        "reason": "Measured journal is represented ideally and exact-pair contact must not fight it.",
+        "source_entity_ids": [
+          "link/hour_pipe",
+          "link/minute_pipe",
+          "relation/minute_inside_hour_journal"
+        ],
+        "fact_ids": [
+          "fit/hour_pipe/inner_journal/minute_pipe/hour_journal",
+          "pair/hour_pipe/minute_pipe"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_lower_bearing",
+          "intermediate_arbor"
+        ],
+        "action": "exclude",
+        "reason": "Measured journal is represented ideally and exact-pair contact must not fight it.",
+        "source_entity_ids": [
+          "link/intermediate_lower_bearing",
+          "link/intermediate_arbor",
+          "relation/intermediate_lower_journal"
+        ],
+        "fact_ids": [
+          "fit/intermediate_lower_bearing/journal/intermediate_arbor/shaft_axis",
+          "pair/intermediate_lower_bearing/intermediate_arbor"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_upper_bearing",
+          "intermediate_arbor"
+        ],
+        "action": "exclude",
+        "reason": "Measured journal is represented ideally and exact-pair contact must not fight it.",
+        "source_entity_ids": [
+          "link/intermediate_upper_bearing",
+          "link/intermediate_arbor",
+          "relation/intermediate_upper_journal"
+        ],
+        "fact_ids": [
+          "fit/intermediate_upper_bearing/journal/intermediate_arbor/shaft_axis",
+          "pair/intermediate_upper_bearing/intermediate_arbor"
+        ]
+      },
+      {
+        "pair": [
+          "minute_pinion",
+          "minute_pipe"
+        ],
+        "action": "exclude",
+        "reason": "Measured press fit is represented ideally and exact-pair contact must not fight it.",
+        "source_entity_ids": [
+          "link/minute_pinion",
+          "link/minute_pipe",
+          "relation/minute_pinion_press_fit"
+        ],
+        "fact_ids": [
+          "fit/minute_pinion/bore/minute_pipe/shaft_axis",
+          "pair/minute_pinion/minute_pipe"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_wheel",
+          "intermediate_arbor"
+        ],
+        "action": "exclude",
+        "reason": "Measured press fit is represented ideally and exact-pair contact must not fight it.",
+        "source_entity_ids": [
+          "link/intermediate_wheel",
+          "link/intermediate_arbor",
+          "relation/intermediate_wheel_press_fit"
+        ],
+        "fact_ids": [
+          "fit/intermediate_wheel/bore/intermediate_arbor/shaft_axis",
+          "pair/intermediate_wheel/intermediate_arbor"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_pinion",
+          "intermediate_arbor"
+        ],
+        "action": "exclude",
+        "reason": "Measured press fit is represented ideally and exact-pair contact must not fight it.",
+        "source_entity_ids": [
+          "link/intermediate_pinion",
+          "link/intermediate_arbor",
+          "relation/intermediate_pinion_press_fit"
+        ],
+        "fact_ids": [
+          "fit/intermediate_pinion/bore/intermediate_arbor/shaft_axis",
+          "pair/intermediate_pinion/intermediate_arbor"
+        ]
+      },
+      {
+        "pair": [
+          "hour_wheel",
+          "hour_pipe"
+        ],
+        "action": "exclude",
+        "reason": "Measured press fit is represented ideally and exact-pair contact must not fight it.",
+        "source_entity_ids": [
+          "link/hour_wheel",
+          "link/hour_pipe",
+          "relation/hour_wheel_press_fit"
+        ],
+        "fact_ids": [
+          "fit/hour_wheel/bore/hour_pipe/outer_shaft",
+          "pair/hour_wheel/hour_pipe"
+        ]
+      },
+      {
+        "pair": [
+          "hour_hand",
+          "hour_pipe"
+        ],
+        "action": "exclude",
+        "reason": "Measured press fit is represented ideally and exact-pair contact must not fight it.",
+        "source_entity_ids": [
+          "link/hour_hand",
+          "link/hour_pipe",
+          "relation/hour_hand_press_fit"
+        ],
+        "fact_ids": [
+          "fit/hour_hand/hub_bore/hour_pipe/hour_hand_seat",
+          "pair/hour_hand/hour_pipe"
+        ]
+      },
+      {
+        "pair": [
+          "minute_hand",
+          "minute_pipe"
+        ],
+        "action": "exclude",
+        "reason": "Measured press fit is represented ideally and exact-pair contact must not fight it.",
+        "source_entity_ids": [
+          "link/minute_hand",
+          "link/minute_pipe",
+          "relation/minute_hand_press_fit"
+        ],
+        "fact_ids": [
+          "fit/minute_hand/hub_bore/minute_pipe/minute_hand_seat",
+          "pair/minute_hand/minute_pipe"
+        ]
+      },
+      {
+        "pair": [
+          "minute_pinion",
+          "intermediate_wheel"
+        ],
+        "action": "exclude",
+        "reason": "Measured gear mesh is represented ideally and exact-pair contact must not fight it.",
+        "source_entity_ids": [
+          "link/minute_pinion",
+          "link/intermediate_wheel",
+          "relation/motion_work_stage_1"
+        ],
+        "fact_ids": [
+          "fit/minute_pinion/teeth/intermediate_wheel/teeth",
+          "pair/minute_pinion/intermediate_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_pinion",
+          "hour_wheel"
+        ],
+        "action": "exclude",
+        "reason": "Measured gear mesh is represented ideally and exact-pair contact must not fight it.",
+        "source_entity_ids": [
+          "link/intermediate_pinion",
+          "link/hour_wheel",
+          "relation/motion_work_stage_2"
+        ],
+        "fact_ids": [
+          "fit/intermediate_pinion/teeth/hour_wheel/teeth",
+          "pair/intermediate_pinion/hour_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "minute_pipe",
+          "baseplate"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/minute_pipe",
+          "link/baseplate"
+        ],
+        "fact_ids": [
+          "nearby/minute_pipe/baseplate",
+          "pair/minute_pipe/baseplate"
+        ]
+      },
+      {
+        "pair": [
+          "minute_pipe",
+          "upper_bridge"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/minute_pipe",
+          "link/upper_bridge"
+        ],
+        "fact_ids": [
+          "nearby/minute_pipe/upper_bridge",
+          "pair/minute_pipe/upper_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "minute_pipe",
+          "central_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/minute_pipe",
+          "link/central_upper_bearing"
+        ],
+        "fact_ids": [
+          "nearby/minute_pipe/central_upper_bearing",
+          "pair/minute_pipe/central_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "minute_pipe",
+          "hour_wheel"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/minute_pipe",
+          "link/hour_wheel"
+        ],
+        "fact_ids": [
+          "nearby/minute_pipe/hour_wheel",
+          "pair/minute_pipe/hour_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "minute_pipe",
+          "hour_hand"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/minute_pipe",
+          "link/hour_hand"
+        ],
+        "fact_ids": [
+          "nearby/minute_pipe/hour_hand",
+          "pair/minute_pipe/hour_hand"
+        ]
+      },
+      {
+        "pair": [
+          "minute_pipe",
+          "intermediate_wheel"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/minute_pipe",
+          "link/intermediate_wheel"
+        ],
+        "fact_ids": [
+          "nearby/minute_pipe/intermediate_wheel",
+          "pair/minute_pipe/intermediate_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "hour_pipe",
+          "upper_bridge"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/hour_pipe",
+          "link/upper_bridge"
+        ],
+        "fact_ids": [
+          "nearby/hour_pipe/upper_bridge",
+          "pair/hour_pipe/upper_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "hour_pipe",
+          "minute_pinion"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/hour_pipe",
+          "link/minute_pinion"
+        ],
+        "fact_ids": [
+          "nearby/hour_pipe/minute_pinion",
+          "pair/hour_pipe/minute_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "hour_pipe",
+          "minute_hand"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/hour_pipe",
+          "link/minute_hand"
+        ],
+        "fact_ids": [
+          "nearby/hour_pipe/minute_hand",
+          "pair/hour_pipe/minute_hand"
+        ]
+      },
+      {
+        "pair": [
+          "hour_pipe",
+          "intermediate_wheel"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/hour_pipe",
+          "link/intermediate_wheel"
+        ],
+        "fact_ids": [
+          "nearby/hour_pipe/intermediate_wheel",
+          "pair/hour_pipe/intermediate_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "hour_pipe",
+          "central_lower_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/hour_pipe",
+          "link/central_lower_bearing"
+        ],
+        "fact_ids": [
+          "nearby/hour_pipe/central_lower_bearing",
+          "pair/hour_pipe/central_lower_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_arbor",
+          "baseplate"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/intermediate_arbor",
+          "link/baseplate"
+        ],
+        "fact_ids": [
+          "nearby/intermediate_arbor/baseplate",
+          "pair/intermediate_arbor/baseplate"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_arbor",
+          "upper_bridge"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/intermediate_arbor",
+          "link/upper_bridge"
+        ],
+        "fact_ids": [
+          "nearby/intermediate_arbor/upper_bridge",
+          "pair/intermediate_arbor/upper_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_arbor",
+          "hour_wheel"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/intermediate_arbor",
+          "link/hour_wheel"
+        ],
+        "fact_ids": [
+          "nearby/intermediate_arbor/hour_wheel",
+          "pair/intermediate_arbor/hour_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_arbor",
+          "hour_hand"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/intermediate_arbor",
+          "link/hour_hand"
+        ],
+        "fact_ids": [
+          "nearby/intermediate_arbor/hour_hand",
+          "pair/intermediate_arbor/hour_hand"
+        ]
+      },
+      {
+        "pair": [
+          "minute_pinion",
+          "hour_wheel"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/minute_pinion",
+          "link/hour_wheel"
+        ],
+        "fact_ids": [
+          "nearby/minute_pinion/hour_wheel",
+          "pair/minute_pinion/hour_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "minute_pinion",
+          "central_lower_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/minute_pinion",
+          "link/central_lower_bearing"
+        ],
+        "fact_ids": [
+          "nearby/minute_pinion/central_lower_bearing",
+          "pair/minute_pinion/central_lower_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "minute_pinion",
+          "upper_bridge"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/minute_pinion",
+          "link/upper_bridge"
+        ],
+        "fact_ids": [
+          "nearby/minute_pinion/upper_bridge",
+          "pair/minute_pinion/upper_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "minute_pinion",
+          "central_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/minute_pinion",
+          "link/central_upper_bearing"
+        ],
+        "fact_ids": [
+          "nearby/minute_pinion/central_upper_bearing",
+          "pair/minute_pinion/central_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_wheel",
+          "pillar_03"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/intermediate_wheel",
+          "link/pillar_03"
+        ],
+        "fact_ids": [
+          "nearby/intermediate_wheel/pillar_03",
+          "pair/intermediate_wheel/pillar_03"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_wheel",
+          "pillar_04"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/intermediate_wheel",
+          "link/pillar_04"
+        ],
+        "fact_ids": [
+          "nearby/intermediate_wheel/pillar_04",
+          "pair/intermediate_wheel/pillar_04"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_wheel",
+          "hour_wheel"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/intermediate_wheel",
+          "link/hour_wheel"
+        ],
+        "fact_ids": [
+          "nearby/intermediate_wheel/hour_wheel",
+          "pair/intermediate_wheel/hour_wheel"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_wheel",
+          "intermediate_pinion"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/intermediate_wheel",
+          "link/intermediate_pinion"
+        ],
+        "fact_ids": [
+          "nearby/intermediate_wheel/intermediate_pinion",
+          "pair/intermediate_wheel/intermediate_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_wheel",
+          "central_lower_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/intermediate_wheel",
+          "link/central_lower_bearing"
+        ],
+        "fact_ids": [
+          "nearby/intermediate_wheel/central_lower_bearing",
+          "pair/intermediate_wheel/central_lower_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_wheel",
+          "intermediate_lower_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/intermediate_wheel",
+          "link/intermediate_lower_bearing"
+        ],
+        "fact_ids": [
+          "nearby/intermediate_wheel/intermediate_lower_bearing",
+          "pair/intermediate_wheel/intermediate_lower_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_wheel",
+          "upper_bridge"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/intermediate_wheel",
+          "link/upper_bridge"
+        ],
+        "fact_ids": [
+          "nearby/intermediate_wheel/upper_bridge",
+          "pair/intermediate_wheel/upper_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_wheel",
+          "central_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/intermediate_wheel",
+          "link/central_upper_bearing"
+        ],
+        "fact_ids": [
+          "nearby/intermediate_wheel/central_upper_bearing",
+          "pair/intermediate_wheel/central_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_wheel",
+          "intermediate_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/intermediate_wheel",
+          "link/intermediate_upper_bearing"
+        ],
+        "fact_ids": [
+          "nearby/intermediate_wheel/intermediate_upper_bearing",
+          "pair/intermediate_wheel/intermediate_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_pinion",
+          "upper_bridge"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/intermediate_pinion",
+          "link/upper_bridge"
+        ],
+        "fact_ids": [
+          "nearby/intermediate_pinion/upper_bridge",
+          "pair/intermediate_pinion/upper_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "intermediate_pinion",
+          "intermediate_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/intermediate_pinion",
+          "link/intermediate_upper_bearing"
+        ],
+        "fact_ids": [
+          "nearby/intermediate_pinion/intermediate_upper_bearing",
+          "pair/intermediate_pinion/intermediate_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "hour_wheel",
+          "upper_bridge"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/hour_wheel",
+          "link/upper_bridge"
+        ],
+        "fact_ids": [
+          "nearby/hour_wheel/upper_bridge",
+          "pair/hour_wheel/upper_bridge"
+        ]
+      },
+      {
+        "pair": [
+          "hour_wheel",
+          "central_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/hour_wheel",
+          "link/central_upper_bearing"
+        ],
+        "fact_ids": [
+          "nearby/hour_wheel/central_upper_bearing",
+          "pair/hour_wheel/central_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "hour_wheel",
+          "intermediate_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/hour_wheel",
+          "link/intermediate_upper_bearing"
+        ],
+        "fact_ids": [
+          "nearby/hour_wheel/intermediate_upper_bearing",
+          "pair/hour_wheel/intermediate_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "hour_hand",
+          "minute_hand"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/hour_hand",
+          "link/minute_hand"
+        ],
+        "fact_ids": [
+          "nearby/hour_hand/minute_hand",
+          "pair/hour_hand/minute_hand"
+        ]
+      },
+      {
+        "pair": [
+          "minute_hand",
+          "dial_marker_01"
+        ],
+        "action": "exclude",
+        "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+        "source_entity_ids": [
+          "link/minute_hand",
+          "link/dial_marker_01"
+        ],
+        "fact_ids": [
+          "nearby/minute_hand/dial_marker_01",
+          "pair/minute_hand/dial_marker_01"
+        ]
+      }
+    ],
+    "support_ground": "baseplate",
+    "support_strategy": "World-root baseplate rests on the declared plane; no support patch is required."
+  },
+  "decisions": [
+    {
+      "generated_kind": "constraint",
+      "generated_name": "stage_1_external_mesh",
+      "constraint_type": "joint",
+      "reason": "Pitch radii 2.7 and 10.8 mm.",
+      "source_entity_ids": [
+        "relation/motion_work_stage_1",
+        "transmission/stage_1_external_mesh"
+      ],
+      "fact_ids": [
+        "fit/minute_pinion/teeth/intermediate_wheel/teeth",
+        "pair/intermediate_wheel/minute_pinion"
+      ]
+    },
+    {
+      "generated_kind": "constraint",
+      "generated_name": "stage_2_external_mesh",
+      "constraint_type": "joint",
+      "reason": "Pitch radii 3.375 and 10.125 mm.",
+      "source_entity_ids": [
+        "relation/motion_work_stage_2",
+        "transmission/stage_2_external_mesh"
+      ],
+      "fact_ids": [
+        "fit/intermediate_pinion/teeth/hour_wheel/teeth",
+        "pair/hour_wheel/intermediate_pinion"
+      ]
+    },
+    {
+      "entity_id": "link/baseplate",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/baseplate"
+      ]
+    },
+    {
+      "entity_id": "link/pillar_01",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/pillar_01"
+      ]
+    },
+    {
+      "entity_id": "link/pillar_02",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/pillar_02"
+      ]
+    },
+    {
+      "entity_id": "link/pillar_03",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/pillar_03"
+      ]
+    },
+    {
+      "entity_id": "link/pillar_04",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/pillar_04"
+      ]
+    },
+    {
+      "entity_id": "link/upper_bridge",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/upper_bridge"
+      ]
+    },
+    {
+      "entity_id": "link/central_lower_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/central_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/intermediate_lower_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/intermediate_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/central_upper_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/central_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/intermediate_upper_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/intermediate_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/minute_pipe",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/minute_pipe"
+      ]
+    },
+    {
+      "entity_id": "link/hour_pipe",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/hour_pipe"
+      ]
+    },
+    {
+      "entity_id": "link/intermediate_arbor",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/intermediate_arbor"
+      ]
+    },
+    {
+      "entity_id": "link/minute_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/minute_pinion"
+      ]
+    },
+    {
+      "entity_id": "link/intermediate_wheel",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/intermediate_wheel"
+      ]
+    },
+    {
+      "entity_id": "link/intermediate_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/intermediate_pinion"
+      ]
+    },
+    {
+      "entity_id": "link/hour_wheel",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/hour_wheel"
+      ]
+    },
+    {
+      "entity_id": "link/hour_hand",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/hour_hand"
+      ]
+    },
+    {
+      "entity_id": "link/minute_hand",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/minute_hand"
+      ]
+    },
+    {
+      "entity_id": "link/dial_marker_01",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/dial_marker_01"
+      ]
+    },
+    {
+      "entity_id": "link/dial_marker_02",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/dial_marker_02"
+      ]
+    },
+    {
+      "entity_id": "link/dial_marker_03",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/dial_marker_03"
+      ]
+    },
+    {
+      "entity_id": "link/dial_marker_04",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/dial_marker_04"
+      ]
+    },
+    {
+      "entity_id": "link/dial_marker_05",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/dial_marker_05"
+      ]
+    },
+    {
+      "entity_id": "link/dial_marker_06",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/dial_marker_06"
+      ]
+    },
+    {
+      "entity_id": "link/dial_marker_07",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/dial_marker_07"
+      ]
+    },
+    {
+      "entity_id": "link/dial_marker_08",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/dial_marker_08"
+      ]
+    },
+    {
+      "entity_id": "link/dial_marker_09",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/dial_marker_09"
+      ]
+    },
+    {
+      "entity_id": "link/dial_marker_10",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/dial_marker_10"
+      ]
+    },
+    {
+      "entity_id": "link/dial_marker_11",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/dial_marker_11"
+      ]
+    },
+    {
+      "entity_id": "link/dial_marker_12",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "link/dial_marker_12"
+      ]
+    },
+    {
+      "entity_id": "pose/place_baseplate",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_baseplate"
+      ]
+    },
+    {
+      "entity_id": "pose/place_pillar_01",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_pillar_01"
+      ]
+    },
+    {
+      "entity_id": "pose/place_pillar_02",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_pillar_02"
+      ]
+    },
+    {
+      "entity_id": "pose/place_pillar_03",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_pillar_03"
+      ]
+    },
+    {
+      "entity_id": "pose/place_pillar_04",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_pillar_04"
+      ]
+    },
+    {
+      "entity_id": "pose/place_upper_bridge",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_upper_bridge"
+      ]
+    },
+    {
+      "entity_id": "pose/place_central_lower_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_central_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_intermediate_lower_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_intermediate_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_central_upper_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_central_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_intermediate_upper_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_intermediate_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_minute_pipe",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_minute_pipe"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hour_pipe",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_hour_pipe"
+      ]
+    },
+    {
+      "entity_id": "pose/place_intermediate_arbor",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_intermediate_arbor"
+      ]
+    },
+    {
+      "entity_id": "pose/place_minute_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_minute_pinion"
+      ]
+    },
+    {
+      "entity_id": "pose/place_intermediate_wheel",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_intermediate_wheel"
+      ]
+    },
+    {
+      "entity_id": "pose/place_intermediate_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_intermediate_pinion"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hour_wheel",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_hour_wheel"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hour_hand",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_hour_hand"
+      ]
+    },
+    {
+      "entity_id": "pose/place_minute_hand",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_minute_hand"
+      ]
+    },
+    {
+      "entity_id": "pose/place_dial_marker_01",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_dial_marker_01"
+      ]
+    },
+    {
+      "entity_id": "pose/place_dial_marker_02",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_dial_marker_02"
+      ]
+    },
+    {
+      "entity_id": "pose/place_dial_marker_03",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_dial_marker_03"
+      ]
+    },
+    {
+      "entity_id": "pose/place_dial_marker_04",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_dial_marker_04"
+      ]
+    },
+    {
+      "entity_id": "pose/place_dial_marker_05",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_dial_marker_05"
+      ]
+    },
+    {
+      "entity_id": "pose/place_dial_marker_06",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_dial_marker_06"
+      ]
+    },
+    {
+      "entity_id": "pose/place_dial_marker_07",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_dial_marker_07"
+      ]
+    },
+    {
+      "entity_id": "pose/place_dial_marker_08",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_dial_marker_08"
+      ]
+    },
+    {
+      "entity_id": "pose/place_dial_marker_09",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_dial_marker_09"
+      ]
+    },
+    {
+      "entity_id": "pose/place_dial_marker_10",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_dial_marker_10"
+      ]
+    },
+    {
+      "entity_id": "pose/place_dial_marker_11",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_dial_marker_11"
+      ]
+    },
+    {
+      "entity_id": "pose/place_dial_marker_12",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "pose/place_dial_marker_12"
+      ]
+    },
+    {
+      "entity_id": "port/minute_pipe/shaft_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "port/minute_pipe/shaft_axis"
+      ]
+    },
+    {
+      "entity_id": "port/minute_pipe/hour_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "port/minute_pipe/hour_journal"
+      ]
+    },
+    {
+      "entity_id": "port/minute_pipe/minute_hand_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "port/minute_pipe/minute_hand_seat"
+      ]
+    },
+    {
+      "entity_id": "port/hour_pipe/outer_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "port/hour_pipe/outer_shaft"
+      ]
+    },
+    {
+      "entity_id": "port/hour_pipe/inner_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "port/hour_pipe/inner_journal"
+      ]
+    },
+    {
+      "entity_id": "port/hour_pipe/hour_hand_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "port/hour_pipe/hour_hand_seat"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_arbor/shaft_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "port/intermediate_arbor/shaft_axis"
+      ]
+    },
+    {
+      "entity_id": "port/minute_pinion/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "port/minute_pinion/bore"
+      ]
+    },
+    {
+      "entity_id": "port/minute_pinion/teeth",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "port/minute_pinion/teeth"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_wheel/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "port/intermediate_wheel/bore"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_wheel/teeth",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "port/intermediate_wheel/teeth"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_pinion/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "port/intermediate_pinion/bore"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_pinion/teeth",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "port/intermediate_pinion/teeth"
+      ]
+    },
+    {
+      "entity_id": "port/hour_wheel/bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "port/hour_wheel/bore"
+      ]
+    },
+    {
+      "entity_id": "port/hour_wheel/teeth",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "port/hour_wheel/teeth"
+      ]
+    },
+    {
+      "entity_id": "port/central_lower_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "port/central_lower_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/central_upper_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "port/central_upper_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_lower_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "port/intermediate_lower_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/intermediate_upper_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "port/intermediate_upper_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/hour_hand/hub_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "port/hour_hand/hub_bore"
+      ]
+    },
+    {
+      "entity_id": "port/minute_hand/hub_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "port/minute_hand/hub_bore"
+      ]
+    },
+    {
+      "entity_id": "relation/minute_lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "relation/minute_lower_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/hour_upper_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "relation/hour_upper_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/minute_inside_hour_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "relation/minute_inside_hour_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/intermediate_lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "relation/intermediate_lower_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/intermediate_upper_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "relation/intermediate_upper_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/minute_pinion_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "relation/minute_pinion_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/intermediate_wheel_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "relation/intermediate_wheel_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/intermediate_pinion_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "relation/intermediate_pinion_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/hour_wheel_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "relation/hour_wheel_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/hour_hand_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "relation/hour_hand_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/minute_hand_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "relation/minute_hand_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/motion_work_stage_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "relation/motion_work_stage_1"
+      ]
+    },
+    {
+      "entity_id": "relation/motion_work_stage_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "relation/motion_work_stage_2"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/minute_rotation",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "motion_joint/minute_rotation"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/intermediate_rotation",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "motion_joint/intermediate_rotation"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/hour_rotation",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "motion_joint/hour_rotation"
+      ]
+    },
+    {
+      "entity_id": "transmission/minute_pipe_to_minute_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "transmission/minute_pipe_to_minute_pinion"
+      ]
+    },
+    {
+      "entity_id": "transmission/stage_1_external_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "transmission/stage_1_external_mesh"
+      ]
+    },
+    {
+      "entity_id": "transmission/intermediate_compound",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "transmission/intermediate_compound"
+      ]
+    },
+    {
+      "entity_id": "transmission/stage_2_external_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "transmission/stage_2_external_mesh"
+      ]
+    },
+    {
+      "entity_id": "transmission/hour_wheel_to_hour_pipe",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "transmission/hour_wheel_to_hour_pipe"
+      ]
+    },
+    {
+      "entity_id": "role/driver/minute_pipe",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "role/driver/minute_pipe"
+      ]
+    },
+    {
+      "entity_id": "role/output/hour_hand",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "role/output/hour_hand"
+      ]
+    },
+    {
+      "entity_id": "role/watch/minute_pipe",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "role/watch/minute_pipe"
+      ]
+    },
+    {
+      "entity_id": "role/watch/intermediate_arbor",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "role/watch/intermediate_arbor"
+      ]
+    },
+    {
+      "entity_id": "role/watch/hour_pipe",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "role/watch/hour_pipe"
+      ]
+    },
+    {
+      "entity_id": "role/watch/minute_hand",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "role/watch/minute_hand"
+      ]
+    },
+    {
+      "entity_id": "role/watch/hour_hand",
+      "action": "represented_by",
+      "generated_nodes": [
+        "baseplate"
+      ],
+      "reason": "The authored entity is represented by the emitted body tree, shared coordinate, equality, or reviewed exact-pair contact decision.",
+      "fact_ids": [
+        "role/watch/hour_hand"
+      ]
+    }
+  ],
+  "excludes": [
+    {
+      "pair": [
+        "central_lower_bearing",
+        "minute_pipe"
+      ],
+      "reason": "Measured journal is represented ideally and exact-pair contact must not fight it.",
+      "source_entity_ids": [
+        "link/central_lower_bearing",
+        "link/minute_pipe",
+        "relation/minute_lower_journal"
+      ],
+      "fact_ids": [
+        "fit/central_lower_bearing/journal/minute_pipe/shaft_axis",
+        "pair/central_lower_bearing/minute_pipe"
+      ]
+    },
+    {
+      "pair": [
+        "central_upper_bearing",
+        "hour_pipe"
+      ],
+      "reason": "Measured journal is represented ideally and exact-pair contact must not fight it.",
+      "source_entity_ids": [
+        "link/central_upper_bearing",
+        "link/hour_pipe",
+        "relation/hour_upper_journal"
+      ],
+      "fact_ids": [
+        "fit/central_upper_bearing/journal/hour_pipe/outer_shaft",
+        "pair/central_upper_bearing/hour_pipe"
+      ]
+    },
+    {
+      "pair": [
+        "hour_pipe",
+        "minute_pipe"
+      ],
+      "reason": "Measured journal is represented ideally and exact-pair contact must not fight it.",
+      "source_entity_ids": [
+        "link/hour_pipe",
+        "link/minute_pipe",
+        "relation/minute_inside_hour_journal"
+      ],
+      "fact_ids": [
+        "fit/hour_pipe/inner_journal/minute_pipe/hour_journal",
+        "pair/hour_pipe/minute_pipe"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_arbor",
+        "intermediate_lower_bearing"
+      ],
+      "reason": "Measured journal is represented ideally and exact-pair contact must not fight it.",
+      "source_entity_ids": [
+        "link/intermediate_lower_bearing",
+        "link/intermediate_arbor",
+        "relation/intermediate_lower_journal"
+      ],
+      "fact_ids": [
+        "fit/intermediate_lower_bearing/journal/intermediate_arbor/shaft_axis",
+        "pair/intermediate_lower_bearing/intermediate_arbor"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_arbor",
+        "intermediate_upper_bearing"
+      ],
+      "reason": "Measured journal is represented ideally and exact-pair contact must not fight it.",
+      "source_entity_ids": [
+        "link/intermediate_upper_bearing",
+        "link/intermediate_arbor",
+        "relation/intermediate_upper_journal"
+      ],
+      "fact_ids": [
+        "fit/intermediate_upper_bearing/journal/intermediate_arbor/shaft_axis",
+        "pair/intermediate_upper_bearing/intermediate_arbor"
+      ]
+    },
+    {
+      "pair": [
+        "minute_pinion",
+        "minute_pipe"
+      ],
+      "reason": "Measured press fit is represented ideally and exact-pair contact must not fight it.",
+      "source_entity_ids": [
+        "link/minute_pinion",
+        "link/minute_pipe",
+        "relation/minute_pinion_press_fit"
+      ],
+      "fact_ids": [
+        "fit/minute_pinion/bore/minute_pipe/shaft_axis",
+        "pair/minute_pinion/minute_pipe"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_arbor",
+        "intermediate_wheel"
+      ],
+      "reason": "Measured press fit is represented ideally and exact-pair contact must not fight it.",
+      "source_entity_ids": [
+        "link/intermediate_wheel",
+        "link/intermediate_arbor",
+        "relation/intermediate_wheel_press_fit"
+      ],
+      "fact_ids": [
+        "fit/intermediate_wheel/bore/intermediate_arbor/shaft_axis",
+        "pair/intermediate_wheel/intermediate_arbor"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_arbor",
+        "intermediate_pinion"
+      ],
+      "reason": "Measured press fit is represented ideally and exact-pair contact must not fight it.",
+      "source_entity_ids": [
+        "link/intermediate_pinion",
+        "link/intermediate_arbor",
+        "relation/intermediate_pinion_press_fit"
+      ],
+      "fact_ids": [
+        "fit/intermediate_pinion/bore/intermediate_arbor/shaft_axis",
+        "pair/intermediate_pinion/intermediate_arbor"
+      ]
+    },
+    {
+      "pair": [
+        "hour_pipe",
+        "hour_wheel"
+      ],
+      "reason": "Measured press fit is represented ideally and exact-pair contact must not fight it.",
+      "source_entity_ids": [
+        "link/hour_wheel",
+        "link/hour_pipe",
+        "relation/hour_wheel_press_fit"
+      ],
+      "fact_ids": [
+        "fit/hour_wheel/bore/hour_pipe/outer_shaft",
+        "pair/hour_wheel/hour_pipe"
+      ]
+    },
+    {
+      "pair": [
+        "hour_hand",
+        "hour_pipe"
+      ],
+      "reason": "Measured press fit is represented ideally and exact-pair contact must not fight it.",
+      "source_entity_ids": [
+        "link/hour_hand",
+        "link/hour_pipe",
+        "relation/hour_hand_press_fit"
+      ],
+      "fact_ids": [
+        "fit/hour_hand/hub_bore/hour_pipe/hour_hand_seat",
+        "pair/hour_hand/hour_pipe"
+      ]
+    },
+    {
+      "pair": [
+        "minute_hand",
+        "minute_pipe"
+      ],
+      "reason": "Measured press fit is represented ideally and exact-pair contact must not fight it.",
+      "source_entity_ids": [
+        "link/minute_hand",
+        "link/minute_pipe",
+        "relation/minute_hand_press_fit"
+      ],
+      "fact_ids": [
+        "fit/minute_hand/hub_bore/minute_pipe/minute_hand_seat",
+        "pair/minute_hand/minute_pipe"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_wheel",
+        "minute_pinion"
+      ],
+      "reason": "Measured gear mesh is represented ideally and exact-pair contact must not fight it.",
+      "source_entity_ids": [
+        "link/minute_pinion",
+        "link/intermediate_wheel",
+        "relation/motion_work_stage_1"
+      ],
+      "fact_ids": [
+        "fit/minute_pinion/teeth/intermediate_wheel/teeth",
+        "pair/minute_pinion/intermediate_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "hour_wheel",
+        "intermediate_pinion"
+      ],
+      "reason": "Measured gear mesh is represented ideally and exact-pair contact must not fight it.",
+      "source_entity_ids": [
+        "link/intermediate_pinion",
+        "link/hour_wheel",
+        "relation/motion_work_stage_2"
+      ],
+      "fact_ids": [
+        "fit/intermediate_pinion/teeth/hour_wheel/teeth",
+        "pair/intermediate_pinion/hour_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "baseplate",
+        "minute_pipe"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/minute_pipe",
+        "link/baseplate"
+      ],
+      "fact_ids": [
+        "nearby/minute_pipe/baseplate",
+        "pair/minute_pipe/baseplate"
+      ]
+    },
+    {
+      "pair": [
+        "minute_pipe",
+        "upper_bridge"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/minute_pipe",
+        "link/upper_bridge"
+      ],
+      "fact_ids": [
+        "nearby/minute_pipe/upper_bridge",
+        "pair/minute_pipe/upper_bridge"
+      ]
+    },
+    {
+      "pair": [
+        "central_upper_bearing",
+        "minute_pipe"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/minute_pipe",
+        "link/central_upper_bearing"
+      ],
+      "fact_ids": [
+        "nearby/minute_pipe/central_upper_bearing",
+        "pair/minute_pipe/central_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "hour_wheel",
+        "minute_pipe"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/minute_pipe",
+        "link/hour_wheel"
+      ],
+      "fact_ids": [
+        "nearby/minute_pipe/hour_wheel",
+        "pair/minute_pipe/hour_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "hour_hand",
+        "minute_pipe"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/minute_pipe",
+        "link/hour_hand"
+      ],
+      "fact_ids": [
+        "nearby/minute_pipe/hour_hand",
+        "pair/minute_pipe/hour_hand"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_wheel",
+        "minute_pipe"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/minute_pipe",
+        "link/intermediate_wheel"
+      ],
+      "fact_ids": [
+        "nearby/minute_pipe/intermediate_wheel",
+        "pair/minute_pipe/intermediate_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "hour_pipe",
+        "upper_bridge"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/hour_pipe",
+        "link/upper_bridge"
+      ],
+      "fact_ids": [
+        "nearby/hour_pipe/upper_bridge",
+        "pair/hour_pipe/upper_bridge"
+      ]
+    },
+    {
+      "pair": [
+        "hour_pipe",
+        "minute_pinion"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/hour_pipe",
+        "link/minute_pinion"
+      ],
+      "fact_ids": [
+        "nearby/hour_pipe/minute_pinion",
+        "pair/hour_pipe/minute_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "hour_pipe",
+        "minute_hand"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/hour_pipe",
+        "link/minute_hand"
+      ],
+      "fact_ids": [
+        "nearby/hour_pipe/minute_hand",
+        "pair/hour_pipe/minute_hand"
+      ]
+    },
+    {
+      "pair": [
+        "hour_pipe",
+        "intermediate_wheel"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/hour_pipe",
+        "link/intermediate_wheel"
+      ],
+      "fact_ids": [
+        "nearby/hour_pipe/intermediate_wheel",
+        "pair/hour_pipe/intermediate_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "central_lower_bearing",
+        "hour_pipe"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/hour_pipe",
+        "link/central_lower_bearing"
+      ],
+      "fact_ids": [
+        "nearby/hour_pipe/central_lower_bearing",
+        "pair/hour_pipe/central_lower_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "baseplate",
+        "intermediate_arbor"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/intermediate_arbor",
+        "link/baseplate"
+      ],
+      "fact_ids": [
+        "nearby/intermediate_arbor/baseplate",
+        "pair/intermediate_arbor/baseplate"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_arbor",
+        "upper_bridge"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/intermediate_arbor",
+        "link/upper_bridge"
+      ],
+      "fact_ids": [
+        "nearby/intermediate_arbor/upper_bridge",
+        "pair/intermediate_arbor/upper_bridge"
+      ]
+    },
+    {
+      "pair": [
+        "hour_wheel",
+        "intermediate_arbor"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/intermediate_arbor",
+        "link/hour_wheel"
+      ],
+      "fact_ids": [
+        "nearby/intermediate_arbor/hour_wheel",
+        "pair/intermediate_arbor/hour_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "hour_hand",
+        "intermediate_arbor"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/intermediate_arbor",
+        "link/hour_hand"
+      ],
+      "fact_ids": [
+        "nearby/intermediate_arbor/hour_hand",
+        "pair/intermediate_arbor/hour_hand"
+      ]
+    },
+    {
+      "pair": [
+        "hour_wheel",
+        "minute_pinion"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/minute_pinion",
+        "link/hour_wheel"
+      ],
+      "fact_ids": [
+        "nearby/minute_pinion/hour_wheel",
+        "pair/minute_pinion/hour_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "central_lower_bearing",
+        "minute_pinion"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/minute_pinion",
+        "link/central_lower_bearing"
+      ],
+      "fact_ids": [
+        "nearby/minute_pinion/central_lower_bearing",
+        "pair/minute_pinion/central_lower_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "minute_pinion",
+        "upper_bridge"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/minute_pinion",
+        "link/upper_bridge"
+      ],
+      "fact_ids": [
+        "nearby/minute_pinion/upper_bridge",
+        "pair/minute_pinion/upper_bridge"
+      ]
+    },
+    {
+      "pair": [
+        "central_upper_bearing",
+        "minute_pinion"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/minute_pinion",
+        "link/central_upper_bearing"
+      ],
+      "fact_ids": [
+        "nearby/minute_pinion/central_upper_bearing",
+        "pair/minute_pinion/central_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_wheel",
+        "pillar_03"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/intermediate_wheel",
+        "link/pillar_03"
+      ],
+      "fact_ids": [
+        "nearby/intermediate_wheel/pillar_03",
+        "pair/intermediate_wheel/pillar_03"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_wheel",
+        "pillar_04"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/intermediate_wheel",
+        "link/pillar_04"
+      ],
+      "fact_ids": [
+        "nearby/intermediate_wheel/pillar_04",
+        "pair/intermediate_wheel/pillar_04"
+      ]
+    },
+    {
+      "pair": [
+        "hour_wheel",
+        "intermediate_wheel"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/intermediate_wheel",
+        "link/hour_wheel"
+      ],
+      "fact_ids": [
+        "nearby/intermediate_wheel/hour_wheel",
+        "pair/intermediate_wheel/hour_wheel"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_pinion",
+        "intermediate_wheel"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/intermediate_wheel",
+        "link/intermediate_pinion"
+      ],
+      "fact_ids": [
+        "nearby/intermediate_wheel/intermediate_pinion",
+        "pair/intermediate_wheel/intermediate_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "central_lower_bearing",
+        "intermediate_wheel"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/intermediate_wheel",
+        "link/central_lower_bearing"
+      ],
+      "fact_ids": [
+        "nearby/intermediate_wheel/central_lower_bearing",
+        "pair/intermediate_wheel/central_lower_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_lower_bearing",
+        "intermediate_wheel"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/intermediate_wheel",
+        "link/intermediate_lower_bearing"
+      ],
+      "fact_ids": [
+        "nearby/intermediate_wheel/intermediate_lower_bearing",
+        "pair/intermediate_wheel/intermediate_lower_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_wheel",
+        "upper_bridge"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/intermediate_wheel",
+        "link/upper_bridge"
+      ],
+      "fact_ids": [
+        "nearby/intermediate_wheel/upper_bridge",
+        "pair/intermediate_wheel/upper_bridge"
+      ]
+    },
+    {
+      "pair": [
+        "central_upper_bearing",
+        "intermediate_wheel"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/intermediate_wheel",
+        "link/central_upper_bearing"
+      ],
+      "fact_ids": [
+        "nearby/intermediate_wheel/central_upper_bearing",
+        "pair/intermediate_wheel/central_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_upper_bearing",
+        "intermediate_wheel"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/intermediate_wheel",
+        "link/intermediate_upper_bearing"
+      ],
+      "fact_ids": [
+        "nearby/intermediate_wheel/intermediate_upper_bearing",
+        "pair/intermediate_wheel/intermediate_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_pinion",
+        "upper_bridge"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/intermediate_pinion",
+        "link/upper_bridge"
+      ],
+      "fact_ids": [
+        "nearby/intermediate_pinion/upper_bridge",
+        "pair/intermediate_pinion/upper_bridge"
+      ]
+    },
+    {
+      "pair": [
+        "intermediate_pinion",
+        "intermediate_upper_bearing"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/intermediate_pinion",
+        "link/intermediate_upper_bearing"
+      ],
+      "fact_ids": [
+        "nearby/intermediate_pinion/intermediate_upper_bearing",
+        "pair/intermediate_pinion/intermediate_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "hour_wheel",
+        "upper_bridge"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/hour_wheel",
+        "link/upper_bridge"
+      ],
+      "fact_ids": [
+        "nearby/hour_wheel/upper_bridge",
+        "pair/hour_wheel/upper_bridge"
+      ]
+    },
+    {
+      "pair": [
+        "central_upper_bearing",
+        "hour_wheel"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/hour_wheel",
+        "link/central_upper_bearing"
+      ],
+      "fact_ids": [
+        "nearby/hour_wheel/central_upper_bearing",
+        "pair/hour_wheel/central_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "hour_wheel",
+        "intermediate_upper_bearing"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/hour_wheel",
+        "link/intermediate_upper_bearing"
+      ],
+      "fact_ids": [
+        "nearby/hour_wheel/intermediate_upper_bearing",
+        "pair/hour_wheel/intermediate_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "hour_hand",
+        "minute_hand"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/hour_hand",
+        "link/minute_hand"
+      ],
+      "fact_ids": [
+        "nearby/hour_hand/minute_hand",
+        "pair/hour_hand/minute_hand"
+      ]
+    },
+    {
+      "pair": [
+        "dial_marker_01",
+        "minute_hand"
+      ],
+      "reason": "Measured positive real-mesh separation or disjoint AABB extent makes this an SDF false-contact risk.",
+      "source_entity_ids": [
+        "link/minute_hand",
+        "link/dial_marker_01"
+      ],
+      "fact_ids": [
+        "nearby/minute_hand/dial_marker_01",
+        "pair/minute_hand/dial_marker_01"
+      ]
+    }
+  ],
+  "support_patches": [],
+  "bodies": [
+    "baseplate",
+    "central_lower_bearing",
+    "central_upper_bearing",
+    "dial_marker_01",
+    "dial_marker_02",
+    "dial_marker_03",
+    "dial_marker_04",
+    "dial_marker_05",
+    "dial_marker_06",
+    "dial_marker_07",
+    "dial_marker_08",
+    "dial_marker_09",
+    "dial_marker_10",
+    "dial_marker_11",
+    "dial_marker_12",
+    "hour_hand",
+    "hour_pipe",
+    "hour_wheel",
+    "intermediate_arbor",
+    "intermediate_lower_bearing",
+    "intermediate_pinion",
+    "intermediate_upper_bearing",
+    "intermediate_wheel",
+    "minute_hand",
+    "minute_pinion",
+    "minute_pipe",
+    "pillar_01",
+    "pillar_02",
+    "pillar_03",
+    "pillar_04",
+    "upper_bridge"
+  ],
+  "joints": [
+    "hour_rotation",
+    "intermediate_rotation",
+    "minute_rotation"
+  ],
+  "constraints": [
+    "stage_1_external_mesh",
+    "stage_2_external_mesh"
+  ]
+}

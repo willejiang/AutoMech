@@ -1,0 +1,183 @@
+<mujoco model="a_hand_cranked_slider_crank_mech">
+  <compiler angle="radian" coordinate="local" />
+  <option gravity="0 0 -9.81" timestep="0.0002" solver="Newton" iterations="100" cone="elliptic" />
+  <size memory="256M" />
+  <asset>
+    <mesh name="mesh_baseplate" file="meshes/baseplate.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_lower_bearing" file="meshes/lower_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_bridge_left_column" file="meshes/bridge_left_column.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_bridge_right_column" file="meshes/bridge_right_column.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_upper_bridge" file="meshes/upper_bridge.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_upper_bearing" file="meshes/upper_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_guide_floor" file="meshes/guide_floor.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_guide_left_rail" file="meshes/guide_left_rail.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_guide_right_rail" file="meshes/guide_right_rail.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_guide_top_left" file="meshes/guide_top_left.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_guide_top_right" file="meshes/guide_top_right.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_crankshaft" file="meshes/crankshaft.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_crank_web" file="meshes/crank_web.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_crank_pin" file="meshes/crank_pin.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_connecting_rod" file="meshes/connecting_rod.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_piston_slider" file="meshes/piston_slider.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_wrist_pin" file="meshes/wrist_pin.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_marker" file="meshes/output_marker.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hand_arm" file="meshes/hand_arm.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_handle_pin" file="meshes/handle_pin.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_handle_grip" file="meshes/handle_grip.stl" scale=".001 .001 .001" />
+  </asset>
+  <worldbody>
+    <light pos="0 0 3" dir="0 0 -1" />
+    <geom name="ground" type="plane" size="5 5 .1" friction="1 .05 .005" />
+    <body name="baseplate" pos="0.05325 0 0" quat="1 0 0 0">
+      <inertial pos="0 0 0.004" mass="1.5791688" fullinertia="0.002301375331 0.004784124779 0.007068655643 -0 -0 -0" />
+      <geom name="geom_baseplate" type="sdf" mesh="mesh_baseplate" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+      <body name="lower_bearing" pos="-0.05325 0 0.008" quat="1 0 0 0">
+        <inertial pos="4.607059975e-20 5.724889035e-20 0.003" mass="0.01412481552" fullinertia="5.594902941e-07 5.594902832e-07 1.034231684e-06 -2.524866242e-24 1.718322077e-23 3.807780202e-24" />
+        <geom name="geom_lower_bearing" type="sdf" mesh="mesh_lower_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+        <body name="crankshaft" pos="0 0 0" quat="1 0 0 0">
+          <inertial pos="-3.01688722e-20 2.502484379e-19 0.024" mass="0.02958153922" fullinertia="5.864463547e-06 5.864463536e-06 3.696160218e-07 1.427906682e-24 -8.234261865e-23 9.138509801e-23" />
+          <geom name="geom_crankshaft" type="sdf" mesh="mesh_crankshaft" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          <body name="crank_web" pos="0 0 0.008" quat="0.9238795325 0 0 0.3826834324">
+            <inertial pos="0.008560220068 -2.770054437e-19 0.003" mass="0.03006964604" fullinertia="1.118281199e-06 4.321899141e-06 5.259762464e-06 -8.748491575e-23 -1.142325345e-22 -1.737286463e-23" />
+            <geom name="geom_crank_web" type="sdf" mesh="mesh_crank_web" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+            <body name="crank_pin" pos="0.022 -1.282508032e-18 0" quat="0.9238795325 0 0 -0.3826834324">
+              <inertial pos="8.380242259e-21 -6.919019354e-20 0.01" mass="0.004437230892" fullinertia="1.57887329e-07 1.578873291e-07 1.995926526e-08 2.602954889e-26 3.718506984e-25 -7.377496068e-24" />
+              <geom name="geom_crank_pin" type="sdf" mesh="mesh_crank_pin" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+              <body name="connecting_rod" pos="0 0 0.008" quat="0.995768537 0 0 -0.09189679428">
+                <inertial pos="0.04058025125 2.361321516e-19 0.004" mass="0.08062754534" fullinertia="1.97863387e-06 8.771035248e-05 8.88289592e-05 2.631917834e-22 -3.655441105e-21 1.066170322e-22" />
+                <geom name="geom_connecting_rod" type="sdf" mesh="mesh_connecting_rod" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+                <joint name="rod_big_end_revolute" type="hinge" axis="0 0 1" pos="0 0 0" />
+              </body>
+            </body>
+          </body>
+          <body name="hand_arm" pos="0 0 0.042" quat="6.123233996e-17 0 0 1">
+            <inertial pos="0.01434973416 2.59571298e-19 0.002" mass="0.01833673051" fullinertia="4.282576575e-07 3.630795411e-06 4.010155121e-06 1.173250671e-22 1.142325345e-22 1.713488018e-23" />
+            <geom name="geom_hand_arm" type="sdf" mesh="mesh_hand_arm" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+            <body name="handle_pin" pos="0.032 3.918869757e-18 0" quat="6.123233996e-17 0 0 -1">
+              <inertial pos="9.472173406e-21 -6.404585998e-20 0.013" mass="0.007851433509" fullinertia="4.663324724e-07 4.663324729e-07 4.807010338e-08 -4.462208381e-26 9.668118158e-25 -9.995517446e-24" />
+              <geom name="geom_handle_pin" type="sdf" mesh="mesh_handle_pin" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+              <body name="handle_grip" pos="0 0 0.006" quat="1 0 0 0">
+                <inertial pos="5.239790791e-20 -8.931137971e-20 0.009" mass="0.01632234264" fullinertia="6.903928958e-07 6.903929017e-07 4.993792952e-07 -2.426325807e-24 7.697309456e-24 -4.224328517e-23" />
+                <geom name="geom_handle_grip" type="sdf" mesh="mesh_handle_grip" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+              </body>
+            </body>
+          </body>
+          <joint name="crankshaft_rotation" type="hinge" axis="0 0 1" pos="0 0 0" />
+        </body>
+      </body>
+      <body name="bridge_left_column" pos="-0.05325 -0.052 0.008" quat="1 0 0 0">
+        <inertial pos="0 0 0.017" mass="0.0683264" fullinertia="8.039739733e-06 8.039739733e-06 2.915259733e-06 -0 -0 -0" />
+        <geom name="geom_bridge_left_column" type="sdf" mesh="mesh_bridge_left_column" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+        <body name="upper_bridge" pos="0 0.052 0.034" quat="1 0 0 0">
+          <inertial pos="-1.039731995e-18 0 0.003" mass="0.2929794348" fullinertia="0.0003733707667 7.870139173e-05 0.0004503142818 6.027670073e-21 -9.747842948e-22 1.523100461e-23" />
+          <geom name="geom_upper_bridge" type="sdf" mesh="mesh_upper_bridge" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          <body name="upper_bearing" pos="0 0 0" quat="1 0 0 0">
+            <inertial pos="4.607059975e-20 5.724889035e-20 0.003" mass="0.01412481552" fullinertia="5.594902941e-07 5.594902832e-07 1.034231684e-06 -2.524866242e-24 1.718322077e-23 3.807780202e-24" />
+            <geom name="geom_upper_bearing" type="sdf" mesh="mesh_upper_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+        </body>
+      </body>
+      <body name="bridge_right_column" pos="-0.05325 0.052 0.008" quat="1 0 0 0">
+        <inertial pos="0 0 0.017" mass="0.0683264" fullinertia="8.039739733e-06 8.039739733e-06 2.915259733e-06 -0 -0 -0" />
+        <geom name="geom_bridge_right_column" type="sdf" mesh="mesh_bridge_right_column" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+      </body>
+      <body name="guide_floor" pos="0.0395 0 0.008" quat="1 0 0 0">
+        <inertial pos="0 0 0.004" mass="0.3907416" fullinertia="0.0001526497184 0.0002746994853 0.0004231812933 -0 -0 -0" />
+        <geom name="geom_guide_floor" type="sdf" mesh="mesh_guide_floor" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+        <body name="guide_left_rail" pos="0 -0.037 0.008" quat="1 0 0 0">
+          <inertial pos="0 0 0.012" mass="0.1034316" fullinertia="5.2750116e-06 7.712765122e-05 7.247322922e-05 -0 -0 -0" />
+          <geom name="geom_guide_left_rail" type="sdf" mesh="mesh_guide_left_rail" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          <body name="guide_top_left" pos="0 0.009 0.02405" quat="1 0 0 0">
+            <inertial pos="0 0 0.002" mass="0.0344772" fullinertia="4.59696e-07 2.410028108e-05 2.446803788e-05 -0 -0 -0" />
+            <geom name="geom_guide_top_left" type="sdf" mesh="mesh_guide_top_left" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+        </body>
+        <body name="guide_right_rail" pos="0 0.037 0.008" quat="1 0 0 0">
+          <inertial pos="0 0 0.012" mass="0.1034316" fullinertia="5.2750116e-06 7.712765122e-05 7.247322922e-05 -0 -0 -0" />
+          <geom name="geom_guide_right_rail" type="sdf" mesh="mesh_guide_right_rail" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          <body name="guide_top_right" pos="0 -0.009 0.02405" quat="1 0 0 0">
+            <inertial pos="0 0 0.002" mass="0.0344772" fullinertia="4.59696e-07 2.410028108e-05 2.446803788e-05 -0 -0 -0" />
+            <geom name="geom_guide_top_right" type="sdf" mesh="mesh_guide_top_right" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+        </body>
+        <body name="piston_slider" pos="0.00637069565 0 0.008" quat="1 0 0 0">
+          <inertial pos="0.01613472474 -4.113285646e-20 0.012" mass="0.115715011" fullinertia="3.401203177e-05 1.562681636e-05 3.369466701e-05 -2.660355427e-21 -0 -1.142325345e-23" />
+          <geom name="geom_piston_slider" type="sdf" mesh="mesh_piston_slider" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          <body name="wrist_pin" pos="0 0 0.004" quat="1 0 0 0">
+            <inertial pos="1.047530282e-20 -5.243022051e-20 0.008" mass="0.003549784714" fullinertia="8.371244661e-08 8.371244672e-08 1.596741221e-08 -5.205909777e-26 -1.606395017e-24 -7.139547934e-24" />
+            <geom name="geom_wrist_pin" type="sdf" mesh="mesh_wrist_pin" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+          <body name="output_marker" pos="0.0315 0 0.004" quat="1 0 0 0">
+            <inertial pos="0 0 0.006" mass="0.011304" fullinertia="2.71296e-07 2.29848e-07 2.29848e-07 -0 -0 -0" />
+            <geom name="geom_output_marker" type="sdf" mesh="mesh_output_marker" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+          <joint name="slider_translation" type="slide" axis="1 0 0" pos="0 0 0" />
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <equality>
+    <connect name="rod_small_end_connect" body1="connecting_rod" body2="wrist_pin" anchor="0.09912069565 0 0.028" />
+  </equality>
+  <contact>
+    <exclude body1="lower_bearing" body2="crankshaft" />
+    <exclude body1="upper_bearing" body2="crankshaft" />
+    <exclude body1="crankshaft" body2="crank_web" />
+    <exclude body1="crank_web" body2="crank_pin" />
+    <exclude body1="piston_slider" body2="wrist_pin" />
+    <exclude body1="crankshaft" body2="hand_arm" />
+    <exclude body1="hand_arm" body2="handle_pin" />
+    <exclude body1="crankshaft" body2="baseplate" />
+    <exclude body1="crankshaft" body2="upper_bridge" />
+    <exclude body1="crankshaft" body2="connecting_rod" />
+    <exclude body1="crankshaft" body2="crank_pin" />
+    <exclude body1="crankshaft" body2="handle_grip" />
+    <exclude body1="crankshaft" body2="handle_pin" />
+    <exclude body1="crank_web" body2="lower_bearing" />
+    <exclude body1="crank_web" body2="connecting_rod" />
+    <exclude body1="crank_web" body2="baseplate" />
+    <exclude body1="crank_web" body2="bridge_right_column" />
+    <exclude body1="crank_web" body2="guide_floor" />
+    <exclude body1="crank_web" body2="guide_right_rail" />
+    <exclude body1="crank_web" body2="upper_bridge" />
+    <exclude body1="crank_web" body2="upper_bearing" />
+    <exclude body1="crank_web" body2="guide_left_rail" />
+    <exclude body1="crank_web" body2="guide_top_right" />
+    <exclude body1="crank_pin" body2="lower_bearing" />
+    <exclude body1="crank_pin" body2="upper_bridge" />
+    <exclude body1="crank_pin" body2="upper_bearing" />
+    <exclude body1="crank_pin" body2="baseplate" />
+    <exclude body1="crank_pin" body2="hand_arm" />
+    <exclude body1="connecting_rod" body2="piston_slider" />
+    <exclude body1="connecting_rod" body2="guide_right_rail" />
+    <exclude body1="connecting_rod" body2="guide_floor" />
+    <exclude body1="connecting_rod" body2="guide_top_right" />
+    <exclude body1="connecting_rod" body2="lower_bearing" />
+    <exclude body1="connecting_rod" body2="upper_bridge" />
+    <exclude body1="connecting_rod" body2="upper_bearing" />
+    <exclude body1="connecting_rod" body2="guide_top_left" />
+    <exclude body1="connecting_rod" body2="output_marker" />
+    <exclude body1="connecting_rod" body2="bridge_right_column" />
+    <exclude body1="connecting_rod" body2="baseplate" />
+    <exclude body1="connecting_rod" body2="hand_arm" />
+    <exclude body1="connecting_rod" body2="guide_left_rail" />
+    <exclude body1="connecting_rod" body2="bridge_left_column" />
+    <exclude body1="connecting_rod" body2="handle_pin" />
+    <exclude body1="connecting_rod" body2="handle_grip" />
+    <exclude body1="piston_slider" body2="guide_floor" />
+    <exclude body1="piston_slider" body2="output_marker" />
+    <exclude body1="piston_slider" body2="guide_left_rail" />
+    <exclude body1="piston_slider" body2="guide_right_rail" />
+    <exclude body1="piston_slider" body2="guide_top_left" />
+    <exclude body1="piston_slider" body2="guide_top_right" />
+    <exclude body1="piston_slider" body2="baseplate" />
+    <exclude body1="wrist_pin" body2="guide_floor" />
+    <exclude body1="output_marker" body2="guide_floor" />
+    <exclude body1="hand_arm" body2="upper_bridge" />
+    <exclude body1="hand_arm" body2="upper_bearing" />
+    <exclude body1="hand_arm" body2="handle_grip" />
+    <exclude body1="handle_pin" body2="handle_grip" />
+    <exclude body1="handle_pin" body2="upper_bridge" />
+    <exclude body1="handle_grip" body2="upper_bridge" />
+  </contact>
+</mujoco>

@@ -1,0 +1,76 @@
+{
+  "iteration": 2,
+  "started_at": "2026-08-12T09:54:55.121461+00:00",
+  "prompt_sha256": "aee082acf487794db4dcbc8fbd51a7168ddb9a51d2cea6be9b7941e3971eb4e4",
+  "checks": {
+    "source_execution": {
+      "pass": true,
+      "named_part_count": 15,
+      "solid_count": 16,
+      "part_names": [
+        "base",
+        "left_bearing",
+        "right_bearing",
+        "guide_left",
+        "guide_right",
+        "cylinder_left",
+        "cylinder_right",
+        "crankshaft",
+        "crank_disk",
+        "hand_crank",
+        "eccentric_pin",
+        "connecting_rod",
+        "vertical_crosshead",
+        "pump_rod",
+        "piston"
+      ]
+    },
+    "part_inventory": {
+      "pass": true,
+      "mesh_count": 15
+    },
+    "assembly_references": {
+      "pass": true,
+      "unresolved": [],
+      "relation_count": 16
+    },
+    "mjcf_load": {
+      "pass": true,
+      "nq": 3,
+      "nv": 3,
+      "neq": 1,
+      "nu": 1
+    },
+    "physics_and_function": {
+      "pass": true,
+      "sample_count": 401,
+      "simulated_seconds": 8.001999999999342,
+      "input_angle_rad": 6.2453814755813815,
+      "piston_vertical_span_mm": 35.99926550653802,
+      "piston_reversals": 2,
+      "piston_lateral_drift_mm": 0.0,
+      "max_closure_residual_mm": 0.0,
+      "all_finite": true,
+      "contacts_recorded": 0
+    }
+  },
+  "ideal_constraints_disclosed": [
+    {
+      "name": "rod_crosshead_closure",
+      "mjcf_type": "inactive connect plus evaluator closure solve",
+      "authored_relation": "rod_crosshead_closure",
+      "purpose": "ideal kinematic lowering of physical pin closure between connecting rod and guided crosshead",
+      "equation_m": "crosshead_slide=0.027+0.018*sin(crankshaft_hinge)",
+      "direct_output_actuator": false
+    }
+  ],
+  "collision_policy": {
+    "disabled_fixed_frame_geoms": "Fixed frame is non-colliding in simulation; geometry remains available to independent solid checks.",
+    "moving_collision": "piston collision enabled; no false body-ground contact measured",
+    "broad_pair_exclusions": false
+  },
+  "pass": true,
+  "failure_summary": null,
+  "finished_at": "2026-08-12T09:55:00.428230+00:00",
+  "wall_clock_seconds": 5.306768894195557
+}

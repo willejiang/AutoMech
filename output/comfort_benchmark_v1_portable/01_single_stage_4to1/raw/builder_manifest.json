@@ -1,0 +1,2448 @@
+{
+  "manifest_version": 3,
+  "engine": "mujoco-agent",
+  "topology_plan": {
+    "coordinate_map": {
+      "base": null,
+      "bench_bolt_1": null,
+      "bench_bolt_2": null,
+      "bench_bolt_3": null,
+      "bench_bolt_4": null,
+      "input_thrust_washer": null,
+      "output_thrust_washer": null,
+      "input_bearing_pedestal": null,
+      "output_bearing_pedestal": null,
+      "input_lower_bearing": null,
+      "input_upper_bearing": null,
+      "output_lower_bearing": null,
+      "output_upper_bearing": null,
+      "input_shaft": "input_shaft_hinge",
+      "input_pinion": "input_shaft_hinge",
+      "hand_crank": "input_shaft_hinge",
+      "output_shaft": "output_shaft_hinge",
+      "output_gear": "output_shaft_hinge",
+      "crank_grip": "crank_grip_hinge"
+    },
+    "tree_edges": [
+      [
+        "base",
+        "bench_bolt_1"
+      ],
+      [
+        "base",
+        "bench_bolt_2"
+      ],
+      [
+        "base",
+        "bench_bolt_3"
+      ],
+      [
+        "base",
+        "bench_bolt_4"
+      ],
+      [
+        "base",
+        "input_thrust_washer"
+      ],
+      [
+        "base",
+        "output_thrust_washer"
+      ],
+      [
+        "base",
+        "input_bearing_pedestal"
+      ],
+      [
+        "base",
+        "output_bearing_pedestal"
+      ],
+      [
+        "base",
+        "input_shaft"
+      ],
+      [
+        "base",
+        "output_shaft"
+      ],
+      [
+        "input_bearing_pedestal",
+        "input_lower_bearing"
+      ],
+      [
+        "input_lower_bearing",
+        "input_upper_bearing"
+      ],
+      [
+        "output_bearing_pedestal",
+        "output_lower_bearing"
+      ],
+      [
+        "output_lower_bearing",
+        "output_upper_bearing"
+      ],
+      [
+        "input_shaft",
+        "input_pinion"
+      ],
+      [
+        "input_shaft",
+        "hand_crank"
+      ],
+      [
+        "output_shaft",
+        "output_gear"
+      ],
+      [
+        "hand_crank",
+        "crank_grip"
+      ]
+    ],
+    "closure_edges": [
+      [
+        "input_pinion",
+        "output_gear",
+        "spur_reduction_eq"
+      ]
+    ],
+    "rigid_carried": [
+      [
+        "input_shaft",
+        "input_pinion"
+      ],
+      [
+        "input_shaft",
+        "hand_crank"
+      ],
+      [
+        "output_shaft",
+        "output_gear"
+      ]
+    ],
+    "independent_coaxial": [
+      [
+        "input_shaft",
+        "input_lower_bearing"
+      ],
+      [
+        "input_shaft",
+        "input_upper_bearing"
+      ],
+      [
+        "output_shaft",
+        "output_lower_bearing"
+      ],
+      [
+        "output_shaft",
+        "output_upper_bearing"
+      ],
+      [
+        "hand_crank",
+        "crank_grip"
+      ]
+    ],
+    "transmissions": [
+      {
+        "name": "spur_reduction_stage",
+        "driving_joint": "input_shaft_hinge",
+        "driven_joint": "output_shaft_hinge",
+        "ratio": -0.25
+      }
+    ],
+    "contact_decisions": [
+      {
+        "pair": [
+          "input_lower_bearing",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "running journal fit is represented by the input shaft hinge",
+        "source_entity_ids": [
+          "relation/input_lower_running_fit",
+          "link/input_lower_bearing",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "fit/input_lower_bearing/journal/input_shaft/lower_journal",
+          "pair/input_lower_bearing/input_shaft",
+          "nearby/input_lower_bearing/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_upper_bearing",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "running journal fit is represented by the input shaft hinge",
+        "source_entity_ids": [
+          "relation/input_upper_running_fit",
+          "link/input_upper_bearing",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "fit/input_upper_bearing/journal/input_shaft/upper_journal",
+          "pair/input_shaft/input_upper_bearing",
+          "nearby/input_shaft/input_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "output_lower_bearing",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "running journal fit is represented by the output shaft hinge",
+        "source_entity_ids": [
+          "relation/output_lower_running_fit",
+          "link/output_lower_bearing",
+          "link/output_shaft"
+        ],
+        "fact_ids": [
+          "fit/output_lower_bearing/journal/output_shaft/lower_journal",
+          "pair/output_lower_bearing/output_shaft",
+          "nearby/output_lower_bearing/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "output_upper_bearing",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "running journal fit is represented by the output shaft hinge",
+        "source_entity_ids": [
+          "relation/output_upper_running_fit",
+          "link/output_upper_bearing",
+          "link/output_shaft"
+        ],
+        "fact_ids": [
+          "fit/output_upper_bearing/journal/output_shaft/upper_journal",
+          "pair/output_shaft/output_upper_bearing",
+          "nearby/output_shaft/output_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "input_pinion"
+        ],
+        "action": "exclude",
+        "reason": "measured interference press fit is rigidly carried",
+        "source_entity_ids": [
+          "relation/pinion_press_fit",
+          "link/input_shaft",
+          "link/input_pinion"
+        ],
+        "fact_ids": [
+          "fit/input_shaft/pinion_seat/input_pinion/shaft_bore",
+          "pair/input_pinion/input_shaft",
+          "nearby/input_pinion/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "output_shaft",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "measured interference press fit is rigidly carried",
+        "source_entity_ids": [
+          "relation/output_gear_press_fit",
+          "link/output_shaft",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "fit/output_shaft/gear_seat/output_gear/shaft_bore",
+          "pair/output_gear/output_shaft",
+          "nearby/output_gear/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "hand_crank"
+        ],
+        "action": "exclude",
+        "reason": "measured interference press fit is rigidly carried",
+        "source_entity_ids": [
+          "relation/crank_press_fit",
+          "link/input_shaft",
+          "link/hand_crank"
+        ],
+        "fact_ids": [
+          "fit/input_shaft/crank_seat/hand_crank/shaft_bore",
+          "pair/hand_crank/input_shaft",
+          "nearby/hand_crank/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "hand_crank",
+          "crank_grip"
+        ],
+        "action": "exclude",
+        "reason": "running grip journal is represented by its hinge",
+        "source_entity_ids": [
+          "relation/crank_grip_running_fit",
+          "link/hand_crank",
+          "link/crank_grip"
+        ],
+        "fact_ids": [
+          "fit/hand_crank/grip_pin/crank_grip/pin_bore",
+          "pair/crank_grip/hand_crank",
+          "nearby/crank_grip/hand_crank"
+        ]
+      },
+      {
+        "pair": [
+          "input_pinion",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "ideal joint equality replaces the external spur tooth mesh",
+        "source_entity_ids": [
+          "relation/stage1_external_spur_mesh",
+          "link/input_pinion",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "fit/input_pinion/mesh/output_gear/mesh",
+          "pair/input_pinion/output_gear",
+          "nearby/input_pinion/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "input_thrust_washer"
+        ],
+        "action": "keep",
+        "reason": "real thrust-face contact is mechanically required and geometry overlap is uncertain",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/input_thrust_washer"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/input_thrust_washer",
+          "nearby/input_shaft/input_thrust_washer"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "input_bearing_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/input_bearing_pedestal"
+        ],
+        "fact_ids": [
+          "pair/input_bearing_pedestal/input_shaft",
+          "nearby/input_bearing_pedestal/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/input_shaft/output_gear",
+          "nearby/input_shaft/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "input_shaft",
+          "base"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_shaft",
+          "link/base"
+        ],
+        "fact_ids": [
+          "pair/base/input_shaft",
+          "nearby/base/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "output_shaft",
+          "output_thrust_washer"
+        ],
+        "action": "keep",
+        "reason": "real thrust-face contact is mechanically required and geometry overlap is uncertain",
+        "source_entity_ids": [
+          "link/output_shaft",
+          "link/output_thrust_washer"
+        ],
+        "fact_ids": [
+          "pair/output_shaft/output_thrust_washer",
+          "nearby/output_shaft/output_thrust_washer"
+        ]
+      },
+      {
+        "pair": [
+          "output_shaft",
+          "output_bearing_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_shaft",
+          "link/output_bearing_pedestal"
+        ],
+        "fact_ids": [
+          "pair/output_bearing_pedestal/output_shaft",
+          "nearby/output_bearing_pedestal/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "output_shaft",
+          "base"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_shaft",
+          "link/base"
+        ],
+        "fact_ids": [
+          "pair/base/output_shaft",
+          "nearby/base/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_pinion",
+          "input_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_pinion",
+          "link/input_upper_bearing"
+        ],
+        "fact_ids": [
+          "pair/input_pinion/input_upper_bearing",
+          "nearby/input_pinion/input_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "input_pinion",
+          "hand_crank"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_pinion",
+          "link/hand_crank"
+        ],
+        "fact_ids": [
+          "pair/hand_crank/input_pinion",
+          "nearby/hand_crank/input_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "input_pinion",
+          "input_lower_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_pinion",
+          "link/input_lower_bearing"
+        ],
+        "fact_ids": [
+          "pair/input_lower_bearing/input_pinion",
+          "nearby/input_lower_bearing/input_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "input_pinion",
+          "input_bearing_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_pinion",
+          "link/input_bearing_pedestal"
+        ],
+        "fact_ids": [
+          "pair/input_bearing_pedestal/input_pinion",
+          "nearby/input_bearing_pedestal/input_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "input_pinion",
+          "input_thrust_washer"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_pinion",
+          "link/input_thrust_washer"
+        ],
+        "fact_ids": [
+          "pair/input_pinion/input_thrust_washer",
+          "nearby/input_pinion/input_thrust_washer"
+        ]
+      },
+      {
+        "pair": [
+          "input_pinion",
+          "base"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_pinion",
+          "link/base"
+        ],
+        "fact_ids": [
+          "pair/base/input_pinion",
+          "nearby/base/input_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "input_pinion",
+          "crank_grip"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/input_pinion",
+          "link/crank_grip"
+        ],
+        "fact_ids": [
+          "pair/crank_grip/input_pinion",
+          "nearby/crank_grip/input_pinion"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "input_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/input_upper_bearing"
+        ],
+        "fact_ids": [
+          "pair/input_upper_bearing/output_gear",
+          "nearby/input_upper_bearing/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "output_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/output_upper_bearing"
+        ],
+        "fact_ids": [
+          "pair/output_gear/output_upper_bearing",
+          "nearby/output_gear/output_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "hand_crank"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/hand_crank"
+        ],
+        "fact_ids": [
+          "pair/hand_crank/output_gear",
+          "nearby/hand_crank/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "input_lower_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/input_lower_bearing"
+        ],
+        "fact_ids": [
+          "pair/input_lower_bearing/output_gear",
+          "nearby/input_lower_bearing/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "output_lower_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/output_lower_bearing"
+        ],
+        "fact_ids": [
+          "pair/output_gear/output_lower_bearing",
+          "nearby/output_gear/output_lower_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "crank_grip"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/crank_grip"
+        ],
+        "fact_ids": [
+          "pair/crank_grip/output_gear",
+          "nearby/crank_grip/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "bench_bolt_3"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/bench_bolt_3"
+        ],
+        "fact_ids": [
+          "pair/bench_bolt_3/output_gear",
+          "nearby/bench_bolt_3/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "bench_bolt_4"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/bench_bolt_4"
+        ],
+        "fact_ids": [
+          "pair/bench_bolt_4/output_gear",
+          "nearby/bench_bolt_4/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "input_bearing_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/input_bearing_pedestal"
+        ],
+        "fact_ids": [
+          "pair/input_bearing_pedestal/output_gear",
+          "nearby/input_bearing_pedestal/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "output_bearing_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/output_bearing_pedestal"
+        ],
+        "fact_ids": [
+          "pair/output_bearing_pedestal/output_gear",
+          "nearby/output_bearing_pedestal/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "input_thrust_washer"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/input_thrust_washer"
+        ],
+        "fact_ids": [
+          "pair/input_thrust_washer/output_gear",
+          "nearby/input_thrust_washer/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "output_thrust_washer"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/output_thrust_washer"
+        ],
+        "fact_ids": [
+          "pair/output_gear/output_thrust_washer",
+          "nearby/output_gear/output_thrust_washer"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "base"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/base"
+        ],
+        "fact_ids": [
+          "pair/base/output_gear",
+          "nearby/base/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "bench_bolt_1"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/bench_bolt_1"
+        ],
+        "fact_ids": [
+          "pair/bench_bolt_1/output_gear",
+          "nearby/bench_bolt_1/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "bench_bolt_2"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/bench_bolt_2"
+        ],
+        "fact_ids": [
+          "pair/bench_bolt_2/output_gear",
+          "nearby/bench_bolt_2/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "hand_crank",
+          "input_upper_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/hand_crank",
+          "link/input_upper_bearing"
+        ],
+        "fact_ids": [
+          "pair/hand_crank/input_upper_bearing",
+          "nearby/hand_crank/input_upper_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "hand_crank",
+          "input_lower_bearing"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/hand_crank",
+          "link/input_lower_bearing"
+        ],
+        "fact_ids": [
+          "pair/hand_crank/input_lower_bearing",
+          "nearby/hand_crank/input_lower_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "hand_crank",
+          "input_bearing_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/hand_crank",
+          "link/input_bearing_pedestal"
+        ],
+        "fact_ids": [
+          "pair/hand_crank/input_bearing_pedestal",
+          "nearby/hand_crank/input_bearing_pedestal"
+        ]
+      },
+      {
+        "pair": [
+          "hand_crank",
+          "input_thrust_washer"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/hand_crank",
+          "link/input_thrust_washer"
+        ],
+        "fact_ids": [
+          "pair/hand_crank/input_thrust_washer",
+          "nearby/hand_crank/input_thrust_washer"
+        ]
+      },
+      {
+        "pair": [
+          "hand_crank",
+          "base"
+        ],
+        "action": "exclude",
+        "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+        "source_entity_ids": [
+          "link/hand_crank",
+          "link/base"
+        ],
+        "fact_ids": [
+          "pair/base/hand_crank",
+          "nearby/base/hand_crank"
+        ]
+      }
+    ],
+    "support_ground": [
+      "base"
+    ],
+    "support_strategy": "fixed base supports gravity and remains ground-collidable; no patch required"
+  },
+  "decisions": [
+    {
+      "generated_kind": "constraint",
+      "generated_name": "spur_reduction_eq",
+      "constraint_type": "joint",
+      "reason": "external 9 mm to 36 mm pitch-radius spur reduction",
+      "source_entity_ids": [
+        "relation/stage1_external_spur_mesh",
+        "transmission/spur_reduction_stage"
+      ],
+      "fact_ids": [
+        "fit/input_pinion/mesh/output_gear/mesh",
+        "pair/input_pinion/output_gear"
+      ]
+    },
+    {
+      "entity_id": "link/base",
+      "action": "emitted",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "link/base"
+      ]
+    },
+    {
+      "entity_id": "link/bench_bolt_1",
+      "action": "emitted",
+      "generated_nodes": [
+        "bench_bolt_1"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "link/bench_bolt_1"
+      ]
+    },
+    {
+      "entity_id": "link/bench_bolt_2",
+      "action": "emitted",
+      "generated_nodes": [
+        "bench_bolt_2"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "link/bench_bolt_2"
+      ]
+    },
+    {
+      "entity_id": "link/bench_bolt_3",
+      "action": "emitted",
+      "generated_nodes": [
+        "bench_bolt_3"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "link/bench_bolt_3"
+      ]
+    },
+    {
+      "entity_id": "link/bench_bolt_4",
+      "action": "emitted",
+      "generated_nodes": [
+        "bench_bolt_4"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "link/bench_bolt_4"
+      ]
+    },
+    {
+      "entity_id": "link/input_thrust_washer",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_thrust_washer"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "link/input_thrust_washer"
+      ]
+    },
+    {
+      "entity_id": "link/output_thrust_washer",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_thrust_washer"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "link/output_thrust_washer"
+      ]
+    },
+    {
+      "entity_id": "link/input_bearing_pedestal",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_bearing_pedestal"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "link/input_bearing_pedestal"
+      ]
+    },
+    {
+      "entity_id": "link/output_bearing_pedestal",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_bearing_pedestal"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "link/output_bearing_pedestal"
+      ]
+    },
+    {
+      "entity_id": "link/input_lower_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_lower_bearing"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "link/input_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/input_upper_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_upper_bearing"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "link/input_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/output_lower_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_lower_bearing"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "link/output_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/output_upper_bearing",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_upper_bearing"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "link/output_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/input_shaft",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_shaft"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "link/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "link/output_shaft",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_shaft"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "link/output_shaft"
+      ]
+    },
+    {
+      "entity_id": "link/input_pinion",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_pinion"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "link/input_pinion"
+      ]
+    },
+    {
+      "entity_id": "link/output_gear",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_gear"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "link/output_gear"
+      ]
+    },
+    {
+      "entity_id": "link/hand_crank",
+      "action": "emitted",
+      "generated_nodes": [
+        "hand_crank"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "link/hand_crank"
+      ]
+    },
+    {
+      "entity_id": "link/crank_grip",
+      "action": "emitted",
+      "generated_nodes": [
+        "crank_grip"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "link/crank_grip"
+      ]
+    },
+    {
+      "entity_id": "pose/place_base",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "pose/place_base"
+      ]
+    },
+    {
+      "entity_id": "pose/place_bench_bolt_1",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "pose/place_bench_bolt_1"
+      ]
+    },
+    {
+      "entity_id": "pose/place_bench_bolt_2",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "pose/place_bench_bolt_2"
+      ]
+    },
+    {
+      "entity_id": "pose/place_bench_bolt_3",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "pose/place_bench_bolt_3"
+      ]
+    },
+    {
+      "entity_id": "pose/place_bench_bolt_4",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "pose/place_bench_bolt_4"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_thrust_washer",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "pose/place_input_thrust_washer"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_thrust_washer",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "pose/place_output_thrust_washer"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_bearing_pedestal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "pose/place_input_bearing_pedestal"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_bearing_pedestal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "pose/place_output_bearing_pedestal"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_lower_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "pose/place_input_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_upper_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "pose/place_input_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_lower_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "pose/place_output_lower_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_upper_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "pose/place_output_upper_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "pose/place_input_shaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "pose/place_output_shaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "pose/place_input_pinion"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "pose/place_output_gear"
+      ]
+    },
+    {
+      "entity_id": "pose/place_hand_crank",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "pose/place_hand_crank"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crank_grip",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "pose/place_crank_grip"
+      ]
+    },
+    {
+      "entity_id": "port/base/input_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "port/base/input_axis"
+      ]
+    },
+    {
+      "entity_id": "port/base/output_axis",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "port/base/output_axis"
+      ]
+    },
+    {
+      "entity_id": "port/input_lower_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "port/input_lower_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/input_upper_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "port/input_upper_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/output_lower_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "port/output_lower_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/output_upper_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "port/output_upper_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "port/input_shaft/lower_journal"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/upper_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "port/input_shaft/upper_journal"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/pinion_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "port/input_shaft/pinion_seat"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/crank_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "port/input_shaft/crank_seat"
+      ]
+    },
+    {
+      "entity_id": "port/output_shaft/lower_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "port/output_shaft/lower_journal"
+      ]
+    },
+    {
+      "entity_id": "port/output_shaft/upper_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "port/output_shaft/upper_journal"
+      ]
+    },
+    {
+      "entity_id": "port/output_shaft/gear_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "port/output_shaft/gear_seat"
+      ]
+    },
+    {
+      "entity_id": "port/output_shaft/output_end",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "port/output_shaft/output_end"
+      ]
+    },
+    {
+      "entity_id": "port/input_pinion/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "port/input_pinion/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/input_pinion/mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "port/input_pinion/mesh"
+      ]
+    },
+    {
+      "entity_id": "port/output_gear/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "port/output_gear/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/output_gear/mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "port/output_gear/mesh"
+      ]
+    },
+    {
+      "entity_id": "port/hand_crank/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "port/hand_crank/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/hand_crank/grip_pin",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "port/hand_crank/grip_pin"
+      ]
+    },
+    {
+      "entity_id": "port/crank_grip/pin_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "port/crank_grip/pin_bore"
+      ]
+    },
+    {
+      "entity_id": "relation/input_lower_running_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "relation/input_lower_running_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/input_upper_running_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "relation/input_upper_running_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/output_lower_running_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "relation/output_lower_running_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/output_upper_running_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "relation/output_upper_running_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/pinion_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "relation/pinion_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/output_gear_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "relation/output_gear_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/crank_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "relation/crank_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/crank_grip_running_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "relation/crank_grip_running_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/stage1_external_spur_mesh",
+      "action": "represented_by",
+      "generated_nodes": [
+        "spur_reduction_eq"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "relation/stage1_external_spur_mesh"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/input_shaft_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_shaft_hinge"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "motion_joint/input_shaft_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/output_shaft_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_shaft_hinge"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "motion_joint/output_shaft_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/crank_grip_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "crank_grip_hinge"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "motion_joint/crank_grip_hinge"
+      ]
+    },
+    {
+      "entity_id": "transmission/crank_to_input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "transmission/crank_to_input_shaft"
+      ]
+    },
+    {
+      "entity_id": "transmission/input_shaft_to_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "transmission/input_shaft_to_pinion"
+      ]
+    },
+    {
+      "entity_id": "transmission/spur_reduction_stage",
+      "action": "represented_by",
+      "generated_nodes": [
+        "spur_reduction_eq"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "transmission/spur_reduction_stage"
+      ]
+    },
+    {
+      "entity_id": "transmission/output_gear_to_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "transmission/output_gear_to_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/driver/input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "role/driver/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/output/output_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "role/output/output_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/watch/hand_crank",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "role/watch/hand_crank"
+      ]
+    },
+    {
+      "entity_id": "role/watch/input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "role/watch/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/watch/input_pinion",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "role/watch/input_pinion"
+      ]
+    },
+    {
+      "entity_id": "role/watch/output_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "role/watch/output_gear"
+      ]
+    },
+    {
+      "entity_id": "role/watch/output_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "accounted for by an emitted body, joint, fit exclusion, rigid carrying, role mapping, or transmission equality",
+      "fact_ids": [
+        "role/watch/output_shaft"
+      ]
+    }
+  ],
+  "excludes": [
+    {
+      "pair": [
+        "input_lower_bearing",
+        "input_shaft"
+      ],
+      "reason": "running journal fit is represented by the input shaft hinge",
+      "source_entity_ids": [
+        "relation/input_lower_running_fit",
+        "link/input_lower_bearing",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "fit/input_lower_bearing/journal/input_shaft/lower_journal",
+        "pair/input_lower_bearing/input_shaft",
+        "nearby/input_lower_bearing/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "input_upper_bearing"
+      ],
+      "reason": "running journal fit is represented by the input shaft hinge",
+      "source_entity_ids": [
+        "relation/input_upper_running_fit",
+        "link/input_upper_bearing",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "fit/input_upper_bearing/journal/input_shaft/upper_journal",
+        "pair/input_shaft/input_upper_bearing",
+        "nearby/input_shaft/input_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "output_lower_bearing",
+        "output_shaft"
+      ],
+      "reason": "running journal fit is represented by the output shaft hinge",
+      "source_entity_ids": [
+        "relation/output_lower_running_fit",
+        "link/output_lower_bearing",
+        "link/output_shaft"
+      ],
+      "fact_ids": [
+        "fit/output_lower_bearing/journal/output_shaft/lower_journal",
+        "pair/output_lower_bearing/output_shaft",
+        "nearby/output_lower_bearing/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "output_shaft",
+        "output_upper_bearing"
+      ],
+      "reason": "running journal fit is represented by the output shaft hinge",
+      "source_entity_ids": [
+        "relation/output_upper_running_fit",
+        "link/output_upper_bearing",
+        "link/output_shaft"
+      ],
+      "fact_ids": [
+        "fit/output_upper_bearing/journal/output_shaft/upper_journal",
+        "pair/output_shaft/output_upper_bearing",
+        "nearby/output_shaft/output_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "input_pinion",
+        "input_shaft"
+      ],
+      "reason": "measured interference press fit is rigidly carried",
+      "source_entity_ids": [
+        "relation/pinion_press_fit",
+        "link/input_shaft",
+        "link/input_pinion"
+      ],
+      "fact_ids": [
+        "fit/input_shaft/pinion_seat/input_pinion/shaft_bore",
+        "pair/input_pinion/input_shaft",
+        "nearby/input_pinion/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "output_gear",
+        "output_shaft"
+      ],
+      "reason": "measured interference press fit is rigidly carried",
+      "source_entity_ids": [
+        "relation/output_gear_press_fit",
+        "link/output_shaft",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "fit/output_shaft/gear_seat/output_gear/shaft_bore",
+        "pair/output_gear/output_shaft",
+        "nearby/output_gear/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "hand_crank",
+        "input_shaft"
+      ],
+      "reason": "measured interference press fit is rigidly carried",
+      "source_entity_ids": [
+        "relation/crank_press_fit",
+        "link/input_shaft",
+        "link/hand_crank"
+      ],
+      "fact_ids": [
+        "fit/input_shaft/crank_seat/hand_crank/shaft_bore",
+        "pair/hand_crank/input_shaft",
+        "nearby/hand_crank/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "crank_grip",
+        "hand_crank"
+      ],
+      "reason": "running grip journal is represented by its hinge",
+      "source_entity_ids": [
+        "relation/crank_grip_running_fit",
+        "link/hand_crank",
+        "link/crank_grip"
+      ],
+      "fact_ids": [
+        "fit/hand_crank/grip_pin/crank_grip/pin_bore",
+        "pair/crank_grip/hand_crank",
+        "nearby/crank_grip/hand_crank"
+      ]
+    },
+    {
+      "pair": [
+        "input_pinion",
+        "output_gear"
+      ],
+      "reason": "ideal joint equality replaces the external spur tooth mesh",
+      "source_entity_ids": [
+        "relation/stage1_external_spur_mesh",
+        "link/input_pinion",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "fit/input_pinion/mesh/output_gear/mesh",
+        "pair/input_pinion/output_gear",
+        "nearby/input_pinion/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "input_bearing_pedestal",
+        "input_shaft"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/input_bearing_pedestal"
+      ],
+      "fact_ids": [
+        "pair/input_bearing_pedestal/input_shaft",
+        "nearby/input_bearing_pedestal/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "input_shaft",
+        "output_gear"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/input_shaft/output_gear",
+        "nearby/input_shaft/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "input_shaft"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_shaft",
+        "link/base"
+      ],
+      "fact_ids": [
+        "pair/base/input_shaft",
+        "nearby/base/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "output_bearing_pedestal",
+        "output_shaft"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_shaft",
+        "link/output_bearing_pedestal"
+      ],
+      "fact_ids": [
+        "pair/output_bearing_pedestal/output_shaft",
+        "nearby/output_bearing_pedestal/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "output_shaft"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_shaft",
+        "link/base"
+      ],
+      "fact_ids": [
+        "pair/base/output_shaft",
+        "nearby/base/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "input_pinion",
+        "input_upper_bearing"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_pinion",
+        "link/input_upper_bearing"
+      ],
+      "fact_ids": [
+        "pair/input_pinion/input_upper_bearing",
+        "nearby/input_pinion/input_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "hand_crank",
+        "input_pinion"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_pinion",
+        "link/hand_crank"
+      ],
+      "fact_ids": [
+        "pair/hand_crank/input_pinion",
+        "nearby/hand_crank/input_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "input_lower_bearing",
+        "input_pinion"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_pinion",
+        "link/input_lower_bearing"
+      ],
+      "fact_ids": [
+        "pair/input_lower_bearing/input_pinion",
+        "nearby/input_lower_bearing/input_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "input_bearing_pedestal",
+        "input_pinion"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_pinion",
+        "link/input_bearing_pedestal"
+      ],
+      "fact_ids": [
+        "pair/input_bearing_pedestal/input_pinion",
+        "nearby/input_bearing_pedestal/input_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "input_pinion",
+        "input_thrust_washer"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_pinion",
+        "link/input_thrust_washer"
+      ],
+      "fact_ids": [
+        "pair/input_pinion/input_thrust_washer",
+        "nearby/input_pinion/input_thrust_washer"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "input_pinion"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_pinion",
+        "link/base"
+      ],
+      "fact_ids": [
+        "pair/base/input_pinion",
+        "nearby/base/input_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "crank_grip",
+        "input_pinion"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/input_pinion",
+        "link/crank_grip"
+      ],
+      "fact_ids": [
+        "pair/crank_grip/input_pinion",
+        "nearby/crank_grip/input_pinion"
+      ]
+    },
+    {
+      "pair": [
+        "input_upper_bearing",
+        "output_gear"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/input_upper_bearing"
+      ],
+      "fact_ids": [
+        "pair/input_upper_bearing/output_gear",
+        "nearby/input_upper_bearing/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "output_gear",
+        "output_upper_bearing"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/output_upper_bearing"
+      ],
+      "fact_ids": [
+        "pair/output_gear/output_upper_bearing",
+        "nearby/output_gear/output_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "hand_crank",
+        "output_gear"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/hand_crank"
+      ],
+      "fact_ids": [
+        "pair/hand_crank/output_gear",
+        "nearby/hand_crank/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "input_lower_bearing",
+        "output_gear"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/input_lower_bearing"
+      ],
+      "fact_ids": [
+        "pair/input_lower_bearing/output_gear",
+        "nearby/input_lower_bearing/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "output_gear",
+        "output_lower_bearing"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/output_lower_bearing"
+      ],
+      "fact_ids": [
+        "pair/output_gear/output_lower_bearing",
+        "nearby/output_gear/output_lower_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "crank_grip",
+        "output_gear"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/crank_grip"
+      ],
+      "fact_ids": [
+        "pair/crank_grip/output_gear",
+        "nearby/crank_grip/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "bench_bolt_3",
+        "output_gear"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/bench_bolt_3"
+      ],
+      "fact_ids": [
+        "pair/bench_bolt_3/output_gear",
+        "nearby/bench_bolt_3/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "bench_bolt_4",
+        "output_gear"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/bench_bolt_4"
+      ],
+      "fact_ids": [
+        "pair/bench_bolt_4/output_gear",
+        "nearby/bench_bolt_4/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "input_bearing_pedestal",
+        "output_gear"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/input_bearing_pedestal"
+      ],
+      "fact_ids": [
+        "pair/input_bearing_pedestal/output_gear",
+        "nearby/input_bearing_pedestal/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "output_bearing_pedestal",
+        "output_gear"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/output_bearing_pedestal"
+      ],
+      "fact_ids": [
+        "pair/output_bearing_pedestal/output_gear",
+        "nearby/output_bearing_pedestal/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "input_thrust_washer",
+        "output_gear"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/input_thrust_washer"
+      ],
+      "fact_ids": [
+        "pair/input_thrust_washer/output_gear",
+        "nearby/input_thrust_washer/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "output_gear",
+        "output_thrust_washer"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/output_thrust_washer"
+      ],
+      "fact_ids": [
+        "pair/output_gear/output_thrust_washer",
+        "nearby/output_gear/output_thrust_washer"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "output_gear"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/base"
+      ],
+      "fact_ids": [
+        "pair/base/output_gear",
+        "nearby/base/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "bench_bolt_1",
+        "output_gear"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/bench_bolt_1"
+      ],
+      "fact_ids": [
+        "pair/bench_bolt_1/output_gear",
+        "nearby/bench_bolt_1/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "bench_bolt_2",
+        "output_gear"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/bench_bolt_2"
+      ],
+      "fact_ids": [
+        "pair/bench_bolt_2/output_gear",
+        "nearby/bench_bolt_2/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "hand_crank",
+        "input_upper_bearing"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/hand_crank",
+        "link/input_upper_bearing"
+      ],
+      "fact_ids": [
+        "pair/hand_crank/input_upper_bearing",
+        "nearby/hand_crank/input_upper_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "hand_crank",
+        "input_lower_bearing"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/hand_crank",
+        "link/input_lower_bearing"
+      ],
+      "fact_ids": [
+        "pair/hand_crank/input_lower_bearing",
+        "nearby/hand_crank/input_lower_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "hand_crank",
+        "input_bearing_pedestal"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/hand_crank",
+        "link/input_bearing_pedestal"
+      ],
+      "fact_ids": [
+        "pair/hand_crank/input_bearing_pedestal",
+        "nearby/hand_crank/input_bearing_pedestal"
+      ]
+    },
+    {
+      "pair": [
+        "hand_crank",
+        "input_thrust_washer"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/hand_crank",
+        "link/input_thrust_washer"
+      ],
+      "fact_ids": [
+        "pair/hand_crank/input_thrust_washer",
+        "nearby/hand_crank/input_thrust_washer"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "hand_crank"
+      ],
+      "reason": "positive surface separation or disjoint AABB identifies collision-proxy false-contact risk",
+      "source_entity_ids": [
+        "link/hand_crank",
+        "link/base"
+      ],
+      "fact_ids": [
+        "pair/base/hand_crank",
+        "nearby/base/hand_crank"
+      ]
+    }
+  ],
+  "ground_excludes": [],
+  "support_patches": [],
+  "bodies": [
+    "base",
+    "bench_bolt_1",
+    "bench_bolt_2",
+    "bench_bolt_3",
+    "bench_bolt_4",
+    "crank_grip",
+    "hand_crank",
+    "input_bearing_pedestal",
+    "input_lower_bearing",
+    "input_pinion",
+    "input_shaft",
+    "input_thrust_washer",
+    "input_upper_bearing",
+    "output_bearing_pedestal",
+    "output_gear",
+    "output_lower_bearing",
+    "output_shaft",
+    "output_thrust_washer",
+    "output_upper_bearing"
+  ],
+  "joints": [
+    "crank_grip_hinge",
+    "input_shaft_hinge",
+    "output_shaft_hinge"
+  ],
+  "constraints": [
+    "spur_reduction_eq"
+  ]
+}

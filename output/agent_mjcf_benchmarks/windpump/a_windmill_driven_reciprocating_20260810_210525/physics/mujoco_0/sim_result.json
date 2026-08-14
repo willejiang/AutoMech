@@ -1,0 +1,85 @@
+{
+  "task": "a windmill-driven reciprocating piston water pump with a visible multi-blade rotor input, supported rotor shaft, crank eccentric, rigid connecting rod with revolute ends, guided vertical pump rod and piston slider output, finite clearances, and explicit closed-loop kinematic semantics",
+  "spec": {
+    "duration_s": 3.0,
+    "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\agent_mjcf_benchmarks\\windpump\\a_windmill_driven_reciprocating_20260810_210525",
+    "drive": {
+      "torque": 0.5,
+      "mode": "velocity",
+      "drive_method": "servo",
+      "target_velocity": 4.0,
+      "output_link": "piston_slider"
+    },
+    "design": {
+      "input_joint": "wind_rotor",
+      "output_joint": "place_pump_rod",
+      "watch_joints": [
+        "place_crankshaft",
+        "place_connecting_rod",
+        "place_piston_slider",
+        "place_pump_rod"
+      ],
+      "propagation_path": [
+        "place_wind_rotor",
+        "place_crankshaft",
+        "place_connecting_rod",
+        "place_piston_slider",
+        "place_pump_rod"
+      ],
+      "pass_criteria": null,
+      "environment": "Bench-mounted and driven: fix the base and rotate the visible wind rotor so the supported crank, connecting rod, guided pump rod, and piston reciprocation remain observable. Preserve the model's explicit closed-loop kinematic constraints and collision clearances.",
+      "camera": {
+        "locked": true,
+        "target_link": "connecting_rod",
+        "azimuth_degrees": 35.0,
+        "elevation_degrees": -28.0,
+        "distance_scale": 2.5,
+        "roll_degrees": 0.0
+      }
+    }
+  },
+  "metrics": {
+    "verdict": "PASS",
+    "test_kind": "driven_mechanism",
+    "survive_s": 3.0,
+    "input_joint": "crank_rotation",
+    "input_part": "wind_rotor",
+    "input_travel": 0.2386,
+    "input_unit": "rad",
+    "moved_count": 1,
+    "watched_count": 5,
+    "output_reached": false,
+    "exploded": false,
+    "output_travel": 0.0001,
+    "output_unit": "m",
+    "ratio_in_out": null,
+    "displaced_parts": [
+      {
+        "part": "crankshaft",
+        "disp_mm": 26.18
+      },
+      {
+        "part": "wind_rotor",
+        "disp_mm": 23.8
+      }
+    ],
+    "end_z": 0.0,
+    "max_tilt_deg": 0.0,
+    "max_drift": 0.0262
+  },
+  "stability": {
+    "verdict": "PASS",
+    "exploded": false,
+    "max_disp_m": 0.0001,
+    "end_z": 0.0,
+    "displaced_parts": []
+  },
+  "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\agent_mjcf_benchmarks\\windpump\\a_windmill_driven_reciprocating_20260810_210525\\physics\\mujoco_0\\frames",
+  "n_frames": 40,
+  "log": [
+    "initial contacts: 0 interpenetrating pair(s)",
+    "stability(settle): PASS max_disp=0.000m exploded=False",
+    "camera: az=90.0 el=-25.0 dist=0.392 (designer)",
+    "drive: method=servo mode=velocity rate=4"
+  ]
+}

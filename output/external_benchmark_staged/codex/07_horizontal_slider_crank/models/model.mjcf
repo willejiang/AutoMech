@@ -1,0 +1,64 @@
+<mujoco model="open_horizontal_slider_crank">
+  <compiler angle="radian" meshdir="meshes" />
+  <option timestep="0.0005" gravity="0 0 -9.81" integrator="implicitfast" iterations="100" tolerance="1e-10" />
+  <default>
+    <joint damping="0.08" armature="0.0002" />
+    <geom type="mesh" density="1000" friction="0.7 0.02 0.002" condim="3" solref="0.004 1" />
+  </default>
+  <asset>
+    <mesh name="base_mesh" file="base.stl" scale="0.001 0.001 0.001" />
+    <mesh name="left_pedestal_mesh" file="left_pedestal.stl" scale="0.001 0.001 0.001" />
+    <mesh name="right_pedestal_mesh" file="right_pedestal.stl" scale="0.001 0.001 0.001" />
+    <mesh name="front_bearing_mesh" file="front_bearing.stl" scale="0.001 0.001 0.001" />
+    <mesh name="rear_bearing_mesh" file="rear_bearing.stl" scale="0.001 0.001 0.001" />
+    <mesh name="guide_mesh" file="horizontal_guide.stl" scale="0.001 0.001 0.001" />
+    <mesh name="shaft_mesh" file="crankshaft_input.stl" scale="0.001 0.001 0.001" />
+    <mesh name="web_mesh" file="crank_web.stl" scale="0.001 0.001 0.001" />
+    <mesh name="crank_pin_mesh" file="crank_pin.stl" scale="0.001 0.001 0.001" />
+    <mesh name="rod_mesh" file="connecting_rod.stl" scale="0.001 0.001 0.001" />
+    <mesh name="slider_mesh" file="horizontal_slider.stl" scale="0.001 0.001 0.001" />
+    <mesh name="hand_crank_mesh" file="hand_crank.stl" scale="0.001 0.001 0.001" />
+  </asset>
+  <worldbody>
+    <body name="base" pos="0.055 0 0.004"><geom name="base_visual" mesh="base_mesh" contype="1" conaffinity="1" /></body>
+    <body name="left_pedestal" pos="0 0 0.039"><geom name="left_pedestal_visual" mesh="left_pedestal_mesh" contype="1" conaffinity="1" /></body>
+    <body name="right_pedestal" pos="0 0 0.039"><geom name="right_pedestal_visual" mesh="right_pedestal_mesh" contype="1" conaffinity="1" /></body>
+    <body name="front_bearing" pos="0 0 0.072"><geom name="front_bearing_visual" mesh="front_bearing_mesh" contype="0" conaffinity="0" /></body>
+    <body name="rear_bearing" pos="0 0 0.072"><geom name="rear_bearing_visual" mesh="rear_bearing_mesh" contype="0" conaffinity="0" /></body>
+    <body name="horizontal_guide" pos="0.118 0.008 0.072"><geom name="horizontal_guide_visual" mesh="guide_mesh" contype="1" conaffinity="1" /></body>
+    <body name="crankshaft_input" pos="0 0 0.072">
+      <joint name="crankshaft_input_hinge" type="hinge" axis="0 1 0" damping="0.8" armature="0.01" />
+      <geom name="crankshaft_input_visual" mesh="shaft_mesh" contype="1" conaffinity="1" />
+      <geom name="crank_inertia" type="cylinder" size="0.008 0.004" pos="0 0 0" quat="0.7071068 0.7071068 0 0" density="3000" contype="0" conaffinity="0" rgba="0 0 0 0" />
+      <body name="crank_web"><geom name="crank_web_visual" mesh="web_mesh" contype="1" conaffinity="1" /></body>
+      <body name="hand_crank"><geom name="hand_crank_visual" mesh="hand_crank_mesh" contype="1" conaffinity="1" /></body>
+      <body name="crank_pin" pos="0 0.008 0.028">
+        <geom name="crank_pin_visual" mesh="crank_pin_mesh" contype="0" conaffinity="0" />
+        <site name="crank_pin_site" size="0.003" />
+      </body>
+    </body>
+    <body name="horizontal_slider" pos="0.1084435 0.008 0.072">
+      <joint name="horizontal_slider_slide" type="slide" axis="1 0 0" range="-0.08 0.02" limited="true" damping="0.25" />
+      <geom name="horizontal_slider_visual" mesh="slider_mesh" contype="1" conaffinity="1" />
+      <site name="slider_pin_site" size="0.003" />
+    </body>
+    <body name="connecting_rod" pos="0.05422175 0.008 0.086">
+      <joint name="rod_free_joint" type="free" />
+      <geom name="connecting_rod_visual" mesh="rod_mesh" contype="0" conaffinity="0" density="1700" />
+      <site name="rod_big_end_site" pos="-0.05422175 0 0.014" size="0.003" />
+      <site name="rod_small_end_site" pos="0.05422175 0 -0.014" size="0.003" />
+    </body>
+  </worldbody>
+  <equality>
+    <connect name="rod_crank_pin_closure" body1="connecting_rod" body2="crank_pin" anchor="-0.05422175 0 0.014" solref="0.001 1" />
+    <connect name="rod_slider_pin_closure" body1="connecting_rod" body2="horizontal_slider" anchor="0.05422175 0 -0.014" solref="0.001 1" />
+  </equality>
+  <contact>
+    <exclude body1="crankshaft_input" body2="left_pedestal" />
+    <exclude body1="crankshaft_input" body2="right_pedestal" />
+    <exclude body1="connecting_rod" body2="horizontal_slider" />
+  </contact>
+  <actuator>
+    <motor name="crank_motor" joint="crankshaft_input_hinge" gear="1" ctrllimited="true" ctrlrange="-2 2" forcelimited="true" forcerange="-2 2" />
+  </actuator>
+</mujoco>

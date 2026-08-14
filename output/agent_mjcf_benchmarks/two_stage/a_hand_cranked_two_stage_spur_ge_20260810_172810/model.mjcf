@@ -1,0 +1,238 @@
+<mujoco model="a_hand_cranked_two_stage_spur_ge">
+  <compiler angle="radian" coordinate="local" />
+  <option gravity="0 0 -9.81" timestep="0.0002" solver="Newton" iterations="100" cone="elliptic" />
+  <size memory="256M" />
+  <asset>
+    <mesh name="mesh_baseplate" file="meshes/baseplate.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_front_left_column" file="meshes/front_left_column.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_rear_left_column" file="meshes/rear_left_column.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_front_right_column" file="meshes/front_right_column.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_rear_right_column" file="meshes/rear_right_column.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_upper_bridge" file="meshes/upper_bridge.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_thrust_button" file="meshes/input_thrust_button.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_compound_thrust_button" file="meshes/compound_thrust_button.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_thrust_button" file="meshes/output_thrust_button.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_lower_bearing" file="meshes/input_lower_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_compound_lower_bearing" file="meshes/compound_lower_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_lower_bearing" file="meshes/output_lower_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_upper_bearing" file="meshes/input_upper_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_compound_upper_bearing" file="meshes/compound_upper_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_upper_bearing" file="meshes/output_upper_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_shaft" file="meshes/input_shaft.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_input_pinion" file="meshes/input_pinion.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hand_crank" file="meshes/hand_crank.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_crank_handle" file="meshes/crank_handle.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_compound_shaft" file="meshes/compound_shaft.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_compound_wheel" file="meshes/compound_wheel.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_compound_pinion" file="meshes/compound_pinion.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_shaft" file="meshes/output_shaft.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_gear" file="meshes/output_gear.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_output_coupling" file="meshes/output_coupling.stl" scale=".001 .001 .001" />
+  </asset>
+  <worldbody>
+    <light pos="0 0 3" dir="0 0 -1" />
+    <geom name="ground" type="plane" size="5 5 .1" friction="1 .05 .005" />
+    <body name="baseplate" pos="0.0096 0 0" quat="1 0 0 0">
+      <inertial pos="0 0 0.0025" mass="0.1863904067" fullinertia="4.909833963e-05 0.0001120833939 0.0001604051068 -0 -0 -0" />
+      <geom name="geom_baseplate" type="sdf" mesh="mesh_baseplate" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+      <body name="front_left_column" pos="-0.0374 -0.023 0.005" quat="1 0 0 0">
+        <inertial pos="0 -6.336241679e-20 0.0115" mass="0.005102815526" fullinertia="2.364256952e-07 2.364256954e-07 2.295315505e-08 1.413032654e-25 3.807751151e-24 -8.091570151e-24" />
+        <geom name="geom_front_left_column" type="sdf" mesh="mesh_front_left_column" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+        <body name="upper_bridge" pos="0.0278 0.023 -0.005" quat="1 0 0 0">
+          <inertial pos="0.01001659602 0 0.0305" mass="0.1771646465" fullinertia="4.902159527e-05 0.0001085040544 0.0001567874636 1.523100461e-23 -1.02352351e-19 -0" />
+          <geom name="geom_upper_bridge" type="sdf" mesh="mesh_upper_bridge" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          <body name="input_upper_bearing" pos="-0.0192 0 0.028" quat="1 0 0 0">
+            <inertial pos="-3.123071632e-20 -1.139527008e-19 0.0025" mass="0.001934817565" fullinertia="2.061626515e-08 2.061626391e-08 3.317078921e-08 1.143440898e-25 -1.510643462e-25 -5.354486646e-25" />
+            <geom name="geom_input_upper_bearing" type="sdf" mesh="mesh_input_upper_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+          <body name="compound_upper_bearing" pos="0 0 0.028" quat="1 0 0 0">
+            <inertial pos="-3.123071632e-20 -1.139527008e-19 0.0025" mass="0.001934817565" fullinertia="2.061626515e-08 2.061626391e-08 3.317078921e-08 1.143440898e-25 -1.510643462e-25 -5.354486646e-25" />
+            <geom name="geom_compound_upper_bearing" type="sdf" mesh="mesh_compound_upper_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+          <body name="output_upper_bearing" pos="0.024 0 0.028" quat="1 0 0 0">
+            <inertial pos="-3.123071632e-20 -1.139527008e-19 0.0025" mass="0.001934817565" fullinertia="2.061626515e-08 2.061626391e-08 3.317078921e-08 1.143440898e-25 -1.510643462e-25 -5.354486646e-25" />
+            <geom name="geom_output_upper_bearing" type="sdf" mesh="mesh_output_upper_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+        </body>
+      </body>
+      <body name="rear_left_column" pos="-0.0374 0.023 0.005" quat="1 0 0 0">
+        <inertial pos="0 -6.336241679e-20 0.0115" mass="0.005102815526" fullinertia="2.364256952e-07 2.364256954e-07 2.295315505e-08 1.413032654e-25 3.807751151e-24 -8.091570151e-24" />
+        <geom name="geom_rear_left_column" type="sdf" mesh="mesh_rear_left_column" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+      </body>
+      <body name="front_right_column" pos="0.0374 -0.023 0.005" quat="1 0 0 0">
+        <inertial pos="0 -6.336241679e-20 0.0115" mass="0.005102815526" fullinertia="2.364256952e-07 2.364256954e-07 2.295315505e-08 1.413032654e-25 3.807751151e-24 -8.091570151e-24" />
+        <geom name="geom_front_right_column" type="sdf" mesh="mesh_front_right_column" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+      </body>
+      <body name="rear_right_column" pos="0.0374 0.023 0.005" quat="1 0 0 0">
+        <inertial pos="0 -6.336241679e-20 0.0115" mass="0.005102815526" fullinertia="2.364256952e-07 2.364256954e-07 2.295315505e-08 1.413032654e-25 3.807751151e-24 -8.091570151e-24" />
+        <geom name="geom_rear_right_column" type="sdf" mesh="mesh_rear_right_column" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+      </body>
+      <body name="input_thrust_button" pos="-0.0288 0 0.005" quat="1 0 0 0">
+        <inertial pos="-5.237651412e-21 -6.811632155e-20 0.00025" mass="2.773269308e-05" fullinertia="1.617094032e-11 1.617094052e-11 3.118635197e-11 -5.810167162e-29 -9.441521639e-29 -2.324084596e-28" />
+        <geom name="geom_input_thrust_button" type="sdf" mesh="mesh_input_thrust_button" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+      </body>
+      <body name="compound_thrust_button" pos="-0.0096 0 0.005" quat="1 0 0 0">
+        <inertial pos="-5.237651412e-21 -6.811632155e-20 0.00025" mass="2.773269308e-05" fullinertia="1.617094032e-11 1.617094052e-11 3.118635197e-11 -5.810167162e-29 -9.441521639e-29 -2.324084596e-28" />
+        <geom name="geom_compound_thrust_button" type="sdf" mesh="mesh_compound_thrust_button" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+      </body>
+      <body name="output_thrust_button" pos="0.0144 0 0.005" quat="1 0 0 0">
+        <inertial pos="-5.237651412e-21 -6.811632155e-20 0.00025" mass="2.773269308e-05" fullinertia="1.617094032e-11 1.617094052e-11 3.118635197e-11 -5.810167162e-29 -9.441521639e-29 -2.324084596e-28" />
+        <geom name="geom_output_thrust_button" type="sdf" mesh="mesh_output_thrust_button" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+      </body>
+      <body name="input_lower_bearing" pos="-0.0288 0 0.005" quat="1 0 0 0">
+        <inertial pos="-3.123071632e-20 -1.139527008e-19 0.0025" mass="0.001934817565" fullinertia="2.061626515e-08 2.061626391e-08 3.317078921e-08 1.143440898e-25 -1.510643462e-25 -5.354486646e-25" />
+        <geom name="geom_input_lower_bearing" type="sdf" mesh="mesh_input_lower_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+      </body>
+      <body name="compound_lower_bearing" pos="-0.0096 0 0.005" quat="1 0 0 0">
+        <inertial pos="-3.123071632e-20 -1.139527008e-19 0.0025" mass="0.001934817565" fullinertia="2.061626515e-08 2.061626391e-08 3.317078921e-08 1.143440898e-25 -1.510643462e-25 -5.354486646e-25" />
+        <geom name="geom_compound_lower_bearing" type="sdf" mesh="mesh_compound_lower_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+      </body>
+      <body name="output_lower_bearing" pos="0.0144 0 0.005" quat="1 0 0 0">
+        <inertial pos="-3.123071632e-20 -1.139527008e-19 0.0025" mass="0.001934817565" fullinertia="2.061626515e-08 2.061626391e-08 3.317078921e-08 1.143440898e-25 -1.510643462e-25 -5.354486646e-25" />
+        <geom name="geom_output_lower_bearing" type="sdf" mesh="mesh_output_lower_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+      </body>
+      <body name="input_shaft" pos="-0.0288 0 0.0055" quat="1 0 0 0">
+        <inertial pos="-8.276782478e-21 7.482445762e-20 0.02025" mass="0.008985392557" fullinertia="1.248399601e-06 1.248399601e-06 4.041751215e-08 2.23110419e-26 1.372500928e-23 2.320349175e-23" />
+        <geom name="geom_input_shaft" type="sdf" mesh="mesh_input_shaft" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+        <joint name="input_shaft_rotation" type="hinge" axis="0 0 1" pos="0 0 0" />
+        <body name="input_pinion" pos="0 0 0.0055" quat="1 0 0 0">
+          <inertial pos="-7.675227477e-20 9.713959776e-20 0.003" mass="0.001937926658" fullinertia="2.311540612e-08 2.31154062e-08 3.460325238e-08 -7.734494526e-25 -4.462208381e-25 -3.021286924e-26" />
+          <geom name="geom_input_pinion" type="sdf" mesh="mesh_input_pinion" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+        </body>
+        <body name="hand_crank" pos="0 0 0.0345" quat="1 0 0 0">
+          <inertial pos="9.02726036e-20 -0.00560909058 0.002" mass="0.004943037204" fullinertia="2.431652434e-07 4.443187956e-08 2.744156904e-07 -6.310644251e-24 6.544572292e-25 -7.139533409e-24" />
+          <geom name="geom_hand_crank" type="sdf" mesh="mesh_hand_crank" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          <body name="crank_handle" pos="0 -0.014 0.004" quat="1 0 0 0">
+            <inertial pos="2.285520616e-20 1.613516548e-20 0.0055" mass="0.002440476991" fullinertia="3.00969409e-08 3.009694097e-08 1.097759589e-08 -5.205909777e-26 1.258714614e-24 9.221920016e-25" />
+            <geom name="geom_crank_handle" type="sdf" mesh="mesh_crank_handle" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+          </body>
+        </body>
+      </body>
+      <body name="compound_shaft" pos="-0.0096 0 0.0055" quat="1 0 0 0">
+        <inertial pos="-8.276782478e-21 7.482445762e-20 0.02025" mass="0.008985392557" fullinertia="1.248399601e-06 1.248399601e-06 4.041751215e-08 2.23110419e-26 1.372500928e-23 2.320349175e-23" />
+        <geom name="geom_compound_shaft" type="sdf" mesh="mesh_compound_shaft" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+        <joint name="compound_shaft_rotation" type="hinge" axis="0 0 1" pos="0 0 0" />
+        <body name="compound_wheel" pos="0 0 0.0055" quat="0.9990482216 0 0 0.04361938737">
+          <inertial pos="2.070928717e-19 -5.500904404e-20 0.003" mass="0.02872919346" fullinertia="1.630953671e-06 1.630953671e-06 3.089532181e-06 2.415542137e-23 4.450309158e-23 -5.763685825e-25" />
+          <geom name="geom_compound_wheel" type="sdf" mesh="mesh_compound_wheel" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+        </body>
+        <body name="compound_pinion" pos="0 0 0.0145" quat="1 0 0 0">
+          <inertial pos="-7.675227477e-20 9.713959776e-20 0.003" mass="0.001937926658" fullinertia="2.311540612e-08 2.31154062e-08 3.460325238e-08 -7.734494526e-25 -4.462208381e-25 -3.021286924e-26" />
+          <geom name="geom_compound_pinion" type="sdf" mesh="mesh_compound_pinion" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+        </body>
+      </body>
+      <body name="output_shaft" pos="0.0144 0 0.0055" quat="1 0 0 0">
+        <inertial pos="-8.276782478e-21 7.482445762e-20 0.02025" mass="0.008985392557" fullinertia="1.248399601e-06 1.248399601e-06 4.041751215e-08 2.23110419e-26 1.372500928e-23 2.320349175e-23" />
+        <geom name="geom_output_shaft" type="sdf" mesh="mesh_output_shaft" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+        <joint name="output_shaft_rotation" type="hinge" axis="0 0 1" pos="0 0 0" />
+        <body name="output_gear" pos="0 0 0.0145" quat="0.9994645875 0 0 0.03271908282">
+          <inertial pos="6.818798489e-20 1.352661393e-19 0.003" mass="0.05235184337" fullinertia="5.060727093e-06 5.060727093e-06 9.807343126e-06 3.153293922e-23 2.784418029e-23 1.928092352e-23" />
+          <geom name="geom_output_gear" type="sdf" mesh="mesh_output_gear" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+        </body>
+        <body name="output_coupling" pos="0 0 0.0345" quat="1 0 0 0">
+          <inertial pos="3.532767353e-20 5.191512025e-20 0.002" mass="0.003947160907" fullinertia="6.244343112e-08 6.244343252e-08 1.143611012e-07 2.953888985e-25 2.788880238e-25 4.759834193e-25" />
+          <geom name="geom_output_coupling" type="sdf" mesh="mesh_output_coupling" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" />
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <equality>
+    <joint name="stage_1_ratio" joint1="compound_shaft_rotation" joint2="input_shaft_rotation" polycoef="0 -0.3333333333 0 0 0" />
+    <joint name="stage_2_ratio" joint1="output_shaft_rotation" joint2="compound_shaft_rotation" polycoef="0 -0.25 0 0 0" />
+  </equality>
+  <contact>
+    <exclude body1="baseplate" body2="compound_shaft" />
+    <exclude body1="baseplate" body2="compound_wheel" />
+    <exclude body1="baseplate" body2="input_pinion" />
+    <exclude body1="baseplate" body2="input_shaft" />
+    <exclude body1="baseplate" body2="output_gear" />
+    <exclude body1="baseplate" body2="output_shaft" />
+    <exclude body1="compound_lower_bearing" body2="compound_shaft" />
+    <exclude body1="compound_lower_bearing" body2="compound_wheel" />
+    <exclude body1="compound_lower_bearing" body2="input_shaft" />
+    <exclude body1="compound_lower_bearing" body2="output_gear" />
+    <exclude body1="compound_lower_bearing" body2="output_shaft" />
+    <exclude body1="compound_pinion" body2="compound_shaft" />
+    <exclude body1="compound_pinion" body2="compound_upper_bearing" />
+    <exclude body1="compound_pinion" body2="compound_wheel" />
+    <exclude body1="compound_pinion" body2="input_shaft" />
+    <exclude body1="compound_pinion" body2="output_gear" />
+    <exclude body1="compound_pinion" body2="output_shaft" />
+    <exclude body1="compound_pinion" body2="upper_bridge" />
+    <exclude body1="compound_shaft" body2="compound_thrust_button" />
+    <exclude body1="compound_shaft" body2="compound_upper_bearing" />
+    <exclude body1="compound_shaft" body2="compound_wheel" />
+    <exclude body1="compound_shaft" body2="crank_handle" />
+    <exclude body1="compound_shaft" body2="hand_crank" />
+    <exclude body1="compound_shaft" body2="input_lower_bearing" />
+    <exclude body1="compound_shaft" body2="input_pinion" />
+    <exclude body1="compound_shaft" body2="input_shaft" />
+    <exclude body1="compound_shaft" body2="input_thrust_button" />
+    <exclude body1="compound_shaft" body2="input_upper_bearing" />
+    <exclude body1="compound_shaft" body2="output_coupling" />
+    <exclude body1="compound_shaft" body2="output_gear" />
+    <exclude body1="compound_shaft" body2="output_lower_bearing" />
+    <exclude body1="compound_shaft" body2="output_shaft" />
+    <exclude body1="compound_shaft" body2="output_thrust_button" />
+    <exclude body1="compound_shaft" body2="output_upper_bearing" />
+    <exclude body1="compound_thrust_button" body2="compound_wheel" />
+    <exclude body1="compound_thrust_button" body2="input_shaft" />
+    <exclude body1="compound_thrust_button" body2="output_gear" />
+    <exclude body1="compound_thrust_button" body2="output_shaft" />
+    <exclude body1="compound_upper_bearing" body2="compound_wheel" />
+    <exclude body1="compound_upper_bearing" body2="hand_crank" />
+    <exclude body1="compound_upper_bearing" body2="input_shaft" />
+    <exclude body1="compound_upper_bearing" body2="output_gear" />
+    <exclude body1="compound_upper_bearing" body2="output_shaft" />
+    <exclude body1="compound_wheel" body2="front_left_column" />
+    <exclude body1="compound_wheel" body2="input_lower_bearing" />
+    <exclude body1="compound_wheel" body2="input_pinion" />
+    <exclude body1="compound_wheel" body2="input_shaft" />
+    <exclude body1="compound_wheel" body2="input_thrust_button" />
+    <exclude body1="compound_wheel" body2="input_upper_bearing" />
+    <exclude body1="compound_wheel" body2="output_gear" />
+    <exclude body1="compound_wheel" body2="output_lower_bearing" />
+    <exclude body1="compound_wheel" body2="output_shaft" />
+    <exclude body1="compound_wheel" body2="output_thrust_button" />
+    <exclude body1="compound_wheel" body2="output_upper_bearing" />
+    <exclude body1="compound_wheel" body2="rear_left_column" />
+    <exclude body1="compound_wheel" body2="upper_bridge" />
+    <exclude body1="crank_handle" body2="hand_crank" />
+    <exclude body1="crank_handle" body2="input_shaft" />
+    <exclude body1="crank_handle" body2="output_gear" />
+    <exclude body1="front_left_column" body2="hand_crank" />
+    <exclude body1="front_left_column" body2="input_shaft" />
+    <exclude body1="front_left_column" body2="output_gear" />
+    <exclude body1="front_right_column" body2="output_gear" />
+    <exclude body1="hand_crank" body2="input_shaft" />
+    <exclude body1="hand_crank" body2="input_upper_bearing" />
+    <exclude body1="hand_crank" body2="output_gear" />
+    <exclude body1="hand_crank" body2="upper_bridge" />
+    <exclude body1="input_lower_bearing" body2="input_pinion" />
+    <exclude body1="input_lower_bearing" body2="input_shaft" />
+    <exclude body1="input_lower_bearing" body2="output_gear" />
+    <exclude body1="input_pinion" body2="input_shaft" />
+    <exclude body1="input_pinion" body2="input_thrust_button" />
+    <exclude body1="input_pinion" body2="output_gear" />
+    <exclude body1="input_shaft" body2="input_thrust_button" />
+    <exclude body1="input_shaft" body2="input_upper_bearing" />
+    <exclude body1="input_shaft" body2="output_gear" />
+    <exclude body1="input_shaft" body2="rear_left_column" />
+    <exclude body1="input_thrust_button" body2="output_gear" />
+    <exclude body1="input_upper_bearing" body2="output_gear" />
+    <exclude body1="output_coupling" body2="output_gear" />
+    <exclude body1="output_coupling" body2="output_shaft" />
+    <exclude body1="output_coupling" body2="output_upper_bearing" />
+    <exclude body1="output_coupling" body2="upper_bridge" />
+    <exclude body1="output_gear" body2="output_lower_bearing" />
+    <exclude body1="output_gear" body2="output_shaft" />
+    <exclude body1="output_gear" body2="output_thrust_button" />
+    <exclude body1="output_gear" body2="output_upper_bearing" />
+    <exclude body1="output_gear" body2="rear_left_column" />
+    <exclude body1="output_gear" body2="rear_right_column" />
+    <exclude body1="output_gear" body2="upper_bridge" />
+    <exclude body1="output_lower_bearing" body2="output_shaft" />
+    <exclude body1="output_shaft" body2="output_thrust_button" />
+    <exclude body1="output_shaft" body2="output_upper_bearing" />
+  </contact>
+</mujoco>

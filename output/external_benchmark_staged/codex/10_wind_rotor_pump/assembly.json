@@ -1,0 +1,635 @@
+{
+  "links": [
+    {
+      "dof": "fixed",
+      "mesh": "meshes/base.stl",
+      "mesh_filename": "meshes/base.stl",
+      "mount": "",
+      "name": "base",
+      "rigid_mount": "world",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "dof": "fixed",
+      "mesh": "meshes/tower_left.stl",
+      "mesh_filename": "meshes/tower_left.stl",
+      "mount": "base",
+      "name": "tower_left",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "dof": "fixed",
+      "mesh": "meshes/tower_right.stl",
+      "mesh_filename": "meshes/tower_right.stl",
+      "mount": "base",
+      "name": "tower_right",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "dof": "fixed",
+      "mesh": "meshes/front_bearing.stl",
+      "mesh_filename": "meshes/front_bearing.stl",
+      "mount": "tower_left",
+      "name": "front_bearing",
+      "rigid_mount": "tower_left",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "dof": "fixed",
+      "mesh": "meshes/rear_bearing.stl",
+      "mesh_filename": "meshes/rear_bearing.stl",
+      "mount": "tower_right",
+      "name": "rear_bearing",
+      "rigid_mount": "tower_right",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "dof": "spin",
+      "driver": true,
+      "mesh": "meshes/rotor_shaft_input.stl",
+      "mesh_filename": "meshes/rotor_shaft_input.stl",
+      "mount": "",
+      "name": "rotor_shaft_input",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "dof": "carried",
+      "mesh": "meshes/wind_rotor.stl",
+      "mesh_filename": "meshes/wind_rotor.stl",
+      "mount": "rotor_shaft_input",
+      "name": "wind_rotor",
+      "rigid_mount": "rotor_shaft_input",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "dof": "carried",
+      "mesh": "meshes/crank_disk.stl",
+      "mesh_filename": "meshes/crank_disk.stl",
+      "mount": "rotor_shaft_input",
+      "name": "crank_disk",
+      "rigid_mount": "rotor_shaft_input",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "dof": "carried",
+      "mesh": "meshes/crank_pin.stl",
+      "mesh_filename": "meshes/crank_pin.stl",
+      "mount": "crank_disk",
+      "name": "crank_pin",
+      "rigid_mount": "crank_disk",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "dof": "planar_link",
+      "mesh": "meshes/connecting_rod.stl",
+      "mesh_filename": "meshes/connecting_rod.stl",
+      "mount": "",
+      "name": "connecting_rod",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "dof": "slide",
+      "mesh": "meshes/vertical_crosshead.stl",
+      "mesh_filename": "meshes/vertical_crosshead.stl",
+      "mount": "",
+      "name": "vertical_crosshead",
+      "slide_axis": [
+        0,
+        0,
+        1
+      ],
+      "spin_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "dof": "fixed",
+      "mesh": "meshes/vertical_guide.stl",
+      "mesh_filename": "meshes/vertical_guide.stl",
+      "mount": "base",
+      "name": "vertical_guide",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "dof": "carried",
+      "mesh": "meshes/pump_rod.stl",
+      "mesh_filename": "meshes/pump_rod.stl",
+      "mount": "vertical_crosshead",
+      "name": "pump_rod",
+      "rigid_mount": "vertical_crosshead",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "dof": "carried",
+      "mesh": "meshes/piston_output.stl",
+      "mesh_filename": "meshes/piston_output.stl",
+      "mount": "pump_rod",
+      "name": "piston_output",
+      "rigid_mount": "pump_rod",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    }
+  ],
+  "mesh_pairs": [],
+  "motion_joints": [
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "child": "rotor_shaft_input",
+      "driver": true,
+      "kind": "spin",
+      "name": "rotor_shaft_input_hinge",
+      "origin_m": [
+        -0.045,
+        0,
+        0.2
+      ],
+      "parent": "base",
+      "pos_mm": [
+        -45.0,
+        0.0,
+        200.0
+      ],
+      "type": "spin"
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "child": "connecting_rod",
+      "driver": false,
+      "kind": "spin",
+      "name": "crank_pin_hinge",
+      "origin_m": [
+        -0.02,
+        0,
+        0.2
+      ],
+      "parent": "crank_pin",
+      "pos_mm": [
+        -20.0,
+        0.0,
+        200.0
+      ],
+      "type": "spin"
+    },
+    {
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "child": "vertical_crosshead",
+      "driver": false,
+      "kind": "slide",
+      "name": "vertical_crosshead_slide",
+      "origin_m": [
+        0,
+        0,
+        0.122540333
+      ],
+      "parent": "vertical_guide",
+      "pos_mm": [
+        0.0,
+        0.0,
+        122.540333
+      ],
+      "type": "slide"
+    }
+  ],
+  "name": "open_wind_rotor_pump",
+  "output_link": "piston_output",
+  "planetary_stages": [],
+  "ports_by_link": {
+    "connecting_rod": [
+      "rod_big_end",
+      "rod_small_end"
+    ],
+    "crank_pin": [
+      "crank_pin_port"
+    ],
+    "rotor_shaft_input": [
+      "shaft_axis"
+    ],
+    "vertical_crosshead": [
+      "crosshead_pin"
+    ],
+    "vertical_guide": [
+      "guide_axis"
+    ]
+  },
+  "poses": [
+    {
+      "child": "base",
+      "name": "place_base",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0.005
+      ]
+    },
+    {
+      "child": "tower_left",
+      "name": "place_tower_left",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        -0.062,
+        0,
+        0.105
+      ]
+    },
+    {
+      "child": "tower_right",
+      "name": "place_tower_right",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        -0.028,
+        0,
+        0.105
+      ]
+    },
+    {
+      "child": "front_bearing",
+      "name": "place_front_bearing",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        -0.045,
+        0,
+        0.2
+      ]
+    },
+    {
+      "child": "rear_bearing",
+      "name": "place_rear_bearing",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        -0.045,
+        0,
+        0.2
+      ]
+    },
+    {
+      "child": "rotor_shaft_input",
+      "name": "place_rotor_shaft_input",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        -0.045,
+        0,
+        0.2
+      ]
+    },
+    {
+      "child": "wind_rotor",
+      "name": "place_wind_rotor",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        -0.045,
+        0,
+        0.2
+      ]
+    },
+    {
+      "child": "crank_disk",
+      "name": "place_crank_disk",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        -0.045,
+        0,
+        0.2
+      ]
+    },
+    {
+      "child": "crank_pin",
+      "name": "place_crank_pin",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        -0.02,
+        0,
+        0.2
+      ]
+    },
+    {
+      "child": "connecting_rod",
+      "name": "place_connecting_rod",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        -0.01,
+        0,
+        0.1612701665
+      ]
+    },
+    {
+      "child": "vertical_crosshead",
+      "name": "place_vertical_crosshead",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0.122540333
+      ]
+    },
+    {
+      "child": "vertical_guide",
+      "name": "place_vertical_guide",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0.135
+      ]
+    },
+    {
+      "child": "pump_rod",
+      "name": "place_pump_rod",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0.092540333
+      ]
+    },
+    {
+      "child": "piston_output",
+      "name": "place_piston_output",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0.062540333
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "base_part": "front_bearing",
+      "incoming_part": "rotor_shaft_input",
+      "mate_type": "journal_bearing",
+      "name": "relation_0"
+    },
+    {
+      "base_part": "rear_bearing",
+      "incoming_part": "rotor_shaft_input",
+      "mate_type": "journal_bearing",
+      "name": "relation_1"
+    },
+    {
+      "base_part": "wind_rotor",
+      "incoming_part": "rotor_shaft_input",
+      "mate_type": "press_fit",
+      "name": "relation_2"
+    },
+    {
+      "base_part": "crank_disk",
+      "incoming_part": "rotor_shaft_input",
+      "mate_type": "press_fit",
+      "name": "relation_3"
+    },
+    {
+      "base_part": "rod_big_end",
+      "incoming_part": "crank_pin_port",
+      "mate_type": "closure",
+      "name": "rod_crank_closure"
+    },
+    {
+      "base_part": "rod_small_end",
+      "incoming_part": "crosshead_pin",
+      "mate_type": "closure",
+      "name": "rod_crosshead_closure"
+    },
+    {
+      "base_part": "vertical_crosshead",
+      "incoming_part": "pump_rod",
+      "mate_type": "rigid_carrying",
+      "name": "relation_7"
+    },
+    {
+      "base_part": "pump_rod",
+      "incoming_part": "piston_output",
+      "mate_type": "rigid_carrying",
+      "name": "relation_8"
+    }
+  ],
+  "root_link": "base",
+  "transmissions": [],
+  "watch_links": [
+    "wind_rotor",
+    "crank_disk",
+    "crank_pin",
+    "connecting_rod",
+    "vertical_crosshead",
+    "pump_rod",
+    "piston_output"
+  ]
+}

@@ -1,0 +1,47 @@
+<mujoco model="open_wind_rotor_pump">
+  <compiler angle="radian" meshdir="meshes" />
+  <option timestep="0.002" gravity="0 0 -9.81" iterations="100" tolerance="1e-9" />
+  <default><joint damping="0.15" /><geom density="900" friction="0.7 0.01 0.001" /></default>
+  <asset>
+    <mesh name="base_m" file="base.stl" scale=".001 .001 .001" /><mesh name="tl_m" file="tower_left.stl" scale=".001 .001 .001" /><mesh name="tr_m" file="tower_right.stl" scale=".001 .001 .001" />
+    <mesh name="fb_m" file="front_bearing.stl" scale=".001 .001 .001" /><mesh name="rb_m" file="rear_bearing.stl" scale=".001 .001 .001" /><mesh name="shaft_m" file="rotor_shaft_input.stl" scale=".001 .001 .001" />
+    <mesh name="rotor_m" file="wind_rotor.stl" scale=".001 .001 .001" /><mesh name="disk_m" file="crank_disk.stl" scale=".001 .001 .001" /><mesh name="pin_m" file="crank_pin.stl" scale=".001 .001 .001" />
+    <mesh name="rod_m" file="connecting_rod.stl" scale=".001 .001 .001" /><mesh name="cross_m" file="vertical_crosshead.stl" scale=".001 .001 .001" /><mesh name="guide_m" file="vertical_guide.stl" scale=".001 .001 .001" />
+    <mesh name="prod_m" file="pump_rod.stl" scale=".001 .001 .001" /><mesh name="piston_m" file="piston_output.stl" scale=".001 .001 .001" />
+  </asset>
+  <worldbody>
+    <geom name="ground" type="plane" size=".5 .5 .01" />
+    <body name="base" pos="0 0 .005"><geom type="mesh" mesh="base_m" contype="0" conaffinity="0" /><geom name="base_proxy" type="box" size=".095 .06 .005" />
+      <body name="tower_left" pos="-.062 0 .10"><geom type="mesh" mesh="tl_m" contype="0" conaffinity="0" /></body>
+      <body name="tower_right" pos="-.028 0 .10"><geom type="mesh" mesh="tr_m" contype="0" conaffinity="0" /></body>
+      <body name="front_bearing" pos="-.045 0 .195"><geom type="mesh" mesh="fb_m" contype="0" conaffinity="0" /></body>
+      <body name="rear_bearing" pos="-.045 0 .195"><geom type="mesh" mesh="rb_m" contype="0" conaffinity="0" /></body>
+      <body name="vertical_guide" pos="0 0 .13"><geom type="mesh" mesh="guide_m" contype="0" conaffinity="0" /></body>
+      <body name="rotor_shaft_input" pos="-.045 0 .195">
+        <joint name="rotor_shaft_input_hinge" type="hinge" axis="0 1 0" />
+        <geom type="mesh" mesh="shaft_m" contype="0" conaffinity="0" />
+        <geom name="shaft_proxy" type="cylinder" size=".006 .045" quat=".70710678 .70710678 0 0" />
+        <body name="wind_rotor"><geom type="mesh" mesh="rotor_m" contype="0" conaffinity="0" /></body>
+        <body name="crank_disk"><geom type="mesh" mesh="disk_m" contype="0" conaffinity="0" />
+          <body name="crank_pin" pos=".025 0 0"><geom type="mesh" mesh="pin_m" contype="0" conaffinity="0" /><site name="crank_site" pos="0 0 0" size=".003" /></body>
+        </body>
+      </body>
+      <body name="connecting_rod" pos="-.010 0 .1562701665">
+        <joint name="rod_x" type="slide" axis="1 0 0" /><joint name="rod_z" type="slide" axis="0 0 1" /><joint name="crank_pin_hinge" type="hinge" axis="0 1 0" />
+        <geom type="mesh" mesh="rod_m" contype="0" conaffinity="0" /><site name="rod_big_site" pos="-.010 0 .0387298335" size=".003" /><site name="rod_small_site" pos=".010 0 -.0387298335" size=".003" />
+      </body>
+      <body name="vertical_crosshead" pos="0 0 .117540333">
+        <joint name="vertical_crosshead_slide" type="slide" axis="0 0 1" range="-.04 .04" limited="true" />
+        <geom type="mesh" mesh="cross_m" contype="0" conaffinity="0" /><geom name="crosshead_proxy" type="box" size=".014 .014 .012" /><site name="crosshead_site" pos="0 0 0" size=".003" />
+        <body name="pump_rod" pos="0 0 -.03"><geom type="mesh" mesh="prod_m" contype="0" conaffinity="0" />
+          <body name="piston_output" pos="0 0 -.03"><geom type="mesh" mesh="piston_m" contype="0" conaffinity="0" /><geom name="piston_proxy" type="cylinder" size=".018 .006" /></body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <equality>
+    <connect name="rod_crank_closure" body1="connecting_rod" body2="crank_pin" anchor="-.020 0 .195" solref=".003 1" />
+    <connect name="rod_crosshead_closure" body1="connecting_rod" body2="vertical_crosshead" anchor="0 0 .117540333" solref=".003 1" />
+  </equality>
+  <actuator><velocity name="rotor_driver" joint="rotor_shaft_input_hinge" kv="20" ctrlrange="-5 5" forcerange="-40 40" /></actuator>
+</mujoco>

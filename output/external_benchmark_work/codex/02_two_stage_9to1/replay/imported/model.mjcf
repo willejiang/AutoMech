@@ -1,0 +1,35 @@
+<mujoco model="open_frame_two_stage_9to1">
+  <compiler angle="radian" meshdir="meshes" />
+  <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast" />
+  <default><joint damping="0.02" armature="0.0001" /><geom friction="0.7 0.01 0.001" /></default>
+  <asset>
+    <mesh name="base_m" file="base.stl" scale=".001 .001 .001" />
+    <mesh name="ifb_m" file="input_front_bearing.stl" scale=".001 .001 .001" /><mesh name="irb_m" file="input_rear_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mfb_m" file="intermediate_front_bearing.stl" scale=".001 .001 .001" /><mesh name="mrb_m" file="intermediate_rear_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="ofb_m" file="output_front_bearing.stl" scale=".001 .001 .001" /><mesh name="orb_m" file="output_rear_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="inshaft_m" file="input_shaft.stl" scale=".001 .001 .001" /><mesh name="midshaft_m" file="compound_intermediate_shaft.stl" scale=".001 .001 .001" /><mesh name="outshaft_m" file="output_shaft.stl" scale=".001 .001 .001" />
+    <mesh name="g1p_m" file="stage1_input_pinion.stl" scale=".001 .001 .001" /><mesh name="g1g_m" file="stage1_driven_gear.stl" scale=".001 .001 .001" />
+    <mesh name="g2p_m" file="stage2_intermediate_pinion.stl" scale=".001 .001 .001" /><mesh name="g2g_m" file="stage2_output_gear.stl" scale=".001 .001 .001" /><mesh name="crank_m" file="hand_crank.stl" scale=".001 .001 .001" />
+  </asset>
+  <worldbody>
+    <geom name="ground" type="plane" size=".5 .5 .01" />
+    <body name="base" pos="0 0 .004">
+      <geom name="base_visual" type="mesh" mesh="base_m" rgba=".2 .25 .3 1" contype="0" conaffinity="0" /><geom name="base_collision" type="box" size=".125 .055 .004" rgba="0 0 0 0" />
+      <body name="input_front_bearing" pos="-.072 -.036 .086"><geom name="ifb_visual" type="mesh" mesh="ifb_m" rgba=".6 .6 .65 1" contype="0" conaffinity="0" /></body>
+      <body name="input_rear_bearing" pos="-.072 .036 .086"><geom name="irb_visual" type="mesh" mesh="irb_m" rgba=".6 .6 .65 1" contype="0" conaffinity="0" /></body>
+      <body name="intermediate_front_bearing" pos="0 -.036 .086"><geom name="mfb_visual" type="mesh" mesh="mfb_m" rgba=".6 .6 .65 1" contype="0" conaffinity="0" /></body>
+      <body name="intermediate_rear_bearing" pos="0 .036 .086"><geom name="mrb_visual" type="mesh" mesh="mrb_m" rgba=".6 .6 .65 1" contype="0" conaffinity="0" /></body>
+      <body name="output_front_bearing" pos=".072 -.036 .086"><geom name="ofb_visual" type="mesh" mesh="ofb_m" rgba=".6 .6 .65 1" contype="0" conaffinity="0" /></body>
+      <body name="output_rear_bearing" pos=".072 .036 .086"><geom name="orb_visual" type="mesh" mesh="orb_m" rgba=".6 .6 .65 1" contype="0" conaffinity="0" /></body>
+      <body name="input_shaft" pos="-.072 0 .086"><joint name="input_shaft_hinge" type="hinge" axis="0 1 0" /><geom name="input_shaft_visual" type="mesh" mesh="inshaft_m" rgba=".7 .7 .72 1" contype="0" conaffinity="0" /><geom name="input_shaft_collision" type="cylinder" size=".005 .056" quat=".70710678 .70710678 0 0" rgba="0 0 0 0" /><body name="stage1_input_pinion"><geom name="g1p_visual" type="mesh" mesh="g1p_m" rgba=".95 .5 .1 1" contype="0" conaffinity="0" /></body><body name="hand_crank"><geom name="crank_visual" type="mesh" mesh="crank_m" rgba=".2 .4 .8 1" contype="0" conaffinity="0" /></body></body>
+      <body name="compound_intermediate_shaft" pos="0 0 .086"><joint name="compound_intermediate_shaft_hinge" type="hinge" axis="0 1 0" /><geom name="midshaft_visual" type="mesh" mesh="midshaft_m" rgba=".7 .7 .72 1" contype="0" conaffinity="0" /><geom name="midshaft_collision" type="cylinder" size=".005 .046" quat=".70710678 .70710678 0 0" rgba="0 0 0 0" /><body name="stage1_driven_gear"><geom name="g1g_visual" type="mesh" mesh="g1g_m" rgba=".2 .72 .48 1" contype="0" conaffinity="0" /></body><body name="stage2_intermediate_pinion"><geom name="g2p_visual" type="mesh" mesh="g2p_m" rgba=".95 .5 .1 1" contype="0" conaffinity="0" /></body></body>
+      <body name="output_shaft" pos=".072 0 .086"><joint name="output_shaft_hinge" type="hinge" axis="0 1 0" /><geom name="output_shaft_visual" type="mesh" mesh="outshaft_m" rgba=".7 .7 .72 1" contype="0" conaffinity="0" /><geom name="output_shaft_collision" type="cylinder" size=".005 .046" quat=".70710678 .70710678 0 0" rgba="0 0 0 0" /><body name="stage2_output_gear"><geom name="g2g_visual" type="mesh" mesh="g2g_m" rgba=".2 .72 .48 1" contype="0" conaffinity="0" /></body></body>
+    </body>
+  </worldbody>
+  <contact><exclude name="stage1_exact_mesh" body1="stage1_input_pinion" body2="stage1_driven_gear" /><exclude name="stage2_exact_mesh" body1="stage2_intermediate_pinion" body2="stage2_output_gear" /></contact>
+  <equality>
+    <joint name="stage1_3to1" joint1="compound_intermediate_shaft_hinge" joint2="input_shaft_hinge" polycoef="0 -0.3333333333333333 0 0 0" solref=".002 1" />
+    <joint name="stage2_3to1" joint1="output_shaft_hinge" joint2="compound_intermediate_shaft_hinge" polycoef="0 -0.3333333333333333 0 0 0" solref=".002 1" />
+  </equality>
+  <actuator><velocity name="hand_crank_velocity" joint="input_shaft_hinge" kv="4" ctrlrange="-8 8" /></actuator>
+</mujoco>

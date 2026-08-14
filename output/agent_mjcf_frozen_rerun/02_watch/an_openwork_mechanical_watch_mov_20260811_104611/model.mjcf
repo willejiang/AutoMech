@@ -1,0 +1,203 @@
+<mujoco model="an_openwork_mechanical_watch_mov">
+  <compiler angle="radian" coordinate="local" />
+  <option gravity="0 0 -9.81" timestep="0.0002" solver="Newton" iterations="100" cone="elliptic" />
+  <size memory="256M" />
+  <asset>
+    <mesh name="mesh_baseplate" file="meshes/baseplate.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_central_lower_bearing" file="meshes/central_lower_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_intermediate_lower_bearing" file="meshes/intermediate_lower_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_bridge_post_low" file="meshes/bridge_post_low.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_bridge_post_high" file="meshes/bridge_post_high.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_upper_bridge" file="meshes/upper_bridge.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_central_upper_bearing" file="meshes/central_upper_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_intermediate_upper_bearing" file="meshes/intermediate_upper_bearing.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_dial_post_1" file="meshes/dial_post_1.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_dial_post_2" file="meshes/dial_post_2.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_dial_post_3" file="meshes/dial_post_3.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_dial_post_4" file="meshes/dial_post_4.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_chapter_ring" file="meshes/chapter_ring.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hour_marker_1" file="meshes/hour_marker_1.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hour_marker_2" file="meshes/hour_marker_2.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hour_marker_3" file="meshes/hour_marker_3.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hour_marker_4" file="meshes/hour_marker_4.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hour_marker_5" file="meshes/hour_marker_5.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hour_marker_6" file="meshes/hour_marker_6.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hour_marker_7" file="meshes/hour_marker_7.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hour_marker_8" file="meshes/hour_marker_8.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hour_marker_9" file="meshes/hour_marker_9.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hour_marker_10" file="meshes/hour_marker_10.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hour_marker_11" file="meshes/hour_marker_11.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hour_marker_12" file="meshes/hour_marker_12.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_minute_shaft" file="meshes/minute_shaft.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_minute_pinion" file="meshes/minute_pinion.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_minute_hand" file="meshes/minute_hand.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_intermediate_arbor" file="meshes/intermediate_arbor.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_intermediate_wheel" file="meshes/intermediate_wheel.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_intermediate_pinion" file="meshes/intermediate_pinion.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hour_pipe" file="meshes/hour_pipe.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hour_wheel" file="meshes/hour_wheel.stl" scale=".001 .001 .001" />
+    <mesh name="mesh_hour_hand" file="meshes/hour_hand.stl" scale=".001 .001 .001" />
+  </asset>
+  <worldbody>
+    <light pos="0 0 3" dir="0 0 -1" />
+    <geom name="ground" type="plane" size="5 5 .1" friction="1 .05 .005" contype="1" conaffinity="0" />
+    <body name="baseplate" pos="0 0 0" quat="1 0 0 0">
+      <inertial pos="0.001690548876 -1.014031681e-18 0.001" mass="0.01877530665" fullinertia="4.666285608e-06 4.983509955e-06 9.637278693e-06 1.505861081e-22 -3.212790034e-23 -3.426976036e-23" />
+      <geom name="geom_baseplate" type="sdf" mesh="mesh_baseplate" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      <body name="central_lower_bearing" pos="0 0 0.002" quat="1 0 0 0">
+        <inertial pos="-5.830409795e-22 4.61285625e-20 0.00075" mass="0.0002491320236" fullinertia="6.034472429e-10 6.034472458e-10 1.11346998e-09 -8.44108348e-27 -1.089406343e-28 1.115512377e-26" />
+        <geom name="geom_central_lower_bearing" type="sdf" mesh="mesh_central_lower_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="intermediate_lower_bearing" pos="0.012 0 0.002" quat="1 0 0 0">
+        <inertial pos="-5.830409795e-22 4.61285625e-20 0.00075" mass="0.0002491320236" fullinertia="6.034472429e-10 6.034472458e-10 1.11346998e-09 -8.44108348e-27 -1.089406343e-28 1.115512377e-26" />
+        <geom name="geom_intermediate_lower_bearing" type="sdf" mesh="mesh_intermediate_lower_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="bridge_post_low" pos="0.006 -0.0132 0.002" quat="1 0 0 0">
+        <inertial pos="-2.793414086e-21 -1.224846606e-20 0.0075" mass="0.0008319807923" fullinertia="1.606743513e-08 1.606743514e-08 9.35590559e-10 -1.859253492e-27 1.610578337e-25 1.859221718e-25" />
+        <geom name="geom_bridge_post_low" type="sdf" mesh="mesh_bridge_post_low" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="bridge_post_high" pos="0.006 0.0132 0.002" quat="1 0 0 0">
+        <inertial pos="-2.793414086e-21 -1.224846606e-20 0.0075" mass="0.0008319807923" fullinertia="1.606743513e-08 1.606743514e-08 9.35590559e-10 -1.859253492e-27 1.610578337e-25 1.859221718e-25" />
+        <geom name="geom_bridge_post_high" type="sdf" mesh="mesh_bridge_post_high" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="upper_bridge" pos="0 0 0.017" quat="1 0 0 0">
+        <inertial pos="0.006208525871 1.779509392e-19 0.001" mass="0.003291159083" fullinertia="1.050980265e-07 7.864337101e-08 1.815472915e-07 3.041154255e-24 -0 -1.20851477e-25" />
+        <geom name="geom_upper_bridge" type="sdf" mesh="mesh_upper_bridge" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="central_upper_bearing" pos="0 0 0.0155" quat="1 0 0 0">
+        <inertial pos="-4.507526117e-20 1.407721535e-19 0.00075" mass="0.000206238793" fullinertia="6.78904725e-10 6.789047329e-10 1.28046991e-09 1.147508015e-27 -6.972200595e-27 5.577760476e-27" />
+        <geom name="geom_central_upper_bearing" type="sdf" mesh="mesh_central_upper_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="intermediate_upper_bearing" pos="0.012 0 0.0155" quat="1 0 0 0">
+        <inertial pos="-5.830409795e-22 4.61285625e-20 0.00075" mass="0.0002491320236" fullinertia="6.034472429e-10 6.034472458e-10 1.11346998e-09 -8.44108348e-27 -1.089406343e-28 1.115512377e-26" />
+        <geom name="geom_intermediate_upper_bearing" type="sdf" mesh="mesh_intermediate_upper_bearing" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="dial_post_1" pos="0.0266 0 0.002" quat="1 0 0 0">
+        <inertial pos="1.340838764e-20 8.929377293e-21 0.009" mass="0.0006933173255" fullinertia="1.899028266e-08 1.899028264e-08 5.414297194e-10 -4.067117014e-27 1.431625189e-25 2.231198379e-25" />
+        <geom name="geom_dial_post_1" type="sdf" mesh="mesh_dial_post_1" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="dial_post_2" pos="-0.0266 0 0.002" quat="1 0 0 0">
+        <inertial pos="1.340838764e-20 8.929377293e-21 0.009" mass="0.0006933173255" fullinertia="1.899028266e-08 1.899028264e-08 5.414297194e-10 -4.067117014e-27 1.431625189e-25 2.231198379e-25" />
+        <geom name="geom_dial_post_2" type="sdf" mesh="mesh_dial_post_2" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="dial_post_3" pos="0 0.0266 0.002" quat="1 0 0 0">
+        <inertial pos="1.340838764e-20 8.929377293e-21 0.009" mass="0.0006933173255" fullinertia="1.899028266e-08 1.899028264e-08 5.414297194e-10 -4.067117014e-27 1.431625189e-25 2.231198379e-25" />
+        <geom name="geom_dial_post_3" type="sdf" mesh="mesh_dial_post_3" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="dial_post_4" pos="0 -0.0266 0.002" quat="1 0 0 0">
+        <inertial pos="1.340838764e-20 8.929377293e-21 0.009" mass="0.0006933173255" fullinertia="1.899028266e-08 1.899028264e-08 5.414297194e-10 -4.067117014e-27 1.431625189e-25 2.231198379e-25" />
+        <geom name="geom_dial_post_4" type="sdf" mesh="mesh_dial_post_4" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="chapter_ring" pos="0 0 0.02" quat="1 0 0 0">
+        <inertial pos="-9.918476104e-19 -3.602431712e-18 0.000400000006" mass="0.005698587723" fullinertia="1.918451238e-06 1.918451212e-06 3.836294601e-06 -5.47364228e-24 -2.26085228e-24 -1.192897053e-23" />
+        <geom name="geom_chapter_ring" type="sdf" mesh="mesh_chapter_ring" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="hour_marker_1" pos="0 0.0258 0.0208" quat="1 0 0 0">
+        <inertial pos="0 0 0.000224999994" mass="4.821861976e-06" fullinertia="1.853403032e-12 2.511386278e-13 1.941803827e-12 -0 -0 -0" />
+        <geom name="geom_hour_marker_1" type="sdf" mesh="mesh_hour_marker_1" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="hour_marker_2" pos="0.0129 0.02234345542 0.0208" quat="0.9659258263 0 0 -0.2588190451">
+        <inertial pos="0 0 0.000224999994" mass="2.225474844e-06" fullinertia="4.010490982e-13 7.510977201e-14 4.010490982e-13 -0 -0 -0" />
+        <geom name="geom_hour_marker_2" type="sdf" mesh="mesh_hour_marker_2" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="hour_marker_3" pos="0.02234345542 0.0129 0.0208" quat="0.8660254038 0 0 -0.5">
+        <inertial pos="0 0 0.000224999994" mass="2.225474844e-06" fullinertia="4.010490982e-13 7.510977201e-14 4.010490982e-13 -0 -0 -0" />
+        <geom name="geom_hour_marker_3" type="sdf" mesh="mesh_hour_marker_3" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="hour_marker_4" pos="0.0258 1.579794371e-18 0.0208" quat="0.7071067812 0 0 -0.7071067812">
+        <inertial pos="0 0 0.000224999994" mass="4.821861976e-06" fullinertia="1.853403032e-12 2.511386278e-13 1.941803827e-12 -0 -0 -0" />
+        <geom name="geom_hour_marker_4" type="sdf" mesh="mesh_hour_marker_4" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="hour_marker_5" pos="0.02234345542 -0.0129 0.0208" quat="0.5 0 0 -0.8660254038">
+        <inertial pos="0 0 0.000224999994" mass="2.225474844e-06" fullinertia="4.010490982e-13 7.510977201e-14 4.010490982e-13 -0 -0 -0" />
+        <geom name="geom_hour_marker_5" type="sdf" mesh="mesh_hour_marker_5" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="hour_marker_6" pos="0.0129 -0.02234345542 0.0208" quat="0.2588190451 0 0 -0.9659258263">
+        <inertial pos="0 0 0.000224999994" mass="2.225474844e-06" fullinertia="4.010490982e-13 7.510977201e-14 4.010490982e-13 -0 -0 -0" />
+        <geom name="geom_hour_marker_6" type="sdf" mesh="mesh_hour_marker_6" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="hour_marker_7" pos="3.159588742e-18 -0.0258 0.0208" quat="6.123233996e-17 0 0 -1">
+        <inertial pos="0 0 0.000224999994" mass="4.821861976e-06" fullinertia="1.853403032e-12 2.511386278e-13 1.941803827e-12 -0 -0 -0" />
+        <geom name="geom_hour_marker_7" type="sdf" mesh="mesh_hour_marker_7" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="hour_marker_8" pos="-0.0129 -0.02234345542 0.0208" quat="0.2588190451 0 0 0.9659258263">
+        <inertial pos="0 0 0.000224999994" mass="2.225474844e-06" fullinertia="4.010490982e-13 7.510977201e-14 4.010490982e-13 -0 -0 -0" />
+        <geom name="geom_hour_marker_8" type="sdf" mesh="mesh_hour_marker_8" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="hour_marker_9" pos="-0.02234345542 -0.0129 0.0208" quat="0.5 0 0 0.8660254038">
+        <inertial pos="0 0 0.000224999994" mass="2.225474844e-06" fullinertia="4.010490982e-13 7.510977201e-14 4.010490982e-13 -0 -0 -0" />
+        <geom name="geom_hour_marker_9" type="sdf" mesh="mesh_hour_marker_9" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="hour_marker_10" pos="-0.0258 -4.739383113e-18 0.0208" quat="0.7071067812 0 0 0.7071067812">
+        <inertial pos="0 0 0.000224999994" mass="4.821861976e-06" fullinertia="1.853403032e-12 2.511386278e-13 1.941803827e-12 -0 -0 -0" />
+        <geom name="geom_hour_marker_10" type="sdf" mesh="mesh_hour_marker_10" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="hour_marker_11" pos="-0.02234345542 0.0129 0.0208" quat="0.8660254038 0 0 0.5">
+        <inertial pos="0 0 0.000224999994" mass="2.225474844e-06" fullinertia="4.010490982e-13 7.510977201e-14 4.010490982e-13 -0 -0 -0" />
+        <geom name="geom_hour_marker_11" type="sdf" mesh="mesh_hour_marker_11" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="hour_marker_12" pos="-0.0129 0.02234345542 0.0208" quat="0.9659258263 0 0 0.2588190451">
+        <inertial pos="0 0 0.000224999994" mass="2.225474844e-06" fullinertia="4.010490982e-13 7.510977201e-14 4.010490982e-13 -0 -0 -0" />
+        <geom name="geom_hour_marker_12" type="sdf" mesh="mesh_hour_marker_12" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+      </body>
+      <body name="minute_shaft" pos="0 0 0.002" quat="1 0 0 0">
+        <inertial pos="-4.621457237e-21 1.340403125e-20 0.01019999981" mass="0.0005028861559" fullinertia="1.756576068e-08 1.756576068e-08 2.513388887e-10 1.394440119e-27 6.042574292e-27 1.833171276e-25" />
+        <geom name="geom_minute_shaft" type="sdf" mesh="mesh_minute_shaft" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <joint name="minute_shaft_spin" type="hinge" axis="0 0 1" pos="0 0 0" />
+        <body name="minute_pinion" pos="0 0 0.0025" quat="1 0 0 0">
+          <inertial pos="9.903411318e-20 -1.392667217e-20 0.001" mass="0.000375477385" fullinertia="1.18903346e-09 1.189033434e-09 2.127748637e-09 3.369896954e-27 2.23110419e-26 1.196894435e-26" />
+          <geom name="geom_minute_pinion" type="sdf" mesh="mesh_minute_pinion" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        </body>
+        <body name="minute_hand" pos="0 0 0.02" quat="1 0 0 0">
+          <inertial pos="2.019242041e-20 0.006211050408 0.000200000003" mass="8.991875175e-05" fullinertia="5.157827281e-09 5.891500011e-11 5.214344448e-09 1.143068758e-26 3.63135453e-28 -2.788880238e-26" />
+          <geom name="geom_minute_hand" type="sdf" mesh="mesh_minute_hand" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        </body>
+      </body>
+      <body name="intermediate_arbor" pos="0.012 0 0.002" quat="1 0 0 0">
+        <inertial pos="0 -1.117408766e-20 0.0085" mass="0.0004190718044" fullinertia="1.01973705e-08 1.01973705e-08 2.094490778e-10 -5.810167162e-28 -2.974805587e-26 4.834053405e-26" />
+        <geom name="geom_intermediate_arbor" type="sdf" mesh="mesh_intermediate_arbor" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <joint name="intermediate_arbor_spin" type="hinge" axis="0 0 1" pos="0 0 0" />
+        <body name="intermediate_wheel" pos="0 0 0.0025" quat="0.9986295348 0 0 0.05233595624">
+          <inertial pos="2.896451843e-19 -5.430847206e-21 0.001" mass="0.003851443613" fullinertia="7.994108236e-08 7.994095182e-08 1.573144051e-07 2.528584749e-25 1.710513213e-24 3.123545866e-25" />
+          <geom name="geom_intermediate_wheel" type="sdf" mesh="mesh_intermediate_wheel" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        </body>
+        <body name="intermediate_pinion" pos="0 0 0.007" quat="0.9986295348 0 0 0.05233595624">
+          <inertial pos="-8.333366674e-20 1.562506251e-20 0.001" mass="0.0002231095264" fullinertia="5.391321571e-10 5.39132157e-10 9.295246298e-10 2.649436226e-26 -3.346656285e-26 -1.162033432e-27" />
+          <geom name="geom_intermediate_pinion" type="sdf" mesh="mesh_intermediate_pinion" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        </body>
+      </body>
+      <body name="hour_pipe" pos="0 0 0.0065" quat="1 0 0 0">
+        <inertial pos="-1.184068157e-20 -1.129793548e-19 0.007449999809" mass="0.0007851125296" fullinertia="1.537721993e-08 1.537721993e-08 1.703969231e-09 1.52516888e-27 -6.92571908e-26 -9.325276886e-26" />
+        <geom name="geom_hour_pipe" type="sdf" mesh="mesh_hour_pipe" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        <joint name="hour_pipe_spin" type="hinge" axis="0 0 1" pos="0 0 -2.602085214e-18" />
+        <body name="hour_wheel" pos="0 0 0.0025" quat="0.9948586381 0 0 0.1012733441">
+          <inertial pos="-3.471762804e-20 -1.220541611e-21 0.001" mass="0.004284286909" fullinertia="1.03146909e-07 1.03146909e-07 2.034376267e-07 -5.949611174e-25 8.924416761e-26 2.490237646e-25" />
+          <geom name="geom_hour_wheel" type="sdf" mesh="mesh_hour_wheel" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        </body>
+        <body name="hour_hand" pos="0 0 0.0145" quat="1 0 0 0">
+          <inertial pos="4.234686063e-20 0.004224489235 0.000200000003" mass="8.918273042e-05" fullinertia="2.973146407e-09 1.105312426e-10 3.081299443e-09 4.479162465e-27 1.220135115e-27 -4.183320357e-26" />
+          <geom name="geom_hour_hand" type="sdf" mesh="mesh_hour_hand" friction="1 0.05 0.005" solref=".002 1" margin=".0002" condim="4" contype="1" conaffinity="1" />
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <equality>
+    <joint name="minute_to_intermediate_eq" joint1="intermediate_arbor_spin" joint2="minute_shaft_spin" polycoef="0 -0.3333333333 0 0 0" />
+    <joint name="intermediate_to_hour_eq" joint1="hour_pipe_spin" joint2="intermediate_arbor_spin" polycoef="0 -0.25 0 0 0" />
+  </equality>
+  <contact>
+    <exclude body1="central_lower_bearing" body2="minute_shaft" />
+    <exclude body1="central_upper_bearing" body2="hour_pipe" />
+    <exclude body1="hour_pipe" body2="minute_shaft" />
+    <exclude body1="intermediate_lower_bearing" body2="intermediate_arbor" />
+    <exclude body1="intermediate_upper_bearing" body2="intermediate_arbor" />
+    <exclude body1="minute_shaft" body2="minute_pinion" />
+    <exclude body1="intermediate_arbor" body2="intermediate_wheel" />
+    <exclude body1="intermediate_arbor" body2="intermediate_pinion" />
+    <exclude body1="hour_pipe" body2="hour_wheel" />
+    <exclude body1="hour_pipe" body2="hour_hand" />
+    <exclude body1="minute_shaft" body2="minute_hand" />
+    <exclude body1="minute_pinion" body2="intermediate_wheel" />
+    <exclude body1="hour_wheel" body2="intermediate_pinion" />
+  </contact>
+</mujoco>

@@ -1,0 +1,607 @@
+{
+  "links": [
+    {
+      "axis": null,
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/base.stl",
+      "mesh_filename": "meshes/base.stl",
+      "mount": "",
+      "name": "base",
+      "rigid_mount": "world",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axis": null,
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/left_pedestal.stl",
+      "mesh_filename": "meshes/left_pedestal.stl",
+      "mount": "base",
+      "name": "left_pedestal",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axis": null,
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/right_pedestal.stl",
+      "mesh_filename": "meshes/right_pedestal.stl",
+      "mount": "base",
+      "name": "right_pedestal",
+      "rigid_mount": "base",
+      "slide_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "spin_axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/front_bearing.stl",
+      "mesh_filename": "meshes/front_bearing.stl",
+      "mount": "left_pedestal",
+      "name": "front_bearing",
+      "rigid_mount": "left_pedestal",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/rear_bearing.stl",
+      "mesh_filename": "meshes/rear_bearing.stl",
+      "mount": "right_pedestal",
+      "name": "rear_bearing",
+      "rigid_mount": "right_pedestal",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        1,
+        0,
+        0
+      ],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/horizontal_guide.stl",
+      "mesh_filename": "meshes/horizontal_guide.stl",
+      "mount": "base",
+      "name": "horizontal_guide",
+      "rigid_mount": "base",
+      "slide_axis": [
+        1,
+        0,
+        0
+      ],
+      "spin_axis": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "dof": "spin",
+      "driver": true,
+      "mesh": "meshes/crankshaft_input.stl",
+      "mesh_filename": "meshes/crankshaft_input.stl",
+      "mount": "",
+      "name": "crankshaft_input",
+      "rigid_mount": null,
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/crank_web.stl",
+      "mesh_filename": "meshes/crank_web.stl",
+      "mount": "crankshaft_input",
+      "name": "crank_web",
+      "rigid_mount": "crankshaft_input",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/hand_crank.stl",
+      "mesh_filename": "meshes/hand_crank.stl",
+      "mount": "crankshaft_input",
+      "name": "hand_crank",
+      "rigid_mount": "crankshaft_input",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "dof": "fixed",
+      "driver": false,
+      "mesh": "meshes/crank_pin.stl",
+      "mesh_filename": "meshes/crank_pin.stl",
+      "mount": "crank_web",
+      "name": "crank_pin",
+      "rigid_mount": "crank_web",
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "dof": "planar_link",
+      "driver": false,
+      "mesh": "meshes/connecting_rod.stl",
+      "mesh_filename": "meshes/connecting_rod.stl",
+      "mount": "",
+      "name": "connecting_rod",
+      "rigid_mount": null,
+      "slide_axis": [
+        0,
+        1,
+        0
+      ],
+      "spin_axis": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "axis": [
+        1,
+        0,
+        0
+      ],
+      "dof": "slide",
+      "driver": false,
+      "mesh": "meshes/horizontal_slider.stl",
+      "mesh_filename": "meshes/horizontal_slider.stl",
+      "mount": "",
+      "name": "horizontal_slider",
+      "rigid_mount": null,
+      "slide_axis": [
+        1,
+        0,
+        0
+      ],
+      "spin_axis": [
+        1,
+        0,
+        0
+      ]
+    }
+  ],
+  "mesh_pairs": [],
+  "motion_joints": [
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "child": "crankshaft_input",
+      "driver": true,
+      "kind": "spin",
+      "name": "crankshaft_input_hinge",
+      "origin_m": [
+        0,
+        0,
+        0.072
+      ],
+      "parent": "base",
+      "pos_mm": [
+        0.0,
+        0.0,
+        72.0
+      ],
+      "type": "spin"
+    },
+    {
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "child": "connecting_rod",
+      "driver": false,
+      "kind": "spin",
+      "name": "crank_pin_hinge",
+      "origin_m": [
+        0,
+        0.008,
+        0.1
+      ],
+      "parent": "crank_pin",
+      "pos_mm": [
+        0.0,
+        8.0,
+        100.0
+      ],
+      "type": "spin"
+    },
+    {
+      "axis": [
+        1,
+        0,
+        0
+      ],
+      "child": "horizontal_slider",
+      "driver": false,
+      "kind": "slide",
+      "name": "horizontal_slider_slide",
+      "origin_m": [
+        0.1084435,
+        0.008,
+        0.072
+      ],
+      "parent": "horizontal_guide",
+      "pos_mm": [
+        108.4435,
+        8.0,
+        72.0
+      ],
+      "type": "slide"
+    }
+  ],
+  "name": "open_horizontal_slider_crank",
+  "output_link": "horizontal_slider",
+  "planetary_stages": [],
+  "ports_by_link": {
+    "connecting_rod": [
+      "rod_big_end",
+      "rod_small_end"
+    ],
+    "crank_pin": [
+      "crank_pin_axis"
+    ],
+    "crankshaft_input": [
+      "crank_axis"
+    ],
+    "horizontal_guide": [
+      "guide_axis"
+    ],
+    "horizontal_slider": [
+      "slider_pin_axis"
+    ]
+  },
+  "poses": [
+    {
+      "child": "base",
+      "name": "place_base",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0.055,
+        0,
+        0.004
+      ]
+    },
+    {
+      "child": "left_pedestal",
+      "name": "place_left_pedestal",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0.039
+      ]
+    },
+    {
+      "child": "right_pedestal",
+      "name": "place_right_pedestal",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0.039
+      ]
+    },
+    {
+      "child": "front_bearing",
+      "name": "place_front_bearing",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0.072
+      ]
+    },
+    {
+      "child": "rear_bearing",
+      "name": "place_rear_bearing",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0.072
+      ]
+    },
+    {
+      "child": "horizontal_guide",
+      "name": "place_horizontal_guide",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0.118,
+        0.008,
+        0.072
+      ]
+    },
+    {
+      "child": "crankshaft_input",
+      "name": "place_crankshaft_input",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0.072
+      ]
+    },
+    {
+      "child": "crank_web",
+      "name": "place_crank_web",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0.072
+      ]
+    },
+    {
+      "child": "hand_crank",
+      "name": "place_hand_crank",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0,
+        0.072
+      ]
+    },
+    {
+      "child": "crank_pin",
+      "name": "place_crank_pin",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0,
+        0.008,
+        0.1
+      ]
+    },
+    {
+      "child": "connecting_rod",
+      "name": "place_connecting_rod",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0.0542218,
+        0.008,
+        0.086
+      ]
+    },
+    {
+      "child": "horizontal_slider",
+      "name": "place_horizontal_slider",
+      "parent": "",
+      "rpy_rad": [
+        0,
+        0,
+        0
+      ],
+      "xyz_m": [
+        0.1084435,
+        0.008,
+        0.072
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "base_part": "front_bearing",
+      "incoming_part": "crankshaft_input",
+      "mate_type": "journal_bearing",
+      "name": "front_running_bearing"
+    },
+    {
+      "base_part": "rear_bearing",
+      "incoming_part": "crankshaft_input",
+      "mate_type": "journal_bearing",
+      "name": "rear_running_bearing"
+    },
+    {
+      "base_part": "crankshaft_input",
+      "incoming_part": "crank_web",
+      "mate_type": "press_fit",
+      "name": "web_press_fit"
+    },
+    {
+      "base_part": "crankshaft_input",
+      "incoming_part": "hand_crank",
+      "mate_type": "press_fit",
+      "name": "crank_press_fit"
+    },
+    {
+      "base_part": "crank_web",
+      "incoming_part": "crank_pin",
+      "mate_type": "press_fit",
+      "name": "crank_pin_press_fit"
+    },
+    {
+      "base_part": "crank_pin",
+      "incoming_part": "connecting_rod",
+      "mate_type": "revolute",
+      "name": "rod_crank_pin_revolute"
+    },
+    {
+      "base_part": "connecting_rod",
+      "incoming_part": "horizontal_slider",
+      "mate_type": "revolute",
+      "name": "rod_slider_pin_revolute"
+    }
+  ],
+  "root_link": "base",
+  "transmissions": [],
+  "watch_links": [
+    "crank_web",
+    "crank_pin",
+    "connecting_rod",
+    "horizontal_slider"
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "source_execution": true,
+  "part_inventory": {
+    "mesh_count": 17,
+    "names": [
+      "base",
+      "carrier",
+      "hand_crank",
+      "lower_bearing",
+      "planet_gear_1",
+      "planet_gear_2",
+      "planet_gear_3",
+      "planet_pin_1",
+      "planet_pin_2",
+      "planet_pin_3",
+      "ring_gear",
+      "ring_support_1",
+      "ring_support_2",
+      "ring_support_3",
+      "sun_gear",
+      "sun_shaft",
+      "upper_bearing"
+    ],
+    "nonempty": true
+  },
+  "references": {
+    "all_resolved": true,
+    "unresolved": []
+  },
+  "mjcf": {
+    "loaded": true,
+    "finite_initial": true,
+    "nbody": 12,
+    "njnt": 5,
+    "neq": 4,
+    "nu": 1
+  },
+  "physics": {
+    "samples": 601,
+    "horizon_s": 3.004999999999958,
+    "all_finite": true,
+    "contacts_measured": 0,
+    "max_abs_constraint_residual_all": 4.09112663189279,
+    "max_abs_constraint_residual_stable_window": 0.010313170594168142
+  },
+  "functional": {
+    "sun_net_rad": 12.168066346153935,
+    "carrier_net_rad": 3.039578415942017,
+    "stable_window_carrier_over_sun": 0.24999438951520733,
+    "ratio_in_over_out": 4.00320856416624,
+    "ring_fixed": true,
+    "planet_orbit_radius_max_error_mm": 2.67752088944917e-07,
+    "planet_gear_pin_nominal_distance_mm": [
+      2.0,
+      2.0,
+      2.0
+    ],
+    "planet_gear_pin_distance_max_variation_mm": 0.0,
+    "planet_local_spin_abs_rad": [
+      9.115736589021283,
+      9.115736589021283,
+      9.115736589021283
+    ],
+    "planet_spacing_deg": [
+      0.0,
+      120.0,
+      240.0
+    ]
+  },
+  "anti_cheating_disclosure": {
+    "ideal_joint_equalities": [
+      "planetary_carrier",
+      "planetary_planet_1",
+      "planetary_planet_2",
+      "planetary_planet_3"
+    ],
+    "ideal_mesh_collision_exclusions": [
+      [
+        "sun_gear",
+        "planet_gear_1"
+      ],
+      [
+        "sun_gear",
+        "planet_gear_2"
+      ],
+      [
+        "sun_gear",
+        "planet_gear_3"
+      ],
+      [
+        "ring_gear",
+        "planet_gear_1"
+      ],
+      [
+        "ring_gear",
+        "planet_gear_2"
+      ],
+      [
+        "ring_gear",
+        "planet_gear_3"
+      ]
+    ],
+    "direct_output_actuation": false,
+    "note": "Ideal disclosed planetary lowering; no claim of tooth-contact load capacity."
+  },
+  "failures": [],
+  "source_returncode": 0,
+  "source_stdout": "{\n  \"part_count\": 17,\n  \"parts\": [\n    \"base\",\n    \"carrier\",\n    \"hand_crank\",\n    \"lower_bearing\",\n    \"planet_gear_1\",\n    \"planet_gear_2\",\n    \"planet_gear_3\",\n    \"planet_pin_1\",\n    \"planet_pin_2\",\n    \"planet_pin_3\",\n    \"ring_gear\",\n    \"ring_support_1\",\n    \"ring_support_2\",\n    \"ring_support_3\",\n    \"sun_gear\",\n    \"sun_shaft\",\n    \"upper_bearing\"\n  ],\n  \"step\": \"C:\\\\benchmark-runs\\\\claude-code-gpt-5.6-sol-1m-20260812\\\\05_three_planet_4to1\\\\open_three_planet_4to1.step\"\n}\n",
+  "source_stderr": "",
+  "checks": {
+    "input_minimum_12_rad": true,
+    "carrier_ratio_range": true,
+    "finite_health": true,
+    "three_planets": true,
+    "three_independent_planet_hinges": true,
+    "orbit": true,
+    "local_spin": true,
+    "constant_gear_pin_distance": true,
+    "constraint_residual_stable_window": true
+  },
+  "pass": true
+}

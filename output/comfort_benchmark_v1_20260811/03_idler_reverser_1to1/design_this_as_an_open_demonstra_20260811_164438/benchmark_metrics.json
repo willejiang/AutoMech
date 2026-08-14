@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "run_id": "6398e21cebe24cf08349e7ea2fc1ec29",
+  "task_digest": "5014e249562b5ca4220b5a27bad4eccfa2eec39c3e212efff5f2bcaead1cd4c4",
+  "started_at": "2026-08-11T08:44:38.264769+00:00",
+  "ended_at": "2026-08-11T08:53:07.306933+00:00",
+  "duration_s": 509.042167,
+  "pipeline": {
+    "mode": "single_agent",
+    "provider": "local_gateway",
+    "model": "gpt-5.6-sol",
+    "engine": "mujoco"
+  },
+  "outcome": {
+    "ok": true,
+    "iterations": 2,
+    "physics_passed": true,
+    "functional_ok": true,
+    "pass_at_1": {
+      "known": true,
+      "passed": false,
+      "stage": "preterminal_refinement",
+      "fault_domain": null,
+      "reason": "iteration 0 required refinement"
+    }
+  },
+  "cold_run": {
+    "requested": true,
+    "qualified": false,
+    "reasons": [
+      "a project or provider cache hit was observed"
+    ]
+  },
+  "usage": {
+    "requests": 15,
+    "errors": 0,
+    "usage_known_requests": 15,
+    "usage_unknown_requests": 0,
+    "tokens": {
+      "input_tokens": 395647,
+      "output_tokens": 31093,
+      "cache_read_input_tokens": 328763,
+      "cache_write_input_tokens": 0,
+      "reasoning_tokens": 0,
+      "total_tokens": 426740
+    },
+    "cost_usd": null,
+    "cost_coverage": "unavailable"
+  },
+  "tools": {
+    "calls": 109,
+    "errors": 0,
+    "by_name": {
+      "query_motion_path": {
+        "calls": 7,
+        "errors": 0,
+        "duration_ms": 0
+      },
+      "query_nearby_parts": {
+        "calls": 8,
+        "errors": 0,
+        "duration_ms": 8
+      },
+      "query_pair_geometry": {
+        "calls": 63,
+        "errors": 0,
+        "duration_ms": 8645
+      },
+      "query_port_fit": {
+        "calls": 13,
+        "errors": 0,
+        "duration_ms": 0
+      },
+      "read_current_compiler": {
+        "calls": 1,
+        "errors": 0,
+        "duration_ms": 0
+      },
+      "read_mjcf_facts": {
+        "calls": 14,
+        "errors": 0,
+        "duration_ms": 0
+      },
+      "run_mjcf_gate": {
+        "calls": 1,
+        "errors": 0,
+        "duration_ms": 4633
+      },
+      "submit_compiler_source": {
+        "calls": 2,
+        "errors": 0,
+        "duration_ms": 11
+      }
+    }
+  },
+  "cache": {
+    "hits": 0,
+    "misses": 1,
+    "rejected_hits": 0,
+    "events": [
+      {
+        "name": "mjcf_compiler",
+        "outcome": "miss"
+      }
+    ]
+  },
+  "mjcf_compiler": {
+    "candidates": 1,
+    "submissions": 1
+  }
+}

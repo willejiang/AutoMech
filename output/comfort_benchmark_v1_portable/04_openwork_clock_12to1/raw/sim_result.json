@@ -1,0 +1,80 @@
+{
+  "task": "Design this as an open demonstration mechanism: expose the complete mechanical structure and motion path, and avoid covers, housings, bridges, or plates that obstruct the gears, shafts, bearings, joints, pins, linkages, carrier, or output from the simulation camera. Build an openwork mechanical clock display with two clearly visible coaxial hands whose angular speed ratio is exactly 12:1. Use a visible spur gear train, independent coaxial shafts or sleeves with running clearances, rigidly attach each hand to its intended shaft, and expose the gears and both hands from the camera side. Mount the frame rigidly on a stable base. The minute-side input is the only driver; the hour hand is the final output. Coaxial members with different speeds must remain independent and must not be welded or forced to 1:1. Author complete mechanism semantics for every transmission, bearing, press fit, driver, output, and watched link.",
+  "spec": {
+    "duration_s": 3.0,
+    "run_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\04_openwork_clock_12to1\\design_this_as_an_open_demonstra_20260811_165309",
+    "drive": {
+      "torque": 0.5,
+      "mode": "velocity",
+      "drive_method": "direct_qpos",
+      "target_velocity": 4.0,
+      "output_link": "hour_hand"
+    },
+    "design": {
+      "input_joint": "minute_gear",
+      "output_joint": "place_hour_gear",
+      "watch_joints": [
+        "place_minute_shaft",
+        "place_intermediate_shaft",
+        "place_hour_sleeve",
+        "place_compound_big_gear",
+        "place_compound_pinion",
+        "place_hour_gear"
+      ],
+      "propagation_path": [
+        "place_minute_gear",
+        "place_minute_shaft",
+        "place_intermediate_shaft",
+        "place_hour_sleeve",
+        "place_compound_big_gear",
+        "place_compound_pinion",
+        "place_hour_gear"
+      ],
+      "pass_criteria": null,
+      "environment": "Bench-mounted and driven openwork clock demonstration, with base rigidly fixed and the exposed gear train and coaxial hands facing the camera. The minute-side input is the sole actuator, and successful transmission is judged at the hour hand.",
+      "camera": {
+        "target_link": "base",
+        "azimuth": 35.0,
+        "elevation": -28.0,
+        "roll": 0.0,
+        "distance_scale": 2.5,
+        "locked": true
+      }
+    }
+  },
+  "metrics": {
+    "verdict": "PASS",
+    "test_kind": "driven_mechanism",
+    "survive_s": 3.0,
+    "input_joint": "minute_spin",
+    "input_part": "minute_gear",
+    "input_travel": 12.0,
+    "input_unit": "rad",
+    "moved_count": 5,
+    "watched_count": 5,
+    "output_reached": true,
+    "exploded": false,
+    "output_travel": 1.0,
+    "output_unit": "rad",
+    "ratio_in_out": 12.0,
+    "displaced_parts": [],
+    "end_z": 0.0,
+    "max_tilt_deg": 0.0,
+    "max_drift": 0.0
+  },
+  "stability": {
+    "verdict": "PASS",
+    "exploded": false,
+    "max_disp_m": 0.0,
+    "end_z": 0.0,
+    "displaced_parts": []
+  },
+  "frames_dir": "C:\\Users\\t-zhijjiang\\Downloads\\PhysCADResearcher\\output\\comfort_benchmark_v1_20260811\\04_openwork_clock_12to1\\design_this_as_an_open_demonstra_20260811_165309\\physics\\mujoco_0\\frames",
+  "n_frames": 40,
+  "log": [
+    "initial contacts: 0 interpenetrating pair(s)",
+    "stability(settle): PASS max_disp=0.000m exploded=False",
+    "camera: az=35.0 el=-28.0 dist=0.115 (designer)",
+    "drive: method=direct_qpos mode=velocity rate=4"
+  ]
+}

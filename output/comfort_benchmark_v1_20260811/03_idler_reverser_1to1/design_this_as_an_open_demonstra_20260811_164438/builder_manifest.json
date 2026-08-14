@@ -1,0 +1,3235 @@
+{
+  "manifest_version": 3,
+  "engine": "mujoco-agent",
+  "topology_plan": {
+    "coordinate_map": {
+      "input_shaft": "input_shaft_hinge",
+      "input_gear": "input_shaft_hinge",
+      "idler_shaft": "idler_shaft_hinge",
+      "idler_gear": "idler_shaft_hinge",
+      "output_shaft": "output_shaft_hinge",
+      "output_gear": "output_shaft_hinge",
+      "crank_arm": "input_shaft_hinge",
+      "crank_handle": "input_shaft_hinge",
+      "base": null,
+      "input_front_pedestal": null,
+      "input_front_bearing": null,
+      "input_rear_pedestal": null,
+      "input_rear_bearing": null,
+      "idler_front_pedestal": null,
+      "idler_front_bearing": null,
+      "idler_rear_pedestal": null,
+      "idler_rear_bearing": null,
+      "output_front_pedestal": null,
+      "output_front_bearing": null,
+      "output_rear_pedestal": null,
+      "output_rear_bearing": null
+    },
+    "tree_edges": [
+      [
+        "base",
+        "input_front_pedestal"
+      ],
+      [
+        "base",
+        "input_rear_pedestal"
+      ],
+      [
+        "base",
+        "idler_front_pedestal"
+      ],
+      [
+        "base",
+        "idler_rear_pedestal"
+      ],
+      [
+        "base",
+        "output_front_pedestal"
+      ],
+      [
+        "base",
+        "output_rear_pedestal"
+      ],
+      [
+        "input_front_pedestal",
+        "input_front_bearing"
+      ],
+      [
+        "input_rear_pedestal",
+        "input_rear_bearing"
+      ],
+      [
+        "idler_front_pedestal",
+        "idler_front_bearing"
+      ],
+      [
+        "idler_rear_pedestal",
+        "idler_rear_bearing"
+      ],
+      [
+        "output_front_pedestal",
+        "output_front_bearing"
+      ],
+      [
+        "output_rear_pedestal",
+        "output_rear_bearing"
+      ],
+      [
+        "input_front_bearing",
+        "input_shaft"
+      ],
+      [
+        "idler_front_bearing",
+        "idler_shaft"
+      ],
+      [
+        "output_front_bearing",
+        "output_shaft"
+      ],
+      [
+        "input_shaft",
+        "input_gear"
+      ],
+      [
+        "input_shaft",
+        "crank_arm"
+      ],
+      [
+        "crank_arm",
+        "crank_handle"
+      ],
+      [
+        "idler_shaft",
+        "idler_gear"
+      ],
+      [
+        "output_shaft",
+        "output_gear"
+      ]
+    ],
+    "closure_edges": [],
+    "rigid_carried": [
+      [
+        "input_shaft",
+        "input_gear"
+      ],
+      [
+        "idler_shaft",
+        "idler_gear"
+      ],
+      [
+        "output_shaft",
+        "output_gear"
+      ],
+      [
+        "input_shaft",
+        "crank_arm"
+      ],
+      [
+        "crank_arm",
+        "crank_handle"
+      ]
+    ],
+    "independent_coaxial": [],
+    "transmissions": [
+      {
+        "driving_joint": "input_shaft_hinge",
+        "driven_joint": "idler_shaft_hinge",
+        "ratio": -1.0
+      },
+      {
+        "driving_joint": "idler_shaft_hinge",
+        "driven_joint": "output_shaft_hinge",
+        "ratio": -1.0
+      }
+    ],
+    "contact_decisions": [
+      {
+        "pair": [
+          "input_front_bearing",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "running journal fit with positive diametral clearance is represented by the input hinge",
+        "source_entity_ids": [
+          "relation/input_front_journal"
+        ],
+        "fact_ids": [
+          "fit/input_front_bearing/journal/input_shaft/front_journal",
+          "pair/input_front_bearing/input_shaft",
+          "nearby/input_front_bearing/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_rear_bearing",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "running rear journal fit is represented by the same supported input hinge",
+        "source_entity_ids": [
+          "relation/input_rear_journal"
+        ],
+        "fact_ids": [
+          "fit/input_rear_bearing/journal/input_shaft/rear_journal",
+          "pair/input_rear_bearing/input_shaft",
+          "nearby/input_rear_bearing/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "idler_front_bearing",
+          "idler_shaft"
+        ],
+        "action": "exclude",
+        "reason": "running journal fit with positive diametral clearance is represented by the idler hinge",
+        "source_entity_ids": [
+          "relation/idler_front_journal"
+        ],
+        "fact_ids": [
+          "fit/idler_front_bearing/journal/idler_shaft/front_journal",
+          "pair/idler_front_bearing/idler_shaft",
+          "nearby/idler_front_bearing/idler_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "idler_rear_bearing",
+          "idler_shaft"
+        ],
+        "action": "exclude",
+        "reason": "running rear journal fit is represented by the same supported idler hinge",
+        "source_entity_ids": [
+          "relation/idler_rear_journal"
+        ],
+        "fact_ids": [
+          "fit/idler_rear_bearing/journal/idler_shaft/rear_journal",
+          "pair/idler_rear_bearing/idler_shaft",
+          "nearby/idler_rear_bearing/idler_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "output_front_bearing",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "running journal fit with positive diametral clearance is represented by the output hinge",
+        "source_entity_ids": [
+          "relation/output_front_journal"
+        ],
+        "fact_ids": [
+          "fit/output_front_bearing/journal/output_shaft/front_journal",
+          "pair/output_front_bearing/output_shaft",
+          "nearby/output_front_bearing/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "output_rear_bearing",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "running rear journal fit is represented by the same supported output hinge",
+        "source_entity_ids": [
+          "relation/output_rear_journal"
+        ],
+        "fact_ids": [
+          "fit/output_rear_bearing/journal/output_shaft/rear_journal",
+          "pair/output_rear_bearing/output_shaft",
+          "nearby/output_rear_bearing/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_gear",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured interference press fit is rigidly carried",
+        "source_entity_ids": [
+          "relation/input_gear_press_fit"
+        ],
+        "fact_ids": [
+          "fit/input_shaft/gear_seat/input_gear/shaft_bore",
+          "pair/input_gear/input_shaft",
+          "nearby/input_gear/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "idler_gear",
+          "idler_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured interference press fit is rigidly carried",
+        "source_entity_ids": [
+          "relation/idler_gear_press_fit"
+        ],
+        "fact_ids": [
+          "fit/idler_shaft/gear_seat/idler_gear/shaft_bore",
+          "pair/idler_gear/idler_shaft",
+          "nearby/idler_gear/idler_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured interference press fit is rigidly carried",
+        "source_entity_ids": [
+          "relation/output_gear_press_fit"
+        ],
+        "fact_ids": [
+          "fit/output_shaft/gear_seat/output_gear/shaft_bore",
+          "pair/output_gear/output_shaft",
+          "nearby/output_gear/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "idler_gear",
+          "input_gear"
+        ],
+        "action": "exclude",
+        "reason": "ideal external gear equality replaces tooth contact",
+        "source_entity_ids": [
+          "relation/input_idler_mesh"
+        ],
+        "fact_ids": [
+          "fit/input_gear/mesh_to_idler/idler_gear/mesh_to_input",
+          "pair/idler_gear/input_gear",
+          "nearby/idler_gear/input_gear"
+        ]
+      },
+      {
+        "pair": [
+          "idler_gear",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "ideal external gear equality replaces tooth contact",
+        "source_entity_ids": [
+          "relation/idler_output_mesh"
+        ],
+        "fact_ids": [
+          "fit/idler_gear/mesh_to_output/output_gear/mesh_to_idler",
+          "pair/idler_gear/output_gear",
+          "nearby/idler_gear/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "measured interference press fit is rigidly carried",
+        "source_entity_ids": [
+          "relation/crank_arm_press_fit"
+        ],
+        "fact_ids": [
+          "fit/input_shaft/crank_seat/crank_arm/shaft_bore",
+          "pair/crank_arm/input_shaft",
+          "nearby/crank_arm/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "crank_handle"
+        ],
+        "action": "exclude",
+        "reason": "measured interference press fit is rigidly carried",
+        "source_entity_ids": [
+          "relation/crank_handle_press_fit"
+        ],
+        "fact_ids": [
+          "fit/crank_arm/handle_bore/crank_handle/handle_shaft",
+          "pair/crank_arm/crank_handle",
+          "nearby/crank_arm/crank_handle"
+        ]
+      },
+      {
+        "pair": [
+          "input_front_pedestal",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/input_front_pedestal",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/input_front_pedestal/input_shaft",
+          "nearby/input_front_pedestal/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_rear_pedestal",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/input_rear_pedestal",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/input_rear_pedestal/input_shaft",
+          "nearby/input_rear_pedestal/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "idler_gear",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_gear",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/idler_gear/input_shaft",
+          "nearby/idler_gear/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "crank_handle",
+          "input_shaft"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/crank_handle",
+          "link/input_shaft"
+        ],
+        "fact_ids": [
+          "pair/crank_handle/input_shaft",
+          "nearby/crank_handle/input_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "idler_front_pedestal",
+          "idler_shaft"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_front_pedestal",
+          "link/idler_shaft"
+        ],
+        "fact_ids": [
+          "pair/idler_front_pedestal/idler_shaft",
+          "nearby/idler_front_pedestal/idler_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "idler_rear_pedestal",
+          "idler_shaft"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_rear_pedestal",
+          "link/idler_shaft"
+        ],
+        "fact_ids": [
+          "pair/idler_rear_pedestal/idler_shaft",
+          "nearby/idler_rear_pedestal/idler_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "idler_shaft",
+          "input_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_shaft",
+          "link/input_gear"
+        ],
+        "fact_ids": [
+          "pair/idler_shaft/input_gear",
+          "nearby/idler_shaft/input_gear"
+        ]
+      },
+      {
+        "pair": [
+          "idler_shaft",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_shaft",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/idler_shaft/output_gear",
+          "nearby/idler_shaft/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_front_pedestal",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/output_front_pedestal",
+          "link/output_shaft"
+        ],
+        "fact_ids": [
+          "pair/output_front_pedestal/output_shaft",
+          "nearby/output_front_pedestal/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "output_rear_pedestal",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/output_rear_pedestal",
+          "link/output_shaft"
+        ],
+        "fact_ids": [
+          "pair/output_rear_pedestal/output_shaft",
+          "nearby/output_rear_pedestal/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "idler_gear",
+          "output_shaft"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_gear",
+          "link/output_shaft"
+        ],
+        "fact_ids": [
+          "pair/idler_gear/output_shaft",
+          "nearby/idler_gear/output_shaft"
+        ]
+      },
+      {
+        "pair": [
+          "input_front_pedestal",
+          "input_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/input_front_pedestal",
+          "link/input_gear"
+        ],
+        "fact_ids": [
+          "pair/input_front_pedestal/input_gear",
+          "nearby/input_front_pedestal/input_gear"
+        ]
+      },
+      {
+        "pair": [
+          "input_front_bearing",
+          "input_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/input_front_bearing",
+          "link/input_gear"
+        ],
+        "fact_ids": [
+          "pair/input_front_bearing/input_gear",
+          "nearby/input_front_bearing/input_gear"
+        ]
+      },
+      {
+        "pair": [
+          "input_gear",
+          "input_rear_bearing"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/input_gear",
+          "link/input_rear_bearing"
+        ],
+        "fact_ids": [
+          "pair/input_gear/input_rear_bearing",
+          "nearby/input_gear/input_rear_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "input_gear",
+          "input_rear_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/input_gear",
+          "link/input_rear_pedestal"
+        ],
+        "fact_ids": [
+          "pair/input_gear/input_rear_pedestal",
+          "nearby/input_gear/input_rear_pedestal"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "input_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/base",
+          "link/input_gear"
+        ],
+        "fact_ids": [
+          "pair/base/input_gear",
+          "nearby/base/input_gear"
+        ]
+      },
+      {
+        "pair": [
+          "idler_front_bearing",
+          "input_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_front_bearing",
+          "link/input_gear"
+        ],
+        "fact_ids": [
+          "pair/idler_front_bearing/input_gear",
+          "nearby/idler_front_bearing/input_gear"
+        ]
+      },
+      {
+        "pair": [
+          "idler_rear_bearing",
+          "input_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_rear_bearing",
+          "link/input_gear"
+        ],
+        "fact_ids": [
+          "pair/idler_rear_bearing/input_gear",
+          "nearby/idler_rear_bearing/input_gear"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "input_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/input_gear"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/input_gear",
+          "nearby/crank_arm/input_gear"
+        ]
+      },
+      {
+        "pair": [
+          "crank_handle",
+          "input_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/crank_handle",
+          "link/input_gear"
+        ],
+        "fact_ids": [
+          "pair/crank_handle/input_gear",
+          "nearby/crank_handle/input_gear"
+        ]
+      },
+      {
+        "pair": [
+          "idler_front_pedestal",
+          "input_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_front_pedestal",
+          "link/input_gear"
+        ],
+        "fact_ids": [
+          "pair/idler_front_pedestal/input_gear",
+          "nearby/idler_front_pedestal/input_gear"
+        ]
+      },
+      {
+        "pair": [
+          "idler_rear_pedestal",
+          "input_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_rear_pedestal",
+          "link/input_gear"
+        ],
+        "fact_ids": [
+          "pair/idler_rear_pedestal/input_gear",
+          "nearby/idler_rear_pedestal/input_gear"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "idler_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/base",
+          "link/idler_gear"
+        ],
+        "fact_ids": [
+          "pair/base/idler_gear",
+          "nearby/base/idler_gear"
+        ]
+      },
+      {
+        "pair": [
+          "idler_front_pedestal",
+          "idler_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_front_pedestal",
+          "link/idler_gear"
+        ],
+        "fact_ids": [
+          "pair/idler_front_pedestal/idler_gear",
+          "nearby/idler_front_pedestal/idler_gear"
+        ]
+      },
+      {
+        "pair": [
+          "idler_front_bearing",
+          "idler_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_front_bearing",
+          "link/idler_gear"
+        ],
+        "fact_ids": [
+          "pair/idler_front_bearing/idler_gear",
+          "nearby/idler_front_bearing/idler_gear"
+        ]
+      },
+      {
+        "pair": [
+          "idler_gear",
+          "idler_rear_bearing"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_gear",
+          "link/idler_rear_bearing"
+        ],
+        "fact_ids": [
+          "pair/idler_gear/idler_rear_bearing",
+          "nearby/idler_gear/idler_rear_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "idler_gear",
+          "idler_rear_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_gear",
+          "link/idler_rear_pedestal"
+        ],
+        "fact_ids": [
+          "pair/idler_gear/idler_rear_pedestal",
+          "nearby/idler_gear/idler_rear_pedestal"
+        ]
+      },
+      {
+        "pair": [
+          "idler_gear",
+          "input_front_bearing"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_gear",
+          "link/input_front_bearing"
+        ],
+        "fact_ids": [
+          "pair/idler_gear/input_front_bearing",
+          "nearby/idler_gear/input_front_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "idler_gear",
+          "output_front_bearing"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_gear",
+          "link/output_front_bearing"
+        ],
+        "fact_ids": [
+          "pair/idler_gear/output_front_bearing",
+          "nearby/idler_gear/output_front_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "idler_gear",
+          "input_rear_bearing"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_gear",
+          "link/input_rear_bearing"
+        ],
+        "fact_ids": [
+          "pair/idler_gear/input_rear_bearing",
+          "nearby/idler_gear/input_rear_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "idler_gear",
+          "output_rear_bearing"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_gear",
+          "link/output_rear_bearing"
+        ],
+        "fact_ids": [
+          "pair/idler_gear/output_rear_bearing",
+          "nearby/idler_gear/output_rear_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "idler_gear",
+          "input_front_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_gear",
+          "link/input_front_pedestal"
+        ],
+        "fact_ids": [
+          "pair/idler_gear/input_front_pedestal",
+          "nearby/idler_gear/input_front_pedestal"
+        ]
+      },
+      {
+        "pair": [
+          "idler_gear",
+          "output_front_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_gear",
+          "link/output_front_pedestal"
+        ],
+        "fact_ids": [
+          "pair/idler_gear/output_front_pedestal",
+          "nearby/idler_gear/output_front_pedestal"
+        ]
+      },
+      {
+        "pair": [
+          "idler_gear",
+          "input_rear_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_gear",
+          "link/input_rear_pedestal"
+        ],
+        "fact_ids": [
+          "pair/idler_gear/input_rear_pedestal",
+          "nearby/idler_gear/input_rear_pedestal"
+        ]
+      },
+      {
+        "pair": [
+          "idler_gear",
+          "output_rear_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_gear",
+          "link/output_rear_pedestal"
+        ],
+        "fact_ids": [
+          "pair/idler_gear/output_rear_pedestal",
+          "nearby/idler_gear/output_rear_pedestal"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "idler_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/idler_gear"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/idler_gear",
+          "nearby/crank_arm/idler_gear"
+        ]
+      },
+      {
+        "pair": [
+          "crank_handle",
+          "idler_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/crank_handle",
+          "link/idler_gear"
+        ],
+        "fact_ids": [
+          "pair/crank_handle/idler_gear",
+          "nearby/crank_handle/idler_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_front_pedestal",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/output_front_pedestal",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/output_front_pedestal/output_gear",
+          "nearby/output_front_pedestal/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_front_bearing",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/output_front_bearing",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/output_front_bearing/output_gear",
+          "nearby/output_front_bearing/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "output_rear_bearing"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/output_rear_bearing"
+        ],
+        "fact_ids": [
+          "pair/output_gear/output_rear_bearing",
+          "nearby/output_gear/output_rear_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "output_gear",
+          "output_rear_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/output_gear",
+          "link/output_rear_pedestal"
+        ],
+        "fact_ids": [
+          "pair/output_gear/output_rear_pedestal",
+          "nearby/output_gear/output_rear_pedestal"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/base",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/base/output_gear",
+          "nearby/base/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "idler_front_bearing",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_front_bearing",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/idler_front_bearing/output_gear",
+          "nearby/idler_front_bearing/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "idler_rear_bearing",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_rear_bearing",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/idler_rear_bearing/output_gear",
+          "nearby/idler_rear_bearing/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "idler_front_pedestal",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_front_pedestal",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/idler_front_pedestal/output_gear",
+          "nearby/idler_front_pedestal/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "idler_rear_pedestal",
+          "output_gear"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/idler_rear_pedestal",
+          "link/output_gear"
+        ],
+        "fact_ids": [
+          "pair/idler_rear_pedestal/output_gear",
+          "nearby/idler_rear_pedestal/output_gear"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "input_front_bearing"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/input_front_bearing"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/input_front_bearing",
+          "nearby/crank_arm/input_front_bearing"
+        ]
+      },
+      {
+        "pair": [
+          "crank_arm",
+          "input_front_pedestal"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/crank_arm",
+          "link/input_front_pedestal"
+        ],
+        "fact_ids": [
+          "pair/crank_arm/input_front_pedestal",
+          "nearby/crank_arm/input_front_pedestal"
+        ]
+      },
+      {
+        "pair": [
+          "base",
+          "crank_arm"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/base",
+          "link/crank_arm"
+        ],
+        "fact_ids": [
+          "pair/base/crank_arm",
+          "nearby/base/crank_arm"
+        ]
+      },
+      {
+        "pair": [
+          "crank_handle",
+          "input_front_bearing"
+        ],
+        "action": "exclude",
+        "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+        "source_entity_ids": [
+          "link/crank_handle",
+          "link/input_front_bearing"
+        ],
+        "fact_ids": [
+          "pair/crank_handle/input_front_bearing",
+          "nearby/crank_handle/input_front_bearing"
+        ]
+      }
+    ],
+    "support_ground": "base rests on global ground plane",
+    "support_strategy": "fixed base and pedestal-bearing structure; no support patch required"
+  },
+  "decisions": [
+    {
+      "generated_kind": "constraint",
+      "generated_name": "input_to_idler",
+      "constraint_type": "joint",
+      "reason": "equal pitch radii external mesh",
+      "source_entity_ids": [
+        "relation/input_idler_mesh",
+        "transmission/input_to_idler"
+      ],
+      "fact_ids": [
+        "fit/input_gear/mesh_to_idler/idler_gear/mesh_to_input"
+      ]
+    },
+    {
+      "generated_kind": "constraint",
+      "generated_name": "idler_to_output",
+      "constraint_type": "joint",
+      "reason": "equal pitch radii external mesh",
+      "source_entity_ids": [
+        "relation/idler_output_mesh",
+        "transmission/idler_to_output"
+      ],
+      "fact_ids": [
+        "fit/idler_gear/mesh_to_output/output_gear/mesh_to_idler"
+      ]
+    },
+    {
+      "entity_id": "link/base",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "link/base"
+      ]
+    },
+    {
+      "entity_id": "link/input_front_pedestal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "link/input_front_pedestal"
+      ]
+    },
+    {
+      "entity_id": "link/input_front_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "link/input_front_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/input_rear_pedestal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "link/input_rear_pedestal"
+      ]
+    },
+    {
+      "entity_id": "link/input_rear_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "link/input_rear_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/idler_front_pedestal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "link/idler_front_pedestal"
+      ]
+    },
+    {
+      "entity_id": "link/idler_front_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "link/idler_front_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/idler_rear_pedestal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "link/idler_rear_pedestal"
+      ]
+    },
+    {
+      "entity_id": "link/idler_rear_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "link/idler_rear_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/output_front_pedestal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "link/output_front_pedestal"
+      ]
+    },
+    {
+      "entity_id": "link/output_front_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "link/output_front_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/output_rear_pedestal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "link/output_rear_pedestal"
+      ]
+    },
+    {
+      "entity_id": "link/output_rear_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "link/output_rear_bearing"
+      ]
+    },
+    {
+      "entity_id": "link/input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "link/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "link/idler_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "link/idler_shaft"
+      ]
+    },
+    {
+      "entity_id": "link/output_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "link/output_shaft"
+      ]
+    },
+    {
+      "entity_id": "link/input_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "link/input_gear"
+      ]
+    },
+    {
+      "entity_id": "link/idler_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "link/idler_gear"
+      ]
+    },
+    {
+      "entity_id": "link/output_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "link/output_gear"
+      ]
+    },
+    {
+      "entity_id": "link/crank_arm",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "link/crank_arm"
+      ]
+    },
+    {
+      "entity_id": "link/crank_handle",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "link/crank_handle"
+      ]
+    },
+    {
+      "entity_id": "pose/place_base",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "pose/place_base"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_front_pedestal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "pose/place_input_front_pedestal"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_front_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "pose/place_input_front_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_rear_pedestal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "pose/place_input_rear_pedestal"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_rear_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "pose/place_input_rear_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_idler_front_pedestal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "pose/place_idler_front_pedestal"
+      ]
+    },
+    {
+      "entity_id": "pose/place_idler_front_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "pose/place_idler_front_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_idler_rear_pedestal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "pose/place_idler_rear_pedestal"
+      ]
+    },
+    {
+      "entity_id": "pose/place_idler_rear_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "pose/place_idler_rear_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_front_pedestal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "pose/place_output_front_pedestal"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_front_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "pose/place_output_front_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_rear_pedestal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "pose/place_output_rear_pedestal"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_rear_bearing",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "pose/place_output_rear_bearing"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "pose/place_input_shaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_idler_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "pose/place_idler_shaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "pose/place_output_shaft"
+      ]
+    },
+    {
+      "entity_id": "pose/place_input_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "pose/place_input_gear"
+      ]
+    },
+    {
+      "entity_id": "pose/place_idler_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "pose/place_idler_gear"
+      ]
+    },
+    {
+      "entity_id": "pose/place_output_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "pose/place_output_gear"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crank_arm",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "pose/place_crank_arm"
+      ]
+    },
+    {
+      "entity_id": "pose/place_crank_handle",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "pose/place_crank_handle"
+      ]
+    },
+    {
+      "entity_id": "port/input_front_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/input_front_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/input_rear_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/input_rear_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/idler_front_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/idler_front_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/idler_rear_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/idler_rear_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/output_front_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/output_front_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/output_rear_bearing/journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/output_rear_bearing/journal"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/front_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/input_shaft/front_journal"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/rear_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/input_shaft/rear_journal"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/gear_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/input_shaft/gear_seat"
+      ]
+    },
+    {
+      "entity_id": "port/input_shaft/crank_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/input_shaft/crank_seat"
+      ]
+    },
+    {
+      "entity_id": "port/idler_shaft/front_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/idler_shaft/front_journal"
+      ]
+    },
+    {
+      "entity_id": "port/idler_shaft/rear_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/idler_shaft/rear_journal"
+      ]
+    },
+    {
+      "entity_id": "port/idler_shaft/gear_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/idler_shaft/gear_seat"
+      ]
+    },
+    {
+      "entity_id": "port/output_shaft/front_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/output_shaft/front_journal"
+      ]
+    },
+    {
+      "entity_id": "port/output_shaft/rear_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/output_shaft/rear_journal"
+      ]
+    },
+    {
+      "entity_id": "port/output_shaft/gear_seat",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/output_shaft/gear_seat"
+      ]
+    },
+    {
+      "entity_id": "port/input_gear/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/input_gear/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/input_gear/mesh_to_idler",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/input_gear/mesh_to_idler"
+      ]
+    },
+    {
+      "entity_id": "port/idler_gear/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/idler_gear/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/idler_gear/mesh_to_input",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/idler_gear/mesh_to_input"
+      ]
+    },
+    {
+      "entity_id": "port/idler_gear/mesh_to_output",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/idler_gear/mesh_to_output"
+      ]
+    },
+    {
+      "entity_id": "port/output_gear/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/output_gear/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/output_gear/mesh_to_idler",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/output_gear/mesh_to_idler"
+      ]
+    },
+    {
+      "entity_id": "port/crank_arm/shaft_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/crank_arm/shaft_bore"
+      ]
+    },
+    {
+      "entity_id": "port/crank_arm/handle_bore",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/crank_arm/handle_bore"
+      ]
+    },
+    {
+      "entity_id": "port/crank_handle/handle_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "port/crank_handle/handle_shaft"
+      ]
+    },
+    {
+      "entity_id": "relation/input_front_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "relation/input_front_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/input_rear_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "relation/input_rear_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/idler_front_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "relation/idler_front_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/idler_rear_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "relation/idler_rear_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/output_front_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "relation/output_front_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/output_rear_journal",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "relation/output_rear_journal"
+      ]
+    },
+    {
+      "entity_id": "relation/input_gear_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "relation/input_gear_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/idler_gear_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "relation/idler_gear_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/output_gear_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "relation/output_gear_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/input_idler_mesh",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_to_idler"
+      ],
+      "reason": "authored joint or equality emitted",
+      "fact_ids": [
+        "relation/input_idler_mesh"
+      ]
+    },
+    {
+      "entity_id": "relation/idler_output_mesh",
+      "action": "emitted",
+      "generated_nodes": [
+        "idler_to_output"
+      ],
+      "reason": "authored joint or equality emitted",
+      "fact_ids": [
+        "relation/idler_output_mesh"
+      ]
+    },
+    {
+      "entity_id": "relation/crank_arm_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "relation/crank_arm_press_fit"
+      ]
+    },
+    {
+      "entity_id": "relation/crank_handle_press_fit",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "relation/crank_handle_press_fit"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/input_shaft_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_shaft_hinge"
+      ],
+      "reason": "authored joint or equality emitted",
+      "fact_ids": [
+        "motion_joint/input_shaft_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/idler_shaft_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "idler_shaft_hinge"
+      ],
+      "reason": "authored joint or equality emitted",
+      "fact_ids": [
+        "motion_joint/idler_shaft_hinge"
+      ]
+    },
+    {
+      "entity_id": "motion_joint/output_shaft_hinge",
+      "action": "emitted",
+      "generated_nodes": [
+        "output_shaft_hinge"
+      ],
+      "reason": "authored joint or equality emitted",
+      "fact_ids": [
+        "motion_joint/output_shaft_hinge"
+      ]
+    },
+    {
+      "entity_id": "transmission/input_shaft_to_input_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "transmission/input_shaft_to_input_gear"
+      ]
+    },
+    {
+      "entity_id": "transmission/input_to_idler",
+      "action": "emitted",
+      "generated_nodes": [
+        "input_to_idler"
+      ],
+      "reason": "authored joint or equality emitted",
+      "fact_ids": [
+        "transmission/input_to_idler"
+      ]
+    },
+    {
+      "entity_id": "transmission/idler_shaft_lock",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "transmission/idler_shaft_lock"
+      ]
+    },
+    {
+      "entity_id": "transmission/idler_to_output",
+      "action": "emitted",
+      "generated_nodes": [
+        "idler_to_output"
+      ],
+      "reason": "authored joint or equality emitted",
+      "fact_ids": [
+        "transmission/idler_to_output"
+      ]
+    },
+    {
+      "entity_id": "transmission/output_gear_to_output_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "transmission/output_gear_to_output_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/driver/input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "role/driver/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/output/output_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "role/output/output_gear"
+      ]
+    },
+    {
+      "entity_id": "role/watch/input_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "role/watch/input_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/watch/input_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "role/watch/input_gear"
+      ]
+    },
+    {
+      "entity_id": "role/watch/idler_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "role/watch/idler_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/watch/idler_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "role/watch/idler_gear"
+      ]
+    },
+    {
+      "entity_id": "role/watch/output_shaft",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "role/watch/output_shaft"
+      ]
+    },
+    {
+      "entity_id": "role/watch/output_gear",
+      "action": "represented_by",
+      "generated_nodes": [
+        "base"
+      ],
+      "reason": "represented by emitted mesh, rigid carrying, topology, role, contact decision, or equality",
+      "fact_ids": [
+        "role/watch/output_gear"
+      ]
+    }
+  ],
+  "excludes": [
+    {
+      "pair": [
+        "input_front_bearing",
+        "input_shaft"
+      ],
+      "reason": "running journal fit with positive diametral clearance is represented by the input hinge",
+      "source_entity_ids": [
+        "relation/input_front_journal"
+      ],
+      "fact_ids": [
+        "fit/input_front_bearing/journal/input_shaft/front_journal",
+        "pair/input_front_bearing/input_shaft",
+        "nearby/input_front_bearing/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "input_rear_bearing",
+        "input_shaft"
+      ],
+      "reason": "running rear journal fit is represented by the same supported input hinge",
+      "source_entity_ids": [
+        "relation/input_rear_journal"
+      ],
+      "fact_ids": [
+        "fit/input_rear_bearing/journal/input_shaft/rear_journal",
+        "pair/input_rear_bearing/input_shaft",
+        "nearby/input_rear_bearing/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "idler_front_bearing",
+        "idler_shaft"
+      ],
+      "reason": "running journal fit with positive diametral clearance is represented by the idler hinge",
+      "source_entity_ids": [
+        "relation/idler_front_journal"
+      ],
+      "fact_ids": [
+        "fit/idler_front_bearing/journal/idler_shaft/front_journal",
+        "pair/idler_front_bearing/idler_shaft",
+        "nearby/idler_front_bearing/idler_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "idler_rear_bearing",
+        "idler_shaft"
+      ],
+      "reason": "running rear journal fit is represented by the same supported idler hinge",
+      "source_entity_ids": [
+        "relation/idler_rear_journal"
+      ],
+      "fact_ids": [
+        "fit/idler_rear_bearing/journal/idler_shaft/rear_journal",
+        "pair/idler_rear_bearing/idler_shaft",
+        "nearby/idler_rear_bearing/idler_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "output_front_bearing",
+        "output_shaft"
+      ],
+      "reason": "running journal fit with positive diametral clearance is represented by the output hinge",
+      "source_entity_ids": [
+        "relation/output_front_journal"
+      ],
+      "fact_ids": [
+        "fit/output_front_bearing/journal/output_shaft/front_journal",
+        "pair/output_front_bearing/output_shaft",
+        "nearby/output_front_bearing/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "output_rear_bearing",
+        "output_shaft"
+      ],
+      "reason": "running rear journal fit is represented by the same supported output hinge",
+      "source_entity_ids": [
+        "relation/output_rear_journal"
+      ],
+      "fact_ids": [
+        "fit/output_rear_bearing/journal/output_shaft/rear_journal",
+        "pair/output_rear_bearing/output_shaft",
+        "nearby/output_rear_bearing/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "input_gear",
+        "input_shaft"
+      ],
+      "reason": "measured interference press fit is rigidly carried",
+      "source_entity_ids": [
+        "relation/input_gear_press_fit"
+      ],
+      "fact_ids": [
+        "fit/input_shaft/gear_seat/input_gear/shaft_bore",
+        "pair/input_gear/input_shaft",
+        "nearby/input_gear/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "idler_gear",
+        "idler_shaft"
+      ],
+      "reason": "measured interference press fit is rigidly carried",
+      "source_entity_ids": [
+        "relation/idler_gear_press_fit"
+      ],
+      "fact_ids": [
+        "fit/idler_shaft/gear_seat/idler_gear/shaft_bore",
+        "pair/idler_gear/idler_shaft",
+        "nearby/idler_gear/idler_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "output_gear",
+        "output_shaft"
+      ],
+      "reason": "measured interference press fit is rigidly carried",
+      "source_entity_ids": [
+        "relation/output_gear_press_fit"
+      ],
+      "fact_ids": [
+        "fit/output_shaft/gear_seat/output_gear/shaft_bore",
+        "pair/output_gear/output_shaft",
+        "nearby/output_gear/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "idler_gear",
+        "input_gear"
+      ],
+      "reason": "ideal external gear equality replaces tooth contact",
+      "source_entity_ids": [
+        "relation/input_idler_mesh"
+      ],
+      "fact_ids": [
+        "fit/input_gear/mesh_to_idler/idler_gear/mesh_to_input",
+        "pair/idler_gear/input_gear",
+        "nearby/idler_gear/input_gear"
+      ]
+    },
+    {
+      "pair": [
+        "idler_gear",
+        "output_gear"
+      ],
+      "reason": "ideal external gear equality replaces tooth contact",
+      "source_entity_ids": [
+        "relation/idler_output_mesh"
+      ],
+      "fact_ids": [
+        "fit/idler_gear/mesh_to_output/output_gear/mesh_to_idler",
+        "pair/idler_gear/output_gear",
+        "nearby/idler_gear/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "crank_arm",
+        "input_shaft"
+      ],
+      "reason": "measured interference press fit is rigidly carried",
+      "source_entity_ids": [
+        "relation/crank_arm_press_fit"
+      ],
+      "fact_ids": [
+        "fit/input_shaft/crank_seat/crank_arm/shaft_bore",
+        "pair/crank_arm/input_shaft",
+        "nearby/crank_arm/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "crank_arm",
+        "crank_handle"
+      ],
+      "reason": "measured interference press fit is rigidly carried",
+      "source_entity_ids": [
+        "relation/crank_handle_press_fit"
+      ],
+      "fact_ids": [
+        "fit/crank_arm/handle_bore/crank_handle/handle_shaft",
+        "pair/crank_arm/crank_handle",
+        "nearby/crank_arm/crank_handle"
+      ]
+    },
+    {
+      "pair": [
+        "input_front_pedestal",
+        "input_shaft"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/input_front_pedestal",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "pair/input_front_pedestal/input_shaft",
+        "nearby/input_front_pedestal/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "input_rear_pedestal",
+        "input_shaft"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/input_rear_pedestal",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "pair/input_rear_pedestal/input_shaft",
+        "nearby/input_rear_pedestal/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "idler_gear",
+        "input_shaft"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_gear",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "pair/idler_gear/input_shaft",
+        "nearby/idler_gear/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "crank_handle",
+        "input_shaft"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/crank_handle",
+        "link/input_shaft"
+      ],
+      "fact_ids": [
+        "pair/crank_handle/input_shaft",
+        "nearby/crank_handle/input_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "idler_front_pedestal",
+        "idler_shaft"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_front_pedestal",
+        "link/idler_shaft"
+      ],
+      "fact_ids": [
+        "pair/idler_front_pedestal/idler_shaft",
+        "nearby/idler_front_pedestal/idler_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "idler_rear_pedestal",
+        "idler_shaft"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_rear_pedestal",
+        "link/idler_shaft"
+      ],
+      "fact_ids": [
+        "pair/idler_rear_pedestal/idler_shaft",
+        "nearby/idler_rear_pedestal/idler_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "idler_shaft",
+        "input_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_shaft",
+        "link/input_gear"
+      ],
+      "fact_ids": [
+        "pair/idler_shaft/input_gear",
+        "nearby/idler_shaft/input_gear"
+      ]
+    },
+    {
+      "pair": [
+        "idler_shaft",
+        "output_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_shaft",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/idler_shaft/output_gear",
+        "nearby/idler_shaft/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "output_front_pedestal",
+        "output_shaft"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/output_front_pedestal",
+        "link/output_shaft"
+      ],
+      "fact_ids": [
+        "pair/output_front_pedestal/output_shaft",
+        "nearby/output_front_pedestal/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "output_rear_pedestal",
+        "output_shaft"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/output_rear_pedestal",
+        "link/output_shaft"
+      ],
+      "fact_ids": [
+        "pair/output_rear_pedestal/output_shaft",
+        "nearby/output_rear_pedestal/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "idler_gear",
+        "output_shaft"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_gear",
+        "link/output_shaft"
+      ],
+      "fact_ids": [
+        "pair/idler_gear/output_shaft",
+        "nearby/idler_gear/output_shaft"
+      ]
+    },
+    {
+      "pair": [
+        "input_front_pedestal",
+        "input_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/input_front_pedestal",
+        "link/input_gear"
+      ],
+      "fact_ids": [
+        "pair/input_front_pedestal/input_gear",
+        "nearby/input_front_pedestal/input_gear"
+      ]
+    },
+    {
+      "pair": [
+        "input_front_bearing",
+        "input_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/input_front_bearing",
+        "link/input_gear"
+      ],
+      "fact_ids": [
+        "pair/input_front_bearing/input_gear",
+        "nearby/input_front_bearing/input_gear"
+      ]
+    },
+    {
+      "pair": [
+        "input_gear",
+        "input_rear_bearing"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/input_gear",
+        "link/input_rear_bearing"
+      ],
+      "fact_ids": [
+        "pair/input_gear/input_rear_bearing",
+        "nearby/input_gear/input_rear_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "input_gear",
+        "input_rear_pedestal"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/input_gear",
+        "link/input_rear_pedestal"
+      ],
+      "fact_ids": [
+        "pair/input_gear/input_rear_pedestal",
+        "nearby/input_gear/input_rear_pedestal"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "input_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/base",
+        "link/input_gear"
+      ],
+      "fact_ids": [
+        "pair/base/input_gear",
+        "nearby/base/input_gear"
+      ]
+    },
+    {
+      "pair": [
+        "idler_front_bearing",
+        "input_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_front_bearing",
+        "link/input_gear"
+      ],
+      "fact_ids": [
+        "pair/idler_front_bearing/input_gear",
+        "nearby/idler_front_bearing/input_gear"
+      ]
+    },
+    {
+      "pair": [
+        "idler_rear_bearing",
+        "input_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_rear_bearing",
+        "link/input_gear"
+      ],
+      "fact_ids": [
+        "pair/idler_rear_bearing/input_gear",
+        "nearby/idler_rear_bearing/input_gear"
+      ]
+    },
+    {
+      "pair": [
+        "crank_arm",
+        "input_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/crank_arm",
+        "link/input_gear"
+      ],
+      "fact_ids": [
+        "pair/crank_arm/input_gear",
+        "nearby/crank_arm/input_gear"
+      ]
+    },
+    {
+      "pair": [
+        "crank_handle",
+        "input_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/crank_handle",
+        "link/input_gear"
+      ],
+      "fact_ids": [
+        "pair/crank_handle/input_gear",
+        "nearby/crank_handle/input_gear"
+      ]
+    },
+    {
+      "pair": [
+        "idler_front_pedestal",
+        "input_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_front_pedestal",
+        "link/input_gear"
+      ],
+      "fact_ids": [
+        "pair/idler_front_pedestal/input_gear",
+        "nearby/idler_front_pedestal/input_gear"
+      ]
+    },
+    {
+      "pair": [
+        "idler_rear_pedestal",
+        "input_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_rear_pedestal",
+        "link/input_gear"
+      ],
+      "fact_ids": [
+        "pair/idler_rear_pedestal/input_gear",
+        "nearby/idler_rear_pedestal/input_gear"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "idler_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/base",
+        "link/idler_gear"
+      ],
+      "fact_ids": [
+        "pair/base/idler_gear",
+        "nearby/base/idler_gear"
+      ]
+    },
+    {
+      "pair": [
+        "idler_front_pedestal",
+        "idler_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_front_pedestal",
+        "link/idler_gear"
+      ],
+      "fact_ids": [
+        "pair/idler_front_pedestal/idler_gear",
+        "nearby/idler_front_pedestal/idler_gear"
+      ]
+    },
+    {
+      "pair": [
+        "idler_front_bearing",
+        "idler_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_front_bearing",
+        "link/idler_gear"
+      ],
+      "fact_ids": [
+        "pair/idler_front_bearing/idler_gear",
+        "nearby/idler_front_bearing/idler_gear"
+      ]
+    },
+    {
+      "pair": [
+        "idler_gear",
+        "idler_rear_bearing"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_gear",
+        "link/idler_rear_bearing"
+      ],
+      "fact_ids": [
+        "pair/idler_gear/idler_rear_bearing",
+        "nearby/idler_gear/idler_rear_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "idler_gear",
+        "idler_rear_pedestal"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_gear",
+        "link/idler_rear_pedestal"
+      ],
+      "fact_ids": [
+        "pair/idler_gear/idler_rear_pedestal",
+        "nearby/idler_gear/idler_rear_pedestal"
+      ]
+    },
+    {
+      "pair": [
+        "idler_gear",
+        "input_front_bearing"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_gear",
+        "link/input_front_bearing"
+      ],
+      "fact_ids": [
+        "pair/idler_gear/input_front_bearing",
+        "nearby/idler_gear/input_front_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "idler_gear",
+        "output_front_bearing"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_gear",
+        "link/output_front_bearing"
+      ],
+      "fact_ids": [
+        "pair/idler_gear/output_front_bearing",
+        "nearby/idler_gear/output_front_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "idler_gear",
+        "input_rear_bearing"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_gear",
+        "link/input_rear_bearing"
+      ],
+      "fact_ids": [
+        "pair/idler_gear/input_rear_bearing",
+        "nearby/idler_gear/input_rear_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "idler_gear",
+        "output_rear_bearing"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_gear",
+        "link/output_rear_bearing"
+      ],
+      "fact_ids": [
+        "pair/idler_gear/output_rear_bearing",
+        "nearby/idler_gear/output_rear_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "idler_gear",
+        "input_front_pedestal"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_gear",
+        "link/input_front_pedestal"
+      ],
+      "fact_ids": [
+        "pair/idler_gear/input_front_pedestal",
+        "nearby/idler_gear/input_front_pedestal"
+      ]
+    },
+    {
+      "pair": [
+        "idler_gear",
+        "output_front_pedestal"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_gear",
+        "link/output_front_pedestal"
+      ],
+      "fact_ids": [
+        "pair/idler_gear/output_front_pedestal",
+        "nearby/idler_gear/output_front_pedestal"
+      ]
+    },
+    {
+      "pair": [
+        "idler_gear",
+        "input_rear_pedestal"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_gear",
+        "link/input_rear_pedestal"
+      ],
+      "fact_ids": [
+        "pair/idler_gear/input_rear_pedestal",
+        "nearby/idler_gear/input_rear_pedestal"
+      ]
+    },
+    {
+      "pair": [
+        "idler_gear",
+        "output_rear_pedestal"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_gear",
+        "link/output_rear_pedestal"
+      ],
+      "fact_ids": [
+        "pair/idler_gear/output_rear_pedestal",
+        "nearby/idler_gear/output_rear_pedestal"
+      ]
+    },
+    {
+      "pair": [
+        "crank_arm",
+        "idler_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/crank_arm",
+        "link/idler_gear"
+      ],
+      "fact_ids": [
+        "pair/crank_arm/idler_gear",
+        "nearby/crank_arm/idler_gear"
+      ]
+    },
+    {
+      "pair": [
+        "crank_handle",
+        "idler_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/crank_handle",
+        "link/idler_gear"
+      ],
+      "fact_ids": [
+        "pair/crank_handle/idler_gear",
+        "nearby/crank_handle/idler_gear"
+      ]
+    },
+    {
+      "pair": [
+        "output_front_pedestal",
+        "output_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/output_front_pedestal",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/output_front_pedestal/output_gear",
+        "nearby/output_front_pedestal/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "output_front_bearing",
+        "output_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/output_front_bearing",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/output_front_bearing/output_gear",
+        "nearby/output_front_bearing/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "output_gear",
+        "output_rear_bearing"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/output_rear_bearing"
+      ],
+      "fact_ids": [
+        "pair/output_gear/output_rear_bearing",
+        "nearby/output_gear/output_rear_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "output_gear",
+        "output_rear_pedestal"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/output_gear",
+        "link/output_rear_pedestal"
+      ],
+      "fact_ids": [
+        "pair/output_gear/output_rear_pedestal",
+        "nearby/output_gear/output_rear_pedestal"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "output_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/base",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/base/output_gear",
+        "nearby/base/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "idler_front_bearing",
+        "output_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_front_bearing",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/idler_front_bearing/output_gear",
+        "nearby/idler_front_bearing/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "idler_rear_bearing",
+        "output_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_rear_bearing",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/idler_rear_bearing/output_gear",
+        "nearby/idler_rear_bearing/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "idler_front_pedestal",
+        "output_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_front_pedestal",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/idler_front_pedestal/output_gear",
+        "nearby/idler_front_pedestal/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "idler_rear_pedestal",
+        "output_gear"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/idler_rear_pedestal",
+        "link/output_gear"
+      ],
+      "fact_ids": [
+        "pair/idler_rear_pedestal/output_gear",
+        "nearby/idler_rear_pedestal/output_gear"
+      ]
+    },
+    {
+      "pair": [
+        "crank_arm",
+        "input_front_bearing"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/crank_arm",
+        "link/input_front_bearing"
+      ],
+      "fact_ids": [
+        "pair/crank_arm/input_front_bearing",
+        "nearby/crank_arm/input_front_bearing"
+      ]
+    },
+    {
+      "pair": [
+        "crank_arm",
+        "input_front_pedestal"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/crank_arm",
+        "link/input_front_pedestal"
+      ],
+      "fact_ids": [
+        "pair/crank_arm/input_front_pedestal",
+        "nearby/crank_arm/input_front_pedestal"
+      ]
+    },
+    {
+      "pair": [
+        "base",
+        "crank_arm"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/base",
+        "link/crank_arm"
+      ],
+      "fact_ids": [
+        "pair/base/crank_arm",
+        "nearby/base/crank_arm"
+      ]
+    },
+    {
+      "pair": [
+        "crank_handle",
+        "input_front_bearing"
+      ],
+      "reason": "placed real meshes have positive surface separation or a disjoint AABB extent; exclude collision-proxy false contact",
+      "source_entity_ids": [
+        "link/crank_handle",
+        "link/input_front_bearing"
+      ],
+      "fact_ids": [
+        "pair/crank_handle/input_front_bearing",
+        "nearby/crank_handle/input_front_bearing"
+      ]
+    }
+  ],
+  "ground_excludes": [],
+  "support_patches": [],
+  "bodies": [
+    "base",
+    "crank_arm",
+    "crank_handle",
+    "idler_front_bearing",
+    "idler_front_pedestal",
+    "idler_gear",
+    "idler_rear_bearing",
+    "idler_rear_pedestal",
+    "idler_shaft",
+    "input_front_bearing",
+    "input_front_pedestal",
+    "input_gear",
+    "input_rear_bearing",
+    "input_rear_pedestal",
+    "input_shaft",
+    "output_front_bearing",
+    "output_front_pedestal",
+    "output_gear",
+    "output_rear_bearing",
+    "output_rear_pedestal",
+    "output_shaft"
+  ],
+  "joints": [
+    "idler_shaft_hinge",
+    "input_shaft_hinge",
+    "output_shaft_hinge"
+  ],
+  "constraints": [
+    "idler_to_output",
+    "input_to_idler"
+  ]
+}

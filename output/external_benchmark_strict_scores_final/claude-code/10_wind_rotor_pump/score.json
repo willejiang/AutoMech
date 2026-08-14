@@ -1,0 +1,375 @@
+{
+  "first_blocker": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=3",
+  "layer_weights": [
+    10,
+    15,
+    15,
+    20,
+    40
+  ],
+  "layers": [
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "source_execution",
+              "path": "output/external_benchmark_work/claude-code/10_wind_rotor_pump/source/source_execution.json",
+              "sha256": "bbcb2ecc9ed7bcd80ad45897c1ae1b80ac5f17af240cef01b277a80ee0c34367",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "scorer_owned_execution",
+          "points_awarded": 10,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "scorer-owned source build produced a nonempty part set; MJCF replay compiled, initialized, and stayed finite",
+          "status": "PASS"
+        }
+      ],
+      "index": 1,
+      "name": "execution",
+      "points_awarded": 10,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 10
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/claude-code/10_wind_rotor_pump/assembly.json",
+              "sha256": "64c7c5a85186d484b481ed8effd2bbfb2c331d659a81f335457d010d2611ff0e",
+              "source": "normalized_submission"
+            }
+          ],
+          "gate": null,
+          "name": "assembly_model",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "assembly/simulation model is available",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/claude-code/10_wind_rotor_pump/assembly.json",
+              "sha256": "64c7c5a85186d484b481ed8effd2bbfb2c331d659a81f335457d010d2611ff0e",
+              "source": "normalized_submission"
+            }
+          ],
+          "gate": null,
+          "name": "required_role_cardinalities",
+          "points_awarded": 7,
+          "points_possible": 7,
+          "raw_status": "PASS",
+          "reason": "all required roles are bound",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "assembly",
+              "path": "output/external_benchmark_staged/claude-code/10_wind_rotor_pump/assembly.json",
+              "sha256": "64c7c5a85186d484b481ed8effd2bbfb2c331d659a81f335457d010d2611ff0e",
+              "source": "normalized_submission"
+            }
+          ],
+          "gate": null,
+          "name": "input_output_independence",
+          "points_awarded": 3,
+          "points_possible": 3,
+          "raw_status": "PASS",
+          "reason": "input and output are distinct",
+          "status": "PASS"
+        }
+      ],
+      "index": 2,
+      "name": "assembly",
+      "points_awarded": 15,
+      "status": "PASS",
+      "strict_gate": null,
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "geometry",
+              "path": "output/external_benchmark_strict/claude-code/10_wind_rotor_pump/strict/geometry.json",
+              "sha256": "afcaf32b6bd2af59467afdb4c1223ecb0d04f8b76147fd2a07a09c1da3808e9d",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "mesh_inventory",
+          "points_awarded": 5,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "strict geometry hashes every scanned usable mesh",
+          "status": "PASS"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "geometry",
+              "path": "output/external_benchmark_strict/claude-code/10_wind_rotor_pump/strict/geometry.json",
+              "sha256": "afcaf32b6bd2af59467afdb4c1223ecb0d04f8b76147fd2a07a09c1da3808e9d",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": null,
+          "name": "non_exempt_conflicts",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "FAIL",
+          "reason": "strict non-exempt conflicts=3; unavailable=3",
+          "status": "FAIL"
+        }
+      ],
+      "index": 3,
+      "name": "geometry",
+      "points_awarded": 5,
+      "status": "FAIL",
+      "strict_gate": null,
+      "weight": 15
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/10_wind_rotor_pump/replay/trajectory.json",
+              "sha256": "c7c15b4dd97b1a3fee8c1676b2f71d398145ad58f54a308e0fa01b1a924fb38b",
+              "source": "scorer_owned"
+            },
+            {
+              "kind": "model_audit",
+              "path": "output/external_benchmark_strict/claude-code/10_wind_rotor_pump/strict/model_audit.json",
+              "sha256": "5f9f3a4631ac222823089849f8c88d86a08ab3013f1d56ba5c71e875da834a1c",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=3",
+          "name": "trajectory_shape",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "trajectory has time samples and joint series",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/10_wind_rotor_pump/replay/trajectory.json",
+              "sha256": "c7c15b4dd97b1a3fee8c1676b2f71d398145ad58f54a308e0fa01b1a924fb38b",
+              "source": "scorer_owned"
+            },
+            {
+              "kind": "model_audit",
+              "path": "output/external_benchmark_strict/claude-code/10_wind_rotor_pump/strict/model_audit.json",
+              "sha256": "5f9f3a4631ac222823089849f8c88d86a08ab3013f1d56ba5c71e875da834a1c",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=3",
+          "name": "sample_alignment",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "all joint series align with time",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/10_wind_rotor_pump/replay/trajectory.json",
+              "sha256": "c7c15b4dd97b1a3fee8c1676b2f71d398145ad58f54a308e0fa01b1a924fb38b",
+              "source": "scorer_owned"
+            },
+            {
+              "kind": "model_audit",
+              "path": "output/external_benchmark_strict/claude-code/10_wind_rotor_pump/strict/model_audit.json",
+              "sha256": "5f9f3a4631ac222823089849f8c88d86a08ab3013f1d56ba5c71e875da834a1c",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=3",
+          "name": "finite_health",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "finite sample fraction=1",
+          "status": "GATED"
+        }
+      ],
+      "index": 4,
+      "name": "physics_ready",
+      "points_awarded": 0,
+      "status": "GATED",
+      "strict_gate": {
+        "passed": false,
+        "reason": "collision_coverage_ok, closure_ok, transmission_binding_ok, one or more physical mesh links lack active collision coverage, authored transmission/closure is not represented by a valid active constraint"
+      },
+      "weight": 20
+    },
+    {
+      "checks": [
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/10_wind_rotor_pump/replay/trajectory.json",
+              "sha256": "c7c15b4dd97b1a3fee8c1676b2f71d398145ad58f54a308e0fa01b1a924fb38b",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=3",
+          "name": "input_motion",
+          "points_awarded": 0,
+          "points_possible": 5,
+          "raw_status": "PASS",
+          "reason": "input travel=6.32202 rad reaches minimum 6.28319",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/10_wind_rotor_pump/replay/trajectory.json",
+              "sha256": "c7c15b4dd97b1a3fee8c1676b2f71d398145ad58f54a308e0fa01b1a924fb38b",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=3",
+          "name": "motion_propagation",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "FAIL",
+          "reason": "registered output remains static",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/10_wind_rotor_pump/replay/trajectory.json",
+              "sha256": "c7c15b4dd97b1a3fee8c1676b2f71d398145ad58f54a308e0fa01b1a924fb38b",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=3",
+          "name": "registered_output",
+          "points_awarded": 0,
+          "points_possible": 15,
+          "raw_status": "FAIL",
+          "reason": "output span=0 mm, reversals=0",
+          "status": "GATED"
+        },
+        {
+          "evidence": [
+            {
+              "kind": "trajectory",
+              "path": "output/external_benchmark_work/claude-code/10_wind_rotor_pump/replay/trajectory.json",
+              "sha256": "c7c15b4dd97b1a3fee8c1676b2f71d398145ad58f54a308e0fa01b1a924fb38b",
+              "source": "scorer_owned"
+            }
+          ],
+          "gate": "non_exempt_conflicts: strict non-exempt conflicts=3; unavailable=3",
+          "name": "registered_invariants",
+          "points_awarded": 0,
+          "points_possible": 10,
+          "raw_status": "PASS",
+          "reason": "all registered invariants have passing named evidence",
+          "status": "GATED"
+        }
+      ],
+      "index": 5,
+      "name": "functional",
+      "points_awarded": 0,
+      "status": "GATED",
+      "strict_gate": null,
+      "weight": 40
+    }
+  ],
+  "method": "claude-code",
+  "points_possible": 100,
+  "provenance": {
+    "anchor_audit": {
+      "kind": "anchor_audit",
+      "path": "output/external_benchmark_strict/claude-code/10_wind_rotor_pump/strict/anchor_audit.json",
+      "sha256": "1367e7883173d40dee635964992eeb30d129ae7ccfcf8afc0c93affb6b15baa8",
+      "source": "scorer_owned"
+    },
+    "assembly": {
+      "kind": "assembly",
+      "path": "output/external_benchmark_staged/claude-code/10_wind_rotor_pump/assembly.json",
+      "sha256": "64c7c5a85186d484b481ed8effd2bbfb2c331d659a81f335457d010d2611ff0e",
+      "source": "normalized_submission"
+    },
+    "bindings": {
+      "kind": "bindings",
+      "path": "output/external_benchmark_staged/claude-code/10_wind_rotor_pump/task_bindings.json",
+      "sha256": "c25f706a1fcc945f30c45546a2b69a67709e9bc6db62809b6ad3982f45ca3815",
+      "source": "normalized_submission"
+    },
+    "contacts": {
+      "kind": "contacts",
+      "path": "output/external_benchmark_staged/claude-code/10_wind_rotor_pump/evidence/contacts.json",
+      "sha256": "90b8ebfc0686ae7095240b96be1d487e985c6caf164b2fb21f8a8de19b3ae821",
+      "source": "normalized_submission"
+    },
+    "geometry": {
+      "kind": "geometry",
+      "path": "output/external_benchmark_strict/claude-code/10_wind_rotor_pump/strict/geometry.json",
+      "sha256": "afcaf32b6bd2af59467afdb4c1223ecb0d04f8b76147fd2a07a09c1da3808e9d",
+      "source": "scorer_owned"
+    },
+    "model_audit": {
+      "kind": "model_audit",
+      "path": "output/external_benchmark_strict/claude-code/10_wind_rotor_pump/strict/model_audit.json",
+      "sha256": "5f9f3a4631ac222823089849f8c88d86a08ab3013f1d56ba5c71e875da834a1c",
+      "source": "scorer_owned"
+    },
+    "realization": {
+      "kind": "realization",
+      "path": "output/external_declared_realization_audit/claude-code/10_wind_rotor_pump.json",
+      "sha256": "32957c974c98dec51c5751845913ab8f8fa7e5446404baa2bb6e39ba1a417aab",
+      "source": "scorer_owned"
+    },
+    "replay_status": {
+      "kind": "replay_status",
+      "path": "output/external_benchmark_work/claude-code/10_wind_rotor_pump/replay_status.json",
+      "sha256": "d1813d35aacf449f5e89bed9f656104be60a365a2458a1638add102702a772dc",
+      "source": "scorer_owned"
+    },
+    "source_execution": {
+      "kind": "source_execution",
+      "path": "output/external_benchmark_work/claude-code/10_wind_rotor_pump/source/source_execution.json",
+      "sha256": "bbcb2ecc9ed7bcd80ad45897c1ae1b80ac5f17af240cef01b277a80ee0c34367",
+      "source": "scorer_owned"
+    },
+    "trajectory": {
+      "kind": "trajectory",
+      "path": "output/external_benchmark_work/claude-code/10_wind_rotor_pump/replay/trajectory.json",
+      "sha256": "c7c15b4dd97b1a3fee8c1676b2f71d398145ad58f54a308e0fa01b1a924fb38b",
+      "source": "scorer_owned"
+    }
+  },
+  "schema": "physcad-external-strict-score/1.0",
+  "scorer_version": "physcad-external-strict-scorer/1.0",
+  "strict_verdict": "FAIL",
+  "suite_id": "physcad-comfort-v1",
+  "summary_reason": "No authored transmission, inactive closure, stationary replay output, and nine detached links.",
+  "task_id": "10_wind_rotor_pump",
+  "total_points": 30
+}

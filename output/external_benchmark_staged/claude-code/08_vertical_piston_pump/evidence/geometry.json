@@ -1,0 +1,83 @@
+{
+  "analyzer_version": "comfort-geometry/1.0",
+  "fail_closed": true,
+  "input_hashes": {
+    "meshes/base.stl": "cd50874b4fe28c7085ff43c558fa59317f0fee52bc354d81c6b125e4a512b048",
+    "meshes/connecting_rod.stl": "72df60271bcd8d82cb1d63ab040ffc9f071781ba51cdbcd3330126d0528fd501",
+    "meshes/crank_disk.stl": "83bef92d7fc9be5676a4766670aa24355ae3861c50120fb94ba93b8c76508856",
+    "meshes/crankshaft.stl": "bc0d9452cb92e03681751e81d5078626a6be287a6d99c8ef9c67234240795136",
+    "meshes/cylinder_left.stl": "7c1f49212c1a41e67edd67233adccb46938931265850a486977f53567430da47",
+    "meshes/cylinder_right.stl": "56f91cd14f3205ae2a44be8e559d8604a24c057c52a725a44cd3e9552a1fef06",
+    "meshes/eccentric_pin.stl": "d4fbd50fcfbc4ad630765ddf608a8d85f28896f607db2e28499f1267b3ddbc42",
+    "meshes/guide_left.stl": "27d8954724bdb46af21400695409b07611f0b1efac401b32074d13455d264d9b",
+    "meshes/guide_right.stl": "8e4a4d3dc6f74bd46a34831016da5d8ad18b4431ff1b0200898686de9ed4237f",
+    "meshes/hand_crank.stl": "1019d969407fc5568bdac267ff72769f2502ad482c30a1c75f80b6410bf44ad1",
+    "meshes/left_bearing.stl": "d817eac54575f7d431f4442f7dd437fdf0129f9d5ef4b5a0f8516bd8d5a114f5",
+    "meshes/piston.stl": "76aea5e47afd52cdbcada92b7617f732876cf7056d448f898f4d173a792cb91c",
+    "meshes/pump_rod.stl": "919dd94e8744d6697f4166c5db43a9164850b4bbeca748ac2da8d1fb899f1db4",
+    "meshes/right_bearing.stl": "407621f0b08c880303b0aeca3afc50642fcbe1f8effb40f1e63f82a7489e7882",
+    "meshes/vertical_crosshead.stl": "bfce06743098d8b2ad1b5a03c4530fec58614fd5d538420a9ca3f2bb97c1e7d9"
+  },
+  "intersections": [
+    {
+      "evidence_id": null,
+      "exemption": null,
+      "exemption_source": "",
+      "fraction_smaller": 0.002072845,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "connecting_rod",
+        "eccentric_pin"
+      ],
+      "status": "CONFLICT",
+      "volume_mm3": 2.928667
+    },
+    {
+      "evidence_id": null,
+      "exemption": null,
+      "exemption_source": "",
+      "fraction_smaller": 0.224315051,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "connecting_rod",
+        "vertical_crosshead"
+      ],
+      "status": "CONFLICT",
+      "volume_mm3": 980.557422
+    },
+    {
+      "evidence_id": "relation/disk_shaft_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.111111129,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "crank_disk",
+        "crankshaft"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 904.238962
+    },
+    {
+      "evidence_id": "relation/eccentric_pin_press_fit",
+      "exemption": "authored_press_fit",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.021326446,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "crank_disk",
+        "eccentric_pin"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 30.131563
+    }
+  ],
+  "links_scanned": 15,
+  "manifest_only_exemption_count": 0,
+  "method": "final-pose watertight STL boolean intersection using manifold",
+  "non_exempt_conflict_count": 2,
+  "provenance_warnings": [],
+  "report_volume_mm3": 0.0001,
+  "scan_unavailable": [],
+  "schema": "physcad-scorer-geometry/1.0"
+}

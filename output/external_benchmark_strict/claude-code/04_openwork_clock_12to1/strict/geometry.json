@@ -1,0 +1,156 @@
+{
+  "analyzer_version": "comfort-geometry/1.0",
+  "fail_closed": true,
+  "input_hashes": {
+    "meshes/base_frame.stl": "a95593b89d23a61a8afd115ac24d5a24b1b3008255472a40a9542b733772022c",
+    "meshes/hour_gear_48t.stl": "2d7ba4c0d5e43f85d71fded828a9a9fbc376b3ef6d6094c0942ee71a4a970154",
+    "meshes/hour_hand.stl": "59e39ddc204b0775a7463bc3a32fc3be3509cfa04574f9115bc32ad52c069f31",
+    "meshes/hour_sleeve.stl": "07d51d7294f736428c82fbf42b72c4e5c88b2dbc237f1bd0c2ebd6ac41eb1398",
+    "meshes/intermediate_gear_45t.stl": "394fc75fb3d42edbadeb8c449e4a9b74f5d3f806dbf724cf9276fdb7bdda3350",
+    "meshes/intermediate_pinion_12t.stl": "4b804173cdf41cb912bf4eb9eaeb5fc3933a0a811caa1bb4d3b5b2868afb899b",
+    "meshes/intermediate_shaft.stl": "5d337d3106ab58cc009b076baeaa65c271c4c4b7037cc6a87cb833a1509d2da0",
+    "meshes/minute_hand.stl": "ba09c3044eaf4a57aea38dcfa53c4e007e6b2dc6e44ea7732aed08e4c1fcc336",
+    "meshes/minute_pinion_15t.stl": "33db2741e8f153d78f77b83050933ff4967bbb0447f51cede54cec0ad4990536",
+    "meshes/minute_shaft.stl": "6984ad957395a8e34820dc7815fc72ea845a34673e159e020a67092aeb8df508"
+  },
+  "intersections": [
+    {
+      "evidence_id": "mount/hour_sleeve/hour_gear_48t",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.35,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "hour_gear_48t",
+        "hour_sleeve"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 350.769359
+    },
+    {
+      "evidence_id": "relation/relation_12",
+      "exemption": "ideal_gear_mesh",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.052575597,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "hour_gear_48t",
+        "intermediate_pinion_12t"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 164.016741
+    },
+    {
+      "evidence_id": null,
+      "exemption": null,
+      "exemption_source": "",
+      "fraction_smaller": 0.148148148,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "hour_gear_48t",
+        "minute_shaft"
+      ],
+      "status": "CONFLICT",
+      "volume_mm3": 401.883873
+    },
+    {
+      "evidence_id": "mount/hour_sleeve/hour_hand",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.205000019,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "hour_hand",
+        "hour_sleeve"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 205.450643
+    },
+    {
+      "evidence_id": null,
+      "exemption": null,
+      "exemption_source": "",
+      "fraction_smaller": 0.141595204,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "hour_hand",
+        "minute_shaft"
+      ],
+      "status": "CONFLICT",
+      "volume_mm3": 210.989071
+    },
+    {
+      "evidence_id": "mount/intermediate_shaft/intermediate_gear_45t",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.2,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "intermediate_gear_45t",
+        "intermediate_shaft"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 401.883859
+    },
+    {
+      "evidence_id": "relation/relation_11",
+      "exemption": "ideal_gear_mesh",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.001247901,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "intermediate_gear_45t",
+        "minute_pinion_15t"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 5.759693
+    },
+    {
+      "evidence_id": "mount/intermediate_shaft/intermediate_pinion_12t",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.2,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "intermediate_pinion_12t",
+        "intermediate_shaft"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 401.883859
+    },
+    {
+      "evidence_id": "mount/minute_shaft/minute_hand",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.151342658,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "minute_hand",
+        "minute_shaft"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 170.800723
+    },
+    {
+      "evidence_id": "mount/minute_shaft/minute_pinion_15t",
+      "exemption": "authored_rigid_mount",
+      "exemption_source": "kinematic_model",
+      "fraction_smaller": 0.148148148,
+      "kind": "exact_solid_intersection",
+      "pair": [
+        "minute_pinion_15t",
+        "minute_shaft"
+      ],
+      "status": "EXEMPT",
+      "volume_mm3": 401.883873
+    }
+  ],
+  "links_scanned": 10,
+  "manifest_only_exemption_count": 0,
+  "method": "final-pose watertight STL boolean intersection using manifold",
+  "non_exempt_conflict_count": 2,
+  "provenance_warnings": [],
+  "report_volume_mm3": 0.0001,
+  "scan_unavailable": [],
+  "schema": "physcad-scorer-geometry/1.0"
+}
